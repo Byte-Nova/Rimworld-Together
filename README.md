@@ -4,6 +4,8 @@
 
 Welcome to the Github repository for "Rimworld Together"! In here you will find everything related to the server management part of the mod, great place for the tech savvies!
 
+Discord link: https://discord.gg/NCsArSaqBW
+
 ## Server Prequisites
 The server runs utilizing the .NET 7.0 libraries, therefore you will need to have those said dependencies installed in your server machine. For quick access, you can download them from here: https://dotnet.microsoft.com/es-es/download/dotnet/7.0
 
@@ -28,6 +30,9 @@ On first launch, the server will also generate the "MODS" folder, inside of it w
 - Required mods will kick the connecting player if its missing them.
   
 To install mods, directly dump the mod folder (The one with the numbers in the title if grabing from Steam) inside whichever folder you choose.
+
+## Contribution
+If you want to contribute, directly ask the development team (in here or in Discord) and we will gladly grant you access to the files! Working together makes us stronger and our common dream come closer-
 
 ## Other Questions?
 Please don't hesitate to create and issue on Github if you have any question/issue with the server. We are here for you!
