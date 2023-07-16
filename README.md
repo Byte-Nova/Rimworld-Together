@@ -1,4 +1,4 @@
-# Rimworld Together - SERVER FILES
+# Rimworld Together - SOURCE FILES
 ## A Community Driven Multiplayer Mod!
 ### Mod is currently a work in progress! Please report any broken stuff you find!
 
