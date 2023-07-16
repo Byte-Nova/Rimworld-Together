@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GameServer
+{
+    public static class VersionManager
+    {
+        //TODO
+        //Maybe someday
+
+        public static void CheckForClientVersion(string clientVersion)
+        {
+
+        }
+
+        public static void CheckForServerVersion()
+        {
+
+        }
+    }
+}

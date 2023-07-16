@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4ACC93D1-3675-49D8-96A3-7D0B6C6B6427}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RimworldTogether</RootNamespace>
+    <AssemblyName>RimworldTogether</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\RimworldTogether\Current\Assemblies\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>C:\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\RimworldTogether\Current\Assemblies\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Harmony\Current\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="HugsLib">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\HugsLib\v1.4\Assemblies\HugsLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\ModStuff.cs" />
+    <Compile Include="Dialogs\DialogShortcuts.cs" />
+    <Compile Include="Dialogs\RT_Dialog_3Button.cs" />
+    <Compile Include="Dialogs\RT_Dialog_ListingWithButton.cs" />
+    <Compile Include="Dialogs\RT_Dialog_ItemListing.cs" />
+    <Compile Include="Dialogs\RT_Dialog_Listing.cs" />
+    <Compile Include="Dialogs\RT_Dialog_ScrollButtons.cs" />
+    <Compile Include="Dialogs\RT_Dialog_TransferMenu.cs" />
+    <Compile Include="Files\ClientPreferencesFile.cs" />
+    <Compile Include="JSON\Actions\OfflineVisitDetailsJSON.cs" />
+    <Compile Include="JSON\Actions\VisitDetailsJSON.cs" />
+    <Compile Include="JSON\CommandDetailsJSON.cs" />
+    <Compile Include="JSON\Actions\EventDetailsJSON.cs" />
+    <Compile Include="JSON\FactionManifestJSON.cs" />
+    <Compile Include="JSON\MapDetailsJSON.cs" />
+    <Compile Include="JSON\Actions\RaidDetailsJSON.cs" />
+    <Compile Include="JSON\SiteDetailsJSON.cs" />
+    <Compile Include="JSON\Actions\SpyDetailsJSON.cs" />
+    <Compile Include="JSON\StructureLikelihood.cs" />
+    <Compile Include="JSON\Things\AnimalDetailsJSON.cs" />
+    <Compile Include="JSON\ChatMessagesJSON.cs" />
+    <Compile Include="JSON\Things\ItemDetailsJSON.cs" />
+    <Compile Include="JSON\SettlementDetailsJSON.cs" />
+    <Compile Include="JSON\Things\HumanDetailsJSON.cs" />
+    <Compile Include="JSON\PlayerRecountJSON.cs" />
+    <Compile Include="JSON\Actions\TransferManifestJSON.cs" />
+    <Compile Include="Managers\ChatManager.cs" />
+    <Compile Include="Managers\CommandManager.cs" />
+    <Compile Include="Managers\Actions\EventManager.cs" />
+    <Compile Include="Managers\Actions\FactionManager.cs" />
+    <Compile Include="Managers\LetterManager.cs" />
+    <Compile Include="Managers\Actions\LikelihoodManager.cs" />
+    <Compile Include="Managers\DeepScribeManager.cs" />
+    <Compile Include="Managers\LoginManager.cs" />
+    <Compile Include="Managers\ModManager.cs" />
+    <Compile Include="Managers\Actions\RaidManager.cs" />
+    <Compile Include="Managers\Actions\SiteManager.cs" />
+    <Compile Include="Managers\Actions\SpyManager.cs" />
+    <Compile Include="Managers\Actions\TransferManager.cs" />
+    <Compile Include="Managers\Actions\OfflineVisitManager.cs" />
+    <Compile Include="Managers\RimworldManager.cs" />
+    <Compile Include="Managers\SettlementManager.cs" />
+    <Compile Include="Managers\Actions\VisitManager.cs" />
+    <Compile Include="Managers\WorldManager.cs" />
+    <Compile Include="Patches\OnlineSettlementsPatch.cs" />
+    <Compile Include="Patches\Tabs\ChatTab.cs" />
+    <Compile Include="Patches\Tabs\PlayersUI.cs" />
+    <Compile Include="Patches\Tabs\BasesUI.cs" />
+    <Compile Include="Patches\Pages\WorldViewPatch.cs" />
+    <Compile Include="Patches\Tabs\SitesUI.cs" />
+    <Compile Include="Patches\TransferPatcher.cs" />
+    <Compile Include="Values\ClientValues.cs" />
+    <Compile Include="Values\DifficultyValues.cs" />
+    <Compile Include="Core\Main.cs" />
+    <Compile Include="Core\Master.cs" />
+    <Compile Include="Core\ModConfigs.cs" />
+    <Compile Include="Values\ServerValues.cs" />
+    <Compile Include="Managers\WorldGeneratorManager.cs" />
+    <Compile Include="Managers\DialogManager.cs" />
+    <Compile Include="Dialogs\RT_Dialog_1Input.cs" />
+    <Compile Include="Dialogs\RT_Dialog_2Input.cs" />
+    <Compile Include="Dialogs\RT_Dialog_2Button.cs" />
+    <Compile Include="Dialogs\RT_Dialog_3Input.cs" />
+    <Compile Include="Dialogs\RT_Dialog_Error.cs" />
+    <Compile Include="Dialogs\RT_Dialog_OK_Loop.cs" />
+    <Compile Include="Dialogs\RT_Dialog_Error_Loop.cs" />
+    <Compile Include="Dialogs\RT_Dialog_OK.cs" />
+    <Compile Include="Dialogs\RT_Dialog_Wait.cs" />
+    <Compile Include="Dialogs\RT_Dialog_YesNo.cs" />
+    <Compile Include="Files\LoginDataFile.cs" />
+    <Compile Include="Files\ConnectionDataFile.cs" />
+    <Compile Include="JSON\SaveFileJSON.cs" />
+    <Compile Include="JSON\ServerOverallJSON.cs" />
+    <Compile Include="JSON\WorldDetailsJSON.cs" />
+    <Compile Include="Misc\Fetcher.cs" />
+    <Compile Include="Misc\GZip.cs" />
+    <Compile Include="Misc\Hasher.cs" />
+    <Compile Include="Misc\Parser.cs" />
+    <Compile Include="Misc\Saver.cs" />
+    <Compile Include="Network\Network.cs" />
+    <Compile Include="Network\Packet.cs" />
+    <Compile Include="Network\PacketHandler.cs" />
+    <Compile Include="Misc\Serializer.cs" />
+    <Compile Include="Misc\Threader.cs" />
+    <Compile Include="JSON\LoginDetailsJSON.cs" />
+    <Compile Include="Patches\Pages\CreateWorldParamsPatch.cs" />
+    <Compile Include="Patches\EscMenuPatch.cs" />
+    <Compile Include="Patches\GameStatusPatcher.cs" />
+    <Compile Include="Patches\Pages\MainMenuPatch.cs" />
+    <Compile Include="Patches\PersistentPatches.cs" />
+    <Compile Include="Patches\Pages\SelectStartingSitePatch.cs" />
+    <Compile Include="Patches\SavePatch.cs" />
+    <Compile Include="Patches\Pages\SelectScenarioPatch.cs" />
+    <Compile Include="Patches\Pages\SelectStorytellerPatch.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Planet\PlanetBuilder.cs" />
+    <Compile Include="Planet\PlanetFactions.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
