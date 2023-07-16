@@ -12,7 +12,7 @@ The server runs utilizing the .NET 7.0 libraries, therefore you will need to hav
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, I'm sure modern e-toasters could run it.
 
 ## Server Installation
-First, navigate towards the download section of this page and download the desired server version. We will always suggest the latest one as it usually comes with all the new bleeding edge features that old ones don't have: https://github.com/TastyLollipop/Rimworld-Together/releases/latest
+First, navigate towards the download section of this page and download the desired server version. We will always suggest the latest one as it usually comes with all the new bleeding edge features that old ones don't have: https://github.com/Nova-Atomic/Rimworld-Together/releases/tag/1.0.0
 
 Then, place the server files somewhere where the server will be able to operate freely without any system/antivirus intervention (This is specially needed for linux users).
 
