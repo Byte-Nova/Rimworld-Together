@@ -29,6 +29,9 @@ On first launch, the server will also generate the "MODS" folder, inside of it w
 - Optional mods will allow a player to join even if it has them running or not.
 - Required mods will kick the connecting player if its missing them.
 
+## Enabling DLCs
+To enable the use of DLCs in the server (Or even the core game), fetch the zip file called "DLCs" from this repository and treat them as a folder of a normal mod and place them wherever you please in the mod folders.
+
 ## Port Forwarding & VPNs
 The server, by default, uses the 25555 port through TCP protocol, you can change the port as you wish but remember that other than TCP it won't work. You can use VPN programs to go around the issue of port forwarding the same way you would do it with any other game.
   
