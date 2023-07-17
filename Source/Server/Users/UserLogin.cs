@@ -59,8 +59,6 @@ namespace GameServer
                     if (cClient.username == client.username)
                     {
                         UserManager_Joinings.SendLoginResponse(cClient, UserManager_Joinings.LoginResponse.ExtraLogin);
-
-                        return;
                     }
                 }
             }
