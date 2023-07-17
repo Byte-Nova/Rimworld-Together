@@ -95,15 +95,19 @@ namespace GameServer
 
         public static void KickClient(Client client)
         {
-            client.disconnectFlag = true;
-            connectedClients.Remove(client);
-            client.tcp.Dispose();
+            try
+            {
+                client.disconnectFlag = true;
+                connectedClients.Remove(client);
+                client.tcp.Dispose();
 
-            UserManager.SendPlayerRecount();
+                UserManager.SendPlayerRecount();
 
-            Titler.ChangeTitle();
+                Titler.ChangeTitle();
 
-            Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
+                Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
+            }
+            catch { Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", Logger.LogMode.Warning); }
         }
 
         public static void HearbeatClients()
@@ -112,19 +116,20 @@ namespace GameServer
             {
                 Thread.Sleep(100);
 
-                try
+                Client[] actualClients = connectedClients.ToArray();
+
+                foreach (Client client in actualClients)
                 {
-                    Client[] actualClients = connectedClients.ToArray();
-                    foreach (Client client in actualClients)
+                    try
                     {
-                        if (!CheckIfConnected(client) || client.disconnectFlag)
+                        if (client.disconnectFlag || !CheckIfConnected(client))
                         {
                             KickClient(client);
                         }
                     }
-                }
 
-                catch { }
+                    catch { KickClient(client); }
+                }
             }
         }
 

@@ -51,7 +51,7 @@ namespace GameServer
 
         private static void RemoveOldClientIfAny(Client client)
         {
-            foreach (Client cClient in Network.connectedClients)
+            foreach (Client cClient in Network.connectedClients.ToArray())
             {
                 if (cClient == client) continue;
                 else
