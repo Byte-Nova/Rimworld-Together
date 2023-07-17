@@ -318,9 +318,12 @@ namespace RimworldTogether
                 }
 
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != PlanetFactions.yourOnlineFaction) gizmoList.Add(command_Likelihood);
-                gizmoList.Add(command_Spy);
-                gizmoList.Add(command_Raid);
+                if (__instance.Faction != PlanetFactions.yourOnlineFaction)
+                {
+                    gizmoList.Add(command_Likelihood);
+                    gizmoList.Add(command_Spy);
+                    gizmoList.Add(command_Raid);
+                }
                 gizmoList.Add(command_Event);
                 __result = gizmoList;
             }

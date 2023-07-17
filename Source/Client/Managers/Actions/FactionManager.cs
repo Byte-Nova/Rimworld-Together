@@ -195,7 +195,7 @@ namespace RimworldTogether
                 "Promote", "Demote",
                 delegate { DialogManager.PushNewDialog(d4); },
                 delegate { DialogManager.PushNewDialog(d5); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                null);
 
             RT_Dialog_2Button d1 = new RT_Dialog_2Button("Management Menu", "Choose what you want to manage", 
                 "Powers", "Kick", 

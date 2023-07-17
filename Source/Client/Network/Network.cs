@@ -135,11 +135,13 @@ namespace RimworldTogether
 
             if (Current.ProgramState != ProgramState.Entry)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Game will now quit to menu",
-                    delegate { PersistentPatches.DisconnectToMenu(); }));
+                DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
+                {
+                    "Connection to the server has been lost!",
+                    "Game will now quit to menu"
+                },
+                delegate { PersistentPatches.DisconnectToMenu(); }));
             }
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Connection to the server has been lost!"));
 
             ClientValues.CleanValues();
             ServerValues.CleanValues();
