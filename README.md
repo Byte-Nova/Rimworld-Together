@@ -7,7 +7,7 @@ Welcome to the Github repository for "Rimworld Together"! In here you will find 
 Discord link: https://discord.gg/NCsArSaqBW
 
 ## Server Prequisites
-The server runs utilizing the .NET 7.0 libraries, therefore you will need to have those said dependencies installed in your server machine. For quick access, you can download them from here: https://dotnet.microsoft.com/es-es/download/dotnet/7.0
+The server runs utilizing the .NET 7.0 libraries, therefore you will need to have those said dependencies installed in your server machine. For quick access, you can download them from here: https://dotnet.microsoft.com/en-us/download/dotnet/7.0
 
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, I'm sure modern e-toasters could run it.
 
