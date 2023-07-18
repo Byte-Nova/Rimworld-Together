@@ -40,7 +40,7 @@ namespace GameServer
         public static ActionValuesFile actionValues;
         public static WhitelistFile whitelist;
 
-        public static string serverVersion = "1.0.3";
+        public static string serverVersion = "1.0.4";
 
         public static void Main()
         {

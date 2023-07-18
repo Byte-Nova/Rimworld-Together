@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using RimWorld;
+using RimWorld.BaseGen;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -65,25 +67,29 @@ namespace RimworldTogether
             private static Scenario curScen;
 
             [HarmonyPrefix]
-            public static bool DoPre(Rect rect)
+            public static bool DoPre(Rect rect, ref Scenario ___curScen)
             {
                 if (!ClientValues.isLoadingPrefabWorld || ServerValues.AllowCustomScenarios) return true;
                 else
                 {
+                    if (curScen != null) ___curScen = curScen;
+
                     rect.xMax += 2f;
                     Rect rect2 = new Rect(0f, 0f, rect.width - 16f - 2f, totalScenarioListHeight + 250f);
                     Widgets.BeginScrollView(rect, ref scenariosScrollPosition, rect2);
                     Rect rect3 = rect2.AtZero();
                     rect3.height = 999999f;
+
                     Listing_Standard listing_Standard = new Listing_Standard();
                     listing_Standard.ColumnWidth = rect2.width;
                     listing_Standard.Begin(rect3);
+
                     Text.Font = GameFont.Small;
                     ListScenariosOnListing(listing_Standard, ScenarioLister.ScenariosInCategory(ScenarioCategory.FromDef));
+
                     listing_Standard.End();
                     totalScenarioListHeight = listing_Standard.CurHeight;
                     Widgets.EndScrollView();
-
                     return false;
                 }
             }
@@ -95,10 +101,7 @@ namespace RimworldTogether
                 {
                     if (scenario.showInUI)
                     {
-                        if (flag)
-                        {
-                            listing.Gap(6f);
-                        }
+                        if (flag) listing.Gap(6f);
 
                         Scenario scen = scenario;
                         Rect rect = listing.GetRect(68f).ContractedBy(4f);

@@ -55,64 +55,66 @@ namespace RimworldTogether
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref StorytellerDef chosenStoryteller, ref DifficultyDef difficulty, ref Difficulty difficultyValues, Listing_Standard infoListing)
         {
-            if (!ClientValues.isLoadingPrefabWorld) return true;
-
             if (!DifficultyValues.UseCustomDifficulty) return true;
-
-            Widgets.BeginGroup(rect);
-            Rect outRect = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x + 16f, rect.height);
-            Widgets.BeginScrollView(viewRect: new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, (float)DefDatabase<StorytellerDef>.AllDefs.Count() * (Storyteller.PortraitSizeTiny.y + 10f)), outRect: outRect, scrollPosition: ref scrollPosition);
-            Rect rect2 = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, Storyteller.PortraitSizeTiny.y).ContractedBy(4f);
-            foreach (StorytellerDef item in DefDatabase<StorytellerDef>.AllDefs.OrderBy((StorytellerDef tel) => tel.listOrder))
+            else
             {
-                if (item.listVisible)
+                Widgets.BeginGroup(rect);
+                Rect outRect = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x + 16f, rect.height);
+                Widgets.BeginScrollView(viewRect: new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, (float)DefDatabase<StorytellerDef>.AllDefs.Count() * (Storyteller.PortraitSizeTiny.y + 10f)), outRect: outRect, scrollPosition: ref scrollPosition);
+                Rect rect2 = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, Storyteller.PortraitSizeTiny.y).ContractedBy(4f);
+
+                foreach (StorytellerDef item in DefDatabase<StorytellerDef>.AllDefs.OrderBy((StorytellerDef tel) => tel.listOrder))
                 {
-                    bool flag = chosenStoryteller == item;
-                    Widgets.DrawOptionBackground(rect2, flag);
-                    if (Widgets.ButtonImage(rect2, item.portraitTinyTex, Color.white, new Color(0.72f, 0.68f, 0.59f)))
+                    if (item.listVisible)
                     {
-                        TutorSystem.Notify_Event("ChooseStoryteller");
-                        chosenStoryteller = item;
+                        bool flag = chosenStoryteller == item;
+                        Widgets.DrawOptionBackground(rect2, flag);
+                        if (Widgets.ButtonImage(rect2, item.portraitTinyTex, Color.white, new Color(0.72f, 0.68f, 0.59f)))
+                        {
+                            TutorSystem.Notify_Event("ChooseStoryteller");
+                            chosenStoryteller = item;
+                        }
+
+                        if (flag) GUI.DrawTexture(rect2, StorytellerHighlightTex);
+
+                        rect2.y += rect2.height + 8f;
                     }
-
-                    if (flag) GUI.DrawTexture(rect2, StorytellerHighlightTex);
-
-                    rect2.y += rect2.height + 8f;
                 }
-            }
 
-            Widgets.EndScrollView();
-            Rect outRect2 = new Rect(outRect.xMax + 8f, 0f, rect.width - outRect.width - 8f, rect.height);
-            explanationInnerRect.width = outRect2.width - 16f;
-            Widgets.BeginScrollView(outRect2, ref explanationScrollPosition, explanationInnerRect);
-            Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(0f, 0f, 300f, 999f), "HowStorytellersWork".Translate());
-            Rect rect3 = new Rect(0f, 120f, 290f, 9999f);
-            float num = 300f;
-            if (chosenStoryteller != null && chosenStoryteller.listVisible)
-            {
-                Rect position = new Rect(390f - outRect2.x, rect.height - Storyteller.PortraitSizeLarge.y - 1f, Storyteller.PortraitSizeLarge.x, Storyteller.PortraitSizeLarge.y);
-                GUI.DrawTexture(position, chosenStoryteller.portraitLargeTex);
-                Text.Anchor = TextAnchor.UpperLeft;
-                infoListing.Begin(rect3);
-                Text.Font = GameFont.Medium;
-                infoListing.Indent(15f);
-                infoListing.Label(chosenStoryteller.label);
-                infoListing.Outdent(15f);
+                Widgets.EndScrollView();
+                Rect outRect2 = new Rect(outRect.xMax + 8f, 0f, rect.width - outRect.width - 8f, rect.height);
+                explanationInnerRect.width = outRect2.width - 16f;
+                Widgets.BeginScrollView(outRect2, ref explanationScrollPosition, explanationInnerRect);
                 Text.Font = GameFont.Small;
-                infoListing.Gap(8f);
-                infoListing.Label(chosenStoryteller.description, 160f);
-                infoListing.Gap(6f);
+                Widgets.Label(new Rect(0f, 0f, 300f, 999f), "HowStorytellersWork".Translate());
+                Rect rect3 = new Rect(0f, 120f, 290f, 9999f);
+                float num = 300f;
 
-                num = rect3.y + infoListing.CurHeight;
-                infoListing.End();
+                if (chosenStoryteller != null && chosenStoryteller.listVisible)
+                {
+                    Rect position = new Rect(390f - outRect2.x, rect.height - Storyteller.PortraitSizeLarge.y - 1f, Storyteller.PortraitSizeLarge.x, Storyteller.PortraitSizeLarge.y);
+                    GUI.DrawTexture(position, chosenStoryteller.portraitLargeTex);
+                    Text.Anchor = TextAnchor.UpperLeft;
+                    infoListing.Begin(rect3);
+                    Text.Font = GameFont.Medium;
+                    infoListing.Indent(15f);
+                    infoListing.Label(chosenStoryteller.label);
+                    infoListing.Outdent(15f);
+                    Text.Font = GameFont.Small;
+                    infoListing.Gap(8f);
+                    infoListing.Label(chosenStoryteller.description, 160f);
+                    infoListing.Gap(6f);
+
+                    num = rect3.y + infoListing.CurHeight;
+                    infoListing.End();
+                }
+
+                explanationInnerRect.height = num;
+                Widgets.EndScrollView();
+                Widgets.EndGroup();
+
+                return false;
             }
-
-            explanationInnerRect.height = num;
-            Widgets.EndScrollView();
-            Widgets.EndGroup();
-
-            return false;
         }
     }
 }

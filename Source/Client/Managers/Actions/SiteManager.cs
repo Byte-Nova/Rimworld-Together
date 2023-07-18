@@ -98,8 +98,7 @@ namespace RimworldTogether
             switch(int.Parse(siteDetailsJSON.siteStep))
             {
                 case (int)SiteStepMode.Accept:
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
+                    OnSiteAccept();
                     break;
 
                 case (int)SiteStepMode.Build:
@@ -126,6 +125,15 @@ namespace RimworldTogether
                     ReceiveSitesRewards(siteDetailsJSON);
                     break;
             }
+        }
+
+        private static void OnSiteAccept()
+        {
+            DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
+
+            //DEBUG
+            SavePatch.ForceSave();
         }
 
         public static void OnSimpleSiteRequest()

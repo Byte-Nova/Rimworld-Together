@@ -109,6 +109,8 @@ namespace GameServer
 
         public static void DeleteMap(MapFile mapFile)
         {
+            if (mapFile == null) return;
+
             File.Delete(Path.Combine(Program.mapsPath, mapFile.mapTile + ".json"));
 
             Logger.WriteToConsole($"[Delete map] > {mapFile.mapTile}", Logger.LogMode.Warning);
@@ -117,8 +119,8 @@ namespace GameServer
         public static MapFile[] GetAllUserMaps(Client client)
         {
             List<MapFile> userMaps = new List<MapFile>();
-            SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
 
+            SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
             foreach (SettlementFile settlementFile in userSettlements)
             {
                 MapFile mapFile = GetUserMapFromTile(settlementFile.tile);
