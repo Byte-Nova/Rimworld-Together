@@ -66,7 +66,7 @@ namespace GameServer
         {
             List<string> conflictingMods = new List<string>();
 
-            if (Program.loadedRequiredMods.Count() > 0 || Program.loadedForbiddenMods.Count() > 0)
+            if (Program.loadedRequiredMods.Count() > 0)
             {
                 foreach (string mod in Program.loadedRequiredMods)
                 {
@@ -74,14 +74,6 @@ namespace GameServer
                     {
                         conflictingMods.Add($"[Required] > {mod}");
                         continue;
-                    }
-                }
-
-                foreach (string mod in Program.loadedForbiddenMods)
-                {
-                    if (loginDetailsJSON.runningMods.Contains(mod))
-                    {
-                        conflictingMods.Add($"[Forbidden] > {mod}");
                     }
                 }
 
@@ -95,24 +87,37 @@ namespace GameServer
                 }
             }
 
+            if (Program.loadedForbiddenMods.Count() > 0)
+            {
+                foreach (string mod in Program.loadedForbiddenMods)
+                {
+                    if (loginDetailsJSON.runningMods.Contains(mod))
+                    {
+                        conflictingMods.Add($"[Forbidden] > {mod}");
+                    }
+                }
+            }
+
             if (conflictingMods.Count == 0)
             {
                 client.runningMods = loginDetailsJSON.runningMods;
                 return false;
             }
 
-            else if (client.isAdmin)
-            {
-                Logger.WriteToConsole($"[Mod bypass] > {client.username}", Logger.LogMode.Warning);
-                client.runningMods = loginDetailsJSON.runningMods;
-                return false;
-            }
-
             else
             {
-                UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.WrongMods, conflictingMods);
+                if(client.isAdmin)
+                {
+                    Logger.WriteToConsole($"[Mod bypass] > {client.username}", Logger.LogMode.Warning);
+                    client.runningMods = loginDetailsJSON.runningMods;
+                    return false;
+                }
 
-                return true;
+                else
+                {
+                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.WrongMods, conflictingMods);
+                    return true;
+                }
             }
         }
     }
