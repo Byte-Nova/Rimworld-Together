@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using RimWorld;
+using System;
 using System.IO;
 using System.Reflection;
 using Verse;
@@ -71,16 +72,32 @@ namespace RimworldTogether
     public static class SaveOnlineGame
     {
         [HarmonyPrefix]
-        public static bool DoPre()
+        public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
             if (Network.isConnectedToServer)
             {
                 PersistentPatches.ForcePermadeath();
                 PersistentPatches.ManageDevOptions();
                 PersistentPatches.ManageGameDifficulty();
+
+                fileName = SavePatch.customSaveName;
+
+                try
+                {
+                    SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
+                    {
+                        ScribeMetaHeaderUtility.WriteMetaHeader();
+                        Game target = Current.Game;
+                        Scribe_Deep.Look(ref target, "game");
+                    }, Find.GameInfo.permadeathMode);
+                    ___lastSaveTick = Find.TickManager.TicksGame;
+                }
+                catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
+
+                return false;
             }
 
-            return true;
+            else return true;
         }
 
         [HarmonyPostfix]

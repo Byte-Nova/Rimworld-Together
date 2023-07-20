@@ -65,10 +65,10 @@ namespace RimworldTogether
 
                 else
                 {
-                    ClientValues.autosaveDays = 1;
+                    ClientValues.autosaveDays = 3;
                     ClientValues.autosaveInternalTicks = 60000f;
 
-                    Saver.SaveClientPreferences(1.ToString());
+                    Saver.SaveClientPreferences(ClientValues.autosaveDays.ToString());
                 }
             }
         }

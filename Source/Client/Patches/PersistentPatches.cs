@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
+using System;
+using UnityEngine.SceneManagement;
 using Verse;
 using Verse.Profile;
 
@@ -19,14 +21,21 @@ namespace RimworldTogether
 
         public static void DisconnectToMenu()
         {
-            LongEventHandler.QueueLongEvent(delegate { MemoryUtility.ClearAllMapsAndWorld(); },
-            "Entry", "SavingLongEvent", doAsynchronously: false, null, showExtraUIInfo: false);
+            //FIXME
+            //Check on this function, randomly causes games to go black after disconnecting but is useful if not wanting to wait for GC
+            //MemoryUtility.ClearAllMapsAndWorld();
 
-            ClientValues.CleanValues();
-            ServerValues.CleanValues();
-            ChatManager.ClearChat();
+            Action toDo = delegate
+            {
+                MemoryUtility.ClearAllMapsAndWorld();
+                ClientValues.ToggleDisconnecting(false);
+                ClientValues.CleanValues();
+                ServerValues.CleanValues();
+                ChatManager.ClearChat();
 
-            ClientValues.ToggleDisconnecting(false);
+                SceneManager.LoadScene(0, LoadSceneMode.Single);
+            };
+            toDo.Invoke();
         }
 
         public static void QuitGame()

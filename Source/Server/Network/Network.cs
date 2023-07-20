@@ -39,9 +39,6 @@ namespace GameServer
 
             if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))
             {
-                //FIXME
-                //LOOP?
-
                 UserManager_Joinings.SendLoginResponse(newServerClient, UserManager_Joinings.LoginResponse.ServerFull);
                 Logger.WriteToConsole($"[Disconnect] > {newServerClient.username} | {newServerClient.SavedIP} > Server Full", Logger.LogMode.Warning);
             }
@@ -74,7 +71,13 @@ namespace GameServer
                     catch { ResponseShortcutManager.SendIllegalPacket(client, true); }
                 }
             }
-            catch { }
+
+            catch
+            {
+                client.disconnectFlag = true;
+
+                return;
+            }
         }
 
         public static void SendData(Client client, Packet packet)

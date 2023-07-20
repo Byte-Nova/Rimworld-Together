@@ -39,7 +39,7 @@ namespace RimworldTogether
         public static int autosaveDays = 1;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = 1 * 60000f;
-        public static string versionCode = "1.0.2";
+        public static string versionCode = "1.0.3";
 
         public static string[] serverBrowserContainer = new string[]
         {
