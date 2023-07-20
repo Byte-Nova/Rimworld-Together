@@ -55,7 +55,7 @@ namespace RimworldTogether
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref StorytellerDef chosenStoryteller, ref DifficultyDef difficulty, ref Difficulty difficultyValues, Listing_Standard infoListing)
         {
-            if (!DifficultyValues.UseCustomDifficulty) return true;
+            if (!DifficultyValues.UseCustomDifficulty || !Network.isConnectedToServer) return true;
             else
             {
                 Widgets.BeginGroup(rect);

@@ -140,6 +140,13 @@ namespace GameServer
             so.AdaptationEffectFactor = dv.AdaptationEffectFactor;
             so.AdaptationGrowthRateFactorOverZero = dv.AdaptationGrowthRateFactorOverZero;
             so.FixedWealthMode = dv.FixedWealthMode;
+            so.LowPopConversionBoost = dv.LowPopConversionBoost;
+            so.NoBabiesOrChildren = dv.NoBabiesOrChildren;
+            so.babiesAreHealthy = dv.babiesAreHealthy;
+            so.ChildRaidersAllowed = dv.ChildRaidersAllowed;
+            so.ChildAgingRate = dv.ChildAgingRate;
+            so.AdultAgingRate = dv.AdultAgingRate;
+            so.WastepackInfestationChanceFactor = dv.WastepackInfestationChanceFactor;
 
             return so;
         }
