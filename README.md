@@ -4,7 +4,9 @@
 
 Welcome to the Github repository for "Rimworld Together"! In here you will find everything related to the server management part of the mod, great place for the tech savvies!
 
-Discord link: https://discord.gg/NCsArSaqBW
+- Wiki: https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki
+- Discord: https://discord.gg/NCsArSaqBW
+- Incompatibility list: https://docs.google.com/spreadsheets/d/14f4oJIV82SzqNK-Tyewr0OKxVRgge8xFasivACwRlsA/edit#gid=0
 
 ## Server Prequisites
 The server runs utilizing the .NET 7.0 libraries, therefore you will need to have those said dependencies installed in your server machine. For quick access, you can download them from here: https://dotnet.microsoft.com/en-us/download/dotnet/7.0
