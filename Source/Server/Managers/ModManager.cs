@@ -16,13 +16,13 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "about.xml", SearchOption.AllDirectories)[0];
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
                     foreach (string str in XmlParser.ParseDataFromXML(aboutFile, "packageId"))
                     {
                         if (!Program.loadedRequiredMods.Contains(str.ToLower())) Program.loadedRequiredMods.Add(str.ToLower());
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load about.xml of mod at '{modPath}'", Logger.LogMode.Error); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", Logger.LogMode.Error); }
             }
 
             Logger.WriteToConsole($"Loaded required mods [{Program.loadedRequiredMods.Count()}]");
@@ -33,13 +33,13 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "about.xml", SearchOption.AllDirectories)[0];
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
                     foreach (string str in XmlParser.ParseDataFromXML(aboutFile, "packageId"))
                     {
                         if (!Program.loadedOptionalMods.Contains(str.ToLower())) Program.loadedOptionalMods.Add(str.ToLower());
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load about.xml of mod at '{modPath}'", Logger.LogMode.Error); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", Logger.LogMode.Error); }
             }
 
             Logger.WriteToConsole($"Loaded optional mods [{Program.loadedOptionalMods.Count()}]");
@@ -50,13 +50,13 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "about.xml", SearchOption.AllDirectories)[0];
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
                     foreach (string str in XmlParser.ParseDataFromXML(aboutFile, "packageId"))
                     {
                         if (!Program.loadedForbiddenMods.Contains(str.ToLower())) Program.loadedForbiddenMods.Add(str.ToLower());
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load about.xml of mod at '{modPath}'", Logger.LogMode.Error); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", Logger.LogMode.Error); }
             }
 
             Logger.WriteToConsole($"Loaded forbidden mods [{Program.loadedForbiddenMods.Count()}]");

@@ -26,6 +26,8 @@ namespace GameServer
 
             Threader.GenerateServerThread(Threader.ServerMode.Heartbeat);
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
+
+            Logger.WriteToConsole("Type 'help' to get a list of available commands");
             Logger.WriteToConsole($"Listening for users at {localAddress}:{port}");
             Logger.WriteToConsole("Server launched");
             Titler.ChangeTitle();
@@ -40,7 +42,7 @@ namespace GameServer
             if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))
             {
                 UserManager_Joinings.SendLoginResponse(newServerClient, UserManager_Joinings.LoginResponse.ServerFull);
-                Logger.WriteToConsole($"[Disconnect] > {newServerClient.username} | {newServerClient.SavedIP} > Server Full", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Warning] > Server Full", Logger.LogMode.Warning);
             }
 
             else
