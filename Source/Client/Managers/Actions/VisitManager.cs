@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Shared.JSON;
+using Shared.JSON.Actions;
+using Shared.Misc;
 using Verse;
 using Verse.AI;
 

@@ -1,4 +1,7 @@
-﻿namespace RimworldTogether
+﻿using Shared.JSON;
+using Shared.Misc;
+
+namespace RimworldTogether
 {
     public static class SettlementManager
     {

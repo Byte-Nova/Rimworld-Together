@@ -3,6 +3,8 @@ using RimWorld;
 using System;
 using System.IO;
 using System.Reflection;
+using Shared.JSON;
+using Shared.Misc;
 using Verse;
 
 namespace RimworldTogether

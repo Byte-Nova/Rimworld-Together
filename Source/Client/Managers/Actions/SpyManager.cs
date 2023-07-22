@@ -2,6 +2,9 @@
 using RimWorld.Planet;
 using System;
 using System.Text;
+using Shared.JSON;
+using Shared.JSON.Actions;
+using Shared.Misc;
 using Verse;
 
 namespace RimworldTogether

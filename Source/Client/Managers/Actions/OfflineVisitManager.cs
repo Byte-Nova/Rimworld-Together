@@ -3,6 +3,9 @@ using RimWorld;
 using System;
 using System.Linq;
 using System.Text;
+using Shared.JSON;
+using Shared.JSON.Actions;
+using Shared.Misc;
 using Verse;
 using Verse.AI.Group;
 

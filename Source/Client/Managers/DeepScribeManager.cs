@@ -3,6 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Shared.JSON;
+using Shared.JSON.Actions;
+using Shared.Misc;
 using UnityEngine.Assertions.Must;
 using Verse;
 

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using Shared.Misc;
 using Verse;
 
 namespace RimworldTogether

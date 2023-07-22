@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
+using Shared.JSON;
+using Shared.Misc;
 using Verse;
 
 namespace RimworldTogether

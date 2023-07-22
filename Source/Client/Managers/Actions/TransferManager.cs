@@ -3,6 +3,8 @@ using RimWorld.Planet;
 using System;
 using System.Linq;
 using System.Threading;
+using Shared.JSON.Actions;
+using Shared.Misc;
 using Verse;
 using Verse.Sound;
 

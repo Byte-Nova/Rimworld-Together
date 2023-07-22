@@ -2,6 +2,8 @@
 using RimWorld.Planet;
 using RimWorld;
 using System.Collections.Generic;
+using Shared.JSON;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
