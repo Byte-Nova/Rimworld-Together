@@ -80,10 +80,8 @@ namespace RimworldTogether.GameClient.Dialogs
                 "Port",
                 delegate { Parser.ParseConnectionDetails(false); },
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
-            var vv = MessagePack.MessagePackSerializer.Serialize("Messagepack says fuck this outdated shit");
-            var va = MessagePack.MessagePackSerializer.Deserialize<string>(vv);
             RT_Dialog_2Button newDialog = new RT_Dialog_2Button(
-                va,
+                "Play Online",
                 "Choose the connection type",
                 "Server Browser",
                 "Direct Connect",
