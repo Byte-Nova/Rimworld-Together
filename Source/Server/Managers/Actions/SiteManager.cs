@@ -310,8 +310,6 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     Packet packet = new Packet("SitePacket", contents);
                     Network.Network.SendData(client, packet);
                 }
-
-                Console.WriteLine($"Player {client.username} Count > {siteDetailsJSON.sitesWithRewards.Count()}");
             }
 
             Logger.WriteToConsole($"[Site tick]");
