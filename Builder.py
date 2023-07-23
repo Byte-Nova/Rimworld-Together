@@ -17,16 +17,32 @@ subprocess.run(["dotnet", "build", source_solution, "--configuration", "Release"
 
 # Copy the output dll to dll_destination
 dll_output_path = "Source/Client/bin/Release/GameClient.dll"  # Adjust the path based on your configuration
-shared_dll_output_path = "Source/Client/bin/Release/Shared.dll"  # Adjust the path based on your configuration
+shared_dll_output_path = "Source/Client/bin/Release/"  # Adjust the path based on your configuration
 dll_destination_path = os.path.join(destination_dir, "Current/Assemblies/RimworldTogether.dll")
-shared_dll_destination_path = os.path.join(destination_dir, "Current/Assemblies/Shared.dll")
+shared_dll_destination_path = os.path.join(destination_dir, "Current/Assemblies/")
 
 # If the destination path doesn't exist, create it
 os.makedirs(os.path.dirname(dll_destination_path), exist_ok=True)
 
 # Copy and rename the dll file
 shutil.copy2(dll_output_path, dll_destination_path)
-shutil.copy2(shared_dll_output_path, shared_dll_destination_path)
+
+def copy_all_files(source_dir, destination_dir):
+    # Check if the destination directory exists and if not, create it
+    if not os.path.exists(destination_dir):
+        os.makedirs(destination_dir)
+
+    for filename in os.listdir(source_dir):
+        file_path = os.path.join(source_dir, filename)
+
+        # Only copy files (not directories)
+        if os.path.isfile(file_path):
+            shutil.copy2(file_path, destination_dir)
+
+
+copy_all_files(shared_dll_output_path, shared_dll_destination_path)
+
+# shutil.copy2(shared_dll_output_path, shared_dll_destination_path)
 mod_paths = [
     "C:/Games/Rimworld/Mods",
     "C:/Program Files (x86)/Steam/steamapps/common/RimWorld/Mods"
@@ -43,5 +59,3 @@ for mod_path in mod_paths:
 
         # Copy mod to mod_path
         shutil.copytree(destination_dir, mod_specific_path)
-
-
