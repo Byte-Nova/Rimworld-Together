@@ -51,7 +51,12 @@ namespace GameServer
 
             Threader.GenerateServerThread(Threader.ServerMode.Start);
 
-            while (true) ServerCommandManager.ListenForServerCommands();
+            Threader.GenerateServerThread(Threader.ServerMode.Console);
+
+            //TODO
+            //There might be another way of asking the console not to close when main stops having stuff to do
+            //For now, this suffices
+            while (true) Thread.Sleep(1);
         }
 
         public static void LoadResources()

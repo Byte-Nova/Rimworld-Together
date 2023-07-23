@@ -4,7 +4,7 @@ namespace Shared.Misc
 {
     public static class Threader
     {
-        public enum ServerMode { Start, Heartbeat, Sites }
+        public enum ServerMode { Start, Heartbeat, Sites, Console }
 
         public enum ClientMode { Start }
 
@@ -31,6 +31,14 @@ namespace Shared.Misc
                 Thread thread = new Thread(SiteManager.StartSiteTicker);
                 thread.IsBackground = true;
                 thread.Name = "Sites";
+                thread.Start();
+            }
+
+            else if (mode == ServerMode.Console)
+            {
+                Thread thread = new Thread(ServerCommandManager.ListenForServerCommands);
+                thread.IsBackground = true;
+                thread.Name = "Console";
                 thread.Start();
             }
         }

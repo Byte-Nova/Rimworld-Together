@@ -57,7 +57,13 @@ namespace GameServer
             catch (Exception e) { Logger.WriteToConsole($"[Error] > Couldn't parse command '{parsedPrefix}'. Reason: {e}", Logger.LogMode.Error); }
         }
 
-        public static void ListenForServerCommands() { ParseServerCommands(Console.ReadLine()); }
+        public static void ListenForServerCommands()
+        {
+            while(true)
+            {
+                ParseServerCommands(Console.ReadLine());
+            }
+        }
     }
 
     public static class ServerCommandStorage
