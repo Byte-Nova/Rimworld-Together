@@ -1,10 +1,12 @@
 ﻿using System.Globalization;
 using System.IO;
-using Shared.Misc;
+using RimworldTogether.GameClient.Files;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Core
 {
     public class Main
     {

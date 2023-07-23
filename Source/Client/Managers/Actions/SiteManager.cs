@@ -1,13 +1,19 @@
-﻿using RimWorld;
-using RimWorld.Planet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shared.JSON;
-using Shared.Misc;
+using RimWorld;
+using RimWorld.Planet;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Patches;
+using RimworldTogether.GameClient.Planet;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.JSON.Things;
+using RimworldTogether.Shared.Network;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class SiteManager
     {
@@ -148,7 +154,7 @@ namespace RimworldTogether
 
             string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
             Packet packet = new Packet("SitePacket", contents);
-            Network.SendData(packet);
+            Network.Network.SendData(packet);
         }
 
         public static void OnSimpleSiteOpen(SiteDetailsJSON siteDetailsJSON)
@@ -180,7 +186,7 @@ namespace RimworldTogether
 
             string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
             Packet packet = new Packet("SitePacket", contents);
-            Network.SendData(packet);
+            Network.Network.SendData(packet);
         }
 
         private static void OnWorkerRetrieval(SiteDetailsJSON siteDetailsJSON)
@@ -233,7 +239,7 @@ namespace RimworldTogether
 
             string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
             Packet packet = new Packet("SitePacket", contents);
-            Network.SendData(packet);
+            Network.Network.SendData(packet);
 
             if (caravanHumans.Count == 1) ClientValues.chosenCaravan.Destroy();
 
@@ -251,7 +257,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
                 Packet packet = new Packet("SitePacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
@@ -368,7 +374,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
                 Packet packet = new Packet("SitePacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
             }
@@ -436,7 +442,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
                 Packet packet = new Packet("SitePacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
             }

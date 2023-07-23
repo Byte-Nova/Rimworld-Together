@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace RimworldTogether
+namespace RimworldTogether.Shared.JSON.Things
 {
     [Serializable]
     public class HumanDetailsJSON

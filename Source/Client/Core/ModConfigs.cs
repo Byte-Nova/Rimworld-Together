@@ -1,6 +1,7 @@
-﻿using Verse;
+﻿using RimworldTogether.GameClient.Values;
+using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Core
 {
     public class ModConfigs : ModSettings
     {

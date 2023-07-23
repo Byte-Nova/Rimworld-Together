@@ -1,9 +1,10 @@
 ﻿using HugsLib.Utils;
 using RimWorld;
+using RimworldTogether.GameClient.Managers;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_Wait : Window
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Managers
 {
     public static class LetterManager
     {

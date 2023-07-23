@@ -1,7 +1,7 @@
-﻿using Shared.JSON;
+﻿using RimworldTogether.Shared.JSON;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Values
 {
     public static class DifficultyValues
     {

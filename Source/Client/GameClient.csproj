@@ -7,8 +7,8 @@
     <ProjectGuid>{4ACC93D1-3675-49D8-96A3-7D0B6C6B6427}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RimworldTogether</RootNamespace>
-    <AssemblyName>RimworldTogether</AssemblyName>
+    <RootNamespace>RimworldTogether.GameClient</RootNamespace>
+    <AssemblyName>GameClient</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

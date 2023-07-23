@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Shared.Misc
+namespace RimworldTogether.Shared.Misc
 {
     public static class Hasher
     {

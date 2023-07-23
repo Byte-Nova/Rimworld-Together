@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.Network;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Core
 {
     public class ModStuff : Mod
     {
@@ -59,7 +64,7 @@ namespace RimworldTogether
 
         private void ResetServerProgress()
         {
-            if (!Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
+            if (!Network.Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
             else
             {
                 Action r1 = delegate 
@@ -67,7 +72,7 @@ namespace RimworldTogether
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
 
                     Packet packet = new Packet("ResetSavePacket");
-                    Network.SendData(packet);
+                    Network.Network.SendData(packet);
                 };
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);

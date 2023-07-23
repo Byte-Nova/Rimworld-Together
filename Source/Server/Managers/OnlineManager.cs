@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
+﻿using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class OnlineManager
     {

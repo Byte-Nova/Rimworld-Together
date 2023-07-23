@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml;
+﻿using System.Xml;
 
-namespace Shared.Misc
+namespace RimworldTogether.GameServer.Misc
 {
     public static class XmlParser
     {

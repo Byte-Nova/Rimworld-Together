@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class WhitelistManager
     {

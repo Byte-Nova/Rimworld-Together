@@ -1,13 +1,20 @@
-﻿using HarmonyLib;
-using RimWorld;
-using RimWorld.Planet;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
+using RimWorld;
+using RimWorld.Planet;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Patches.Tabs;
+using RimworldTogether.GameClient.Planet;
+using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
+using FactionManager = RimworldTogether.GameClient.Managers.Actions.FactionManager;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(WorldInspectPane), "SetInitialSizeAndPosition")]
     public static class AddSideTabs
@@ -15,7 +22,7 @@ namespace RimworldTogether
         [HarmonyPrefix]
         public static bool DoPre(ref WITab[] ___TileTabs)
         {
-            if (___TileTabs.Count() != 5 && Network.isConnectedToServer)
+            if (___TileTabs.Count() != 5 && Network.Network.isConnectedToServer)
             {
                 ___TileTabs = new WITab[5]
                 {
@@ -37,7 +44,7 @@ namespace RimworldTogether
         [HarmonyPrefix]
         public static bool DoPre(ref int tile, ref List<Pair<Settlement, int>> outOffsets)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (!Network.Network.isConnectedToServer) return true;
             else
             {
                 int maxDist = SettlementProximityGoodwillUtility.MaxDist;
@@ -69,7 +76,7 @@ namespace RimworldTogether
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance)
         {
-            if (!Network.isConnectedToServer) return;
+            if (!Network.Network.isConnectedToServer) return;
 
             if (PlanetFactions.playerFactions.Contains(__instance.Faction))
             {
@@ -168,7 +175,7 @@ namespace RimworldTogether
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance, Caravan caravan)
         {
-            if (!Network.isConnectedToServer) return;
+            if (!Network.Network.isConnectedToServer) return;
 
             if (PlanetFactions.playerFactions.Contains(__instance.Faction))
             {
@@ -360,7 +367,7 @@ namespace RimworldTogether
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Site __instance)
         {
-            if (!Network.isConnectedToServer) return;
+            if (!Network.Network.isConnectedToServer) return;
 
             if (PlanetFactions.playerFactions.Contains(__instance.Faction))
             {
@@ -432,7 +439,7 @@ namespace RimworldTogether
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<Gizmo> __result, Caravan __instance)
         {
-            if (Network.isConnectedToServer && RimworldManager.CheckIfPlayerHasMap())
+            if (Network.Network.isConnectedToServer && RimworldManager.CheckIfPlayerHasMap())
             {
                 Site presentSite = Find.World.worldObjects.Sites.ToList().Find(x => x.Tile == __instance.Tile);
                 Settlement presentSettlement = Find.World.worldObjects.Settlements.ToList().Find(x => x.Tile == __instance.Tile);
@@ -594,7 +601,7 @@ namespace RimworldTogether
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result)
         {
-            if (!Network.isConnectedToServer) return;
+            if (!Network.Network.isConnectedToServer) return;
 
             var gizmoList = __result.ToList();
             List<Gizmo> removeList = new List<Gizmo>();

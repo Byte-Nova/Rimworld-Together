@@ -1,10 +1,11 @@
-﻿using HarmonyLib;
+﻿using System.Linq;
+using HarmonyLib;
 using RimWorld;
-using System.Linq;
+using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(Page_SelectStoryteller), "DoWindowContents")]
     public static class PatchSelectStorytellerPage
@@ -55,7 +56,7 @@ namespace RimworldTogether
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref StorytellerDef chosenStoryteller, ref DifficultyDef difficulty, ref Difficulty difficultyValues, Listing_Standard infoListing)
         {
-            if (!DifficultyValues.UseCustomDifficulty || !Network.isConnectedToServer) return true;
+            if (!DifficultyValues.UseCustomDifficulty || !Network.Network.isConnectedToServer) return true;
             else
             {
                 Widgets.BeginGroup(rect);

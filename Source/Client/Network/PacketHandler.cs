@@ -1,8 +1,15 @@
-﻿using Shared.JSON;
-using Shared.Misc;
+﻿using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Patches;
+using RimworldTogether.GameClient.Planet;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Network
 {
     public static class PacketHandlers
     {

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON.Actions;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class OfflineVisitManager
     {
@@ -36,7 +33,7 @@ namespace GameServer
                 offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
                 string[] contents = new string[] { Serializer.SerializeToString(offlineVisitDetails) };
                 Packet packet = new Packet("OfflineVisitPacket", contents);
-                Network.SendData(client, packet);
+                Network.Network.SendData(client, packet);
             }
 
             else
@@ -48,7 +45,7 @@ namespace GameServer
                     offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
                     string[] contents = new string[] { Serializer.SerializeToString(offlineVisitDetails) };
                     Packet packet = new Packet("OfflineVisitPacket", contents);
-                    Network.SendData(client, packet);
+                    Network.Network.SendData(client, packet);
                 }
 
                 else
@@ -58,7 +55,7 @@ namespace GameServer
 
                     string[] contents = new string[] { Serializer.SerializeToString(offlineVisitDetails) };
                     Packet packet = new Packet("OfflineVisitPacket", contents);
-                    Network.SendData(client, packet);
+                    Network.Network.SendData(client, packet);
                 }
             }
         }

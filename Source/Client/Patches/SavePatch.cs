@@ -1,13 +1,18 @@
-﻿using HarmonyLib;
-using RimWorld;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
-using Shared.JSON;
-using Shared.Misc;
+using HarmonyLib;
+using RimWorld;
+using RimworldTogether.GameClient.Core;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Network;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Patches
 {
     public class SavePatch
     {
@@ -42,7 +47,7 @@ namespace RimworldTogether
 
             string[] contents = new string[] { Serializer.SerializeToString(saveFileJSON) };
             Packet packet = new Packet("SaveFilePacket", contents);
-            Network.SendData(packet);
+            Network.Network.SendData(packet);
         }
 
         public static void SendMapsToServer()
@@ -57,7 +62,7 @@ namespace RimworldTogether
 
                     string[] contents = new string[] { Serializer.SerializeToString(toSend) };
                     Packet packet = new Packet("MapPacket", contents);
-                    Network.SendData(packet);
+                    Network.Network.SendData(packet);
                 }
             }
         }
@@ -76,7 +81,7 @@ namespace RimworldTogether
         [HarmonyPrefix]
         public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
-            if (Network.isConnectedToServer)
+            if (Network.Network.isConnectedToServer)
             {
                 PersistentPatches.ForcePermadeath();
                 PersistentPatches.ManageDevOptions();
@@ -105,7 +110,7 @@ namespace RimworldTogether
         [HarmonyPostfix]
         public static void DoPost(ref string fileName)
         {
-            if (Network.isConnectedToServer)
+            if (Network.Network.isConnectedToServer)
             {
                 if (ClientValues.isDisconnecting || ClientValues.isQuiting) SavePatch.SendMapsToServer();
                 SavePatch.SendSaveToServer(fileName);
@@ -119,7 +124,7 @@ namespace RimworldTogether
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!Network.isConnectedToServer) return true;
+            if (!Network.Network.isConnectedToServer) return true;
             else
             {
                 ClientValues.autosaveCurrentTicks++;

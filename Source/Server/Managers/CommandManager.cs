@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON;
-using Shared.JSON.Actions;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class CommandManager
     {
@@ -53,7 +50,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
             Packet packet = new Packet("CommandPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
 
         public static void SendDeOpCommand(Client client)
@@ -63,7 +60,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
             Packet packet = new Packet("CommandPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
 
         }
 
@@ -74,7 +71,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
             Packet packet = new Packet("CommandPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
 
         }
 
@@ -85,7 +82,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
             Packet packet = new Packet("CommandPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
 
         }
 
@@ -96,7 +93,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
             Packet packet = new Packet("CommandPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
 
         public static void SendEventCommand(Client client, int eventID)
@@ -107,7 +104,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(eventDetailsJSON) };
             Packet packet = new Packet("EventPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
 
         public static void SendBroadcastCommand(string str)
@@ -118,9 +115,9 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
             Packet packet = new Packet("CommandPacket", contents);
-            foreach (Client client in Network.connectedClients.ToArray())
+            foreach (Client client in Network.Network.connectedClients.ToArray())
             {
-                Network.SendData(client, packet);
+                Network.Network.SendData(client, packet);
             }
         }
     }

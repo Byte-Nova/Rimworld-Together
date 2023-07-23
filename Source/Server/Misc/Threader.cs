@@ -1,6 +1,8 @@
-﻿using GameServer;
+﻿using RimworldTogether.GameServer.Managers;
+using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Network;
 
-namespace Shared.Misc
+namespace RimworldTogether.GameServer.Misc
 {
     public static class Threader
     {
@@ -12,7 +14,7 @@ namespace Shared.Misc
         {
             if (mode == ServerMode.Start)
             {
-                Thread thread = new Thread(new ThreadStart(Network.ReadyServer));
+                Thread thread = new Thread(new ThreadStart(Network.Network.ReadyServer));
                 thread.IsBackground = true;
                 thread.Name = "Networking";
                 thread.Start();
@@ -20,7 +22,7 @@ namespace Shared.Misc
 
             else if (mode == ServerMode.Heartbeat)
             {
-                Thread thread = new Thread(Network.HearbeatClients);
+                Thread thread = new Thread(Network.Network.HearbeatClients);
                 thread.IsBackground = true;
                 thread.Name = "Heartbeat";
                 thread.Start();
@@ -47,7 +49,7 @@ namespace Shared.Misc
         {
             if (mode == ClientMode.Start)
             {
-                Thread thread = new Thread(() => Network.ListenToClient(client));
+                Thread thread = new Thread(() => Network.Network.ListenToClient(client));
                 thread.IsBackground = true;
                 thread.Name = $"Client {client.SavedIP}";
                 thread.Start();

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Shared.JSON.Actions
+namespace RimworldTogether.Shared.JSON.Actions
 {
     [Serializable]
     public class EventDetailsJSON

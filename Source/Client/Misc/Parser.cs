@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
-using Shared.JSON;
-using Shared.Misc;
-using Verse;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Network;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Misc
 {
     public static class Parser
     {
@@ -36,15 +39,15 @@ namespace RimworldTogether
             {
                 if (throughBrowser)
                 {
-                    Network.ip = answerSplit[0];
-                    Network.port = answerSplit[1];
+                    Network.Network.ip = answerSplit[0];
+                    Network.Network.port = answerSplit[1];
                     Saver.SaveConnectionDetails(answerSplit[0], answerSplit[1]);
                 }
 
                 else
                 {
-                    Network.ip = DialogManager.dialog2ResultOne;
-                    Network.port = DialogManager.dialog2ResultTwo;
+                    Network.Network.ip = DialogManager.dialog2ResultOne;
+                    Network.Network.port = DialogManager.dialog2ResultTwo;
                     Saver.SaveConnectionDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
                 }
 
@@ -78,7 +81,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(loginDetails) };
                 Packet packet = new Packet("LoginClientPacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
             }
@@ -110,7 +113,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(registerDetails) };
                 Packet packet = new Packet("RegisterClientPacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
             }

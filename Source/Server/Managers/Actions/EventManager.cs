@@ -1,15 +1,10 @@
-﻿using GameServer.Managers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON.Actions;
-using Shared.Misc;
-using static GameServer.TransferManager;
+﻿using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class EventManager
     {
@@ -46,7 +41,7 @@ namespace GameServer
                     eventDetailsJSON.eventStepMode = ((int)EventStepMode.Recover).ToString();
                     string[] contents = new string[] { Serializer.SerializeToString(eventDetailsJSON) };
                     Packet packet = new Packet("EventPacket", contents);
-                    Network.SendData(client, packet);
+                    Network.Network.SendData(client, packet);
                 }
 
                 else
@@ -57,7 +52,7 @@ namespace GameServer
                         eventDetailsJSON.eventStepMode = ((int)EventStepMode.Recover).ToString();
                         string[] contents = new string[] { Serializer.SerializeToString(eventDetailsJSON) };
                         Packet packet = new Packet("EventPacket", contents);
-                        Network.SendData(client, packet);
+                        Network.Network.SendData(client, packet);
                     }
 
                     else
@@ -66,12 +61,12 @@ namespace GameServer
 
                         string[] contents = new string[] { Serializer.SerializeToString(eventDetailsJSON) };
                         Packet packet = new Packet("EventPacket", contents);
-                        Network.SendData(client, packet);
+                        Network.Network.SendData(client, packet);
 
                         eventDetailsJSON.eventStepMode = ((int)EventStepMode.Receive).ToString();
                         contents = new string[] { Serializer.SerializeToString(eventDetailsJSON) };
                         Packet rPacket = new Packet("EventPacket", contents);
-                        Network.SendData(target, rPacket);
+                        Network.Network.SendData(target, rPacket);
                     }
                 }
             }

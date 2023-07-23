@@ -1,15 +1,10 @@
-﻿using GameServer.Managers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class LikelihoodManager
     {
@@ -88,7 +83,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(structureLikelihoodJSON) };
             Packet rPacket = new Packet("LikelihoodPacket", contents);
-            Network.SendData(client, rPacket);
+            Network.Network.SendData(client, rPacket);
         }
 
         public static int GetLikelihoodFromTile(Client client, string tileToCheck)
@@ -167,7 +162,7 @@ namespace GameServer
 
         public static void ClearAllFactionMemberLikelihoods(FactionFile factionFile)
         {
-            Client[] clients = Network.connectedClients.ToArray();
+            Client[] clients = Network.Network.connectedClients.ToArray();
             List<Client> clientsToGet = new List<Client>();
 
             foreach (Client client in clients)
@@ -241,7 +236,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(structureLikelihoodJSON) };
             Packet packet = new Packet("LikelihoodPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
     }
 }

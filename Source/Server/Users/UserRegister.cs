@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Managers;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Users
 {
     public static class UserRegister
     {

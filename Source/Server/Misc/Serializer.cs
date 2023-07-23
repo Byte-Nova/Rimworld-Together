@@ -1,8 +1,7 @@
-﻿using System.IO;
-using Newtonsoft.Json;
-using RimworldTogether;
+﻿using Newtonsoft.Json;
+using RimworldTogether.Shared.Network;
 
-namespace Shared.Misc
+namespace RimworldTogether.GameServer.Misc
 {
     public static class Serializer
     {

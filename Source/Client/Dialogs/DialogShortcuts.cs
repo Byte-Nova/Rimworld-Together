@@ -1,4 +1,9 @@
-﻿namespace RimworldTogether
+﻿using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Patches;
+using RimworldTogether.GameClient.Values;
+
+namespace RimworldTogether.GameClient.Dialogs
 {
     public static class DialogShortcuts
     {
@@ -41,7 +46,7 @@
                     DialogManager.PushNewDialog(a2);
                     Fetcher.FetchLastUserDetails();
                 },
-                delegate { Network.DisconnectFromServer(); });
+                delegate { Network.Network.DisconnectFromServer(); });
 
             DialogManager.PushNewDialog(d1);
         }

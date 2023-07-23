@@ -1,11 +1,14 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using RimWorld;
-using System;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Values;
 using UnityEngine.SceneManagement;
 using Verse;
 using Verse.Profile;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Patches
 {
     public class PersistentPatches
     {
@@ -62,7 +65,7 @@ namespace RimworldTogether
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.isConnectedToServer) PersistentPatches.ManageDevOptions();
+            if (Network.Network.isConnectedToServer) PersistentPatches.ManageDevOptions();
         }
     }
 
@@ -72,7 +75,7 @@ namespace RimworldTogether
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.isConnectedToServer) PersistentPatches.ManageGameDifficulty();
+            if (Network.Network.isConnectedToServer) PersistentPatches.ManageGameDifficulty();
         }
     }
 }

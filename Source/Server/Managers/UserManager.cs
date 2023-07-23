@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class UserManager
     {
@@ -77,17 +76,17 @@ namespace GameServer
         public static void SendPlayerRecount()
         {
             PlayerRecountJSON playerRecountJSON = new PlayerRecountJSON();
-            playerRecountJSON.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
-            foreach(Client client in Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
+            playerRecountJSON.currentPlayers = Network.Network.connectedClients.ToArray().Count().ToString();
+            foreach(Client client in Network.Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
 
             string[] contents = new string[] { Serializer.SerializeToString(playerRecountJSON) };
             Packet packet = new Packet("PlayerRecountPacket", contents);
-            foreach (Client client in Network.connectedClients.ToArray()) Network.SendData(client, packet);
+            foreach (Client client in Network.Network.connectedClients.ToArray()) Network.Network.SendData(client, packet);
         }
 
         public static bool CheckIfUserIsConnected(string username)
         {
-            List<Client> connectedClients = Network.connectedClients.ToList();
+            List<Client> connectedClients = Network.Network.connectedClients.ToList();
 
             Client toGet = connectedClients.Find(x => x.username == username);
             if (toGet != null) return true;
@@ -96,7 +95,7 @@ namespace GameServer
 
         public static Client GetConnectedClientFromUsername(string username)
         {
-            List<Client> connectedClients = Network.connectedClients.ToList();
+            List<Client> connectedClients = Network.Network.connectedClients.ToList();
             return connectedClients.Find(x => x.username == username);
         }
 
@@ -197,7 +196,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(loginDetailsJSON) };
             Packet packet = new Packet("LoginResponsePacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
 
             client.disconnectFlag = true;
         }

@@ -1,14 +1,10 @@
-﻿using GameServer.Managers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON.Actions;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class VisitManager
     {
@@ -54,7 +50,7 @@ namespace GameServer
                     visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Unavailable).ToString();
                     string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
                     Packet packet = new Packet("VisitPacket", contents);
-                    Network.SendData(client, packet);
+                    Network.Network.SendData(client, packet);
                 }
 
                 else
@@ -64,7 +60,7 @@ namespace GameServer
                         visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Unavailable).ToString();
                         string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
                         Packet packet = new Packet("VisitPacket", contents);
-                        Network.SendData(client, packet);
+                        Network.Network.SendData(client, packet);
                     }
 
                     else
@@ -72,7 +68,7 @@ namespace GameServer
                         visitDetailsJSON.visitorName = client.username;
                         string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
                         Packet packet = new Packet("VisitPacket", contents);
-                        Network.SendData(toGet, packet);
+                        Network.Network.SendData(toGet, packet);
                     }
                 }
             }
@@ -93,7 +89,7 @@ namespace GameServer
 
                     string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
                     Packet packet = new Packet("VisitPacket", contents);
-                    Network.SendData(toGet, packet);
+                    Network.Network.SendData(toGet, packet);
                 }
             }
         }
@@ -110,7 +106,7 @@ namespace GameServer
                 {
                     string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
                     Packet packet = new Packet("VisitPacket", contents);
-                    Network.SendData(toGet, packet);
+                    Network.Network.SendData(toGet, packet);
                 }
             }
         }
@@ -122,14 +118,14 @@ namespace GameServer
                 visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
                 string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
                 Packet packet = new Packet("VisitPacket", contents);
-                Network.SendData(client, packet);
+                Network.Network.SendData(client, packet);
             }
 
             else
             {
                 string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
                 Packet packet = new Packet("VisitPacket", contents);
-                Network.SendData(client.inVisitWith, packet);
+                Network.Network.SendData(client.inVisitWith, packet);
             }
         }
 
@@ -138,11 +134,11 @@ namespace GameServer
             string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
             Packet packet = new Packet("VisitPacket", contents);
 
-            if (client.inVisitWith == null) Network.SendData(client, packet);
+            if (client.inVisitWith == null) Network.Network.SendData(client, packet);
             else
             {
-                Network.SendData(client, packet);
-                Network.SendData(client.inVisitWith, packet);
+                Network.Network.SendData(client, packet);
+                Network.Network.SendData(client.inVisitWith, packet);
 
                 client.inVisitWith.inVisitWith = null;
                 client.inVisitWith = null;

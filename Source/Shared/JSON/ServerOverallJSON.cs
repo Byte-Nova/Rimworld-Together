@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Shared.JSON
+namespace RimworldTogether.Shared.JSON
 {
     [Serializable]
     public class ServerOverallJSON

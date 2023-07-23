@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RimworldTogether
+namespace RimworldTogether.Shared.Network
 {
     [Serializable]
     public class Packet

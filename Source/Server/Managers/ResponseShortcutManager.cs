@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer.Managers
+namespace RimworldTogether.GameServer.Managers
 {
     public static class ResponseShortcutManager
     {
         public static void SendIllegalPacket(Client client, bool broadcast = true)
         {
             Packet Packet = new Packet("IllegalActionPacket");
-            Network.SendData(client, Packet);
+            Network.Network.SendData(client, Packet);
             client.disconnectFlag = true;
 
             if (broadcast) Logger.WriteToConsole($"[Illegal action] > {client.username} > {client.SavedIP}", Logger.LogMode.Error);
@@ -23,13 +20,13 @@ namespace GameServer.Managers
         public static void SendUnavailablePacket(Client client)
         {
             Packet packet = new Packet("UserUnavailablePacket");
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
 
         public static void SendBreakPacket(Client client)
         {
             Packet packet = new Packet("BreakPacket");
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
 
         public static void SendNoPowerPacket(Client client, FactionManifestJSON factionManifest)
@@ -38,7 +35,7 @@ namespace GameServer.Managers
 
             string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
             Packet packet = new Packet("FactionPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
     }
 }

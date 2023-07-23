@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shared.JSON
+namespace RimworldTogether.Shared.JSON
 {
     public class StructureLikelihoodJSON
     {

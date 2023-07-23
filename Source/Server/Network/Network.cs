@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using GameServer.Managers;
-using RimworldTogether;
-using Shared.Misc;
+using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Managers;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Network
 {
     public static class Network
     {

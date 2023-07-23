@@ -1,14 +1,19 @@
-﻿using RimWorld;
-using RimWorld.Planet;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading;
-using Shared.JSON.Actions;
-using Shared.Misc;
+using RimWorld;
+using RimWorld.Planet;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Patches;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.Shared.JSON.Things;
+using RimworldTogether.Shared.Network;
 using Verse;
 using Verse.Sound;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class TransferManager
     {
@@ -95,7 +100,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(ClientValues.outgoingManifest) };
                 Packet packet = new Packet("TransferPacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
@@ -104,7 +109,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(ClientValues.outgoingManifest) };
                 Packet packet = new Packet("TransferPacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
             }
         }
 
@@ -285,7 +290,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(ClientValues.incomingManifest) };
                 Packet packet = new Packet("TransferPacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
             }
 
             else if (transferMode == TransferMode.Rebound)
@@ -294,7 +299,7 @@ namespace RimworldTogether
 
                 string[] contents = new string[] { Serializer.SerializeToString(ClientValues.incomingManifest) };
                 Packet packet = new Packet("TransferPacket", contents);
-                Network.SendData(packet);
+                Network.Network.SendData(packet);
 
                 RecoverTradeItems(TransferLocation.Caravan);
             }

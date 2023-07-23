@@ -1,13 +1,15 @@
-﻿using RimWorld;
-using RimWorld.Planet;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Shared.JSON;
-using Shared.Misc;
+using RimWorld;
+using RimWorld.Planet;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Misc;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Managers
 {
     public static class RimworldManager
     {

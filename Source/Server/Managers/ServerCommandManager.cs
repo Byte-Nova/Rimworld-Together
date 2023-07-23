@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Commands;
+using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class ServerCommandManager
     {
@@ -192,9 +190,9 @@ namespace GameServer
 
         private static void ListCommandAction()
         {
-            Logger.WriteToConsole($"Connected players: [{Network.connectedClients.ToArray().Count()}]", Logger.LogMode.Title, false);
+            Logger.WriteToConsole($"Connected players: [{Network.Network.connectedClients.ToArray().Count()}]", Logger.LogMode.Title, false);
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
-            foreach (Client client in Network.connectedClients.ToArray())
+            foreach (Client client in Network.Network.connectedClients.ToArray())
             {
                 Logger.WriteToConsole($"{client.username} - {client.SavedIP}", Logger.LogMode.Warning, writeToLogs: false);
             }
@@ -216,7 +214,7 @@ namespace GameServer
 
         private static void OpCommandAction()
         {
-            Client toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found", 
                 Logger.LogMode.Warning);
 
@@ -253,7 +251,7 @@ namespace GameServer
 
         private static void DeopCommandAction()
         {
-            Client toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found", 
                 Logger.LogMode.Warning);
 
@@ -290,7 +288,7 @@ namespace GameServer
 
         private static void KickCommandAction()
         {
-            Client toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
@@ -305,7 +303,7 @@ namespace GameServer
 
         private static void BanCommandAction()
         {
-            Client toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null)
             {
                 UserFile userFile = UserManager.GetUserFileFromName(ServerCommandManager.commandParameters[0]);
@@ -432,7 +430,7 @@ namespace GameServer
 
         private static void EventCommandAction()
         {
-            Client toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
@@ -462,7 +460,7 @@ namespace GameServer
             {
                 if (ServerCommandManager.eventTypes[i] == ServerCommandManager.commandParameters[0])
                 {
-                    foreach (Client client in Network.connectedClients.ToArray())
+                    foreach (Client client in Network.Network.connectedClients.ToArray())
                     {
                         CommandManager.SendEventCommand(client, i);
                     }

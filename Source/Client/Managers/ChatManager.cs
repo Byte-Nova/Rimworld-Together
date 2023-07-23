@@ -1,14 +1,16 @@
-﻿using HarmonyLib;
-using RimWorld;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shared.JSON;
-using Shared.Misc;
+using HarmonyLib;
+using RimWorld;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Managers
 {
     [StaticConstructorOnStartup]
     public static class ChatManager
@@ -55,7 +57,7 @@ namespace RimworldTogether
 
             string[] contents = new string[] { Serializer.SerializeToString(chatMessagesJSON) };
             Packet packet = new Packet("ChatPacket", contents);
-            Network.SendData(packet);
+            Network.Network.SendData(packet);
         }
 
         public static void ReceiveMessages(Packet packet)

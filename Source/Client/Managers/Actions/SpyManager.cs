@@ -1,13 +1,18 @@
-﻿using RimWorld;
-using RimWorld.Planet;
-using System;
+﻿using System;
 using System.Text;
-using Shared.JSON;
-using Shared.JSON.Actions;
-using Shared.Misc;
+using RimWorld;
+using RimWorld.Planet;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Planet;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Network;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class SpyManager
     {
@@ -63,7 +68,7 @@ namespace RimworldTogether
 
                     string[] contents = new string[] { Serializer.SerializeToString(spyDetailsJSON) };
                     Packet packet = new Packet("SpyPacket", contents);
-                    Network.SendData(packet);
+                    Network.Network.SendData(packet);
                 }
             };
 

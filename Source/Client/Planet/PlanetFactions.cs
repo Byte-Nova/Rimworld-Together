@@ -1,9 +1,9 @@
-﻿using RimWorld;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Planet
 {
     public static class PlanetFactions
     {

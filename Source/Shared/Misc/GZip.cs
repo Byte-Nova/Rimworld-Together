@@ -2,7 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 
-namespace Shared.Misc
+namespace RimworldTogether.Shared.Misc
 {
     public static class GZip
     {

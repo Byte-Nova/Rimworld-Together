@@ -1,14 +1,11 @@
-﻿using GameServer.Managers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class SiteManager
     {
@@ -69,19 +66,19 @@ namespace GameServer
             siteDetailsJSON.type = siteFile.type;
             siteDetailsJSON.isFromFaction = siteFile.isFromFaction;
 
-            foreach (Client cClient in Network.connectedClients.ToArray())
+            foreach (Client cClient in Network.Network.connectedClients.ToArray())
             {
                 siteDetailsJSON.likelihood = LikelihoodManager.GetSiteLikelihood(cClient, siteFile).ToString();
                 string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
                 Packet packet = new Packet("SitePacket", contents);
 
-                Network.SendData(cClient, packet);
+                Network.Network.SendData(cClient, packet);
             }
 
             siteDetailsJSON.siteStep = ((int)SiteStepMode.Accept).ToString();
             string[] contents2 = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
             Packet rPacket = new Packet("SitePacket", contents2);
-            Network.SendData(client, rPacket);
+            Network.Network.SendData(client, rPacket);
 
             Logger.WriteToConsole($"[Created site] > {client.username}", Logger.LogMode.Warning);
         }
@@ -208,7 +205,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
             Packet packet = new Packet("SitePacket", contents);
-            foreach (Client client in Network.connectedClients.ToArray()) Network.SendData(client, packet);
+            foreach (Client client in Network.Network.connectedClients.ToArray()) Network.Network.SendData(client, packet);
 
             File.Delete(Path.Combine(Program.sitesPath, siteFile.tile + ".json"));
             Logger.WriteToConsole($"[Destroyed site] > {siteFile.tile}", Logger.LogMode.Warning);
@@ -224,7 +221,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
             Packet packet = new Packet("SitePacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
 
         private static void DepositWorkerToSite(Client client, SiteDetailsJSON siteDetailsJSON)
@@ -263,7 +260,7 @@ namespace GameServer
 
                 string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
                 Packet packet = new Packet("SitePacket", contents);
-                Network.SendData(client, packet);
+                Network.Network.SendData(client, packet);
             }
         }
 
@@ -284,7 +281,7 @@ namespace GameServer
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
             siteDetailsJSON.siteStep = ((int)SiteStepMode.Reward).ToString();
 
-            foreach (Client client in Network.connectedClients.ToArray())
+            foreach (Client client in Network.Network.connectedClients.ToArray())
             {
                 siteDetailsJSON.sitesWithRewards.Clear();
 
@@ -311,7 +308,7 @@ namespace GameServer
                 {
                     string[] contents = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
                     Packet packet = new Packet("SitePacket", contents);
-                    Network.SendData(client, packet);
+                    Network.Network.SendData(client, packet);
                 }
 
                 Console.WriteLine($"Player {client.username} Count > {siteDetailsJSON.sitesWithRewards.Count()}");

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Shared.JSON.Actions
+namespace RimworldTogether.Shared.JSON.Actions
 {
     [Serializable]
     public class TransferManifestJSON

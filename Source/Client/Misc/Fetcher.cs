@@ -1,7 +1,9 @@
 using System.IO;
-using Shared.Misc;
+using RimworldTogether.GameClient.Core;
+using RimworldTogether.GameClient.Files;
+using RimworldTogether.GameClient.Managers;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Misc
 {
     public static class Fetcher
     {

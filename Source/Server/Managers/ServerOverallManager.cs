@@ -1,14 +1,12 @@
-﻿using GameServer.Files;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimworldTogether;
-using Shared.JSON;
-using Shared.Misc;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class ServerOverallManager
     {
@@ -34,7 +32,7 @@ namespace GameServer
 
             string[] contents = new string[] { Serializer.SerializeToString(so) };
             Packet packet = new Packet("ServerValuesPacket", contents);
-            Network.SendData(client, packet);
+            Network.Network.SendData(client, packet);
         }
 
         private static ServerOverallJSON GetServerValues(ServerOverallJSON so)

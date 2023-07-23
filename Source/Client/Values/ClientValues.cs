@@ -1,9 +1,10 @@
-﻿using RimWorld;
+﻿using System.Collections.Generic;
+using RimWorld;
 using RimWorld.Planet;
-using System.Collections.Generic;
-using Shared.JSON.Actions;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.Shared.JSON.Actions;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Values
 {
     public static class ClientValues
     {

@@ -1,15 +1,20 @@
-﻿using RimWorld;
-using RimWorld.Planet;
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
-using Shared.JSON;
-using Shared.JSON.Actions;
-using Shared.Misc;
+using RimWorld;
+using RimWorld.Planet;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Planet;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Network;
 using Verse;
 using Verse.AI.Group;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class RaidManager
     {
@@ -41,7 +46,7 @@ namespace RimworldTogether
 
             string[] contents = new string[] { Serializer.SerializeToString(raidDetailsJSON) };
             Packet packet = new Packet("RaidPacket", contents);
-            Network.SendData(packet);
+            Network.Network.SendData(packet);
         }
 
         private static void OnRaidAccept(RaidDetailsJSON raidDetailsJSON)

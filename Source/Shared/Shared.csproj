@@ -7,7 +7,7 @@
     <ProjectGuid>{4E5E50A7-ABF5-4AD5-A104-6012C3E2C56C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Shared</RootNamespace>
+    <RootNamespace>RimworldTogether.Shared</RootNamespace>
     <AssemblyName>Shared</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

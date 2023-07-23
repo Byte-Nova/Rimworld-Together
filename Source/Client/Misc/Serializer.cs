@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
+using RimworldTogether.Shared.Network;
 using UnityEngine;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Misc
 {
     public static class Serializer
     {

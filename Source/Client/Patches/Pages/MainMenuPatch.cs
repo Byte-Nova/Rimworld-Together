@@ -1,9 +1,10 @@
 ﻿using HarmonyLib;
 using RimWorld;
+using RimworldTogether.GameClient.Dialogs;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Patches.Pages
 {
     public class MainMenuPatch
     {

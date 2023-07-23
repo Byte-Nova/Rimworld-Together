@@ -1,12 +1,14 @@
-﻿using RimWorld.Planet;
-using RimWorld;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shared.JSON;
+using RimWorld;
+using RimWorld.Planet;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Planet
 {
     public static class PlanetBuilder
     {

@@ -1,9 +1,12 @@
-﻿using RimWorld.Planet;
-using System.Linq;
+﻿using System.Linq;
+using RimWorld.Planet;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Planet;
+using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Patches.Tabs
 {
     public class BasesUI : WITab
     {
@@ -23,7 +26,7 @@ namespace RimworldTogether
 
         protected override void FillTab()
         {
-            if (Network.isConnectedToServer)
+            if (Network.Network.isConnectedToServer)
             {
                 tabTitle = $"Player Bases [{PlanetBuilder.playerSettlements.Count()}]";
 

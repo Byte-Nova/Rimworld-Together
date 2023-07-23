@@ -1,11 +1,15 @@
-﻿using RimWorld;
-using System;
+﻿using System;
 using System.Linq;
-using Shared.Misc;
+using RimWorld;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.Network;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_ItemListing : Window
     {
@@ -146,7 +150,7 @@ namespace RimworldTogether
 
                     string[] contents = new string[] { Serializer.SerializeToString(ClientValues.incomingManifest) };
                     Packet packet = new Packet("TransferPacket", contents);
-                    Network.SendData(packet);
+                    Network.Network.SendData(packet);
 
                     TransferManager.SendTransferToCaravan(listedThings);
                 }

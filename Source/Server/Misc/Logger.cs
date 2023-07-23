@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using GameServer;
+﻿using System.Text;
+using RimworldTogether.GameServer.Core;
 
-namespace Shared.Misc
+namespace RimworldTogether.GameServer.Misc
 {
     public static class Logger
     {

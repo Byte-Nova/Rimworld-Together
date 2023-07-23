@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Shared.JSON;
-using Shared.Misc;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 using Verse;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Managers
 {
     public static class ModManager
     {

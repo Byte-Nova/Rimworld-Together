@@ -1,6 +1,7 @@
 using System.Threading;
+using RimworldTogether.GameClient.Managers.Actions;
 
-namespace RimworldTogether
+namespace RimworldTogether.GameClient.Misc
 {
     public static class Threader
     {
@@ -10,7 +11,7 @@ namespace RimworldTogether
         {
             if (mode == Mode.Start)
             {
-                Thread thread = new Thread(new ThreadStart(Network.StartConnection));
+                Thread thread = new Thread(new ThreadStart(Network.Network.StartConnection));
                 thread.IsBackground = true;
                 thread.Name = "Networking";
                 thread.Start();
@@ -18,7 +19,7 @@ namespace RimworldTogether
 
             else if (mode == Mode.Heartbeat)
             {
-                Thread thread = new Thread(() => Network.HeartbeatServer());
+                Thread thread = new Thread(() => Network.Network.HeartbeatServer());
                 thread.IsBackground = true;
                 thread.Name = "Heartbeat";
                 thread.Start();
