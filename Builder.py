@@ -44,3 +44,4 @@ for mod_path in mod_paths:
         # Copy mod to mod_path
         shutil.copytree(destination_dir, mod_specific_path)
 
+
