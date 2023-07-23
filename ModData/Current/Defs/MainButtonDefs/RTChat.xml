@@ -4,7 +4,7 @@
     <defName>Chat</defName>
     <label>chat</label>
     <description>Chat together!</description>
-    <tabWindowClass>RimworldTogether.ChatTab</tabWindowClass>
+    <tabWindowClass>RimworldTogether.GameClient.Patches.Tabs.ChatTab</tabWindowClass>
     <order>100</order>
     <defaultHotKey>P</defaultHotKey>
     <validWithoutMap>true</validWithoutMap>
