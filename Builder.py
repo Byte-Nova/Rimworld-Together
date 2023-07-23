@@ -16,8 +16,8 @@ shutil.copytree(source_dir, destination_dir)
 subprocess.run(["dotnet", "build", source_solution, "--configuration", "Release"])
 
 # Copy the output dll to dll_destination
-dll_output_path = "Source/Client/bin/Release/GameClient.dll"  # Adjust the path based on your configuration
-shared_dll_output_path = "Source/Client/bin/Release/"  # Adjust the path based on your configuration
+dll_output_path = "Source/Client/bin/Release/net472/GameClient.dll"  # Adjust the path based on your configuration
+shared_dll_output_path = "Source/Client/bin/Release/net472/"  # Adjust the path based on your configuration
 dll_destination_path = os.path.join(destination_dir, "Current/Assemblies/RimworldTogether.dll")
 shared_dll_destination_path = os.path.join(destination_dir, "Current/Assemblies/")
 
