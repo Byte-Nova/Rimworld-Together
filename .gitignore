@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 Source/Client/0Harmony.dll
 Source/Client/HugsLib.dll
+.idea
