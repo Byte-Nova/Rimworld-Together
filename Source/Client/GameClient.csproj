@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -40,6 +41,7 @@
     </Reference>
     <Reference Include="HugsLib">
       <HintPath>HugsLib.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -97,6 +99,7 @@
     <Compile Include="Misc\Fetcher.cs" />
     <Compile Include="Misc\Parser.cs" />
     <Compile Include="Misc\Saver.cs" />
+    <Compile Include="Misc\Serializer.cs" />
     <Compile Include="Misc\Threaded.cs" />
     <Compile Include="Network\Network.cs" />
     <Compile Include="Patches\OnlineSettlementsPatch.cs" />

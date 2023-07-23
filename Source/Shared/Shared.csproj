@@ -23,7 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -67,7 +67,6 @@
     <Compile Include="JSON\WorldDetailsJSON.cs" />
     <Compile Include="Misc\GZip.cs" />
     <Compile Include="Misc\Hasher.cs" />
-    <Compile Include="Misc\Serializer.cs" />
     <Compile Include="Network\Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
