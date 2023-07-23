@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -29,13 +30,16 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Primitives, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Serialization.Primitives.4.3.0\lib\net46\System.Runtime.Serialization.Primitives.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -65,10 +69,95 @@
     <Compile Include="JSON\Things\HumanDetailsJSON.cs" />
     <Compile Include="JSON\Things\ItemDetailsJSON.cs" />
     <Compile Include="JSON\WorldDetailsJSON.cs" />
+    <Compile Include="Messagepack\Attributes.cs" />
+    <Compile Include="Messagepack\BitOperations.cs" />
+    <Compile Include="Messagepack\FloatBits.cs" />
+    <Compile Include="Messagepack\Formatters\CollectionFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\CollectionHelpers`2.cs" />
+    <Compile Include="Messagepack\Formatters\DictionaryFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\DynamicObjectTypeFallbackFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\EnumAsStringFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\ForceSizePrimitiveFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\IgnoreFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\IMessagePackFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\MultiDimentionalArrayFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\NullableFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\OldSpecFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\PrimitiveFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\PrimitiveObjectFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\StandardClassLibraryFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\TupleFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\TypelessFormatter.cs" />
+    <Compile Include="Messagepack\Formatters\UnsafeBinaryFormatters.cs" />
+    <Compile Include="Messagepack\Formatters\ValueTupleFormatter.cs" />
+    <Compile Include="Messagepack\HashCode.cs" />
+    <Compile Include="Messagepack\IFormatterResolver.cs" />
+    <Compile Include="Messagepack\IMessagePackSerializationCallbackReceiver.cs" />
+    <Compile Include="Messagepack\Internal\ArrayPool.cs" />
+    <Compile Include="Messagepack\Internal\AsymmetricKeyHashTable.cs" />
+    <Compile Include="Messagepack\Internal\AutomataDictionary.cs" />
+    <Compile Include="Messagepack\Internal\ByteArrayComparer.cs" />
+    <Compile Include="Messagepack\Internal\ByteArrayStringHashTable.cs" />
+    <Compile Include="Messagepack\Internal\DynamicAssembly.cs" />
+    <Compile Include="Messagepack\Internal\ExpressionUtility.cs" />
+    <Compile Include="Messagepack\Internal\FarmHash.cs" />
+    <Compile Include="Messagepack\Internal\GuidBits.cs" />
+    <Compile Include="Messagepack\Internal\ILGeneratorExtensions.cs" />
+    <Compile Include="Messagepack\Internal\ReflectionExtensions.cs" />
+    <Compile Include="Messagepack\Internal\ThreadsafeTypeKeyHashTable.cs" />
+    <Compile Include="Messagepack\Internal\TinyJsonReader.cs" />
+    <Compile Include="Messagepack\Internal\UnsafeMemory.cs" />
+    <Compile Include="Messagepack\Internal\UnsafeMemory.Low.cs" />
+    <Compile Include="Messagepack\LZ4\Codec\LZ4Codec.cs" />
+    <Compile Include="Messagepack\LZ4\Codec\LZ4Codec.Helper.cs" />
+    <Compile Include="Messagepack\LZ4\Codec\LZ4Codec.Safe.cs" />
+    <Compile Include="Messagepack\LZ4\Codec\LZ4Codec.Safe32.Dirty.cs" />
+    <Compile Include="Messagepack\LZ4\Codec\LZ4Codec.Safe64.Dirty.cs" />
+    <Compile Include="Messagepack\LZ4\Codec\LZ4Codec.Unsafe.cs" />
+    <Compile Include="Messagepack\LZ4\Codec\LZ4Codec.Unsafe32.Dirty.cs" />
+    <Compile Include="Messagepack\LZ4\Codec\LZ4Codec.Unsafe64.Dirty.cs" />
+    <Compile Include="Messagepack\LZ4\LZ4MessagePackSerializer.cs" />
+    <Compile Include="Messagepack\LZ4\LZ4MessagePackSerializer.JSON.cs" />
+    <Compile Include="Messagepack\LZ4\LZ4MessagePackSerializer.NonGeneric.cs" />
+    <Compile Include="Messagepack\LZ4\LZ4MessagePackSerializer.Typeless.cs" />
+    <Compile Include="Messagepack\MessagePackBinary.cs" />
+    <Compile Include="Messagepack\MessagePackCode.cs" />
+    <Compile Include="Messagepack\MessagePackSecurity.cs" />
+    <Compile Include="Messagepack\MessagePackSerializer.cs" />
+    <Compile Include="Messagepack\MessagePackSerializer.Json.cs" />
+    <Compile Include="Messagepack\MessagePackSerializer.NonGeneric.cs" />
+    <Compile Include="Messagepack\MessagePackSerializer.Typeless.cs" />
+    <Compile Include="Messagepack\Nil.cs" />
+    <Compile Include="Messagepack\Resolvers\AttributeFormatterResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\BuiltinResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\CompositeResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\ContractlessReflectionObjectResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\DynamicEnumAsStringResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\DynamicEnumResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\DynamicGenericResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\DynamicObjectResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\DynamicUnionResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\NativeDateTimeResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\OldSpecResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\PrimitiveObjectResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\StandardResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\TypelessContractlessStandardResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\TypelessObjectResolver.cs" />
+    <Compile Include="Messagepack\Resolvers\UnsafeBinaryResolver.cs" />
+    <Compile Include="Messagepack\StringEncoding.cs" />
     <Compile Include="Misc\GZip.cs" />
     <Compile Include="Misc\Hasher.cs" />
     <Compile Include="Network\Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Messagepack\Formatters\ForceSizePrimitiveFormatter.tt" />
+    <Content Include="Messagepack\Formatters\PrimitiveFormatter.tt" />
+    <Content Include="Messagepack\Formatters\TupleFormatter.tt" />
+    <Content Include="Messagepack\Formatters\ValueTupleFormatter.tt" />
+    <Content Include="Messagepack\Internal\UnsafeMemory.tt" />
+    <Content Include="Messagepack\LICENSE" />
+    <Content Include="Messagepack\This is modified version of the source code that runs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
