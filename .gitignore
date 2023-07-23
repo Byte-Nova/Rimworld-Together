@@ -399,3 +399,4 @@ FodyWeavers.xsd
 Source/Client/0Harmony.dll
 Source/Client/HugsLib.dll
 .idea
+Build/
