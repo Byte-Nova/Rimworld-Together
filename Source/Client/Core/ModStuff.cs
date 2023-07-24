@@ -39,16 +39,24 @@ namespace RimworldTogether.GameClient.Core
                 ResetServerProgress();
             }
 
+            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open"))
+            {
+                try { System.Diagnostics.Process.Start(Application.persistentDataPath); } catch { }
+            }
+
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
+
             if (listingStandard.ButtonTextLabeled("Check the mod's wiki!", "Open"))
             {
                 try { System.Diagnostics.Process.Start("https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki"); } catch { }
             }
+
             if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open"))
             {
                 try { System.Diagnostics.Process.Start("https://discord.gg/NCsArSaqBW"); } catch { }
             }
+
             if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open"))
             {
                 try { System.Diagnostics.Process.Start("https://github.com/Nova-Atomic/Rimworld-Together"); } catch { }

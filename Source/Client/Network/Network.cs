@@ -140,12 +140,32 @@ namespace RimworldTogether.GameClient.Network
             isConnectedToServer = false;
             isTryingToConnect = false;
 
+            Action r1 = delegate
+            {
+                if (Current.ProgramState == ProgramState.Playing)
+                {
+                    PersistentPatches.DisconnectToMenu();
+                }
+
+                else
+                {
+                    if (DialogManager.currentDialog != null)
+                    {
+                        DialogManager.currentDialog.Close();
+                    }
+
+                    if (DialogManager.previousDialog != null)
+                    {
+                        DialogManager.previousDialog.Close();
+                    }
+                }
+            };
+
             DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
             {
                 "Connection to the server has been lost!",
                 "Game will now quit to menu"
-            },
-            delegate { PersistentPatches.DisconnectToMenu(); }));
+            }, r1));
 
             ClientValues.CleanValues();
             ServerValues.CleanValues();
