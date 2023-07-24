@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MessagePack;
+using NetMQ.Sockets;
 
 namespace RimworldTogether.Shared.Network
 {
