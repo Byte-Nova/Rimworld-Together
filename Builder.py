@@ -28,7 +28,7 @@ dll_output_dir = "Source/Client/bin/Release/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
 
 # Define an array of DLL names
-dll_names = ["Shared.dll", "AsyncIO.dll"]
+dll_names = ["Shared.dll", "AsyncIO.dll", "NetMQ.dll"]
 
 # If the destination path doesn't exist, create it
 os.makedirs(dll_destination_dir, exist_ok=True)

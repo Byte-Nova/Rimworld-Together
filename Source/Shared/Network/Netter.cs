@@ -10,6 +10,7 @@ namespace RimworldTogether.Shared.Network
             using (var socket = new RequestSocket())
             {
                 Console.WriteLine("NetMQ successfully installed!");
+                Console.WriteLine(MessagePack.MessagePackSerializer.Serialize("AAAAAAAAAAAAAAAAAAAAAAA"));
             }
         }
     }
