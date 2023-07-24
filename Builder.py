@@ -15,20 +15,12 @@ shutil.copytree(source_dir, destination_dir)
 # Build the C# project
 subprocess.run(["dotnet", "build", source_solution, "--configuration", "Release"])
 
-# Copy the output dll to dll_destination
-dll_output_path = "Source/Client/bin/Release/net472/GameClient.dll"  # Adjust the path based on your configuration
-dll_destination_path = os.path.join(destination_dir, "Current/Assemblies/RimworldTogether.dll")
-
-# If the destination path doesn't exist, create it
-os.makedirs(os.path.dirname(dll_destination_path), exist_ok=True)
-
 # Copy and rename the dll file
-shutil.copy2(dll_output_path, dll_destination_path)
 dll_output_dir = "Source/Client/bin/Release/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
 
 # Define an array of DLL names
-dll_names = ["Shared.dll", "AsyncIO.dll", "NetMQ.dll"]
+dll_names = ["GameClient.dll", "Shared.dll", "AsyncIO.dll", "NetMQ.dll"]
 
 # If the destination path doesn't exist, create it
 os.makedirs(dll_destination_dir, exist_ok=True)
