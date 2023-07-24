@@ -13,14 +13,14 @@ if os.path.exists(destination_dir):
 shutil.copytree(source_dir, destination_dir)
 
 # Build the C# project
-subprocess.run(["dotnet", "build", source_solution, "--configuration", "Release"])
+subprocess.run(["dotnet", "build", source_solution, "--configuration", "Debug"])
 
 # Copy and rename the dll file
-dll_output_dir = "Source/Client/bin/Release/net472/"
+dll_output_dir = "Source/Client/bin/Debug/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
 
 # Define an array of DLL names
-dll_names = ["GameClient.dll", "Shared.dll", "AsyncIO.dll", "NetMQ.dll"]
+dll_names = ["GameClient.dll", "GameClient.pdb", "Shared.dll", "Shared.pdb", "AsyncIO.dll", "NetMQ.dll"]
 
 # If the destination path doesn't exist, create it
 os.makedirs(dll_destination_dir, exist_ok=True)
@@ -50,3 +50,8 @@ for mod_path in mod_paths:
 
         # Copy mod to mod_path
         shutil.copytree(destination_dir, mod_specific_path)
+
+exe_path = "C:/Games/Rimworld/RimWorldWin64.exe"
+
+# Use subprocess.Popen()
+subprocess.Popen(exe_path)

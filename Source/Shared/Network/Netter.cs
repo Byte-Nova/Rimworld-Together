@@ -7,11 +7,24 @@ namespace RimworldTogether.Shared.Network
     {
         public static void A()
         {
-            using (var socket = new RequestSocket())
-            {
-                Console.WriteLine("NetMQ successfully installed!");
-                Console.WriteLine(MessagePack.MessagePackSerializer.Serialize("AAAAAAAAAAAAAAAAAAAAAAA"));
-            }
+            Console.WriteLine("NetMQ successfully installed!");
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            MainNetworkingUnit.isClient = true;
+            MainNetworkingUnit.client.Connect();
         }
     }
 }

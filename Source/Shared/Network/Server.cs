@@ -12,6 +12,7 @@ namespace RimworldTogether.Shared.Network
         private int _nextPlayerId = 1;
         public void Listen()
         {
+            var pck = MessagePack.MessagePackSerializer.Serialize(5);
             _publisherSocket = new PublisherSocket();
             _publisherSocket.Bind($"tcp://localhost:{MainNetworkingUnit.startPort}");
             _subscriberSocket = new PullSocket();

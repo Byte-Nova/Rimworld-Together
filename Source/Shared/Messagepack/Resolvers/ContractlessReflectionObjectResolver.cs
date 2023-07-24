@@ -2,7 +2,6 @@
 
 using MessagePack.Formatters;
 using MessagePack.Internal;
-using System;
 using System.Collections.Generic;
 using System.Text;
 

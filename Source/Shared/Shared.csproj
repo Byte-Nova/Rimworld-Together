@@ -12,6 +12,6 @@
       <DefineConstants>TRACE;ENABLE_UNSAFE_MSGPACK;</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-      <PackageReference Include="NetMQ" Version="4.0.1.12" />
+      <PackageReference Include="NetMQ" Version="4.0.0.207" />
     </ItemGroup>
 </Project>

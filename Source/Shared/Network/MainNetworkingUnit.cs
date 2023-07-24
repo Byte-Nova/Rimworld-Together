@@ -1,5 +1,3 @@
-using System;
-
 namespace RimworldTogether.Shared.Network
 {
     public class MainNetworkingUnit

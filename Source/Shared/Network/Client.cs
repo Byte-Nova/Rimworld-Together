@@ -31,6 +31,7 @@ namespace RimworldTogether.Shared.Network
                 playerId = item.playerId;
                 _subscriberSocket.Subscribe($"{playerId}");
             });
+            Console.WriteLine($"Connectting to server with guid {guid}");
         }
 
         protected override void ServerReceiveReady(object sender, NetMQSocketEventArgs e)
@@ -47,12 +48,14 @@ namespace RimworldTogether.Shared.Network
             {
                 throw receiveTask.Exception;
             }
-
+            Console.WriteLine("Hello cow");
             var srsData = MessagePackSerializer.Serialize(data);
             var messagePackNetworkType = new MessagePackNetworkType(type, srsData);
             var msg = new Msg();
             var serializedData = MessagePackSerializer.Serialize(messagePackNetworkType);
             msg.InitGC(serializedData, serializedData.Length);
+            Console.WriteLine(_publisherSocket);
+            Console.WriteLine(serializedData);
             _publisherSocket.SendMoreFrame($"{topic}").SendFrame(serializedData);
         }
     }
