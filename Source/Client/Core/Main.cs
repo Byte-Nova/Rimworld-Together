@@ -10,11 +10,7 @@ namespace RimworldTogether.GameClient.Core
 {
     public class Main
     {
-        //TODO
-        //Instance below doesn't work yet but would provide a safe way to invoke into Unity's main thread
-        //Need to find out how to pass function parameters to the queue
         public static UnityMainThreadDispatcher threadDispatcher;
-
         public static Master master = new Master();
         public static ModConfigs modConfigs = new ModConfigs();
 
