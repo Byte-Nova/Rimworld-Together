@@ -42,7 +42,12 @@ namespace RimworldTogether.GameServer.Core
 
         public static void Main()
         {
-            QuickEdit.DisableQuickEdit();
+            try
+            {
+                QuickEdit quickEdit = new QuickEdit();
+                quickEdit.DisableQuickEdit();
+            }
+            catch { };
 
             Console.ForegroundColor = ConsoleColor.White;
 

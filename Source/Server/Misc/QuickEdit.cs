@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RimworldTogether.GameServer.Misc
 {
-    public static class QuickEdit
+    public class QuickEdit
     {
         const uint ENABLE_QUICK_EDIT = 0x0040;
 
@@ -24,7 +24,7 @@ namespace RimworldTogether.GameServer.Misc
         [DllImport("kernel32.dll")]
         static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
-        public static bool DisableQuickEdit()
+        public bool DisableQuickEdit()
         {
             IntPtr consoleHandle = GetStdHandle(STD_INPUT_HANDLE);
 
