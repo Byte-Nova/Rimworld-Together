@@ -13,25 +13,28 @@ namespace RimworldTogether.Shared.Network
         public int playerId;
         public Guid guid;
 
-        public void Connect()
+        public void Connect(string address = "localhost", int port = MainNetworkingUnit.startPort)
         {
+            MainNetworkingUnit.isClient = true;
             guid = Guid.NewGuid();
+            Console.WriteLine($"Connectting to server with guid {guid}");
             _subscriberSocket = new SubscriberSocket();
-            _subscriberSocket.Connect($"tcp://localhost:{MainNetworkingUnit.startPort}");
+            _subscriberSocket.Connect($"tcp://{address}:{port}");
             _subscriberSocket.Subscribe("0");
             _poller = new NetMQPoller() { _subscriberSocket };
             _subscriberSocket.ReceiveReady += ServerReceiveReady;
             receiveTask = Task.Run(_poller.Run);
 
             _publisherSocket = new PushSocket();
-            _publisherSocket.Connect($"tcp://localhost:{MainNetworkingUnit.startPort + 1}");
+            _publisherSocket.Connect($"tcp://{address}:{port + 1}");
             NetworkCallbackHolder.GetType<InitPlayerCommunicator>().SendWithReply(guid, item =>
             {
                 if (guid != item.guid) return;
                 playerId = item.playerId;
                 _subscriberSocket.Subscribe($"{playerId}");
+                Console.WriteLine($"Connected {guid} with player id {playerId}");
             });
-            Console.WriteLine($"Connectting to server with guid {guid}");
+            SpawnExecuteActionsTask();
         }
 
         protected override void ServerReceiveReady(object sender, NetMQSocketEventArgs e)
@@ -48,6 +51,7 @@ namespace RimworldTogether.Shared.Network
             {
                 throw receiveTask.Exception;
             }
+
             var srsData = MessagePackSerializer.Serialize(data);
             var messagePackNetworkType = new MessagePackNetworkType(type, srsData);
             var msg = new Msg();

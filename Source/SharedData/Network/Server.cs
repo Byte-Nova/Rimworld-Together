@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.Tasks;
 using MessagePack;
 using NetMQ;
@@ -10,16 +11,18 @@ namespace RimworldTogether.Shared.Network
         private PublisherSocket _publisherSocket;
         private PullSocket _subscriberSocket;
         private int _nextPlayerId = 1;
-        public void Listen()
+
+        public void Listen(string address, int port = MainNetworkingUnit.startPort)
         {
             var pck = MessagePack.MessagePackSerializer.Serialize(5);
             _publisherSocket = new PublisherSocket();
-            _publisherSocket.Bind($"tcp://localhost:{MainNetworkingUnit.startPort}");
+            _publisherSocket.Bind($"tcp://{address}:{port}");
             _subscriberSocket = new PullSocket();
-            _subscriberSocket.Bind($"tcp://localhost:{MainNetworkingUnit.startPort + 1}");
-            _poller = new NetMQPoller() { _subscriberSocket };
+            _subscriberSocket.Bind($"tcp://{address}:{port + 1}");
+            _poller = new NetMQPoller { _subscriberSocket };
             _subscriberSocket.ReceiveReady += ServerReceiveReady;
             receiveTask = Task.Run(_poller.Run);
+            SpawnExecuteActionsTask();
         }
 
         public int RegisterNewPlayer()

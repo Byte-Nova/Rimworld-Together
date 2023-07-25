@@ -107,9 +107,6 @@
     <Compile Include="..\SharedData\Network\MessagePackNetworkType.cs">
       <Link>SharedData\Network\MessagePackNetworkType.cs</Link>
     </Compile>
-    <Compile Include="..\SharedData\Network\Netter.cs">
-      <Link>SharedData\Network\Netter.cs</Link>
-    </Compile>
     <Compile Include="..\SharedData\Network\NetworkCallbackHolder.cs">
       <Link>SharedData\Network\NetworkCallbackHolder.cs</Link>
     </Compile>

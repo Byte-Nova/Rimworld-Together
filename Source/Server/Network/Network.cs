@@ -21,7 +21,7 @@ namespace RimworldTogether.GameServer.Network
             server = new TcpListener(localAddress, port);
             server.Start();
             isServerOpen = true;
-
+            MainNetworkingUnit.server.Listen(localAddress.ToString(), port + 1);
             Threader.GenerateServerThread(Threader.ServerMode.Heartbeat);
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
 
@@ -71,8 +71,14 @@ namespace RimworldTogether.GameServer.Network
                     Packet receivedPacket = Serializer.SerializeToPacket(data);
                     if (receivedPacket == null) break;
 
-                    try { PacketHandler.HandlePacket(client, receivedPacket); }
-                    catch { ResponseShortcutManager.SendIllegalPacket(client, true); }
+                    try
+                    {
+                        PacketHandler.HandlePacket(client, receivedPacket);
+                    }
+                    catch
+                    {
+                        ResponseShortcutManager.SendIllegalPacket(client, true);
+                    }
                 }
             }
 
@@ -97,7 +103,9 @@ namespace RimworldTogether.GameServer.Network
 
                 client.isBusy = false;
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         public static void KickClient(Client client)
@@ -113,7 +121,10 @@ namespace RimworldTogether.GameServer.Network
 
                 Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
             }
-            catch { Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", Logger.LogMode.Warning); }
+            catch
+            {
+                Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", Logger.LogMode.Warning);
+            }
         }
 
         public static void HearbeatClients()
@@ -134,7 +145,10 @@ namespace RimworldTogether.GameServer.Network
                         }
                     }
 
-                    catch { KickClient(client); }
+                    catch
+                    {
+                        KickClient(client);
+                    }
                 }
             }
         }
