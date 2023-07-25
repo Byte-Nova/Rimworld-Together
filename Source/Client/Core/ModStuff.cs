@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.Network;

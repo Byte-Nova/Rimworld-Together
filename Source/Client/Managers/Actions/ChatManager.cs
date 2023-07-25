@@ -10,7 +10,7 @@ using RimworldTogether.Shared.Network;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Managers
+namespace RimworldTogether.GameClient.Managers.Actions
 {
     [StaticConstructorOnStartup]
     public static class ChatManager
@@ -66,8 +66,8 @@ namespace RimworldTogether.GameClient.Managers
 
             for (int i = 0; i < chatMessagesJSON.usernames.Count(); i++)
             {
-                AddMessageToChat(chatMessagesJSON.usernames[i], 
-                    chatMessagesJSON.messages[i], 
+                AddMessageToChat(chatMessagesJSON.usernames[i],
+                    chatMessagesJSON.messages[i],
                     (UserColor)int.Parse(chatMessagesJSON.userColors[i]),
                     (MessageColor)int.Parse(chatMessagesJSON.messageColors[i]));
             }

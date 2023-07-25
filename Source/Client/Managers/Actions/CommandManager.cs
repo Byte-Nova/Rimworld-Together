@@ -1,16 +1,18 @@
 ﻿using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
+using System;
 
 namespace RimworldTogether.GameClient.Managers
 {
     public static class CommandManager
     {
-        public enum CommandType { Op, Deop, Ban, Disconnect, Quit, Broadcast }
+        public enum CommandType { Op, Deop, Ban, Disconnect, Quit, Broadcast, ForceSave }
 
         public static void ParseCommand(Packet packet)
         {
@@ -41,6 +43,10 @@ namespace RimworldTogether.GameClient.Managers
                 case (int)CommandType.Broadcast:
                     OnBroadcastCommand(commandDetailsJSON);
                     break;
+
+                case (int)CommandType.ForceSave:
+                    OnForceSaveCommand();
+                    break;
             }
         }
 
@@ -66,6 +72,16 @@ namespace RimworldTogether.GameClient.Managers
         private static void OnBroadcastCommand(CommandDetailsJSON commandDetailsJSON)
         {
             LetterManager.GenerateLetter("Server Broadcast", commandDetailsJSON.commandDetails, LetterDefOf.PositiveEvent);
+        }
+
+        private static void OnForceSaveCommand()
+        {
+            if (!ClientValues.isReadyToPlay) PersistentPatches.DisconnectToMenu();
+            else
+            {
+                ClientValues.isDisconnecting = true;
+                SavePatch.ForceSave();
+            }
         }
     }
 }

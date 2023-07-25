@@ -2,8 +2,8 @@
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Patches;
@@ -83,8 +83,13 @@ namespace RimworldTogether.GameClient.Network
                 try
                 {
                     string data = sr.ReadLine();
-                    Packet receivedPacket = Serializer.SerializeToPacket(data);
-                    PacketHandlers.HandlePacket(receivedPacket);
+
+                    Action toDo = delegate
+                    {
+                        Packet receivedPacket = Serializer.SerializeToPacket(data);
+                        PacketHandlers.HandlePacket(receivedPacket);
+                    };
+                    Main.threadDispatcher.Enqueue(toDo);
                 }
 
                 catch(Exception e)

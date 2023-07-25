@@ -34,5 +34,9 @@
         public string PersonalTextileFactoryCost = "";
         public string FactionTextileFactoryCost = "";
         public string TextileFactoryRewardCount = "";
+
+        public string PersonalFoodProcessorCost = "";
+        public string FactionFoodProcessorCost = "";
+        public string FoodProcessorRewardCount = "";
     }
 }

@@ -38,12 +38,13 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 ThingDefOf.ComponentIndustrial.defName,
                 ThingDefOf.Chemfuel.defName,
                 ThingDefOf.MedicineHerbal.defName,
-                ThingDefOf.Cloth.defName
+                ThingDefOf.Cloth.defName,
+                ThingDefOf.MealSimple.defName
             };
 
             try
             {
-                siteRewardCount = new int[8]
+                siteRewardCount = new int[9]
                 {
                     int.Parse(serverOverallJSON.FarmlandRewardCount),
                     int.Parse(serverOverallJSON.QuarryRewardCount),
@@ -52,7 +53,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     int.Parse(serverOverallJSON.LaboratoryRewardCount),
                     int.Parse(serverOverallJSON.RefineryRewardCount),
                     int.Parse(serverOverallJSON.HerbalWorkshopRewardCount),
-                    int.Parse(serverOverallJSON.TextileFactoryRewardCount)
+                    int.Parse(serverOverallJSON.TextileFactoryRewardCount),
+                    int.Parse(serverOverallJSON.FoodProcessorRewardCount)
                 };
             }
 
@@ -60,9 +62,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 Log.Warning("Server didn't have site rewards set, defaulting to 0");
 
-                siteRewardCount = new int[8]
+                siteRewardCount = new int[9]
                 {
-                    0, 0, 0, 0, 0, 0, 0, 0
+                    0, 0, 0, 0, 0, 0, 0, 0, 0
                 };
             }
 
@@ -83,6 +85,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 else if (def.defName == "RTRefinery") defs.Add(def);
                 else if (def.defName == "RTHerbalWorkshop") defs.Add(def);
                 else if (def.defName == "RTTextileFactory") defs.Add(def);
+                else if (def.defName == "RTFoodProcessor") defs.Add(def);
             }
             siteDefs = defs.ToArray();
 
@@ -321,7 +324,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             try
             {
-                sitePrices = new int[8]
+                sitePrices = new int[9]
                 {
                     int.Parse(serverOverallJSON.PersonalFarmlandCost),
                     int.Parse(serverOverallJSON.PersonalQuarryCost),
@@ -330,7 +333,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     int.Parse(serverOverallJSON.PersonalLaboratoryCost),
                     int.Parse(serverOverallJSON.PersonalRefineryCost),
                     int.Parse(serverOverallJSON.PersonalHerbalWorkshopCost),
-                    int.Parse(serverOverallJSON.PersonalTextileFactoryCost)
+                    int.Parse(serverOverallJSON.PersonalTextileFactoryCost),
+                    int.Parse(serverOverallJSON.PersonalFoodProcessorCost)
                 };
             }
 
@@ -338,9 +342,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 Log.Warning("Server didn't have personal site prices set, defaulting to 0");
 
-                sitePrices = new int[8]
+                sitePrices = new int[9]
                 {
-                    0, 0, 0, 0, 0, 0, 0, 0
+                    0, 0, 0, 0, 0, 0, 0, 0, 0
                 };
             }
         }
@@ -389,7 +393,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             try
             {
-                sitePrices = new int[8]
+                sitePrices = new int[9]
                 {
                     int.Parse(serverOverallJSON.FactionFarmlandCost),
                     int.Parse(serverOverallJSON.FactionQuarryCost),
@@ -398,7 +402,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     int.Parse(serverOverallJSON.FactionLaboratoryCost),
                     int.Parse(serverOverallJSON.FactionRefineryCost),
                     int.Parse(serverOverallJSON.FactionHerbalWorkshopCost),
-                    int.Parse(serverOverallJSON.FactionTextileFactoryCost)
+                    int.Parse(serverOverallJSON.FactionTextileFactoryCost),
+                    int.Parse(serverOverallJSON.FactionFoodProcessorCost)
                 };
             }
 
@@ -406,9 +411,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 Log.Warning("Server didn't have faction site prices set, defaulting to 0");
 
-                sitePrices = new int[8]
+                sitePrices = new int[9]
                 {
-                    0, 0, 0, 0, 0, 0, 0, 0
+                    0, 0, 0, 0, 0, 0, 0, 0, 0
                 };
             }
         }

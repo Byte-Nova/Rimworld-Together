@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;

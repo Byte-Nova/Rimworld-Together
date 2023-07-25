@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
+using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using UnityEngine;

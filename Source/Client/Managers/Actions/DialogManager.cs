@@ -2,7 +2,7 @@
 using RimworldTogether.GameClient.Dialogs;
 using Verse;
 
-namespace RimworldTogether.GameClient.Managers
+namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class DialogManager
     {

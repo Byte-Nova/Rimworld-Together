@@ -22,15 +22,19 @@ namespace RimworldTogether.GameClient.Patches
 
         public static void ForceSave()
         {
-            if (ClientValues.isSaving) return;
-            else
+            Action toDo = delegate
             {
-                ClientValues.ToggleSaving(true);
-                FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
-                FticksSinceSave.SetValue(Current.Game.autosaver, 0);
-                Current.Game.autosaver.DoAutosave();
-                ClientValues.ToggleSaving(false);
-            }
+                if (ClientValues.isSaving) return;
+                else
+                {
+                    ClientValues.ToggleSaving(true);
+                    FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
+                    FticksSinceSave.SetValue(Current.Game.autosaver, 0);
+                    Current.Game.autosaver.DoAutosave();
+                    ClientValues.ToggleSaving(false);
+                }
+            };
+            toDo.Invoke();
         }
 
         public static void SendSaveToServer(string fileName)

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Runtime.InteropServices;
 using RimworldTogether.GameServer.Files;
 using RimworldTogether.GameServer.Managers;
 using RimworldTogether.GameServer.Misc;
@@ -35,10 +36,14 @@ namespace RimworldTogether.GameServer.Core
         public static ActionValuesFile actionValues;
         public static WhitelistFile whitelist;
 
-        public static string serverVersion = "1.0.6";
+        public static string serverVersion = "1.0.7";
+
+        public static bool isClosing;
 
         public static void Main()
         {
+            QuickEdit.DisableQuickEdit();
+
             Console.ForegroundColor = ConsoleColor.White;
 
             LoadResources();
@@ -47,9 +52,6 @@ namespace RimworldTogether.GameServer.Core
 
             Threader.GenerateServerThread(Threader.ServerMode.Console);
 
-            //TODO
-            //There might be another way of asking the console not to close when main stops having stuff to do
-            //For now, this suffices
             while (true) Thread.Sleep(1);
         }
 

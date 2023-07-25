@@ -3,13 +3,12 @@ using RimworldTogether.GameServer.Core;
 using RimworldTogether.GameServer.Files;
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.Network;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class ServerCommandManager
     {
-        public enum CommandType { Op, Deop, Ban }
-
         public static string[] eventTypes = new string[]
         {
             "Raid",
@@ -69,10 +68,6 @@ namespace RimworldTogether.GameServer.Managers
         private static ServerCommand helpCommand = new ServerCommand("help", 0,
             "Shows a list of all available commands to use",
             HelpCommandAction);
-
-        private static ServerCommand exitCommand = new ServerCommand("exit", 0,
-            "Closes the server",
-            ExitCommandAction);
 
         private static ServerCommand listCommand = new ServerCommand("list", 0,
             "Shows all connected players",
@@ -150,10 +145,21 @@ namespace RimworldTogether.GameServer.Managers
             "Toggles the whitelist ON or OFF",
             WhitelistToggleCommandAction);
 
+        private static ServerCommand forceSaveCommand = new ServerCommand("forcesave", 1,
+            "Forces a player to sync their save",
+            ForceSaveCommandAction);
+
+        private static ServerCommand quitCommand = new ServerCommand("quit", 0,
+            "Saves all player details and then closes the server",
+            QuitCommandAction);
+
+        private static ServerCommand forceQuitCommand = new ServerCommand("forcequit", 0,
+            "Closes the server without saving player details",
+            ForceQuitCommandAction);
+
         public static ServerCommand[] serverCommands = new ServerCommand[]
         {
             helpCommand,
-            exitCommand,
             listCommand,
             deepListCommand,
             opCommand,
@@ -172,7 +178,10 @@ namespace RimworldTogether.GameServer.Managers
             whitelistAddCommand,
             whitelistRemoveCommand,
             whitelistToggleCommand,
-            clearCommand
+            clearCommand,
+            forceSaveCommand,
+            quitCommand,
+            forceQuitCommand
         };
 
         private static void HelpCommandAction()
@@ -185,8 +194,6 @@ namespace RimworldTogether.GameServer.Managers
             }
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
         }
-
-        private static void ExitCommandAction() { Environment.Exit(0); }
 
         private static void ListCommandAction()
         {
@@ -568,6 +575,42 @@ namespace RimworldTogether.GameServer.Managers
         {
             WhitelistManager.ToggleWhitelist();
         }
+
+        private static void ForceSaveCommandAction()
+        {
+            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
+                Logger.LogMode.Warning);
+
+            else
+            {
+                CommandManager.SendForceSaveCommand(toFind);
+
+                Logger.WriteToConsole($"User '{ServerCommandManager.commandParameters[0]}' has been forced to save",
+                    Logger.LogMode.Warning);
+            }
+        }
+
+        private static void QuitCommandAction()
+        {
+            Program.isClosing = true;
+
+            Logger.WriteToConsole($"Waiting for all saves to quit", Logger.LogMode.Warning);
+
+            foreach (Client client in Network.Network.connectedClients.ToArray())
+            {
+                CommandManager.SendForceSaveCommand(client);
+            }
+
+            while (Network.Network.connectedClients.ToArray().Length > 0)
+            {
+                Thread.Sleep(1);
+            }
+
+            Environment.Exit(0);
+        }
+
+        private static void ForceQuitCommandAction() { Environment.Exit(0); }
 
         private static void ClearCommandAction()
         {

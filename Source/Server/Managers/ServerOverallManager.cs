@@ -103,6 +103,10 @@ namespace RimworldTogether.GameServer.Managers
             so.FactionTextileFactoryCost = sv.FactionTextileFactoryCost;
             so.TextileFactoryRewardCount = sv.TextileFactoryRewardCount;
 
+            so.PersonalFoodProcessorCost = sv.PersonalFoodProcessorCost;
+            so.FactionFoodProcessorCost = sv.FactionFoodProcessorCost;
+            so.FoodProcessorRewardCount = sv.FoodProcessorRewardCount;
+
             return so;
         }
 

@@ -9,7 +9,7 @@ namespace RimworldTogether.GameServer.Managers
 {
     public static class CommandManager
     {
-        public enum CommandType { Op, Deop, Ban, Disconnect, Quit, Broadcast }
+        public enum CommandType { Op, Deop, Ban, Disconnect, Quit, Broadcast, ForceSave }
 
         public static void ParseCommand(Packet packet)
         {
@@ -119,6 +119,16 @@ namespace RimworldTogether.GameServer.Managers
             {
                 Network.Network.SendData(client, packet);
             }
+        }
+
+        public static void SendForceSaveCommand(Client client)
+        {
+            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
+            commandDetailsJSON.commandType = ((int)CommandType.ForceSave).ToString();
+
+            string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
+            Packet packet = new Packet("CommandPacket", contents);
+            Network.Network.SendData(client, packet);
         }
     }
 }

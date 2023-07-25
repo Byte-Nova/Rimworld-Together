@@ -10,6 +10,11 @@ namespace RimworldTogether.GameClient.Core
 {
     public class Main
     {
+        //TODO
+        //Instance below doesn't work yet but would provide a safe way to invoke into Unity's main thread
+        //Need to find out how to pass function parameters to the queue
+        public static UnityMainThreadDispatcher threadDispatcher;
+
         public static Master master = new Master();
         public static ModConfigs modConfigs = new ModConfigs();
 
@@ -33,6 +38,7 @@ namespace RimworldTogether.GameClient.Core
                 PrepareCulture();
                 PreparePaths();
                 LoadClientPreferences();
+                CreateUnityDispatcher();
             }
 
             private static void PrepareCulture()
@@ -72,6 +78,18 @@ namespace RimworldTogether.GameClient.Core
                     ClientValues.autosaveInternalTicks = 60000f;
 
                     Saver.SaveClientPreferences(ClientValues.autosaveDays.ToString());
+                }
+            }
+
+            public static void CreateUnityDispatcher()
+            {
+                if (threadDispatcher == null)
+                {
+                    GameObject go = new GameObject("Dispatcher");
+                    threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
+                    Object.Instantiate(go);
+
+                    Log.Message("Created Rimworld Together Dispatcher");
                 }
             }
         }

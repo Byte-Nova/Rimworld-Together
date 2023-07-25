@@ -86,4 +86,15 @@
     <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
     <minThreatPoints>5000</minThreatPoints>
   </SitePartDef>
+
+<SitePartDef>
+    <defName>RTFoodProcessor</defName>
+    <label>Food Processor</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/FoodProcessor</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
 </Defs>

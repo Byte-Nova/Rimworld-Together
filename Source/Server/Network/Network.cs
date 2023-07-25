@@ -37,21 +37,25 @@ namespace RimworldTogether.GameServer.Network
         {
             Client newServerClient = new Client(server.AcceptTcpClient());
 
-            if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))
-            {
-                UserManager_Joinings.SendLoginResponse(newServerClient, UserManager_Joinings.LoginResponse.ServerFull);
-                Logger.WriteToConsole($"[Warning] > Server Full", Logger.LogMode.Warning);
-            }
-
+            if (Program.isClosing) newServerClient.disconnectFlag = true;
             else
             {
-                connectedClients.Add(newServerClient);
+                if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))
+                {
+                    UserManager_Joinings.SendLoginResponse(newServerClient, UserManager_Joinings.LoginResponse.ServerFull);
+                    Logger.WriteToConsole($"[Warning] > Server Full", Logger.LogMode.Warning);
+                }
 
-                Titler.ChangeTitle();
+                else
+                {
+                    connectedClients.Add(newServerClient);
 
-                Threader.GenerateClientThread(Threader.ClientMode.Start, newServerClient);
+                    Titler.ChangeTitle();
 
-                Logger.WriteToConsole($"[Connect] > {newServerClient.username} | {newServerClient.SavedIP}");
+                    Threader.GenerateClientThread(Threader.ClientMode.Start, newServerClient);
+
+                    Logger.WriteToConsole($"[Connect] > {newServerClient.username} | {newServerClient.SavedIP}");
+                }
             }
         }
 
