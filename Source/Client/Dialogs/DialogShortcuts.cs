@@ -70,7 +70,6 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ShowConnectDialogs()
         {
-            Netter.A();
             RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
                 ClientValues.serverBrowserContainer,
                 delegate { Parser.ParseConnectionDetails(true); },
