@@ -104,7 +104,6 @@ namespace RimworldTogether.GameServer.Network
         {
             try
             {
-                client.disconnectFlag = true;
                 connectedClients.Remove(client);
                 client.tcp.Dispose();
 
