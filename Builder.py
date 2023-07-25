@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import psutil
 
 modSteamId = "3005289691"  # Replace with your actual Steam ID
 
@@ -20,7 +21,7 @@ dll_output_dir = "Source/Client/bin/Debug/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
 
 # Define an array of DLL names
-dll_names = ["GameClient.dll", "GameClient.pdb", "Shared.dll", "Shared.pdb", "AsyncIO.dll", "NetMQ.dll"]
+dll_names = ["GameClient.dll", "AsyncIO.dll", "NetMQ.dll"]
 
 # If the destination path doesn't exist, create it
 os.makedirs(dll_destination_dir, exist_ok=True)
@@ -35,23 +36,30 @@ for dll_name in dll_names:
     shutil.copy2(dll_output_path, dll_destination_path)
 
 mod_paths = [
-    "C:/Games/Rimworld/Mods",
-    "C:/Program Files (x86)/Steam/steamapps/common/RimWorld/Mods"
+    "C:/Games/Rimworld",
+    "C:/Program Files (x86)/Steam/steamapps/common/RimWorld"
 ]
-
+truePath = ""
 # Copy mod to each path if it exists
-for mod_path in mod_paths:
+for mod_path1 in mod_paths:
+    mod_path = os.path.join(mod_path1, "Mods")
     if os.path.exists(mod_path):
         mod_specific_path = os.path.join(mod_path, modSteamId)
 
         # Clear the specific mod directory if it already exists
         if os.path.exists(mod_specific_path):
+            truePath = mod_path1
             shutil.rmtree(mod_specific_path)
 
         # Copy mod to mod_path
         shutil.copytree(destination_dir, mod_specific_path)
 
-exe_path = "C:/Games/Rimworld/RimWorldWin64.exe"
+norm_exe_path = os.path.normcase(os.path.realpath(os.path.join(truePath, "RimWorldWin64.exe")))
 
-# Use subprocess.Popen()
-subprocess.Popen(exe_path)
+# Check if the process is already running
+for proc in psutil.process_iter(['pid', 'name', 'exe']):
+    # Check whether the process name matches
+    if proc.info['exe'] and os.path.normcase(os.path.realpath(proc.info['exe'])) == norm_exe_path:
+        proc.kill()  # If so, kill the process
+
+subprocess.Popen(norm_exe_path)

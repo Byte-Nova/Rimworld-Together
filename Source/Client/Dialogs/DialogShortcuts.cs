@@ -2,6 +2,7 @@
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.Network;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
@@ -69,6 +70,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ShowConnectDialogs()
         {
+            Netter.A();
             RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
                 ClientValues.serverBrowserContainer,
                 delegate { Parser.ParseConnectionDetails(true); },

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Reflection;
+using HarmonyLib;
 using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.Shared.Network;
@@ -15,7 +16,6 @@ namespace RimworldTogether.GameClient.Patches.Pages
             [HarmonyPrefix]
             public static bool DoPre(Rect rect)
             {
-                Netter.A();
                 if (Current.ProgramState == ProgramState.Entry)
                 {
                     Vector2 buttonSize = new Vector2(170f, 45f);
