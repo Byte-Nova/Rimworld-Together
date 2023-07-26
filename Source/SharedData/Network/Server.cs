@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using MessagePack;
@@ -14,7 +15,7 @@ namespace RimworldTogether.Shared.Network
 
         public void Listen(string address, int port = MainNetworkingUnit.startPort)
         {
-            var pck = MessagePack.MessagePackSerializer.Serialize(5);
+            if (MainNetworkingUnit.client != null) throw new Exception("Attempted to connect to a server while attempting to host a server");
             _publisherSocket = new PublisherSocket();
             _publisherSocket.Bind($"tcp://{address}:{port}");
             _subscriberSocket = new PullSocket();

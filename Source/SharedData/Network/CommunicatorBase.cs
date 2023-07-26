@@ -13,6 +13,7 @@ namespace RimworldTogether.Shared.Network
         public static int idCounter = 1;
     }
 
+    //Because we cant use null as a generic type param
     [MessagePackObject(true)]
     public struct EmptyData
     {
@@ -27,7 +28,7 @@ namespace RimworldTogether.Shared.Network
     {
     }
 
-    public abstract class CommunicatorBase<T, TReply> : ICommunicatorBase
+    public abstract class CommunicatorBase<TSend, TReply> : ICommunicatorBase
     {
         protected CommunicatorBase()
         {
@@ -39,15 +40,21 @@ namespace RimworldTogether.Shared.Network
         private readonly int _id;
         private readonly Dictionary<int, Action<byte[], int>> _callbacks = new Dictionary<int, Action<byte[], int>>();
         private Action<byte[], int> _acceptHandler;
-        private Action<T, Action<TReply>, int> _replyHandler;
+        private Action<TSend, Action<TReply>, int> _replyHandler;
         private int _replyId = 0;
         private int NextReplyId => _replyId++;
-        public void RegisterAcceptHandler(Action<T> handler)
+
+        public void RegisterAcceptHandler(Action<TSend> handler)
         {
             _acceptHandler = Typeless(handler);
         }
 
-        public void RegisterReplyHandler(Action<T, Action<TReply>, int> handler)
+        public void RegisterAcceptHandler(Action<TSend, int> handler)
+        {
+            _acceptHandler = Typeless(handler);
+        }
+
+        public void RegisterReplyHandler(Action<TSend, Action<TReply>, int> handler)
         {
             _replyHandler = handler;
         }
@@ -67,12 +74,12 @@ namespace RimworldTogether.Shared.Network
                 return;
             }
 
-            var message = MessagePackSerializer.Deserialize<T>(data);
+            var message = MessagePackSerializer.Deserialize<TSend>(data);
             AcceptT(message, clientId);
         }
 
-        public virtual void AcceptT(T data, int clientId = -1) => throw new NotImplementedException();
-        public virtual void AcceptTAndReply(T data, Action<TReply> callback, int clientId = -1) => _replyHandler(data, callback, clientId);
+        public virtual void AcceptT(TSend data, int clientId = -1) => throw new NotImplementedException();
+        public virtual void AcceptTAndReply(TSend data, Action<TReply> callback, int clientId = -1) => _replyHandler(data, callback, clientId);
 
         public void Reply(TReply data, int callbackId, int clientId = -1)
         {
@@ -87,7 +94,7 @@ namespace RimworldTogether.Shared.Network
         public struct ReplyData
         {
             public byte[] data;
-            public T Data => MessagePackSerializer.Deserialize<T>(data);
+            public TSend Data => MessagePackSerializer.Deserialize<TSend>(data);
             public int callBackId;
         }
 
@@ -107,21 +114,21 @@ namespace RimworldTogether.Shared.Network
             return (data, id) => func(MessagePackSerializer.Deserialize<TA>(data));
         }
 
-        public void SendWithReply(T data, Action<TReply> reply)
+        public void SendWithReply(TSend data, Action<TReply> reply, int target = 0)
         {
             var replyId = NextReplyId;
             _callbacks[replyId] = Typeless(reply);
-            MainNetworkingUnit.Send(_id, new ReplyData { data = MessagePackSerializer.Serialize(data), callBackId = replyId });
+            MainNetworkingUnit.Send(_id, new ReplyData { data = MessagePackSerializer.Serialize(data), callBackId = replyId }, target);
         }
 
-        public void SendWithReply(Action<TReply> reply)
+        public void SendWithReply(Action<TReply> reply, int target = 0)
         {
-            if (typeof(T) != typeof(EmptyData)) throw new Exception("You need to specify data to send");
+            if (typeof(TSend) != typeof(EmptyData)) throw new Exception("You need to specify data to send");
             var replyId = NextReplyId;
             _callbacks[replyId] = Typeless(reply);
-            MainNetworkingUnit.Send(_id, new ReplyData { data = MessagePackSerializer.Serialize(new EmptyData()), callBackId = replyId });
+            MainNetworkingUnit.Send(_id, new ReplyData { data = MessagePackSerializer.Serialize(new EmptyData()), callBackId = replyId }, target);
         }
 
-        public void Send(T data, int id = 0) => MainNetworkingUnit.Send(_id, data, id);
+        public void Send(TSend data, int id = 0) => MainNetworkingUnit.Send(_id, data, id);
     }
 }

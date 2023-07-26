@@ -15,7 +15,6 @@ namespace RimworldTogether.Shared.Network
         public override void AcceptTAndReply(Guid data, Action<InitPlayerData> reply, int clientId = -1)
         {
             var answer = MainNetworkingUnit.server.RegisterNewPlayer();
-            Console.WriteLine(answer);
             reply(new InitPlayerData
             {
                 playerId = answer,

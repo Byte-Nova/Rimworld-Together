@@ -13,9 +13,11 @@ if os.path.exists(destination_dir):
 # Copy files from source_dir to destination_dir
 shutil.copytree(source_dir, destination_dir)
 
-# Build the C# project
-subprocess.run(["dotnet", "build", source_solution, "--configuration", "Debug"])
-
+result = subprocess.run(["dotnet", "build", source_solution, "--configuration", "Debug"],
+                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+print(result.stdout)
+assert "Build succeeded." in result.stdout, "Build did not succeed"
+assert "Build FAILED." not in result.stdout, "Build failed"
 # Copy and rename the dll file
 dll_output_dir = "Source/Client/bin/Debug/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")

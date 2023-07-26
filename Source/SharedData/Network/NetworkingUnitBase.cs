@@ -27,7 +27,7 @@ namespace RimworldTogether.Shared.Network
             {
                 while (true)
                 {
-                    if (MainNetworkingUnit.isClient) MainNetworkingUnit.client.ExecuteActions();
+                    if (MainNetworkingUnit.IsClient) MainNetworkingUnit.client.ExecuteActions();
                     else MainNetworkingUnit.server.ExecuteActions();
                 }
             }).Start();
