@@ -79,6 +79,7 @@ namespace RimworldTogether.Shared.JSON
         public string PersonalRefineryCost;
         public string PersonalHerbalWorkshopCost;
         public string PersonalTextileFactoryCost;
+        public string PersonalFoodProcessorCost;
 
         public string FactionFarmlandCost;
         public string FactionQuarryCost;
@@ -88,6 +89,7 @@ namespace RimworldTogether.Shared.JSON
         public string FactionRefineryCost;
         public string FactionHerbalWorkshopCost;
         public string FactionTextileFactoryCost;
+        public string FactionFoodProcessorCost;
 
         public string FarmlandRewardCount;
         public string QuarryRewardCount;
@@ -97,6 +99,7 @@ namespace RimworldTogether.Shared.JSON
         public string RefineryRewardCount;
         public string HerbalWorkshopRewardCount;
         public string TextileFactoryRewardCount;
+        public string FoodProcessorRewardCount;
 
         public string SpyCost;
     }
