@@ -2,8 +2,8 @@ namespace RimworldTogether.Shared.Network
 {
     public class MainNetworkingUnit
     {
-        public static NetworkingUnitClient client = new NetworkingUnitClient();
-        public static NetworkingUnitServer server = new NetworkingUnitServer();
+        public static NetworkingUnitClient client;
+        public static NetworkingUnitServer server;
 
         // we make sure getting the client results in an exception if it's not initialized
         public static bool IsClient;

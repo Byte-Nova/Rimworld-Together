@@ -38,6 +38,7 @@ for dll_name in dll_names:
     shutil.copy2(dll_output_path, dll_destination_path)
 
 mod_paths = [
+    "C:/Games/Rimworld - Copy",
     "C:/Games/Rimworld",
     "C:/Program Files (x86)/Steam/steamapps/common/RimWorld"
 ]

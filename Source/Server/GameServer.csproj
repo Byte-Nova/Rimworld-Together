@@ -22,9 +22,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\SharedData\**\*.cs">
-      <Link>SharedData\%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </Compile>
-  </ItemGroup>
+  <Import Project="..\SharedProject1\SharedProject1.projitems" Label="Shared" />
+
+  <Import Project="..\Shared\Shared.projitems" Label="Shared" />
 </Project>
