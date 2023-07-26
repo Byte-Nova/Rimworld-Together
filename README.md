@@ -30,6 +30,8 @@ On first launch, the server will also generate the "MODS" folder, inside of it w
 - Forbidden mods will kick the connecting player if its running them.
 - Optional mods will allow a player to join even if it has them running or not.
 - Required mods will kick the connecting player if its missing them.
+  
+If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Nova-Atomic/Library
 
 If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Nova-Atomic/Library
 
