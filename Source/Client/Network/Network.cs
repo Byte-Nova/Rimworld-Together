@@ -151,19 +151,6 @@ namespace RimworldTogether.GameClient.Network
                 {
                     PersistentPatches.DisconnectToMenu();
                 }
-
-                else
-                {
-                    if (DialogManager.currentDialog != null)
-                    {
-                        DialogManager.currentDialog.Close();
-                    }
-
-                    if (DialogManager.previousDialog != null)
-                    {
-                        DialogManager.previousDialog.Close();
-                    }
-                }
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
