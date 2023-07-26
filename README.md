@@ -31,6 +31,8 @@ On first launch, the server will also generate the "MODS" folder, inside of it w
 - Optional mods will allow a player to join even if it has them running or not.
 - Required mods will kick the connecting player if its missing them.
 
+If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Nova-Atomic/Library
+
 ## Enabling DLCs
 To enable the use of DLCs in the server (Or even the core game), fetch the zip file called "DLCs" from this repository and treat them as a folder of a normal mod and place them wherever you please in the mod folders.
 
