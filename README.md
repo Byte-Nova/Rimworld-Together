@@ -47,4 +47,4 @@ To install mods, directly dump the mod folder (The one with the numbers in the t
 Please don't hesitate to create and issue on Github if you have any question/issue with the server. We are here for you!
 
 ## Contribution
-Make a form of this repository and submit a pull request
+Make a fork of this repository and submit a pull request from said fork
