@@ -67,10 +67,10 @@ for proc in psutil.process_iter(['pid', 'name', 'exe']):
     if proc.info['exe'] and os.path.normcase(os.path.realpath(proc.info['exe'])) == norm_exe_path:
         proc.kill()  # If so, kill the process
 
-userA = "name=A"
+userA = "name=A" # name and password are the same
 userB = "name=B"
-fastConnect = "fastConnect=true"
-instantConnect = "instantConnect=true"
+fastConnect = "fastConnect=true" # shows button
+instantConnect = "instantConnect=true" # auto connects, ignores the above button
 subprocess.Popen([norm_exe_path, userA, fastConnect, instantConnect])
 time.sleep(2)
 subprocess.Popen([norm_exe_path, userB, fastConnect, instantConnect])
