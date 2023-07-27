@@ -1,5 +1,10 @@
+using System;
+using MessagePack;
+using RimworldTogether.Shared.Misc;
+
 namespace RimworldTogether.Shared.Network
 {
+    [MessagePackObject(true)]
     public struct WrappedData<T>
     {
         public WrappedData(T data, int targetToRelayTo)
@@ -13,7 +18,7 @@ namespace RimworldTogether.Shared.Network
     }
 
     // Represents the session between two clients
-    public class ClientToClientCommunicatorSession<TSend, TReply> : CommunicatorBase<WrappedData<TSend>, WrappedData<TReply>>
+    public abstract class ClientToClientCommunicatorSession<TSend, TReply> : CommunicatorBase<WrappedData<TSend>, WrappedData<TReply>>
     {
         public ClientToClientCommunicatorSession()
         {
@@ -27,5 +32,14 @@ namespace RimworldTogether.Shared.Network
             RegisterAcceptHandler((data, origin) => Send(data, data.targetToRelayTo));
             RegisterReplyHandler((data, callback, origin) => SendWithReply(data, callback, data.targetToRelayTo));
         }
+
+        public void InitForClient()
+        {
+            RegisterAcceptHandler((data, origin) => GameLogger.Warning($"{data.data} ${data.targetToRelayTo} ${origin}"));
+        }
+    }
+
+    public class TestSession : ClientToClientCommunicatorSession<int, int>
+    {
     }
 }

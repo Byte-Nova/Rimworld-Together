@@ -87,7 +87,7 @@ namespace RimworldTogether.Shared.Network
             {
                 callBackId = callbackId,
                 data = MessagePackSerializer.Serialize(data)
-            }, MainNetworkingUnit.client.playerId);
+            }, MainNetworkingUnit.client != null ? MainNetworkingUnit.client.playerId : 0);
         }
 
         [MessagePackObject(true)]

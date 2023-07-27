@@ -92,7 +92,7 @@ namespace RimworldTogether.GameServer.Managers
             Packet packet = new Packet("LoadFilePacket", contents);
             Network.Network.SendData(client, packet);
 
-            Logger.WriteToConsole($"[Load game] > {client.username}");
+            Logger.WriteToConsole($"[Load game] > {client.username} {contents.GetHashCode()}");
         }
 
         public static void SaveUserMap(Client client, Packet packet)

@@ -21,8 +21,5 @@
     <PackageReference Include="NetMQ" Version="4.0.0.207" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-
-  <Import Project="..\SharedProject1\SharedProject1.projitems" Label="Shared" />
-
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
 </Project>

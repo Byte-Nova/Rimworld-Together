@@ -1,8 +1,10 @@
-﻿using HarmonyLib;
+﻿using System.Threading.Tasks;
+using HarmonyLib;
 using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.Misc;
 using UnityEngine;
 using Verse;
 
@@ -14,6 +16,9 @@ namespace RimworldTogether.GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
+            LoggerActions.LogAction = Log.Message;
+            LoggerActions.WarningAction = Log.Warning;
+            LoggerActions.ErrorAction = Log.Error;
             if (Network.Network.isConnectedToServer && Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);

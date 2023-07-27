@@ -1,7 +1,9 @@
-using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using NetMQ;
+using RimworldTogether.Shared.Misc;
+using System.Threading.Tasks;
+using System;
+using System.Threading;
 
 namespace RimworldTogether.Shared.Network
 {
@@ -13,11 +15,21 @@ namespace RimworldTogether.Shared.Network
         public abstract void Send<T>(int type, T data, int topic = 0);
         protected abstract void ServerReceiveReady(object sender, NetMQSocketEventArgs e);
 
-        public void ExecuteActions()
+        private void ExecuteActions()
         {
             while (_queuedActions.TryTake(out var item))
             {
                 item();
+            }
+
+            Thread.Sleep(100);
+            if (MainNetworkingUnit.IsClient) GameLogger.Warning($"{MainNetworkingUnit.client.playerId} ${MainNetworkingUnit.IsClient} ${DateTime.Now.Millisecond}");
+            if (MainNetworkingUnit.IsClient && MainNetworkingUnit.client.playerId == 1)
+            {
+                var communicator = NetworkCallbackHolder.GetType<TestSession>();
+                communicator.InitForClient();
+                communicator.Send(new WrappedData<int>(DateTime.Now.Millisecond, 2));
+                GameLogger.Log("Sent");
             }
         }
 
@@ -25,10 +37,18 @@ namespace RimworldTogether.Shared.Network
         {
             new Task(() =>
             {
-                while (true)
+                try
                 {
-                    if (MainNetworkingUnit.IsClient) MainNetworkingUnit.client.ExecuteActions();
-                    else MainNetworkingUnit.server.ExecuteActions();
+                    while (true)
+                    {
+                        if (MainNetworkingUnit.IsClient) MainNetworkingUnit.client.ExecuteActions();
+                        else MainNetworkingUnit.server.ExecuteActions();
+                    }
+                }
+                catch (Exception e)
+                {
+                    GameLogger.Error(e.ToString());
+                    throw;
                 }
             }).Start();
         }

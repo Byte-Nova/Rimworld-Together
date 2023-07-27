@@ -8,7 +8,40 @@
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
-   <ItemGroup>
-	<Compile Include="$(MSBuildThisFileDirectory)**\*.cs" />
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\EventDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\OfflineVisitDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\RaidDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\SpyDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\TransferManifestJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\VisitDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\ChatMessagesJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\CommandDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\FactionManifestJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\LoginDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\MapDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\PlayerRecountJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\SaveFileJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\ServerOverallJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\SettlementDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\SiteDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\StructureLikelihoodJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\AnimalDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\HumanDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\ItemDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\WorldDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\GameLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\CommunicatorBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Communicators\ClientToClientCommunicatorSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Communicators\InitPlayerCommunicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\MainNetworkingUnit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\MessagePackNetworkType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\NetworkCallbackHolder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\NetworkingUnitBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Server.cs" />
   </ItemGroup>
 </Project>

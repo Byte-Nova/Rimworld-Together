@@ -1,6 +1,8 @@
 import os
 import shutil
 import subprocess
+import time
+
 import psutil
 
 modSteamId = "3005289691"  # Replace with your actual Steam ID
@@ -65,4 +67,10 @@ for proc in psutil.process_iter(['pid', 'name', 'exe']):
     if proc.info['exe'] and os.path.normcase(os.path.realpath(proc.info['exe'])) == norm_exe_path:
         proc.kill()  # If so, kill the process
 
-subprocess.Popen(norm_exe_path)
+userA = "name=A"
+userB = "name=B"
+fastConnect = "fastConnect=true"
+instantConnect = "instantConnect=true"
+subprocess.Popen([norm_exe_path, userA, fastConnect, instantConnect])
+time.sleep(2)
+subprocess.Popen([norm_exe_path, userB, fastConnect, instantConnect])
