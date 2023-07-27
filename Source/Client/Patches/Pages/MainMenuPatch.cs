@@ -21,19 +21,6 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPatch(typeof(MainMenuDrawer), "DoMainMenuControls")]
         public static class PatchButton
         {
-            public static string GetArg(string name)
-            {
-                var args = System.Environment.GetCommandLineArgs();
-
-                for (int i = 0; i < args.Length; i++)
-                {
-                    if (args[i].Contains(name)) return args[i].Split('=')[1];
-                }
-
-                return null;
-            }
-
-
             private static void DefaultServer(string name, string password)
             {
                 Network.Network.ip = "127.0.0.1";
@@ -62,15 +49,15 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     Vector2 buttonSize = new Vector2(170f, 45f);
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "")) DialogShortcuts.ShowConnectDialogs();
-                    if (GetArg("instantConnect") == "true")
+                    if (CommandLineParamsManager.instantConnect == "true")
                     {
-                        DefaultServer(GetArg("name"), GetArg("name"));
+                        DefaultServer(CommandLineParamsManager.name, CommandLineParamsManager.name);
                         return true;
                     }
 
-                    if (GetArg("fastConnect") == "true")
+                    if (CommandLineParamsManager.fastConnect == "true")
                         if (Widgets.ButtonText(new Rect(buttonLocation.x - 200, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
-                            DefaultServer(GetArg("name"), GetArg("name"));
+                            DefaultServer(CommandLineParamsManager.name, CommandLineParamsManager.name);
                 }
 
                 return true;
@@ -87,7 +74,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                     }
 
-                    if (GetArg("fastConnect") == "true")
+                    if (CommandLineParamsManager.fastConnect == "true")
                         Widgets.ButtonText(new Rect(buttonLocation.x - 200, buttonLocation.y, buttonSize.x, buttonSize.y), "FastConnect");
                 }
             }
