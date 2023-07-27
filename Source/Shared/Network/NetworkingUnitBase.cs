@@ -31,6 +31,12 @@ namespace RimworldTogether.Shared.Network
                 communicator.Send(new WrappedData<int>(DateTime.Now.Millisecond, 2));
                 GameLogger.Log("Sent");
             }
+
+            if (MainNetworkingUnit.IsClient && MainNetworkingUnit.client.playerId == 2)
+            {
+                var communicator = NetworkCallbackHolder.GetType<TestSession>();
+                communicator.RegisterAcceptHandler((data => GameLogger.Warning($"{data.data}")));
+            }
         }
 
         public void SpawnExecuteActionsTask()

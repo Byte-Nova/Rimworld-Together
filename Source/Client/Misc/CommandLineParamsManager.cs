@@ -18,7 +18,8 @@ namespace RimworldTogether.GameClient.Misc
         public static string password = GetArg("name");
         public static string ip = GetArg("ip") ?? "127.0.0.1";
         public static string port = GetArg("port") ?? "25555";
-        public static string instantConnect = GetArg("instantConnect") ?? "false";
-        public static string fastConnect = GetArg("fastConnect") ?? "false";
+        public static bool instantConnect = GetArg("instantConnect") == "true";
+        public static bool fastConnect = GetArg("fastConnect") == "true";
+        public static bool forceDevMode = GetArg("forceDevMode") == "true";
     }
 }

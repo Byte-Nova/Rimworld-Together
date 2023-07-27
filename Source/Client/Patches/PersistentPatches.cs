@@ -3,6 +3,7 @@ using HarmonyLib;
 using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
 using UnityEngine.SceneManagement;
 using Verse;
@@ -18,6 +19,7 @@ namespace RimworldTogether.GameClient.Patches
 
         public static void ManageDevOptions()
         {
+            if (CommandLineParamsManager.forceDevMode && ServerValues.isAdmin) Prefs.DevMode = true;
             if (ServerValues.isAdmin) return;
             else Prefs.DevMode = false;
         }
