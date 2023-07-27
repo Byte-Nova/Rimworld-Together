@@ -39,7 +39,7 @@ namespace RimworldTogether.GameServer.Core
         public static string serverVersion = "1.0.7";
 
         public static bool isClosing;
-
+        public static CancellationToken serverCancelationToken = new();
         public static void Main()
         {
             try
@@ -52,10 +52,8 @@ namespace RimworldTogether.GameServer.Core
             Console.ForegroundColor = ConsoleColor.White;
 
             LoadResources();
-
-            Threader.GenerateServerThread(Threader.ServerMode.Start);
-
-            Threader.GenerateServerThread(Threader.ServerMode.Console);
+            Threader.GenerateServerThread(Threader.ServerMode.Start, serverCancelationToken);
+            Threader.GenerateServerThread(Threader.ServerMode.Console, serverCancelationToken);
 
             while (true) Thread.Sleep(1);
         }

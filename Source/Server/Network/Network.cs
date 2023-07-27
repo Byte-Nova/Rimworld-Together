@@ -24,8 +24,8 @@ namespace RimworldTogether.GameServer.Network
             isServerOpen = true;
             MainNetworkingUnit.server = new();
             MainNetworkingUnit.server.Listen(localAddress.ToString(), port + 1);
-            Threader.GenerateServerThread(Threader.ServerMode.Heartbeat);
-            Threader.GenerateServerThread(Threader.ServerMode.Sites);
+            Threader.GenerateServerThread(Threader.ServerMode.Heartbeat, Program.serverCancelationToken);
+            Threader.GenerateServerThread(Threader.ServerMode.Sites, Program.serverCancelationToken);
 
             Logger.WriteToConsole("Type 'help' to get a list of available commands");
             Logger.WriteToConsole($"Listening for users at {localAddress}:{port}");
