@@ -35,7 +35,6 @@ namespace RimworldTogether.Shared.Network
                 _subscriberSocket.Subscribe($"{playerId}");
                 Console.WriteLine($"Connected {guid} with player id {playerId}");
             });
-            SpawnExecuteActionsTask();
         }
 
         protected override void ServerReceiveReady(object sender, NetMQSocketEventArgs e)

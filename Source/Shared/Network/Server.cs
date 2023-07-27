@@ -11,7 +11,7 @@ namespace RimworldTogether.Shared.Network
     {
         private PublisherSocket _publisherSocket;
         private PullSocket _subscriberSocket;
-        private int _nextPlayerId = 1;
+        private int _nextPlayerId = 1; // 0 is reserved for the server
 
         public void Listen(string address, int port = MainNetworkingUnit.startPort)
         {
@@ -28,6 +28,8 @@ namespace RimworldTogether.Shared.Network
 
         public int RegisterNewPlayer()
         {
+            //todo remove me
+            if (_nextPlayerId > 2) _nextPlayerId = 1;
             return _nextPlayerId++;
         }
 
