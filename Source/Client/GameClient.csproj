@@ -20,10 +20,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
     <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3704" />
     <PackageReference Include="Lib.Harmony" Version="2.2.2" />
     <PackageReference Include="NetMQ" Version="4.0.0.207" />
     <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Patched\Newtonsoft.Json.Patched.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
 </Project>

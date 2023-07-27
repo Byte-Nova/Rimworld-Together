@@ -34,7 +34,7 @@ namespace RimworldTogether.Shared.Network
         }
     }
 
-    public class TestSession : ClientToClientCommunicatorSession<int, int>
+    public class TestSession : ClientToClientCommunicatorSession<string, EmptyData>
     {
     }
 }
