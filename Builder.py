@@ -15,17 +15,17 @@ if os.path.exists(destination_dir):
 # Copy files from source_dir to destination_dir
 shutil.copytree(source_dir, destination_dir)
 
-result = subprocess.run(["dotnet", "build", source_solution, "--configuration", "Debug"],
+result = subprocess.run(["dotnet", "build", source_solution, "--configuration", "Release"],
                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 print(result.stdout)
 assert "Build succeeded." in result.stdout, "Build did not succeed"
 assert "Build FAILED." not in result.stdout, "Build failed"
 # Copy and rename the dll file
-dll_output_dir = "Source/Client/bin/Debug/net472/"
+dll_output_dir = "Source/Client/bin/Release/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
 
 # Define an array of DLL names
-dll_names = ["GameClient.dll", "AsyncIO.dll", "NetMQ.dll", "Newtonsoft.Json.Patched.dll", "JsonDiffPatchDotNet.dll"]
+dll_names = ["GameClient.dll", "AsyncIO.dll", "NetMQ.dll", "Newtonsoft.Json.dll", "JsonDiffPatchDotNet.dll"]
 
 # If the destination path doesn't exist, create it
 os.makedirs(dll_destination_dir, exist_ok=True)
