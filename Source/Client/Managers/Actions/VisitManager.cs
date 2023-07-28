@@ -84,8 +84,12 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     Network.Network.SendData(packet);
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
-                DialogManager.PushNewDialog(d1);
+                if (CommandLineParamsManager.silentVisit) r1();
+                else
+                {
+                    var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
+                    DialogManager.PushNewDialog(d1);
+                }
             }
         }
 
@@ -114,7 +118,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             ClientValues.ToggleVisit(true);
 
             Threader.GenerateThread(Threader.Mode.Visit);
-
+            if (CommandLineParamsManager.silentVisit) return;
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {
                 "You are now in online visit mode!",
@@ -162,8 +166,13 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 Network.Network.SendData(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitDetailsJSON.visitorName}, accept?", r1, r2);
-            DialogManager.PushNewDialog(d1);
+            if (CommandLineParamsManager.silentVisit) r1();
+            else
+            {
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitDetailsJSON.visitorName}, accept?", r1, r2);
+                DialogManager.PushNewDialog(d1);
+            }
+            
         }
 
         private static void OnVisitAccept(VisitDetailsJSON visitDetailsJSON)
@@ -173,7 +182,11 @@ namespace RimworldTogether.GameClient.Managers.Actions
             MapDetailsJSON mapDetailsJSON = RimworldManager.DeCompressMapDetailsFromString(visitDetailsJSON.deflatedMapData);
 
             Action r1 = delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); };
-
+            if (CommandLineParamsManager.silentVisit)
+            {
+                r1();
+                return;
+            }
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));

@@ -21,5 +21,7 @@ namespace RimworldTogether.GameClient.Misc
         public static bool instantConnect = GetArg("instantConnect") == "true";
         public static bool fastConnect = GetArg("fastConnect") == "true";
         public static bool forceDevMode = GetArg("forceDevMode") == "true";
+        public static bool instantVisit = GetArg("instantVisit") == "true";
+        public static bool silentVisit = GetArg("silentVisit") == "true";
     }
 }

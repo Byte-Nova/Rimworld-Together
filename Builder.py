@@ -31,7 +31,6 @@ except Exception as e:
     error(e, 1, 1)
     exit(1)
 
-
 # Mod ID
 modSteamId = "3005289691"  # Replace with your actual Steam ID
 
@@ -50,13 +49,14 @@ rimworld_dir_file = "rimworld_dir.txt"
 rimworld_dir = ""
 
 # RimWorld Execution Details
-userA = "name=A" # name and password are the same
+userA = "name=A"  # name and password are the same
 userB = "name=B"
-fastConnect = "fastConnect=true" # shows button
-instantConnect = "instantConnect=true" # auto connects, ignores the above button
-forceDevMode = "forceDevMode=true" # shows dev mode button
-
-#Debug Flags
+fastConnect = "fastConnect=true"  # shows button
+instantConnect = "instantConnect=true"  # auto connects, ignores the above button
+forceDevMode = "forceDevMode=true"  # shows dev mode button
+instantVisit = "instantVisit=true"  # auto visits
+silentVisit = "silentVisit=true"  # useful when autovisiting to not show the visit screen and bypass confirmations
+# Debug Flags
 printCompileLog = True
 
 
@@ -122,9 +122,10 @@ def build():
 
             # Had issues with not having .NET 7.0, thought it might be worth mentioning to check the solution and possibly update VS to allow usage of .NET 7.0
             if dll_name == 'Newtonsoft.Json.Patched.dll':
-                error("This DLL requires the solution to use .NET 7.0. You may need to update Visual Studio and install .NET 7.0");
+                error(
+                    "This DLL requires the solution to use .NET 7.0. You may need to update Visual Studio and install .NET 7.0");
 
-            output() # Just for a new line
+            output()  # Just for a new line
             exit(1)
 
         # Copy the DLL file
@@ -151,7 +152,7 @@ def run():
     # Copy mod to each path if it exists
     for default_rimworld_dir in default_rimworld_dirs:
         if handle_rim_world_path(default_rimworld_dir):
-            break # Early out, if we found a RimWorld path just use that
+            break  # Early out, if we found a RimWorld path just use that
 
     if rimworld_dir == "":
         output("RimWorld not found, requesting installation directory")
@@ -176,14 +177,14 @@ def run():
     # @TODO(jrseducate): Might be worth adding a check here if they want to open the server here as well
 
     # Check if we want to open instances of RimWorld for testing
-    output("Open RimWorld? (Y/N, Default:Y)", 1)
-    answer = input()
-    no = answer == "n" or answer == 'N'
-
-    output() # Extra Line
-
-    if (no):
-        exit(0)
+    # output("Open RimWorld? (Y/N, Default:Y)", 1)
+    # answer = input()
+    # no = answer == "n" or answer == 'N'
+    #
+    # output()  # Extra Line
+    #
+    # if (no):
+    #     exit(0)
 
     success("Now opening RimWorld")
 
@@ -195,9 +196,9 @@ def run():
         if proc.info['exe'] and os.path.normcase(os.path.realpath(proc.info['exe'])) == norm_exe_path:
             proc.kill()  # If so, kill the process
 
-    subprocess.Popen([norm_exe_path, userA, fastConnect, instantConnect, forceDevMode])
-    time.sleep(2)
-    subprocess.Popen([norm_exe_path, userB, fastConnect, instantConnect, forceDevMode])
+    subprocess.Popen([norm_exe_path, userA, fastConnect, instantConnect, forceDevMode, instantVisit, silentVisit])
+    time.sleep(2)  # prevents the second instance from overwriting the save of the first during loading
+    subprocess.Popen([norm_exe_path, userB, fastConnect, instantConnect, forceDevMode, silentVisit])
 
 
 try:
