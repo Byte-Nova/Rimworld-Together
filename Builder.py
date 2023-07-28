@@ -41,10 +41,9 @@ destination_dir = f"Build/{modSteamId}"
 
 # Mod C# and DLLs
 source_solution = "Source/Client/GameClient.csproj"
-
 dll_output_dir = "Source/Client/bin/Debug/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
-dll_names = ["GameClient.dll", "AsyncIO.dll", "NetMQ.dll", "Newtonsoft.Json.Patched.dll", "JsonDiffPatchDotNet.dll"]
+dll_names = ["GameClient.dll", "AsyncIO.dll", "NetMQ.dll", "Newtonsoft.Json.dll", "JsonDiffPatchDotNet.dll"]
 
 # RimWorld Directory
 rimworld_dir_file = "rimworld_dir.txt"
@@ -75,10 +74,10 @@ def handle_rim_world_path(possible_rimworld_dir):
         # Clear the specific mod directory if it already exists
         if os.path.exists(mod_specific_path):
             shutil.rmtree(mod_specific_path)
-        
+
         # The mod always gets copied in, might as well assume this is the right directory
         rimworld_dir = possible_rimworld_dir
-        
+
         # Copy mod to mod_path
         shutil.copytree(destination_dir, mod_specific_path)
 
@@ -102,7 +101,7 @@ def build():
     # Build the C# project
     result = subprocess.run(["dotnet", "build", source_solution, "--configuration", "Debug"],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    
+
     if printCompileLog:
         output(result.stdout, 1)
 
@@ -120,11 +119,11 @@ def build():
 
         if not os.path.exists(dll_output_path):
             error(f"Failed to find DLL file {dll_name}")
-            
+
             # Had issues with not having .NET 7.0, thought it might be worth mentioning to check the solution and possibly update VS to allow usage of .NET 7.0
             if dll_name == 'Newtonsoft.Json.Patched.dll':
                 error("This DLL requires the solution to use .NET 7.0. You may need to update Visual Studio and install .NET 7.0");
-            
+
             output() # Just for a new line
             exit(1)
 
@@ -173,14 +172,14 @@ def run():
     f = open(rimworld_dir_file, "w")
     f.write(rimworld_dir)
     f.close()
-    
+
     # @TODO(jrseducate): Might be worth adding a check here if they want to open the server here as well
-    
+
     # Check if we want to open instances of RimWorld for testing
     output("Open RimWorld? (Y/N, Default:Y)", 1)
     answer = input()
     no = answer == "n" or answer == 'N'
-    
+
     output() # Extra Line
 
     if (no):
