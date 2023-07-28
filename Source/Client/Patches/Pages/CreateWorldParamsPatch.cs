@@ -9,6 +9,7 @@ using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using UnityEngine;
 using Verse;

@@ -33,6 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GameLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\CommunicatorBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Communicators\ClientToClientCommunicatorSession.cs" />

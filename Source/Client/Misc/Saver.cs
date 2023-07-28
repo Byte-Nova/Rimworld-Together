@@ -1,6 +1,7 @@
 using System.IO;
 using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Files;
+using RimworldTogether.Shared.Misc;
 
 namespace RimworldTogether.GameClient.Misc
 {

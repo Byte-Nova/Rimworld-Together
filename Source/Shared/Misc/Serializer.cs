@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+using System.IO;
+using Newtonsoft.Json;
 using RimworldTogether.Shared.Network;
 
-namespace RimworldTogether.GameServer.Misc
+namespace RimworldTogether.Shared.Misc
 {
     public static class Serializer
     {
@@ -22,7 +23,10 @@ namespace RimworldTogether.GameServer.Misc
 
         public static void SerializeToFile(string path, object serializable)
         {
-            File.WriteAllText(path, JsonConvert.SerializeObject(serializable, Formatting.Indented));
+            File.WriteAllText(path, JsonConvert.SerializeObject(serializable, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            }));
         }
 
         public static T SerializeFromFile<T>(string path)
