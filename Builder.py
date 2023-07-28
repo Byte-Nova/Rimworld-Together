@@ -73,5 +73,5 @@ fastConnect = "fastConnect=true" # shows button
 instantConnect = "instantConnect=true" # auto connects, ignores the above button
 forceDevMode = "forceDevMode=true" # shows dev mode button
 subprocess.Popen([norm_exe_path, userA, fastConnect, instantConnect, forceDevMode])
-time.sleep(2)
+time.sleep(2) # prevent breaking save loading, as they current open the same file
 subprocess.Popen([norm_exe_path, userB, fastConnect, instantConnect, forceDevMode])
