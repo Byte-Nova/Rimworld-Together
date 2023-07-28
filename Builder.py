@@ -1,4 +1,4 @@
-def output(format, message, linesbefore=0, linesafter=0):
+def output(message="", linesbefore=0, linesafter=0, format="{}"):
     for i in range(0, linesbefore):
         print()
     print(format.format(message))
@@ -6,12 +6,12 @@ def output(format, message, linesbefore=0, linesafter=0):
         print()
 
 
-def success(message, linesbefore=0, linesafter=0):
-    output("\033[92m{}\033[0m", message, linesbefore, linesafter)
+def success(message="", linesbefore=0, linesafter=0):
+    output(message, linesbefore, linesafter, "\033[92m{}\033[0m")
 
 
-def error(message, linesbefore=0, linesafter=0):
-    output("\033[91m{}\033[0m", message, linesbefore, linesafter)
+def error(message="", linesbefore=0, linesafter=0):
+    output(message, linesbefore, linesafter, "\033[91m{}\033[0m")
 
 
 # Import Basic Packages
@@ -57,11 +57,14 @@ fastConnect = "fastConnect=true" # shows button
 instantConnect = "instantConnect=true" # auto connects, ignores the above button
 forceDevMode = "forceDevMode=true" # shows dev mode button
 
+#Debug Flags
+printCompileLog = True
+
 
 def handle_rim_world_path(possible_rimworld_dir):
     global rimworld_dir
 
-    print(f"Checking {possible_rimworld_dir}")
+    output(f"Checking {possible_rimworld_dir}")
 
     # Append the Mods folder to the RimWorld directory
     mod_path = os.path.join(possible_rimworld_dir, "Mods")
@@ -71,9 +74,11 @@ def handle_rim_world_path(possible_rimworld_dir):
 
         # Clear the specific mod directory if it already exists
         if os.path.exists(mod_specific_path):
-            rimworld_dir = possible_rimworld_dir
             shutil.rmtree(mod_specific_path)
-
+        
+        # The mod always gets copied in, might as well assume this is the right directory
+        rimworld_dir = possible_rimworld_dir
+        
         # Copy mod to mod_path
         shutil.copytree(destination_dir, mod_specific_path)
 
@@ -85,7 +90,7 @@ def handle_rim_world_path(possible_rimworld_dir):
 
 
 def build():
-    print("Building DLLs")
+    output("Building DLLs")
 
     # Remove destination_dir for a fresh build
     if os.path.exists(destination_dir):
@@ -97,7 +102,9 @@ def build():
     # Build the C# project
     result = subprocess.run(["dotnet", "build", source_solution, "--configuration", "Debug"],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-    print(result.stdout)
+    
+    if printCompileLog:
+        output(result.stdout, 1)
 
     assert "Build succeeded." in result.stdout, "Build did not succeed"
     assert "Build FAILED." not in result.stdout, "Build failed"
@@ -111,14 +118,24 @@ def build():
         dll_output_path = os.path.join(dll_output_dir, dll_name)
         dll_destination_path = os.path.join(dll_destination_dir, dll_name)
 
+        if not os.path.exists(dll_output_path):
+            error(f"Failed to find DLL file {dll_name}")
+            
+            # Had issues with not having .NET 7.0, thought it might be worth mentioning to check the solution and possibly update VS to allow usage of .NET 7.0
+            if dll_name == 'Newtonsoft.Json.Patched.dll':
+                error("This DLL requires the solution to use .NET 7.0. You may need to update Visual Studio and install .NET 7.0");
+            
+            output() # Just for a new line
+            exit(1)
+
         # Copy the DLL file
         shutil.copy2(dll_output_path, dll_destination_path)
 
-    success("Completed building DLLs")
+    success("Completed building DLLs", 0, 1)
 
 
 def run():
-    print("Finding RimWorld")
+    output("Finding RimWorld")
 
     default_rimworld_dirs = [
         "C:/Games/Rimworld",
@@ -134,10 +151,11 @@ def run():
 
     # Copy mod to each path if it exists
     for default_rimworld_dir in default_rimworld_dirs:
-        handle_rim_world_path(default_rimworld_dir)
+        if handle_rim_world_path(default_rimworld_dir):
+            break # Early out, if we found a RimWorld path just use that
 
     if rimworld_dir == "":
-        print("RimWorld not found, requesting installation directory")
+        output("RimWorld not found, requesting installation directory")
         directory = filedialog.askdirectory(initialdir=None, mustexist=True, title="Select RimWorld Directory")
 
         # If no directory provided, end here
@@ -155,9 +173,15 @@ def run():
     f = open(rimworld_dir_file, "w")
     f.write(rimworld_dir)
     f.close()
-
-    answer = input("Open RimWorld? (Y/N, Default:Y)")
+    
+    # @TODO(jrseducate): Might be worth adding a check here if they want to open the server here as well
+    
+    # Check if we want to open instances of RimWorld for testing
+    output("Open RimWorld? (Y/N, Default:Y)", 1)
+    answer = input()
     no = answer == "n" or answer == 'N'
+    
+    output() # Extra Line
 
     if (no):
         exit(0)
