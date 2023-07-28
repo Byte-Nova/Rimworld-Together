@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using MessagePack;
+using RimworldTogether.Shared.Misc;
 
 namespace RimworldTogether.Shared.Network
 {
@@ -61,6 +62,9 @@ namespace RimworldTogether.Shared.Network
 
         public virtual void Accept(byte[] data, int clientId = -1)
         {
+            var id = MainNetworkingUnit.client != null ? MainNetworkingUnit.client.playerId : 0;
+            GameLogger.Log($"Accepting data {data} for type {GetType().Name} from {clientId} as {id}");
+            if (_acceptHandler != null && _replyHandler != null) throw new Exception($"You cant use both accept and reply handlers! for type {GetType().Name}");
             if (_acceptHandler != null)
             {
                 _acceptHandler(data, clientId);
@@ -94,12 +98,13 @@ namespace RimworldTogether.Shared.Network
         public struct ReplyData
         {
             public byte[] data;
-            public TSend Data => MessagePackSerializer.Deserialize<TSend>(data);
+            [IgnoreMember] public TSend Data => MessagePackSerializer.Deserialize<TSend>(data);
             public int callBackId;
         }
 
         public void AcceptReply(byte[] data, int clientId = -1)
         {
+            GameLogger.Log($"Accapting reply data {data} for type {GetType().Name} from {clientId}");
             var message = MessagePackSerializer.Deserialize<ReplyData>(data);
             _callbacks[message.callBackId](message.data, clientId);
         }

@@ -24,6 +24,7 @@ namespace RimworldTogether.GameClient.Patches
         public static void Postfix()
         {
             MainNetworkingUnit.client?.ExecuteActions();
+            return;
             if (--updateDivider > 0) return;
             updateDivider = 100;
             GameLogger.Log(MainNetworkingUnit.client.playerId.ToString());

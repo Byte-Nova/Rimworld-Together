@@ -38,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\CommunicatorBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Communicators\ClientToClientCommunicatorSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Communicators\InitPlayerCommunicator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Communicators\VisitCallbackCommunicator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\MainNetworkingUnit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\MessagePackNetworkType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\NetworkCallbackHolder.cs" />

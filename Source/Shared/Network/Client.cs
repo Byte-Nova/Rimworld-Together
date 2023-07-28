@@ -57,7 +57,7 @@ namespace RimworldTogether.Shared.Network
             var msg = new Msg();
             var serializedData = MessagePackSerializer.Serialize(messagePackNetworkType);
             msg.InitGC(serializedData, serializedData.Length);
-            _publisherSocket.SendMoreFrame($"{topic}").SendFrame(serializedData);
+            _publisherSocket.SendMoreFrame($"{playerId}").SendFrame(serializedData);
         }
     }
 }

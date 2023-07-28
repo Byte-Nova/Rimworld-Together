@@ -7,34 +7,71 @@ namespace RimworldTogether.Shared.Network
     [MessagePackObject(true)]
     public struct WrappedData<T>
     {
-        public WrappedData(T data, int targetToRelayTo)
+        public WrappedData(T data, int targetToRelayTo, int origin = -1)
         {
             this.data = data;
             this.targetToRelayTo = targetToRelayTo;
+            if (origin == -1) this.origin = MainNetworkingUnit.client.playerId;
+            else this.origin = origin;
         }
 
         public readonly T data;
         public readonly int targetToRelayTo;
-    }
+        public readonly int origin;
 
-    // Represents the session between two clients
-    public abstract class ClientToClientCommunicatorSession<TSend, TReply> : CommunicatorBase<WrappedData<TSend>, WrappedData<TReply>>
-    {
-        //Simply relays the data from the client to the server and to the target client
-        // The clients must register their own accept handlers
-        public ClientToClientCommunicatorSession()
+        public WrappedData<T> FlipSenderOrigin()
         {
-            if (!MainNetworkingUnit.IsClient)
-            {
-                RegisterAcceptHandler((data, origin) => Send(data, data.targetToRelayTo));
-                RegisterReplyHandler((data, callback, origin) => SendWithReply(data, callback, data.targetToRelayTo));
-            }
-            else
-                RegisterAcceptHandler((data, origin) => GameLogger.Warning($"Default handler for ${GetType().Name} data: {data.data} target(should be us): ${data.targetToRelayTo} ${origin}"));
+            return new WrappedData<T>(data, origin, targetToRelayTo);
         }
     }
 
-    public class TestSession : ClientToClientCommunicatorSession<string, EmptyData>
+    // Represents the session between two clients
+    public abstract class ClientToClientCommunicatorSessionSend<TSend> : CommunicatorBase<WrappedData<TSend>>
+    {
+        //Simply relays the data from the client to the server and to the target client
+        // The clients must register their own accept handlers
+        public ClientToClientCommunicatorSessionSend()
+        {
+            if (!MainNetworkingUnit.IsClient)
+            {
+                RegisterAcceptHandler((data, origin) =>
+                {
+                    GameLogger.Log($"Relaying {data.data} from {origin} to {data.targetToRelayTo}");
+                    Send(data, data.targetToRelayTo);
+                });
+            }
+            else
+                RegisterAcceptHandler((data, origin) => throw new Exception($"Default client reply handler for {GetType().Name} data: {data.data} target(should be us): {data.targetToRelayTo} {origin} {MainNetworkingUnit.client.playerId}"));
+        }
+    }
+
+    public abstract class ClientToClientCommunicatorSessionReply<TReply> : ClientToClientCommunicatorSessionReply<EmptyData, TReply>
+    {
+    }
+    public abstract class ClientToClientCommunicatorSessionReply<TSend, TReply> : CommunicatorBase<WrappedData<TSend>, WrappedData<TReply>>
+    {
+        //Simply relays the data from the client to the server and to the target client
+        // The clients must register their own accept handlers
+        public ClientToClientCommunicatorSessionReply()
+        {
+            if (!MainNetworkingUnit.IsClient)
+            {
+                RegisterReplyHandler((data, callback, origin) =>
+                {
+                    GameLogger.Log($"Relaying reply request {data.data} from {origin} to {data.targetToRelayTo}");
+                    SendWithReply(data, (inf) =>
+                    {
+                        GameLogger.Log($"Relaying reply {inf.data} from {origin} to {data.targetToRelayTo}");
+                        callback(inf);
+                    }, data.targetToRelayTo);
+                });
+            }
+            else
+                RegisterReplyHandler((data, callback, origin) => throw new Exception($"Default client reply handler for {GetType().Name} data: {data.data} target(should be us): {data.targetToRelayTo} {origin} {MainNetworkingUnit.client.playerId}"));
+        }
+    }
+
+    public class TestSession : ClientToClientCommunicatorSessionSend<string>
     {
     }
 }
