@@ -1,5 +1,7 @@
 using System;
+using System.ComponentModel;
 using System.Numerics;
+using System.Reflection;
 using HarmonyLib;
 using JsonDiffPatchDotNet;
 using Newtonsoft.Json;
@@ -12,9 +14,10 @@ using BigInteger = Mono.Math.BigInteger;
 namespace RimworldTogether.GameClient.Patches
 {
     [HarmonyPatch(typeof(Root_Play), "Update")]
-    public class OnUpdateManager
+    public class OnUpdateManager : ISynchronizeInvoke
     {
         private static int updateDivider = 0;
+
         public class Person
         {
             public string FirstName { get; set; }
@@ -42,7 +45,7 @@ namespace RimworldTogether.GameClient.Patches
                     var left = JToken.Parse(@"{ ""key"": false }");
                     var right = JToken.Parse(@"{ ""key"": true }");
                     JToken patch = jdp.Diff(left, right);
-                    
+
                     communicator.Send(new WrappedData<string>(patch.ToString(), 2));
                     GameLogger.Log("Sent");
                 }
@@ -59,5 +62,22 @@ namespace RimworldTogether.GameClient.Patches
                 // communicator.RegisterAcceptHandler((data => GameLogger.Warning($"{data.data}")));
             }
         }
+
+        public IAsyncResult BeginInvoke(Delegate method, object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object EndInvoke(IAsyncResult result)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Invoke(Delegate method, object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool InvokeRequired { get; }
     }
 }

@@ -22,14 +22,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AsyncIO" Version="0.1.69" />
     <PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
     <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3704" />
     <PackageReference Include="Lib.Harmony" Version="2.2.2" />
-    <PackageReference Include="NetMQ" Version="4.0.0.207" />
     <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NetMq\" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(ProjectDir)..\Patched\Newtonsoft.Json.dll&quot; &quot;$(TargetDir)Newtonsoft.Json.dll&quot;&#xA;" />
+    <Exec Command="copy /Y &quot;$(ProjectDir)..\Patched\Newtonsoft.Json.dll&quot; &quot;$(TargetDir)Newtonsoft.Json.dll&quot; &amp;&#xA;copy /Y &quot;$(ProjectDir)..\Patched\NetMQ.dll&quot; &quot;$(TargetDir)NetMQ.dll&quot;" />
   </Target>
 </Project>

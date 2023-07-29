@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using HarmonyLib;
@@ -35,6 +36,19 @@ namespace RimworldTogether.GameClient.Misc
 
         public static void Postfix()
         {
+            foreach (System.Type allType in GenTypes.AllTypes)
+            foreach (MethodInfo method in allType.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                DebugActionAttribute customAttribute;
+                if (method.TryGetAttribute(out customAttribute))
+                    GameLogger.Log($"{method} {customAttribute}");
+                if (method.TryGetAttribute(out DebugActionYielderAttribute _))
+                {
+                    foreach (DebugActionNode child in (IEnumerable<DebugActionNode>)method.Invoke(null, null))
+                        GameLogger.Log($"{child}");
+                }
+            }
+
             if (!CommandLineParamsManager.instantVisit)
             {
                 NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().RegisterReplyHandler((data, cb, __) =>
