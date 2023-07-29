@@ -141,7 +141,7 @@ namespace RimworldTogether.Shared.Network
             public int origin;
         }
 
-        public async Task<ReplyResult> SendWithReplyAsync(TSend data, int target = 0, int timeoutMilliseconds = 1000)
+        public async Task<ReplyResult?> SendWithReplyAsync(TSend data, int target = 0, int timeoutMilliseconds = 500)
         {
             var replyId = NextReplyId;
             var tcs = new TaskCompletionSource<ReplyResult>();
@@ -151,7 +151,7 @@ namespace RimworldTogether.Shared.Network
 
             // If the timeout task completed first, throw an exception.
             if (completedTask == tcs.Task) return await tcs.Task;
-            throw new TimeoutException($"The operation timed out after {timeoutMilliseconds} milliseconds for type {GetType().Name}.");
+            return null;
         }
 
         public void SendWithReply(Action<TReply> reply, int target = 0)

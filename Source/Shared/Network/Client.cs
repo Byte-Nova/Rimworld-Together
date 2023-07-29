@@ -21,10 +21,10 @@ namespace RimworldTogether.Shared.Network
             MainNetworkingUnit.IsClient = true;
             guid = Guid.NewGuid();
             Console.WriteLine($"Connectting to server with guid {guid}");
-            _subscriberSocket = new SubscriberSocket();
+            _subscriberSocket = new();
             _subscriberSocket.Connect($"tcp://{address}:{port}");
             _subscriberSocket.Subscribe("0");
-            _poller = new NetMQPoller() { _subscriberSocket };
+            _poller = new() { _subscriberSocket };
             _subscriberSocket.ReceiveReady += ServerReceiveReady;
             receiveTask = Task.Run(_poller.Run);
 

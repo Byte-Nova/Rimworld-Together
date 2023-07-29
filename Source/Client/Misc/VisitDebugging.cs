@@ -52,10 +52,12 @@ namespace RimworldTogether.GameClient.Misc
                     while (!NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit)
                     {
                         Thread.Sleep(100);
-                        // var reply = await NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().SendWithReplyAsync(new(new(), 2));
-                        // NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit = reply.data.data;
-                        
-                        NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().SendWithReply(new(new(), 2), reply => { NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit = reply.data; });
+                        var id = await NetworkCallbackHolder.GetType<PlayerNameToIdCommunicator>().SendWithReplyAsync("B");
+                        if (!id.HasValue || id.Value.data == -1) continue;
+                        var reply = await NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().SendWithReplyAsync(new(new(), id.Value.data));
+                        if (!reply.HasValue) continue;
+                        GameLogger.Log(reply.Value.data.data.ToString());
+                        NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit = reply.Value.data.data;
                     }
 
                     var goal = "B's settlement";
