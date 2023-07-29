@@ -51,11 +51,11 @@ rimworld_dir = ""
 # RimWorld Execution Details
 userA = "name=A"  # name and password are the same
 userB = "name=B"
-fastConnect = "fastConnect=true"  # shows button
-instantConnect = "instantConnect=true"  # auto connects, ignores the above button
-forceDevMode = "forceDevMode=true"  # shows dev mode button
-instantVisit = "instantVisit=true"  # auto visits
-silentVisit = "silentVisit=true"  # useful when autovisiting to not show the visit screen and bypass confirmations
+fastConnect = "fastConnect=false"  # shows button
+instantConnect = "instantConnect=false"  # auto connects, ignores the above button
+forceDevMode = "forceDevMode=false"  # shows dev mode button
+instantVisit = "instantVisit=false"  # auto visits
+silentVisit = "silentVisit=false"  # useful when autovisiting to not show the visit screen and bypass confirmations
 # Debug Flags
 printCompileLog = True
 
