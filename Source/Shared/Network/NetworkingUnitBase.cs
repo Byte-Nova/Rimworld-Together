@@ -17,9 +17,16 @@ namespace RimworldTogether.Shared.Network
 
         public void ExecuteActions()
         {
-            while (_queuedActions.TryTake(out var item))
+            try
             {
-                item();
+                while (_queuedActions.TryTake(out var item))
+                {
+                    item();
+                }
+            }
+            catch (Exception e)
+            {
+                GameLogger.Error(e.ToString());
             }
         }
 
@@ -27,19 +34,9 @@ namespace RimworldTogether.Shared.Network
         {
             new Task(() =>
             {
-                try
-                {
-                    while (true)
-                    {
-                        if (MainNetworkingUnit.IsClient) MainNetworkingUnit.client.ExecuteActions();
-                        else MainNetworkingUnit.server.ExecuteActions();
-                    }
-                }
-                catch (Exception e)
-                {
-                    GameLogger.Error(e.ToString());
-                    throw;
-                }
+                while (true)
+                    if (MainNetworkingUnit.IsClient) MainNetworkingUnit.client.ExecuteActions();
+                    else MainNetworkingUnit.server.ExecuteActions();
             }).Start();
         }
     }

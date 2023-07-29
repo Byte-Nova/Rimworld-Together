@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MessagePack;
 using NetMQ;
 using NetMQ.Sockets;
+using RimworldTogether.Shared.Misc;
 
 namespace RimworldTogether.Shared.Network
 {
@@ -29,7 +30,8 @@ namespace RimworldTogether.Shared.Network
 
             _publisherSocket = new PushSocket();
             _publisherSocket.Connect($"tcp://{address}:{port + 1}");
-            NetworkCallbackHolder.GetType<InitPlayerCommunicator>().SendWithReply(new InitPlayerSendData()
+            if(MainNetworkingUnit.client.playerName == null) throw new("Player name not set");
+            NetworkCallbackHolder.GetType<InitPlayerCommunicator>().SendWithReply(new()
             {
                 guid = guid,
                 playerName = MainNetworkingUnit.client.playerName
@@ -38,7 +40,7 @@ namespace RimworldTogether.Shared.Network
                 if (guid != item.guid) return;
                 playerId = item.playerId;
                 _subscriberSocket.Subscribe($"{playerId}");
-                Console.WriteLine($"Connected {guid} with player id {playerId}");
+                GameLogger.Debug.Log($"Connected {guid} with player id {playerId}");
             });
         }
 

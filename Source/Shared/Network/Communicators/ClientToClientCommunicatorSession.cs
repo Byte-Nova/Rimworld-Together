@@ -36,18 +36,19 @@ namespace RimworldTogether.Shared.Network
             {
                 RegisterAcceptHandler((data, origin) =>
                 {
-                    GameLogger.Log($"Relaying {data.data} from {origin} to {data.targetToRelayTo}");
+                    GameLogger.Debug.Log($"Relaying {data.data} from {origin} to {data.targetToRelayTo}");
                     Send(data, data.targetToRelayTo);
                 });
             }
             else
-                RegisterAcceptHandler((data, origin) => throw new Exception($"Default client reply handler for {GetType().Name} data: {data.data} target(should be us): {data.targetToRelayTo} {origin} {MainNetworkingUnit.client.playerId}"));
+                RegisterAcceptHandler((data, origin) => GameLogger.Warning($"Default client accept handler for {GetType().Name} data: {data.data} target(should be us): {data.targetToRelayTo} {origin} {MainNetworkingUnit.client.playerId}"));
         }
     }
 
     public abstract class ClientToClientCommunicatorSessionReply<TReply> : ClientToClientCommunicatorSessionReply<EmptyData, TReply>
     {
     }
+
     public abstract class ClientToClientCommunicatorSessionReply<TSend, TReply> : CommunicatorBase<WrappedData<TSend>, WrappedData<TReply>>
     {
         //Simply relays the data from the client to the server and to the target client
@@ -58,16 +59,16 @@ namespace RimworldTogether.Shared.Network
             {
                 RegisterReplyHandler((data, callback, origin) =>
                 {
-                    GameLogger.Log($"Relaying reply request {data.data} from {origin} to {data.targetToRelayTo}");
-                    SendWithReply(data, (inf) =>
+                    GameLogger.Debug.Log($"Relaying reply request {data.data} from {origin} to {data.targetToRelayTo}");
+                    SendWithReply(data, data =>
                     {
-                        GameLogger.Log($"Relaying reply {inf.data} from {origin} to {data.targetToRelayTo}");
-                        callback(inf);
+                        GameLogger.Debug.Log($"Relaying reply {data.data} from {origin} to {data.targetToRelayTo}");
+                        callback(data);
                     }, data.targetToRelayTo);
                 });
             }
             else
-                RegisterReplyHandler((data, callback, origin) => throw new Exception($"Default client reply handler for {GetType().Name} data: {data.data} target(should be us): {data.targetToRelayTo} {origin} {MainNetworkingUnit.client.playerId}"));
+                RegisterReplyHandler((data, callback, origin) => GameLogger.Warning($"Attempted to call client reply handler for {GetType().Name} data: {data.data} target(should be us): {data.targetToRelayTo} {origin} {MainNetworkingUnit.client.playerId}"));
         }
     }
 

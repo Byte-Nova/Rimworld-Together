@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Reflection;
 using System.Threading;
 using HarmonyLib;
 using RimWorld;
@@ -23,20 +22,22 @@ namespace RimworldTogether.GameClient.Patches.Pages
         {
             private static void DefaultServer(string name, string password)
             {
+                MainNetworkingUnit.client = new();
+                MainNetworkingUnit.client.playerName = name;
+                var loginDetails = new LoginDetailsJSON();
+                loginDetails.username = name;
+                loginDetails.password = Hasher.GetHash(password);
+                Saver.SaveLoginDetails(loginDetails.username, loginDetails.password);
                 Network.Network.ip = "127.0.0.1";
                 Network.Network.port = "25555";
                 Threader.GenerateThread(Threader.Mode.Start);
                 Thread.Sleep(500);
-                var loginDetails = new LoginDetailsJSON();
-                loginDetails.username = name;
-                loginDetails.password = Hasher.GetHash(password);
+                
                 loginDetails.clientVersion = ClientValues.versionCode;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
-
                 ChatManager.username = loginDetails.username;
-                Saver.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
-                var contents = new string[] { Serializer.SerializeToString(loginDetails) };
+                var contents = new[] { Serializer.SerializeToString(loginDetails) };
                 var packet = new Packet("LoginClientPacket", contents);
                 Network.Network.SendData(packet);
             }

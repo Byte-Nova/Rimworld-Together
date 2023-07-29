@@ -5,6 +5,8 @@ using MessagePack;
 using NetMQ;
 using NetMQ.Sockets;
 using System.Collections.Generic;
+using RimworldTogether.Shared.Misc;
+
 namespace RimworldTogether.Shared.Network
 {
     public class NetworkingUnitServer : NetworkingUnitBase
@@ -37,7 +39,7 @@ namespace RimworldTogether.Shared.Network
         {
             //todo remove me
             if (_nextPlayerId > 2) _nextPlayerId = 1;
-            // nameToIdMapping[playerName] = _nextPlayerId;
+            nameToIdMapping[playerName] = _nextPlayerId;
             return _nextPlayerId++;
         }
 
@@ -52,6 +54,7 @@ namespace RimworldTogether.Shared.Network
 
         public override void Send<T>(int type, T data, int topic = 0)
         {
+            GameLogger.Debug.Log($"Sending topic {type} target {topic}");
             var srsData = MessagePackSerializer.Serialize(data);
             var messagePackNetworkType = new MessagePackNetworkType(type, srsData);
             var serializedData = MessagePackSerializer.Serialize(messagePackNetworkType);

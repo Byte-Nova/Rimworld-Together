@@ -39,21 +39,23 @@ namespace RimworldTogether.GameClient.Misc
             {
                 NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().RegisterReplyHandler((data, cb, __) =>
                 {
-                    GameLogger.Log($"Replying to visit request for {data.targetToRelayTo}");
-                    cb(new WrappedData<bool>(true, data.targetToRelayTo));
+                    GameLogger.Debug.Log($"Replying to visit request for {data.targetToRelayTo}");
+                    cb(new(true, data.targetToRelayTo));
                 });
                 return;
             }
 
-            new Task(() =>
+            new Task(async () =>
             {
                 try
                 {
                     while (!NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit)
                     {
-                        Thread.Sleep(1000);
-                        // GameLogger.Log("Waiting for visit");
-                        NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().SendWithReply(new WrappedData<EmptyData>(new EmptyData(), 2), reply => { NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit = reply.data; });
+                        Thread.Sleep(100);
+                        // var reply = await NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().SendWithReplyAsync(new(new(), 2));
+                        // NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit = reply.data.data;
+                        
+                        NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().SendWithReply(new(new(), 2), reply => { NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit = reply.data; });
                     }
 
                     var goal = "B's settlement";
@@ -74,12 +76,8 @@ namespace RimworldTogether.GameClient.Misc
                 catch (Exception e)
                 {
                     GameLogger.Error(e.ToString());
-                    throw;
                 }
             }).Start();
-
-            GameLogger.Error($"{NetworkCallbackHolder.GetType<VisitCallbackCommunicator>().readToVisit}");
-            
         }
 
         public static Settlement FindSettlementByName(string name)

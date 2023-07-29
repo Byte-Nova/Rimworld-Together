@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MessagePack;
 using RimworldTogether.Shared.Misc;
 
@@ -39,7 +40,8 @@ namespace RimworldTogether.Shared.Network
         }
 
         private readonly int _id;
-        private readonly Dictionary<int, Action<byte[], int>> _callbacks = new Dictionary<int, Action<byte[], int>>();
+        private readonly Dictionary<int, Action<byte[], int>> _callbacks = new();
+        private readonly Dictionary<int, TaskCompletionSource<ValueTuple<byte[], int>>> _tcs = new();
         private Action<byte[], int> _acceptHandler;
         private Action<TSend, Action<TReply>, int> _replyHandler;
         private int _replyId = 0;
@@ -57,13 +59,14 @@ namespace RimworldTogether.Shared.Network
 
         public void RegisterReplyHandler(Action<TSend, Action<TReply>, int> handler)
         {
+            GameLogger.Debug.Log($"Registering reply handler for {GetType().Name} {handler}");
             _replyHandler = handler;
         }
 
         public virtual void Accept(byte[] data, int clientId = -1)
         {
             var id = MainNetworkingUnit.client != null ? MainNetworkingUnit.client.playerId : 0;
-            GameLogger.Log($"Accepting data {data} for type {GetType().Name} from {clientId} as {id}");
+            GameLogger.Debug.Log($"Accepting data {data} for type {GetType().Name} from {clientId} as {id}");
             if (_acceptHandler != null && _replyHandler != null) throw new Exception($"You cant use both accept and reply handlers! for type {GetType().Name}");
             if (_acceptHandler != null)
             {
@@ -91,7 +94,7 @@ namespace RimworldTogether.Shared.Network
             {
                 callBackId = callbackId,
                 data = MessagePackSerializer.Serialize(data)
-            }, MainNetworkingUnit.client != null ? MainNetworkingUnit.client.playerId : 0);
+            }, clientId);
         }
 
         [MessagePackObject(true)]
@@ -104,8 +107,8 @@ namespace RimworldTogether.Shared.Network
 
         public void AcceptReply(byte[] data, int clientId = -1)
         {
-            GameLogger.Log($"Accapting reply data {data} for type {GetType().Name} from {clientId}");
             var message = MessagePackSerializer.Deserialize<ReplyData>(data);
+            GameLogger.Debug.Log($"Accapting reply data {data} for type {GetType().Name} from {clientId} with callbackId {MessagePackSerializer.Deserialize<ReplyData>(data).callBackId}");
             _callbacks[message.callBackId](message.data, clientId);
         }
 
@@ -124,6 +127,31 @@ namespace RimworldTogether.Shared.Network
             var replyId = NextReplyId;
             _callbacks[replyId] = Typeless(reply);
             MainNetworkingUnit.Send(_id, new ReplyData { data = MessagePackSerializer.Serialize(data), callBackId = replyId }, target);
+        }
+
+        public struct ReplyResult
+        {
+            public ReplyResult(TReply data, int origin)
+            {
+                this.data = data;
+                this.origin = origin;
+            }
+
+            public TReply data;
+            public int origin;
+        }
+
+        public async Task<ReplyResult> SendWithReplyAsync(TSend data, int target = 0, int timeoutMilliseconds = 1000)
+        {
+            var replyId = NextReplyId;
+            var tcs = new TaskCompletionSource<ReplyResult>();
+            _callbacks[replyId] = (data, id) => tcs.SetResult(new(MessagePackSerializer.Deserialize<TReply>(data), id));
+            MainNetworkingUnit.Send(_id, new ReplyData { data = MessagePackSerializer.Serialize(data), callBackId = replyId }, target);
+            var completedTask = await Task.WhenAny(tcs.Task, Task.Delay(timeoutMilliseconds));
+
+            // If the timeout task completed first, throw an exception.
+            if (completedTask == tcs.Task) return await tcs.Task;
+            throw new TimeoutException($"The operation timed out after {timeoutMilliseconds} milliseconds for type {GetType().Name}.");
         }
 
         public void SendWithReply(Action<TReply> reply, int target = 0)
