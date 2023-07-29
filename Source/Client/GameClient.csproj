@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>RimworldTogether.GameClient</RootNamespace>
+    <Nullable>enable</Nullable>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -27,7 +27,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 Network.Network.port = "25555";
                 Threader.GenerateThread(Threader.Mode.Start);
                 Thread.Sleep(500);
-                LoginDetailsJSON loginDetails = new LoginDetailsJSON();
+                var loginDetails = new LoginDetailsJSON();
                 loginDetails.username = name;
                 loginDetails.password = Hasher.GetHash(password);
                 loginDetails.clientVersion = ClientValues.versionCode;
@@ -36,8 +36,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 ChatManager.username = loginDetails.username;
                 Saver.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
-                string[] contents = new string[] { Serializer.SerializeToString(loginDetails) };
-                Packet packet = new Packet("LoginClientPacket", contents);
+                var contents = new string[] { Serializer.SerializeToString(loginDetails) };
+                var packet = new Packet("LoginClientPacket", contents);
                 Network.Network.SendData(packet);
             }
 

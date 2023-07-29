@@ -12,10 +12,11 @@ namespace RimworldTogether.Shared.Network
         private PushSocket _publisherSocket;
         public int playerId;
         public Guid guid;
+        public string playerName;
 
         public void Connect(string address = "localhost", int port = MainNetworkingUnit.startPort)
         {
-            if(MainNetworkingUnit.server != null) throw new Exception("Attempted to connect to server while server is running");
+            if (MainNetworkingUnit.server != null) throw new Exception("Attempted to connect to server while server is running");
             MainNetworkingUnit.IsClient = true;
             guid = Guid.NewGuid();
             Console.WriteLine($"Connectting to server with guid {guid}");
@@ -28,7 +29,11 @@ namespace RimworldTogether.Shared.Network
 
             _publisherSocket = new PushSocket();
             _publisherSocket.Connect($"tcp://{address}:{port + 1}");
-            NetworkCallbackHolder.GetType<InitPlayerCommunicator>().SendWithReply(guid, item =>
+            NetworkCallbackHolder.GetType<InitPlayerCommunicator>().SendWithReply(new InitPlayerSendData()
+            {
+                guid = guid,
+                playerName = MainNetworkingUnit.client.playerName
+            }, item =>
             {
                 if (guid != item.guid) return;
                 playerId = item.playerId;

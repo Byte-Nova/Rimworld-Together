@@ -4,18 +4,25 @@ using System.Threading.Tasks;
 using MessagePack;
 using NetMQ;
 using NetMQ.Sockets;
-
+using System.Collections.Generic;
 namespace RimworldTogether.Shared.Network
 {
     public class NetworkingUnitServer : NetworkingUnitBase
     {
         private PublisherSocket _publisherSocket;
         private PullSocket _subscriberSocket;
+        private Dictionary<string, int> nameToIdMapping = new Dictionary<string, int>();
         private int _nextPlayerId = 1; // 0 is reserved for the server
+
+        public int GetPlayerId(string playerName)
+        {
+            return nameToIdMapping[playerName];
+        }
 
         public void Listen(string address, int port = MainNetworkingUnit.startPort)
         {
             if (MainNetworkingUnit.client != null) throw new Exception("Attempted to connect to a server while attempting to host a server");
+            NetworkCallbackHolder.GetType<PlayerNameToIdCommunicator>().RegisterReplyHandler(((name, callback,_ ) => callback(MainNetworkingUnit.server.GetPlayerId(name))));
             _publisherSocket = new PublisherSocket();
             _publisherSocket.Bind($"tcp://{address}:{port}");
             _subscriberSocket = new PullSocket();
@@ -26,10 +33,11 @@ namespace RimworldTogether.Shared.Network
             SpawnExecuteActionsTask();
         }
 
-        public int RegisterNewPlayer()
+        public int RegisterNewPlayer(string playerName)
         {
             //todo remove me
             if (_nextPlayerId > 2) _nextPlayerId = 1;
+            // nameToIdMapping[playerName] = _nextPlayerId;
             return _nextPlayerId++;
         }
 

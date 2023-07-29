@@ -2,6 +2,7 @@ using System.IO;
 using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Files;
 using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Network;
 
 namespace RimworldTogether.GameClient.Misc
 {
@@ -21,6 +22,7 @@ namespace RimworldTogether.GameClient.Misc
 
         public static void SaveLoginDetails(string username, string password)
         {
+            MainNetworkingUnit.client.playerName = username;//Todo: maybe some other better place for this?
             LoginDataFile newLoginData;
             if (File.Exists(Main.loginDataPath)) newLoginData = Serializer.SerializeFromFile<LoginDataFile>(Main.loginDataPath);
             else newLoginData = new LoginDataFile();
