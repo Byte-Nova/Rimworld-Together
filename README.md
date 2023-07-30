@@ -33,8 +33,8 @@ On first launch, the server will also generate the "MODS" folder, inside of it w
 
 If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Nova-Atomic/Library
 
-## Enabling DLCs
-To enable the use of DLCs in the server (Or even the core game), fetch the zip file called "DLCs" from this repository and treat them as a folder of a normal mod and place them wherever you please in the mod folders.
+## Enabling Core & DLCs
+To enable the use of Core and DLCs in the server, fetch the zip file called "DLCs" from this repository and treat them as a folder of a normal mod and place them wherever you please in the mod folders.
 
 ## Port Forwarding & VPNs
 The server, by default, uses the 25555 port through TCP protocol, you can change the port as you wish but remember that other than TCP it won't work. You can use VPN programs to go around the issue of port forwarding the same way you would do it with any other game.
