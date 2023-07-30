@@ -28,10 +28,6 @@
     <PackageReference Include="Lib.Harmony" Version="2.2.2" />
     <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib" Version="10.0.1" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NetMq\" />
-  </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /Y &quot;$(ProjectDir)..\Patched\Newtonsoft.Json.dll&quot; &quot;$(TargetDir)Newtonsoft.Json.dll&quot; &amp;&#xA;copy /Y &quot;$(ProjectDir)..\Patched\NetMQ.dll&quot; &quot;$(TargetDir)NetMQ.dll&quot;" />
