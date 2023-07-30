@@ -16,14 +16,20 @@ namespace RimworldTogether.GameServer.Network
         private static int port = int.Parse(Program.serverConfig.Port);
 
         public static bool isServerOpen;
+        public static bool usingNewNetworking;
 
         public static void ReadyServer()
         {
             server = new TcpListener(localAddress, port);
             server.Start();
             isServerOpen = true;
-            MainNetworkingUnit.server = new();
-            MainNetworkingUnit.server.Listen(localAddress.ToString(), port + 1);
+
+            if (usingNewNetworking)
+            {
+                MainNetworkingUnit.server = new();
+                MainNetworkingUnit.server.Listen(localAddress.ToString(), port + 1);
+            }
+
             Threader.GenerateServerThread(Threader.ServerMode.Heartbeat, Program.serverCancelationToken);
             Threader.GenerateServerThread(Threader.ServerMode.Sites, Program.serverCancelationToken);
 

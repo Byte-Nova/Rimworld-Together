@@ -25,12 +25,16 @@ namespace RimworldTogether.GameServer.Misc
             {
                 case ServerMode.Start:
                     return Task.Run(Network.Network.ReadyServer, cancellationToken);
+
                 case ServerMode.Heartbeat:
                     return Task.Run(Network.Network.HearbeatClients, cancellationToken);
+
                 case ServerMode.Sites:
                     return Task.Run(SiteManager.StartSiteTicker, cancellationToken);
+
                 case ServerMode.Console:
                     return Task.Run(ServerCommandManager.ListenForServerCommands, cancellationToken);
+
                 default:
                     throw new NotImplementedException();
             }
@@ -38,9 +42,14 @@ namespace RimworldTogether.GameServer.Misc
 
         public static void GenerateClientThread(ClientMode mode, Client client)
         {
-            if (mode == ClientMode.Start)
+            switch (mode)
             {
-                Task.Run(() => Network.Network.ListenToClient(client));
+                case ClientMode.Start:
+                    Task.Run(() => Network.Network.ListenToClient(client));
+                    break;
+
+                default:
+                    throw new NotImplementedException();
             }
         }
     }

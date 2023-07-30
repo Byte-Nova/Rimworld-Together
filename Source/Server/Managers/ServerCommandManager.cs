@@ -4,6 +4,7 @@ using RimworldTogether.GameServer.Files;
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.Network;
+using System.Linq.Expressions;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -56,10 +57,28 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void ListenForServerCommands()
         {
-            while(true)
+            bool interactiveConsole;
+
+            try
             {
-                ParseServerCommands(Console.ReadLine());
+                if (Console.In.Peek() != -1) interactiveConsole = true;
+                else interactiveConsole = false;
             }
+
+            catch
+            {
+                interactiveConsole = false;
+                Logger.WriteToConsole($"[Warning] > Couldn't found interactive console, disabling commands", Logger.LogMode.Warning);
+            }
+
+            if (interactiveConsole)
+            {
+                while (true)
+                {
+                    ParseServerCommands(Console.ReadLine());
+                }
+            }
+            else Logger.WriteToConsole($"[Warning] > Couldn't found interactive console, disabling commands", Logger.LogMode.Warning);
         }
     }
 

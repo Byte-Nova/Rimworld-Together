@@ -23,6 +23,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static bool isConnectedToServer;
         public static bool isTryingToConnect;
+        public static bool usingNewNetworking;
 
         public static string ip = "";
         public static string port = "";
@@ -62,8 +63,9 @@ namespace RimworldTogether.GameClient.Network
                 {
                     isTryingToConnect = true;
 
+                    if (usingNewNetworking) MainNetworkingUnit.client.Connect(ip, int.Parse(port) + 1);
+
                     connection = new(ip, int.Parse(port));
-                    MainNetworkingUnit.client.Connect(ip, int.Parse(port) + 1);
                     ns = connection.GetStream();
                     sw = new StreamWriter(ns);
                     sr = new StreamReader(ns);
