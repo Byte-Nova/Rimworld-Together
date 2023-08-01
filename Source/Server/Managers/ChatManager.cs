@@ -43,6 +43,8 @@ namespace RimworldTogether.GameServer.Managers
 
                 toFind.commandAction.Invoke();
             }
+
+            Logger.WriteToConsole($"[Chat command] > {client.username} > {chatMessagesJSON.messages[0]}");
         }
 
         public static void BroadcastClientMessages(Client client, Packet packet)

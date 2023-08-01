@@ -73,6 +73,8 @@ namespace RimworldTogether.GameClient.Patches
 
         public static void ReceiveSaveFromServer(Packet packet)
         {
+            customSaveName = $"ServerSave - {Network.Network.ip} - {Network.Network.port}";
+
             string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
             File.WriteAllBytes(filePath, GZip.Decompress(packet.contents[0]));
             GameDataSaveLoader.LoadGame(customSaveName);
@@ -91,6 +93,7 @@ namespace RimworldTogether.GameClient.Patches
                 PersistentPatches.ManageDevOptions();
                 PersistentPatches.ManageGameDifficulty();
 
+                SavePatch.customSaveName = $"ServerSave - {Network.Network.ip} - {Network.Network.port}";
                 fileName = SavePatch.customSaveName;
 
                 try
