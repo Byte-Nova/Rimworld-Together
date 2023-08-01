@@ -12,10 +12,20 @@ namespace RimworldTogether.Shared.Misc
             return Convert.ToBase64String(compressed);
         }
 
+        public static byte[] CompressDefault(byte[] input)
+        {
+            return DoCompress(input);
+        }
+
         public static byte[] Decompress(string input)
         {
             byte[] compressed = Convert.FromBase64String(input);
             return DoDecompress(compressed);
+        }
+
+        public static byte[] DecompressDefault(byte[] input)
+        {
+            return DoDecompress(input);
         }
 
         private static byte[] DoCompress(byte[] input)

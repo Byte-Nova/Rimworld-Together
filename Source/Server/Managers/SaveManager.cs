@@ -42,14 +42,14 @@ namespace RimworldTogether.GameServer.Managers
             return mapFiles.ToArray();
         }
 
-        public static SaveFileJSON GetUserSave(Client client)
+        public static byte[] GetUserSaveFromUsername(string username)
         {
             string[] saves = Directory.GetFiles(Program.savesPath);
             foreach (string save in saves)
             {
-                if (Path.GetFileNameWithoutExtension(save) == client.username)
+                if (Path.GetFileNameWithoutExtension(save) == username)
                 {
-                    return Serializer.SerializeFromFile<SaveFileJSON>(save);
+                    return File.ReadAllBytes(save);
                 }
             }
 
@@ -93,7 +93,9 @@ namespace RimworldTogether.GameServer.Managers
             Packet packet = new Packet("LoadFilePacket", contents);
             Network.Network.SendData(client, packet);
 
-            Logger.WriteToConsole($"[Load game] > {client.username} {contents.GetHashCode()}");
+            if (Network.Network.usingNewNetworking) Logger.WriteToConsole($"[Load game] > {client.username} {contents.GetHashCode()}");
+            else Logger.WriteToConsole($"[Load game] > {client.username}");
+
         }
 
         public static void SaveUserMap(Client client, Packet packet)
@@ -115,14 +117,14 @@ namespace RimworldTogether.GameServer.Managers
 
             File.Delete(Path.Combine(Program.mapsPath, mapFile.mapTile + ".json"));
 
-            Logger.WriteToConsole($"[Delete map] > {mapFile.mapTile}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", Logger.LogMode.Warning);
         }
 
-        public static MapFile[] GetAllUserMaps(Client client)
+        public static MapFile[] GetAllMapsFromUsername(string username)
         {
             List<MapFile> userMaps = new List<MapFile>();
 
-            SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
+            SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in userSettlements)
             {
                 MapFile mapFile = GetUserMapFromTile(settlementFile.tile);
@@ -152,15 +154,16 @@ namespace RimworldTogether.GameServer.Managers
                 client.disconnectFlag = true;
 
                 string[] saves = Directory.GetFiles(Program.savesPath);
+
                 string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == client.username);
-                File.Delete(toDelete);
+                if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
                 Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
 
-                MapFile[] userMaps = GetAllUserMaps(client);
+                MapFile[] userMaps = GetAllMapsFromUsername(client.username);
                 foreach (MapFile map in userMaps) DeleteMap(map);
 
-                SiteFile[] playerSites = SiteManager.GetAllSitesFromUser(client);
+                SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
                 foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
 
                 SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
@@ -173,6 +176,32 @@ namespace RimworldTogether.GameServer.Managers
                     SettlementManager.RemoveSettlement(client, settlementDetailsJSON);
                 }
             }
+        }
+
+        public static void DeletePlayerDetails(string username)
+        {
+            string[] saves = Directory.GetFiles(Program.savesPath);
+
+            string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);
+            if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
+
+            MapFile[] userMaps = GetAllMapsFromUsername(username);
+            foreach (MapFile map in userMaps) DeleteMap(map);
+
+            SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(username);
+            foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
+
+            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
+            foreach (SettlementFile settlementFile in playerSettlements)
+            {
+                SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
+                settlementDetailsJSON.tile = settlementFile.tile;
+                settlementDetailsJSON.owner = settlementFile.owner;
+
+                SettlementManager.RemoveSettlement(null, settlementDetailsJSON, false);
+            }
+
+            Logger.WriteToConsole($"[Deleted player details] > {username}", Logger.LogMode.Warning);
         }
     }
 }

@@ -102,7 +102,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             return sitesList.ToArray();
         }
 
-        public static SiteFile[] GetAllSitesFromUser(Client client)
+        public static SiteFile[] GetAllSitesFromUsername(string username)
         {
             List<SiteFile> sitesList = new List<SiteFile>();
 
@@ -110,7 +110,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             foreach (string site in sites)
             {
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
-                if (!siteFile.isFromFaction && siteFile.owner == client.username)
+                if (!siteFile.isFromFaction && siteFile.owner == username)
                 {
                     sitesList.Add(siteFile);
                 }
