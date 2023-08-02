@@ -21,7 +21,6 @@ namespace RimworldTogether.GameClient.Dialogs
 
             forcePause = true;
             absorbInputAroundWindow = true;
-            if(CommandLineParamsManager.silentVisit) absorbInputAroundWindow = false;
             soundAppear = SoundDefOf.CommsWindow_Open;
             //soundClose = SoundDefOf.CommsWindow_Close;
 

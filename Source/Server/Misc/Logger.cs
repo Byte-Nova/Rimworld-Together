@@ -32,7 +32,7 @@ namespace RimworldTogether.GameServer.Misc
             isLogging = true;
 
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(toLog);
+            stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | " + toLog);
             stringBuilder.Append(Environment.NewLine);
 
             DateTime dateTime = DateTime.Now.Date;

@@ -24,12 +24,6 @@ namespace RimworldTogether.GameServer.Network
             server.Start();
             isServerOpen = true;
 
-            if (usingNewNetworking)
-            {
-                MainNetworkingUnit.server = new();
-                MainNetworkingUnit.server.Listen(localAddress.ToString(), port + 1);
-            }
-
             Threader.GenerateServerThread(Threader.ServerMode.Heartbeat, Program.serverCancelationToken);
             Threader.GenerateServerThread(Threader.ServerMode.Sites, Program.serverCancelationToken);
 

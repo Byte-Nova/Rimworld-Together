@@ -22,11 +22,6 @@ namespace RimworldTogether.GameClient.Misc
 
         public static void SaveLoginDetails(string username, string password)
         {
-            if (Network.Network.usingNewNetworking)
-            {
-                MainNetworkingUnit.client.playerName = username;//Todo: maybe some other better place for this?
-            }
-
             LoginDataFile newLoginData;
             if (File.Exists(Main.loginDataPath)) newLoginData = Serializer.SerializeFromFile<LoginDataFile>(Main.loginDataPath);
             else newLoginData = new LoginDataFile();

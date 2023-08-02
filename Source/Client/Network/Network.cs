@@ -63,8 +63,6 @@ namespace RimworldTogether.GameClient.Network
                 {
                     isTryingToConnect = true;
 
-                    if (usingNewNetworking) MainNetworkingUnit.client.Connect(ip, int.Parse(port) + 1);
-
                     connection = new(ip, int.Parse(port));
                     ns = connection.GetStream();
                     sw = new StreamWriter(ns);

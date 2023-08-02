@@ -19,10 +19,6 @@ namespace RimworldTogether.GameClient.Patches
 
         public static void ManageDevOptions()
         {
-            if (CommandLineParamsManager.forceDevMode && ServerValues.isAdmin)
-            {
-                Prefs.DevMode = true;
-            }
             if (ServerValues.isAdmin) return;
             else Prefs.DevMode = false;
         }

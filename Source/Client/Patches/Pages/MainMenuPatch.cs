@@ -22,8 +22,6 @@ namespace RimworldTogether.GameClient.Patches.Pages
         {
             private static void DefaultServer(string name, string password)
             {
-                MainNetworkingUnit.client = new();
-                MainNetworkingUnit.client.playerName = name;
                 var loginDetails = new LoginDetailsJSON();
                 loginDetails.username = name;
                 loginDetails.password = Hasher.GetHash(password);
@@ -50,15 +48,6 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     Vector2 buttonSize = new Vector2(170f, 45f);
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "")) DialogShortcuts.ShowConnectDialogs();
-                    if (CommandLineParamsManager.instantConnect)
-                    {
-                        DefaultServer(CommandLineParamsManager.name, CommandLineParamsManager.name);
-                        return true;
-                    }
-
-                    if (CommandLineParamsManager.fastConnect)
-                        if (Widgets.ButtonText(new Rect(buttonLocation.x - 200, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
-                            DefaultServer(CommandLineParamsManager.name, CommandLineParamsManager.name);
                 }
 
                 return true;
@@ -73,10 +62,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Play Together"))
                     {
-                    }
 
-                    if (CommandLineParamsManager.fastConnect)
-                        Widgets.ButtonText(new Rect(buttonLocation.x - 200, buttonLocation.y, buttonSize.x, buttonSize.y), "FastConnect");
+                    }
                 }
             }
         }

@@ -180,8 +180,10 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void DeletePlayerDetails(string username)
         {
-            string[] saves = Directory.GetFiles(Program.savesPath);
+            Client connectedUser = UserManager.GetConnectedClientFromUsername(username);
+            if (connectedUser != null) connectedUser.disconnectFlag = true;
 
+            string[] saves = Directory.GetFiles(Program.savesPath);
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);
             if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
