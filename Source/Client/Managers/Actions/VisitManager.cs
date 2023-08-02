@@ -193,11 +193,15 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void OnVisitStop()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Visiting event ended"));
+            if (!ClientValues.isInVisit) return;
+            else
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_OK("Visiting event ended"));
 
-            foreach (Pawn pawn in otherPlayerPawns.ToArray()) pawn.Destroy();
+                foreach (Pawn pawn in otherPlayerPawns.ToArray()) pawn.Destroy();
 
-            ClientValues.ToggleVisit(false);
+                ClientValues.ToggleVisit(false);
+            }
         }
     }
 

@@ -41,11 +41,13 @@ namespace RimworldTogether.GameClient.Values
         public static int autosaveDays = 1;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = 1 * 60000f;
-        public static string versionCode = "1.0.4";
+        public static string versionCode = "1.0.5 Pre";
 
         public static string[] serverBrowserContainer = new string[]
         {
-            "127.0.0.1|25555"
+            "127.0.0.1|25555",
+            "173.212.193.68|25555",
+            "173.212.193.68|25556"
         };
 
         public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }

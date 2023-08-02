@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -22,7 +22,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AsyncIO" Version="0.1.69" />
     <PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
     <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3704" />
     <PackageReference Include="Lib.Harmony" Version="2.2.2" />
