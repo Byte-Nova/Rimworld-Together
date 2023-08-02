@@ -1,10 +1,10 @@
-﻿namespace RimworldTogether.GameServer.Files
+using System;
+
+namespace RimworldTogether.Shared.JSON
 {
     [Serializable]
-    public class DifficultyValuesFile
+    public class DifficultyValuesJSON
     {
-        public bool UseCustomDifficulty;
-
         public float ThreatScale;
 
         public bool AllowBigThreats;

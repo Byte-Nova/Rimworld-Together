@@ -107,7 +107,7 @@ namespace RimworldTogether.GameClient.Network
                     EventManager.SetEventPrices(serverOverallJSON);
                     SiteManager.SetSiteDetails(serverOverallJSON);
                     SpyManager.SetSpyCost(serverOverallJSON);
-                    DifficultyValues.SetDifficultyValues(serverOverallJSON);
+                    CustomDifficultyManager.SetCustomDifficulty(serverOverallJSON);
                     break;
             }
         }

@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\VisitDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\ChatMessagesJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\CommandDetailsJSON.cs" />
+    <Compile Include="..\Shared\json\CustomDifficultyValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\FactionManifestJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\LoginDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\MapDetailsJSON.cs" />

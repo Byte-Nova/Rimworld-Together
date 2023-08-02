@@ -174,6 +174,14 @@ namespace RimworldTogether.GameServer.Managers
             "Deletes all data of a player",
             DeletePlayerCommandAction);
 
+        private static ServerCommand enableDifficultyCommand = new ServerCommand("enabledifficulty", 0,
+            "Locks an editable save for use [WIP]",
+            EnableDifficultyCommandAction);
+
+        private static ServerCommand disableDifficultyCommand = new ServerCommand("disabledifficulty", 0,
+            "Locks an editable save for use [WIP]",
+            DisableDifficultyCommandAction);
+
         private static ServerCommand lockSaveCommand = new ServerCommand("locksave", 1,
             "Locks an editable save for use [WIP]",
             LockSaveCommandAction);
@@ -214,6 +222,8 @@ namespace RimworldTogether.GameServer.Managers
             clearCommand,
             forceSaveCommand,
             deletePlayerCommand,
+            enableDifficultyCommand,
+            disableDifficultyCommand,
             lockSaveCommand,
             unlockSaveCommand,
             quitCommand,
@@ -634,6 +644,38 @@ namespace RimworldTogether.GameServer.Managers
                 Logger.LogMode.Warning);
 
             else SaveManager.DeletePlayerDetails(userFile.username);
+        }
+
+        private static void EnableDifficultyCommandAction()
+        {
+            if (Program.difficultyValues.UseCustomDifficulty == true)
+            {
+                Logger.WriteToConsole($"[ERROR] > Custom difficulty was already enabled", Logger.LogMode.Warning);
+            }
+
+            else
+            {
+                Program.difficultyValues.UseCustomDifficulty = true;
+                CustomDifficultyManager.SaveCustomDifficulty(Program.difficultyValues);
+
+                Logger.WriteToConsole($"Custom difficulty is now enabled", Logger.LogMode.Warning);
+            }
+        }
+
+        private static void DisableDifficultyCommandAction()
+        {
+            if (Program.difficultyValues.UseCustomDifficulty == false)
+            {
+                Logger.WriteToConsole($"[ERROR] > Custom difficulty was already disabled", Logger.LogMode.Warning);
+            }
+
+            else
+            {
+                Program.difficultyValues.UseCustomDifficulty = false;
+                CustomDifficultyManager.SaveCustomDifficulty(Program.difficultyValues);
+
+                Logger.WriteToConsole($"Custom difficulty is now disabled", Logger.LogMode.Warning);
+            }
         }
 
         private static void LockSaveCommandAction()

@@ -148,7 +148,7 @@ namespace RimworldTogether.GameServer.Managers
             so.FixedWealthMode = dv.FixedWealthMode;
             so.LowPopConversionBoost = dv.LowPopConversionBoost;
             so.NoBabiesOrChildren = dv.NoBabiesOrChildren;
-            so.babiesAreHealthy = dv.babiesAreHealthy;
+            so.BabiesAreHealthy = dv.BabiesAreHealthy;
             so.ChildRaidersAllowed = dv.ChildRaidersAllowed;
             so.ChildAgingRate = dv.ChildAgingRate;
             so.AdultAgingRate = dv.AdultAgingRate;

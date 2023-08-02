@@ -80,6 +80,10 @@ namespace RimworldTogether.GameServer.Network
                     WorldManager.ParseWorldPacket(client, packet);
                     break;
 
+                case "CustomDifficultyPacket":
+                    CustomDifficultyManager.ParseDifficultyPacket(client, packet);
+                    break;
+
                 case "ResetSavePacket":
                     SaveManager.ResetClientSave(client);
                     break;

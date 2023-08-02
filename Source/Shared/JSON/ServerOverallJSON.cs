@@ -55,7 +55,7 @@ namespace RimworldTogether.Shared.JSON
         public bool FixedWealthMode;
         public float LowPopConversionBoost;
         public bool NoBabiesOrChildren;
-        public bool babiesAreHealthy;
+        public bool BabiesAreHealthy;
         public bool ChildRaidersAllowed;
         public float ChildAgingRate;
         public float AdultAgingRate;

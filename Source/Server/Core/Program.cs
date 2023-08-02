@@ -67,7 +67,7 @@ namespace RimworldTogether.GameServer.Core
             Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
 
             SetCulture();
-            LoadCustomDifficulty();
+            CustomDifficultyManager.LoadCustomDifficulty();
             LoadServerConfig();
             LoadServerValues();
             LoadEventValues();
@@ -192,20 +192,6 @@ namespace RimworldTogether.GameServer.Core
             }
 
             Logger.WriteToConsole("Loaded action values");
-        }
-
-        private static void LoadCustomDifficulty()
-        {
-            string path = Path.Combine(corePath, "DifficultyValues.json");
-
-            if (File.Exists(path)) difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
-            else
-            {
-                difficultyValues = new DifficultyValuesFile();
-                Serializer.SerializeToFile(path, difficultyValues);
-            }
-
-            Logger.WriteToConsole("Loaded difficulty values");
         }
     }
 }

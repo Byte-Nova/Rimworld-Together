@@ -2,6 +2,7 @@
 using HarmonyLib;
 using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
@@ -15,7 +16,7 @@ namespace RimworldTogether.GameClient.Patches
     {
         public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }
 
-        public static void ManageGameDifficulty() { DifficultyValues.ForceCustomDifficulty(); }
+        public static void ManageGameDifficulty() { CustomDifficultyManager.EnforceCustomDifficulty(); }
 
         public static void ManageDevOptions()
         {
