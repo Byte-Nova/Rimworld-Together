@@ -10,6 +10,24 @@ using Verse;
 
 namespace RimworldTogether.GameClient.Patches.Pages
 {
+    [HarmonyPatch(typeof(Page_SelectStoryteller), "PreOpen")]
+    public static class PatchDifficultyOverrrive
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
+        {
+            if (ClientValues.isLoadingPrefabWorld && DifficultyValues.UseCustomDifficulty)
+            {
+                ___difficulty = DifficultyDefOf.Rough;
+                ___difficultyValues = new Difficulty(___difficulty);
+
+                Find.GameInitData.permadeathChosen = true;
+            }
+
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(Page_SelectStoryteller), "DoWindowContents")]
     public static class PatchSelectStorytellerPage
     {
@@ -26,21 +44,37 @@ namespace RimworldTogether.GameClient.Patches.Pages
         }
     }
 
-    [HarmonyPatch(typeof(Page_SelectStoryteller), "PreOpen")]
-    public static class PatchDifficultyOverdrive
+    [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "DoWindowContents")]
+    public static class PatchSelectStorytellerInGamePage
     {
         [HarmonyPrefix]
-        public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
+        public static bool DoPre(Rect rect)
         {
-            if (ClientValues.isLoadingPrefabWorld && DifficultyValues.UseCustomDifficulty)
+            if (ServerValues.isAdmin && !DifficultyValues.UseCustomDifficulty)
             {
-                ___difficulty = DifficultyDefOf.Rough;
-                ___difficultyValues = new Difficulty(___difficulty);
-
-                Find.GameInitData.permadeathChosen = true;
+                Text.Font = GameFont.Small;
+                Vector2 buttonSize = new Vector2(150f, 38f);
+                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
+                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty"))
+                {
+                    CustomDifficultyManager.SendCustomDifficulty();
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("Custom difficulty has been sent!"));
+                }
             }
 
             return true;
+        }
+
+        [HarmonyPostfix]
+        public static void DoPost(Rect rect)
+        {
+            if (ServerValues.isAdmin && !DifficultyValues.UseCustomDifficulty)
+            {
+                Text.Font = GameFont.Small;
+                Vector2 buttonSize = new Vector2(150f, 38f);
+                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
+                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty")) { }
+            }
         }
     }
 
@@ -121,34 +155,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
 
                     return false;
                 }
-
-                else
-                {
-                    if (ServerValues.isAdmin)
-                    {
-                        Text.Font = GameFont.Small;
-                        Vector2 buttonSize = new Vector2(130f, 38f);
-                        Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
-                        if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty"))
-                        {
-                            CustomDifficultyManager.SendCustomDifficulty();
-                            DialogManager.PushNewDialog(new RT_Dialog_OK("Custom difficulty has been sent!"));
-                        }
-                    }
-
-                    return true;
-                }
-            }
-        }
-
-        public static void DoPost(Rect rect)
-        {
-            if (ServerValues.isAdmin)
-            {
-                Text.Font = GameFont.Small;
-                Vector2 buttonSize = new Vector2(130f, 38f);
-                Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
-                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty")) { }
+                else return true;
             }
         }
     }
