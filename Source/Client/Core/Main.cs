@@ -72,7 +72,7 @@ namespace RimworldTogether.GameClient.Core
                 else
                 {
                     ClientValues.autosaveDays = 3;
-                    ClientValues.autosaveInternalTicks = 60000f;
+                    ClientValues.autosaveInternalTicks = Mathf.RoundToInt(ClientValues.autosaveDays * 60000f);
 
                     Saver.SaveClientPreferences(ClientValues.autosaveDays.ToString());
                 }
