@@ -27,11 +27,15 @@ This is a really straight forward topic, really. The server will generate all th
 
 Please check every one of the files that has been generated as all of them have important parameters for server functionality.
 
+For a quick and easy way to setup custom difficulty, please follow this guide: https://rimworld-together.fandom.com/wiki/Custom_difficulty
+
 ## Mod Management
 On first launch, the server will also generate the "MODS" folder, inside of it will be another 3 folders, where different mods will go depending on how you want to enforce them. 
 - Forbidden mods will kick the connecting player if its running them.
 - Optional mods will allow a player to join even if it has them running or not.
 - Required mods will kick the connecting player if its missing them.
+
+To install mods, directly dump the mod folder (The one with the numbers in the title if grabing from Steam) inside whichever folder you choose.
   
 If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Nova-Atomic/Library
 
@@ -40,8 +44,8 @@ To enable the use of Core and DLCs in the server, fetch the zip file called "Ext
 
 ## Port Forwarding & VPNs
 The server, by default, uses the 25555 port through TCP protocol, you can change the port as you wish but remember that other than TCP it won't work. You can use VPN programs to go around the issue of port forwarding the same way you would do it with any other game.
-  
-To install mods, directly dump the mod folder (The one with the numbers in the title if grabing from Steam) inside whichever folder you choose.
+
+For a quick and easy guide to port forwarding and VPNs, please follow this guide: https://rimworld-together.fandom.com/wiki/Going_public
 
 ## Other Questions?
 Please don't hesitate to create and issue on Github if you have any question/issue with the server. We are here for you!
