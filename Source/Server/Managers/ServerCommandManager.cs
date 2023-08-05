@@ -224,8 +224,8 @@ namespace RimworldTogether.GameServer.Managers
             deletePlayerCommand,
             enableDifficultyCommand,
             disableDifficultyCommand,
-            lockSaveCommand,
-            unlockSaveCommand,
+            //lockSaveCommand,
+            //unlockSaveCommand,
             quitCommand,
             forceQuitCommand
         };
