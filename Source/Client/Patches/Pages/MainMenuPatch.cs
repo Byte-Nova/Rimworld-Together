@@ -20,26 +20,6 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPatch(typeof(MainMenuDrawer), "DoMainMenuControls")]
         public static class PatchButton
         {
-            private static void DefaultServer(string name, string password)
-            {
-                var loginDetails = new LoginDetailsJSON();
-                loginDetails.username = name;
-                loginDetails.password = Hasher.GetHash(password);
-                Saver.SaveLoginDetails(loginDetails.username, loginDetails.password);
-                Network.Network.ip = "127.0.0.1";
-                Network.Network.port = "25555";
-                Threader.GenerateThread(Threader.Mode.Start);
-                Thread.Sleep(500);
-                
-                loginDetails.clientVersion = ClientValues.versionCode;
-                loginDetails.runningMods = ModManager.GetRunningModList().ToList();
-                ChatManager.username = loginDetails.username;
-
-                var contents = new[] { Serializer.SerializeToString(loginDetails) };
-                var packet = new Packet("LoginClientPacket", contents);
-                Network.Network.SendData(packet);
-            }
-
             [HarmonyPrefix]
             public static bool DoPre(Rect rect)
             {

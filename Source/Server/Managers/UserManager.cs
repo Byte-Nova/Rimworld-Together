@@ -176,6 +176,7 @@ namespace RimworldTogether.GameServer.Managers
         {
             bool isInvalid = false;
             if (string.IsNullOrWhiteSpace(client.username)) isInvalid = true;
+            if (client.username.Any(Char.IsWhiteSpace)) isInvalid = true;
             if (string.IsNullOrWhiteSpace(client.password)) isInvalid = true;
             if (client.username.Length > 32) isInvalid = true;
 

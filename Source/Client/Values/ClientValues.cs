@@ -33,7 +33,8 @@ namespace RimworldTogether.GameClient.Values
         public static Settlement chosenSettlement;
         public static Caravan chosenCaravan;
         public static Site chosenSite;
-        
+        public static CompLaunchable chosendPods;
+
         public static TransferManifestJSON outgoingManifest = new TransferManifestJSON();
         public static TransferManifestJSON incomingManifest = new TransferManifestJSON();
         public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();

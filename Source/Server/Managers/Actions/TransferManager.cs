@@ -4,14 +4,15 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using System.Diagnostics;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class TransferManager
     {
-        public enum TransferMode { Gift, Trade }
+        public enum TransferMode { Gift, Trade, Rebound, Pod }
 
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover }
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
 
         public static void ParseTransferPacket(Client client, Packet packet)
         {
@@ -51,17 +52,30 @@ namespace RimworldTogether.GameServer.Managers.Actions
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.toTile);
+
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
-                    transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
-                    string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                    Packet rPacket = new Packet("TransferPacket", contents);
-                    Network.Network.SendData(client, rPacket);
+                    if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) ResponseShortcutManager.SendUnavailablePacket(client);
+                    else
+                    {
+                        transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
+                        string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
+                        Packet rPacket = new Packet("TransferPacket", contents);
+                        Network.Network.SendData(client, rPacket);
+                    }
                 }
 
                 else
                 {
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Gift)
+                    {
+                        transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeAccept).ToString();
+                        string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
+                        Packet rPacket = new Packet("TransferPacket", contents);
+                        Network.Network.SendData(client, rPacket);
+                    }
+
+                    else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
                     {
                         transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeAccept).ToString();
                         string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };

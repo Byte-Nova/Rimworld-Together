@@ -18,11 +18,11 @@ namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class TransferManager
     {
-        public enum TransferMode { Gift, Trade, Rebound }
+        public enum TransferMode { Gift, Trade, Rebound, Pod }
 
-        public enum TransferLocation { Caravan, Settlement }
+        public enum TransferLocation { Caravan, Settlement, Pod }
 
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover }
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
 
         public static void ParseTransferPacket(Packet packet)
         {
@@ -37,6 +37,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 case (int)TransferStepMode.TradeAccept:
                     DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
+                    if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
@@ -53,7 +54,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
                 case (int)TransferStepMode.TradeReAccept:
                     DialogManager.PopWaitDialog();
-                    SendTransferToSettlement(DeepScribeManager.GetAllTransferedItems(ClientValues.incomingManifest));
+                    GetTransferedItemsToSettlement(DeepScribeManager.GetAllTransferedItems(ClientValues.incomingManifest));
                     break;
 
                 case (int)TransferStepMode.TradeReReject:
@@ -91,7 +92,24 @@ namespace RimworldTogether.GameClient.Managers.Actions
             toDo.Invoke();
         }
 
-        public static void SendTransferToServer(TransferLocation transferLocation)
+        public static void TakeTransferItemsFromPods(CompLaunchable representative)
+        {
+            ClientValues.outgoingManifest.transferMode = ((int)TransferMode.Pod).ToString();
+            ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
+            ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
+
+            foreach (CompTransporter pod in representative.TransportersInGroup)
+            {
+                ThingOwner directlyHeldThings = pod.GetDirectlyHeldThings();
+
+                for(int i = 0; i < directlyHeldThings.Count(); i++)
+                {
+                    TransferManagerHelper.AddThingToTransferManifest(directlyHeldThings[i], directlyHeldThings[i].stackCount);
+                }
+            }
+        }
+
+        public static void SendTransferRequestToServer(TransferLocation transferLocation)
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for transfer response"));
 
@@ -112,6 +130,15 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 Packet packet = new Packet("TransferPacket", contents);
                 Network.Network.SendData(packet);
             }
+
+            else if (transferLocation == TransferLocation.Pod)
+            {
+                ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
+
+                string[] contents = new string[] { Serializer.SerializeToString(ClientValues.outgoingManifest) };
+                Packet packet = new Packet("TransferPacket", contents);
+                Network.Network.SendData(packet);
+            }
         }
 
         public static void RecoverTradeItems(TransferLocation transferLocation)
@@ -124,12 +151,17 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
                     if (transferLocation == TransferLocation.Caravan)
                     {
-                        SendTransferToCaravan(toRecover, false);
+                        GetTransferedItemsToCaravan(toRecover, false);
                     }
 
                     else if (transferLocation == TransferLocation.Settlement)
                     {
-                        SendTransferToSettlement(toRecover, false);
+                        GetTransferedItemsToSettlement(toRecover, false);
+                    }
+
+                    else if (transferLocation == TransferLocation.Pod)
+                    {
+                        //Do nothing
                     }
                 };
                 r1.Invoke();
@@ -145,7 +177,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             }
         }
 
-        public static void SendTransferToSettlement(Thing[] things, bool success = true, bool customMap = true, bool invokeMessage = true)
+        public static void GetTransferedItemsToSettlement(Thing[] things, bool success = true, bool customMap = true, bool invokeMessage = true)
         {
             Action r1 = delegate
             {
@@ -172,7 +204,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             else r1.Invoke();
         }
 
-        public static void SendTransferToCaravan(Thing[] things, bool success = true, bool invokeMessage = true)
+        public static void GetTransferedItemsToCaravan(Thing[] things, bool success = true, bool invokeMessage = true)
         {
             Action r1 = delegate
             {
@@ -234,6 +266,12 @@ namespace RimworldTogether.GameClient.Managers.Actions
                             RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(DeepScribeManager.GetAllTransferedItems(transferManifestJSON), TransferMode.Trade);
                             DialogManager.PushNewDialog(d1);
                         }
+
+                        else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
+                        {
+                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(DeepScribeManager.GetAllTransferedItems(transferManifestJSON), TransferMode.Pod);
+                            DialogManager.PushNewDialog(d1);
+                        }
                     };
 
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Gift)
@@ -244,6 +282,11 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Trade)
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a trade request", r1));
+                    }
+
+                    else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
+                    {
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
                     }
                 }
             }
@@ -294,6 +337,11 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 Network.Network.SendData(packet);
             }
 
+            else if (transferMode == TransferMode.Pod)
+            {
+                //Nothing should happen here
+            }
+
             else if (transferMode == TransferMode.Rebound)
             {
                 ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReReject).ToString();
@@ -337,6 +385,12 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Thing silverToRecover = DeepScribeManager.GetItemSimple(itemDetailsJSON);
             ClientValues.chosenCaravan.AddPawnOrItem(silverToRecover, false);
         }
+
+        public static void LaunchDropPods()
+        {
+            ClientValues.chosendPods.TryLaunch(
+                ClientValues.chosenSettlement.Tile, new TransportPodsArrivalAction_GiveGift(ClientValues.chosenSettlement));
+        }
     }
 
     public static class TransferManagerHelper
@@ -372,6 +426,31 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             if (thing.def == ThingDefOf.MinifiedThing || thing.def == ThingDefOf.MinifiedTree) return true;
             else return false;
+        }
+
+        public static void AddThingToTransferManifest(Thing thing, int thingCount)
+        {
+            if (CheckIfThingIsHuman(thing))
+            {
+                Pawn pawn = thing as Pawn;
+
+                ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.SerializeToString
+                    (DeepScribeManager.TransformHumanToString(pawn, false)));
+            }
+
+            else if (CheckIfThingIsAnimal(thing))
+            {
+                Pawn pawn = thing as Pawn;
+
+                ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.SerializeToString
+                    (DeepScribeManager.TransformAnimalToString(pawn)));
+            }
+
+            else
+            {
+                ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.SerializeToString
+                    (DeepScribeManager.TransformItemToString(thing, thingCount)));
+            }
         }
     }
 }

@@ -200,7 +200,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Action r1 = delegate
             {
                 Pawn pawnToRetrieve = DeepScribeManager.GetHumanSimple(Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
-                TransferManager.SendTransferToCaravan(new Thing[] { pawnToRetrieve }, true, false);
+                TransferManager.GetTransferedItemsToCaravan(new Thing[] { pawnToRetrieve }, true, false);
 
                 //DEBUG
                 SavePatch.ForceSave();
@@ -284,7 +284,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
                 if (rewards.Count() > 0)
                 {
-                    TransferManager.SendTransferToSettlement(rewards, true, false, false);
+                    TransferManager.GetTransferedItemsToSettlement(rewards, true, false, false);
 
                     LetterManager.GenerateLetter("Site Rewards", "You have received site rewards!", LetterDefOf.PositiveEvent);
                 }

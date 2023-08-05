@@ -12,6 +12,7 @@ using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
+using static RimworldTogether.GameClient.Managers.Actions.TransferManager;
 using FactionManager = RimworldTogether.GameClient.Managers.Actions.FactionManager;
 
 namespace RimworldTogether.GameClient.Patches.Pages
@@ -573,6 +574,22 @@ namespace RimworldTogether.GameClient.Patches.Pages
             {
                 var floatMenuList = __result.ToList();
                 floatMenuList.Clear();
+
+                if (Network.Network.isConnectedToServer)
+                {
+                    ClientValues.chosenSettlement = settlement;
+                    ClientValues.chosendPods = representative;
+
+                    string optionLabel = $"Transfer things to {settlement.Name}";
+                    Action toDo = delegate
+                    {
+                        TransferManager.TakeTransferItemsFromPods(ClientValues.chosendPods);
+                        TransferManager.SendTransferRequestToServer(TransferManager.TransferLocation.Pod);
+                    };
+
+                    FloatMenuOption floatMenuOption = new FloatMenuOption(optionLabel, toDo);
+                    floatMenuList.Add(floatMenuOption);
+                }
 
                 __result = floatMenuList;
             }

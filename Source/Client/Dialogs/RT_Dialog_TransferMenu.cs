@@ -180,7 +180,7 @@ namespace RimworldTogether.GameClient.Dialogs
             void postChoosing()
             {
                 TransferManager.TakeTransferItems(transferLocation);
-                TransferManager.SendTransferToServer(transferLocation);
+                TransferManager.SendTransferRequestToServer(transferLocation);
                 Close();
             }
         }

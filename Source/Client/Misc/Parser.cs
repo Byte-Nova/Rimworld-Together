@@ -68,6 +68,7 @@ namespace RimworldTogether.GameClient.Misc
         {
             bool isInvalid = false;
             if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultOne)) isInvalid = true;
+            if (DialogManager.dialog2ResultOne.Any(Char.IsWhiteSpace)) isInvalid = true;
             if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultTwo)) isInvalid = true;
 
             if (!isInvalid)
@@ -101,6 +102,7 @@ namespace RimworldTogether.GameClient.Misc
         {
             bool isInvalid = false;
             if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultOne)) isInvalid = true;
+            if (DialogManager.dialog3ResultOne.Any(Char.IsWhiteSpace)) isInvalid = true;
             if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultTwo)) isInvalid = true;
             if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultThree)) isInvalid = true;
             if (DialogManager.dialog3ResultTwo != DialogManager.dialog3ResultThree) isInvalid = true;

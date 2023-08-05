@@ -128,7 +128,7 @@ namespace RimworldTogether.GameClient.Dialogs
             {
                 if (transferMode == TransferManager.TransferMode.Gift)
                 {
-                    TransferManager.SendTransferToSettlement(listedThings);
+                    TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
                 else if (transferMode == TransferManager.TransferMode.Trade)
@@ -145,6 +145,11 @@ namespace RimworldTogether.GameClient.Dialogs
                     }
                 }
 
+                else if (transferMode == TransferManager.TransferMode.Pod)
+                {
+                    TransferManager.GetTransferedItemsToSettlement(listedThings);
+                }
+
                 else if (transferMode == TransferManager.TransferMode.Rebound)
                 {
                     ClientValues.incomingManifest.transferStepMode = ((int)TransferManager.TransferStepMode.TradeReAccept).ToString();
@@ -153,7 +158,7 @@ namespace RimworldTogether.GameClient.Dialogs
                     Packet packet = new Packet("TransferPacket", contents);
                     Network.Network.SendData(packet);
 
-                    TransferManager.SendTransferToCaravan(listedThings);
+                    TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }
 
                 Close();

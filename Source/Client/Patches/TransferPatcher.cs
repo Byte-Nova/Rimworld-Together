@@ -38,27 +38,7 @@ namespace RimworldTogether.GameClient.Patches
             {
                 if (PlanetFactions.playerFactions.Contains(TradeSession.trader.Faction))
                 {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(___thingsColony[0]))
-                    {
-                        Pawn pawn = ___thingsColony[0] as Pawn;
-
-                        ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.SerializeToString
-                            (DeepScribeManager.TransformHumanToString(pawn, false)));
-                    }
-
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(___thingsColony[0]))
-                    {
-                        Pawn pawn = ___thingsColony[0] as Pawn;
-
-                        ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.SerializeToString
-                            (DeepScribeManager.TransformAnimalToString(pawn)));
-                    }
-
-                    else
-                    {
-                        ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.SerializeToString
-                            (DeepScribeManager.TransformItemToString(___thingsColony[0], ___countToTransfer)));
-                    }
+                    TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], ___countToTransfer);
                 }
             }
 
