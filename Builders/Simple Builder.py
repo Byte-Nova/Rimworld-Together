@@ -35,12 +35,12 @@ except Exception as e:
 modSteamId = "3005289691"  # Replace with your actual Steam ID
 
 # Mod Resources
-source_dir = "ModData"
-destination_dir = f"Build/{modSteamId}"
+source_dir = "../ModData"
+destination_dir = f"../Build/{modSteamId}"
 
 # Mod C# and DLLs
-source_solution = "Source/Client/GameClient.csproj"
-dll_output_dir = "Source/Client/bin/Debug/net472/"
+source_solution = "../Source/Client/GameClient.csproj"
+dll_output_dir = "../Source/Client/bin/Debug/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
 dll_names = ["GameClient.dll", "Newtonsoft.Json.dll", "JsonDiffPatchDotNet.dll"]
 
@@ -48,14 +48,6 @@ dll_names = ["GameClient.dll", "Newtonsoft.Json.dll", "JsonDiffPatchDotNet.dll"]
 rimworld_dir_file = "rimworld_dir.txt"
 rimworld_dir = ""
 
-# RimWorld Execution Details
-userA = "name=A"  # name and password are the same
-userB = "name=B"
-fastConnect = "fastConnect=true"  # shows button
-instantConnect = "instantConnect=true"  # auto connects, ignores the above button
-forceDevMode = "forceDevMode=true"  # shows dev mode button
-instantVisit = "instantVisit=true"  # auto visits
-silentVisit = "silentVisit=true"  # useful when autovisiting to not show the visit screen and bypass confirmations
 # Debug Flags
 printCompileLog = True
 

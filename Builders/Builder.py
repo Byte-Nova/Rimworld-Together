@@ -35,12 +35,12 @@ except Exception as e:
 modSteamId = "3005289691"  # Replace with your actual Steam ID
 
 # Mod Resources
-source_dir = "ModData"
-destination_dir = f"Build/{modSteamId}"
+source_dir = "../ModData"
+destination_dir = f"../Build/{modSteamId}"
 
 # Mod C# and DLLs
-source_solution = "Source/Client/GameClient.csproj"
-dll_output_dir = "Source/Client/bin/Debug/net472/"
+source_solution = "../Source/Client/GameClient.csproj"
+dll_output_dir = "../Source/Client/bin/Debug/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
 dll_names = ["GameClient.dll", "Newtonsoft.Json.dll", "JsonDiffPatchDotNet.dll"]
 
