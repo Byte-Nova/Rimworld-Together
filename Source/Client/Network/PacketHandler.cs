@@ -16,7 +16,7 @@ namespace RimworldTogether.GameClient.Network
     {
         public static void HandlePacket(Packet packet)
         {
-            Log.Message($"Packet > {packet.header}");
+            Log.Message($"[Rimworld Together] Packet > {packet.header}");
 
             switch (packet.header)
             {

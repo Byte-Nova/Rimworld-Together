@@ -86,7 +86,7 @@ namespace RimworldTogether.GameClient.Core
                     threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
                     Object.Instantiate(go);
 
-                    Log.Message("Created Rimworld Together Dispatcher");
+                    Log.Message($"[Rimworld Together] > Created dispatcher for version {ClientValues.versionCode}");
                 }
             }
         }

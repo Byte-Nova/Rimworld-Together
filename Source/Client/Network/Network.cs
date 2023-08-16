@@ -74,7 +74,8 @@ namespace RimworldTogether.GameClient.Network
 
                 catch (Exception e)
                 {
-                    Log.Error($"Network exception > {e}");
+                    Log.Warning($"[Rimworld Together] > {e}");
+
                     return false;
                 }
             }
@@ -100,7 +101,8 @@ namespace RimworldTogether.GameClient.Network
 
                 catch(Exception e)
                 {
-                    Log.Warning($"Network exception > {e}");
+                    Log.Warning($"[Rimworld Together] > {e}");
+
                     DisconnectFromServer();
                 }
             }
