@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Values;
