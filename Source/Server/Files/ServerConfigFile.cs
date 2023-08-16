@@ -3,7 +3,7 @@
     [Serializable]
     public class ServerConfigFile
     {
-        public string IP = "127.0.0.1";
+        public string IP = "0.0.0.0";
 
         public string Port = "25555";
 
