@@ -14,7 +14,7 @@ namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_ItemListing : Window
     {
-        public override Vector2 InitialSize => new Vector2(300f, 512f);
+        public override Vector2 InitialSize => new Vector2(350f, 512f);
 
         public string title = "Item Listing";
 
@@ -102,7 +102,7 @@ namespace RimworldTogether.GameClient.Dialogs
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            string itemName = thing.LabelNoCount;
+            string itemName = thing.LabelShort;
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
