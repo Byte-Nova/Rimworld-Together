@@ -74,7 +74,7 @@ namespace RimworldTogether.GameClient.Network
 
                 catch (Exception e)
                 {
-                    Log.Warning($"[Rimworld Together] > {e}");
+                    Log.Warning($"[Rimworld Together] (DEBUG) > {e}");
 
                     return false;
                 }
