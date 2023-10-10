@@ -127,7 +127,7 @@ namespace RimworldTogether.GameClient.Network
                         DisconnectFromServer();
                     }
                 }
-                catch { }
+                catch { DisconnectFromServer(); }
             }
         }
 
