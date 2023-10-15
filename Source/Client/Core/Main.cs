@@ -49,12 +49,12 @@ namespace RimworldTogether.GameClient.Core
 
             public static void PreparePaths()
             {
-                mainPath = Application.persistentDataPath;
+                mainPath = GenFilePaths.SaveDataFolderPath;
                 modPath = Path.Combine(mainPath, "Rimworld Together");
                 connectionDataPath = Path.Combine(modPath, "ConnectionData.json");
                 loginDataPath = Path.Combine(modPath, "LoginData.json");
                 clientPreferencesPath = Path.Combine(modPath, "Preferences.json");
-                savesPath = Path.Combine(mainPath, "Saves");
+                savesPath = GenFilePaths.SavedGamesFolderPath;
 
                 if (!Directory.Exists(modPath)) Directory.CreateDirectory(modPath);
             }
