@@ -41,7 +41,7 @@ namespace RimworldTogether.GameClient.Core
 
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open"))
             {
-                try { System.Diagnostics.Process.Start(GenFilePaths.SaveDataFolderPath); } catch { }
+                try { System.Diagnostics.Process.Start(Main.mainPath); } catch { }
             }
 
             listingStandard.GapLine();
@@ -79,8 +79,8 @@ namespace RimworldTogether.GameClient.Core
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
 
-                    Packet packet = Packet.CreatePacketFromJSON("ResetSavePacket");
-                    Network.Network.serverListener.SendData(packet);
+                    Packet packet = new Packet("ResetSavePacket");
+                    Network.Network.SendData(packet);
                 };
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);
