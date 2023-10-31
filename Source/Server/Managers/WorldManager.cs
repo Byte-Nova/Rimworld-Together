@@ -5,6 +5,7 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -16,9 +17,9 @@ namespace RimworldTogether.GameServer.Managers
 
         private static string worldFilePath = Path.Combine(Program.corePath, worldFileName);
 
-        public static void ParseWorldPacket(Client client, Packet packet)
+        public static void ParseWorldPacket(ServerClient client, Packet packet)
         {
-            WorldDetailsJSON worldDetailsJSON = Serializer.SerializeFromString<WorldDetailsJSON>(packet.contents[0]);
+            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(worldDetailsJSON.worldStepMode))
             {
@@ -38,7 +39,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public static bool CheckIfWorldExists() { return File.Exists(worldFilePath); }
 
-        public static void SaveWorldPrefab(Client client, WorldDetailsJSON worldDetailsJSON)
+        public static void SaveWorldPrefab(ServerClient client, WorldDetailsJSON worldDetailsJSON)
         {
             WorldValuesFile worldValues = new WorldValuesFile();
             worldValues.SeedString = worldDetailsJSON.SeedString;
@@ -55,22 +56,20 @@ namespace RimworldTogether.GameServer.Managers
             Program.worldValues = worldValues;
 
             worldDetailsJSON.worldStepMode = ((int)WorldStepMode.Saved).ToString();
-            string[] contents = new string[] { Serializer.SerializeToString(worldDetailsJSON) };
-            Packet packet = new Packet("WorldPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+            client.clientListener.SendData(packet);
         }
 
-        public static void RequireWorldFile(Client client)
+        public static void RequireWorldFile(ServerClient client)
         {
             WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
             worldDetailsJSON.worldStepMode = ((int)WorldStepMode.Required).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(worldDetailsJSON) };
-            Packet packet = new Packet("WorldPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+            client.clientListener.SendData(packet);
         }
 
-        public static void SendWorldFile(Client client)
+        public static void SendWorldFile(ServerClient client)
         {
             WorldValuesFile worldValues = Program.worldValues;
 
@@ -84,9 +83,8 @@ namespace RimworldTogether.GameServer.Managers
             worldDetailsJSON.Pollution = worldValues.Pollution;
             worldDetailsJSON.Factions = worldValues.Factions;
 
-            string[] contents = new string[] { Serializer.SerializeToString(worldDetailsJSON) };
-            Packet packet = new Packet("WorldPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+            client.clientListener.SendData(packet);
         }
 
         public static void LoadWorldFile()

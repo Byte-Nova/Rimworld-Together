@@ -7,6 +7,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 
 namespace RimworldTogether.GameClient.Misc
@@ -82,9 +83,8 @@ namespace RimworldTogether.GameClient.Misc
                 ChatManager.username = loginDetails.username;
                 Saver.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
-                string[] contents = new string[] { Serializer.SerializeToString(loginDetails) };
-                Packet packet = new Packet("LoginClientPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("LoginClientPacket", loginDetails);
+                Network.Network.serverListener.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
             }
@@ -115,9 +115,8 @@ namespace RimworldTogether.GameClient.Misc
                 registerDetails.clientVersion = ClientValues.versionCode;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
-                string[] contents = new string[] { Serializer.SerializeToString(registerDetails) };
-                Packet packet = new Packet("RegisterClientPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("RegisterClientPacket", registerDetails);
+                Network.Network.serverListener.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
             }

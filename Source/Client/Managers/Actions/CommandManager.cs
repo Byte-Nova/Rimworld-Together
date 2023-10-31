@@ -8,6 +8,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
 using System;
 using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameClient.Managers
 {
@@ -17,7 +18,7 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = Serializer.SerializeFromString<CommandDetailsJSON>(packet.contents[0]);
+            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(commandDetailsJSON.commandType))
             {

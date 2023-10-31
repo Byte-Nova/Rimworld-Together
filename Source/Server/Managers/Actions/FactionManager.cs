@@ -5,6 +5,7 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
@@ -27,9 +28,9 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
         public enum FactionRanks { Member, Moderator, Admin }
 
-        public static void ParseFactionPacket(Client client, Packet packet)
+        public static void ParseFactionPacket(ServerClient client, Packet packet)
         {
-            FactionManifestJSON factionManifest = Serializer.SerializeFromString<FactionManifestJSON>(packet.contents[0]);
+            FactionManifestJSON factionManifest = (FactionManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(factionManifest.manifestMode))
             {
@@ -80,7 +81,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             return factionFiles.ToArray();
         }
 
-        public static FactionFile GetFactionFromClient(Client client)
+        public static FactionFile GetFactionFromClient(ServerClient client)
         {
             string[] factions = Directory.GetFiles(Program.factionsPath);
             foreach (string faction in factions)
@@ -144,15 +145,14 @@ namespace RimworldTogether.GameServer.Managers.Actions
             return false;
         }
 
-        private static void CreateFaction(Client client, FactionManifestJSON factionManifest)
+        private static void CreateFaction(ServerClient client, FactionManifestJSON factionManifest)
         {
             if (CheckIfFactionExistsByName(factionManifest.manifestDetails))
             {
                 factionManifest.manifestMode = ((int)FactionManifestMode.NameInUse).ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(client, packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+                client.clientListener.SendData(packet);
             }
 
             else
@@ -173,15 +173,14 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 userFile.factionName = factionFile.factionName;
                 UserManager.SaveUserFile(client, userFile);
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(client, packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+                client.clientListener.SendData(packet);
 
                 Logger.WriteToConsole($"[Created faction] > {client.username} > {factionFile.factionName}", Logger.LogMode.Warning);
             }
         }
 
-        private static void DeleteFaction(Client client, FactionManifestJSON factionManifest)
+        private static void DeleteFaction(ServerClient client, FactionManifestJSON factionManifest)
         {
             if (!CheckIfFactionExistsByName(client.factionName)) return;
             else
@@ -209,16 +208,15 @@ namespace RimworldTogether.GameServer.Managers.Actions
                         }
                     }
 
-                    string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-                    Packet packet = new Packet("FactionPacket", contents);
+                    Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
                     foreach (string str in factionFile.factionMembers)
                     {
-                        Client cClient = Network.Network.connectedClients.ToList().Find(x => x.username == str);
+                        ServerClient cClient = Network.Network.connectedClients.ToList().Find(x => x.username == str);
                         if (cClient != null)
                         {
                             cClient.hasFaction = false;
                             cClient.factionName = "";
-                            Network.Network.SendData(cClient, packet);
+                            client.clientListener.SendData(packet);
 
                             LikelihoodManager.UpdateClientLikelihoods(cClient);
                         }
@@ -233,11 +231,11 @@ namespace RimworldTogether.GameServer.Managers.Actions
             }
         }
 
-        private static void AddMemberToFaction(Client client, FactionManifestJSON factionManifest)
+        private static void AddMemberToFaction(ServerClient client, FactionManifestJSON factionManifest)
         {
             FactionFile factionFile = GetFactionFromClient(client);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDetails);
-            Client toAdd = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+            ServerClient toAdd = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
             if (factionFile == null) return;
             else
@@ -259,9 +257,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
                             else
                             {
                                 factionManifest.manifestDetails = factionFile.factionName;
-                                string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-                                Packet packet = new Packet("FactionPacket", contents);
-                                Network.Network.SendData(toAdd, packet);
+                                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+                                toAdd.clientListener.SendData(packet);
                             }
                         }
                     }
@@ -269,7 +266,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             }
         }
 
-        private static void ConfirmAddMemberToFaction(Client client, FactionManifestJSON factionManifest)
+        private static void ConfirmAddMemberToFaction(ServerClient client, FactionManifestJSON factionManifest)
         {
             FactionFile factionFile = GetFactionFromFactionName(factionManifest.manifestDetails);
 
@@ -292,18 +289,18 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                     LikelihoodManager.ClearAllFactionMemberLikelihoods(factionFile);
 
-                    Client[] members = GetAllConnectedFactionMembers(factionFile);
-                    foreach (Client member in members) LikelihoodManager.UpdateClientLikelihoods(member);
+                    ServerClient[] members = GetAllConnectedFactionMembers(factionFile);
+                    foreach (ServerClient member in members) LikelihoodManager.UpdateClientLikelihoods(member);
                 }
             }
         }
 
-        private static void RemoveMemberFromFaction(Client client, FactionManifestJSON factionManifest)
+        private static void RemoveMemberFromFaction(ServerClient client, FactionManifestJSON factionManifest)
         {
             FactionFile factionFile = GetFactionFromClient(client);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDetails);
             UserFile toRemoveLocal = UserManager.GetUserFileFromName(settlementFile.owner);
-            Client toRemove = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+            ServerClient toRemove = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
             if (GetMemberRank(factionFile, client.username) == FactionRanks.Member)
             {
@@ -328,9 +325,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 if (settlementFile.owner == client.username)
                 {
                     factionManifest.manifestMode = ((int)FactionManifestMode.AdminProtection).ToString();
-                    string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-                    Packet packet = new Packet("FactionPacket", contents);
-                    Network.Network.SendData(client, packet);
+                    Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+                    client.clientListener.SendData(packet);
                 }
                 else RemoveFromFaction();
             }
@@ -345,9 +341,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
                         toRemove.hasFaction = false;
                         toRemove.factionName = "";
 
-                        string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-                        Packet packet = new Packet("FactionPacket", contents);
-                        Network.Network.SendData(toRemove, packet);
+                        Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+                        toRemove.clientListener.SendData(packet);
 
                         LikelihoodManager.UpdateClientLikelihoods(toRemove);
                     }
@@ -371,13 +366,13 @@ namespace RimworldTogether.GameServer.Managers.Actions
                         }
                     }
 
-                    Client[] members = GetAllConnectedFactionMembers(factionFile);
-                    foreach (Client member in members) LikelihoodManager.UpdateClientLikelihoods(member);
+                    ServerClient[] members = GetAllConnectedFactionMembers(factionFile);
+                    foreach (ServerClient member in members) LikelihoodManager.UpdateClientLikelihoods(member);
                 }
             }
         }
 
-        private static void PromoteMember(Client client, FactionManifestJSON factionManifest)
+        private static void PromoteMember(ServerClient client, FactionManifestJSON factionManifest)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDetails);
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
@@ -414,7 +409,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             }
         }
 
-        private static void DemoteMember(Client client, FactionManifestJSON factionManifest)
+        private static void DemoteMember(ServerClient client, FactionManifestJSON factionManifest)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDetails);
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
@@ -458,10 +453,10 @@ namespace RimworldTogether.GameServer.Managers.Actions
             return factionSites.ToArray();
         }
 
-        private static Client[] GetAllConnectedFactionMembers(FactionFile factionFile)
+        private static ServerClient[] GetAllConnectedFactionMembers(FactionFile factionFile)
         {
-            List<Client> connectedFactionMembers = new List<Client>();
-            foreach (Client client in Network.Network.connectedClients.ToArray())
+            List<ServerClient> connectedFactionMembers = new List<ServerClient>();
+            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
             {
                 if (factionFile.factionMembers.Contains(client.username))
                 {
@@ -472,7 +467,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             return connectedFactionMembers.ToArray();
         }
 
-        private static void SendFactionMemberList(Client client, FactionManifestJSON factionManifest)
+        private static void SendFactionMemberList(ServerClient client, FactionManifestJSON factionManifest)
         {
             FactionFile factionFile = GetFactionFromClient(client);
 
@@ -482,9 +477,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 factionManifest.manifestSecondaryComplexDetails.Add(((int)GetMemberRank(factionFile, str)).ToString());
             }
 
-            string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-            Packet packet = new Packet("FactionPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+            client.clientListener.SendData(packet);
         }
     }
 }

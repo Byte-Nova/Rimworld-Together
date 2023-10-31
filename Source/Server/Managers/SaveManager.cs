@@ -6,6 +6,7 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -15,7 +16,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public enum MapMode { Save, Load }
 
-        public static bool CheckIfUserHasSave(Client client)
+        public static bool CheckIfUserHasSave(ServerClient client)
         {
             string[] saves = Directory.GetFiles(Program.savesPath);
             foreach(string save in saves) if (Path.GetFileNameWithoutExtension(save) == client.username) return true;
@@ -56,9 +57,9 @@ namespace RimworldTogether.GameServer.Managers
             return null;
         }
 
-        public static void SaveUserGame(Client client, Packet packet)
+        public static void SaveUserGame(ServerClient client, Packet packet)
         {
-            SaveFileJSON saveFileJSON = Serializer.SerializeFromString<SaveFileJSON>(packet.contents[0]);
+            SaveFileJSON saveFileJSON = (SaveFileJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             File.WriteAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave"), Convert.FromBase64String(saveFileJSON.saveData));
 
             if (saveFileJSON.saveMode == ((int)SaveMode.Disconnect).ToString())
@@ -87,20 +88,20 @@ namespace RimworldTogether.GameServer.Managers
             else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");
         }
 
-        public static void LoadUserGame(Client client)
+        public static void LoadUserGame(ServerClient client)
         {
             string[] contents = new string[] { Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave"))) };
-            Packet packet = new Packet("LoadFilePacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("LoadFilePacket", contents);
+            client.clientListener.SendData(packet);
 
             if (Network.Network.usingNewNetworking) Logger.WriteToConsole($"[Load game] > {client.username} {contents.GetHashCode()}");
             else Logger.WriteToConsole($"[Load game] > {client.username}");
 
         }
 
-        public static void SaveUserMap(Client client, Packet packet)
+        public static void SaveUserMap(ServerClient client, Packet packet)
         {
-            MapDetailsJSON mapDetailsJSON = Serializer.SerializeFromString<MapDetailsJSON>(packet.contents[0]);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             MapFile mapFile = new MapFile();
             mapFile.mapTile = mapDetailsJSON.mapTile;
@@ -146,7 +147,7 @@ namespace RimworldTogether.GameServer.Managers
             return null;
         }
 
-        public static void ResetClientSave(Client client)
+        public static void ResetClientSave(ServerClient client)
         {
             if (!CheckIfUserHasSave(client)) ResponseShortcutManager.SendIllegalPacket(client);
             else
@@ -180,7 +181,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void DeletePlayerDetails(string username)
         {
-            Client connectedUser = UserManager.GetConnectedClientFromUsername(username);
+            ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
             if (connectedUser != null) connectedUser.disconnectFlag = true;
 
             string[] saves = Directory.GetFiles(Program.savesPath);

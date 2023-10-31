@@ -3,6 +3,7 @@ using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Files;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameClient.Misc
 {

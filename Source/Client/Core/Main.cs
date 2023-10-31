@@ -4,6 +4,7 @@ using RimworldTogether.GameClient.Files;
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Serializers;
 using UnityEngine;
 using Verse;
 

@@ -4,14 +4,15 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameServer.Users
 {
     public static class UserLogin
     {
-        public static void TryLoginUser(Client client, Packet packet)
+        public static void TryLoginUser(ServerClient client, Packet packet)
         {
-            LoginDetailsJSON loginDetails = Serializer.SerializeFromString<LoginDetailsJSON>(packet.contents[0]);
+            LoginDetailsJSON loginDetails = (LoginDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             client.username = loginDetails.username;
             client.password = loginDetails.password;
 
@@ -32,7 +33,7 @@ namespace RimworldTogether.GameServer.Users
             PostLogin(client);
         }
 
-        private static void PostLogin(Client client)
+        private static void PostLogin(ServerClient client)
         {
             UserManager.SaveUserIP(client);
 
@@ -50,9 +51,9 @@ namespace RimworldTogether.GameServer.Users
             else WorldManager.RequireWorldFile(client);
         }
 
-        private static void RemoveOldClientIfAny(Client client)
+        private static void RemoveOldClientIfAny(ServerClient client)
         {
-            foreach (Client cClient in Network.Network.connectedClients.ToArray())
+            foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
             {
                 if (cClient == client) continue;
                 else

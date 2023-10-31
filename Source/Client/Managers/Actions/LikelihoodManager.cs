@@ -10,6 +10,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 
 namespace RimworldTogether.GameClient.Managers.Actions
@@ -63,7 +64,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ChangeStructureLikelihood(Packet packet)
         {
-            StructureLikelihoodJSON structureLikelihoodJSON = Serializer.SerializeFromString<StructureLikelihoodJSON>(packet.contents[0]);
+            StructureLikelihoodJSON structureLikelihoodJSON = (StructureLikelihoodJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             ChangeSettlementLikelihoods(structureLikelihoodJSON);
             ChangeSiteLikelihoods(structureLikelihoodJSON);
         }
@@ -131,9 +132,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
             structureLikelihoodJSON.tile = structureTile.ToString();
             structureLikelihoodJSON.likelihood = value.ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(structureLikelihoodJSON) };
-            Packet packet = new Packet("LikelihoodPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("LikelihoodPacket", structureLikelihoodJSON);
+            Network.Network.serverListener.SendData(packet);
         }
     }
 }

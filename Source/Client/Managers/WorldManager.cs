@@ -6,6 +6,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameClient.Managers
 {
@@ -15,7 +16,7 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void ParseWorldPacket(Packet packet)
         {
-            WorldDetailsJSON worldDetailsJSON = Serializer.SerializeFromString<WorldDetailsJSON>(packet.contents[0]);
+            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(worldDetailsJSON.worldStepMode))
             {

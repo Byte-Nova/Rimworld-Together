@@ -11,6 +11,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 
 namespace RimworldTogether.GameClient.Patches
@@ -50,9 +51,8 @@ namespace RimworldTogether.GameClient.Patches
             else if (ClientValues.isInTransfer) saveFileJSON.saveMode = ((int)SaveMode.Transfer).ToString();
             else saveFileJSON.saveMode = ((int)SaveMode.Autosave).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(saveFileJSON) };
-            Packet packet = new Packet("SaveFilePacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("SaveFilePacket", saveFileJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         public static void SendMapsToServer()
@@ -65,9 +65,8 @@ namespace RimworldTogether.GameClient.Patches
                     toSend.mapTile = map.Tile.ToString();
                     toSend.deflatedMapData = RimworldManager.CompressMapToString(map, true, true, true, true);
 
-                    string[] contents = new string[] { Serializer.SerializeToString(toSend) };
-                    Packet packet = new Packet("MapPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("MapPacket", toSend);
+                    Network.Network.serverListener.SendData(packet);
                 }
             }
         }
@@ -77,7 +76,8 @@ namespace RimworldTogether.GameClient.Patches
             customSaveName = $"Server - {Network.Network.ip} - {ChatManager.username}";
 
             string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
-            File.WriteAllBytes(filePath, GZip.Decompress(packet.contents[0]));
+            //FIXME
+            //File.WriteAllBytes(filePath, GZip.Decompress(packet.contents[0]));
             GameDataSaveLoader.LoadGame(customSaveName);
         }
     }

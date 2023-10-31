@@ -10,6 +10,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 
 namespace RimworldTogether.GameClient.Managers.Actions
@@ -22,7 +23,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ParseSpyPacket(Packet packet)
         {
-            SpyDetailsJSON spyDetailsJSON = Serializer.SerializeFromString<SpyDetailsJSON>(packet.contents[0]);
+            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(spyDetailsJSON.spyStepMode))
             {
@@ -66,9 +67,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     spyDetailsJSON.spyStepMode = ((int)SpyStepMode.Request).ToString();
                     spyDetailsJSON.spyData = ClientValues.chosenSettlement.Tile.ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(spyDetailsJSON) };
-                    Packet packet = new Packet("SpyPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
                 }
             };
 

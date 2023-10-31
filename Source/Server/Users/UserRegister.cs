@@ -6,14 +6,15 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameServer.Users
 {
     public static class UserRegister
     {
-        public static void TryRegisterUser(Client client, Packet packet)
+        public static void TryRegisterUser(ServerClient client, Packet packet)
         {
-            LoginDetailsJSON registerDetails = Serializer.SerializeFromString<LoginDetailsJSON>(packet.contents[0]);
+            LoginDetailsJSON registerDetails = (LoginDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             client.username = registerDetails.username;
             client.password = registerDetails.password;
 
@@ -45,7 +46,7 @@ namespace RimworldTogether.GameServer.Users
             }
         }
 
-        private static bool TryFetchAlreadyRegistered(Client client)
+        private static bool TryFetchAlreadyRegistered(ServerClient client)
         {
             string[] existingUsers = Directory.GetFiles(Program.usersPath);
 
@@ -64,7 +65,7 @@ namespace RimworldTogether.GameServer.Users
             return false;
         }
 
-        private static string GetNewUIDForUser(Client client)
+        private static string GetNewUIDForUser(ServerClient client)
         {
             return Hasher.GetHash(client.username);
         }

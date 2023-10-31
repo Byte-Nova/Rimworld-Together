@@ -6,6 +6,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -20,9 +21,9 @@ namespace RimworldTogether.GameServer.Managers
             "Welcome to the global chat!", "Please be considerate with others and have fun!", "Use '/help' to check available commands"
         };
 
-        public static void ParseClientMessages(Client client, Packet packet)
+        public static void ParseClientMessages(ServerClient client, Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = Serializer.SerializeFromString<ChatMessagesJSON>(packet.contents[0]);
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             
             for(int i = 0; i < chatMessagesJSON.messages.Count(); i++)
             {
@@ -31,9 +32,9 @@ namespace RimworldTogether.GameServer.Managers
             }
         }
 
-        public static void ExecuteCommand(Client client, Packet packet)
+        public static void ExecuteCommand(ServerClient client, Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = Serializer.SerializeFromString<ChatMessagesJSON>(packet.contents[0]);
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             ChatCommand toFind = ChatCommandManager.chatCommands.ToList().Find(x => x.prefix == chatMessagesJSON.messages[0]);
             if (toFind == null) SendMessagesToClient(client, new string[] { "Command was not found" });
@@ -47,9 +48,9 @@ namespace RimworldTogether.GameServer.Managers
             Logger.WriteToConsole($"[Chat command] > {client.username} > {chatMessagesJSON.messages[0]}");
         }
 
-        public static void BroadcastClientMessages(Client client, Packet packet)
+        public static void BroadcastClientMessages(ServerClient client, Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = Serializer.SerializeFromString<ChatMessagesJSON>(packet.contents[0]);
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             for(int i = 0; i < chatMessagesJSON.messages.Count(); i++)
             {
                 if (client.isAdmin)
@@ -65,9 +66,8 @@ namespace RimworldTogether.GameServer.Managers
                 }
             }
 
-            string[] contents = new string[] { Serializer.SerializeToString(chatMessagesJSON) };
-            Packet rPacket = new Packet("ChatPacket", contents);
-            foreach (Client cClient in Network.Network.connectedClients.ToArray()) Network.Network.SendData(cClient, rPacket);
+            Packet rPacket = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
+            foreach (ServerClient cClient in Network.Network.connectedClients.ToArray()) cClient.clientListener.SendData(rPacket);
 
             Logger.WriteToConsole($"[Chat] > {client.username} > {chatMessagesJSON.messages[0]}");
         }
@@ -80,18 +80,17 @@ namespace RimworldTogether.GameServer.Managers
             chatMessagesJSON.userColors.Add(((int)MessageColor.Console).ToString());
             chatMessagesJSON.messageColors.Add(((int)MessageColor.Console).ToString());
 
-            string[] contents = new string[] { Serializer.SerializeToString(chatMessagesJSON) };
-            Packet packet = new Packet("ChatPacket", contents);
+            Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
 
-            foreach (Client client in Network.Network.connectedClients.ToArray())
+            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
             {
-                Network.Network.SendData(client, packet);
+                client.clientListener.SendData(packet);
             }
 
             Logger.WriteToConsole($"[Chat] > {"CONSOLE"} > {"127.0.0.1"} > {chatMessagesJSON.messages[0]}");
         }
 
-        public static void SendMessagesToClient(Client client, string[] messagesToSend)
+        public static void SendMessagesToClient(ServerClient client, string[] messagesToSend)
         {
             ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
             for(int i = 0; i < messagesToSend.Count(); i++)
@@ -102,15 +101,14 @@ namespace RimworldTogether.GameServer.Managers
                 chatMessagesJSON.messageColors.Add(((int)MessageColor.Console).ToString());
             }
 
-            string[] contents = new string[] { Serializer.SerializeToString(chatMessagesJSON) };
-            Packet packet = new Packet("ChatPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
+            client.clientListener.SendData(packet);
         }
     }
 
     public static class ChatCommandManager
     {
-        public static Client invoker;
+        public static ServerClient invoker;
 
         private static ChatCommand helpCommand = new ChatCommand("/help", 0,
             "Shows a list of all available commands",

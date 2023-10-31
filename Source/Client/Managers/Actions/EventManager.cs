@@ -9,6 +9,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 
 namespace RimworldTogether.GameClient.Managers.Actions
@@ -34,7 +35,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ParseEventPacket(Packet packet)
         {
-            EventDetailsJSON eventDetailsJSON = Serializer.SerializeFromString<EventDetailsJSON>(packet.contents[0]);
+            EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(eventDetailsJSON.eventStepMode))
             {
@@ -108,9 +109,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 eventDetailsJSON.toTile = ClientValues.chosenSettlement.Tile.ToString();
                 eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(eventDetailsJSON) };
-                Packet packet = new Packet("EventPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+                Network.Network.serverListener.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }

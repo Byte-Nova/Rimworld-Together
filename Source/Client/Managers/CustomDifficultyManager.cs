@@ -1,6 +1,7 @@
 ﻿using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -169,9 +170,8 @@ namespace RimworldTogether.GameClient.Managers
 
             difficultyValuesJSON.WastepackInfestationChanceFactor = Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor;
 
-            string[] contents = new string[] { Serializer.SerializeToString(difficultyValuesJSON) };
-            Packet packet = new Packet("CustomDifficultyPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("CustomDifficultyPacket", difficultyValuesJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         public static void EnforceCustomDifficulty()

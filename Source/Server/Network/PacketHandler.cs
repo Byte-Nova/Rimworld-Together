@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using RimworldTogether.GameServer.Managers;
 using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Users;
 using RimworldTogether.Shared.Network;
 
@@ -8,86 +10,105 @@ namespace RimworldTogether.GameServer.Network
 {
     public static class PacketHandler
     {
-        public static void HandlePacket(Client client, Packet packet)
+        public static void HandlePacket(ServerClient client, Packet packet)
         {
-            #if DEBUG
-            Debug.WriteLine(packet.header);
-            #endif
+            Logger.WriteToConsole($"[Header] > {packet.header}");
+            //Logger.WriteToConsole($"[Pointer] > {packet.pointer}");
+            //Logger.WriteToConsole($"[Contents] > {packet.contents}");
 
-            switch (packet.header)
-            {
-                case "LoginClientPacket":
-                    UserLogin.TryLoginUser(client, packet);
-                    break;
+            Type toUse = typeof(PacketHandler);
+            MethodInfo methodInfo = toUse.GetMethod(packet.header);
+            methodInfo.Invoke(packet.header, new object[] { client, packet });
+        }
 
-                case "RegisterClientPacket":
-                    UserRegister.TryRegisterUser(client, packet);
-                    break;
+        public static void LoginClientPacket(ServerClient client, Packet packet)
+        {
+            UserLogin.TryLoginUser(client, packet);
+        }
 
-                case "SaveFilePacket":
-                    SaveManager.SaveUserGame(client, packet);
-                    break;
+        public static void RegisterClientPacket(ServerClient client, Packet packet)
+        {
+            UserRegister.TryRegisterUser(client, packet);
+        }
 
-                case "LikelihoodPacket":
-                    LikelihoodManager.ChangeUserLikelihoods(client, packet);
-                    break;
+        public static void SaveFilePacket(ServerClient client, Packet packet)
+        {
+            SaveManager.SaveUserGame(client, packet);
+        }
 
-                case "TransferPacket":
-                    TransferManager.ParseTransferPacket(client, packet);
-                    break;
+        public static void LikelihoodPacket(ServerClient client, Packet packet)
+        {
+            LikelihoodManager.ChangeUserLikelihoods(client, packet);
+        }
 
-                case "SitePacket":
-                    SiteManager.ParseSitePacket(client, packet);
-                    break;
+        public static void TransferPacket(ServerClient client, Packet packet)
+        {
+            TransferManager.ParseTransferPacket(client, packet);
+        }
 
-                case "VisitPacket":
-                    VisitManager.ParseVisitPacket(client, packet);
-                    break;
+        public static void SitePacket(ServerClient client, Packet packet)
+        {
+            SiteManager.ParseSitePacket(client, packet);
+        }
 
-                case "OfflineVisitPacket":
-                    OfflineVisitManager.ParseOfflineVisitPacket(client, packet);
-                    break;
+        public static void VisitPacket(ServerClient client, Packet packet)
+        {
+            VisitManager.ParseVisitPacket(client, packet);
+        }
 
-                case "ChatPacket":
-                    ChatManager.ParseClientMessages(client, packet);
-                    break;
+        public static void OfflineVisitPacket(ServerClient client, Packet packet)
+        {
+            OfflineVisitManager.ParseOfflineVisitPacket(client, packet);
+        }
 
-                case "FactionPacket":
-                    FactionManager.ParseFactionPacket(client, packet);
-                    break;
+        public static void ChatPacket(ServerClient client, Packet packet)
+        {
+            ChatManager.ParseClientMessages(client, packet);
+        }
 
-                case "MapPacket":
-                    SaveManager.SaveUserMap(client, packet);
-                    break;
+        public static void FactionPacket(ServerClient client, Packet packet)
+        {
+            FactionManager.ParseFactionPacket(client, packet);
+        }
 
-                case "RaidPacket":
-                    RaidManager.ParseRaidPacket(client, packet);
-                    break;
+        public static void MapPacket(ServerClient client, Packet packet)
+        {
+            SaveManager.SaveUserMap(client, packet);
+        }
 
-                case "SpyPacket":
-                    SpyManager.ParseSpyPacket(client, packet);
-                    break;
+        public static void RaidPacket(ServerClient client, Packet packet)
+        {
+            RaidManager.ParseRaidPacket(client, packet);
+        }
 
-                case "SettlementPacket":
-                    SettlementManager.ParseSettlementPacket(client, packet);
-                    break;
+        public static void SpyPacket(ServerClient client, Packet packet)
+        {
+            SpyManager.ParseSpyPacket(client, packet);
+        }
 
-                case "EventPacket":
-                    EventManager.ParseEventPacket(client, packet);
-                    break;
+        public static void SettlementPacket(ServerClient client, Packet packet)
+        {
+            SettlementManager.ParseSettlementPacket(client, packet);
+        }
 
-                case "WorldPacket":
-                    WorldManager.ParseWorldPacket(client, packet);
-                    break;
+        public static void EventPacket(ServerClient client, Packet packet)
+        {
+            EventManager.ParseEventPacket(client, packet);
+        }
 
-                case "CustomDifficultyPacket":
-                    CustomDifficultyManager.ParseDifficultyPacket(client, packet);
-                    break;
+        public static void WorldPacket(ServerClient client, Packet packet)
+        {
+            WorldManager.ParseWorldPacket(client, packet);
+        }
 
-                case "ResetSavePacket":
-                    SaveManager.ResetClientSave(client);
-                    break;
-            }
+        public static void CustomDifficultyPacket(ServerClient client, Packet packet)
+        {
+            CustomDifficultyManager.ParseDifficultyPacket(client, packet);
+        }
+
+        public static void ResetSavePacket(ServerClient client, Packet packet)
+        {
+            SaveManager.ResetClientSave(client);
         }
     }
 }

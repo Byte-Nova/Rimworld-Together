@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -17,6 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BinaryFormatter" Version="3.0.0" />
+    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />

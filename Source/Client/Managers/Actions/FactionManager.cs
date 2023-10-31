@@ -7,6 +7,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
@@ -31,7 +32,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ParseFactionPacket(Packet packet)
         {
-            FactionManifestJSON factionManifest = Serializer.SerializeFromString<FactionManifestJSON>(packet.contents[0]);
+            FactionManifestJSON factionManifest = (FactionManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(factionManifest.manifestMode))
             {
@@ -78,9 +79,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                 factionManifestJSON.manifestMode = ((int)FactionManifestMode.MemberList).ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifestJSON) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Network.Network.serverListener.SendData(packet);
             };
 
             Action r2 = delegate
@@ -89,9 +89,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 factionManifestJSON.manifestMode = ((int)FactionManifestMode.RemoveMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifestJSON) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Network.Network.serverListener.SendData(packet);
             };
 
             Action r1 = delegate
@@ -101,9 +100,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                 factionManifestJSON.manifestMode = ((int)FactionManifestMode.Delete).ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifestJSON) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Network.Network.serverListener.SendData(packet);
             };
 
             RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to LEAVE your faction?", r2, null);
@@ -137,9 +135,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     factionManifestJSON.manifestMode = ((int)FactionManifestMode.Create).ToString();
                     factionManifestJSON.manifestDetails = DialogManager.dialog1ResultOne;
 
-                    string[] contents = new string[] { Serializer.SerializeToString(factionManifestJSON) };
-                    Packet packet = new Packet("FactionPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                    Network.Network.serverListener.SendData(packet);
                 }
             };
             RT_Dialog_1Input d2 = new RT_Dialog_1Input("New Faction Name", "Input the name of your new faction", r2, null);
@@ -158,9 +155,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 factionManifestJSON.manifestMode = ((int)FactionManifestMode.Promote).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifestJSON) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Network.Network.serverListener.SendData(packet);
             };
 
             Action r2 = delegate
@@ -169,9 +165,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 factionManifestJSON.manifestMode = ((int)FactionManifestMode.Demote).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifestJSON) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Network.Network.serverListener.SendData(packet);
             };
 
             Action r3 = delegate
@@ -180,9 +175,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 factionManifestJSON.manifestMode = ((int)FactionManifestMode.RemoveMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifestJSON) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Network.Network.serverListener.SendData(packet);
             };
 
             RT_Dialog_YesNo d5 = new RT_Dialog_YesNo("Are you sure you want to demote this player?", 
@@ -220,9 +214,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 factionManifestJSON.manifestMode = ((int)FactionManifestMode.AddMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifestJSON) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Network.Network.serverListener.SendData(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to invite this player to your faction?", r1, null);
@@ -272,9 +265,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
                 factionManifest.manifestMode = ((int)FactionManifestMode.AcceptInvite).ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-                Packet packet = new Packet("FactionPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+                Network.Network.serverListener.SendData(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest.manifestDetails}, accept?", r1, null);

@@ -6,12 +6,13 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class UserManager
     {
-        public static void LoadDataFromFile(Client client)
+        public static void LoadDataFromFile(ServerClient client)
         {
             UserFile file = GetUserFile(client);
             client.uid = file.uid;
@@ -27,7 +28,7 @@ namespace RimworldTogether.GameServer.Managers
             Logger.WriteToConsole($"[Handshake] > {client.username} | {client.SavedIP}");
         }
 
-        public static UserFile GetUserFile(Client client)
+        public static UserFile GetUserFile(ServerClient client)
         {
             string[] userFiles = Directory.GetFiles(Program.usersPath);
 
@@ -62,7 +63,7 @@ namespace RimworldTogether.GameServer.Managers
             return userFiles.ToArray();
         }
 
-        public static void SaveUserFile(Client client, UserFile userFile)
+        public static void SaveUserFile(ServerClient client, UserFile userFile)
         {
             string savePath = Path.Combine(Program.usersPath, client.username + ".json");
             Serializer.SerializeToFile(savePath, userFile);
@@ -78,29 +79,28 @@ namespace RimworldTogether.GameServer.Managers
         {
             PlayerRecountJSON playerRecountJSON = new PlayerRecountJSON();
             playerRecountJSON.currentPlayers = Network.Network.connectedClients.ToArray().Count().ToString();
-            foreach(Client client in Network.Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
+            foreach(ServerClient client in Network.Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
 
-            string[] contents = new string[] { Serializer.SerializeToString(playerRecountJSON) };
-            Packet packet = new Packet("PlayerRecountPacket", contents);
-            foreach (Client client in Network.Network.connectedClients.ToArray()) Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("PlayerRecountPacket", playerRecountJSON);
+            foreach (ServerClient client in Network.Network.connectedClients.ToArray()) client.clientListener.SendData(packet);
         }
 
         public static bool CheckIfUserIsConnected(string username)
         {
-            List<Client> connectedClients = Network.Network.connectedClients.ToList();
+            List<ServerClient> connectedClients = Network.Network.connectedClients.ToList();
 
-            Client toGet = connectedClients.Find(x => x.username == username);
+            ServerClient toGet = connectedClients.Find(x => x.username == username);
             if (toGet != null) return true;
             else return false;
         }
 
-        public static Client GetConnectedClientFromUsername(string username)
+        public static ServerClient GetConnectedClientFromUsername(string username)
         {
-            List<Client> connectedClients = Network.Network.connectedClients.ToList();
+            List<ServerClient> connectedClients = Network.Network.connectedClients.ToList();
             return connectedClients.Find(x => x.username == username);
         }
 
-        public static bool CheckIfUserExists(Client client)
+        public static bool CheckIfUserExists(ServerClient client)
         {
             string[] existingUsers = Directory.GetFiles(Program.usersPath);
 
@@ -125,7 +125,7 @@ namespace RimworldTogether.GameServer.Managers
             return false;
         }
 
-        public static bool CheckIfUserBanned(Client client)
+        public static bool CheckIfUserBanned(ServerClient client)
         {
             if (!client.isBanned) return false;
             else
@@ -135,7 +135,7 @@ namespace RimworldTogether.GameServer.Managers
             }
         }
 
-        public static void SaveUserIP(Client client)
+        public static void SaveUserIP(ServerClient client)
         {
             UserFile userFile = GetUserFile(client);
             userFile.SavedIP = client.SavedIP;
@@ -172,7 +172,7 @@ namespace RimworldTogether.GameServer.Managers
             Whitelist
         }
 
-        public static bool CheckLoginDetails(Client client, CheckMode mode)
+        public static bool CheckLoginDetails(ServerClient client, CheckMode mode)
         {
             bool isInvalid = false;
             if (string.IsNullOrWhiteSpace(client.username)) isInvalid = true;
@@ -189,21 +189,20 @@ namespace RimworldTogether.GameServer.Managers
             }
         }
 
-        public static void SendLoginResponse(Client client, LoginResponse response, object extraDetails = null)
+        public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
             LoginDetailsJSON loginDetailsJSON = new LoginDetailsJSON();
             loginDetailsJSON.tryResponse = ((int)response).ToString();
 
             if (response == LoginResponse.WrongMods) loginDetailsJSON.conflictingMods = (List<string>)extraDetails;
 
-            string[] contents = new string[] { Serializer.SerializeToString(loginDetailsJSON) };
-            Packet packet = new Packet("LoginResponsePacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("LoginResponsePacket", loginDetailsJSON);
+            client.clientListener.SendData(packet);
 
             client.disconnectFlag = true;
         }
 
-        public static bool CheckWhitelist(Client client)
+        public static bool CheckWhitelist(ServerClient client)
         {
             if (!Program.whitelist.UseWhitelist) return true;
             else

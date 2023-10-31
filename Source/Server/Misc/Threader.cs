@@ -14,11 +14,6 @@ namespace RimworldTogether.GameServer.Misc
             Console
         }
 
-        public enum ClientMode
-        {
-            Start
-        }
-
         public static Task GenerateServerThread(ServerMode mode, CancellationToken cancellationToken)
         {
             switch (mode)
@@ -34,19 +29,6 @@ namespace RimworldTogether.GameServer.Misc
 
                 case ServerMode.Console:
                     return Task.Run(ServerCommandManager.ListenForServerCommands, cancellationToken);
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public static void GenerateClientThread(ClientMode mode, Client client)
-        {
-            switch (mode)
-            {
-                case ClientMode.Start:
-                    Task.Run(() => Network.Network.ListenToClient(client));
-                    break;
 
                 default:
                     throw new NotImplementedException();

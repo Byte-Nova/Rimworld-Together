@@ -8,6 +8,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 
 namespace RimworldTogether.GameClient.Patches
@@ -30,9 +31,8 @@ namespace RimworldTogether.GameClient.Patches
                     settlementDetailsJSON.tile = __instance.CurrentMap.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Add).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-                    Packet packet = new Packet("SettlementPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
 
                     SavePatch.ForceSave();
                 }
@@ -70,9 +70,8 @@ namespace RimworldTogether.GameClient.Patches
                     settlementDetailsJSON.tile = caravan.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Add).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-                    Packet packet = new Packet("SettlementPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
 
                     SavePatch.ForceSave();
                 }
@@ -91,9 +90,8 @@ namespace RimworldTogether.GameClient.Patches
                     settlementDetailsJSON.tile = map.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Add).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-                    Packet packet = new Packet("SettlementPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
 
                     SavePatch.ForceSave();
                 }
@@ -112,9 +110,8 @@ namespace RimworldTogether.GameClient.Patches
                     settlementDetailsJSON.tile = settlement.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Remove).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-                    Packet packet = new Packet("SettlementPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
 
                     SavePatch.ForceSave();
                 }

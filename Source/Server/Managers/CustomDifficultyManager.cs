@@ -4,6 +4,7 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,13 @@ namespace RimworldTogether.GameServer.Managers
 {
     public static class CustomDifficultyManager
     {
-        public static void ParseDifficultyPacket(Client client, Packet packet)
+        public static void ParseDifficultyPacket(ServerClient client, Packet packet)
         {
-            DifficultyValuesJSON difficultyValuesJSON = Serializer.SerializeFromString<DifficultyValuesJSON>(packet.contents[0]);
+            DifficultyValuesJSON difficultyValuesJSON = (DifficultyValuesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             SetCustomDifficulty(client, difficultyValuesJSON);
         }
 
-        public static void SetCustomDifficulty(Client client, DifficultyValuesJSON difficultyValuesJSON)
+        public static void SetCustomDifficulty(ServerClient client, DifficultyValuesJSON difficultyValuesJSON)
         {
             if (!client.isAdmin) ResponseShortcutManager.SendIllegalPacket(client);
             else

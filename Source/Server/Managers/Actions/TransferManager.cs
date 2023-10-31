@@ -4,6 +4,7 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using System.Diagnostics;
 
 namespace RimworldTogether.GameServer.Managers.Actions
@@ -14,9 +15,9 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
         public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
 
-        public static void ParseTransferPacket(Client client, Packet packet)
+        public static void ParseTransferPacket(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = Serializer.SerializeFromString<TransferManifestJSON>(packet.contents[0]);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(transferManifestJSON.transferStepMode))
             {
@@ -46,7 +47,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             }
         }
 
-        public static void TransferThings(Client client, TransferManifestJSON transferManifestJSON)
+        public static void TransferThings(ServerClient client, TransferManifestJSON transferManifestJSON)
         {
             if (!SettlementManager.CheckIfTileIsInUse(transferManifestJSON.toTile)) ResponseShortcutManager.SendIllegalPacket(client);
             else
@@ -59,9 +60,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     else
                     {
                         transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
-                        string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                        Packet rPacket = new Packet("TransferPacket", contents);
-                        Network.Network.SendData(client, rPacket);
+                        Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                        client.clientListener.SendData(rPacket);
                     }
                 }
 
@@ -70,112 +70,102 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Gift)
                     {
                         transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeAccept).ToString();
-                        string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                        Packet rPacket = new Packet("TransferPacket", contents);
-                        Network.Network.SendData(client, rPacket);
+                        Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                        client.clientListener.SendData(rPacket);
                     }
 
                     else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
                     {
                         transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeAccept).ToString();
-                        string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                        Packet rPacket = new Packet("TransferPacket", contents);
-                        Network.Network.SendData(client, rPacket);
+                        Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                        client.clientListener.SendData(rPacket);
                     }
 
                     transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
                     string[] contents2 = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                    Packet rPacket2 = new Packet("TransferPacket", contents2);
-                    Network.Network.SendData(UserManager.GetConnectedClientFromUsername(settlement.owner), rPacket2);
+                    Packet rPacket2 = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                    UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket2);
                 }
             }
         }
 
-        public static void RejectTransfer(Client client, Packet packet)
+        public static void RejectTransfer(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = Serializer.SerializeFromString<TransferManifestJSON>(packet.contents[0]);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                Packet rPacket = new Packet("TransferPacket", contents);
-                Network.Network.SendData(client, rPacket);
+                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                client.clientListener.SendData(rPacket);
             }
 
             else
             {
                 transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReject).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                Packet rPacket = new Packet("TransferPacket", contents);
-                Network.Network.SendData(UserManager.GetConnectedClientFromUsername(settlement.owner), rPacket);
+                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket);
             }
         }
 
-        public static void TransferThingsRebound(Client client, Packet packet)
+        public static void TransferThingsRebound(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = Serializer.SerializeFromString<TransferManifestJSON>(packet.contents[0]);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.toTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReReject).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                Packet rPacket = new Packet("TransferPacket", contents);
-                Network.Network.SendData(client, rPacket);
+                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                client.clientListener.SendData(rPacket);
             }
 
             else
             {
                 transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReRequest).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                Packet rPacket = new Packet("TransferPacket", contents);
-                Network.Network.SendData(UserManager.GetConnectedClientFromUsername(settlement.owner), rPacket);
+                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket);
             }
         }
 
-        public static void AcceptReboundTransfer(Client client, Packet packet)
+        public static void AcceptReboundTransfer(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = Serializer.SerializeFromString<TransferManifestJSON>(packet.contents[0]);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                Packet rPacket = new Packet("TransferPacket", contents);
-                Network.Network.SendData(client, rPacket);
+                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                client.clientListener.SendData(rPacket);
             }
 
             else
             {
                 transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReAccept).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                Packet rPacket = new Packet("TransferPacket", contents);
-                Network.Network.SendData(UserManager.GetConnectedClientFromUsername(settlement.owner), rPacket);
+                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket);
             }
         }
 
-        public static void RejectReboundTransfer(Client client, Packet packet)
+        public static void RejectReboundTransfer(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = Serializer.SerializeFromString<TransferManifestJSON>(packet.contents[0]);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                Packet rPacket = new Packet("TransferPacket", contents);
-                Network.Network.SendData(client, rPacket);
+                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                client.clientListener.SendData(rPacket);
             }
 
             else
             {
                 transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReReject).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                Packet rPacket = new Packet("TransferPacket", contents);
-                Network.Network.SendData(UserManager.GetConnectedClientFromUsername(settlement.owner), rPacket);
+                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket);
             }
         }
     }

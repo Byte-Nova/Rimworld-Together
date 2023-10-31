@@ -7,6 +7,7 @@ using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using UnityEngine;
 using Verse;
 
@@ -154,9 +155,8 @@ namespace RimworldTogether.GameClient.Dialogs
                 {
                     ClientValues.incomingManifest.transferStepMode = ((int)TransferManager.TransferStepMode.TradeReAccept).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(ClientValues.incomingManifest) };
-                    Packet packet = new Packet("TransferPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
+                    Network.Network.serverListener.SendData(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }

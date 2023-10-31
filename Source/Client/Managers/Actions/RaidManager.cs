@@ -11,6 +11,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 using Verse.AI.Group;
 
@@ -22,7 +23,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ParseRaidPacket(Packet packet)
         {
-            RaidDetailsJSON raidDetailsJSON = Serializer.SerializeFromString<RaidDetailsJSON>(packet.contents[0]);
+            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(raidDetailsJSON.raidStepMode))
             {
@@ -44,9 +45,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
             raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Request).ToString();
             raidDetailsJSON.raidData = ClientValues.chosenSettlement.Tile.ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(raidDetailsJSON) };
-            Packet packet = new Packet("RaidPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         private static void OnRaidAccept(RaidDetailsJSON raidDetailsJSON)

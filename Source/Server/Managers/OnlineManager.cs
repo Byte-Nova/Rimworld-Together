@@ -7,7 +7,7 @@ namespace RimworldTogether.GameServer.Managers
     {
         public enum OnlineMode { Spy }
 
-        public static void ParseOnlinePacket(Client client, Packet packet)
+        public static void ParseOnlinePacket(ServerClient client, Packet packet)
         {
 
         }

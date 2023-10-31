@@ -6,41 +6,40 @@ using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Network.Listener;
 using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 
 namespace RimworldTogether.GameClient.Network
 {
     public static class Network
     {
-        public static TcpClient connection;
-        public static NetworkStream ns;
-        public static StreamWriter sw;
-        public static StreamReader sr;
+        public static ServerListener serverListener;
+        public static string ip = "";
+        public static string port = "";
 
         public static bool isConnectedToServer;
         public static bool isTryingToConnect;
         public static bool usingNewNetworking;
 
-        public static string ip = "";
-        public static string port = "";
-
         public static void StartConnection()
         {
             if (TryConnectToServer())
             {
+                Threader.GenerateThread(Threader.Mode.Heartbeat);
+
                 DialogManager.PopWaitDialog();
 
-                PersistentPatches.ManageDevOptions();
+                //TODO
+                //PersistentPatches.ManageDevOptions();
 
                 SiteManager.SetSiteDefs();
 
-                Threader.GenerateThread(Threader.Mode.Heartbeat);
-
-                ListenToServer();
+                serverListener.ListenToServer();
             }
 
             else
@@ -63,10 +62,8 @@ namespace RimworldTogether.GameClient.Network
                 {
                     isTryingToConnect = true;
 
-                    connection = new(ip, int.Parse(port));
-                    ns = connection.GetStream();
-                    sw = new StreamWriter(ns);
-                    sr = new StreamReader(ns);
+                    serverListener = new ServerListener(new(ip, int.Parse(port)));
+
                     isConnectedToServer = true;
 
                     return true;
@@ -81,39 +78,6 @@ namespace RimworldTogether.GameClient.Network
             }
         }
 
-        public static void ListenToServer()
-        {
-            DialogShortcuts.ShowLoginOrRegisterDialogs();
-
-            while (isConnectedToServer)
-            {
-                try
-                {
-                    string data = sr.ReadLine();
-
-                    Action toDo = delegate
-                    {
-                        Packet receivedPacket = Serializer.SerializeToPacket(data);
-                        PacketHandlers.HandlePacket(receivedPacket);
-                    };
-                    Main.threadDispatcher.Enqueue(toDo);
-                }
-
-                catch(Exception e)
-                {
-                    Log.Warning($"[Rimworld Together] > {e}");
-
-                    DisconnectFromServer();
-                }
-            }
-        }
-
-        public static void SendData(Packet packet)
-        {
-            sw.WriteLine(Serializer.SerializeToString(packet));
-            sw.Flush();
-        }
-
         public static void HeartbeatServer()
         {
             while (isConnectedToServer)
@@ -124,22 +88,24 @@ namespace RimworldTogether.GameClient.Network
                 {
                     if (!CheckIfConnected())
                     {
-                        DisconnectFromServer();
+                        break;
                     }
                 }
-                catch { DisconnectFromServer(); }
+                catch { break; }
             }
+
+            DisconnectFromServer();
         }
 
         private static bool CheckIfConnected()
         {
-            if (!connection.Connected) return false;
+            if (!serverListener.connection.Connected) return false;
             else
             {
-                if (connection.Client.Poll(0, SelectMode.SelectRead))
+                if (serverListener.connection.Client.Poll(0, SelectMode.SelectRead))
                 {
                     byte[] buff = new byte[1];
-                    if (connection.Client.Receive(buff, SocketFlags.Peek) == 0) return false;
+                    if (serverListener.connection.Client.Receive(buff, SocketFlags.Peek) == 0) return false;
                     else return true;
                 }
 
@@ -149,27 +115,30 @@ namespace RimworldTogether.GameClient.Network
 
         public static void DisconnectFromServer()
         {
-            if (connection != null) connection.Dispose();
-            isConnectedToServer = false;
-            isTryingToConnect = false;
-
-            Action r1 = delegate
+            if (isConnectedToServer)
             {
-                if (Current.ProgramState == ProgramState.Playing)
+                serverListener.connection.Dispose();
+                isConnectedToServer = false;
+                isTryingToConnect = false;
+
+                Action r1 = delegate
                 {
-                    PersistentPatches.DisconnectToMenu();
-                }
-            };
+                    if (Current.ProgramState == ProgramState.Playing)
+                    {
+                        PersistentPatches.DisconnectToMenu();
+                    }
+                };
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
-            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
+                {
                 "Connection to the server has been lost!",
                 "Game will now quit to menu"
-            }, r1));
+                }, r1));
 
-            ClientValues.CleanValues();
-            ServerValues.CleanValues();
-            ChatManager.ClearChat();
+                ClientValues.CleanValues();
+                ServerValues.CleanValues();
+                ChatManager.ClearChat();
+            }
         }
     }
 }

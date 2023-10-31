@@ -3,6 +3,7 @@ using RimworldTogether.GameClient.Planet;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameClient.Managers
 {
@@ -12,7 +13,7 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void ParseSettlementPacket(Packet packet)
         {
-            SettlementDetailsJSON settlementDetailsJSON = Serializer.SerializeFromString<SettlementDetailsJSON>(packet.contents[0]);
+            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(settlementDetailsJSON.settlementStepMode))
             {

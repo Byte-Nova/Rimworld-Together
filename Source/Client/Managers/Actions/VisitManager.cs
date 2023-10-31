@@ -13,6 +13,7 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.JSON.Things;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 using Verse.AI;
 
@@ -34,7 +35,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ParseVisitPacket(Packet packet)
         {
-            VisitDetailsJSON visitDetailsJSON = Serializer.SerializeFromString<VisitDetailsJSON>(packet.contents[0]);
+            VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
@@ -79,9 +80,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     visitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
                     visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(VisitThingHelper.FetchMode.Player, visitDetailsJSON);
 
-                    string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                    Packet packet = new Packet("VisitPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
                 };
 
                 var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
@@ -93,9 +93,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Accept).ToString();
             visitDetailsJSON.deflatedMapData = RimworldManager.CompressMapToString(visitMap, true, false, false, true);
-            string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-            Packet packet = new Packet("VisitPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         private static void VisitMap(MapDetailsJSON mapDetailsJSON, VisitDetailsJSON visitDetailsJSON)
@@ -131,9 +130,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-            Packet packet = new Packet("VisitPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         private static void OnVisitRequest(VisitDetailsJSON visitDetailsJSON)
@@ -156,9 +154,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Action r2 = delegate
             {
                 visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Reject).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                Packet packet = new Packet("VisitPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                Network.Network.serverListener.SendData(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitDetailsJSON.visitorName}, accept?", r1, r2);
@@ -463,9 +460,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
             toDo.Invoke();
 
             visitDetailsJSON.visitStepMode = ((int)VisitManager.VisitStepMode.Action).ToString();
-            string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-            Packet packet = new Packet("VisitPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         public static void ReceiveActions(VisitDetailsJSON visitDetailsJSON)

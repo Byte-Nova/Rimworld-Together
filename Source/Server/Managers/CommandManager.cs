@@ -5,6 +5,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -14,7 +15,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = Serializer.SerializeFromString<CommandDetailsJSON>(packet.contents[0]);
+            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(commandDetailsJSON.commandType))
             {
@@ -44,68 +45,62 @@ namespace RimworldTogether.GameServer.Managers
             }
         }
 
-        public static void SendOpCommand(Client client)
+        public static void SendOpCommand(ServerClient client)
         {
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommandType.Op).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
-            Packet packet = new Packet("CommandPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            client.clientListener.SendData(packet);
         }
 
-        public static void SendDeOpCommand(Client client)
+        public static void SendDeOpCommand(ServerClient client)
         {
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommandType.Deop).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
-            Packet packet = new Packet("CommandPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            client.clientListener.SendData(packet);
 
         }
 
-        public static void SendBanCommand(Client client)
+        public static void SendBanCommand(ServerClient client)
         {
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommandType.Ban).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
-            Packet packet = new Packet("CommandPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            client.clientListener.SendData(packet);
 
         }
 
-        public static void SendDisconnectCommand(Client client)
+        public static void SendDisconnectCommand(ServerClient client)
         {
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommandType.Disconnect).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
-            Packet packet = new Packet("CommandPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            client.clientListener.SendData(packet);
 
         }
 
-        public static void SendQuitCommand(Client client)
+        public static void SendQuitCommand(ServerClient client)
         {
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommandType.Quit).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
-            Packet packet = new Packet("CommandPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            client.clientListener.SendData(packet);
         }
 
-        public static void SendEventCommand(Client client, int eventID)
+        public static void SendEventCommand(ServerClient client, int eventID)
         {
             EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
             eventDetailsJSON.eventStepMode = ((int)EventManager.EventStepMode.Receive).ToString();
             eventDetailsJSON.eventID = eventID.ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(eventDetailsJSON) };
-            Packet packet = new Packet("EventPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+            client.clientListener.SendData(packet);
         }
 
         public static void SendBroadcastCommand(string str)
@@ -114,22 +109,20 @@ namespace RimworldTogether.GameServer.Managers
             commandDetailsJSON.commandType = ((int)CommandType.Broadcast).ToString();
             commandDetailsJSON.commandDetails = str;
 
-            string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
-            Packet packet = new Packet("CommandPacket", contents);
-            foreach (Client client in Network.Network.connectedClients.ToArray())
+            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
             {
-                Network.Network.SendData(client, packet);
+                client.clientListener.SendData(packet);
             }
         }
 
-        public static void SendForceSaveCommand(Client client)
+        public static void SendForceSaveCommand(ServerClient client)
         {
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommandType.ForceSave).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(commandDetailsJSON) };
-            Packet packet = new Packet("CommandPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            client.clientListener.SendData(packet);
         }
     }
 }

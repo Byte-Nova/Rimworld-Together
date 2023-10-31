@@ -17,6 +17,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\VisitDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\ChatMessagesJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\CommandDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overrides\BindOverrider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
+    <Compile Include="..\Shared\Misc\GZip2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serializers\ObjectConverter.cs" />
     <Compile Include="..\Shared\json\CustomDifficultyValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\FactionManifestJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\LoginDetailsJSON.cs" />
@@ -31,9 +35,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\HumanDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\ItemDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\WorldDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serializers\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
   </ItemGroup>
 </Project>

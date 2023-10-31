@@ -11,6 +11,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using UnityEngine;
 using Verse;
 
@@ -86,9 +87,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server to accept world"));
 
-                string[] contents = new string[] { Serializer.SerializeToString(worldDetailsJSON) };
-                Packet packet = new Packet("WorldPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+                Network.Network.serverListener.SendData(packet);
             }
         }
 

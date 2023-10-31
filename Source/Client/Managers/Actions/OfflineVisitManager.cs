@@ -11,6 +11,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using Verse;
 using Verse.AI.Group;
 
@@ -22,7 +23,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ParseOfflineVisitPacket(Packet packet)
         {
-            OfflineVisitDetailsJSON offlineVisitDetails = Serializer.SerializeFromString<OfflineVisitDetailsJSON>(packet.contents[0]);
+            OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(offlineVisitDetails.offlineVisitStepMode))
             {
@@ -44,9 +45,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
             offlineVisitDetailsJSON.offlineVisitStepMode = ((int)OfflineVisitStepMode.Request).ToString();
             offlineVisitDetailsJSON.offlineVisitData = ClientValues.chosenSettlement.Tile.ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(offlineVisitDetailsJSON) };
-            Packet packet = new Packet("OfflineVisitPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetailsJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         private static void OnOfflineVisitDeny()

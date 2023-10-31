@@ -8,108 +8,134 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using System;
+using System.Reflection;
 using Verse;
 
 namespace RimworldTogether.GameClient.Network
 {
-    public static class PacketHandlers
+    public static class PacketHandler
     {
         public static void HandlePacket(Packet packet)
         {
-            Log.Message($"[Rimworld Together] Packet > {packet.header}");
+            Log.Message($"[Header] > {packet.header}");
+            //Log.Message($"[Pointer] > {packet.header}");
+            //Log.Message($"[Contents] > {packet.contents}");
 
-            switch (packet.header)
-            {
-                case "LoginResponsePacket":
-                    LoginManager.ReceiveLoginResponse(packet);
-                    break;
+            Type toUse = typeof(PacketHandler);
+            MethodInfo methodInfo = toUse.GetMethod(packet.header);
+            methodInfo.Invoke(packet.header, new object[] { packet });
+        }
 
-                case "ChatPacket":
-                    ChatManager.ReceiveMessages(packet);
-                    break;
+        public static void LoginResponsePacket(Packet packet)
+        {
+            LoginManager.ReceiveLoginResponse(packet);
+        }
 
-                case "CommandPacket":
-                    CommandManager.ParseCommand(packet);
-                    break;
+        public static void ChatPacket(Packet packet)
+        {
+            ChatManager.ReceiveMessages(packet);
+        }
 
-                case "TransferPacket":
-                    TransferManager.ParseTransferPacket(packet);
-                    break;
+        public static void CommandPacket(Packet packet)
+        {
+            CommandManager.ParseCommand(packet);
+        }
 
-                case "FactionPacket":
-                    FactionManager.ParseFactionPacket(packet);
-                    break;
+        public static void TransferPacket(Packet packet)
+        {
+            TransferManager.ParseTransferPacket(packet);
+        }
 
-                case "VisitPacket":
-                    VisitManager.ParseVisitPacket(packet);
-                    break;
+        public static void FactionPacket(Packet packet)
+        {
+            FactionManager.ParseFactionPacket(packet);
+        }
 
-                case "OfflineVisitPacket":
-                    OfflineVisitManager.ParseOfflineVisitPacket(packet);
-                    break;
+        public static void VisitPacket(Packet packet)
+        {
+            VisitManager.ParseVisitPacket(packet);
+        }
 
-                case "RaidPacket":
-                    RaidManager.ParseRaidPacket(packet);
-                    break;
+        public static void OfflineVisitPacket(Packet packet)
+        {
+            OfflineVisitManager.ParseOfflineVisitPacket(packet);
+        }
 
-                case "SettlementPacket":
-                    SettlementManager.ParseSettlementPacket(packet);
-                    break;
+        public static void RaidPacket(Packet packet)
+        {
+            RaidManager.ParseRaidPacket(packet);
+        }
 
-                case "SpyPacket":
-                    SpyManager.ParseSpyPacket(packet);
-                    break;
+        public static void SettlementPacket(Packet packet)
+        {
+            SettlementManager.ParseSettlementPacket(packet);
+        }
 
-                case "SitePacket":
-                    SiteManager.ParseSitePacket(packet);
-                    break;
+        public static void SpyPacket(Packet packet)
+        {
+            SpyManager.ParseSpyPacket(packet);
+        }
 
-                case "WorldPacket":
-                    WorldManager.ParseWorldPacket(packet);
-                    break;
+        public static void SitePacket(Packet packet)
+        {
+            SiteManager.ParseSitePacket(packet);
+        }
 
-                case "BreakPacket":
-                    DialogManager.PopWaitDialog();
-                    break;
+        public static void WorldPacket(Packet packet)
+        {
+            WorldManager.ParseWorldPacket(packet);
+        }
 
-                case "LoadFilePacket":
-                    SavePatch.ReceiveSaveFromServer(packet);
-                    break;
+        public static void BreakPacket(Packet packet)
+        {
+            DialogManager.PopWaitDialog();
+        }
 
-                case "PlayerRecountPacket":
-                    ServerValues.SetServerPlayers(packet);
-                    break;
+        public static void LoadFilePacket(Packet packet)
+        {
+            SavePatch.ReceiveSaveFromServer(packet);
+        }
 
-                case "LikelihoodPacket":
-                    DialogManager.PopWaitDialog();
-                    LikelihoodManager.ChangeStructureLikelihood(packet);
-                    break;
+        public static void PlayerRecountPacket(Packet packet)
+        {
+            ServerValues.SetServerPlayers(packet);
+        }
 
-                case "EventPacket":
-                    EventManager.ParseEventPacket(packet);
-                    break;
+        public static void LikelihoodPacket(Packet packet)
+        {
+            DialogManager.PopWaitDialog();
+            LikelihoodManager.ChangeStructureLikelihood(packet);
+        }
 
-                case "IllegalActionPacket":
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Kicked for ilegal actions!"));
-                    break;
+        public static void EventPacket(Packet packet)
+        {
+            EventManager.ParseEventPacket(packet);
+        }
 
-                case "UserUnavailablePacket":
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
-                    break;
+        public static void IllegalActionPacket(Packet packet)
+        {
+            DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Kicked for ilegal actions!"));
+        }
 
-                case "ServerValuesPacket":
-                    ServerOverallJSON serverOverallJSON = Serializer.SerializeFromString<ServerOverallJSON>(packet.contents[0]);
-                    ServerValues.SetServerParameters(serverOverallJSON);
-                    ServerValues.SetAccountDetails(serverOverallJSON);
-                    PlanetBuilder_Temp.SetWorldFeatures(serverOverallJSON);
-                    EventManager.SetEventPrices(serverOverallJSON);
-                    SiteManager.SetSiteDetails(serverOverallJSON);
-                    SpyManager.SetSpyCost(serverOverallJSON);
-                    CustomDifficultyManager.SetCustomDifficulty(serverOverallJSON);
-                    break;
-            }
+        public static void UserUnavailablePacket(Packet packet)
+        {
+            DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+        }
+
+        public static void ServerValuesPacket(Packet packet)
+        {
+            ServerOverallJSON serverOverallJSON = (ServerOverallJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            ServerValues.SetServerParameters(serverOverallJSON);
+            ServerValues.SetAccountDetails(serverOverallJSON);
+            PlanetBuilder_Temp.SetWorldFeatures(serverOverallJSON);
+            EventManager.SetEventPrices(serverOverallJSON);
+            SiteManager.SetSiteDetails(serverOverallJSON);
+            SpyManager.SetSpyCost(serverOverallJSON);
+            CustomDifficultyManager.SetCustomDifficulty(serverOverallJSON);
         }
     }
 }

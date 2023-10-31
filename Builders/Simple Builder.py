@@ -42,7 +42,7 @@ destination_dir = f"../Build/{modSteamId}"
 source_solution = "../Source/Client/GameClient.csproj"
 dll_output_dir = "../Source/Client/bin/Debug/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
-dll_names = ["GameClient.dll", "Newtonsoft.Json.dll", "JsonDiffPatchDotNet.dll"]
+dll_names = ["GameClient.dll", "Newtonsoft.Json.dll", "JsonDiffPatchDotNet.dll", "BinaryFormatter.dll"]
 
 # RimWorld Directory
 rimworld_dir_file = "rimworld_dir.txt"

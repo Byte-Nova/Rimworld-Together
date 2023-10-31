@@ -8,6 +8,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 using UnityEngine;
 using Verse;
 
@@ -56,14 +57,13 @@ namespace RimworldTogether.GameClient.Managers.Actions
             chatMessagesJSON.usernames.Add(username);
             chatMessagesJSON.messages.Add(messageToSend);
 
-            string[] contents = new string[] { Serializer.SerializeToString(chatMessagesJSON) };
-            Packet packet = new Packet("ChatPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         public static void ReceiveMessages(Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = Serializer.SerializeFromString<ChatMessagesJSON>(packet.contents[0]);
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             for (int i = 0; i < chatMessagesJSON.usernames.Count(); i++)
             {
