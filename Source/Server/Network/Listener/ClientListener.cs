@@ -31,17 +31,15 @@ namespace RimworldTogether.GameServer.Network.Listener
 
         public void ListenToClient()
         {
-            while (!targetClient.disconnectFlag)
-            {
-                string data = targetClient.streamReader.ReadLine();
-
-                Packet receivedPacket = Serializer.SerializeStringToPacket(data);
-                PacketHandler.HandlePacket(targetClient, receivedPacket);
-            }
-
             try
             {
+                while (!targetClient.disconnectFlag)
+                {
+                    string data = targetClient.streamReader.ReadLine();
 
+                    Packet receivedPacket = Serializer.SerializeStringToPacket(data);
+                    PacketHandler.HandlePacket(targetClient, receivedPacket);
+                }
             }
 
             catch (Exception e)
