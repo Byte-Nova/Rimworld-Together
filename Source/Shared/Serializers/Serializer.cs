@@ -15,9 +15,6 @@ namespace RimworldTogether.Shared.Serializers
             byte[] packetBytes = ObjectConverter.ConvertObjectToBytes(packet);
             packetBytes = GZip.Compress(packetBytes);
 
-            //Logger.WriteToConsole($"Outgoing > {packetBytes.Length}", Logger.LogMode.Warning);
-            //Logger.WriteToConsole("");
-
             return Convert.ToBase64String(packetBytes);
         }
 
@@ -25,8 +22,6 @@ namespace RimworldTogether.Shared.Serializers
         {
             byte[] packetBytes = Convert.FromBase64String(serializable);
             packetBytes = GZip.Decompress(packetBytes);
-
-            //Logger.WriteToConsole($"Incoming > {packetBytes.Length}", Logger.LogMode.Warning);
 
             return (Packet)ObjectConverter.ConvertBytesToObject(packetBytes);
         }

@@ -1,4 +1,5 @@
 ﻿using RimworldTogether.GameServer.Network.Listener;
+using Shared.Network;
 using System.Net;
 using System.Net.Sockets;
 
@@ -11,6 +12,10 @@ namespace RimworldTogether.GameServer.Network
         [NonSerialized] public StreamWriter streamWriter;
         [NonSerialized] public StreamReader streamReader;
         [NonSerialized] public ClientListener clientListener;
+
+        [NonSerialized] public UploadManager uploadManager;
+        [NonSerialized] public DownloadManager downloadManager;
+
         [NonSerialized] public bool disconnectFlag;
 
         public string uid;

@@ -1,7 +1,9 @@
 ﻿using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Network;
 using System;
 using System.IO;
 using System.Net.Sockets;
@@ -16,8 +18,14 @@ namespace RimworldTogether.GameClient.Network.Listener
         public StreamWriter sw;
         public StreamReader sr;
 
+        public DownloadManager downloadManager;
+        public UploadManager uploadManager;
+
         public ServerListener(TcpClient connection)
         {
+            Threader.GenerateThread(Threader.Mode.Heartbeat);
+            DialogShortcuts.ShowLoginOrRegisterDialogs();
+
             this.connection = connection;
             ns = connection.GetStream();
             sw = new StreamWriter(ns);
@@ -28,8 +36,6 @@ namespace RimworldTogether.GameClient.Network.Listener
         {
             try
             {
-                DialogShortcuts.ShowLoginOrRegisterDialogs();
-
                 while (true)
                 {
                     string data = sr.ReadLine();
@@ -42,7 +48,8 @@ namespace RimworldTogether.GameClient.Network.Listener
 
             catch (Exception e)
             {
-                Log.Message(e.ToString());
+                Log.Error($"[Rimworld Together] (DEBUG) > {e}");
+
                 Network.DisconnectFromServer();
             }
         }

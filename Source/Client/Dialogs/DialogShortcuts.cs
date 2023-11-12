@@ -64,7 +64,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
                 "Separate colony", "Together with other players (TBA)", null, delegate { DialogManager.PushNewDialog(d3); },
-                delegate { PersistentPatches.RestartGame(true); });
+                delegate { DisconnectionManager.RestartGame(true); });
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "Welcome to the world view!",
                         "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },

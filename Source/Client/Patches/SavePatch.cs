@@ -16,9 +16,9 @@ namespace RimworldTogether.GameClient.Patches
         {
             if (Network.Network.isConnectedToServer)
             {
-                PersistentPatches.ForcePermadeath();
-                PersistentPatches.ManageDevOptions();
-                PersistentPatches.ManageGameDifficulty();
+                ClientValues.ForcePermadeath();
+                ClientValues.ManageDevOptions();
+                CustomDifficultyManager.EnforceCustomDifficulty();
 
                 SaveManager.customSaveName = $"Server - {Network.Network.ip} - {ChatManager.username}";
                 fileName = SaveManager.customSaveName;
@@ -47,7 +47,7 @@ namespace RimworldTogether.GameClient.Patches
             if (Network.Network.isConnectedToServer)
             {
                 if (ClientValues.isDisconnecting || ClientValues.isQuiting) MapManager.SendMapsToServer();
-                SaveManager.SendSaveToServer(fileName);
+                SaveManager.SendSavePartToServer(fileName);
             }
         }
     }

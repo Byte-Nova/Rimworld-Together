@@ -8,20 +8,81 @@ using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.JSON;
 using Shared.Misc;
-
+using Shared.Network;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class SaveManager
     {
-        public static void SaveUserGame(ServerClient client, Packet packet)
+        public static void SaveUserGamePart(ServerClient client, Packet packet)
         {
-            SaveFileJSON saveFileJSON = (SaveFileJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
-            byte[] compressedSave = GZip.Compress(saveFileJSON.saveData);
+            string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
+            string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
 
-            File.WriteAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave"), compressedSave);
+            FileTransferJSON fileTransferJSON = (FileTransferJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
-            if (saveFileJSON.saveMode == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
+            if (client.downloadManager == null)
+            {
+                client.downloadManager = new DownloadManager();
+                client.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileName, fileTransferJSON.fileParts);
+            }
+
+            client.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
+
+            if (fileTransferJSON.isLastPart)
+            {
+                client.downloadManager.FinishFileWrite();
+
+                byte[] saveBytes = File.ReadAllBytes(tempClientSavePath);
+                byte[] compressedSave = GZip.Compress(saveBytes);
+                File.WriteAllBytes(baseClientSavePath, compressedSave);
+
+                File.Delete(tempClientSavePath);
+
+                OnUserSave(client, fileTransferJSON);
+            }
+
+            else
+            {
+                Packet rPacket = Packet.CreatePacketFromJSON("RequestSavePartPacket");
+                client.clientListener.SendData(rPacket);
+            }
+        }
+
+        public static void LoadUserGamePart(ServerClient client)
+        {
+            string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
+            string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
+
+            if (client.uploadManager == null)
+            {
+                byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(baseClientSavePath));
+                File.WriteAllBytes(tempClientSavePath, decompressedSave);
+
+                client.uploadManager = new UploadManager();
+                client.uploadManager.PrepareUpload(tempClientSavePath);
+            }
+
+            FileTransferJSON fileTransferJSON = new FileTransferJSON();
+            fileTransferJSON.fileName = client.uploadManager.fileName;
+            fileTransferJSON.fileSize = client.uploadManager.fileSize;
+            fileTransferJSON.fileParts = client.uploadManager.fileParts;
+            fileTransferJSON.fileBytes = client.uploadManager.ReadFilePart();
+            fileTransferJSON.isLastPart = client.uploadManager.isLastPart;
+
+            Packet packet = Packet.CreatePacketFromJSON("LoadFilePartPacket", fileTransferJSON);
+            client.clientListener.SendData(packet);
+
+            if (client.uploadManager.isLastPart)
+            {
+                File.Delete(tempClientSavePath);
+                client.uploadManager = null;
+            }
+        }
+
+        private static void OnUserSave(ServerClient client, FileTransferJSON fileTransferJSON)
+        {
+            if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
             {
                 CommandManager.SendDisconnectCommand(client);
 
@@ -30,7 +91,7 @@ namespace RimworldTogether.GameServer.Managers
                 Logger.WriteToConsole($"[Save game] > {client.username} > To menu");
             }
 
-            else if (saveFileJSON.saveMode == ((int)CommonEnumerators.SaveMode.Quit).ToString())
+            else if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Quit).ToString())
             {
                 CommandManager.SendQuitCommand(client);
 
@@ -39,24 +100,12 @@ namespace RimworldTogether.GameServer.Managers
                 Logger.WriteToConsole($"[Save game] > {client.username} > Quiting");
             }
 
-            else if (saveFileJSON.saveMode == ((int)CommonEnumerators.SaveMode.Transfer).ToString())
+            else if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Transfer).ToString())
             {
                 Logger.WriteToConsole($"[Save game] > {client.username} > Item transfer");
             }
 
             else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");
-        }
-
-        public static void LoadUserGame(ServerClient client)
-        {
-            byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave")));
-            SaveFileJSON saveFileJSON = new SaveFileJSON();
-            saveFileJSON.saveData = decompressedSave;
-
-            Packet packet = Packet.CreatePacketFromJSON("LoadFilePacket", saveFileJSON);
-            client.clientListener.SendData(packet);
-
-            Logger.WriteToConsole($"[Load game] > {client.username}");
         }
 
         public static bool CheckIfUserHasSave(ServerClient client)

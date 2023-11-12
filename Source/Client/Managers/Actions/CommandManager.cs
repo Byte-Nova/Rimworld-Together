@@ -31,11 +31,11 @@ namespace RimworldTogether.GameClient.Managers
                     break;
 
                 case (int)CommonEnumerators.CommandType.Disconnect:
-                    PersistentPatches.DisconnectToMenu();
+                    DisconnectionManager.DisconnectToMenu();
                     break;
 
                 case (int)CommonEnumerators.CommandType.Quit:
-                    PersistentPatches.QuitGame();
+                    DisconnectionManager.QuitGame();
                     break;
 
                 case (int)CommonEnumerators.CommandType.Broadcast:
@@ -51,14 +51,14 @@ namespace RimworldTogether.GameClient.Managers
         private static void OnOpCommand()
         {
             ServerValues.isAdmin = true;
-            PersistentPatches.ManageDevOptions();
+            ClientValues.ManageDevOptions();
             DialogManager.PushNewDialog(new RT_Dialog_OK("You are now an admin!"));
         }
 
         private static void OnDeopCommand()
         {
             ServerValues.isAdmin = false;
-            PersistentPatches.ManageDevOptions();
+            ClientValues.ManageDevOptions();
             DialogManager.PushNewDialog(new RT_Dialog_OK("You are no longer an admin!"));
         }
 
@@ -74,7 +74,7 @@ namespace RimworldTogether.GameClient.Managers
 
         private static void OnForceSaveCommand()
         {
-            if (!ClientValues.isReadyToPlay) PersistentPatches.DisconnectToMenu();
+            if (!ClientValues.isReadyToPlay) DisconnectionManager.DisconnectToMenu();
             else
             {
                 ClientValues.isDisconnecting = true;

@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Threading;
 using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Network.Listener;
@@ -19,18 +20,14 @@ namespace RimworldTogether.GameClient.Network
 
         public static bool isConnectedToServer;
         public static bool isTryingToConnect;
-        public static bool usingNewNetworking;
 
         public static void StartConnection()
         {
             if (TryConnectToServer())
             {
-                Threader.GenerateThread(Threader.Mode.Heartbeat);
-
                 DialogManager.PopWaitDialog();
 
-                //TODO
-                //PersistentPatches.ManageDevOptions();
+                ClientValues.ManageDevOptions();
 
                 SiteManager.SetSiteDefs();
 
@@ -110,17 +107,18 @@ namespace RimworldTogether.GameClient.Network
 
         public static void DisconnectFromServer()
         {
+            isTryingToConnect = false;
+
             if (isConnectedToServer)
             {
                 serverListener.connection.Dispose();
                 isConnectedToServer = false;
-                isTryingToConnect = false;
 
                 Action r1 = delegate
                 {
                     if (Current.ProgramState == ProgramState.Playing)
                     {
-                        PersistentPatches.DisconnectToMenu();
+                        DisconnectionManager.DisconnectToMenu();
                     }
                 };
 

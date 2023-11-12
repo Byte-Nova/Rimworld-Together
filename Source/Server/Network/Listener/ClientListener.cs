@@ -38,7 +38,7 @@ namespace RimworldTogether.GameServer.Network.Listener
 
             catch (Exception e)
             {
-                Logger.WriteToConsole(e.ToString(), Logger.LogMode.Error);
+                Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
                 targetClient.disconnectFlag = true;
             }
         }

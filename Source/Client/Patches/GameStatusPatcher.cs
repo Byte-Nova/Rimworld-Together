@@ -20,9 +20,9 @@ namespace RimworldTogether.GameClient.Patches
             {
                 if (Network.Network.isConnectedToServer)
                 {
-                    PersistentPatches.ForcePermadeath();
-                    PersistentPatches.ManageDevOptions();
-                    PersistentPatches.ManageGameDifficulty();
+                    ClientValues.ForcePermadeath();
+                    ClientValues.ManageDevOptions();
+                    CustomDifficultyManager.EnforceCustomDifficulty();
 
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = __instance.CurrentMap.Tile.ToString();
@@ -44,9 +44,9 @@ namespace RimworldTogether.GameClient.Patches
             {
                 if (Network.Network.isConnectedToServer)
                 {
-                    PersistentPatches.ForcePermadeath();
-                    PersistentPatches.ManageDevOptions();
-                    PersistentPatches.ManageGameDifficulty();
+                    ClientValues.ForcePermadeath();
+                    ClientValues.ManageDevOptions();
+                    CustomDifficultyManager.EnforceCustomDifficulty();
 
                     PlanetBuilder.BuildPlanet();
 

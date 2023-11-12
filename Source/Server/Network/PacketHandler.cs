@@ -12,8 +12,6 @@ namespace RimworldTogether.GameServer.Network
         public static void HandlePacket(ServerClient client, Packet packet)
         {
             Logger.WriteToConsole($"[Header] > {packet.header}");
-            //Logger.WriteToConsole($"[Pointer] > {packet.pointer}");
-            //Logger.WriteToConsole($"[Contents] > {packet.contents}");
 
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);
@@ -30,9 +28,14 @@ namespace RimworldTogether.GameServer.Network
             UserRegister.TryRegisterUser(client, packet);
         }
 
-        public static void SaveFilePacket(ServerClient client, Packet packet)
+        public static void RequestSavePartPacket(ServerClient client, Packet packet)
         {
-            SaveManager.SaveUserGame(client, packet);
+            SaveManager.LoadUserGamePart(client);
+        }
+
+        public static void LoadFilePartPacket(ServerClient client, Packet packet)
+        {
+            SaveManager.SaveUserGamePart(client, packet);
         }
 
         public static void LikelihoodPacket(ServerClient client, Packet packet)

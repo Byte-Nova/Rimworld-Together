@@ -17,8 +17,6 @@ namespace RimworldTogether.GameClient.Network
         public static void HandlePacket(Packet packet)
         {
             Log.Message($"[Header] > {packet.header}");
-            //Log.Message($"[Pointer] > {packet.header}");
-            //Log.Message($"[Contents] > {packet.contents}");
 
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);
@@ -90,9 +88,14 @@ namespace RimworldTogether.GameClient.Network
             DialogManager.PopWaitDialog();
         }
 
-        public static void LoadFilePacket(Packet packet)
+        public static void RequestSavePartPacket(Packet packet)
         {
-            SaveManager.ReceiveSaveFromServer(packet);
+            SaveManager.SendSavePartToServer();
+        }
+
+        public static void LoadFilePartPacket(Packet packet)
+        {
+            SaveManager.ReceiveSavePartFromServer(packet);
         }
 
         public static void PlayerRecountPacket(Packet packet)

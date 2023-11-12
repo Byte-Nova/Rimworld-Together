@@ -44,7 +44,7 @@ namespace RimworldTogether.GameServer.Users
 
             if (WorldManager.CheckIfWorldExists())
             {
-                if (SaveManager.CheckIfUserHasSave(client)) SaveManager.LoadUserGame(client);
+                if (SaveManager.CheckIfUserHasSave(client)) SaveManager.LoadUserGamePart(client);
                 else WorldManager.SendWorldFile(client);
             }
             else WorldManager.RequireWorldFile(client);
