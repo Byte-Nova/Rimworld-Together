@@ -4,6 +4,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
@@ -49,7 +50,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                 else
                 {
-                    MapDetailsJSON mapDetails = MapManager.GetUserMapFromTile(offlineVisitDetails.targetTile);
+                    MapFileJSON mapDetails = MapManager.GetUserMapFromTile(offlineVisitDetails.targetTile);
                     offlineVisitDetails.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);

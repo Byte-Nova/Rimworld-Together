@@ -8,6 +8,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 using Shared.Misc;
 using Verse;
 using Verse.AI.Group;
@@ -49,7 +50,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(raidDetailsJSON.mapDetails);
+            MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(raidDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(mapFileJSON.mapData);
 
             Action r1 = delegate { PrepareMapForRaid(mapDetailsJSON); };
 

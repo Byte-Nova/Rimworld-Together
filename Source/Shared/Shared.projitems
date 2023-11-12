@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\VisitDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\ChatMessagesJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\CommandDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\MapFileJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Overrides\BindOverrider.cs" />

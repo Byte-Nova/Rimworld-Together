@@ -263,6 +263,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             LetterManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
                 LetterDefOf.PositiveEvent);
+
+            SaveManager.ForceSave();
         }
 
         private static void OnRecoverEventSilver()

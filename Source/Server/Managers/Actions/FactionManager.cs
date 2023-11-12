@@ -199,7 +199,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                         {
                             cClient.hasFaction = false;
                             cClient.factionName = "";
-                            client.clientListener.SendData(packet);
+                            cClient.clientListener.SendData(packet);
 
                             LikelihoodManager.UpdateClientLikelihoods(cClient);
                         }

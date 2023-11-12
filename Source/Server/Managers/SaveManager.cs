@@ -6,6 +6,7 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 using Shared.Misc;
 
 
@@ -100,8 +101,8 @@ namespace RimworldTogether.GameServer.Managers
 
                 Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
 
-                MapDetailsJSON[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
-                foreach (MapDetailsJSON map in userMaps) MapManager.DeleteMap(map);
+                MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
+                foreach (MapFileJSON map in userMaps) MapManager.DeleteMap(map);
 
                 SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
                 foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
@@ -127,8 +128,8 @@ namespace RimworldTogether.GameServer.Managers
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);
             if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
-            MapDetailsJSON[] userMaps = MapManager.GetAllMapsFromUsername(username);
-            foreach (MapDetailsJSON map in userMaps) MapManager.DeleteMap(map);
+            MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(username);
+            foreach (MapFileJSON map in userMaps) MapManager.DeleteMap(map);
 
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(username);
             foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);

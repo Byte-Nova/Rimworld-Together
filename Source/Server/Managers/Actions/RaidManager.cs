@@ -4,6 +4,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
@@ -49,7 +50,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                 else
                 {
-                    MapDetailsJSON mapDetails = MapManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
+                    MapFileJSON mapDetails = MapManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
                     raidDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);

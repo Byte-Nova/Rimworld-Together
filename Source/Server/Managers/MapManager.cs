@@ -5,6 +5,7 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
@@ -13,17 +14,16 @@ namespace RimworldTogether.GameServer.Managers
     {
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
-            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
-            mapDetailsJSON.mapOwner = client.username;
+            MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            mapFileJSON.mapOwner = client.username;
 
-            byte[] compressedMapBytes = ObjectConverter.ConvertObjectToBytes(mapDetailsJSON);
-            //byte[] compressedMapBytes = GZip.Compress(ObjectConverter.ConvertObjectToBytes(mapDetailsJSON));
-            File.WriteAllBytes(Path.Combine(Program.mapsPath, mapDetailsJSON.mapTile + ".json"), compressedMapBytes);
+            byte[] compressedMapBytes = GZip.Compress(ObjectConverter.ConvertObjectToBytes(mapFileJSON));
+            File.WriteAllBytes(Path.Combine(Program.mapsPath, mapFileJSON.mapTile + ".mpmap"), compressedMapBytes);
 
-            Logger.WriteToConsole($"[Save map] > {client.username} > {mapDetailsJSON.mapTile}");
+            Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileJSON.mapTile}");
         }
 
-        public static void DeleteMap(MapDetailsJSON mapFile)
+        public static void DeleteMap(MapFileJSON mapFile)
         {
             if (mapFile == null) return;
 
@@ -32,17 +32,16 @@ namespace RimworldTogether.GameServer.Managers
             Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", Logger.LogMode.Warning);
         }
 
-        public static MapDetailsJSON[] GetAllMapFiles()
+        public static MapFileJSON[] GetAllMapFiles()
         {
-            List<MapDetailsJSON> mapDetails = new List<MapDetailsJSON>();
+            List<MapFileJSON> mapDetails = new List<MapFileJSON>();
 
             string[] maps = Directory.GetFiles(Program.mapsPath);
             foreach (string str in maps)
             {
-                byte[] fileBytes = File.ReadAllBytes(str);
-                //byte[] decompressedBytes = GZip.Decompress(fileBytes);
+                byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(str));
 
-                MapDetailsJSON newMap = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(fileBytes);
+                MapFileJSON newMap = (MapFileJSON)ObjectConverter.ConvertBytesToObject(decompressedBytes);
                 mapDetails.Add(newMap);
             }
 
@@ -51,8 +50,8 @@ namespace RimworldTogether.GameServer.Managers
 
         public static bool CheckIfMapExists(string mapTileToCheck)
         {
-            MapDetailsJSON[] maps = GetAllMapFiles();
-            foreach (MapDetailsJSON map in maps)
+            MapFileJSON[] maps = GetAllMapFiles();
+            foreach (MapFileJSON map in maps)
             {
                 if (map.mapTile == mapTileToCheck)
                 {
@@ -63,25 +62,25 @@ namespace RimworldTogether.GameServer.Managers
             return false;
         }
 
-        public static MapDetailsJSON[] GetAllMapsFromUsername(string username)
+        public static MapFileJSON[] GetAllMapsFromUsername(string username)
         {
-            List<MapDetailsJSON> userMaps = new List<MapDetailsJSON>();
+            List<MapFileJSON> userMaps = new List<MapFileJSON>();
 
             SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in userSettlements)
             {
-                MapDetailsJSON mapFile = GetUserMapFromTile(settlementFile.tile);
+                MapFileJSON mapFile = GetUserMapFromTile(settlementFile.tile);
                 userMaps.Add(mapFile);
             }
 
             return userMaps.ToArray();
         }
 
-        public static MapDetailsJSON GetUserMapFromTile(string mapTileToGet)
+        public static MapFileJSON GetUserMapFromTile(string mapTileToGet)
         {
-            MapDetailsJSON[] mapFiles = GetAllMapFiles();
+            MapFileJSON[] mapFiles = GetAllMapFiles();
 
-            foreach (MapDetailsJSON mapFile in mapFiles)
+            foreach (MapFileJSON mapFile in mapFiles)
             {
                 if (mapFile.mapTile == mapTileToGet) return mapFile;
             }

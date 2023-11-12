@@ -1,5 +1,7 @@
 ﻿using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 using Verse;
 using Verse.Noise;
 
@@ -21,7 +23,12 @@ namespace RimworldTogether.GameClient.Managers
         private static void SendMapToServerSingle(Map map)
         {
             MapDetailsJSON mapDetailsJSON = RimworldManager.GetMap(map, true, true, true, true);
-            Packet packet = Packet.CreatePacketFromJSON("MapPacket", mapDetailsJSON);
+
+            MapFileJSON mapFileJSON = new MapFileJSON();
+            mapFileJSON.mapTile = mapDetailsJSON.mapTile;
+            mapFileJSON.mapData = ObjectConverter.ConvertObjectToBytes(mapDetailsJSON);
+
+            Packet packet = Packet.CreatePacketFromJSON("MapPacket", mapFileJSON);
             Network.Network.serverListener.SendData(packet);
         }
     }

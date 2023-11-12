@@ -61,7 +61,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                         eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
                         Packet rPacket = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
-                        client.clientListener.SendData(rPacket);
+                        target.clientListener.SendData(rPacket);
                     }
                 }
             }
