@@ -12,19 +12,15 @@ using RimworldTogether.Shared.JSON.Things;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
 using Verse.Sound;
+using static Shared.Misc.CommonEnumerators;
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class TransferManager
     {
-        public enum TransferMode { Gift, Trade, Rebound, Pod }
-
-        public enum TransferLocation { Caravan, Settlement, Pod }
-
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
-
         public static void ParseTransferPacket(Packet packet)
         {
             TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
@@ -71,12 +67,12 @@ namespace RimworldTogether.GameClient.Managers.Actions
             }
         }
 
-        public static void TakeTransferItems(TransferLocation transferLocation)
+        public static void TakeTransferItems(CommonEnumerators.TransferLocation transferLocation)
         {
             ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
 
-            if (transferLocation == TransferLocation.Caravan) ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
-            else if (transferLocation == TransferLocation.Settlement) ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile.ToString();
+            if (transferLocation == CommonEnumerators.TransferLocation.Caravan) ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
+            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement) ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile.ToString();
 
             Action toDo = delegate
             {
@@ -84,7 +80,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 {
                     SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
 
-                    if (transferLocation == TransferLocation.Caravan)
+                    if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
                     {
                         TradeSession.playerNegotiator.GetCaravan().RecacheImmobilizedNow();
                     }

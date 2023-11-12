@@ -13,7 +13,7 @@ namespace RimworldTogether.Shared.Serializers
         public static string SerializePacketToString(Packet packet)
         {
             byte[] packetBytes = ObjectConverter.ConvertObjectToBytes(packet);
-            packetBytes = GZip2.Compress(packetBytes);
+            packetBytes = GZip.Compress(packetBytes);
 
             //Logger.WriteToConsole($"Outgoing > {packetBytes.Length}", Logger.LogMode.Warning);
             //Logger.WriteToConsole("");
@@ -24,7 +24,7 @@ namespace RimworldTogether.Shared.Serializers
         public static Packet SerializeStringToPacket(string serializable)
         {
             byte[] packetBytes = Convert.FromBase64String(serializable);
-            packetBytes = GZip2.Decompress(packetBytes);
+            packetBytes = GZip.Decompress(packetBytes);
 
             //Logger.WriteToConsole($"Incoming > {packetBytes.Length}", Logger.LogMode.Warning);
 

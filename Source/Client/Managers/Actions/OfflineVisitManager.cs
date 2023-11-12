@@ -12,26 +12,26 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
 using Verse.AI.Group;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class OfflineVisitManager
     {
-        private enum OfflineVisitStepMode { Request, Deny }
-
         public static void ParseOfflineVisitPacket(Packet packet)
         {
             OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(offlineVisitDetails.offlineVisitStepMode))
             {
-                case (int)OfflineVisitStepMode.Request:
+                case (int)CommonEnumerators.OfflineVisitStepMode.Request:
                     OnRequestAccepted(offlineVisitDetails);
                     break;
 
-                case (int)OfflineVisitStepMode.Deny:
+                case (int)CommonEnumerators.OfflineVisitStepMode.Deny:
                     OnOfflineVisitDeny();
                     break;
             }
@@ -42,8 +42,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             OfflineVisitDetailsJSON offlineVisitDetailsJSON = new OfflineVisitDetailsJSON();
-            offlineVisitDetailsJSON.offlineVisitStepMode = ((int)OfflineVisitStepMode.Request).ToString();
-            offlineVisitDetailsJSON.offlineVisitData = ClientValues.chosenSettlement.Tile.ToString();
+            offlineVisitDetailsJSON.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Request).ToString();
+            offlineVisitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetailsJSON);
             Network.Network.serverListener.SendData(packet);
@@ -60,11 +60,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON dummyDetails = Serializer.SerializeFromString<MapDetailsJSON>(offlineVisitDetailsJSON.offlineVisitData);
-            byte[] inflatedBytes = GZip.Decompress(dummyDetails.deflatedMapData);
-            string inflatedString = Encoding.UTF8.GetString(inflatedBytes);
-
-            MapDetailsJSON mapDetailsJSON = Serializer.SerializeFromString<MapDetailsJSON>(inflatedString);
+            MapDetailsJSON mapDetailsJSON = offlineVisitDetailsJSON.mapDetails;
 
             Action r1 = delegate { PrepareMapForOfflineVisit(mapDetailsJSON); };
 

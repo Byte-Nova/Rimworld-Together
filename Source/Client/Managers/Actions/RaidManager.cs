@@ -12,26 +12,26 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
 using Verse.AI.Group;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class RaidManager
     {
-        private enum RaidStepMode { Request, Deny }
-
         public static void ParseRaidPacket(Packet packet)
         {
             RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(raidDetailsJSON.raidStepMode))
             {
-                case (int)RaidStepMode.Request:
+                case (int)CommonEnumerators.RaidStepMode.Request:
                     OnRaidAccept(raidDetailsJSON);
                     break;
 
-                case (int)RaidStepMode.Deny:
+                case (int)CommonEnumerators.RaidStepMode.Deny:
                     OnRaidDeny();
                     break;
             }
@@ -42,8 +42,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             RaidDetailsJSON raidDetailsJSON = new RaidDetailsJSON();
-            raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Request).ToString();
-            raidDetailsJSON.raidData = ClientValues.chosenSettlement.Tile.ToString();
+            raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
+            raidDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
             Network.Network.serverListener.SendData(packet);
@@ -53,11 +53,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON dummyDetails = Serializer.SerializeFromString<MapDetailsJSON>(raidDetailsJSON.raidData);
-            byte[] inflatedBytes = GZip.Decompress(dummyDetails.deflatedMapData);
-            string inflatedString = Encoding.UTF8.GetString(inflatedBytes);
-
-            MapDetailsJSON mapDetailsJSON = Serializer.SerializeFromString<MapDetailsJSON>(inflatedString);
+            MapDetailsJSON mapDetailsJSON = raidDetailsJSON.mapDetails;
 
             Action r1 = delegate { PrepareMapForRaid(mapDetailsJSON); };
 

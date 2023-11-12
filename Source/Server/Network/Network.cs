@@ -6,6 +6,7 @@ using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network.Listener;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Network
 {
@@ -45,7 +46,7 @@ namespace RimworldTogether.GameServer.Network
             {
                 if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))
                 {
-                    UserManager_Joinings.SendLoginResponse(newServerClient, UserManager_Joinings.LoginResponse.ServerFull);
+                    UserManager_Joinings.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
                     Logger.WriteToConsole($"[Warning] > Server Full", Logger.LogMode.Warning);
                 }
 

@@ -11,14 +11,14 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class SpyManager
     {
-        private enum SpyStepMode { Request, Deny }
-
         public static int spyCost;
 
         public static void ParseSpyPacket(Packet packet)
@@ -27,11 +27,11 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             switch(int.Parse(spyDetailsJSON.spyStepMode))
             {
-                case (int)SpyStepMode.Request:
+                case (int)CommonEnumerators.SpyStepMode.Request:
                     OnSpyAccept(spyDetailsJSON);
                     break;
 
-                case (int)SpyStepMode.Deny:
+                case (int)CommonEnumerators.SpyStepMode.Deny:
                     OnSpyDeny();
                     break;
             }
@@ -64,8 +64,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
                     SpyDetailsJSON spyDetailsJSON = new SpyDetailsJSON();
-                    spyDetailsJSON.spyStepMode = ((int)SpyStepMode.Request).ToString();
-                    spyDetailsJSON.spyData = ClientValues.chosenSettlement.Tile.ToString();
+                    spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
+                    spyDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
@@ -80,11 +80,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON dummyDetails = Serializer.SerializeFromString<MapDetailsJSON>(spyDetailsJSON.spyData);
-            byte[] inflatedBytes = GZip.Decompress(dummyDetails.deflatedMapData);
-            string inflatedString = Encoding.UTF8.GetString(inflatedBytes);
-
-            MapDetailsJSON mapDetailsJSON = Serializer.SerializeFromString<MapDetailsJSON>(inflatedString);
+            MapDetailsJSON mapDetailsJSON = spyDetailsJSON.mapDetails;
 
             Action r1 = delegate { PrepareMapForSpy(mapDetailsJSON); };
 

@@ -8,63 +8,47 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class FactionManager
     {
-        private enum FactionManifestMode 
-        { 
-            Create, 
-            Delete, 
-            NameInUse, 
-            NoPower, 
-            AddMember, 
-            RemoveMember, 
-            AcceptInvite, 
-            Promote, 
-            Demote, 
-            AdminProtection,
-            MemberList
-        }
-
-        private enum FactionRanks { Member, Moderator, Admin }
-
         public static void ParseFactionPacket(Packet packet)
         {
             FactionManifestJSON factionManifest = (FactionManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(factionManifest.manifestMode))
             {
-                case (int)FactionManifestMode.Create:
+                case (int)CommonEnumerators.FactionManifestMode.Create:
                     OnCreateFaction();
                     break;
 
-                case (int)FactionManifestMode.Delete:
+                case (int)CommonEnumerators.FactionManifestMode.Delete:
                     OnDeleteFaction();
                     break;
 
-                case (int)FactionManifestMode.NameInUse:
+                case (int)CommonEnumerators.FactionManifestMode.NameInUse:
                     OnFactionNameInUse();
                     break;
 
-                case (int)FactionManifestMode.NoPower:
+                case (int)CommonEnumerators.FactionManifestMode.NoPower:
                     OnFactionNoPower();
                     break;
 
-                case (int)FactionManifestMode.AddMember:
+                case (int)CommonEnumerators.FactionManifestMode.AddMember:
                     OnFactionGetInvited(factionManifest);
                     break;
 
-                case (int)FactionManifestMode.RemoveMember:
+                case (int)CommonEnumerators.FactionManifestMode.RemoveMember:
                     OnFactionGetKicked();
                     break;
 
-                case (int)FactionManifestMode.AdminProtection:
+                case (int)CommonEnumerators.FactionManifestMode.AdminProtection:
                     OnFactionAdminProtection();
                     break;
 
-                case (int)FactionManifestMode.MemberList:
+                case (int)CommonEnumerators.FactionManifestMode.MemberList:
                     OnFactionMemberList(factionManifest);
                     break;
             }
@@ -77,7 +61,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for member list"));
 
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
-                factionManifestJSON.manifestMode = ((int)FactionManifestMode.MemberList).ToString();
+                factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.MemberList).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
                 Network.Network.serverListener.SendData(packet);
@@ -86,7 +70,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Action r2 = delegate
             {
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
-                factionManifestJSON.manifestMode = ((int)FactionManifestMode.RemoveMember).ToString();
+                factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.RemoveMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
@@ -98,7 +82,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for faction deletion"));
 
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
-                factionManifestJSON.manifestMode = ((int)FactionManifestMode.Delete).ToString();
+                factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Delete).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
                 Network.Network.serverListener.SendData(packet);
@@ -132,7 +116,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for faction creation"));
 
                     FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
-                    factionManifestJSON.manifestMode = ((int)FactionManifestMode.Create).ToString();
+                    factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Create).ToString();
                     factionManifestJSON.manifestDetails = DialogManager.dialog1ResultOne;
 
                     Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
@@ -152,7 +136,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Action r1 = delegate
             {
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
-                factionManifestJSON.manifestMode = ((int)FactionManifestMode.Promote).ToString();
+                factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Promote).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
@@ -162,7 +146,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Action r2 = delegate
             {
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
-                factionManifestJSON.manifestMode = ((int)FactionManifestMode.Demote).ToString();
+                factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Demote).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
@@ -172,7 +156,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Action r3 = delegate
             {
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
-                factionManifestJSON.manifestMode = ((int)FactionManifestMode.RemoveMember).ToString();
+                factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.RemoveMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
@@ -211,7 +195,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Action r1 = delegate
             {
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
-                factionManifestJSON.manifestMode = ((int)FactionManifestMode.AddMember).ToString();
+                factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.AddMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
@@ -263,7 +247,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 ServerValues.hasFaction = true;
 
-                factionManifest.manifestMode = ((int)FactionManifestMode.AcceptInvite).ToString();
+                factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.AcceptInvite).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
                 Network.Network.serverListener.SendData(packet);
@@ -293,7 +277,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             for (int i = 0; i < factionManifest.manifestComplexDetails.Count(); i++)
             {
                 unraveledDetails.Add($"{factionManifest.manifestComplexDetails[i]} " +
-                    $"- {(FactionRanks)int.Parse(factionManifest.manifestSecondaryComplexDetails[i])}");
+                    $"- {(CommonEnumerators.FactionRanks)int.Parse(factionManifest.manifestSecondaryComplexDetails[i])}");
             }
 
             RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members", 

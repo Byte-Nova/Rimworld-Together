@@ -5,36 +5,35 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class VisitManager
     {
-        public enum VisitStepMode { Request, Accept, Reject, Unavailable, Action, Stop }
-
         public static void ParseVisitPacket(ServerClient client, Packet packet)
         {
             VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
-                case (int)VisitStepMode.Request:
+                case (int)CommonEnumerators.VisitStepMode.Request:
                     SendVisitRequest(client, visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Accept:
+                case (int)CommonEnumerators.VisitStepMode.Accept:
                     AcceptVisitRequest(client, visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Reject:
+                case (int)CommonEnumerators.VisitStepMode.Reject:
                     RejectVisitRequest(client, visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Action:
+                case (int)CommonEnumerators.VisitStepMode.Action:
                     SendVisitActions(client, visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Stop:
+                case (int)CommonEnumerators.VisitStepMode.Stop:
                     SendVisitStop(client, visitDetailsJSON);
                     break;
             }
@@ -49,7 +48,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
-                    visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Unavailable).ToString();
+                    visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
                     client.clientListener.SendData(packet);
                 }
@@ -58,7 +57,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 {
                     if (toGet.inVisitWith != null)
                     {
-                        visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Unavailable).ToString();
+                        visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
                         Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
                         client.clientListener.SendData(packet);
                     }
@@ -112,7 +111,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
         {
             if (client.inVisitWith == null)
             {
-                visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
+                visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
                 client.clientListener.SendData(packet);
             }

@@ -5,28 +5,27 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class EventManager
     {
-        public enum EventStepMode { Send, Receive, Recover }
-
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
             EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(eventDetailsJSON.eventStepMode))
             {
-                case (int)EventStepMode.Send:
+                case (int)CommonEnumerators.EventStepMode.Send:
                     SendEvent(client, eventDetailsJSON);
                     break;
 
-                case (int)EventStepMode.Receive:
+                case (int)CommonEnumerators.EventStepMode.Receive:
                     //Nothing goes here
                     break;
 
-                case (int)EventStepMode.Recover:
+                case (int)CommonEnumerators.EventStepMode.Recover:
                     //Nothing goes here
                     break;
             }
@@ -40,7 +39,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventDetailsJSON.toTile);
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
-                    eventDetailsJSON.eventStepMode = ((int)EventStepMode.Recover).ToString();
+                    eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
                     client.clientListener.SendData(packet);
                 }
@@ -50,7 +49,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
                     if (target.inSafeZone)
                     {
-                        eventDetailsJSON.eventStepMode = ((int)EventStepMode.Recover).ToString();
+                        eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
                         Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
                         client.clientListener.SendData(packet);
                     }
@@ -62,7 +61,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                         Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
                         client.clientListener.SendData(packet);
 
-                        eventDetailsJSON.eventStepMode = ((int)EventStepMode.Receive).ToString();
+                        eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
                         Packet rPacket = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
                         client.clientListener.SendData(rPacket);
                     }

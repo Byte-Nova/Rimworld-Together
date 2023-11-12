@@ -7,6 +7,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using static Shared.Misc.CommonEnumerators;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -113,14 +114,14 @@ namespace RimworldTogether.GameServer.Managers
                     if (existingUser.password == client.password) return true;
                     else
                     {
-                        UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.InvalidLogin);
+                        UserManager_Joinings.SendLoginResponse(client, LoginResponse.InvalidLogin);
 
                         return false;
                     }
                 }
             }
 
-            UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.InvalidLogin);
+            UserManager_Joinings.SendLoginResponse(client, LoginResponse.InvalidLogin);
 
             return false;
         }
@@ -130,7 +131,7 @@ namespace RimworldTogether.GameServer.Managers
             if (!client.isBanned) return false;
             else
             {
-                UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.BannedLogin);
+                UserManager_Joinings.SendLoginResponse(client, LoginResponse.BannedLogin);
                 return true;
             }
         }
@@ -157,22 +158,7 @@ namespace RimworldTogether.GameServer.Managers
 
     public static class UserManager_Joinings
     {
-        public enum CheckMode { Login, Register }
-
-        public enum LoginResponse
-        {
-            InvalidLogin,
-            BannedLogin,
-            RegisterSuccess,
-            RegisterInUse,
-            RegisterError,
-            ExtraLogin,
-            WrongMods,
-            ServerFull,
-            Whitelist
-        }
-
-        public static bool CheckLoginDetails(ServerClient client, CheckMode mode)
+        public static bool CheckLoginDetails(ServerClient client, LoginMode mode)
         {
             bool isInvalid = false;
             if (string.IsNullOrWhiteSpace(client.username)) isInvalid = true;
@@ -183,8 +169,8 @@ namespace RimworldTogether.GameServer.Managers
             if (!isInvalid) return true;
             else
             {
-                if (mode == CheckMode.Login) SendLoginResponse(client, LoginResponse.InvalidLogin);
-                else if (mode == CheckMode.Register) SendLoginResponse(client, LoginResponse.RegisterError);
+                if (mode == LoginMode.Login) SendLoginResponse(client, LoginResponse.InvalidLogin);
+                else if (mode == LoginMode.Register) SendLoginResponse(client, LoginResponse.RegisterError);
                 return false;
             }
         }

@@ -9,44 +9,43 @@ using RimworldTogether.Shared.Network;
 using System;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameClient.Managers
 {
     public static class CommandManager
     {
-        public enum CommandType { Op, Deop, Ban, Disconnect, Quit, Broadcast, ForceSave }
-
         public static void ParseCommand(Packet packet)
         {
             CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(commandDetailsJSON.commandType))
             {
-                case (int)CommandType.Op:
+                case (int)CommonEnumerators.CommandType.Op:
                     OnOpCommand();
                     break;
 
-                case (int)CommandType.Deop:
+                case (int)CommonEnumerators.CommandType.Deop:
                     OnDeopCommand();
                     break;
 
-                case (int)CommandType.Ban:
+                case (int)CommonEnumerators.CommandType.Ban:
                     OnBanCommand();
                     break;
 
-                case (int)CommandType.Disconnect:
+                case (int)CommonEnumerators.CommandType.Disconnect:
                     PersistentPatches.DisconnectToMenu();
                     break;
 
-                case (int)CommandType.Quit:
+                case (int)CommonEnumerators.CommandType.Quit:
                     PersistentPatches.QuitGame();
                     break;
 
-                case (int)CommandType.Broadcast:
+                case (int)CommonEnumerators.CommandType.Broadcast:
                     OnBroadcastCommand(commandDetailsJSON);
                     break;
 
-                case (int)CommandType.ForceSave:
+                case (int)CommonEnumerators.CommandType.ForceSave:
                     OnForceSaveCommand();
                     break;
             }

@@ -8,17 +8,18 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
 
 namespace RimworldTogether.GameClient.Managers
 {
     public static class RimworldManager
     {
-        public enum Location { Caravan, Settlement }
+        public enum SearchLocation { Caravan, Settlement }
 
-        public static bool CheckForAnySocialPawn(Location location)
+        public static bool CheckForAnySocialPawn(SearchLocation location)
         {
-            if (location == Location.Caravan)
+            if (location == SearchLocation.Caravan)
             {
                 Caravan caravan = ClientValues.chosenCaravan;
 
@@ -26,7 +27,7 @@ namespace RimworldTogether.GameClient.Managers
                 if (playerNegotiator != null) return true;
             }
 
-            else if (location == Location.Settlement)
+            else if (location == SearchLocation.Settlement)
             {
                 Map map = Find.AnyPlayerHomeMap;
 
@@ -116,22 +117,13 @@ namespace RimworldTogether.GameClient.Managers
             return mapsWithComms.ToArray();
         }
 
-        public static string CompressMapToString(Map map, bool includeItems, bool includeHumans, bool includeAnimals, bool includeMods)
+        public static MapDetailsJSON GetMap(Map map, bool includeItems, bool includeHumans, bool includeAnimals, bool includeMods)
         {
             MapDetailsJSON mapDetailsJSON = DeepScribeManager.TransformMapToString(map, includeItems, includeHumans, includeAnimals);
 
             if (includeMods) mapDetailsJSON.mapMods = ModManager.GetRunningModList().ToList();
 
-            string toConvert = Serializer.SerializeToString(mapDetailsJSON);
-            byte[] bytes = Encoding.UTF8.GetBytes(toConvert);
-            return GZip.Compress(bytes);
-        }
-
-        public static MapDetailsJSON DeCompressMapDetailsFromString(string deflatedDetails)
-        {
-            byte[] inflatedBytes = GZip.Decompress(deflatedDetails);
-            string inflatedString = Encoding.UTF8.GetString(inflatedBytes);
-            return Serializer.SerializeFromString<MapDetailsJSON>(inflatedString);
+            return mapDetailsJSON;
         }
     }
 }

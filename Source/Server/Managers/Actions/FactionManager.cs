@@ -6,63 +6,47 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class FactionManager
     {
-        public enum FactionManifestMode
-        {
-            Create,
-            Delete,
-            NameInUse,
-            NoPower,
-            AddMember,
-            RemoveMember,
-            AcceptInvite,
-            Promote,
-            Demote,
-            AdminProtection,
-            MemberList
-        }
-
-        public enum FactionRanks { Member, Moderator, Admin }
-
         public static void ParseFactionPacket(ServerClient client, Packet packet)
         {
             FactionManifestJSON factionManifest = (FactionManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(factionManifest.manifestMode))
             {
-                case (int)FactionManifestMode.Create:
+                case (int)CommonEnumerators.FactionManifestMode.Create:
                     CreateFaction(client, factionManifest);
                     break;
 
-                case (int)FactionManifestMode.Delete:
+                case (int)CommonEnumerators.FactionManifestMode.Delete:
                     DeleteFaction(client, factionManifest);
                     break;
 
-                case (int)FactionManifestMode.AddMember:
+                case (int)CommonEnumerators.FactionManifestMode.AddMember:
                     AddMemberToFaction(client, factionManifest);
                     break;
 
-                case (int)FactionManifestMode.RemoveMember:
+                case (int)CommonEnumerators.FactionManifestMode.RemoveMember:
                     RemoveMemberFromFaction(client, factionManifest);
                     break;
 
-                case (int)FactionManifestMode.AcceptInvite:
+                case (int)CommonEnumerators.FactionManifestMode.AcceptInvite:
                     ConfirmAddMemberToFaction(client, factionManifest);
                     break;
 
-                case (int)FactionManifestMode.Promote:
+                case (int)CommonEnumerators.FactionManifestMode.Promote:
                     PromoteMember(client, factionManifest);
                     break;
 
-                case (int)FactionManifestMode.Demote:
+                case (int)CommonEnumerators.FactionManifestMode.Demote:
                     DemoteMember(client, factionManifest);
                     break;
 
-                case (int)FactionManifestMode.MemberList:
+                case (int)CommonEnumerators.FactionManifestMode.MemberList:
                     SendFactionMemberList(client, factionManifest);
                     break;
             }
@@ -115,17 +99,17 @@ namespace RimworldTogether.GameServer.Managers.Actions
             return false;
         }
 
-        public static FactionRanks GetMemberRank(FactionFile factionFile, string usernameToCheck)
+        public static CommonEnumerators.FactionRanks GetMemberRank(FactionFile factionFile, string usernameToCheck)
         {
             for(int i = 0; i < factionFile.factionMembers.Count(); i++)
             {
                 if (factionFile.factionMembers[i] == usernameToCheck)
                 {
-                    return (FactionRanks)int.Parse(factionFile.factionMemberRanks[i]);
+                    return (CommonEnumerators.FactionRanks)int.Parse(factionFile.factionMemberRanks[i]);
                 }
             }
 
-            return FactionRanks.Member;
+            return CommonEnumerators.FactionRanks.Member;
         }
 
         public static void SaveFactionFile(FactionFile factionFile)
@@ -149,7 +133,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
         {
             if (CheckIfFactionExistsByName(factionManifest.manifestDetails))
             {
-                factionManifest.manifestMode = ((int)FactionManifestMode.NameInUse).ToString();
+                factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NameInUse).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
                 client.clientListener.SendData(packet);
@@ -157,12 +141,12 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
             else
             {
-                factionManifest.manifestMode = ((int)FactionManifestMode.Create).ToString();
+                factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Create).ToString();
 
                 FactionFile factionFile = new FactionFile();
                 factionFile.factionName = factionManifest.manifestDetails;
                 factionFile.factionMembers.Add(client.username);
-                factionFile.factionMemberRanks.Add(((int)FactionRanks.Admin).ToString());
+                factionFile.factionMemberRanks.Add(((int)CommonEnumerators.FactionRanks.Admin).ToString());
                 SaveFactionFile(factionFile);
 
                 client.hasFaction = true;
@@ -187,14 +171,14 @@ namespace RimworldTogether.GameServer.Managers.Actions
             {
                 FactionFile factionFile = GetFactionFromClient(client);
 
-                if (GetMemberRank(factionFile, client.username) != FactionRanks.Admin)
+                if (GetMemberRank(factionFile, client.username) != CommonEnumerators.FactionRanks.Admin)
                 {
                     ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
                 }
 
                 else
                 {
-                    factionManifest.manifestMode = ((int)FactionManifestMode.Delete).ToString();
+                    factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Delete).ToString();
 
                     UserFile[] userFiles = UserManager.GetAllUserFiles();
                     foreach (UserFile userFile in userFiles)
@@ -240,7 +224,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             if (factionFile == null) return;
             else
             {
-                if (GetMemberRank(factionFile, client.username) == FactionRanks.Member)
+                if (GetMemberRank(factionFile, client.username) == CommonEnumerators.FactionRanks.Member)
                 {
                     ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
                 }
@@ -276,7 +260,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 if (!factionFile.factionMembers.Contains(client.username))
                 {
                     factionFile.factionMembers.Add(client.username);
-                    factionFile.factionMemberRanks.Add(((int)FactionRanks.Member).ToString());
+                    factionFile.factionMemberRanks.Add(((int)CommonEnumerators.FactionRanks.Member).ToString());
                     SaveFactionFile(factionFile);
 
                     client.hasFaction = true;
@@ -302,29 +286,29 @@ namespace RimworldTogether.GameServer.Managers.Actions
             UserFile toRemoveLocal = UserManager.GetUserFileFromName(settlementFile.owner);
             ServerClient toRemove = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
-            if (GetMemberRank(factionFile, client.username) == FactionRanks.Member)
+            if (GetMemberRank(factionFile, client.username) == CommonEnumerators.FactionRanks.Member)
             {
                 if (settlementFile.owner == client.username) RemoveFromFaction();
                 else ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
             }
 
-            else if (GetMemberRank(factionFile, client.username) == FactionRanks.Moderator)
+            else if (GetMemberRank(factionFile, client.username) == CommonEnumerators.FactionRanks.Moderator)
             {
                 if (settlementFile.owner == client.username) RemoveFromFaction();
                 else
                 {
-                    if (GetMemberRank(factionFile, settlementFile.owner) != FactionRanks.Member)
+                    if (GetMemberRank(factionFile, settlementFile.owner) != CommonEnumerators.FactionRanks.Member)
                         ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
 
                     else RemoveFromFaction();
                 }
             }
 
-            else if (GetMemberRank(factionFile, client.username) == FactionRanks.Admin)
+            else if (GetMemberRank(factionFile, client.username) == CommonEnumerators.FactionRanks.Admin)
             {
                 if (settlementFile.owner == client.username)
                 {
-                    factionManifest.manifestMode = ((int)FactionManifestMode.AdminProtection).ToString();
+                    factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.AdminProtection).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
                     client.clientListener.SendData(packet);
                 }
@@ -378,7 +362,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
-            if (GetMemberRank(factionFile, client.username) == FactionRanks.Member)
+            if (GetMemberRank(factionFile, client.username) == CommonEnumerators.FactionRanks.Member)
             {
                 ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
             }
@@ -388,7 +372,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 if (!factionFile.factionMembers.Contains(userFile.username)) return;
                 else
                 {
-                    if (GetMemberRank(factionFile, settlementFile.owner) == FactionRanks.Admin)
+                    if (GetMemberRank(factionFile, settlementFile.owner) == CommonEnumerators.FactionRanks.Admin)
                     {
                         ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
                     }
@@ -415,7 +399,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
-            if (GetMemberRank(factionFile, client.username) != FactionRanks.Admin)
+            if (GetMemberRank(factionFile, client.username) != CommonEnumerators.FactionRanks.Admin)
             {
                 ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
             }

@@ -9,6 +9,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
 
 namespace RimworldTogether.GameClient.Patches
@@ -29,7 +30,7 @@ namespace RimworldTogether.GameClient.Patches
 
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = __instance.CurrentMap.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Add).ToString();
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
@@ -68,7 +69,7 @@ namespace RimworldTogether.GameClient.Patches
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = caravan.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Add).ToString();
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
@@ -88,7 +89,7 @@ namespace RimworldTogether.GameClient.Patches
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = map.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Add).ToString();
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
@@ -108,7 +109,7 @@ namespace RimworldTogether.GameClient.Patches
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = settlement.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Remove).ToString();
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
                     Network.Network.serverListener.SendData(packet);

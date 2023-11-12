@@ -7,15 +7,14 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
+using System.Security.Cryptography;
+
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class SaveManager
     {
-        public enum SaveMode { Disconnect, Quit, Autosave, Transfer, Event }
-
-        public enum MapMode { Save, Load }
-
         public static bool CheckIfUserHasSave(ServerClient client)
         {
             string[] saves = Directory.GetFiles(Program.savesPath);
@@ -28,19 +27,19 @@ namespace RimworldTogether.GameServer.Managers
             string[] maps = Directory.GetFiles(Program.mapsPath);
             foreach(string str in maps)
             {
-                MapFile mapFile = Serializer.SerializeFromFile<MapFile>(str);
-                if (mapFile.mapTile == mapTileToCheck) return true;
+                MapDetailsJSON mapDetailsJSON = Serializer.SerializeFromFile<MapDetailsJSON>(str);
+                if (mapDetailsJSON.mapTile == mapTileToCheck) return true;
             }
 
             return false;
         }
 
-        public static MapFile[] GetAllMapFiles()
+        public static MapDetailsJSON[] GetAllMapFiles()
         {
-            List<MapFile> mapFiles = new List<MapFile>();
+            List<MapDetailsJSON> mapDetails = new List<MapDetailsJSON>();
             string[] maps = Directory.GetFiles(Program.mapsPath);
-            foreach (string str in maps) mapFiles.Add(Serializer.SerializeFromFile<MapFile>(str));
-            return mapFiles.ToArray();
+            foreach (string str in maps) mapDetails.Add(Serializer.SerializeFromFile<MapDetailsJSON>(str));
+            return mapDetails.ToArray();
         }
 
         public static byte[] GetUserSaveFromUsername(string username)
@@ -60,9 +59,11 @@ namespace RimworldTogether.GameServer.Managers
         public static void SaveUserGame(ServerClient client, Packet packet)
         {
             SaveFileJSON saveFileJSON = (SaveFileJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
-            File.WriteAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave"), Convert.FromBase64String(saveFileJSON.saveData));
+            byte[] compressedSave = GZip.Compress(saveFileJSON.saveData);
 
-            if (saveFileJSON.saveMode == ((int)SaveMode.Disconnect).ToString())
+            File.WriteAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave"), compressedSave);
+
+            if (saveFileJSON.saveMode == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
             {
                 CommandManager.SendDisconnectCommand(client);
 
@@ -71,7 +72,7 @@ namespace RimworldTogether.GameServer.Managers
                 Logger.WriteToConsole($"[Save game] > {client.username} > To menu");
             }
 
-            else if (saveFileJSON.saveMode == ((int)SaveMode.Quit).ToString())
+            else if (saveFileJSON.saveMode == ((int)CommonEnumerators.SaveMode.Quit).ToString())
             {
                 CommandManager.SendQuitCommand(client);
 
@@ -80,7 +81,7 @@ namespace RimworldTogether.GameServer.Managers
                 Logger.WriteToConsole($"[Save game] > {client.username} > Quiting");
             }
 
-            else if (saveFileJSON.saveMode == ((int)SaveMode.Transfer).ToString())
+            else if (saveFileJSON.saveMode == ((int)CommonEnumerators.SaveMode.Transfer).ToString())
             {
                 Logger.WriteToConsole($"[Save game] > {client.username} > Item transfer");
             }
@@ -90,29 +91,26 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void LoadUserGame(ServerClient client)
         {
-            string[] contents = new string[] { Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave"))) };
-            Packet packet = Packet.CreatePacketFromJSON("LoadFilePacket", contents);
+            byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave")));
+            SaveFileJSON saveFileJSON = new SaveFileJSON();
+            saveFileJSON.saveData = decompressedSave;
+
+            Packet packet = Packet.CreatePacketFromJSON("LoadFilePacket", saveFileJSON);
             client.clientListener.SendData(packet);
 
-            if (Network.Network.usingNewNetworking) Logger.WriteToConsole($"[Load game] > {client.username} {contents.GetHashCode()}");
-            else Logger.WriteToConsole($"[Load game] > {client.username}");
-
+            Logger.WriteToConsole($"[Load game] > {client.username}");
         }
 
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            mapDetailsJSON.mapOwner = client.username;
 
-            MapFile mapFile = new MapFile();
-            mapFile.mapTile = mapDetailsJSON.mapTile;
-            mapFile.mapOwner = client.username;
-            mapFile.deflatedMapData = mapDetailsJSON.deflatedMapData;
-
-            Serializer.SerializeToFile(Path.Combine(Program.mapsPath, mapFile.mapTile + ".json"), mapFile);
-            Logger.WriteToConsole($"[Save map] > {client.username} > {mapFile.mapTile}");
+            Serializer.SerializeToFile(Path.Combine(Program.mapsPath, mapDetailsJSON.mapTile + ".json"), mapDetailsJSON);
+            Logger.WriteToConsole($"[Save map] > {client.username} > {mapDetailsJSON.mapTile}");
         }
 
-        public static void DeleteMap(MapFile mapFile)
+        public static void DeleteMap(MapDetailsJSON mapFile)
         {
             if (mapFile == null) return;
 
@@ -121,25 +119,25 @@ namespace RimworldTogether.GameServer.Managers
             Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", Logger.LogMode.Warning);
         }
 
-        public static MapFile[] GetAllMapsFromUsername(string username)
+        public static MapDetailsJSON[] GetAllMapsFromUsername(string username)
         {
-            List<MapFile> userMaps = new List<MapFile>();
+            List<MapDetailsJSON> userMaps = new List<MapDetailsJSON>();
 
             SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in userSettlements)
             {
-                MapFile mapFile = GetUserMapFromTile(settlementFile.tile);
+                MapDetailsJSON mapFile = GetUserMapFromTile(settlementFile.tile);
                 userMaps.Add(mapFile);
             }
 
             return userMaps.ToArray();
         }
 
-        public static MapFile GetUserMapFromTile(string mapTileToGet)
+        public static MapDetailsJSON GetUserMapFromTile(string mapTileToGet)
         {
-            MapFile[] mapFiles = GetAllMapFiles();
+            MapDetailsJSON[] mapFiles = GetAllMapFiles();
 
-            foreach(MapFile mapFile in mapFiles)
+            foreach(MapDetailsJSON mapFile in mapFiles)
             {
                 if (mapFile.mapTile == mapTileToGet) return mapFile;
             }
@@ -161,8 +159,8 @@ namespace RimworldTogether.GameServer.Managers
 
                 Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
 
-                MapFile[] userMaps = GetAllMapsFromUsername(client.username);
-                foreach (MapFile map in userMaps) DeleteMap(map);
+                MapDetailsJSON[] userMaps = GetAllMapsFromUsername(client.username);
+                foreach (MapDetailsJSON map in userMaps) DeleteMap(map);
 
                 SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
                 foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
@@ -188,8 +186,8 @@ namespace RimworldTogether.GameServer.Managers
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);
             if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
-            MapFile[] userMaps = GetAllMapsFromUsername(username);
-            foreach (MapFile map in userMaps) DeleteMap(map);
+            MapDetailsJSON[] userMaps = GetAllMapsFromUsername(username);
+            foreach (MapDetailsJSON map in userMaps) DeleteMap(map);
 
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(username);
             foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);

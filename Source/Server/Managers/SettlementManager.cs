@@ -7,24 +7,23 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class SettlementManager
     {
-        public enum SettlementStepMode { Add, Remove }
-
         public static void ParseSettlementPacket(ServerClient client, Packet packet)
         {
             SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(settlementDetailsJSON.settlementStepMode))
             {
-                case (int)SettlementStepMode.Add:
+                case (int)CommonEnumerators.SettlementStepMode.Add:
                     AddSettlement(client, settlementDetailsJSON);
                     break;
 
-                case (int)SettlementStepMode.Remove:
+                case (int)CommonEnumerators.SettlementStepMode.Remove:
                     RemoveSettlement(client, settlementDetailsJSON);
                     break;
             }
@@ -105,7 +104,7 @@ namespace RimworldTogether.GameServer.Managers
                 settlementFile.owner = client.username;
                 Serializer.SerializeToFile(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"), settlementFile);
 
-                settlementDetailsJSON.settlementStepMode = ((int)SettlementStepMode.Add).ToString();
+                settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
                 foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
                 {
                     if (cClient == client) continue;
@@ -149,7 +148,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void SendSettlementRemoval(ServerClient client, SettlementDetailsJSON settlementDetailsJSON)
         {
-            settlementDetailsJSON.settlementStepMode = ((int)SettlementStepMode.Remove).ToString();
+            settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
             Packet rPacket = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
             foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
             {

@@ -44,14 +44,14 @@ namespace RimworldTogether.GameClient.Misc
                 {
                     Network.Network.ip = answerSplit[0];
                     Network.Network.port = answerSplit[1];
-                    Saver.SaveConnectionDetails(answerSplit[0], answerSplit[1]);
+                    PreferenceManager.SaveConnectionDetails(answerSplit[0], answerSplit[1]);
                 }
 
                 else
                 {
                     Network.Network.ip = DialogManager.dialog2ResultOne;
                     Network.Network.port = DialogManager.dialog2ResultTwo;
-                    Saver.SaveConnectionDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                    PreferenceManager.SaveConnectionDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
                 }
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
@@ -81,7 +81,7 @@ namespace RimworldTogether.GameClient.Misc
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
-                Saver.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromJSON("LoginClientPacket", loginDetails);
                 Network.Network.serverListener.SendData(packet);

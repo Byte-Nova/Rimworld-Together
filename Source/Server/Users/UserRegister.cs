@@ -7,6 +7,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Users
 {
@@ -18,7 +19,7 @@ namespace RimworldTogether.GameServer.Users
             client.username = registerDetails.username;
             client.password = registerDetails.password;
 
-            if (!UserManager_Joinings.CheckLoginDetails(client, UserManager_Joinings.CheckMode.Register)) return;
+            if (!UserManager_Joinings.CheckLoginDetails(client, CommonEnumerators.LoginMode.Register)) return;
 
             if (TryFetchAlreadyRegistered(client)) return;
             else
@@ -32,14 +33,14 @@ namespace RimworldTogether.GameServer.Users
                 {
                     UserManager.SaveUserFile(client, userFile);
 
-                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.RegisterSuccess);
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterSuccess);
 
                     Logger.WriteToConsole($"[Registered] > {client.username}");
                 }
 
                 catch 
                 {
-                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.RegisterError);
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError);
 
                     return;
                 }
@@ -56,7 +57,7 @@ namespace RimworldTogether.GameServer.Users
                 if (existingUser.username.ToLower() != client.username.ToLower()) continue;
                 else
                 {
-                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.RegisterInUse);
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterInUse);
 
                     return true;
                 }

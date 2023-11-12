@@ -5,6 +5,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Users
 {
@@ -18,7 +19,7 @@ namespace RimworldTogether.GameServer.Users
 
             if (!UserManager_Joinings.CheckWhitelist(client)) return;
 
-            if (!UserManager_Joinings.CheckLoginDetails(client, UserManager_Joinings.CheckMode.Login)) return;
+            if (!UserManager_Joinings.CheckLoginDetails(client, CommonEnumerators.LoginMode.Login)) return;
 
             if (!UserManager.CheckIfUserExists(client)) return;
 
@@ -60,7 +61,7 @@ namespace RimworldTogether.GameServer.Users
                 {
                     if (cClient.username == client.username)
                     {
-                        UserManager_Joinings.SendLoginResponse(cClient, UserManager_Joinings.LoginResponse.ExtraLogin);
+                        UserManager_Joinings.SendLoginResponse(cClient, CommonEnumerators.LoginResponse.ExtraLogin);
                     }
                 }
             }

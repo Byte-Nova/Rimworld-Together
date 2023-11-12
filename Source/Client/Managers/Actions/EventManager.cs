@@ -10,13 +10,15 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class EventManager
     {
-        private enum EventStepMode { Send, Receive, Recover }
+        
 
         public static string[] eventNames = new string[]
         {
@@ -39,15 +41,15 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             switch (int.Parse(eventDetailsJSON.eventStepMode))
             {
-                case (int)EventStepMode.Send:
+                case (int)CommonEnumerators.EventStepMode.Send:
                     OnEventSent();
                     break;
 
-                case (int)EventStepMode.Receive:
+                case (int)CommonEnumerators.EventStepMode.Receive:
                     OnEventReceived(eventDetailsJSON);
                     break;
 
-                case (int)EventStepMode.Recover:
+                case (int)CommonEnumerators.EventStepMode.Recover:
                     OnRecoverEventSilver();
                     break;
             }
@@ -104,7 +106,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
                 EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
-                eventDetailsJSON.eventStepMode = ((int)EventStepMode.Send).ToString();
+                eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
                 eventDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
                 eventDetailsJSON.toTile = ClientValues.chosenSettlement.Tile.ToString();
                 eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();

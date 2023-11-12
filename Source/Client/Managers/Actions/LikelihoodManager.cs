@@ -11,27 +11,25 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class LikelihoodManager
     {
-        public enum Likelihoods { Enemy, Neutral, Ally, Faction, Personal }
-
-        public enum LikelihoodTarget { Settlement, Site }
-
-        public static void TryRequestLikelihood(Likelihoods type, LikelihoodTarget target)
+        public static void TryRequestLikelihood(CommonEnumerators.Likelihoods type, CommonEnumerators.LikelihoodTarget target)
         {
             int tileToUse = 0;
-            if (target == LikelihoodTarget.Settlement) tileToUse = ClientValues.chosenSettlement.Tile;
-            else if (target == LikelihoodTarget.Site) tileToUse = ClientValues.chosenSite.Tile;
+            if (target == CommonEnumerators.LikelihoodTarget.Settlement) tileToUse = ClientValues.chosenSettlement.Tile;
+            else if (target == CommonEnumerators.LikelihoodTarget.Site) tileToUse = ClientValues.chosenSite.Tile;
 
             Faction factionToUse = null;
-            if (target == LikelihoodTarget.Settlement) factionToUse = ClientValues.chosenSettlement.Faction;
-            else if (target == LikelihoodTarget.Site) factionToUse = ClientValues.chosenSite.Faction;
+            if (target == CommonEnumerators.LikelihoodTarget.Settlement) factionToUse = ClientValues.chosenSettlement.Faction;
+            else if (target == CommonEnumerators.LikelihoodTarget.Site) factionToUse = ClientValues.chosenSite.Faction;
 
-            if (type == Likelihoods.Enemy)
+            if (type == CommonEnumerators.Likelihoods.Enemy)
             {
                 if (factionToUse == PlanetFactions.enemyPlayer)
                 {
@@ -41,7 +39,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 else RequestChangeStructureLikelihood(tileToUse, 0);
             }
 
-            else if (type == Likelihoods.Neutral)
+            else if (type == CommonEnumerators.Likelihoods.Neutral)
             {
                 if (factionToUse == PlanetFactions.neutralPlayer)
                 {
@@ -51,7 +49,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 else RequestChangeStructureLikelihood(tileToUse, 1);
             }
 
-            else if (type == Likelihoods.Ally)
+            else if (type == CommonEnumerators.Likelihoods.Ally)
             {
                 if (factionToUse == PlanetFactions.allyPlayer)
                 {

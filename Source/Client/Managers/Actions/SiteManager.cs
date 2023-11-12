@@ -13,14 +13,14 @@ using RimworldTogether.Shared.JSON.Things;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class SiteManager
     {
-        public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward }
-
         public static SitePartDef[] siteDefs;
 
         public static string[] siteDefLabels;
@@ -110,31 +110,31 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             switch(int.Parse(siteDetailsJSON.siteStep))
             {
-                case (int)SiteStepMode.Accept:
+                case (int)CommonEnumerators.SiteStepMode.Accept:
                     OnSiteAccept();
                     break;
 
-                case (int)SiteStepMode.Build:
+                case (int)CommonEnumerators.SiteStepMode.Build:
                     PlanetBuilder.SpawnSingleSite(siteDetailsJSON);
                     break;
 
-                case (int)SiteStepMode.Destroy:
+                case (int)CommonEnumerators.SiteStepMode.Destroy:
                     PlanetBuilder.RemoveSingleSite(siteDetailsJSON);
                     break;
 
-                case (int)SiteStepMode.Info:
+                case (int)CommonEnumerators.SiteStepMode.Info:
                     OnSimpleSiteOpen(siteDetailsJSON);
                     break;
 
-                case (int)SiteStepMode.Deposit:
+                case (int)CommonEnumerators.SiteStepMode.Deposit:
                     //Nothing goes here
                     break;
 
-                case (int)SiteStepMode.Retrieve:
+                case (int)CommonEnumerators.SiteStepMode.Retrieve:
                     OnWorkerRetrieval(siteDetailsJSON);
                     break;
 
-                case (int)SiteStepMode.Reward:
+                case (int)CommonEnumerators.SiteStepMode.Reward:
                     ReceiveSitesRewards(siteDetailsJSON);
                     break;
             }
@@ -155,7 +155,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
             siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
-            siteDetailsJSON.siteStep = ((int)SiteStepMode.Info).ToString();
+            siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Info).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);
             Network.Network.serverListener.SendData(packet);
@@ -186,7 +186,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site worker"));
 
-            siteDetailsJSON.siteStep = ((int)SiteStepMode.Retrieve).ToString();
+            siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Retrieve).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);
             Network.Network.serverListener.SendData(packet);
@@ -237,7 +237,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
             siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
-            siteDetailsJSON.siteStep = ((int)SiteStepMode.Deposit).ToString();
+            siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Deposit).ToString();
             siteDetailsJSON.workerData = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);
@@ -255,7 +255,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
-                siteDetailsJSON.siteStep = ((int)SiteStepMode.Destroy).ToString();
+                siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Destroy).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);
                 Network.Network.serverListener.SendData(packet);
@@ -369,7 +369,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
-                siteDetailsJSON.siteStep = ((int)SiteManager.SiteStepMode.Build).ToString();
+                siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
                 siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
                 siteDetailsJSON.isFromFaction = false;
@@ -437,7 +437,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
-                siteDetailsJSON.siteStep = ((int)SiteManager.SiteStepMode.Build).ToString();
+                siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
                 siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
                 siteDetailsJSON.isFromFaction = true;

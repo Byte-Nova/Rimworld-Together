@@ -8,6 +8,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
@@ -31,9 +32,9 @@ namespace RimworldTogether.GameClient.Dialogs
 
         private Thing[] listedThings;
 
-        private TransferManager.TransferMode transferMode;
+        private CommonEnumerators.TransferMode transferMode;
 
-        public RT_Dialog_ItemListing(Thing[] listedThings, TransferManager.TransferMode transferMode)
+        public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
         {
             DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
@@ -127,16 +128,16 @@ namespace RimworldTogether.GameClient.Dialogs
         {
             Action r1 = delegate
             {
-                if (transferMode == TransferManager.TransferMode.Gift)
+                if (transferMode == CommonEnumerators.TransferMode.Gift)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
-                else if (transferMode == TransferManager.TransferMode.Trade)
+                else if (transferMode == CommonEnumerators.TransferMode.Trade)
                 {
-                    if (RimworldManager.CheckForAnySocialPawn(RimworldManager.Location.Settlement))
+                    if (RimworldManager.CheckForAnySocialPawn(RimworldManager.SearchLocation.Settlement))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferManager.TransferLocation.Settlement, true, true, true));
+                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
                     }
 
                     else
@@ -146,14 +147,14 @@ namespace RimworldTogether.GameClient.Dialogs
                     }
                 }
 
-                else if (transferMode == TransferManager.TransferMode.Pod)
+                else if (transferMode == CommonEnumerators.TransferMode.Pod)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
-                else if (transferMode == TransferManager.TransferMode.Rebound)
+                else if (transferMode == CommonEnumerators.TransferMode.Rebound)
                 {
-                    ClientValues.incomingManifest.transferStepMode = ((int)TransferManager.TransferStepMode.TradeReAccept).ToString();
+                    ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
                     Network.Network.serverListener.SendData(packet);

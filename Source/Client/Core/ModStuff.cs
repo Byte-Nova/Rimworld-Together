@@ -108,7 +108,7 @@ namespace RimworldTogether.GameClient.Core
                     ClientValues.autosaveDays = tuple.Item2;
                     ClientValues.autosaveInternalTicks = Mathf.RoundToInt(tuple.Item2 * 60000f);
 
-                    Saver.SaveClientPreferences(ClientValues.autosaveDays.ToString());
+                    PreferenceManager.SaveClientPreferences(ClientValues.autosaveDays.ToString());
                 });
 
                 list.Add(item);

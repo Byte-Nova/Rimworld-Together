@@ -12,6 +12,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
@@ -69,7 +70,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
             {
                 WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-                worldDetailsJSON.worldStepMode = ((int)WorldManager.WorldStepMode.Required).ToString();
+                worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
                 worldDetailsJSON.SeedString = seedString;
                 worldDetailsJSON.PlanetCoverage = planetCoverage;
                 worldDetailsJSON.Rainfall = (float)rainfall;

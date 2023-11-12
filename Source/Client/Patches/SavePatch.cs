@@ -12,15 +12,15 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
+
 
 namespace RimworldTogether.GameClient.Patches
 {
     public class SavePatch
     {
         public static string customSaveName = "ServerSave";
-
-        public enum SaveMode { Disconnect, Quit, Autosave, Transfer, Event }
 
         public static void ForceSave()
         {
@@ -44,15 +44,26 @@ namespace RimworldTogether.GameClient.Patches
             string filePath = Path.Combine(new string[] { Main.savesPath, fileName + ".rws" });
 
             SaveFileJSON saveFileJSON = new SaveFileJSON();
-            saveFileJSON.saveData = GZip.Compress(File.ReadAllBytes(filePath));
+            saveFileJSON.saveData = File.ReadAllBytes(filePath);
 
-            if (ClientValues.isDisconnecting) saveFileJSON.saveMode = ((int)SaveMode.Disconnect).ToString();
-            else if (ClientValues.isQuiting) saveFileJSON.saveMode = ((int)SaveMode.Quit).ToString();
-            else if (ClientValues.isInTransfer) saveFileJSON.saveMode = ((int)SaveMode.Transfer).ToString();
-            else saveFileJSON.saveMode = ((int)SaveMode.Autosave).ToString();
+            if (ClientValues.isDisconnecting) saveFileJSON.saveMode = ((int)CommonEnumerators.SaveStepMode.Disconnect).ToString();
+            else if (ClientValues.isQuiting) saveFileJSON.saveMode = ((int)CommonEnumerators.SaveStepMode.Quit).ToString();
+            else if (ClientValues.isInTransfer) saveFileJSON.saveMode = ((int)CommonEnumerators.SaveStepMode.Transfer).ToString();
+            else saveFileJSON.saveMode = ((int)CommonEnumerators.SaveStepMode.Autosave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("SaveFilePacket", saveFileJSON);
             Network.Network.serverListener.SendData(packet);
+        }
+
+        public static void ReceiveSaveFromServer(Packet packet)
+        {
+            customSaveName = $"Server - {Network.Network.ip} - {ChatManager.username}";
+
+            SaveFileJSON saveFileJSON = (SaveFileJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
+            File.WriteAllBytes(filePath, saveFileJSON.saveData);
+
+            GameDataSaveLoader.LoadGame(customSaveName);
         }
 
         public static void SendMapsToServer()
@@ -61,24 +72,13 @@ namespace RimworldTogether.GameClient.Patches
             {
                 if (map.IsPlayerHome)
                 {
-                    MapDetailsJSON toSend = new MapDetailsJSON();
-                    toSend.mapTile = map.Tile.ToString();
-                    toSend.deflatedMapData = RimworldManager.CompressMapToString(map, true, true, true, true);
+                    MapDetailsJSON mapDetailsJSON = RimworldManager.GetMap(map, true, true, true, true);
+                    mapDetailsJSON.mapTile = map.Tile.ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON("MapPacket", toSend);
+                    Packet packet = Packet.CreatePacketFromJSON("MapPacket", mapDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
                 }
             }
-        }
-
-        public static void ReceiveSaveFromServer(Packet packet)
-        {
-            customSaveName = $"Server - {Network.Network.ip} - {ChatManager.username}";
-
-            string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
-            //FIXME
-            //File.WriteAllBytes(filePath, GZip.Decompress(packet.contents[0]));
-            GameDataSaveLoader.LoadGame(customSaveName);
         }
     }
 

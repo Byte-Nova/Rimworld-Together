@@ -14,17 +14,15 @@ using RimworldTogether.Shared.JSON.Things;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
 using Verse.AI;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class VisitManager
     {
-        public enum VisitStepMode { Request, Accept, Reject, Unavailable, Action, Stop }
-
-        public enum ActionTargetType { Thing, Human, Animal, Cell }
-
         public static List<Pawn> playerPawns = new List<Pawn>();
 
         public static List<Pawn> otherPlayerPawns = new List<Pawn>();
@@ -39,27 +37,27 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
-                case (int)VisitStepMode.Request:
+                case (int)CommonEnumerators.VisitStepMode.Request:
                     OnVisitRequest(visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Accept:
+                case (int)CommonEnumerators.VisitStepMode.Accept:
                     OnVisitAccept(visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Reject:
+                case (int)CommonEnumerators.VisitStepMode.Reject:
                     OnVisitReject();
                     break;
 
-                case (int)VisitStepMode.Unavailable:
+                case (int)CommonEnumerators.VisitStepMode.Unavailable:
                     OnVisitUnavailable();
                     break;
 
-                case (int)VisitStepMode.Action:
+                case (int)CommonEnumerators.VisitStepMode.Action:
                     VisitActionGetter.ReceiveActions(visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Stop:
+                case (int)CommonEnumerators.VisitStepMode.Stop:
                     OnVisitStop();
                     break;
             }
@@ -75,7 +73,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
 
                     VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
-                    visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Request).ToString();
+                    visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Request).ToString();
                     visitDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
                     visitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
                     visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(VisitThingHelper.FetchMode.Player, visitDetailsJSON);
@@ -91,8 +89,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void SendRequestedMap(VisitDetailsJSON visitDetailsJSON)
         {
-            visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Accept).ToString();
-            visitDetailsJSON.deflatedMapData = RimworldManager.CompressMapToString(visitMap, true, false, false, true);
+            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Accept).ToString();
+            visitDetailsJSON.mapDetails = RimworldManager.GetMap(visitMap, true, false, false, true);
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
             Network.Network.serverListener.SendData(packet);
         }
@@ -128,7 +126,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             //Implement this
 
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
-            visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
+            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
             Network.Network.serverListener.SendData(packet);
@@ -153,7 +151,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             Action r2 = delegate
             {
-                visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Reject).ToString();
+                visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Reject).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
                 Network.Network.serverListener.SendData(packet);
             };
@@ -166,10 +164,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON mapDetailsJSON = RimworldManager.DeCompressMapDetailsFromString(visitDetailsJSON.deflatedMapData);
-
-            Action r1 = delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); };
-            if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
+            Action r1 = delegate { VisitMap(visitDetailsJSON.mapDetails, visitDetailsJSON); };
+            if (ModManager.CheckIfMapHasConflictingMods(visitDetailsJSON.mapDetails))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));
             }
@@ -459,7 +455,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             };
             toDo.Invoke();
 
-            visitDetailsJSON.visitStepMode = ((int)VisitManager.VisitStepMode.Action).ToString();
+            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Action).ToString();
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
             Network.Network.serverListener.SendData(packet);
         }
@@ -507,19 +503,19 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 {
                     if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Thing))
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)VisitManager.ActionTargetType.Human).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Human).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(targetInfo.Pawn));
                     }
 
                     else if (TransferManagerHelper.CheckIfThingIsAnimal(targetInfo.Thing))
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)VisitManager.ActionTargetType.Animal).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Animal).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformAnimalToString(targetInfo.Pawn));
                     }
 
                     else
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)VisitManager.ActionTargetType.Thing).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Thing).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformItemToString(targetInfo.Thing, 1));
                     }
                 }
@@ -528,20 +524,20 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 {
                     if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Pawn))
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)VisitManager.ActionTargetType.Human).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Human).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(targetInfo.Pawn));
                     }
 
                     else
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)VisitManager.ActionTargetType.Animal).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Animal).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformAnimalToString(targetInfo.Pawn));
                     }
                 }
 
                 else if (targetInfo.Cell != null)
                 {
-                    visitDetailsJSON.actionTargetType.Add(((int)VisitManager.ActionTargetType.Cell).ToString());
+                    visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Cell).ToString());
                     toReturn = $"{targetInfo.Cell.x}|{targetInfo.Cell.y}|{targetInfo.Cell.z}";
                 }
             }
@@ -558,28 +554,28 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 switch (int.Parse(actionTargetType))
                 {
-                    case (int)VisitManager.ActionTargetType.Thing:
+                    case (int)CommonEnumerators.ActionTargetType.Thing:
                         ItemDetailsJSON itemDetailsJSON = Serializer.SerializeFromString<ItemDetailsJSON>(toReadFrom);
                         Thing thingToCompare = DeepScribeManager.GetItemSimple(itemDetailsJSON);
                         Thing realThing = VisitManager.mapThings.Find(fetch => fetch.Position == thingToCompare.Position && fetch.def.defName == thingToCompare.def.defName);
                         if (realThing != null) target = new LocalTargetInfo(realThing);
                         break;
 
-                    case (int)VisitManager.ActionTargetType.Human:
+                    case (int)CommonEnumerators.ActionTargetType.Human:
                         HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(toReadFrom);
                         Pawn humanToCompare = DeepScribeManager.GetHumanSimple(humanDetailsJSON);
                         Pawn realHuman = VisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == humanToCompare.Position);
                         if (realHuman != null) target = new LocalTargetInfo(realHuman);
                         break;
 
-                    case (int)VisitManager.ActionTargetType.Animal:
+                    case (int)CommonEnumerators.ActionTargetType.Animal:
                         AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(toReadFrom); ;
                         Pawn animalToCompare = DeepScribeManager.GetAnimalSimple(animalDetailsJSON);
                         Pawn realAnimal = VisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == animalToCompare.Position);
                         if (realAnimal != null) target = new LocalTargetInfo(realAnimal);
                         break;
 
-                    case (int)VisitManager.ActionTargetType.Cell:
+                    case (int)CommonEnumerators.ActionTargetType.Cell:
                         string[] cellCoords = toReadFrom.Split('|');
                         IntVec3 cell = new IntVec3(int.Parse(cellCoords[0]), int.Parse(cellCoords[1]), int.Parse(cellCoords[2]));
                         if (cell != null) target = new LocalTargetInfo(cell);

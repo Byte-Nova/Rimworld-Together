@@ -5,6 +5,7 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -33,7 +34,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void SendNoPowerPacket(ServerClient client, FactionManifestJSON factionManifest)
         {
-            factionManifest.manifestMode = ((int)FactionManager.FactionManifestMode.NoPower).ToString();
+            factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NoPower).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
             client.clientListener.SendData(packet);

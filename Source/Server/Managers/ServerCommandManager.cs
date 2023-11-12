@@ -182,14 +182,6 @@ namespace RimworldTogether.GameServer.Managers
             "Locks an editable save for use [WIP]",
             DisableDifficultyCommandAction);
 
-        private static ServerCommand lockSaveCommand = new ServerCommand("locksave", 1,
-            "Locks an editable save for use [WIP]",
-            LockSaveCommandAction);
-
-        private static ServerCommand unlockSaveCommand = new ServerCommand("unlocksave", 1,
-            "Unlocks a save file for editing [WIP]",
-            UnlockSaveCommandAction);
-
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
             "Saves all player details and then closes the server",
             QuitCommandAction);
@@ -675,52 +667,6 @@ namespace RimworldTogether.GameServer.Managers
                 CustomDifficultyManager.SaveCustomDifficulty(Program.difficultyValues);
 
                 Logger.WriteToConsole($"Custom difficulty is now disabled", Logger.LogMode.Warning);
-            }
-        }
-
-        private static void LockSaveCommandAction()
-        {
-            //TODO
-            //Compression is different for client and server, causing saves to become useless after executing this
-            return;
-
-            byte[] saveFile = SaveManager.GetUserSaveFromUsername(ServerCommandManager.commandParameters[0]);
-
-            if (saveFile == null)
-            {
-                Logger.WriteToConsole($"[ERROR] > Save {ServerCommandManager.commandParameters[0]} was not found", Logger.LogMode.Warning);
-            }
-
-            else
-            {
-                byte[] lockedBytes = GZip.CompressDefault(saveFile);
-
-                File.WriteAllBytes(Path.Combine(Program.savesPath, ServerCommandManager.commandParameters[0] + ".mpsave"), lockedBytes);
-
-                Logger.WriteToConsole($"Save {ServerCommandManager.commandParameters[0]} has been locked");
-            }
-        }
-
-        private static void UnlockSaveCommandAction()
-        {
-            //TODO
-            //Compression is different for client and server, causing saves to become useless after executing this
-            return;
-
-            byte[] saveFile = SaveManager.GetUserSaveFromUsername(ServerCommandManager.commandParameters[0]);
-
-            if (saveFile == null)
-            {
-                Logger.WriteToConsole($"[ERROR] > Save {ServerCommandManager.commandParameters[0]} was not found", Logger.LogMode.Warning);
-            }
-
-            else
-            {
-                byte[] unlockedBytes = GZip.DecompressDefault(saveFile);
-
-                File.WriteAllBytes(Path.Combine(Program.savesPath, ServerCommandManager.commandParameters[0] + ".mpsave"), unlockedBytes);
-
-                Logger.WriteToConsole($"Save {ServerCommandManager.commandParameters[0]} has been unlocked");
             }
         }
 

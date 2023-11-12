@@ -7,15 +7,12 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class ChatManager
     {
-        public enum UserColor { Normal, Admin, Console }
-
-        public enum MessageColor { Normal, Admin, Console }
-
         public static string[] defaultJoinMessages = new string[]
         {
             "Welcome to the global chat!", "Please be considerate with others and have fun!", "Use '/help' to check available commands"
@@ -55,14 +52,14 @@ namespace RimworldTogether.GameServer.Managers
             {
                 if (client.isAdmin)
                 {
-                    chatMessagesJSON.userColors.Add(((int)MessageColor.Admin).ToString());
-                    chatMessagesJSON.messageColors.Add(((int)MessageColor.Admin).ToString());
+                    chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
+                    chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
                 }
 
                 else
                 {
-                    chatMessagesJSON.userColors.Add(((int)MessageColor.Normal).ToString());
-                    chatMessagesJSON.messageColors.Add(((int)MessageColor.Normal).ToString());
+                    chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
+                    chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
                 }
             }
 
@@ -77,8 +74,8 @@ namespace RimworldTogether.GameServer.Managers
             ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
             chatMessagesJSON.usernames.Add("CONSOLE");
             chatMessagesJSON.messages.Add(messageToSend);
-            chatMessagesJSON.userColors.Add(((int)MessageColor.Console).ToString());
-            chatMessagesJSON.messageColors.Add(((int)MessageColor.Console).ToString());
+            chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
+            chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
 
             Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
 
@@ -97,8 +94,8 @@ namespace RimworldTogether.GameServer.Managers
             {
                 chatMessagesJSON.usernames.Add("CONSOLE");
                 chatMessagesJSON.messages.Add(messagesToSend[i]);
-                chatMessagesJSON.userColors.Add(((int)MessageColor.Console).ToString());
-                chatMessagesJSON.messageColors.Add(((int)MessageColor.Console).ToString());
+                chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
+                chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
             }
 
             Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
@@ -157,7 +154,7 @@ namespace RimworldTogether.GameServer.Managers
         private static void ChatStopVisitCommandAction()
         {
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
-            visitDetailsJSON.visitStepMode = ((int)VisitManager.VisitStepMode.Stop).ToString();
+            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
 
             VisitManager.SendVisitStop(invoker, visitDetailsJSON);
         }

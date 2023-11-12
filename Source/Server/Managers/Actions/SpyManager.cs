@@ -1,6 +1,7 @@
 ﻿using RimworldTogether.GameServer.Files;
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
@@ -30,7 +31,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
         private static void SendRequestedMap(ServerClient client, SpyDetailsJSON spyDetailsJSON)
         {
-            if (!SaveManager.CheckIfMapExists(spyDetailsJSON.spyData))
+            if (!SaveManager.CheckIfMapExists(spyDetailsJSON.targetTile))
             {
                 spyDetailsJSON.spyStepMode = ((int)SpyStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
@@ -39,7 +40,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(spyDetailsJSON.spyData);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(spyDetailsJSON.targetTile);
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
@@ -50,8 +51,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                 else
                 {
-                    MapFile mapFile = SaveManager.GetUserMapFromTile(spyDetailsJSON.spyData);
-                    spyDetailsJSON.spyData = Serializer.SerializeToString(mapFile);
+                    MapDetailsJSON mapDetails = SaveManager.GetUserMapFromTile(spyDetailsJSON.targetTile);
+                    spyDetailsJSON.mapDetails = mapDetails;
 
                     Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
                     client.clientListener.SendData(packet);

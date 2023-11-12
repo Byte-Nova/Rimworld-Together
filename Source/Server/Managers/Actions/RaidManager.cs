@@ -1,6 +1,7 @@
 ﻿using RimworldTogether.GameServer.Files;
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
@@ -30,7 +31,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
         private static void SendRequestedMap(ServerClient client, RaidDetailsJSON raidDetailsJSON)
         {
-            if (!SaveManager.CheckIfMapExists(raidDetailsJSON.raidData))
+            if (!SaveManager.CheckIfMapExists(raidDetailsJSON.targetTile))
             {
                 raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
@@ -39,7 +40,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(raidDetailsJSON.raidData);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(raidDetailsJSON.targetTile);
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
@@ -50,8 +51,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                 else
                 {
-                    MapFile mapFile = SaveManager.GetUserMapFromTile(raidDetailsJSON.raidData);
-                    raidDetailsJSON.raidData = Serializer.SerializeToString(mapFile);
+                    MapDetailsJSON mapDetails = SaveManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
+                    raidDetailsJSON.mapDetails = mapDetails;
 
                     Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
                     client.clientListener.SendData(packet);

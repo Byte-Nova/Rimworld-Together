@@ -2,6 +2,7 @@
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -114,7 +115,7 @@ namespace RimworldTogether.GameServer.Managers
 
                 else
                 {
-                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.WrongMods, conflictingMods);
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }
             }

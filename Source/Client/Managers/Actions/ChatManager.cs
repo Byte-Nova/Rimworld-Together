@@ -11,16 +11,13 @@ using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using UnityEngine;
 using Verse;
+using static Shared.Misc.CommonEnumerators;
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     [StaticConstructorOnStartup]
     public static class ChatManager
     {
-        public enum UserColor { Normal, Admin, Console }
-
-        public enum MessageColor { Normal, Admin, Console }
-
         public static Dictionary<UserColor, string> userColorDictionary = new Dictionary<UserColor, string>()
         {
             { UserColor.Normal, "<color=grey>" },

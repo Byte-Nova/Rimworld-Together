@@ -3,6 +3,7 @@ using RimWorld.Planet;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
@@ -102,8 +103,8 @@ namespace RimworldTogether.GameClient.Patches.Tabs
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Enemy, 
-                            LikelihoodManager.LikelihoodTarget.Settlement);
+                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
 
                         break;
                     }
@@ -118,8 +119,8 @@ namespace RimworldTogether.GameClient.Patches.Tabs
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Neutral, 
-                            LikelihoodManager.LikelihoodTarget.Settlement);
+                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
 
                         break;
                     }
@@ -134,8 +135,8 @@ namespace RimworldTogether.GameClient.Patches.Tabs
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Ally, 
-                            LikelihoodManager.LikelihoodTarget.Settlement);
+                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
 
                         break;
                     }

@@ -6,13 +6,12 @@ using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class WorldManager
     {
-        public enum WorldStepMode { Required, Existing, Saved }
-
         private static string worldFileName = "WorldValues.json";
 
         private static string worldFilePath = Path.Combine(Program.corePath, worldFileName);
@@ -23,15 +22,15 @@ namespace RimworldTogether.GameServer.Managers
 
             switch (int.Parse(worldDetailsJSON.worldStepMode))
             {
-                case (int)WorldStepMode.Required:
+                case (int)CommonEnumerators.WorldStepMode.Required:
                     SaveWorldPrefab(client, worldDetailsJSON);
                     break;
 
-                case (int)WorldStepMode.Existing:
+                case (int)CommonEnumerators.WorldStepMode.Existing:
                     //Do nothing
                     break;
 
-                case (int)WorldStepMode.Saved:
+                case (int)CommonEnumerators.WorldStepMode.Saved:
                     //Do nothing
                     break;
             }
@@ -55,7 +54,7 @@ namespace RimworldTogether.GameServer.Managers
 
             Program.worldValues = worldValues;
 
-            worldDetailsJSON.worldStepMode = ((int)WorldStepMode.Saved).ToString();
+            worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Saved).ToString();
             Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
             client.clientListener.SendData(packet);
         }
@@ -63,7 +62,7 @@ namespace RimworldTogether.GameServer.Managers
         public static void RequireWorldFile(ServerClient client)
         {
             WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-            worldDetailsJSON.worldStepMode = ((int)WorldStepMode.Required).ToString();
+            worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
             client.clientListener.SendData(packet);
@@ -74,7 +73,7 @@ namespace RimworldTogether.GameServer.Managers
             WorldValuesFile worldValues = Program.worldValues;
 
             WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-            worldDetailsJSON.worldStepMode = ((int)WorldStepMode.Existing).ToString();
+            worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
             worldDetailsJSON.SeedString = worldValues.SeedString;
             worldDetailsJSON.PlanetCoverage = worldValues.PlanetCoverage;
             worldDetailsJSON.Rainfall = worldValues.Rainfall;

@@ -45,7 +45,7 @@ namespace RimworldTogether.GameClient.Dialogs
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    Fetcher.FetchLastUserDetails();
+                    PreferenceManager.FetchLoginDetails();
                 },
                 delegate { Network.Network.DisconnectFromServer(); });
 
@@ -89,7 +89,7 @@ namespace RimworldTogether.GameClient.Dialogs
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    Fetcher.FetchLastConnectionDetails();
+                    PreferenceManager.FetchConnectionDetails();
                 },
                 null);
 

@@ -5,43 +5,41 @@ using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using System.Diagnostics;
+
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class TransferManager
     {
-        public enum TransferMode { Gift, Trade, Rebound, Pod }
-
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
-
         public static void ParseTransferPacket(ServerClient client, Packet packet)
         {
             TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(transferManifestJSON.transferStepMode))
             {
-                case (int)TransferStepMode.TradeRequest:
+                case (int)CommonEnumerators.TransferStepMode.TradeRequest:
                     TransferThings(client, transferManifestJSON);
                     break;
 
-                case (int)TransferStepMode.TradeAccept:
+                case (int)CommonEnumerators.TransferStepMode.TradeAccept:
                     //Nothing goes here
                     break;
 
-                case (int)TransferStepMode.TradeReject:
+                case (int)CommonEnumerators.TransferStepMode.TradeReject:
                     RejectTransfer(client, packet);
                     break;
 
-                case (int)TransferStepMode.TradeReRequest:
+                case (int)CommonEnumerators.TransferStepMode.TradeReRequest:
                     TransferThingsRebound(client, packet);
                     break;
 
-                case (int)TransferStepMode.TradeReAccept:
+                case (int)CommonEnumerators.TransferStepMode.TradeReAccept:
                     AcceptReboundTransfer(client, packet);
                     break;
 
-                case (int)TransferStepMode.TradeReReject:
+                case (int)CommonEnumerators.TransferStepMode.TradeReReject:
                     RejectReboundTransfer(client, packet);
                     break;
             }
@@ -56,10 +54,10 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
-                    if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) ResponseShortcutManager.SendUnavailablePacket(client);
+                    if (int.Parse(transferManifestJSON.transferMode) == (int)CommonEnumerators.TransferMode.Pod) ResponseShortcutManager.SendUnavailablePacket(client);
                     else
                     {
-                        transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
+                        transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.Recover).ToString();
                         Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                         client.clientListener.SendData(rPacket);
                     }
@@ -67,21 +65,21 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                 else
                 {
-                    if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Gift)
+                    if (int.Parse(transferManifestJSON.transferMode) == (int)CommonEnumerators.TransferMode.Gift)
                     {
-                        transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeAccept).ToString();
+                        transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeAccept).ToString();
                         Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                         client.clientListener.SendData(rPacket);
                     }
 
-                    else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
+                    else if (int.Parse(transferManifestJSON.transferMode) == (int)CommonEnumerators.TransferMode.Pod)
                     {
-                        transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeAccept).ToString();
+                        transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeAccept).ToString();
                         Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                         client.clientListener.SendData(rPacket);
                     }
 
-                    transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
+                    transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeRequest).ToString();
                     string[] contents2 = new string[] { Serializer.SerializeToString(transferManifestJSON) };
                     Packet rPacket2 = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                     UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket2);
@@ -96,14 +94,14 @@ namespace RimworldTogether.GameServer.Managers.Actions
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.Recover).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                 client.clientListener.SendData(rPacket);
             }
 
             else
             {
-                transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReject).ToString();
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReject).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket);
             }
@@ -116,14 +114,14 @@ namespace RimworldTogether.GameServer.Managers.Actions
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.toTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReReject).ToString();
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReReject).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                 client.clientListener.SendData(rPacket);
             }
 
             else
             {
-                transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReRequest).ToString();
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReRequest).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket);
             }
@@ -136,14 +134,14 @@ namespace RimworldTogether.GameServer.Managers.Actions
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.Recover).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                 client.clientListener.SendData(rPacket);
             }
 
             else
             {
-                transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReAccept).ToString();
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket);
             }
@@ -156,14 +154,14 @@ namespace RimworldTogether.GameServer.Managers.Actions
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                transferManifestJSON.transferStepMode = ((int)TransferStepMode.Recover).ToString();
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.Recover).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                 client.clientListener.SendData(rPacket);
             }
 
             else
             {
-                transferManifestJSON.transferStepMode = ((int)TransferStepMode.TradeReReject).ToString();
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReReject).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).clientListener.SendData(rPacket);
             }

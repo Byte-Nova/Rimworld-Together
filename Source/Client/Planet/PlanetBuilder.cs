@@ -6,6 +6,7 @@ using RimWorld.Planet;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
+using Shared.Misc;
 using Verse;
 
 namespace RimworldTogether.GameClient.Planet
@@ -21,23 +22,23 @@ namespace RimworldTogether.GameClient.Planet
             Faction factionToUse = null;
             switch (value)
             {
-                case (int)LikelihoodManager.Likelihoods.Enemy:
+                case (int)CommonEnumerators.Likelihoods.Enemy:
                     factionToUse = PlanetFactions.enemyPlayer;
                     break;
 
-                case (int)LikelihoodManager.Likelihoods.Neutral:
+                case (int)CommonEnumerators.Likelihoods.Neutral:
                     factionToUse = PlanetFactions.neutralPlayer;
                     break;
 
-                case (int)LikelihoodManager.Likelihoods.Ally:
+                case (int)CommonEnumerators.Likelihoods.Ally:
                     factionToUse = PlanetFactions.allyPlayer;
                     break;
 
-                case (int)LikelihoodManager.Likelihoods.Faction:
+                case (int)CommonEnumerators.Likelihoods.Faction:
                     factionToUse = PlanetFactions.yourOnlineFaction;
                     break;
 
-                case (int)LikelihoodManager.Likelihoods.Personal:
+                case (int)CommonEnumerators.Likelihoods.Personal:
                     factionToUse = Faction.OfPlayer;
                     break;
             }
