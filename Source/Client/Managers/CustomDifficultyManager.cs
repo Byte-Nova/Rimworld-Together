@@ -1,12 +1,5 @@
 ﻿using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace RimworldTogether.GameClient.Managers

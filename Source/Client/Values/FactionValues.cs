@@ -3,9 +3,9 @@ using System.Linq;
 using RimWorld;
 using Verse;
 
-namespace RimworldTogether.GameClient.Planet
+namespace RimworldTogether.GameClient.Values
 {
-    public static class PlanetFactions
+    public static class FactionValues
     {
         public static FactionDef neutralPlayerDef;
         public static FactionDef allyPlayerDef;

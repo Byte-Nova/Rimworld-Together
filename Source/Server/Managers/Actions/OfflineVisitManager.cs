@@ -1,9 +1,7 @@
 ﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 
@@ -31,7 +29,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
         private static void SendRequestedMap(ServerClient client, OfflineVisitDetailsJSON offlineVisitDetails)
         {
-            if (!SaveManager.CheckIfMapExists(offlineVisitDetails.targetTile))
+            if (!MapManager.CheckIfMapExists(offlineVisitDetails.targetTile))
             {
                 offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
@@ -51,8 +49,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                 else
                 {
-                    MapDetailsJSON mapDetails = SaveManager.GetUserMapFromTile(offlineVisitDetails.targetTile);
-                    offlineVisitDetails.mapDetails = mapDetails;
+                    MapDetailsJSON mapDetails = MapManager.GetUserMapFromTile(offlineVisitDetails.targetTile);
+                    offlineVisitDetails.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
                     client.clientListener.SendData(packet);

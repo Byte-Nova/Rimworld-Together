@@ -1,13 +1,10 @@
 ﻿using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
-using System;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
 
@@ -81,7 +78,7 @@ namespace RimworldTogether.GameClient.Managers
             else
             {
                 ClientValues.isDisconnecting = true;
-                SavePatch.ForceSave();
+                SaveManager.ForceSave();
             }
         }
     }

@@ -15,7 +15,7 @@ namespace RimworldTogether.GameServer.Users
     {
         public static void TryRegisterUser(ServerClient client, Packet packet)
         {
-            LoginDetailsJSON registerDetails = (LoginDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            JoinDetailsJSON registerDetails = (JoinDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             client.username = registerDetails.username;
             client.password = registerDetails.password;
 

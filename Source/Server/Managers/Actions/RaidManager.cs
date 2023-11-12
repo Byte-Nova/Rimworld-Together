@@ -1,9 +1,7 @@
 ﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 
@@ -31,7 +29,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
         private static void SendRequestedMap(ServerClient client, RaidDetailsJSON raidDetailsJSON)
         {
-            if (!SaveManager.CheckIfMapExists(raidDetailsJSON.targetTile))
+            if (!MapManager.CheckIfMapExists(raidDetailsJSON.targetTile))
             {
                 raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
@@ -51,8 +49,8 @@ namespace RimworldTogether.GameServer.Managers.Actions
 
                 else
                 {
-                    MapDetailsJSON mapDetails = SaveManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
-                    raidDetailsJSON.mapDetails = mapDetails;
+                    MapDetailsJSON mapDetails = MapManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
+                    raidDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
                     client.clientListener.SendData(packet);

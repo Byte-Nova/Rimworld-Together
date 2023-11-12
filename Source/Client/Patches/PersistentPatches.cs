@@ -1,10 +1,8 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
 using UnityEngine.SceneManagement;
 using Verse;
@@ -30,17 +28,13 @@ namespace RimworldTogether.GameClient.Patches
             //Check on this function, randomly causes games to go black after disconnecting but is useful if not wanting to wait for GC
             //MemoryUtility.ClearAllMapsAndWorld();
 
-            Action toDo = delegate
-            {
-                MemoryUtility.ClearAllMapsAndWorld();
-                ClientValues.ToggleDisconnecting(false);
-                ClientValues.CleanValues();
-                ServerValues.CleanValues();
-                ChatManager.ClearChat();
+            MemoryUtility.ClearAllMapsAndWorld();
+            ClientValues.ToggleDisconnecting(false);
+            ClientValues.CleanValues();
+            ServerValues.CleanValues();
+            ChatManager.ClearChat();
 
-                SceneManager.LoadScene(0, LoadSceneMode.Single);
-            };
-            toDo.Invoke();
+            SceneManager.LoadScene(0, LoadSceneMode.Single);
         }
 
         public static void QuitGame()

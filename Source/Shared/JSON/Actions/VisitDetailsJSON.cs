@@ -28,6 +28,6 @@ namespace RimworldTogether.Shared.JSON.Actions
 
         public List<string> mapMods = new List<string>();
 
-        public MapDetailsJSON mapDetails;
+        public byte[] mapDetails;
     }
 }

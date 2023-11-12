@@ -1,14 +1,10 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
 using Verse;
 
@@ -35,7 +31,7 @@ namespace RimworldTogether.GameClient.Patches
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
 
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
                 }
             }
         }
@@ -74,7 +70,7 @@ namespace RimworldTogether.GameClient.Patches
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
 
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
                 }
             }
         }
@@ -94,7 +90,7 @@ namespace RimworldTogether.GameClient.Patches
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
 
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
                 }
             }
         }
@@ -114,7 +110,7 @@ namespace RimworldTogether.GameClient.Patches
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
                     Network.Network.serverListener.SendData(packet);
 
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
                 }
             }
         }

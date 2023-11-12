@@ -4,13 +4,10 @@ using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Things;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
@@ -145,8 +142,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             DialogManager.PopWaitDialog();
             DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
 
-            //DEBUG
-            SavePatch.ForceSave();
+            SaveManager.ForceSave();
         }
 
         public static void OnSimpleSiteRequest()
@@ -201,8 +197,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 Pawn pawnToRetrieve = DeepScribeManager.GetHumanSimple(Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
                 TransferManager.GetTransferedItemsToCaravan(new Thing[] { pawnToRetrieve }, true, false);
 
-                //DEBUG
-                SavePatch.ForceSave();
+                SaveManager.ForceSave();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_OK("Worker have been recovered", r1));
@@ -245,8 +240,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             if (caravanHumans.Count == 1) ClientValues.chosenCaravan.Destroy();
 
-            //DEBUG
-            SavePatch.ForceSave();
+            SaveManager.ForceSave();
         }
 
         public static void RequestDestroySite()

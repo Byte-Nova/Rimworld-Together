@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
-    public static class FactionManager
+    public static class OnlineFactionManager
     {
         public static void ParseFactionPacket(Packet packet)
         {

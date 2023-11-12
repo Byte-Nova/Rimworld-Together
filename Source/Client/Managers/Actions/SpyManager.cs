@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Text;
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
@@ -80,7 +76,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON mapDetailsJSON = spyDetailsJSON.mapDetails;
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(spyDetailsJSON.mapDetails);
 
             Action r1 = delegate { PrepareMapForSpy(mapDetailsJSON); };
 
@@ -126,17 +122,17 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
             {
-                if (pawn.Faction == PlanetFactions.neutralPlayer)
+                if (pawn.Faction == FactionValues.neutralPlayer)
                 {
-                    pawn.SetFaction(PlanetFactions.enemyPlayer);
+                    pawn.SetFaction(FactionValues.enemyPlayer);
                 }
             }
 
             foreach (Thing thing in map.listerThings.AllThings.ToArray())
             {
-                if (thing.Faction == PlanetFactions.neutralPlayer)
+                if (thing.Faction == FactionValues.neutralPlayer)
                 {
-                    thing.SetFaction(PlanetFactions.enemyPlayer);
+                    thing.SetFaction(FactionValues.enemyPlayer);
                 }
             }
         }

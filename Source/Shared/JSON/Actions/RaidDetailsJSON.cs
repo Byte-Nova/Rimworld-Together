@@ -9,6 +9,6 @@ namespace RimworldTogether.Shared.JSON.Actions
 
         public string targetTile;
 
-        public MapDetailsJSON mapDetails;
+        public byte[] mapDetails;
     }
 }

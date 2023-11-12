@@ -5,13 +5,9 @@ using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
 using UnityEngine;
 using Verse;
@@ -80,11 +76,11 @@ namespace RimworldTogether.GameClient.Patches.Pages
 
                 foreach (FactionDef def in factions) worldDetailsJSON.Factions.Add(def.defName.ToString());
 
-                PlanetFactions.SetPlayerFactionDefs();
-                worldDetailsJSON.Factions.Add(PlanetFactions.neutralPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(PlanetFactions.allyPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(PlanetFactions.enemyPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(PlanetFactions.yourOnlineFactionDef.defName);
+                FactionValues.SetPlayerFactionDefs();
+                worldDetailsJSON.Factions.Add(FactionValues.neutralPlayerDef.defName);
+                worldDetailsJSON.Factions.Add(FactionValues.allyPlayerDef.defName);
+                worldDetailsJSON.Factions.Add(FactionValues.enemyPlayerDef.defName);
+                worldDetailsJSON.Factions.Add(FactionValues.yourOnlineFactionDef.defName);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server to accept world"));
 

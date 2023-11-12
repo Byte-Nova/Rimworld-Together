@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
@@ -60,7 +56,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON mapDetailsJSON = offlineVisitDetailsJSON.mapDetails;
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
 
             Action r1 = delegate { PrepareMapForOfflineVisit(mapDetailsJSON); };
 
@@ -97,17 +93,17 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
             {
-                if (pawn.Faction == PlanetFactions.neutralPlayer)
+                if (pawn.Faction == FactionValues.neutralPlayer)
                 {
-                    pawn.SetFaction(PlanetFactions.allyPlayer);
+                    pawn.SetFaction(FactionValues.allyPlayer);
                 }
             }
 
             foreach (Thing thing in map.listerThings.AllThings.ToArray())
             {
-                if (thing.Faction == PlanetFactions.neutralPlayer)
+                if (thing.Faction == FactionValues.neutralPlayer)
                 {
-                    thing.SetFaction(PlanetFactions.allyPlayer);
+                    thing.SetFaction(FactionValues.allyPlayer);
                 }
             }
         }
@@ -118,9 +114,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Thing chillSpot = map.listerThings.AllThings.Find(x => x.def.defName == "RTChillSpot");
             if (chillSpot != null) chillPlace = chillSpot.Position;
 
-            Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == PlanetFactions.allyPlayer).ToArray();
-            LordJob_VisitColony job = new LordJob_VisitColony(PlanetFactions.allyPlayer, chillPlace, 999999999);
-            LordMaker.MakeNewLord(PlanetFactions.allyPlayer, job, map, lordPawns);
+            Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == FactionValues.allyPlayer).ToArray();
+            LordJob_VisitColony job = new LordJob_VisitColony(FactionValues.allyPlayer, chillPlace, 999999999);
+            LordMaker.MakeNewLord(FactionValues.allyPlayer, job, map, lordPawns);
         }
     }
 }

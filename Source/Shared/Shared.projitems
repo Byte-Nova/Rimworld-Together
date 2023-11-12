@@ -23,7 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serializers\ObjectConverter.cs" />
     <Compile Include="..\Shared\json\CustomDifficultyValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\FactionManifestJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\LoginDetailsJSON.cs" />
+    <Compile Include="..\Shared\JSON\JoinDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\MapDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\PlayerRecountJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\SaveFileJSON.cs" />

@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
@@ -53,7 +49,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON mapDetailsJSON = raidDetailsJSON.mapDetails;
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(raidDetailsJSON.mapDetails);
 
             Action r1 = delegate { PrepareMapForRaid(mapDetailsJSON); };
 
@@ -96,17 +92,17 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
             {
-                if (pawn.Faction == PlanetFactions.neutralPlayer)
+                if (pawn.Faction == FactionValues.neutralPlayer)
                 {
-                    pawn.SetFaction(PlanetFactions.enemyPlayer);
+                    pawn.SetFaction(FactionValues.enemyPlayer);
                 }
             }
 
             foreach (Thing thing in map.listerThings.AllThings.ToArray())
             {
-                if (thing.Faction == PlanetFactions.neutralPlayer)
+                if (thing.Faction == FactionValues.neutralPlayer)
                 {
-                    thing.SetFaction(PlanetFactions.enemyPlayer);
+                    thing.SetFaction(FactionValues.enemyPlayer);
                 }
             }
         }
@@ -117,9 +113,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Thing defenseSpot = map.listerThings.AllThings.Find(x => x.def.defName == "RTDefenseSpot");
             if (defenseSpot != null) defensePlace = defenseSpot.Position;
 
-            Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == PlanetFactions.enemyPlayer).ToArray();
-            LordJob_DefendBase job = new LordJob_DefendBase(PlanetFactions.enemyPlayer, defensePlace, true);
-            LordMaker.MakeNewLord(PlanetFactions.enemyPlayer, job, map, lordPawns);
+            Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == FactionValues.enemyPlayer).ToArray();
+            LordJob_DefendBase job = new LordJob_DefendBase(FactionValues.enemyPlayer, defensePlace, true);
+            LordMaker.MakeNewLord(FactionValues.enemyPlayer, job, map, lordPawns);
         }
     }
 }

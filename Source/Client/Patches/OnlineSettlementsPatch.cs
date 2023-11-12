@@ -2,7 +2,6 @@
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using Verse;
 using Verse.AI;
@@ -17,7 +16,7 @@ namespace RimworldTogether.GameClient.Patches
         {
             if (!Network.Network.isConnectedToServer) return true;
 
-            if (PlanetFactions.playerFactions.Contains(factionBase.Faction)) return false;
+            if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
 
             else return true;
         }

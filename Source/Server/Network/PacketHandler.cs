@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using RimworldTogether.GameServer.Managers;
 using RimworldTogether.GameServer.Managers.Actions;
 using RimworldTogether.GameServer.Misc;
@@ -73,7 +72,7 @@ namespace RimworldTogether.GameServer.Network
 
         public static void MapPacket(ServerClient client, Packet packet)
         {
-            SaveManager.SaveUserMap(client, packet);
+            MapManager.SaveUserMap(client, packet);
         }
 
         public static void RaidPacket(ServerClient client, Packet packet)

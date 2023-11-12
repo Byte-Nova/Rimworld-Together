@@ -1,13 +1,8 @@
-﻿using System;
-using RimWorld;
+﻿using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Patches;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
@@ -252,16 +247,14 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     customLetterLabel = "Event - Trader",
                     target = map,
                     points = defaultParms.points,
-                    faction = PlanetFactions.neutralPlayer,
+                    faction = FactionValues.neutralPlayer,
                     traderKind = defaultParms.traderKind
                 };
             }
 
-            Action toDo = delegate { incidentDef.Worker.TryExecute(parms); };
-            toDo.Invoke();
+            incidentDef.Worker.TryExecute(parms);
 
-            //DEBUG
-            SavePatch.ForceSave();
+            SaveManager.ForceSave();
         }
 
         public static void OnEventSent()

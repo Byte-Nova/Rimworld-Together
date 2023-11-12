@@ -6,12 +6,10 @@ using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.JSON.Things;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
@@ -90,7 +88,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
         private static void SendRequestedMap(VisitDetailsJSON visitDetailsJSON)
         {
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Accept).ToString();
-            visitDetailsJSON.mapDetails = RimworldManager.GetMap(visitMap, true, false, false, true);
+
+            MapDetailsJSON mapDetailsJSON = RimworldManager.GetMap(visitMap, true, false, false, true);
+            visitDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetailsJSON);
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
             Network.Network.serverListener.SendData(packet);
         }
@@ -164,8 +164,10 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            Action r1 = delegate { VisitMap(visitDetailsJSON.mapDetails, visitDetailsJSON); };
-            if (ModManager.CheckIfMapHasConflictingMods(visitDetailsJSON.mapDetails))
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(visitDetailsJSON.mapDetails);
+
+            Action r1 = delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); };
+            if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));
             }
@@ -393,7 +395,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 GetCaravanPawns(FetchMode.Host, visitDetailsJSON);
                 foreach (Pawn pawn in VisitManager.otherPlayerPawns)
                 {
-                    pawn.SetFaction(PlanetFactions.allyPlayer);
+                    pawn.SetFaction(FactionValues.allyPlayer);
                     GenSpawn.Spawn(pawn, VisitManager.visitMap.Center, VisitManager.visitMap, Rot4.Random);
                 }
             }
@@ -403,7 +405,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 GetMapPawns(FetchMode.Player, visitDetailsJSON);
                 foreach (Pawn pawn in VisitManager.otherPlayerPawns)
                 {
-                    pawn.SetFaction(PlanetFactions.allyPlayer);
+                    pawn.SetFaction(FactionValues.allyPlayer);
                     GenSpawn.Spawn(pawn, VisitManager.visitMap.Center, VisitManager.visitMap, Rot4.Random);
                 }
             }
@@ -428,32 +430,28 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
 
-            Action toDo = delegate
+            foreach (Pawn pawn in VisitManager.playerPawns.ToArray())
             {
-                foreach (Pawn pawn in VisitManager.playerPawns.ToArray())
+                try
                 {
-                    try
+                    if (pawn.jobs.curJob != null)
                     {
-                        if (pawn.jobs.curJob != null)
-                        {
-                            visitDetailsJSON.pawnActionDefNames.Add(pawn.jobs.curJob.def.defName);
-                            visitDetailsJSON.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(pawn.jobs.curJob.targetA, visitDetailsJSON));
-                        }
-
-                        else
-                        {
-                            visitDetailsJSON.pawnActionDefNames.Add(JobDefOf.Goto.defName);
-
-                            visitDetailsJSON.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(new LocalTargetInfo(pawn.Position), 
-                                visitDetailsJSON));
-                        }
-
-                        visitDetailsJSON.pawnPositions.Add($"{pawn.Position.x}|{pawn.Position.y}|{pawn.Position.z}");
+                        visitDetailsJSON.pawnActionDefNames.Add(pawn.jobs.curJob.def.defName);
+                        visitDetailsJSON.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(pawn.jobs.curJob.targetA, visitDetailsJSON));
                     }
-                    catch { Log.Warning($"Couldn't get job for {pawn}"); }
+
+                    else
+                    {
+                        visitDetailsJSON.pawnActionDefNames.Add(JobDefOf.Goto.defName);
+
+                        visitDetailsJSON.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(new LocalTargetInfo(pawn.Position),
+                            visitDetailsJSON));
+                    }
+
+                    visitDetailsJSON.pawnPositions.Add($"{pawn.Position.x}|{pawn.Position.y}|{pawn.Position.z}");
                 }
-            };
-            toDo.Invoke();
+                catch { Log.Warning($"Couldn't get job for {pawn}"); }
+            }
 
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Action).ToString();
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
@@ -464,30 +462,26 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             Pawn[] otherPawns = VisitManager.otherPlayerPawns.ToArray();
 
-            Action toDo = delegate
+            for (int i = 0; i < otherPawns.Count(); i++)
             {
-                for (int i = 0; i < otherPawns.Count(); i++)
+                try
                 {
-                    try
-                    {
-                        JobDef jobDef = VisitActionHelper.TryGetJobDefForJob(otherPawns[i], visitDetailsJSON.pawnActionDefNames[i]);
+                    JobDef jobDef = VisitActionHelper.TryGetJobDefForJob(otherPawns[i], visitDetailsJSON.pawnActionDefNames[i]);
 
-                        VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitDetailsJSON, i);
+                    VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitDetailsJSON, i);
 
-                        LocalTargetInfo localTargetInfoA = VisitActionHelper.TryGetLocalTargetInfo(otherPawns[i],
-                            visitDetailsJSON.actionTargetA[i], visitDetailsJSON.actionTargetType[i]);
+                    LocalTargetInfo localTargetInfoA = VisitActionHelper.TryGetLocalTargetInfo(otherPawns[i],
+                        visitDetailsJSON.actionTargetA[i], visitDetailsJSON.actionTargetType[i]);
 
-                        Job newJob = VisitActionHelper.TryCreateNewJob(otherPawns[i], jobDef, localTargetInfoA);
+                    Job newJob = VisitActionHelper.TryCreateNewJob(otherPawns[i], jobDef, localTargetInfoA);
 
-                        VisitActionHelper.TryDraftPawnForJobIfNeeded(otherPawns[i], newJob);
+                    VisitActionHelper.TryDraftPawnForJobIfNeeded(otherPawns[i], newJob);
 
-                        VisitActionHelper.ChangeCurrentJobIfNeeded(otherPawns[i], newJob);
+                    VisitActionHelper.ChangeCurrentJobIfNeeded(otherPawns[i], newJob);
 
-                    }
-                    catch { Log.Warning($"Couldn't set job for {otherPawns[i]}"); }
                 }
-            };
-            toDo.Invoke();
+                catch { Log.Warning($"Couldn't set job for {otherPawns[i]}"); }
+            }
         }
     }
 

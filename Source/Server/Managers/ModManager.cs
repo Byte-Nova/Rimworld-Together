@@ -62,7 +62,7 @@ namespace RimworldTogether.GameServer.Managers
             Logger.WriteToConsole($"Loaded forbidden mods [{Program.loadedForbiddenMods.Count()}]");
         }
 
-        public static bool CheckIfModConflict(ServerClient client, LoginDetailsJSON loginDetailsJSON)
+        public static bool CheckIfModConflict(ServerClient client, JoinDetailsJSON loginDetailsJSON)
         {
             List<string> conflictingMods = new List<string>();
 

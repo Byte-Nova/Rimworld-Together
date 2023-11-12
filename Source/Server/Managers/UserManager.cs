@@ -4,7 +4,6 @@ using RimworldTogether.GameServer.Managers.Actions;
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using static Shared.Misc.CommonEnumerators;
@@ -177,7 +176,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
-            LoginDetailsJSON loginDetailsJSON = new LoginDetailsJSON();
+            JoinDetailsJSON loginDetailsJSON = new JoinDetailsJSON();
             loginDetailsJSON.tryResponse = ((int)response).ToString();
 
             if (response == LoginResponse.WrongMods) loginDetailsJSON.conflictingMods = (List<string>)extraDetails;

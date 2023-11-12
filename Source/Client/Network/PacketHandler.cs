@@ -1,12 +1,9 @@
 ﻿using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using System;
@@ -50,7 +47,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static void FactionPacket(Packet packet)
         {
-            FactionManager.ParseFactionPacket(packet);
+            OnlineFactionManager.ParseFactionPacket(packet);
         }
 
         public static void VisitPacket(Packet packet)
@@ -95,7 +92,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static void LoadFilePacket(Packet packet)
         {
-            SavePatch.ReceiveSaveFromServer(packet);
+            SaveManager.ReceiveSaveFromServer(packet);
         }
 
         public static void PlayerRecountPacket(Packet packet)
@@ -131,7 +128,7 @@ namespace RimworldTogether.GameClient.Network
             ServerOverallJSON serverOverallJSON = (ServerOverallJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             ServerValues.SetServerParameters(serverOverallJSON);
             ServerValues.SetAccountDetails(serverOverallJSON);
-            PlanetBuilder_Temp.SetWorldFeatures(serverOverallJSON);
+            PlanetBuilderHelper.SetWorldFeatures(serverOverallJSON);
             EventManager.SetEventPrices(serverOverallJSON);
             SiteManager.SetSiteDetails(serverOverallJSON);
             SpyManager.SetSpyCost(serverOverallJSON);

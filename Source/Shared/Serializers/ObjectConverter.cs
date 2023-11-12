@@ -1,10 +1,6 @@
 ﻿using RimworldTogether.Shared.Misc;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Collections;
 
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
 

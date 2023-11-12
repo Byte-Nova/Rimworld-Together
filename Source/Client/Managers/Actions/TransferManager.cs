@@ -4,12 +4,9 @@ using System.Threading;
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.JSON.Things;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
@@ -74,19 +71,15 @@ namespace RimworldTogether.GameClient.Managers.Actions
             if (transferLocation == CommonEnumerators.TransferLocation.Caravan) ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
             else if (transferLocation == CommonEnumerators.TransferLocation.Settlement) ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile.ToString();
 
-            Action toDo = delegate
+            if (TradeSession.deal.TryExecute(out bool actuallyTraded))
             {
-                if (TradeSession.deal.TryExecute(out bool actuallyTraded))
-                {
-                    SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
+                SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
 
-                    if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
-                    {
-                        TradeSession.playerNegotiator.GetCaravan().RecacheImmobilizedNow();
-                    }
+                if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
+                {
+                    TradeSession.playerNegotiator.GetCaravan().RecacheImmobilizedNow();
                 }
-            };
-            toDo.Invoke();
+            }
         }
 
         public static void TakeTransferItemsFromPods(CompLaunchable representative)
@@ -226,8 +219,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void FinishTransfer(bool success)
         {
-            //DEBUG
-            if (success) SavePatch.ForceSave();
+            if (success) SaveManager.ForceSave();
 
             ClientValues.incomingManifest = new TransferManifestJSON();
             ClientValues.outgoingManifest = new TransferManifestJSON();

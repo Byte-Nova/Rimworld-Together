@@ -4,8 +4,6 @@ using RimworldTogether.GameServer.Core;
 using RimworldTogether.GameServer.Managers;
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network.Listener;
-using RimworldTogether.Shared.Misc;
-using RimworldTogether.Shared.Network;
 using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Network

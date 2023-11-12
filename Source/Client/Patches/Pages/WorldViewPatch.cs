@@ -8,13 +8,10 @@ using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Patches.Tabs;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using Shared.Misc;
 using UnityEngine;
 using Verse;
-using static RimworldTogether.GameClient.Managers.Actions.TransferManager;
-using FactionManager = RimworldTogether.GameClient.Managers.Actions.FactionManager;
 
 namespace RimworldTogether.GameClient.Patches.Pages
 {
@@ -55,7 +52,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 {
                     Settlement settlement = settlements[i];
 
-                    if (PlanetFactions.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
+                    if (FactionValues.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
                     else
                     {
                         int num = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, maxDist);
@@ -80,7 +77,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         {
             if (!Network.Network.isConnectedToServer) return;
 
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction))
+            if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -119,8 +116,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ClientValues.chosenSettlement.Faction == PlanetFactions.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
-                        else FactionManager.OnFactionOpenOnNonMember();
+                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) OnlineFactionManager.OnFactionOpenOnMember();
+                        else OnlineFactionManager.OnFactionOpenOnNonMember();
                     }
                 };
 
@@ -139,7 +136,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 };
 
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != PlanetFactions.yourOnlineFaction) gizmoList.Add(command_Likelihood);
+                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Likelihood);
                 if (__instance.Map != null && __instance.Map.mapPawns.AllPawns.ToList().Find(fetch => fetch.Faction == Faction.OfPlayer) != null)
                 {
                     gizmoList.Add(command_Caravan);
@@ -160,8 +157,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ServerValues.hasFaction) FactionManager.OnFactionOpen();
-                        else FactionManager.OnNoFactionOpen();
+                        if (ServerValues.hasFaction) OnlineFactionManager.OnFactionOpen();
+                        else OnlineFactionManager.OnNoFactionOpen();
                     }
                 };
 
@@ -179,7 +176,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         {
             if (!Network.Network.isConnectedToServer) return;
 
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction))
+            if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
 
@@ -315,8 +312,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ClientValues.chosenSettlement.Faction == PlanetFactions.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
-                        else FactionManager.OnFactionOpenOnNonMember();
+                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) OnlineFactionManager.OnFactionOpenOnMember();
+                        else OnlineFactionManager.OnFactionOpenOnNonMember();
                     }
                 };
 
@@ -327,7 +324,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 }
 
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != PlanetFactions.yourOnlineFaction)
+                if (__instance.Faction != FactionValues.yourOnlineFaction)
                 {
                     gizmoList.Add(command_Likelihood);
                     gizmoList.Add(command_Spy);
@@ -345,7 +342,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<FloatMenuOption> __result, Caravan caravan, Settlement __instance)
         {
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction))
+            if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -371,7 +368,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         {
             if (!Network.Network.isConnectedToServer) return;
 
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction))
+            if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -401,7 +398,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     }
                 };
 
-                if (__instance.Faction != PlanetFactions.yourOnlineFaction) gizmoList.Add(command_Likelihood);
+                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Likelihood);
 
                 __result = gizmoList;
             }
@@ -422,7 +419,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void DoPost(Site __instance, ref IEnumerable<FloatMenuOption> __result)
         {
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction) || __instance.Faction == Faction.OfPlayer)
+            if (FactionValues.playerFactions.Contains(__instance.Faction) || __instance.Faction == Faction.OfPlayer)
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -552,7 +549,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                         gizmoList.Add(command_DestroySite);
                     }
 
-                    else if (presentSite.Faction == PlanetFactions.yourOnlineFaction)
+                    else if (presentSite.Faction == FactionValues.yourOnlineFaction)
                     {
                         gizmoList.Add(command_DestroySite);
                     }
@@ -571,7 +568,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement, CompLaunchable representative)
         {
-            if (PlanetFactions.playerFactions.Contains(settlement.Faction))
+            if (FactionValues.playerFactions.Contains(settlement.Faction))
             {
                 var floatMenuList = __result.ToList();
                 floatMenuList.Clear();
@@ -603,7 +600,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement)
         {
-            if (PlanetFactions.playerFactions.Contains(settlement.Faction))
+            if (FactionValues.playerFactions.Contains(settlement.Faction))
             {
                 var floatMenuList = __result.ToList();
                 floatMenuList.Clear();

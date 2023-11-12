@@ -1,17 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Net.Sockets;
 using System.Threading;
-using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Network.Listener;
 using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Misc;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
 using Verse;
 
 namespace RimworldTogether.GameClient.Network

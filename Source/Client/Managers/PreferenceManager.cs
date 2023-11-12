@@ -2,11 +2,9 @@ using System.IO;
 using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Files;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.Shared.Misc;
-using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 
-namespace RimworldTogether.GameClient.Misc
+namespace RimworldTogether.GameClient.Managers
 {
     public static class PreferenceManager
     {
