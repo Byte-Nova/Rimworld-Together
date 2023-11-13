@@ -14,7 +14,7 @@ namespace RimworldTogether.GameServer.Managers
 {
     public static class SaveManager
     {
-        public static void SaveUserGamePart(ServerClient client, Packet packet)
+        public static void ReceiveSavePartFromClient(ServerClient client, Packet packet)
         {
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
@@ -32,14 +32,13 @@ namespace RimworldTogether.GameServer.Managers
             if (fileTransferJSON.isLastPart)
             {
                 client.downloadManager.FinishFileWrite();
+                client.downloadManager = null;
 
                 byte[] saveBytes = File.ReadAllBytes(tempClientSavePath);
                 byte[] compressedSave = GZip.Compress(saveBytes);
 
                 File.WriteAllBytes(baseClientSavePath, compressedSave);
                 File.Delete(tempClientSavePath);
-
-                client.downloadManager = null;
 
                 OnUserSave(client, fileTransferJSON);
             }
@@ -51,7 +50,7 @@ namespace RimworldTogether.GameServer.Managers
             }
         }
 
-        public static void LoadUserGamePart(ServerClient client)
+        public static void SendSavePartToClient(ServerClient client)
         {
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
@@ -73,7 +72,7 @@ namespace RimworldTogether.GameServer.Managers
             fileTransferJSON.fileBytes = client.uploadManager.ReadFilePart();
             fileTransferJSON.isLastPart = client.uploadManager.isLastPart;
 
-            Packet packet = Packet.CreatePacketFromJSON("ReceiveFilePartPacket", fileTransferJSON);
+            Packet packet = Packet.CreatePacketFromJSON("ReceiveSavePartPacket", fileTransferJSON);
             client.clientListener.SendData(packet);
 
             if (client.uploadManager.isLastPart)

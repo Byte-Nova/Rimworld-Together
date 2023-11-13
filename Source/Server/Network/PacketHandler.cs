@@ -30,12 +30,12 @@ namespace RimworldTogether.GameServer.Network
 
         public static void RequestSavePartPacket(ServerClient client, Packet packet)
         {
-            SaveManager.LoadUserGamePart(client);
+            SaveManager.SendSavePartToClient(client);
         }
 
-        public static void ReceiveFilePartPacket(ServerClient client, Packet packet)
+        public static void ReceiveSavePartPacket(ServerClient client, Packet packet)
         {
-            SaveManager.SaveUserGamePart(client, packet);
+            SaveManager.ReceiveSavePartFromClient(client, packet);
         }
 
         public static void LikelihoodPacket(ServerClient client, Packet packet)

@@ -93,7 +93,7 @@ namespace RimworldTogether.GameClient.Network
             SaveManager.SendSavePartToServer();
         }
 
-        public static void ReceiveFilePartPacket(Packet packet)
+        public static void ReceiveSavePartPacket(Packet packet)
         {
             SaveManager.ReceiveSavePartFromServer(packet);
         }

@@ -34,39 +34,6 @@ namespace RimworldTogether.GameClient.Managers
             }
         }
 
-        public static void SendSavePartToServer(string fileName = null)
-        {
-            if (Network.Network.serverListener.uploadManager == null)
-            {
-                Log.Message($"[Rimworld Together] > Sending save to server");
-
-                string filePath = Path.Combine(new string[] { Main.savesPath, fileName + ".rws" });
-
-                Network.Network.serverListener.uploadManager = new UploadManager();
-                Network.Network.serverListener.uploadManager.PrepareUpload(filePath);
-            }
-
-            FileTransferJSON fileTransferJSON = new FileTransferJSON();
-            fileTransferJSON.fileSize = Network.Network.serverListener.uploadManager.fileSize;
-            fileTransferJSON.fileParts = Network.Network.serverListener.uploadManager.fileParts;
-            fileTransferJSON.fileBytes = Network.Network.serverListener.uploadManager.ReadFilePart();
-            fileTransferJSON.isLastPart = Network.Network.serverListener.uploadManager.isLastPart;
-
-            if (ClientValues.isDisconnecting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Disconnect).ToString();
-            else if (ClientValues.isQuiting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Quit).ToString();
-            else if (ClientValues.isInTransfer) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Transfer).ToString();
-            else fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Autosave).ToString();
-
-            Packet packet = Packet.CreatePacketFromJSON("ReceiveFilePartPacket", fileTransferJSON);
-            Network.Network.serverListener.SendData(packet);
-
-            if (fileTransferJSON.isLastPart)
-            {
-                Network.Network.serverListener.uploadManager.FinishFileWrite();
-                Network.Network.serverListener.uploadManager = null;
-            }
-        }
-
         public static void ReceiveSavePartFromServer(Packet packet)
         {
             FileTransferJSON fileTransferJSON = (FileTransferJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
@@ -96,6 +63,38 @@ namespace RimworldTogether.GameClient.Managers
             {
                 Packet rPacket = Packet.CreatePacketFromJSON("RequestSavePartPacket");
                 Network.Network.serverListener.SendData(rPacket);
+            }
+        }
+
+        public static void SendSavePartToServer(string fileName = null)
+        {
+            if (Network.Network.serverListener.uploadManager == null)
+            {
+                Log.Message($"[Rimworld Together] > Sending save to server");
+
+                string filePath = Path.Combine(new string[] { Main.savesPath, fileName + ".rws" });
+
+                Network.Network.serverListener.uploadManager = new UploadManager();
+                Network.Network.serverListener.uploadManager.PrepareUpload(filePath);
+            }
+
+            FileTransferJSON fileTransferJSON = new FileTransferJSON();
+            fileTransferJSON.fileSize = Network.Network.serverListener.uploadManager.fileSize;
+            fileTransferJSON.fileParts = Network.Network.serverListener.uploadManager.fileParts;
+            fileTransferJSON.fileBytes = Network.Network.serverListener.uploadManager.ReadFilePart();
+            fileTransferJSON.isLastPart = Network.Network.serverListener.uploadManager.isLastPart;
+
+            if (ClientValues.isDisconnecting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Disconnect).ToString();
+            else if (ClientValues.isQuiting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Quit).ToString();
+            else if (ClientValues.isInTransfer) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Transfer).ToString();
+            else fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Autosave).ToString();
+
+            Packet packet = Packet.CreatePacketFromJSON("ReceiveSavePartPacket", fileTransferJSON);
+            Network.Network.serverListener.SendData(packet);
+
+            if (Network.Network.serverListener.uploadManager.isLastPart)
+            {
+                Network.Network.serverListener.uploadManager = null;
             }
         }
     }
