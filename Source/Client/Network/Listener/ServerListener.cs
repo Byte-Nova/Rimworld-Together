@@ -48,7 +48,7 @@ namespace RimworldTogether.GameClient.Network.Listener
 
             catch (Exception e)
             {
-                Log.Error($"[Rimworld Together] (DEBUG) > {e}");
+                Log.Error($"[Rimworld Together] > {e}");
 
                 Network.DisconnectFromServer();
             }

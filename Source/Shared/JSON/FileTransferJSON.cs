@@ -7,7 +7,6 @@ namespace Shared.JSON
     [Serializable]
     public class FileTransferJSON
     {
-        public string fileName;
         public double fileSize;
         public double fileParts;
         public byte[] fileBytes;

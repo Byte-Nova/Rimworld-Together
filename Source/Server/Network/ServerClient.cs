@@ -11,8 +11,8 @@ namespace RimworldTogether.GameServer.Network
         [NonSerialized] public NetworkStream networkStream;
         [NonSerialized] public StreamWriter streamWriter;
         [NonSerialized] public StreamReader streamReader;
-        [NonSerialized] public ClientListener clientListener;
 
+        [NonSerialized] public ClientListener clientListener;
         [NonSerialized] public UploadManager uploadManager;
         [NonSerialized] public DownloadManager downloadManager;
 

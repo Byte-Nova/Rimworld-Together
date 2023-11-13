@@ -16,7 +16,7 @@ namespace RimworldTogether.GameClient.Network
     {
         public static void HandlePacket(Packet packet)
         {
-            Log.Message($"[Header] > {packet.header}");
+            //Log.Message($"[Header] > {packet.header}");
 
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);
@@ -93,7 +93,7 @@ namespace RimworldTogether.GameClient.Network
             SaveManager.SendSavePartToServer();
         }
 
-        public static void LoadFilePartPacket(Packet packet)
+        public static void ReceiveFilePartPacket(Packet packet)
         {
             SaveManager.ReceiveSavePartFromServer(packet);
         }

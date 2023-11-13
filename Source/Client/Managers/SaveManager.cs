@@ -38,6 +38,8 @@ namespace RimworldTogether.GameClient.Managers
         {
             if (Network.Network.serverListener.uploadManager == null)
             {
+                Log.Message($"[Rimworld Together] > Sending save to server");
+
                 string filePath = Path.Combine(new string[] { Main.savesPath, fileName + ".rws" });
 
                 Network.Network.serverListener.uploadManager = new UploadManager();
@@ -45,7 +47,6 @@ namespace RimworldTogether.GameClient.Managers
             }
 
             FileTransferJSON fileTransferJSON = new FileTransferJSON();
-            fileTransferJSON.fileName = Network.Network.serverListener.uploadManager.fileName;
             fileTransferJSON.fileSize = Network.Network.serverListener.uploadManager.fileSize;
             fileTransferJSON.fileParts = Network.Network.serverListener.uploadManager.fileParts;
             fileTransferJSON.fileBytes = Network.Network.serverListener.uploadManager.ReadFilePart();
@@ -56,7 +57,7 @@ namespace RimworldTogether.GameClient.Managers
             else if (ClientValues.isInTransfer) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Transfer).ToString();
             else fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Autosave).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("LoadFilePartPacket", fileTransferJSON);
+            Packet packet = Packet.CreatePacketFromJSON("ReceiveFilePartPacket", fileTransferJSON);
             Network.Network.serverListener.SendData(packet);
 
             if (fileTransferJSON.isLastPart)
@@ -72,11 +73,13 @@ namespace RimworldTogether.GameClient.Managers
 
             if (Network.Network.serverListener.downloadManager == null)
             {
-                string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
+                Log.Message($"[Rimworld Together] > Receiving save from server");
+
                 customSaveName = $"Server - {Network.Network.ip} - {ChatManager.username}";
+                string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
 
                 Network.Network.serverListener.downloadManager = new DownloadManager();
-                Network.Network.serverListener.downloadManager.PrepareDownload(filePath, fileTransferJSON.fileName, fileTransferJSON.fileParts);
+                Network.Network.serverListener.downloadManager.PrepareDownload(filePath, fileTransferJSON.fileParts);
             }
 
             Network.Network.serverListener.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
@@ -84,6 +87,8 @@ namespace RimworldTogether.GameClient.Managers
             if (fileTransferJSON.isLastPart)
             {
                 Network.Network.serverListener.downloadManager.FinishFileWrite();
+                Network.Network.serverListener.downloadManager = null;
+
                 GameDataSaveLoader.LoadGame(customSaveName);
             }
 

@@ -14,7 +14,8 @@ namespace RimworldTogether.GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
-            if (Network.Network.isConnectedToServer)
+            if (!Network.Network.isConnectedToServer) return true;
+            else
             {
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
@@ -35,19 +36,10 @@ namespace RimworldTogether.GameClient.Patches
                 }
                 catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
 
-                return false;
-            }
-
-            else return true;
-        }
-
-        [HarmonyPostfix]
-        public static void DoPost(ref string fileName)
-        {
-            if (Network.Network.isConnectedToServer)
-            {
-                if (ClientValues.isDisconnecting || ClientValues.isQuiting) MapManager.SendMapsToServer();
+                MapManager.SendMapsToServer();
                 SaveManager.SendSavePartToServer(fileName);
+
+                return false;
             }
         }
     }

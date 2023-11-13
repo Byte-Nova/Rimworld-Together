@@ -30,7 +30,6 @@
     <Compile Include="..\Shared\JSON\JoinDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\MapDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\PlayerRecountJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\SaveFileJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\ServerOverallJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\SettlementDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\SiteDetailsJSON.cs" />

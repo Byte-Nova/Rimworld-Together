@@ -10,16 +10,14 @@ namespace Shared.Network
         private FileStream fileStream;
 
         public string filePath;
-        public string fileName;
         public double fileSize;
         public double fileParts;
 
         public bool isLastPart;
 
-        public void PrepareDownload(string filePath, string fileName, double fileParts)
+        public void PrepareDownload(string filePath, double fileParts)
         {
             this.fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
-            this.fileName = fileName;
             this.fileParts = fileParts;
         }
 

@@ -72,7 +72,6 @@ namespace RimworldTogether.GameServer.Managers.Actions
             }
 
             siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Accept).ToString();
-            string[] contents2 = new string[] { Serializer.SerializeToString(siteDetailsJSON) };
             Packet rPacket = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);
             client.clientListener.SendData(rPacket);
 

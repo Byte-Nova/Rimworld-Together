@@ -16,16 +16,13 @@ namespace RimworldTogether.GameClient.Managers
     {
         public static void DisconnectToMenu()
         {
-            //FIXME
-
-            ClientValues.isReadyToPlay = false;
-            SceneManager.LoadScene(0, LoadSceneMode.Single);
-            Current.ProgramState = ProgramState.Entry;
-
             ChatManager.ClearChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
             ClientValues.ToggleDisconnecting(false);
+
+            SceneManager.LoadScene(0, LoadSceneMode.Single);
+            Current.ProgramState = ProgramState.Entry;
         }
 
         public static void QuitGame()

@@ -24,7 +24,7 @@ namespace RimworldTogether.GameServer.Managers
             if (client.downloadManager == null)
             {
                 client.downloadManager = new DownloadManager();
-                client.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileName, fileTransferJSON.fileParts);
+                client.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileParts);
             }
 
             client.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
@@ -35,9 +35,11 @@ namespace RimworldTogether.GameServer.Managers
 
                 byte[] saveBytes = File.ReadAllBytes(tempClientSavePath);
                 byte[] compressedSave = GZip.Compress(saveBytes);
-                File.WriteAllBytes(baseClientSavePath, compressedSave);
 
+                File.WriteAllBytes(baseClientSavePath, compressedSave);
                 File.Delete(tempClientSavePath);
+
+                client.downloadManager = null;
 
                 OnUserSave(client, fileTransferJSON);
             }
@@ -56,6 +58,8 @@ namespace RimworldTogether.GameServer.Managers
 
             if (client.uploadManager == null)
             {
+                Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
+
                 byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(baseClientSavePath));
                 File.WriteAllBytes(tempClientSavePath, decompressedSave);
 
@@ -64,13 +68,12 @@ namespace RimworldTogether.GameServer.Managers
             }
 
             FileTransferJSON fileTransferJSON = new FileTransferJSON();
-            fileTransferJSON.fileName = client.uploadManager.fileName;
             fileTransferJSON.fileSize = client.uploadManager.fileSize;
             fileTransferJSON.fileParts = client.uploadManager.fileParts;
             fileTransferJSON.fileBytes = client.uploadManager.ReadFilePart();
             fileTransferJSON.isLastPart = client.uploadManager.isLastPart;
 
-            Packet packet = Packet.CreatePacketFromJSON("LoadFilePartPacket", fileTransferJSON);
+            Packet packet = Packet.CreatePacketFromJSON("ReceiveFilePartPacket", fileTransferJSON);
             client.clientListener.SendData(packet);
 
             if (client.uploadManager.isLastPart)

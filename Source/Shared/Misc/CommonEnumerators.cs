@@ -55,10 +55,6 @@
 
         public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward }
 
-        //private enum PersonalSiteType { Farmland, Quarry, Sawmill, Storage }
-
-        //private enum FactionSiteType { Bank, Silo }
-
         //Spying
 
         public enum SpyStepMode { Request, Deny }
