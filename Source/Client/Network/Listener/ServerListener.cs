@@ -30,7 +30,7 @@ namespace RimworldTogether.GameClient.Network.Listener
 
         public ServerListener(TcpClient connection)
         {
-            Main.threadDispatcher.Enqueue(DialogShortcuts.ShowLoginOrRegisterDialogs);
+            DialogShortcuts.ShowLoginOrRegisterDialogs();
 
             this.connection = connection;
             ns = connection.GetStream();
@@ -56,9 +56,9 @@ namespace RimworldTogether.GameClient.Network.Listener
 
         public void ListenToServer()
         {
-            while (Network.isConnectedToServer)
+            try
             {
-                try
+                while (true)
                 {
                     string data = sr.ReadLine();
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
@@ -66,36 +66,46 @@ namespace RimworldTogether.GameClient.Network.Listener
                     Action toDo = delegate { PacketHandler.HandlePacket(receivedPacket); };
                     Main.threadDispatcher.Enqueue(toDo);
                 }
+            }
 
-                catch (Exception e)
-                {
-                    Log.Error($"[Rimworld Together] > {e}");
+            catch (Exception e)
+            {
+                if (ClientValues.verboseBool)  Log.Error($"[Rimworld Together] > {e}");
 
-                    disconnectFlag = true;
-                }
+                disconnectFlag = true;
             }
         }
 
         public void CheckForConnectionHealth()
         {
-            while (Network.isConnectedToServer)
+            try
             {
-                Thread.Sleep(100);
+                while (true)
+                {
+                    Thread.Sleep(100);
 
-                if (disconnectFlag) Network.DisconnectFromServer();
+                    if (disconnectFlag) break;
+                }
             }
+            catch { }
+
+            Network.DisconnectFromServer();
         }
 
         public void SendKAFlag()
         {
-            while (Network.isConnectedToServer)
+            try
             {
-                Thread.Sleep(1000);
+                while (true)
+                {
+                    Thread.Sleep(1000);
 
-                KeepAliveJSON keepAliveJSON = new KeepAliveJSON();
-                Packet packet = Packet.CreatePacketFromJSON("KeepAlivePacket", keepAliveJSON);
-                SendData(packet);
+                    KeepAliveJSON keepAliveJSON = new KeepAliveJSON();
+                    Packet packet = Packet.CreatePacketFromJSON("KeepAlivePacket", keepAliveJSON);
+                    SendData(packet);
+                }
             }
+            catch { }
         }
     }
 }

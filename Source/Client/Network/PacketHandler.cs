@@ -16,7 +16,7 @@ namespace RimworldTogether.GameClient.Network
     {
         public static void HandlePacket(Packet packet)
         {
-            //Log.Message($"[Header] > {packet.header}");
+            if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");
 
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);

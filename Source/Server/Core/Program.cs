@@ -36,7 +36,7 @@ namespace RimworldTogether.GameServer.Core
         public static ActionValuesFile actionValues;
         public static WhitelistFile whitelist;
 
-        public static string serverVersion = "1.1.0";
+        public static string serverVersion = "1.1.1";
 
         public static bool isClosing;
         public static CancellationToken serverCancelationToken = new();

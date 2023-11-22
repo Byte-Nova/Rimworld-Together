@@ -8,5 +8,7 @@
         public string Port = "25555";
 
         public string MaxPlayers = "100";
+
+        public bool verboseLogs = false;
     }
 }

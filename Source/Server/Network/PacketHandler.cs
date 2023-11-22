@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using RimworldTogether.GameServer.Core;
 using RimworldTogether.GameServer.Managers;
 using RimworldTogether.GameServer.Managers.Actions;
 using RimworldTogether.GameServer.Misc;
@@ -11,7 +12,7 @@ namespace RimworldTogether.GameServer.Network
     {
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            Logger.WriteToConsole($"[Header] > {packet.header}");
+            if (Program.serverConfig.verboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}");
 
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);

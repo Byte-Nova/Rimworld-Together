@@ -1,4 +1,5 @@
-﻿using RimworldTogether.GameServer.Misc;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Misc;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 
@@ -37,7 +38,7 @@ namespace RimworldTogether.GameServer.Network.Listener
         {
             try
             {
-                while (!targetClient.disconnectFlag)
+                while (true)
                 {
                     string data = targetClient.streamReader.ReadLine();
 
@@ -48,19 +49,24 @@ namespace RimworldTogether.GameServer.Network.Listener
 
             catch (Exception e)
             {
-                Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
+                if (Program.serverConfig.verboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
+
                 targetClient.disconnectFlag = true;
             }
         }
 
         public void CheckForConnectionHealth()
         {
-            while (true)
+            try
             {
-                Thread.Sleep(100);
+                while (true)
+                {
+                    Thread.Sleep(100);
 
-                if (targetClient.disconnectFlag) break;
+                    if (targetClient.disconnectFlag) break;
+                }
             }
+            catch { }
 
             Network.KickClient(targetClient);
         }
@@ -69,13 +75,17 @@ namespace RimworldTogether.GameServer.Network.Listener
         {
             targetClient.KAFlag = false;
 
-            while (!targetClient.disconnectFlag)
+            try
             {
-                Thread.Sleep(15000);
+                while (true)
+                {
+                    Thread.Sleep(15000);
 
-                if (targetClient.KAFlag) targetClient.KAFlag = false;
-                else targetClient.disconnectFlag = true;
+                    if (targetClient.KAFlag) targetClient.KAFlag = false;
+                    else targetClient.disconnectFlag = true;
+                }
             }
+            catch { }
         }
     }
 }

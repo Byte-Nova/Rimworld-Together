@@ -26,36 +26,25 @@ namespace RimworldTogether.GameClient.Network
 
         public static void StartConnection()
         {
-            Action toDo;
-
             if (TryConnectToServer())
             {
-                toDo = delegate
-                {
-                    DialogManager.PopWaitDialog();
+                DialogManager.PopWaitDialog();
+                ClientValues.ManageDevOptions();
+                SiteManager.SetSiteDefs();
 
-                    ClientValues.ManageDevOptions();
-
-                    SiteManager.SetSiteDefs();
-                };
-                Main.threadDispatcher.Enqueue(toDo);
-
+                Threader.GenerateThread(Threader.Mode.Listen);
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                serverListener.ListenToServer();
+                Log.Message($"[Rimworld Together] > Connected to server");
             }
 
             else
             {
-                toDo = delegate
-                {
-                    DialogManager.PopWaitDialog();
+                DialogManager.PopWaitDialog();
 
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
-                    DialogManager.PushNewDialog(d1);
-                };
-                Main.threadDispatcher.Enqueue(toDo);
+                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
+                DialogManager.PushNewDialog(d1);
 
                 ClearAllValues();
             }
@@ -97,6 +86,8 @@ namespace RimworldTogether.GameClient.Network
                 }, r1));
 
                 ClearAllValues();
+
+                Log.Message($"[Rimworld Together] > Disconnected from server");
             };
 
             Main.threadDispatcher.Enqueue(toDo);

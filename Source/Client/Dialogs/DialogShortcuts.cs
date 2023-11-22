@@ -143,7 +143,7 @@ namespace RimworldTogether.GameClient.Dialogs
                 }
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Threader.GenerateThread(Threader.Mode.Start);
+                Network.Network.StartConnection();
             }
 
             else

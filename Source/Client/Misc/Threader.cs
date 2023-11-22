@@ -5,15 +5,15 @@ namespace RimworldTogether.GameClient.Misc
 {
     public static class Threader
     {
-        public enum Mode { Start, Health, KASender, Visit }
+        public enum Mode { Listen, Health, KASender, Visit }
 
         public static void GenerateThread(Mode mode)
         {
-            if (mode == Mode.Start)
+            if (mode == Mode.Listen)
             {
-                Thread thread = new Thread(new ThreadStart(Network.Network.StartConnection));
+                Thread thread = new Thread(() => Network.Network.serverListener.ListenToServer());
                 thread.IsBackground = true;
-                thread.Name = "Networking";
+                thread.Name = "Listen";
                 thread.Start();
             }
 
