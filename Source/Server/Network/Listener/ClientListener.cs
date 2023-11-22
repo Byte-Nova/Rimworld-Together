@@ -12,15 +12,25 @@ namespace RimworldTogether.GameServer.Network.Listener
         {
             targetClient = clientToUse;
 
-            GenerateClientThread();
+            Threader.GenerateClientThread(this, Threader.ClientMode.Listener, Core.Program.serverCancelationToken);
+            Threader.GenerateClientThread(this, Threader.ClientMode.Health, Core.Program.serverCancelationToken);
+            Threader.GenerateClientThread(this, Threader.ClientMode.KAFlag, Core.Program.serverCancelationToken);
         }
 
-        public void GenerateClientThread()
+        public void SendData(Packet packet)
         {
-            ParameterizedThreadStart toDo = delegate { ListenToClient(); };
-            Thread clientThread = new Thread(toDo);
-            clientThread.IsBackground = true;
-            clientThread.Start();
+            while (targetClient.isBusy) Thread.Sleep(100);
+
+            try
+            {
+                targetClient.isBusy = true;
+
+                targetClient.streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
+                targetClient.streamWriter.Flush();
+
+                targetClient.isBusy = false;
+            }
+            catch { targetClient.disconnectFlag = true; }
         }
 
         public void ListenToClient()
@@ -43,20 +53,29 @@ namespace RimworldTogether.GameServer.Network.Listener
             }
         }
 
-        public void SendData(Packet packet)
+        public void CheckForConnectionHealth()
         {
-            while (targetClient.isBusy) Thread.Sleep(100);
-
-            try
+            while (true)
             {
-                targetClient.isBusy = true;
+                Thread.Sleep(100);
 
-                targetClient.streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
-                targetClient.streamWriter.Flush();
-
-                targetClient.isBusy = false;
+                if (targetClient.disconnectFlag) break;
             }
-            catch { targetClient.disconnectFlag = true; }
+
+            Network.KickClient(targetClient);
+        }
+
+        public void CheckForKAFlag()
+        {
+            targetClient.KAFlag = false;
+
+            while (!targetClient.disconnectFlag)
+            {
+                Thread.Sleep(15000);
+
+                if (targetClient.KAFlag) targetClient.KAFlag = false;
+                else targetClient.disconnectFlag = true;
+            }
         }
     }
 }

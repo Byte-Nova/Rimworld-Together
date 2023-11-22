@@ -25,20 +25,24 @@ namespace RimworldTogether.GameClient.Core
         {
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
+
+            listingStandard.Label("Running version: " + ClientValues.versionCode);
+
+            listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.transferBool, "Automatically denies transfers");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.siteRewardsBool, "Automatically site rewards");
-
             if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s"))
             {
                 ShowAutosaveFloatMenu();
             }
-
             if (listingStandard.ButtonTextLabeled("[When Playing] Delete current progress", "Delete"))
             {
                 ResetServerProgress();
             }
 
+            listingStandard.GapLine();
+            listingStandard.Label("Experimental");
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open"))
             {
                 try { System.Diagnostics.Process.Start(Main.mainPath); } catch { }
@@ -46,25 +50,18 @@ namespace RimworldTogether.GameClient.Core
 
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
-
             if (listingStandard.ButtonTextLabeled("Check the mod's wiki!", "Open"))
             {
                 try { System.Diagnostics.Process.Start("https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki"); } catch { }
             }
-
             if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open"))
             {
                 try { System.Diagnostics.Process.Start("https://discord.gg/NCsArSaqBW"); } catch { }
             }
-
             if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open"))
             {
                 try { System.Diagnostics.Process.Start("https://github.com/Nova-Atomic/Rimworld-Together"); } catch { }
             }
-
-            listingStandard.GapLine();
-            listingStandard.Label("Mod Details");
-            listingStandard.Label("Running version: " + ClientValues.versionCode);
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);

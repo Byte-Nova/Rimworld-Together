@@ -17,6 +17,7 @@ namespace RimworldTogether.GameServer.Network
         [NonSerialized] public DownloadManager downloadManager;
 
         [NonSerialized] public bool disconnectFlag;
+        [NonSerialized] public bool KAFlag;
 
         public string uid;
 

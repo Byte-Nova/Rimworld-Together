@@ -25,7 +25,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                     {
                         __instance.Close();
-                        Network.Network.DisconnectFromServer();
+                        Network.Network.serverListener.disconnectFlag = true;
                     }
                 }
 

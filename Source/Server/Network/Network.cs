@@ -16,7 +16,6 @@ namespace RimworldTogether.GameServer.Network
         public static List<ServerClient> connectedClients = new List<ServerClient>();
 
         public static bool isServerOpen;
-        public static bool usingNewNetworking;
 
         public static void ReadyServer()
         {
@@ -24,7 +23,6 @@ namespace RimworldTogether.GameServer.Network
             server.Start();
             isServerOpen = true;
 
-            Threader.GenerateServerThread(Threader.ServerMode.Heartbeat, Program.serverCancelationToken);
             Threader.GenerateServerThread(Threader.ServerMode.Sites, Program.serverCancelationToken);
 
             Logger.WriteToConsole("Type 'help' to get a list of available commands");
@@ -78,44 +76,6 @@ namespace RimworldTogether.GameServer.Network
             catch
             {
                 Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", Logger.LogMode.Warning);
-            }
-        }
-
-        public static void HearbeatClients()
-        {
-            while (true)
-            {
-                Thread.Sleep(100);
-
-                ServerClient[] actualClients = connectedClients.ToArray();
-
-                foreach (ServerClient client in actualClients)
-                {
-                    try
-                    {
-                        if (client.disconnectFlag || !CheckIfConnected(client))
-                        {
-                            KickClient(client);
-                        }
-                    }
-                    catch { KickClient(client); }
-                }
-            }
-        }
-
-        private static bool CheckIfConnected(ServerClient client)
-        {
-            if (!client.tcp.Connected) return false;
-            else
-            {
-                if (client.tcp.Client.Poll(0, SelectMode.SelectRead))
-                {
-                    byte[] buff = new byte[1];
-                    if (client.tcp.Client.Receive(buff, SocketFlags.Peek) == 0) return false;
-                    else return true;
-                }
-
-                else return true;
             }
         }
     }

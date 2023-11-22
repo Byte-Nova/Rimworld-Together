@@ -30,7 +30,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
                         __instance.Close();
-                        Network.Network.DisconnectFromServer();
+                        Network.Network.serverListener.disconnectFlag = true;
                     }
 
                     buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);

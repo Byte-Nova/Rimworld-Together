@@ -5,7 +5,7 @@ namespace RimworldTogether.GameClient.Misc
 {
     public static class Threader
     {
-        public enum Mode { Start, Heartbeat, Visit }
+        public enum Mode { Start, Health, KASender, Visit }
 
         public static void GenerateThread(Mode mode)
         {
@@ -17,11 +17,19 @@ namespace RimworldTogether.GameClient.Misc
                 thread.Start();
             }
 
-            else if (mode == Mode.Heartbeat)
+            else if (mode == Mode.Health)
             {
-                Thread thread = new Thread(() => Network.Network.HeartbeatServer());
+                Thread thread = new Thread(() => Network.Network.serverListener.CheckForConnectionHealth());
                 thread.IsBackground = true;
-                thread.Name = "Heartbeat";
+                thread.Name = "Health";
+                thread.Start();
+            }
+
+            else if (mode == Mode.KASender)
+            {
+                Thread thread = new Thread(() => Network.Network.serverListener.SendKAFlag());
+                thread.IsBackground = true;
+                thread.Name = "KASender";
                 thread.Start();
             }
 

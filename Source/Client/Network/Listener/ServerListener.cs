@@ -1,12 +1,16 @@
 ﻿using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Network;
 using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Messaging;
+using System.Threading;
 using Verse;
 
 namespace RimworldTogether.GameClient.Network.Listener
@@ -21,10 +25,12 @@ namespace RimworldTogether.GameClient.Network.Listener
         public DownloadManager downloadManager;
         public UploadManager uploadManager;
 
+        private bool isBusy;
+        public bool disconnectFlag;
+
         public ServerListener(TcpClient connection)
         {
-            Threader.GenerateThread(Threader.Mode.Heartbeat);
-            DialogShortcuts.ShowLoginOrRegisterDialogs();
+            Main.threadDispatcher.Enqueue(DialogShortcuts.ShowLoginOrRegisterDialogs);
 
             this.connection = connection;
             ns = connection.GetStream();
@@ -32,11 +38,27 @@ namespace RimworldTogether.GameClient.Network.Listener
             sr = new StreamReader(ns);
         }
 
-        public void ListenToServer()
+        public void SendData(Packet packet)
         {
+            while (isBusy) Thread.Sleep(100);
+
             try
             {
-                while (true)
+                isBusy = true;
+
+                sw.WriteLine(Serializer.SerializePacketToString(packet));
+                sw.Flush();
+
+                isBusy = false;
+            }
+            catch { disconnectFlag = true; }
+        }
+
+        public void ListenToServer()
+        {
+            while (Network.isConnectedToServer)
+            {
+                try
                 {
                     string data = sr.ReadLine();
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
@@ -44,20 +66,36 @@ namespace RimworldTogether.GameClient.Network.Listener
                     Action toDo = delegate { PacketHandler.HandlePacket(receivedPacket); };
                     Main.threadDispatcher.Enqueue(toDo);
                 }
-            }
 
-            catch (Exception e)
-            {
-                Log.Error($"[Rimworld Together] > {e}");
+                catch (Exception e)
+                {
+                    Log.Error($"[Rimworld Together] > {e}");
 
-                Network.DisconnectFromServer();
+                    disconnectFlag = true;
+                }
             }
         }
 
-        public void SendData(Packet packet)
+        public void CheckForConnectionHealth()
         {
-            sw.WriteLine(Serializer.SerializePacketToString(packet));
-            sw.Flush();
+            while (Network.isConnectedToServer)
+            {
+                Thread.Sleep(100);
+
+                if (disconnectFlag) Network.DisconnectFromServer();
+            }
+        }
+
+        public void SendKAFlag()
+        {
+            while (Network.isConnectedToServer)
+            {
+                Thread.Sleep(1000);
+
+                KeepAliveJSON keepAliveJSON = new KeepAliveJSON();
+                Packet packet = Packet.CreatePacketFromJSON("KeepAlivePacket", keepAliveJSON);
+                SendData(packet);
+            }
         }
     }
 }

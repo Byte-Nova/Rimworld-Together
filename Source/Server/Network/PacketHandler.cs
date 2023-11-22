@@ -11,11 +11,16 @@ namespace RimworldTogether.GameServer.Network
     {
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            //Logger.WriteToConsole($"[Header] > {packet.header}");
+            Logger.WriteToConsole($"[Header] > {packet.header}");
 
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);
             methodInfo.Invoke(packet.header, new object[] { client, packet });
+        }
+
+        public static void KeepAlivePacket(ServerClient client, Packet packet)
+        {
+            client.KAFlag = true;
         }
 
         public static void LoginClientPacket(ServerClient client, Packet packet)

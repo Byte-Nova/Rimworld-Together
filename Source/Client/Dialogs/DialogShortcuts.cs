@@ -52,7 +52,7 @@ namespace RimworldTogether.GameClient.Dialogs
                     DialogManager.PushNewDialog(a2);
                     PreferenceManager.FetchLoginDetails();
                 },
-                delegate { Network.Network.DisconnectFromServer(); });
+                delegate { Network.Network.serverListener.disconnectFlag = true; });
 
             DialogManager.PushNewDialog(d1);
         }

@@ -43,15 +43,9 @@ namespace RimworldTogether.GameClient.Values
         public static int autosaveDays = 1;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = autosaveDays * 60000f;
-        public static string versionCode = "1.0.7";
+        public static string versionCode = "1.0.8";
 
-        public static string[] serverBrowserContainer = new string[]
-        {
-            "127.0.0.1|25555",
-            "173.212.193.68|25555",
-            "173.212.193.68|25556",
-            "173.212.193.68|25557",
-        };
+        public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
 
         public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }
 

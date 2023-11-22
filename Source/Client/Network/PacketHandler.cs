@@ -23,6 +23,11 @@ namespace RimworldTogether.GameClient.Network
             methodInfo.Invoke(packet.header, new object[] { packet });
         }
 
+        public static void KeepAlivePacket(Packet packet)
+        {
+            //EMPTY
+        }
+
         public static void LoginResponsePacket(Packet packet)
         {
             LoginManager.ReceiveLoginResponse(packet);
