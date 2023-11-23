@@ -1,6 +1,5 @@
 ﻿using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
@@ -9,7 +8,6 @@ using Shared.Network;
 using System;
 using System.IO;
 using System.Net.Sockets;
-using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using Verse;
 

@@ -1,7 +1,6 @@
 ﻿using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;

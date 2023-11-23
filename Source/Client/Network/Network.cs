@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Net.Sockets;
-using System.Threading;
 using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Network.Listener;
-using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
 using Verse;
 
 namespace RimworldTogether.GameClient.Network
@@ -55,13 +50,17 @@ namespace RimworldTogether.GameClient.Network
             if (isTryingToConnect || isConnectedToServer) return false;
             else
             {
-                isTryingToConnect = true;
+                try
+                {
+                    isTryingToConnect = true;
 
-                isConnectedToServer = true;
+                    isConnectedToServer = true;
 
-                serverListener = new ServerListener(new(ip, int.Parse(port)));
+                    serverListener = new ServerListener(new(ip, int.Parse(port)));
 
-                return true;
+                    return true;
+                }
+                catch { return false; }
             }
         }
 

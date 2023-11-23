@@ -13,9 +13,9 @@ namespace RimworldTogether.GameServer.Network.Listener
         {
             targetClient = clientToUse;
 
-            Threader.GenerateClientThread(this, Threader.ClientMode.Listener, Core.Program.serverCancelationToken);
-            Threader.GenerateClientThread(this, Threader.ClientMode.Health, Core.Program.serverCancelationToken);
-            Threader.GenerateClientThread(this, Threader.ClientMode.KAFlag, Core.Program.serverCancelationToken);
+            Threader.GenerateClientThread(this, Threader.ClientMode.Listener, Program.serverCancelationToken);
+            Threader.GenerateClientThread(this, Threader.ClientMode.Health, Program.serverCancelationToken);
+            Threader.GenerateClientThread(this, Threader.ClientMode.KAFlag, Program.serverCancelationToken);
         }
 
         public void SendData(Packet packet)

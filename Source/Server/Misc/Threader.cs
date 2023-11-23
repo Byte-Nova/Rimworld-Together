@@ -34,8 +34,8 @@ namespace RimworldTogether.GameServer.Misc
         public enum ClientMode
         {
             Listener,
-            KAFlag,
-            Health
+            Health,
+            KAFlag
         }
 
         public static Task GenerateClientThread(ClientListener listener, ClientMode mode, CancellationToken cancellationToken)
@@ -45,11 +45,11 @@ namespace RimworldTogether.GameServer.Misc
                 case ClientMode.Listener:
                     return Task.Run(listener.ListenToClient, cancellationToken);
 
-                case ClientMode.KAFlag:
-                    return Task.Run(listener.CheckForKAFlag, cancellationToken);
-
                 case ClientMode.Health:
                     return Task.Run(listener.CheckForConnectionHealth, cancellationToken);
+
+                case ClientMode.KAFlag:
+                    return Task.Run(listener.CheckForKAFlag, cancellationToken);
 
                 default:
                     throw new NotImplementedException();

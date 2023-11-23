@@ -3,7 +3,6 @@ using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.JSON;
 using Verse;
-using Verse.Noise;
 
 namespace RimworldTogether.GameClient.Managers
 {

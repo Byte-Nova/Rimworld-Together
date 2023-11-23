@@ -1,7 +1,5 @@
 ﻿using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.Network;
 using System.Linq;
