@@ -36,6 +36,11 @@ namespace RimworldTogether.GameServer.Network
         private static void ListenForIncomingUsers()
         {
             ServerClient newServerClient = new ServerClient(server.AcceptTcpClient());
+            newServerClient.clientListener = new ClientListener(newServerClient);
+
+            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.Listener, Program.serverCancelationToken);
+            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.Health, Program.serverCancelationToken);
+            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.KAFlag, Program.serverCancelationToken);
 
             if (Program.isClosing) newServerClient.disconnectFlag = true;
             else
@@ -49,8 +54,6 @@ namespace RimworldTogether.GameServer.Network
                 else
                 {
                     connectedClients.Add(newServerClient);
-
-                    newServerClient.clientListener = new ClientListener(newServerClient);
 
                     Titler.ChangeTitle();
 

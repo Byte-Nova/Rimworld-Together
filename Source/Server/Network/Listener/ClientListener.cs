@@ -9,14 +9,7 @@ namespace RimworldTogether.GameServer.Network.Listener
     {
         private ServerClient targetClient;
 
-        public ClientListener(ServerClient clientToUse)
-        {
-            targetClient = clientToUse;
-
-            Threader.GenerateClientThread(this, Threader.ClientMode.Listener, Program.serverCancelationToken);
-            Threader.GenerateClientThread(this, Threader.ClientMode.Health, Program.serverCancelationToken);
-            Threader.GenerateClientThread(this, Threader.ClientMode.KAFlag, Program.serverCancelationToken);
-        }
+        public ClientListener(ServerClient clientToUse) { targetClient = clientToUse; }
 
         public void SendData(Packet packet)
         {
@@ -79,7 +72,7 @@ namespace RimworldTogether.GameServer.Network.Listener
             {
                 while (true)
                 {
-                    Thread.Sleep(15000);
+                    Thread.Sleep(30000);
 
                     if (targetClient.KAFlag) targetClient.KAFlag = false;
                     else targetClient.disconnectFlag = true;

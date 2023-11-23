@@ -38,8 +38,8 @@ namespace RimworldTogether.GameServer.Core
 
         public static string serverVersion = "1.1.1";
 
+        public static CancellationToken serverCancelationToken;
         public static bool isClosing;
-        public static CancellationToken serverCancelationToken = new();
 
         public static void Main()
         {

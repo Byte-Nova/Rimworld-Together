@@ -19,18 +19,21 @@ namespace RimworldTogether.GameServer.Misc
 
         public static void WriteToConsole(string text, LogMode mode = LogMode.Normal, bool writeToLogs = true)
         {
+            while (isLogging) Thread.Sleep(100);
+
+            isLogging = true;
+
             if (writeToLogs) WriteToLogs(text);
 
             Console.ForegroundColor = colorDictionary[mode];
             Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
             Console.ForegroundColor = ConsoleColor.White;
+
+            isLogging = false;
         }
 
         private static void WriteToLogs(string toLog)
         {
-            while (isLogging) continue;
-            isLogging = true;
-
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | " + toLog);
             stringBuilder.Append(Environment.NewLine);
@@ -41,8 +44,6 @@ namespace RimworldTogether.GameServer.Misc
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
-
-            isLogging = false;
         }
     }
 }

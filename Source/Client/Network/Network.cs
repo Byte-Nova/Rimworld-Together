@@ -27,7 +27,7 @@ namespace RimworldTogether.GameClient.Network
                 ClientValues.ManageDevOptions();
                 SiteManager.SetSiteDefs();
 
-                Threader.GenerateThread(Threader.Mode.Listen);
+                Threader.GenerateThread(Threader.Mode.Listener);
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
