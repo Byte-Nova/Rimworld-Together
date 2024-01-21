@@ -43,19 +43,22 @@ namespace RimworldTogether.GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(SitePartWorker_Outpost), "GetEnemiesCount")]
-    public static class PatchPawnGroupMakerDisplay
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(ref int __result)
-        {
-            if (Network.Network.isConnectedToServer)
-            {
-                __result = 25;
+    //TODO
+    //Check online sites working without this patch
 
-                return false;
-            }
-            else return true;
-        }
-    }
+    //[HarmonyPatch(typeof(SitePartWorker_Outpost), "GetEnemiesCount")]
+    //public static class PatchPawnGroupMakerDisplay
+    //{
+    //    [HarmonyPrefix]
+    //    public static bool DoPre(ref int __result)
+    //    {
+    //        if (Network.Network.isConnectedToServer)
+    //        {
+    //            __result = 25;
+
+    //            return false;
+    //        }
+    //        else return true;
+    //    }
+    //}
 }
