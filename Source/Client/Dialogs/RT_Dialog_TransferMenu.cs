@@ -331,31 +331,45 @@ namespace RimworldTogether.GameClient.Dialogs
             {
                 Map map = Find.Maps.Find(x => x.Tile == int.Parse(ClientValues.incomingManifest.toTile));
 
+
+                //if the server allows items to be traded
                 if (allowItems)
                 {
-                    Zone[] zones = map.zoneManager.AllZones.ToArray();
-                    foreach (Zone zone in zones)
+                    //Find every item on the map that is sellable to a trader
+                    IEnumerable<Thing> enumerable = map.listerThings.AllThings.Where((Thing x) => x.def.category == ThingCategory.Item && !x.Position.Fogged(x.Map) && TradeUtility.EverPlayerSellable(x.def));
+
+                    //for every sellable item, add it to the list of items that will appear in the trade menu
+                    foreach (Thing item in enumerable)
                     {
-                        Thing[] items = zone.AllContainedThings.ToArray();
-                        foreach (Thing item in items)
-                        {
-                            if (item.def.alwaysHaulable)
-                            {
-                                Tradeable tradeable = new Tradeable();
-                                tradeable.AddThing(item, Transactor.Colony);
-                                ClientValues.listToShowInTradesMenu.Add(tradeable);
-                            }
-                        }
+                        Tradeable tradeable = new Tradeable();
+                        tradeable.AddThing(item, Transactor.Colony);
+                        ClientValues.listToShowInTradesMenu.Add(tradeable);
+
                     }
+
                 }
 
+                //Grabs pawns in the colony - this includes colonists, prisoners, and colony owned animals
                 Pawn[] pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToArray();
+
                 foreach (Pawn pawn in pawnsInMap)
                 {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(pawn))
+                    if (TransferManagerHelper.CheckIfThingIsAnimal(pawn))
                     {
+                        //if the server allows animals to be traded 
+                        if (allowAnimals)
+                        {
+                            Tradeable tradeable = new Tradeable();
+                            tradeable.AddThing(pawn, Transactor.Colony);
+                            ClientValues.listToShowInTradesMenu.Add(tradeable);
+                        }
+                    }
+                    else
+                    {
+                        //if the server allows humans to be traded
                         if (allowHumans)
                         {
+                            //if the pawn is the negotiator pawn, skip to next pawn in the list
                             if (pawn == playerNegotiator) continue;
                             else
                             {
@@ -363,16 +377,6 @@ namespace RimworldTogether.GameClient.Dialogs
                                 tradeable.AddThing(pawn, Transactor.Colony);
                                 ClientValues.listToShowInTradesMenu.Add(tradeable);
                             }
-                        }
-                    }
-
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(pawn))
-                    {
-                        if (allowAnimals)
-                        {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(pawn, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
                         }
                     }
                 }
