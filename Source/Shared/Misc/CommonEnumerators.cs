@@ -66,7 +66,6 @@
         public enum ActionTargetType { Thing, Human, Animal, Cell }
 
         //Settlements
-
         public enum SettlementStepMode { Add, Remove }
 
         //Saving

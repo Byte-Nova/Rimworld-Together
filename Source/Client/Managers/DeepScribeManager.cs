@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
@@ -10,6 +11,7 @@ using RimworldTogether.Shared.JSON.Things;
 using RimworldTogether.Shared.Serializers;
 using UnityEngine.Assertions.Must;
 using Verse;
+using RimworldTogether.GameClient.CustomMapGeneration;
 
 namespace RimworldTogether.GameClient.Managers
 {
@@ -108,7 +110,12 @@ namespace RimworldTogether.GameClient.Managers
                 }
             }
 
-            try { humanDetailsJSON.favoriteColor = human.story.favoriteColor.ToString(); }
+            try {
+                Log.Message($"Does color exist? :{human.story.favoriteColor != null} :{human.story.favoriteColor}");
+                Log.Message($"Human's favorite colors as RGB floats are: {human.story.favoriteColor.Value.r},{human.story.favoriteColor.Value.g},{human.story.favoriteColor.Value.b}");
+                Log.Message($"human's favorite color as string is: {human.story.favoriteColor.ToString()}");
+                humanDetailsJSON.favoriteColor = human.story.favoriteColor.ToString();
+            }
             catch (Exception e) { Log.Warning($"Failed to load favorite color from human {human.Label}. Reason: {e}"); }
 
             try
@@ -699,7 +706,7 @@ namespace RimworldTogether.GameClient.Managers
             {
                 for (int x = 0; x < map.Size.x; ++x)
                 {
-                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+                    IntVec3 vectorToCheck = new IntVec3(x, 0, z);
 
                     mapDetailsJSON.tileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
 
@@ -747,8 +754,13 @@ namespace RimworldTogether.GameClient.Managers
             return mapDetailsJSON;
         }
 
+        //generates a map from a mapDetailsJSON file
         public static Map GetMapSimple(MapDetailsJSON mapDetailsJSON, bool containItems, bool containHumans, bool containAnimals, bool lessLoot)
         {
+
+            System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+
+            stopWatch.Start();
             Map map = null;
 
             string[] splitSize = mapDetailsJSON.mapSize.Split('|');
@@ -756,25 +768,30 @@ namespace RimworldTogether.GameClient.Managers
             IntVec3 mapSize = new IntVec3(int.Parse(splitSize[0]), int.Parse(splitSize[1]),
                 int.Parse(splitSize[2]));
 
-            try { map = GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null); }
+
+            //create a map on the caravan's client
+            try { map = RWTGetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null); }
             catch (Exception e) { Log.Warning($"Critical error generating map. Exception: {e}"); }
-
-            map.fogGrid.ClearAllFog();
-
-            List<Thing> thingList = map.listerThings.AllThings.ToList();
-            foreach (Thing thing in thingList)
+            if (map == null)
             {
-                try
-                {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(thing)) thing.Destroy();
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(thing)) thing.Destroy();
-                    else if (thing.def.destroyable) thing.Destroy();
-                }
-                catch { Log.Warning($"Failed to destroy thing {thing.def.defName} at {thing.Position}"); }
+                Log.Message("Map is null after GetOrgenerateMap");
             }
+            else { Log.Message("Map is currently not null after GetOrGenerateMap"); }
+            stopWatch.Stop();
+            Log.Message($"{"Generating new map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
+            stopWatch.Start();
+
+            /*map.fogGrid.ClearAllFog();
+
+            stopWatch.Stop();
+            Log.Message($"{"clearing fog took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
+            stopWatch.Start();*/
 
             List<Thing> thingsToGetInThisTile = new List<Thing>();
 
+            //add all the items to a list of "Things" in the caravan
             foreach (string str in mapDetailsJSON.itemDetailsJSONS)
             {
                 try
@@ -785,6 +802,10 @@ namespace RimworldTogether.GameClient.Managers
                 catch { }
             }
 
+            stopWatch.Stop();
+            Log.Message($"{"adding caravan items to list took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
+            stopWatch.Start();
             if (containItems)
             {
                 Random rnd = new Random();
@@ -795,6 +816,7 @@ namespace RimworldTogether.GameClient.Managers
                     {
                         Thing toGet = GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
 
+                        //if lessLoot is true, Some items will not be generated
                         if (lessLoot)
                         {
                             if (rnd.Next(1, 100) > 70) thingsToGetInThisTile.Add(toGet);
@@ -805,12 +827,28 @@ namespace RimworldTogether.GameClient.Managers
                     catch { }
                 }
             }
-            
+
+
+            stopWatch.Stop();
+            Log.Message($"{"adding Settlement items to list took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
+            stopWatch.Start();
+            if(map == null)
+            {
+                Log.Message("I guess map is null?");
+            }
+
             foreach (Thing thing in thingsToGetInThisTile)
             {
-                try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot:thing.Rotation); }
+                try { GenPlace.TryPlaceThing(thing, thing.Position, RWTMapGenerator.mapBeingGenerated, ThingPlaceMode.Direct, rot: thing.Rotation); }
                 catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
             }
+
+
+            stopWatch.Stop();
+            Log.Message($"{"Spawning items took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
+            stopWatch.Start();
 
             if (containHumans)
             {
@@ -843,6 +881,12 @@ namespace RimworldTogether.GameClient.Managers
                 }
             }
 
+
+            stopWatch.Stop();
+            Log.Message($"{"spawning humans took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
+            stopWatch.Start();
+
             if (containAnimals)
             {
                 foreach (string str in mapDetailsJSON.animalDetailsJSON)
@@ -874,6 +918,12 @@ namespace RimworldTogether.GameClient.Managers
                 }
             }
 
+
+            stopWatch.Stop();
+            Log.Message($"{"spawning animals to list took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
+            stopWatch.Start();
+
             int index = 0;
             for (int z = 0; z < map.Size.z; ++z)
             {
@@ -881,6 +931,7 @@ namespace RimworldTogether.GameClient.Managers
                 {
                     IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
+                    //get and place terrain
                     try
                     {
                         TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
@@ -890,6 +941,7 @@ namespace RimworldTogether.GameClient.Managers
                     }
                     catch { Log.Warning($"Failed to set terrain at {vectorToCheck}"); }
 
+                    //get and place roofs
                     try
                     {
                         RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
@@ -903,18 +955,48 @@ namespace RimworldTogether.GameClient.Managers
                 }
             }
 
+
+            stopWatch.Stop();
+            Log.Message($"{"Adding Terrain and Roofing took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
+            stopWatch.Start();
+
             map.roofCollapseBuffer.Clear();
             map.roofGrid.Drawer.SetDirty();
 
+            /*//set all tiles to be foggy
             CellIndices cellIndices = map.cellIndices;
             if (map.fogGrid.fogGrid == null) map.fogGrid.fogGrid = new bool[cellIndices.NumGridCells];
-            foreach (IntVec3 allCell in map.AllCells) map.fogGrid.fogGrid[cellIndices.CellToIndex(allCell)] = true;
+            foreach (IntVec3 cell in map.AllCells) map.fogGrid.fogGrid[cellIndices.CellToIndex(cell)] = true;
             if (Current.ProgramState == ProgramState.Playing) map.roofGrid.Drawer.SetDirty();
 
-            FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
-            List<IntVec3> rootsToUnfog = MapGenerator.rootsToUnfog;
+            //unfog neccessary tiles
+            FloodFillerFog.FloodUnfog(RWTMapGenerator.PlayerStartSpot, map);
+            List<IntVec3> rootsToUnfog = RWTMapGenerator.rootsToUnfog;
             for (int i = 0; i < rootsToUnfog.Count; i++) FloodFillerFog.FloodUnfog(rootsToUnfog[i], map);
+*/
+            Log.Message(RWTMapGenerator.PlayerStartSpot.ToString());
+            try
+            {
+                RWTMapGenerator.StepToRun(11, map);
+            }
+            catch
+            {
+                Log.Warning("Could not Find player start");
+            }
+            Log.Message(RWTMapGenerator.PlayerStartSpot.ToString());
 
+            /*try
+            {
+                FloodFillerFog.DebugRefogMap(map);
+            }
+            catch
+            {
+                Log.Warning("Could not DebugRefogMap");
+            }*/
+            stopWatch.Stop();
+            Log.Message($"{"Recalculating fog took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            stopWatch.Reset();
             return map;
         }
     }

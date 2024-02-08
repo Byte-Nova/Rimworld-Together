@@ -21,9 +21,13 @@ namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class VisitManager
     {
+
+        //A list of settlement/host pawns
         public static List<Pawn> playerPawns = new List<Pawn>();
 
+        //A list of the visitor/player caravan pawns
         public static List<Pawn> otherPlayerPawns = new List<Pawn>();
+
 
         public static List<Thing> mapThings = new List<Thing>();
 
@@ -33,20 +37,26 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
+            //This is a list of events to occur based on the contents of
+            //an incoming visit packet
             switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
+                //caravan's request to visit settlement packet
                 case (int)CommonEnumerators.VisitStepMode.Request:
                     OnVisitRequest(visitDetailsJSON);
                     break;
 
+                //settlement accepts caravan visit packet
                 case (int)CommonEnumerators.VisitStepMode.Accept:
                     OnVisitAccept(visitDetailsJSON);
                     break;
 
+                //settlement rejects caravan visit packet
                 case (int)CommonEnumerators.VisitStepMode.Reject:
                     OnVisitReject();
                     break;
 
+                //saettlement is unavailable
                 case (int)CommonEnumerators.VisitStepMode.Unavailable:
                     OnVisitUnavailable();
                     break;
@@ -61,6 +71,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             }
         }
 
+        //Runs when a caravan requests to visit
         public static void RequestVisit()
         {
             if (ClientValues.isInVisit) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already visiting someone!"));
@@ -85,6 +96,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             }
         }
 
+        
         private static void SendRequestedMap(VisitDetailsJSON visitDetailsJSON)
         {
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Accept).ToString();
@@ -124,6 +136,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             //TODO
             //Implement this
+
+            ClientValues.isInVisit = false;
 
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
@@ -296,6 +310,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             VisitManager.mapThings.Clear();
 
+            //for each tile, get the "Thing" at that spot
+            //A Thing 
             for (int z = 0; z < VisitManager.visitMap.Size.z; ++z)
             {
                 for (int x = 0; x < VisitManager.visitMap.Size.x; ++x)
@@ -439,7 +455,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                         visitDetailsJSON.pawnActionDefNames.Add(pawn.jobs.curJob.def.defName);
                         visitDetailsJSON.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(pawn.jobs.curJob.targetA, visitDetailsJSON));
                     }
-
+                    
                     else
                     {
                         visitDetailsJSON.pawnActionDefNames.Add(JobDefOf.Goto.defName);
@@ -469,7 +485,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     JobDef jobDef = VisitActionHelper.TryGetJobDefForJob(otherPawns[i], visitDetailsJSON.pawnActionDefNames[i]);
 
                     VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitDetailsJSON, i);
-
+                    //otherPawns[i].pather.
                     LocalTargetInfo localTargetInfoA = VisitActionHelper.TryGetLocalTargetInfo(otherPawns[i],
                         visitDetailsJSON.actionTargetA[i], visitDetailsJSON.actionTargetType[i]);
 
