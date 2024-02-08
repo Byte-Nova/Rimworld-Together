@@ -73,7 +73,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void PrepareMapForRaid(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, true, true, true, true);
+            Map map = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, true, true, true, true);
 
             HandleMapFactions(map);
 

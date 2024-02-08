@@ -337,7 +337,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             else if (mode == FetchMode.Player)
             {
-                VisitManager.visitMap = DeepScribeManager.GetMapSimple(mapDetailsJSON, true, false, false, false);
+                VisitManager.visitMap = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, true, false, false, false);
             }
         }
 

@@ -12,6 +12,7 @@ using RimworldTogether.Shared.Serializers;
 using UnityEngine.Assertions.Must;
 using Verse;
 using RimworldTogether.GameClient.CustomMapGeneration;
+using TMPro;
 
 namespace RimworldTogether.GameClient.Managers
 {
@@ -238,37 +239,53 @@ namespace RimworldTogether.GameClient.Managers
 
                     human.story.bodyType = DefDatabase<BodyTypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.bodyTypeDefName);
 
-                    human.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.FaceTattooDefName);
+                    if (ModsConfig.IdeologyActive)
+                    {
+                        human.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.FaceTattooDefName);
 
-                    human.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.BodyTattooDefName);
+                        human.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.BodyTattooDefName);
+                    }
                 }
                 catch (Exception e) { Log.Warning($"Failed to load biological details in human {humanDetails.name}. Reason: {e}"); }
 
                 try
                 {
-                    string hairColor = humanDetails.hairColor.Replace("RGBA(", "").Replace(")", "");
-                    string[] isolatedHair = hairColor.Split(',');
-                    float r = float.Parse(isolatedHair[0]);
-                    float g = float.Parse(isolatedHair[1]);
-                    float b = float.Parse(isolatedHair[2]);
-                    float a = float.Parse(isolatedHair[3]);
-                    human.story.HairColor = new UnityEngine.Color(r, g, b, a);
+                    float r = 0;
+                    float g = 0;
+                    float b = 0;
+                    float a = 0;
+                    if (humanDetails.hairColor != null)
+                    {
+                        string hairColor = humanDetails.hairColor.Replace("RGBA(", "").Replace(")", "");
+                        string[] isolatedHair = hairColor.Split(',');
+                         r = float.Parse(isolatedHair[0]);
+                         g = float.Parse(isolatedHair[1]);
+                         b = float.Parse(isolatedHair[2]);
+                         a = float.Parse(isolatedHair[3]);
+                        human.story.HairColor = new UnityEngine.Color(r, g, b, a);
+                    }
 
-                    string skinColor = humanDetails.skinColor.Replace("RGBA(", "").Replace(")", "");
-                    string[] isolatedSkin = skinColor.Split(',');
-                    r = float.Parse(isolatedSkin[0]);
-                    g = float.Parse(isolatedSkin[1]);
-                    b = float.Parse(isolatedSkin[2]);
-                    a = float.Parse(isolatedSkin[3]);
-                    human.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
+                    if (humanDetails.skinColor != null)
+                    {
+                        string skinColor = humanDetails.skinColor.Replace("RGBA(", "").Replace(")", "");
+                        string[] isolatedSkin = skinColor.Split(',');
+                        r = float.Parse(isolatedSkin[0]);
+                        g = float.Parse(isolatedSkin[1]);
+                        b = float.Parse(isolatedSkin[2]);
+                        a = float.Parse(isolatedSkin[3]);
+                        human.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
+                    }
 
+                    if(humanDetails.favoriteColor != null) {
                     string favoriteColor = humanDetails.favoriteColor.Replace("RGBA(", "").Replace(")", "");
-                    string[] isolatedFavoriteColor = favoriteColor.Split(',');
-                    r = float.Parse(isolatedFavoriteColor[0]);
-                    g = float.Parse(isolatedFavoriteColor[1]);
-                    b = float.Parse(isolatedFavoriteColor[2]);
-                    a = float.Parse(isolatedFavoriteColor[3]);
-                    human.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
+                    
+                        string[] isolatedFavoriteColor = favoriteColor.Split(',');
+                        r = float.Parse(isolatedFavoriteColor[0]);
+                        g = float.Parse(isolatedFavoriteColor[1]);
+                        b = float.Parse(isolatedFavoriteColor[2]);
+                        a = float.Parse(isolatedFavoriteColor[3]);
+                        human.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
+                    }
                 }
                 catch (Exception e) { Log.Warning($"Failed to load colors in human {humanDetails.name}. Reason: {e}"); }
 
@@ -755,248 +772,26 @@ namespace RimworldTogether.GameClient.Managers
         }
 
         //generates a map from a mapDetailsJSON file
-        public static Map GetMapSimple(MapDetailsJSON mapDetailsJSON, bool containItems, bool containHumans, bool containAnimals, bool lessLoot)
+        public static Map GenerateCustomMap(MapDetailsJSON mapDetailsJSON, bool containItems, bool containHumans, bool containAnimals, bool lessLoot)
         {
-
             System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
-
             stopWatch.Start();
+
             Map map = null;
-
-            string[] splitSize = mapDetailsJSON.mapSize.Split('|');
-
-            IntVec3 mapSize = new IntVec3(int.Parse(splitSize[0]), int.Parse(splitSize[1]),
-                int.Parse(splitSize[2]));
-
+            DataToMap.SpawnItems = containItems;
+            DataToMap.SpawnHumans = containHumans;
+            DataToMap.SpawnAnimals = containAnimals;
+            DataToMap.lessSettlementLoot = lessLoot;
+            DataToMap.mapDetails = mapDetailsJSON;
+            IntVec3 mapSize = DataToMap.GetMapSize(mapDetailsJSON);
 
             //create a map on the caravan's client
             try { map = RWTGetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null); }
             catch (Exception e) { Log.Warning($"Critical error generating map. Exception: {e}"); }
-            if (map == null)
-            {
-                Log.Message("Map is null after GetOrgenerateMap");
-            }
-            else { Log.Message("Map is currently not null after GetOrGenerateMap"); }
-            stopWatch.Stop();
-            Log.Message($"{"Generating new map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
-            stopWatch.Start();
-
-            /*map.fogGrid.ClearAllFog();
 
             stopWatch.Stop();
-            Log.Message($"{"clearing fog took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
-            stopWatch.Start();*/
+            Log.Message($"{"Total map generation took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
 
-            List<Thing> thingsToGetInThisTile = new List<Thing>();
-
-            //add all the items to a list of "Things" in the caravan
-            foreach (string str in mapDetailsJSON.itemDetailsJSONS)
-            {
-                try
-                {
-                    Thing toGet = GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
-                    thingsToGetInThisTile.Add(toGet);
-                }
-                catch { }
-            }
-
-            stopWatch.Stop();
-            Log.Message($"{"adding caravan items to list took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
-            stopWatch.Start();
-            if (containItems)
-            {
-                Random rnd = new Random();
-
-                foreach (string str in mapDetailsJSON.playerItemDetailsJSON)
-                {
-                    try
-                    {
-                        Thing toGet = GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
-
-                        //if lessLoot is true, Some items will not be generated
-                        if (lessLoot)
-                        {
-                            if (rnd.Next(1, 100) > 70) thingsToGetInThisTile.Add(toGet);
-                            else continue;
-                        }
-                        else thingsToGetInThisTile.Add(toGet);
-                    }
-                    catch { }
-                }
-            }
-
-
-            stopWatch.Stop();
-            Log.Message($"{"adding Settlement items to list took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
-            stopWatch.Start();
-            if(map == null)
-            {
-                Log.Message("I guess map is null?");
-            }
-
-            foreach (Thing thing in thingsToGetInThisTile)
-            {
-                try { GenPlace.TryPlaceThing(thing, thing.Position, RWTMapGenerator.mapBeingGenerated, ThingPlaceMode.Direct, rot: thing.Rotation); }
-                catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
-            }
-
-
-            stopWatch.Stop();
-            Log.Message($"{"Spawning items took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
-            stopWatch.Start();
-
-            if (containHumans)
-            {
-                foreach (string str in mapDetailsJSON.humanDetailsJSONS)
-                {
-                    HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
-
-                    try
-                    {
-                        Pawn human = GetHumanSimple(humanDetailsJSON);
-                        human.SetFaction(FactionValues.yourOnlineFaction);
-
-                        GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
-                    }
-                    catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
-                }
-
-                foreach (string str in mapDetailsJSON.playerHumanDetailsJSON)
-                {
-                    HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
-
-                    try
-                    {
-                        Pawn human = GetHumanSimple(humanDetailsJSON);
-                        human.SetFaction(FactionValues.neutralPlayer);
-
-                        GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
-                    }
-                    catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
-                }
-            }
-
-
-            stopWatch.Stop();
-            Log.Message($"{"spawning humans took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
-            stopWatch.Start();
-
-            if (containAnimals)
-            {
-                foreach (string str in mapDetailsJSON.animalDetailsJSON)
-                {
-                    AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
-
-                    try
-                    {
-                        Pawn animal = GetAnimalSimple(animalDetailsJSON);
-                        animal.SetFaction(FactionValues.yourOnlineFaction);
-
-                        GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
-                    }
-                    catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
-                }
-
-                foreach (string str in mapDetailsJSON.playerAnimalDetailsJSON)
-                {
-                    AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
-
-                    try
-                    {
-                        Pawn animal = GetAnimalSimple(animalDetailsJSON);
-                        animal.SetFaction(FactionValues.neutralPlayer);
-
-                        GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
-                    }
-                    catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
-                }
-            }
-
-
-            stopWatch.Stop();
-            Log.Message($"{"spawning animals to list took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
-            stopWatch.Start();
-
-            int index = 0;
-            for (int z = 0; z < map.Size.z; ++z)
-            {
-                for (int x = 0; x < map.Size.x; ++x)
-                {
-                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
-
-                    //get and place terrain
-                    try
-                    {
-                        TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
-                            mapDetailsJSON.tileDefNames[index]);
-                        map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
-
-                    }
-                    catch { Log.Warning($"Failed to set terrain at {vectorToCheck}"); }
-
-                    //get and place roofs
-                    try
-                    {
-                        RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
-                                    mapDetailsJSON.roofDefNames[index]);
-
-                        map.roofGrid.SetRoof(vectorToCheck, roofToUse);
-                    }
-                    catch { Log.Warning($"Failed to set roof at {vectorToCheck}"); }
-
-                    index++;
-                }
-            }
-
-
-            stopWatch.Stop();
-            Log.Message($"{"Adding Terrain and Roofing took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
-            stopWatch.Start();
-
-            map.roofCollapseBuffer.Clear();
-            map.roofGrid.Drawer.SetDirty();
-
-            /*//set all tiles to be foggy
-            CellIndices cellIndices = map.cellIndices;
-            if (map.fogGrid.fogGrid == null) map.fogGrid.fogGrid = new bool[cellIndices.NumGridCells];
-            foreach (IntVec3 cell in map.AllCells) map.fogGrid.fogGrid[cellIndices.CellToIndex(cell)] = true;
-            if (Current.ProgramState == ProgramState.Playing) map.roofGrid.Drawer.SetDirty();
-
-            //unfog neccessary tiles
-            FloodFillerFog.FloodUnfog(RWTMapGenerator.PlayerStartSpot, map);
-            List<IntVec3> rootsToUnfog = RWTMapGenerator.rootsToUnfog;
-            for (int i = 0; i < rootsToUnfog.Count; i++) FloodFillerFog.FloodUnfog(rootsToUnfog[i], map);
-*/
-            Log.Message(RWTMapGenerator.PlayerStartSpot.ToString());
-            try
-            {
-                RWTMapGenerator.StepToRun(11, map);
-            }
-            catch
-            {
-                Log.Warning("Could not Find player start");
-            }
-            Log.Message(RWTMapGenerator.PlayerStartSpot.ToString());
-
-            /*try
-            {
-                FloodFillerFog.DebugRefogMap(map);
-            }
-            catch
-            {
-                Log.Warning("Could not DebugRefogMap");
-            }*/
-            stopWatch.Stop();
-            Log.Message($"{"Recalculating fog took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
-            stopWatch.Reset();
             return map;
         }
     }

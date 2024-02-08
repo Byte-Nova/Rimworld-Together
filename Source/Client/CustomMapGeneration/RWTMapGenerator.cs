@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ using RimWorld;
 using RimWorld.Planet;
 using Verse;
 using Verse.Noise;
+using RimworldTogether.GameClient.CustomMapGeneration;
+using RimworldTogether.Shared.JSON;
 
 namespace RimworldTogether.GameClient.CustomMapGeneration
 {
@@ -131,6 +134,8 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
 
                 Log.Message($"Map{map.mapDrawer}");
+
+               
                 map.FinalizeInit();
                 DeepProfiler.End();
                 DeepProfiler.Start("MapComponent.MapGenerated()");
@@ -163,27 +168,17 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 RWTMapGenerator.tmpGenSteps.Clear();
                 RWTMapGenerator.tmpGenSteps.AddRange(from x in genStepDefs orderby x.def.order, x.def.index select x);
 
-                /*List<GenStepDef> mygenSteps = new List<GenStepDef>();
-                for (int i = 0; i < 3; i++){mygenSteps.Add(new GenStepDef());}
-                mygenSteps[0].genStep = new GenStep_ElevationFertility();
-                mygenSteps[1].genStep = new GenStep_Caves();
-                mygenSteps[2].genStep = new GenStep_RocksFromGrid();
-
-
-                RWTMapGenerator.tmpGenSteps.AddRange(from x in mygenSteps select new GenStepWithParams(x,default(GenStepParams)));*/
-
-
-
                 Log.Message($"Does mapBeingGenerated exist? : {mapBeingGenerated != null}");
                 Log.Message($"What does NumGridCells equal? : {map.cellIndices.NumGridCells}");
                 if (mapBeingGenerated == null) { mapBeingGenerated = map; }
                 Log.Message($"Steps are: {RWTMapGenerator.tmpGenSteps[0]}");
                 Log.Message($"The number of steps are {RWTMapGenerator.tmpGenSteps.Count}");
+
                 //The classes listed in tmpGenSteps rely on MapGenerator to work.
                 //Instead of copying all the GenStep classes, we are just going to give MapGenerator the necessary varaibles
                 //To allow RWTMapGenerator to work.
                 MapGenerator.mapBeingGenerated = mapBeingGenerated;
-                int[] stepsToUse = {0,1,3};
+                int[] stepsToUse = {0,1,3,4,15};
                 if(map == null)
                 {
                     Log.Message("Map is null during gen steps");
@@ -209,32 +204,14 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                         DeepProfiler.End();
                     }
                 }
+                DataToMap.addEverythingToMap(map);
+                StepToRun(18, map);
             }
             finally
             {
-                if (map == null)
-                {
-                    Log.Message("Map is null during gen steps after gen");
-                }
-                else { Log.Message("Map is currently not null after gen"); }
                 Rand.PopState();
-                if (map == null)
-                {
-                    Log.Message("Map is null during gen steps after pop state");
-                }
-                else { Log.Message("Map is currently not null after pop state"); }
                 RockNoises.Reset();
-                if (map == null)
-                {
-                    Log.Message("Map is null during gen steps after reset");
-                }
-                else { Log.Message("Map is currently not null after reset"); }
                 RWTMapGenerator.data.Clear();
-                if (map == null)
-                {
-                    Log.Message("Map is null during gen stepsm after clear");
-                }
-                else { Log.Message("Map is currently not null after clear"); }
             }
         }
 

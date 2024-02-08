@@ -104,7 +104,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void PrepareMapForSpy(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, false, false, false, false);
+            Map map = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, false, false, false, false);
 
             HandleMapFactions(map);
 

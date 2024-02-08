@@ -73,7 +73,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void PrepareMapForOfflineVisit(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, false, true, true, false);
+            Map map = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, false, true, true, false);
 
             HandleMapFactions(map);
 
