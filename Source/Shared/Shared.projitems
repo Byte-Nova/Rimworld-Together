@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>C950CC92-131F-45B4-9201-1CB27C45CEDB</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\EventDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\OfflineVisitDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\RaidDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\SpyDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\TransferManifestJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\VisitDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\ChatMessagesJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\CommandDetailsJSON.cs" />
+    <Compile Include="..\Shared\json\CustomDifficultyValues.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\FactionManifestJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\LoginDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\MapDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\PlayerRecountJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\SaveFileJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\ServerOverallJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\SettlementDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\SiteDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\StructureLikelihoodJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\AnimalDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\HumanDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\ItemDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\WorldDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+  </ItemGroup>
+</Project>
