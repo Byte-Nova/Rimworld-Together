@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Core;
+using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using UnityEngine;
@@ -38,7 +38,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     float num7 = rect.yMin + 10f;
                     if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                     {
-                        PersistentPatches.RestartGame(true);
+                        DisconnectionManager.RestartGame(true);
                     }
                 }
 

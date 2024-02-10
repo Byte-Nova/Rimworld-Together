@@ -4,42 +4,124 @@ using RimworldTogether.GameServer.Managers.Actions;
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
+using Shared.Misc;
+using Shared.Network;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class SaveManager
     {
-        public enum SaveMode { Disconnect, Quit, Autosave, Transfer, Event }
-
-        public enum MapMode { Save, Load }
-
-        public static bool CheckIfUserHasSave(Client client)
+        public static void ReceiveSavePartFromClient(ServerClient client, Packet packet)
         {
-            string[] saves = Directory.GetFiles(Program.savesPath);
-            foreach(string save in saves) if (Path.GetFileNameWithoutExtension(save) == client.username) return true;
-            return false;
+            string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
+            string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
+
+            FileTransferJSON fileTransferJSON = (FileTransferJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+
+            if (client.downloadManager == null)
+            {
+                client.downloadManager = new DownloadManager();
+                client.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileParts);
+            }
+
+            client.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
+
+            if (fileTransferJSON.isLastPart)
+            {
+                client.downloadManager.FinishFileWrite();
+                client.downloadManager = null;
+
+                byte[] saveBytes = File.ReadAllBytes(tempClientSavePath);
+                byte[] compressedSave = GZip.Compress(saveBytes);
+
+                File.WriteAllBytes(baseClientSavePath, compressedSave);
+                File.Delete(tempClientSavePath);
+
+                OnUserSave(client, fileTransferJSON);
+            }
+
+            else
+            {
+                Packet rPacket = Packet.CreatePacketFromJSON("RequestSavePartPacket");
+                client.clientListener.SendData(rPacket);
+            }
         }
 
-        public static bool CheckIfMapExists(string mapTileToCheck)
+        public static void SendSavePartToClient(ServerClient client)
         {
-            string[] maps = Directory.GetFiles(Program.mapsPath);
-            foreach(string str in maps)
+            string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
+            string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
+
+            if (client.uploadManager == null)
             {
-                MapFile mapFile = Serializer.SerializeFromFile<MapFile>(str);
-                if (mapFile.mapTile == mapTileToCheck) return true;
+                Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
+
+                byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(baseClientSavePath));
+                File.WriteAllBytes(tempClientSavePath, decompressedSave);
+
+                client.uploadManager = new UploadManager();
+                client.uploadManager.PrepareUpload(tempClientSavePath);
+            }
+
+            FileTransferJSON fileTransferJSON = new FileTransferJSON();
+            fileTransferJSON.fileSize = client.uploadManager.fileSize;
+            fileTransferJSON.fileParts = client.uploadManager.fileParts;
+            fileTransferJSON.fileBytes = client.uploadManager.ReadFilePart();
+            fileTransferJSON.isLastPart = client.uploadManager.isLastPart;
+
+            Packet packet = Packet.CreatePacketFromJSON("ReceiveSavePartPacket", fileTransferJSON);
+            client.clientListener.SendData(packet);
+
+            if (client.uploadManager.isLastPart)
+            {
+                File.Delete(tempClientSavePath);
+                client.uploadManager = null;
+            }
+        }
+
+        private static void OnUserSave(ServerClient client, FileTransferJSON fileTransferJSON)
+        {
+            if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
+            {
+                CommandManager.SendDisconnectCommand(client);
+
+                client.disconnectFlag = true;
+
+                Logger.WriteToConsole($"[Save game] > {client.username} > To menu");
+            }
+
+            else if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Quit).ToString())
+            {
+                CommandManager.SendQuitCommand(client);
+
+                client.disconnectFlag = true;
+
+                Logger.WriteToConsole($"[Save game] > {client.username} > Quiting");
+            }
+
+            else if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Transfer).ToString())
+            {
+                Logger.WriteToConsole($"[Save game] > {client.username} > Item transfer");
+            }
+
+            else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");
+        }
+
+        public static bool CheckIfUserHasSave(ServerClient client)
+        {
+            string[] saves = Directory.GetFiles(Program.savesPath);
+            foreach(string save in saves)
+            {
+                if (Path.GetFileNameWithoutExtension(save) == client.username)
+                {
+                    return true;
+                }
             }
 
             return false;
-        }
-
-        public static MapFile[] GetAllMapFiles()
-        {
-            List<MapFile> mapFiles = new List<MapFile>();
-            string[] maps = Directory.GetFiles(Program.mapsPath);
-            foreach (string str in maps) mapFiles.Add(Serializer.SerializeFromFile<MapFile>(str));
-            return mapFiles.ToArray();
         }
 
         public static byte[] GetUserSaveFromUsername(string username)
@@ -56,97 +138,7 @@ namespace RimworldTogether.GameServer.Managers
             return null;
         }
 
-        public static void SaveUserGame(Client client, Packet packet)
-        {
-            SaveFileJSON saveFileJSON = Serializer.SerializeFromString<SaveFileJSON>(packet.contents[0]);
-            File.WriteAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave"), Convert.FromBase64String(saveFileJSON.saveData));
-
-            if (saveFileJSON.saveMode == ((int)SaveMode.Disconnect).ToString())
-            {
-                CommandManager.SendDisconnectCommand(client);
-
-                client.disconnectFlag = true;
-
-                Logger.WriteToConsole($"[Save game] > {client.username} > To menu");
-            }
-
-            else if (saveFileJSON.saveMode == ((int)SaveMode.Quit).ToString())
-            {
-                CommandManager.SendQuitCommand(client);
-
-                client.disconnectFlag = true;
-
-                Logger.WriteToConsole($"[Save game] > {client.username} > Quiting");
-            }
-
-            else if (saveFileJSON.saveMode == ((int)SaveMode.Transfer).ToString())
-            {
-                Logger.WriteToConsole($"[Save game] > {client.username} > Item transfer");
-            }
-
-            else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");
-        }
-
-        public static void LoadUserGame(Client client)
-        {
-            string[] contents = new string[] { Convert.ToBase64String(File.ReadAllBytes(Path.Combine(Program.savesPath, client.username + ".mpsave"))) };
-            Packet packet = new Packet("LoadFilePacket", contents);
-            Network.Network.SendData(client, packet);
-
-            if (Network.Network.usingNewNetworking) Logger.WriteToConsole($"[Load game] > {client.username} {contents.GetHashCode()}");
-            else Logger.WriteToConsole($"[Load game] > {client.username}");
-
-        }
-
-        public static void SaveUserMap(Client client, Packet packet)
-        {
-            MapDetailsJSON mapDetailsJSON = Serializer.SerializeFromString<MapDetailsJSON>(packet.contents[0]);
-
-            MapFile mapFile = new MapFile();
-            mapFile.mapTile = mapDetailsJSON.mapTile;
-            mapFile.mapOwner = client.username;
-            mapFile.deflatedMapData = mapDetailsJSON.deflatedMapData;
-
-            Serializer.SerializeToFile(Path.Combine(Program.mapsPath, mapFile.mapTile + ".json"), mapFile);
-            Logger.WriteToConsole($"[Save map] > {client.username} > {mapFile.mapTile}");
-        }
-
-        public static void DeleteMap(MapFile mapFile)
-        {
-            if (mapFile == null) return;
-
-            File.Delete(Path.Combine(Program.mapsPath, mapFile.mapTile + ".json"));
-
-            Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", Logger.LogMode.Warning);
-        }
-
-        public static MapFile[] GetAllMapsFromUsername(string username)
-        {
-            List<MapFile> userMaps = new List<MapFile>();
-
-            SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
-            foreach (SettlementFile settlementFile in userSettlements)
-            {
-                MapFile mapFile = GetUserMapFromTile(settlementFile.tile);
-                userMaps.Add(mapFile);
-            }
-
-            return userMaps.ToArray();
-        }
-
-        public static MapFile GetUserMapFromTile(string mapTileToGet)
-        {
-            MapFile[] mapFiles = GetAllMapFiles();
-
-            foreach(MapFile mapFile in mapFiles)
-            {
-                if (mapFile.mapTile == mapTileToGet) return mapFile;
-            }
-
-            return null;
-        }
-
-        public static void ResetClientSave(Client client)
+        public static void ResetClientSave(ServerClient client)
         {
             if (!CheckIfUserHasSave(client)) ResponseShortcutManager.SendIllegalPacket(client);
             else
@@ -160,8 +152,8 @@ namespace RimworldTogether.GameServer.Managers
 
                 Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
 
-                MapFile[] userMaps = GetAllMapsFromUsername(client.username);
-                foreach (MapFile map in userMaps) DeleteMap(map);
+                MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
+                foreach (MapFileJSON map in userMaps) MapManager.DeleteMap(map);
 
                 SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
                 foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
@@ -180,15 +172,15 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void DeletePlayerDetails(string username)
         {
-            Client connectedUser = UserManager.GetConnectedClientFromUsername(username);
+            ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
             if (connectedUser != null) connectedUser.disconnectFlag = true;
 
             string[] saves = Directory.GetFiles(Program.savesPath);
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);
             if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
-            MapFile[] userMaps = GetAllMapsFromUsername(username);
-            foreach (MapFile map in userMaps) DeleteMap(map);
+            MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(username);
+            foreach (MapFileJSON map in userMaps) MapManager.DeleteMap(map);
 
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(username);
             foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);

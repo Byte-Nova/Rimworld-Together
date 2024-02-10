@@ -7,6 +7,8 @@ namespace RimworldTogether.Shared.JSON.Actions
     {
         public string spyStepMode;
 
-        public string spyData;
+        public string targetTile;
+
+        public byte[] mapDetails;
     }
 }

@@ -2,6 +2,7 @@
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -61,7 +62,7 @@ namespace RimworldTogether.GameServer.Managers
             Logger.WriteToConsole($"Loaded forbidden mods [{Program.loadedForbiddenMods.Count()}]");
         }
 
-        public static bool CheckIfModConflict(Client client, LoginDetailsJSON loginDetailsJSON)
+        public static bool CheckIfModConflict(ServerClient client, JoinDetailsJSON loginDetailsJSON)
         {
             List<string> conflictingMods = new List<string>();
 
@@ -114,7 +115,7 @@ namespace RimworldTogether.GameServer.Managers
 
                 else
                 {
-                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.WrongMods, conflictingMods);
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }
             }

@@ -1,65 +1,35 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 
-namespace RimworldTogether.Shared.Misc
+namespace Shared.Misc
 {
     public static class GZip
     {
-        public static string Compress(byte[] input)
+        public static byte[] Compress(byte[] bytes)
         {
-            byte[] compressed = DoCompress(input);
-            return Convert.ToBase64String(compressed);
-        }
-
-        public static byte[] CompressDefault(byte[] input)
-        {
-            return DoCompress(input);
-        }
-
-        public static byte[] Decompress(string input)
-        {
-            byte[] compressed = Convert.FromBase64String(input);
-            return DoDecompress(compressed);
-        }
-
-        public static byte[] DecompressDefault(byte[] input)
-        {
-            return DoDecompress(input);
-        }
-
-        private static byte[] DoCompress(byte[] input)
-        {
-            using (var result = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
-                var lengthBytes = BitConverter.GetBytes(input.Length);
-                result.Write(lengthBytes, 0, 4);
-
-                using (var compressionStream = new GZipStream(result,
-                    CompressionMode.Compress))
+                using (var gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal))
                 {
-                    compressionStream.Write(input, 0, input.Length);
-                    compressionStream.Flush();
-
+                    gzipStream.Write(bytes, 0, bytes.Length);
                 }
-                return result.ToArray();
+
+                return memoryStream.ToArray();
             }
         }
 
-        private static byte[] DoDecompress(byte[] input)
+        public static byte[] Decompress(byte[] bytes)
         {
-            using (var source = new MemoryStream(input))
+            using (var memoryStream = new MemoryStream(bytes))
             {
-                byte[] lengthBytes = new byte[4];
-                source.Read(lengthBytes, 0, 4);
-
-                var length = BitConverter.ToInt32(lengthBytes, 0);
-                using (var decompressionStream = new GZipStream(source,
-                    CompressionMode.Decompress))
+                using (var outputStream = new MemoryStream())
                 {
-                    var result = new byte[length];
-                    decompressionStream.Read(result, 0, length);
-                    return result;
+                    using (var decompressStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+                    {
+                        decompressStream.CopyTo(outputStream);
+                    }
+
+                    return outputStream.ToArray();
                 }
             }
         }

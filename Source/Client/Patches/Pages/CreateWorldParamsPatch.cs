@@ -5,12 +5,10 @@ using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
@@ -32,7 +30,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
                         __instance.Close();
-                        Network.Network.DisconnectFromServer();
+                        Network.Network.serverListener.disconnectFlag = true;
                     }
 
                     buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
@@ -68,7 +66,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
             {
                 WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-                worldDetailsJSON.worldStepMode = ((int)WorldManager.WorldStepMode.Required).ToString();
+                worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
                 worldDetailsJSON.SeedString = seedString;
                 worldDetailsJSON.PlanetCoverage = planetCoverage;
                 worldDetailsJSON.Rainfall = (float)rainfall;
@@ -78,17 +76,16 @@ namespace RimworldTogether.GameClient.Patches.Pages
 
                 foreach (FactionDef def in factions) worldDetailsJSON.Factions.Add(def.defName.ToString());
 
-                PlanetFactions.SetPlayerFactionDefs();
-                worldDetailsJSON.Factions.Add(PlanetFactions.neutralPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(PlanetFactions.allyPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(PlanetFactions.enemyPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(PlanetFactions.yourOnlineFactionDef.defName);
+                FactionValues.SetPlayerFactionDefs();
+                worldDetailsJSON.Factions.Add(FactionValues.neutralPlayerDef.defName);
+                worldDetailsJSON.Factions.Add(FactionValues.allyPlayerDef.defName);
+                worldDetailsJSON.Factions.Add(FactionValues.enemyPlayerDef.defName);
+                worldDetailsJSON.Factions.Add(FactionValues.yourOnlineFactionDef.defName);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server to accept world"));
 
-                string[] contents = new string[] { Serializer.SerializeToString(worldDetailsJSON) };
-                Packet packet = new Packet("WorldPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+                Network.Network.serverListener.SendData(packet);
             }
         }
 

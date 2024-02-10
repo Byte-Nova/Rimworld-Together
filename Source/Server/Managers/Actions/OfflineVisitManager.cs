@@ -1,9 +1,9 @@
 ﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
@@ -11,9 +11,9 @@ namespace RimworldTogether.GameServer.Managers.Actions
     {
         private enum OfflineVisitStepMode { Request, Deny }
 
-        public static void ParseOfflineVisitPacket(Client client, Packet packet)
+        public static void ParseOfflineVisitPacket(ServerClient client, Packet packet)
         {
-            OfflineVisitDetailsJSON offlineVisitDetails = Serializer.SerializeFromString<OfflineVisitDetailsJSON>(packet.contents[0]);
+            OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(offlineVisitDetails.offlineVisitStepMode))
             {
@@ -27,36 +27,33 @@ namespace RimworldTogether.GameServer.Managers.Actions
             }
         }
 
-        private static void SendRequestedMap(Client client, OfflineVisitDetailsJSON offlineVisitDetails)
+        private static void SendRequestedMap(ServerClient client, OfflineVisitDetailsJSON offlineVisitDetails)
         {
-            if (!SaveManager.CheckIfMapExists(offlineVisitDetails.offlineVisitData))
+            if (!MapManager.CheckIfMapExists(offlineVisitDetails.targetTile))
             {
                 offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(offlineVisitDetails) };
-                Packet packet = new Packet("OfflineVisitPacket", contents);
-                Network.Network.SendData(client, packet);
+                Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
+                client.clientListener.SendData(packet);
             }
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(offlineVisitDetails.offlineVisitData);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(offlineVisitDetails.targetTile);
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
-                    string[] contents = new string[] { Serializer.SerializeToString(offlineVisitDetails) };
-                    Packet packet = new Packet("OfflineVisitPacket", contents);
-                    Network.Network.SendData(client, packet);
+                    Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
+                    client.clientListener.SendData(packet);
                 }
 
                 else
                 {
-                    MapFile mapFile = SaveManager.GetUserMapFromTile(offlineVisitDetails.offlineVisitData);
-                    offlineVisitDetails.offlineVisitData = Serializer.SerializeToString(mapFile);
+                    MapFileJSON mapDetails = MapManager.GetUserMapFromTile(offlineVisitDetails.targetTile);
+                    offlineVisitDetails.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
-                    string[] contents = new string[] { Serializer.SerializeToString(offlineVisitDetails) };
-                    Packet packet = new Packet("OfflineVisitPacket", contents);
-                    Network.Network.SendData(client, packet);
+                    Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
+                    client.clientListener.SendData(packet);
                 }
             }
         }

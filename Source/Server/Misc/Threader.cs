@@ -1,6 +1,6 @@
 ﻿using RimworldTogether.GameServer.Managers;
 using RimworldTogether.GameServer.Managers.Actions;
-using RimworldTogether.GameServer.Network;
+using RimworldTogether.GameServer.Network.Listener;
 
 namespace RimworldTogether.GameServer.Misc
 {
@@ -9,14 +9,8 @@ namespace RimworldTogether.GameServer.Misc
         public enum ServerMode
         {
             Start,
-            Heartbeat,
             Sites,
             Console
-        }
-
-        public enum ClientMode
-        {
-            Start
         }
 
         public static Task GenerateServerThread(ServerMode mode, CancellationToken cancellationToken)
@@ -25,9 +19,6 @@ namespace RimworldTogether.GameServer.Misc
             {
                 case ServerMode.Start:
                     return Task.Run(Network.Network.ReadyServer, cancellationToken);
-
-                case ServerMode.Heartbeat:
-                    return Task.Run(Network.Network.HearbeatClients, cancellationToken);
 
                 case ServerMode.Sites:
                     return Task.Run(SiteManager.StartSiteTicker, cancellationToken);
@@ -40,13 +31,25 @@ namespace RimworldTogether.GameServer.Misc
             }
         }
 
-        public static void GenerateClientThread(ClientMode mode, Client client)
+        public enum ClientMode
+        {
+            Listener,
+            Health,
+            KAFlag
+        }
+
+        public static Task GenerateClientThread(ClientListener listener, ClientMode mode, CancellationToken cancellationToken)
         {
             switch (mode)
             {
-                case ClientMode.Start:
-                    Task.Run(() => Network.Network.ListenToClient(client));
-                    break;
+                case ClientMode.Listener:
+                    return Task.Run(listener.ListenToClient, cancellationToken);
+
+                case ClientMode.Health:
+                    return Task.Run(listener.CheckForConnectionHealth, cancellationToken);
+
+                case ClientMode.KAFlag:
+                    return Task.Run(listener.CheckForKAFlag, cancellationToken);
 
                 default:
                     throw new NotImplementedException();

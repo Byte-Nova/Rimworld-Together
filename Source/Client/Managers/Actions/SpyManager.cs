@@ -1,36 +1,34 @@
 ﻿using System;
-using System.Text;
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
+using Shared.Misc;
 using Verse;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class SpyManager
     {
-        private enum SpyStepMode { Request, Deny }
-
         public static int spyCost;
 
         public static void ParseSpyPacket(Packet packet)
         {
-            SpyDetailsJSON spyDetailsJSON = Serializer.SerializeFromString<SpyDetailsJSON>(packet.contents[0]);
+            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(spyDetailsJSON.spyStepMode))
             {
-                case (int)SpyStepMode.Request:
+                case (int)CommonEnumerators.SpyStepMode.Request:
                     OnSpyAccept(spyDetailsJSON);
                     break;
 
-                case (int)SpyStepMode.Deny:
+                case (int)CommonEnumerators.SpyStepMode.Deny:
                     OnSpyDeny();
                     break;
             }
@@ -63,12 +61,11 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
                     SpyDetailsJSON spyDetailsJSON = new SpyDetailsJSON();
-                    spyDetailsJSON.spyStepMode = ((int)SpyStepMode.Request).ToString();
-                    spyDetailsJSON.spyData = ClientValues.chosenSettlement.Tile.ToString();
+                    spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
+                    spyDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(spyDetailsJSON) };
-                    Packet packet = new Packet("SpyPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
                 }
             };
 
@@ -80,11 +77,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON dummyDetails = Serializer.SerializeFromString<MapDetailsJSON>(spyDetailsJSON.spyData);
-            byte[] inflatedBytes = GZip.Decompress(dummyDetails.deflatedMapData);
-            string inflatedString = Encoding.UTF8.GetString(inflatedBytes);
-
-            MapDetailsJSON mapDetailsJSON = Serializer.SerializeFromString<MapDetailsJSON>(inflatedString);
+            MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(spyDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(mapFileJSON.mapData);
 
             Action r1 = delegate { PrepareMapForSpy(mapDetailsJSON); };
 
@@ -130,17 +124,17 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
             {
-                if (pawn.Faction == PlanetFactions.neutralPlayer)
+                if (pawn.Faction == FactionValues.neutralPlayer)
                 {
-                    pawn.SetFaction(PlanetFactions.enemyPlayer);
+                    pawn.SetFaction(FactionValues.enemyPlayer);
                 }
             }
 
             foreach (Thing thing in map.listerThings.AllThings.ToArray())
             {
-                if (thing.Faction == PlanetFactions.neutralPlayer)
+                if (thing.Faction == FactionValues.neutralPlayer)
                 {
-                    thing.SetFaction(PlanetFactions.enemyPlayer);
+                    thing.SetFaction(FactionValues.enemyPlayer);
                 }
             }
         }

@@ -1,9 +1,9 @@
 ﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
@@ -11,9 +11,9 @@ namespace RimworldTogether.GameServer.Managers.Actions
     {
         private enum RaidStepMode { Request, Deny }
 
-        public static void ParseRaidPacket(Client client, Packet packet)
+        public static void ParseRaidPacket(ServerClient client, Packet packet)
         {
-            RaidDetailsJSON raidDetailsJSON = Serializer.SerializeFromString<RaidDetailsJSON>(packet.contents[0]);
+            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(raidDetailsJSON.raidStepMode))
             {
@@ -27,36 +27,33 @@ namespace RimworldTogether.GameServer.Managers.Actions
             }
         }
 
-        private static void SendRequestedMap(Client client, RaidDetailsJSON raidDetailsJSON)
+        private static void SendRequestedMap(ServerClient client, RaidDetailsJSON raidDetailsJSON)
         {
-            if (!SaveManager.CheckIfMapExists(raidDetailsJSON.raidData))
+            if (!MapManager.CheckIfMapExists(raidDetailsJSON.targetTile))
             {
                 raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Deny).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(raidDetailsJSON) };
-                Packet packet = new Packet("RaidPacket", contents);
-                Network.Network.SendData(client, packet);
+                Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+                client.clientListener.SendData(packet);
             }
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(raidDetailsJSON.raidData);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(raidDetailsJSON.targetTile);
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Deny).ToString();
-                    string[] contents = new string[] { Serializer.SerializeToString(raidDetailsJSON) };
-                    Packet packet = new Packet("RaidPacket", contents);
-                    Network.Network.SendData(client, packet);
+                    Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+                    client.clientListener.SendData(packet);
                 }
 
                 else
                 {
-                    MapFile mapFile = SaveManager.GetUserMapFromTile(raidDetailsJSON.raidData);
-                    raidDetailsJSON.raidData = Serializer.SerializeToString(mapFile);
+                    MapFileJSON mapDetails = MapManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
+                    raidDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
-                    string[] contents = new string[] { Serializer.SerializeToString(raidDetailsJSON) };
-                    Packet packet = new Packet("RaidPacket", contents);
-                    Network.Network.SendData(client, packet);
+                    Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+                    client.clientListener.SendData(packet);
                 }
             }
         }

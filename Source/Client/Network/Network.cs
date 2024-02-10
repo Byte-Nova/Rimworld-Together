@@ -1,46 +1,37 @@
 ﻿using System;
-using System.IO;
-using System.Net.Sockets;
-using System.Threading;
 using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Patches;
+using RimworldTogether.GameClient.Network.Listener;
 using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Misc;
-using RimworldTogether.Shared.Network;
 using Verse;
 
 namespace RimworldTogether.GameClient.Network
 {
     public static class Network
     {
-        public static TcpClient connection;
-        public static NetworkStream ns;
-        public static StreamWriter sw;
-        public static StreamReader sr;
+        public static ServerListener serverListener;
+        public static string ip = "";
+        public static string port = "";
 
         public static bool isConnectedToServer;
         public static bool isTryingToConnect;
-        public static bool usingNewNetworking;
-
-        public static string ip = "";
-        public static string port = "";
 
         public static void StartConnection()
         {
             if (TryConnectToServer())
             {
                 DialogManager.PopWaitDialog();
-
-                PersistentPatches.ManageDevOptions();
-
+                ClientValues.ManageDevOptions();
                 SiteManager.SetSiteDefs();
 
-                Threader.GenerateThread(Threader.Mode.Heartbeat);
+                Threader.GenerateThread(Threader.Mode.Listener);
+                Threader.GenerateThread(Threader.Mode.Health);
+                Threader.GenerateThread(Threader.Mode.KASender);
 
-                ListenToServer();
+                Log.Message($"[Rimworld Together] > Connected to server");
             }
 
             else
@@ -50,7 +41,7 @@ namespace RimworldTogether.GameClient.Network
                 RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
                 DialogManager.PushNewDialog(d1);
 
-                DisconnectFromServer();
+                ClearAllValues();
             }
         }
 
@@ -63,107 +54,48 @@ namespace RimworldTogether.GameClient.Network
                 {
                     isTryingToConnect = true;
 
-                    connection = new(ip, int.Parse(port));
-                    ns = connection.GetStream();
-                    sw = new StreamWriter(ns);
-                    sr = new StreamReader(ns);
                     isConnectedToServer = true;
+
+                    serverListener = new ServerListener(new(ip, int.Parse(port)));
 
                     return true;
                 }
-
-                catch (Exception e)
-                {
-                    Log.Error($"Network exception > {e}");
-                    return false;
-                }
-            }
-        }
-
-        public static void ListenToServer()
-        {
-            DialogShortcuts.ShowLoginOrRegisterDialogs();
-
-            while (isConnectedToServer)
-            {
-                try
-                {
-                    string data = sr.ReadLine();
-
-                    Action toDo = delegate
-                    {
-                        Packet receivedPacket = Serializer.SerializeToPacket(data);
-                        PacketHandlers.HandlePacket(receivedPacket);
-                    };
-                    Main.threadDispatcher.Enqueue(toDo);
-                }
-
-                catch(Exception e)
-                {
-                    Log.Warning($"Network exception > {e}");
-                    DisconnectFromServer();
-                }
-            }
-        }
-
-        public static void SendData(Packet packet)
-        {
-            sw.WriteLine(Serializer.SerializeToString(packet));
-            sw.Flush();
-        }
-
-        public static void HeartbeatServer()
-        {
-            while (isConnectedToServer)
-            {
-                Thread.Sleep(100);
-
-                try
-                {
-                    if (!CheckIfConnected())
-                    {
-                        DisconnectFromServer();
-                    }
-                }
-                catch { }
-            }
-        }
-
-        private static bool CheckIfConnected()
-        {
-            if (!connection.Connected) return false;
-            else
-            {
-                if (connection.Client.Poll(0, SelectMode.SelectRead))
-                {
-                    byte[] buff = new byte[1];
-                    if (connection.Client.Receive(buff, SocketFlags.Peek) == 0) return false;
-                    else return true;
-                }
-
-                else return true;
+                catch { return false; }
             }
         }
 
         public static void DisconnectFromServer()
         {
-            if (connection != null) connection.Dispose();
-            isConnectedToServer = false;
-            isTryingToConnect = false;
-
-            Action r1 = delegate
+            Action toDo = delegate
             {
-                if (Current.ProgramState == ProgramState.Playing)
+                serverListener.connection.Dispose();
+
+                Action r1 = delegate
                 {
-                    PersistentPatches.DisconnectToMenu();
-                }
+                    if (Current.ProgramState == ProgramState.Playing)
+                    {
+                        DisconnectionManager.DisconnectToMenu();
+                    }
+                };
+
+                DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
+                {
+                        "Connection to the server has been lost!",
+                        "Game will now quit to menu"
+                }, r1));
+
+                ClearAllValues();
+
+                Log.Message($"[Rimworld Together] > Disconnected from server");
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
-            {
-                "Connection to the server has been lost!",
-                "Game will now quit to menu"
-            }, r1));
+            Main.threadDispatcher.Enqueue(toDo);
+        }
+
+        public static void ClearAllValues()
+        {
+            isTryingToConnect = false;
+            isConnectedToServer = false;
 
             ClientValues.CleanValues();
             ServerValues.CleanValues();

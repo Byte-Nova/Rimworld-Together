@@ -1,5 +1,4 @@
-﻿using System;
-using Verse;
+﻿using Verse;
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
@@ -7,14 +6,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
     {
         public static void GenerateLetter(string title, string description, LetterDef letterType)
         {
-            Action toDo = delegate
-            {
-                Find.LetterStack.ReceiveLetter(title,
-                    description,
-                    letterType);
-            };
-
-            toDo.Invoke();
+            Find.LetterStack.ReceiveLetter(title,
+                description,
+                letterType);
         }
     }
 }

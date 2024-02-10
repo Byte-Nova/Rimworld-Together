@@ -3,10 +3,9 @@ using System.Linq;
 using RimWorld;
 using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
@@ -14,7 +13,7 @@ namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_ItemListing : Window
     {
-        public override Vector2 InitialSize => new Vector2(300f, 512f);
+        public override Vector2 InitialSize => new Vector2(350f, 512f);
 
         public string title = "Item Listing";
 
@@ -30,9 +29,9 @@ namespace RimworldTogether.GameClient.Dialogs
 
         private Thing[] listedThings;
 
-        private TransferManager.TransferMode transferMode;
+        private CommonEnumerators.TransferMode transferMode;
 
-        public RT_Dialog_ItemListing(Thing[] listedThings, TransferManager.TransferMode transferMode)
+        public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
         {
             DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
@@ -102,7 +101,7 @@ namespace RimworldTogether.GameClient.Dialogs
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            string itemName = thing.LabelNoCount;
+            string itemName = thing.LabelShort;
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
@@ -126,16 +125,16 @@ namespace RimworldTogether.GameClient.Dialogs
         {
             Action r1 = delegate
             {
-                if (transferMode == TransferManager.TransferMode.Gift)
+                if (transferMode == CommonEnumerators.TransferMode.Gift)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
-                else if (transferMode == TransferManager.TransferMode.Trade)
+                else if (transferMode == CommonEnumerators.TransferMode.Trade)
                 {
-                    if (RimworldManager.CheckForAnySocialPawn(RimworldManager.Location.Settlement))
+                    if (RimworldManager.CheckForAnySocialPawn(RimworldManager.SearchLocation.Settlement))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferManager.TransferLocation.Settlement, true, true, true));
+                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
                     }
 
                     else
@@ -145,18 +144,17 @@ namespace RimworldTogether.GameClient.Dialogs
                     }
                 }
 
-                else if (transferMode == TransferManager.TransferMode.Pod)
+                else if (transferMode == CommonEnumerators.TransferMode.Pod)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
-                else if (transferMode == TransferManager.TransferMode.Rebound)
+                else if (transferMode == CommonEnumerators.TransferMode.Rebound)
                 {
-                    ClientValues.incomingManifest.transferStepMode = ((int)TransferManager.TransferStepMode.TradeReAccept).ToString();
+                    ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(ClientValues.incomingManifest) };
-                    Packet packet = new Packet("TransferPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
+                    Network.Network.serverListener.SendData(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }

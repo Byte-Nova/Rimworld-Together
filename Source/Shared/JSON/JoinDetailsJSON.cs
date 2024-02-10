@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace RimworldTogether.Shared.JSON
 {
     [Serializable]
-    public class LoginDetailsJSON
+    public class JoinDetailsJSON
     {
         public string username;
 

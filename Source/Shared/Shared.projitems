@@ -17,12 +17,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\VisitDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\ChatMessagesJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\CommandDetailsJSON.cs" />
-    <Compile Include="..\Shared\json\CustomDifficultyValues.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\FileTransferJSON.cs" />
+    <Compile Include="..\Shared\JSON\KeepAliveJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JSON\MapFileJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overrides\BindOverrider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serializers\ObjectConverter.cs" />
+    <Compile Include="..\Shared\JSON\CustomDifficultyValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\FactionManifestJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\LoginDetailsJSON.cs" />
+    <Compile Include="..\Shared\JSON\JoinDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\MapDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\PlayerRecountJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\SaveFileJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\ServerOverallJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\SettlementDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\SiteDetailsJSON.cs" />
@@ -31,9 +39,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\HumanDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\ItemDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\WorldDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serializers\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
   </ItemGroup>
 </Project>

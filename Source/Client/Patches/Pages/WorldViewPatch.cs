@@ -8,12 +8,10 @@ using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Patches.Tabs;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
-using static RimworldTogether.GameClient.Managers.Actions.TransferManager;
-using FactionManager = RimworldTogether.GameClient.Managers.Actions.FactionManager;
 
 namespace RimworldTogether.GameClient.Patches.Pages
 {
@@ -54,7 +52,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 {
                     Settlement settlement = settlements[i];
 
-                    if (PlanetFactions.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
+                    if (FactionValues.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
                     else
                     {
                         int num = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, maxDist);
@@ -79,7 +77,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         {
             if (!Network.Network.isConnectedToServer) return;
 
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction))
+            if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -93,14 +91,14 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        Action r1 = delegate { LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Enemy, 
-                            LikelihoodManager.LikelihoodTarget.Settlement); };
+                        Action r1 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy, 
+                            CommonEnumerators.LikelihoodTarget.Settlement); };
 
-                        Action r2 = delegate { LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Neutral, 
-                            LikelihoodManager.LikelihoodTarget.Settlement); };
+                        Action r2 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                            CommonEnumerators.LikelihoodTarget.Settlement); };
 
-                        Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Ally, 
-                            LikelihoodManager.LikelihoodTarget.Settlement); };
+                        Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                            CommonEnumerators.LikelihoodTarget.Settlement); };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
@@ -118,8 +116,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ClientValues.chosenSettlement.Faction == PlanetFactions.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
-                        else FactionManager.OnFactionOpenOnNonMember();
+                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) OnlineFactionManager.OnFactionOpenOnMember();
+                        else OnlineFactionManager.OnFactionOpenOnNonMember();
                     }
                 };
 
@@ -138,7 +136,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 };
 
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != PlanetFactions.yourOnlineFaction) gizmoList.Add(command_Likelihood);
+                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Likelihood);
                 if (__instance.Map != null && __instance.Map.mapPawns.AllPawns.ToList().Find(fetch => fetch.Faction == Faction.OfPlayer) != null)
                 {
                     gizmoList.Add(command_Caravan);
@@ -159,8 +157,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ServerValues.hasFaction) FactionManager.OnFactionOpen();
-                        else FactionManager.OnNoFactionOpen();
+                        if (ServerValues.hasFaction) OnlineFactionManager.OnFactionOpen();
+                        else OnlineFactionManager.OnNoFactionOpen();
                     }
                 };
 
@@ -178,7 +176,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         {
             if (!Network.Network.isConnectedToServer) return;
 
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction))
+            if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
 
@@ -249,9 +247,9 @@ namespace RimworldTogether.GameClient.Patches.Pages
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckForAnySocialPawn(RimworldManager.Location.Caravan))
+                        if (RimworldManager.CheckForAnySocialPawn(RimworldManager.SearchLocation.Caravan))
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferManager.TransferLocation.Caravan, true, true, true));
+                            DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
                     }
@@ -284,18 +282,18 @@ namespace RimworldTogether.GameClient.Patches.Pages
                         ClientValues.chosenSettlement = __instance;
 
                         Action r1 = delegate {
-                            LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Enemy,
-                            LikelihoodManager.LikelihoodTarget.Settlement);
+                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
                         };
 
                         Action r2 = delegate {
-                            LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Neutral,
-                            LikelihoodManager.LikelihoodTarget.Settlement);
+                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
                         };
 
                         Action r3 = delegate {
-                            LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Ally,
-                            LikelihoodManager.LikelihoodTarget.Settlement);
+                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
                         };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
@@ -314,8 +312,8 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ClientValues.chosenSettlement.Faction == PlanetFactions.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
-                        else FactionManager.OnFactionOpenOnNonMember();
+                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) OnlineFactionManager.OnFactionOpenOnMember();
+                        else OnlineFactionManager.OnFactionOpenOnNonMember();
                     }
                 };
 
@@ -326,7 +324,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 }
 
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != PlanetFactions.yourOnlineFaction)
+                if (__instance.Faction != FactionValues.yourOnlineFaction)
                 {
                     gizmoList.Add(command_Likelihood);
                     gizmoList.Add(command_Spy);
@@ -344,7 +342,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<FloatMenuOption> __result, Caravan caravan, Settlement __instance)
         {
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction))
+            if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -370,7 +368,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         {
             if (!Network.Network.isConnectedToServer) return;
 
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction))
+            if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -384,14 +382,14 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     {
                         ClientValues.chosenSite = __instance;
 
-                        Action r1 = delegate { LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Enemy, 
-                            LikelihoodManager.LikelihoodTarget.Site); };
+                        Action r1 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
+                            CommonEnumerators.LikelihoodTarget.Site); };
 
-                        Action r2 = delegate { LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Neutral, 
-                            LikelihoodManager.LikelihoodTarget.Site); };
+                        Action r2 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                            CommonEnumerators.LikelihoodTarget.Site); };
 
-                        Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Ally, 
-                            LikelihoodManager.LikelihoodTarget.Site); };
+                        Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                            CommonEnumerators.LikelihoodTarget.Site); };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
@@ -400,7 +398,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     }
                 };
 
-                if (__instance.Faction != PlanetFactions.yourOnlineFaction) gizmoList.Add(command_Likelihood);
+                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Likelihood);
 
                 __result = gizmoList;
             }
@@ -421,7 +419,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void DoPost(Site __instance, ref IEnumerable<FloatMenuOption> __result)
         {
-            if (PlanetFactions.playerFactions.Contains(__instance.Faction) || __instance.Faction == Faction.OfPlayer)
+            if (FactionValues.playerFactions.Contains(__instance.Faction) || __instance.Faction == Faction.OfPlayer)
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -496,18 +494,18 @@ namespace RimworldTogether.GameClient.Patches.Pages
                             ClientValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                             Action r1 = delegate {
-                                LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Enemy,
-                                    LikelihoodManager.LikelihoodTarget.Site);
+                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
+                                    CommonEnumerators.LikelihoodTarget.Site);
                             };
 
                             Action r2 = delegate {
-                                LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Neutral,
-                                    LikelihoodManager.LikelihoodTarget.Site);
+                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                                    CommonEnumerators.LikelihoodTarget.Site);
                             };
 
                             Action r3 = delegate {
-                                LikelihoodManager.TryRequestLikelihood(LikelihoodManager.Likelihoods.Ally,
-                                    LikelihoodManager.LikelihoodTarget.Site);
+                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                                    CommonEnumerators.LikelihoodTarget.Site);
                             };
 
                             RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
@@ -551,7 +549,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                         gizmoList.Add(command_DestroySite);
                     }
 
-                    else if (presentSite.Faction == PlanetFactions.yourOnlineFaction)
+                    else if (presentSite.Faction == FactionValues.yourOnlineFaction)
                     {
                         gizmoList.Add(command_DestroySite);
                     }
@@ -570,7 +568,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement, CompLaunchable representative)
         {
-            if (PlanetFactions.playerFactions.Contains(settlement.Faction))
+            if (FactionValues.playerFactions.Contains(settlement.Faction))
             {
                 var floatMenuList = __result.ToList();
                 floatMenuList.Clear();
@@ -584,7 +582,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     Action toDo = delegate
                     {
                         TransferManager.TakeTransferItemsFromPods(ClientValues.chosendPods);
-                        TransferManager.SendTransferRequestToServer(TransferManager.TransferLocation.Pod);
+                        TransferManager.SendTransferRequestToServer(CommonEnumerators.TransferLocation.Pod);
                     };
 
                     FloatMenuOption floatMenuOption = new FloatMenuOption(optionLabel, toDo);
@@ -602,7 +600,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement)
         {
-            if (PlanetFactions.playerFactions.Contains(settlement.Faction))
+            if (FactionValues.playerFactions.Contains(settlement.Faction))
             {
                 var floatMenuList = __result.ToList();
                 floatMenuList.Clear();

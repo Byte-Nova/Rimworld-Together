@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
 using RimWorld;
-using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Misc;
 using Verse;
 
 namespace RimworldTogether.GameClient.Patches
@@ -18,7 +14,7 @@ namespace RimworldTogether.GameClient.Patches
         public static bool DoPre(ref List<Tradeable> ___tradeables)
         {
             if (!Network.Network.isConnectedToServer) return true;
-            else if (!PlanetFactions.playerFactions.Contains(TradeSession.trader.Faction)) return true;
+            else if (!FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
             else
             {
                 ___tradeables = new List<Tradeable>();
@@ -36,7 +32,7 @@ namespace RimworldTogether.GameClient.Patches
         {
             if (Network.Network.isConnectedToServer)
             {
-                if (PlanetFactions.playerFactions.Contains(TradeSession.trader.Faction))
+                if (FactionValues.playerFactions.Contains(TradeSession.trader.Faction))
                 {
                     TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], ___countToTransfer);
                 }

@@ -1,23 +1,23 @@
 ﻿using RimworldTogether.GameServer.Managers;
-using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Users
 {
     public static class UserLogin
     {
-        public static void TryLoginUser(Client client, Packet packet)
+        public static void TryLoginUser(ServerClient client, Packet packet)
         {
-            LoginDetailsJSON loginDetails = Serializer.SerializeFromString<LoginDetailsJSON>(packet.contents[0]);
+            JoinDetailsJSON loginDetails = (JoinDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             client.username = loginDetails.username;
             client.password = loginDetails.password;
 
             if (!UserManager_Joinings.CheckWhitelist(client)) return;
 
-            if (!UserManager_Joinings.CheckLoginDetails(client, UserManager_Joinings.CheckMode.Login)) return;
+            if (!UserManager_Joinings.CheckLoginDetails(client, CommonEnumerators.LoginMode.Login)) return;
 
             if (!UserManager.CheckIfUserExists(client)) return;
 
@@ -32,7 +32,7 @@ namespace RimworldTogether.GameServer.Users
             PostLogin(client);
         }
 
-        private static void PostLogin(Client client)
+        private static void PostLogin(ServerClient client)
         {
             UserManager.SaveUserIP(client);
 
@@ -44,22 +44,22 @@ namespace RimworldTogether.GameServer.Users
 
             if (WorldManager.CheckIfWorldExists())
             {
-                if (SaveManager.CheckIfUserHasSave(client)) SaveManager.LoadUserGame(client);
+                if (SaveManager.CheckIfUserHasSave(client)) SaveManager.SendSavePartToClient(client);
                 else WorldManager.SendWorldFile(client);
             }
             else WorldManager.RequireWorldFile(client);
         }
 
-        private static void RemoveOldClientIfAny(Client client)
+        private static void RemoveOldClientIfAny(ServerClient client)
         {
-            foreach (Client cClient in Network.Network.connectedClients.ToArray())
+            foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
             {
                 if (cClient == client) continue;
                 else
                 {
                     if (cClient.username == client.username)
                     {
-                        UserManager_Joinings.SendLoginResponse(cClient, UserManager_Joinings.LoginResponse.ExtraLogin);
+                        UserManager_Joinings.SendLoginResponse(cClient, CommonEnumerators.LoginResponse.ExtraLogin);
                     }
                 }
             }

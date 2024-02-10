@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
 namespace RimworldTogether.GameClient.Values
 {
@@ -32,7 +31,7 @@ namespace RimworldTogether.GameClient.Values
 
         public static void SetServerPlayers(Packet packet)
         {
-            PlayerRecountJSON playerRecountJSON = Serializer.SerializeFromString<PlayerRecountJSON>(packet.contents[0]);
+            PlayerRecountJSON playerRecountJSON = (PlayerRecountJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             currentPlayers = int.Parse(playerRecountJSON.currentPlayers);
             currentPlayerNames = playerRecountJSON.currentPlayerNames;
         }

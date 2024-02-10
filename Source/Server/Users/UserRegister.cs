@@ -6,18 +6,20 @@ using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Users
 {
     public static class UserRegister
     {
-        public static void TryRegisterUser(Client client, Packet packet)
+        public static void TryRegisterUser(ServerClient client, Packet packet)
         {
-            LoginDetailsJSON registerDetails = Serializer.SerializeFromString<LoginDetailsJSON>(packet.contents[0]);
+            JoinDetailsJSON registerDetails = (JoinDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             client.username = registerDetails.username;
             client.password = registerDetails.password;
 
-            if (!UserManager_Joinings.CheckLoginDetails(client, UserManager_Joinings.CheckMode.Register)) return;
+            if (!UserManager_Joinings.CheckLoginDetails(client, CommonEnumerators.LoginMode.Register)) return;
 
             if (TryFetchAlreadyRegistered(client)) return;
             else
@@ -31,21 +33,21 @@ namespace RimworldTogether.GameServer.Users
                 {
                     UserManager.SaveUserFile(client, userFile);
 
-                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.RegisterSuccess);
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterSuccess);
 
                     Logger.WriteToConsole($"[Registered] > {client.username}");
                 }
 
                 catch 
                 {
-                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.RegisterError);
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError);
 
                     return;
                 }
             }
         }
 
-        private static bool TryFetchAlreadyRegistered(Client client)
+        private static bool TryFetchAlreadyRegistered(ServerClient client)
         {
             string[] existingUsers = Directory.GetFiles(Program.usersPath);
 
@@ -55,7 +57,7 @@ namespace RimworldTogether.GameServer.Users
                 if (existingUser.username.ToLower() != client.username.ToLower()) continue;
                 else
                 {
-                    UserManager_Joinings.SendLoginResponse(client, UserManager_Joinings.LoginResponse.RegisterInUse);
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterInUse);
 
                     return true;
                 }
@@ -64,7 +66,7 @@ namespace RimworldTogether.GameServer.Users
             return false;
         }
 
-        private static string GetNewUIDForUser(Client client)
+        private static string GetNewUIDForUser(ServerClient client)
         {
             return Hasher.GetHash(client.username);
         }

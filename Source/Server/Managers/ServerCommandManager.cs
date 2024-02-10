@@ -1,12 +1,8 @@
-﻿using RimworldTogether.GameServer.Commands;
-using RimworldTogether.GameServer.Core;
+﻿using RimworldTogether.GameServer.Core;
 using RimworldTogether.GameServer.Files;
 using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Misc.Commands;
 using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
-using RimworldTogether.Shared.Network;
-using System.Linq.Expressions;
 
 namespace RimworldTogether.GameServer.Managers
 {
@@ -182,14 +178,6 @@ namespace RimworldTogether.GameServer.Managers
             "Locks an editable save for use [WIP]",
             DisableDifficultyCommandAction);
 
-        private static ServerCommand lockSaveCommand = new ServerCommand("locksave", 1,
-            "Locks an editable save for use [WIP]",
-            LockSaveCommandAction);
-
-        private static ServerCommand unlockSaveCommand = new ServerCommand("unlocksave", 1,
-            "Unlocks a save file for editing [WIP]",
-            UnlockSaveCommandAction);
-
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
             "Saves all player details and then closes the server",
             QuitCommandAction);
@@ -245,7 +233,7 @@ namespace RimworldTogether.GameServer.Managers
         {
             Logger.WriteToConsole($"Connected players: [{Network.Network.connectedClients.ToArray().Count()}]", Logger.LogMode.Title, false);
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
-            foreach (Client client in Network.Network.connectedClients.ToArray())
+            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
             {
                 Logger.WriteToConsole($"{client.username} - {client.SavedIP}", Logger.LogMode.Warning, writeToLogs: false);
             }
@@ -267,7 +255,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void OpCommandAction()
         {
-            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found", 
                 Logger.LogMode.Warning);
 
@@ -289,7 +277,7 @@ namespace RimworldTogether.GameServer.Managers
                 }
             }
 
-            bool CheckIfIsAlready(Client client)
+            bool CheckIfIsAlready(ServerClient client)
             {
                 if (client.isAdmin)
                 {
@@ -304,7 +292,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void DeopCommandAction()
         {
-            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found", 
                 Logger.LogMode.Warning);
 
@@ -326,7 +314,7 @@ namespace RimworldTogether.GameServer.Managers
                 }
             }
 
-            bool CheckIfIsAlready(Client client)
+            bool CheckIfIsAlready(ServerClient client)
             {
                 if (!client.isAdmin)
                 {
@@ -341,7 +329,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void KickCommandAction()
         {
-            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
@@ -356,7 +344,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void BanCommandAction()
         {
-            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null)
             {
                 UserFile userFile = UserManager.GetUserFileFromName(ServerCommandManager.commandParameters[0]);
@@ -483,7 +471,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void EventCommandAction()
         {
-            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
@@ -513,7 +501,7 @@ namespace RimworldTogether.GameServer.Managers
             {
                 if (ServerCommandManager.eventTypes[i] == ServerCommandManager.commandParameters[0])
                 {
-                    foreach (Client client in Network.Network.connectedClients.ToArray())
+                    foreach (ServerClient client in Network.Network.connectedClients.ToArray())
                     {
                         CommandManager.SendEventCommand(client, i);
                     }
@@ -624,7 +612,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void ForceSaveCommandAction()
         {
-            Client toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
@@ -678,59 +666,13 @@ namespace RimworldTogether.GameServer.Managers
             }
         }
 
-        private static void LockSaveCommandAction()
-        {
-            //TODO
-            //Compression is different for client and server, causing saves to become useless after executing this
-            return;
-
-            byte[] saveFile = SaveManager.GetUserSaveFromUsername(ServerCommandManager.commandParameters[0]);
-
-            if (saveFile == null)
-            {
-                Logger.WriteToConsole($"[ERROR] > Save {ServerCommandManager.commandParameters[0]} was not found", Logger.LogMode.Warning);
-            }
-
-            else
-            {
-                byte[] lockedBytes = GZip.CompressDefault(saveFile);
-
-                File.WriteAllBytes(Path.Combine(Program.savesPath, ServerCommandManager.commandParameters[0] + ".mpsave"), lockedBytes);
-
-                Logger.WriteToConsole($"Save {ServerCommandManager.commandParameters[0]} has been locked");
-            }
-        }
-
-        private static void UnlockSaveCommandAction()
-        {
-            //TODO
-            //Compression is different for client and server, causing saves to become useless after executing this
-            return;
-
-            byte[] saveFile = SaveManager.GetUserSaveFromUsername(ServerCommandManager.commandParameters[0]);
-
-            if (saveFile == null)
-            {
-                Logger.WriteToConsole($"[ERROR] > Save {ServerCommandManager.commandParameters[0]} was not found", Logger.LogMode.Warning);
-            }
-
-            else
-            {
-                byte[] unlockedBytes = GZip.DecompressDefault(saveFile);
-
-                File.WriteAllBytes(Path.Combine(Program.savesPath, ServerCommandManager.commandParameters[0] + ".mpsave"), unlockedBytes);
-
-                Logger.WriteToConsole($"Save {ServerCommandManager.commandParameters[0]} has been unlocked");
-            }
-        }
-
         private static void QuitCommandAction()
         {
             Program.isClosing = true;
 
             Logger.WriteToConsole($"Waiting for all saves to quit", Logger.LogMode.Warning);
 
-            foreach (Client client in Network.Network.connectedClients.ToArray())
+            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
             {
                 CommandManager.SendForceSaveCommand(client);
             }

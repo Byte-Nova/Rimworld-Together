@@ -3,80 +3,80 @@
     [Serializable]
     public class DifficultyValuesFile
     {
-        public bool UseCustomDifficulty;
+        public bool UseCustomDifficulty = false;
 
-        public float ThreatScale;
+        public float ThreatScale = 1.0f;
 
-        public bool AllowBigThreats;
+        public bool AllowBigThreats = true;
 
-        public bool AllowViolentQuests;
+        public bool AllowViolentQuests = true;
 
-        public bool AllowIntroThreats;
+        public bool AllowIntroThreats = true;
 
-        public bool PredatorsHuntHumanlikes;
+        public bool PredatorsHuntHumanlikes = true;
 
-        public bool AllowExtremeWeatherIncidents;
+        public bool AllowExtremeWeatherIncidents = true;
 
-        public float CropYieldFactor;
+        public float CropYieldFactor = 1.0f;
 
-        public float MineYieldFactor;
+        public float MineYieldFactor = 1.0f;
 
-        public float ButcherYieldFactor;
+        public float ButcherYieldFactor = 1.0f;
 
-        public float ResearchSpeedFactor;
+        public float ResearchSpeedFactor = 1.0f;
 
-        public float QuestRewardValueFactor;
+        public float QuestRewardValueFactor = 1.0f;
 
-        public float RaidLootPointsFactor;
+        public float RaidLootPointsFactor = 1.0f;
 
-        public float TradePriceFactorLoss;
+        public float TradePriceFactorLoss = 0.0f;
 
-        public float MaintenanceCostFactor;
+        public float MaintenanceCostFactor = 1.0f;
 
-        public float ScariaRotChance;
+        public float ScariaRotChance = 0.6f;
 
-        public float EnemyDeathOnDownedChanceFactor;
+        public float EnemyDeathOnDownedChanceFactor = 1.0f;
 
-        public float ColonistMoodOffset;
+        public float ColonistMoodOffset = 0.0f;
 
-        public float FoodPoisonChanceFactor;
+        public float FoodPoisonChanceFactor = 1.0f;
 
-        public float ManhunterChanceOnDamageFactor;
+        public float ManhunterChanceOnDamageFactor = 1.0f;
 
-        public float PlayerPawnInfectionChanceFactor;
+        public float PlayerPawnInfectionChanceFactor = 1.0f;
 
-        public float DiseaseIntervalFactor;
+        public float DiseaseIntervalFactor = 1.0f;
 
-        public float DeepDrillInfestationChanceFactor;
+        public float DeepDrillInfestationChanceFactor = 1.0f;
 
-        public float FriendlyFireChanceFactor;
+        public float FriendlyFireChanceFactor = 0.4f;
 
-        public float AllowInstantKillChance;
+        public float AllowInstantKillChance = 1.0f;
 
-        public bool AllowTraps;
+        public bool AllowTraps = true;
 
-        public bool AllowTurrets;
+        public bool AllowTurrets = true;
 
-        public bool AllowMortars;
+        public bool AllowMortars = true;
 
-        public float AdaptationEffectFactor;
+        public float AdaptationEffectFactor = 0.9f;
 
-        public float AdaptationGrowthRateFactorOverZero;
+        public float AdaptationGrowthRateFactorOverZero = 1.0f;
 
-        public bool FixedWealthMode;
+        public bool FixedWealthMode = false;
 
-        public float LowPopConversionBoost;
+        public float LowPopConversionBoost = 3.0f;
 
-        public bool NoBabiesOrChildren;
+        public bool NoBabiesOrChildren = false;
 
-        public bool BabiesAreHealthy;
+        public bool BabiesAreHealthy = false;
 
-        public bool ChildRaidersAllowed;
+        public bool ChildRaidersAllowed = false;
 
-        public float ChildAgingRate;
+        public float ChildAgingRate = 4.0f;
 
-        public float AdultAgingRate;
+        public float AdultAgingRate = 1.0f;
 
-        public float WastepackInfestationChanceFactor;
+        public float WastepackInfestationChanceFactor = 1.0f;
     }
 }

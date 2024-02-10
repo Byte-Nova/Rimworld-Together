@@ -2,7 +2,6 @@
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using Verse;
 using Verse.AI;
@@ -17,7 +16,7 @@ namespace RimworldTogether.GameClient.Patches
         {
             if (!Network.Network.isConnectedToServer) return true;
 
-            if (PlanetFactions.playerFactions.Contains(factionBase.Faction)) return false;
+            if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
 
             else return true;
         }
@@ -44,19 +43,22 @@ namespace RimworldTogether.GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(SitePartWorker_Outpost), "GetEnemiesCount")]
-    public static class PatchPawnGroupMakerDisplay
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(ref int __result)
-        {
-            if (Network.Network.isConnectedToServer)
-            {
-                __result = 25;
+    //TODO
+    //Check online sites working without this patch
 
-                return false;
-            }
-            else return true;
-        }
-    }
+    //[HarmonyPatch(typeof(SitePartWorker_Outpost), "GetEnemiesCount")]
+    //public static class PatchPawnGroupMakerDisplay
+    //{
+    //    [HarmonyPrefix]
+    //    public static bool DoPre(ref int __result)
+    //    {
+    //        if (Network.Network.isConnectedToServer)
+    //        {
+    //            __result = 25;
+
+    //            return false;
+    //        }
+    //        else return true;
+    //    }
+    //}
 }

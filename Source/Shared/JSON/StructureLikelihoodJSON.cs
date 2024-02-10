@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace RimworldTogether.Shared.JSON
 {
+    [Serializable]
     public class StructureLikelihoodJSON
     {
         public string tile;

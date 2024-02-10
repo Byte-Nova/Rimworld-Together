@@ -1,36 +1,34 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
+using Shared.Misc;
 using Verse;
 using Verse.AI.Group;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class RaidManager
     {
-        private enum RaidStepMode { Request, Deny }
-
         public static void ParseRaidPacket(Packet packet)
         {
-            RaidDetailsJSON raidDetailsJSON = Serializer.SerializeFromString<RaidDetailsJSON>(packet.contents[0]);
+            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(raidDetailsJSON.raidStepMode))
             {
-                case (int)RaidStepMode.Request:
+                case (int)CommonEnumerators.RaidStepMode.Request:
                     OnRaidAccept(raidDetailsJSON);
                     break;
 
-                case (int)RaidStepMode.Deny:
+                case (int)CommonEnumerators.RaidStepMode.Deny:
                     OnRaidDeny();
                     break;
             }
@@ -41,23 +39,19 @@ namespace RimworldTogether.GameClient.Managers.Actions
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             RaidDetailsJSON raidDetailsJSON = new RaidDetailsJSON();
-            raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Request).ToString();
-            raidDetailsJSON.raidData = ClientValues.chosenSettlement.Tile.ToString();
+            raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
+            raidDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(raidDetailsJSON) };
-            Packet packet = new Packet("RaidPacket", contents);
-            Network.Network.SendData(packet);
+            Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+            Network.Network.serverListener.SendData(packet);
         }
 
         private static void OnRaidAccept(RaidDetailsJSON raidDetailsJSON)
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON dummyDetails = Serializer.SerializeFromString<MapDetailsJSON>(raidDetailsJSON.raidData);
-            byte[] inflatedBytes = GZip.Decompress(dummyDetails.deflatedMapData);
-            string inflatedString = Encoding.UTF8.GetString(inflatedBytes);
-
-            MapDetailsJSON mapDetailsJSON = Serializer.SerializeFromString<MapDetailsJSON>(inflatedString);
+            MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(raidDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(mapFileJSON.mapData);
 
             Action r1 = delegate { PrepareMapForRaid(mapDetailsJSON); };
 
@@ -100,17 +94,17 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
             {
-                if (pawn.Faction == PlanetFactions.neutralPlayer)
+                if (pawn.Faction == FactionValues.neutralPlayer)
                 {
-                    pawn.SetFaction(PlanetFactions.enemyPlayer);
+                    pawn.SetFaction(FactionValues.enemyPlayer);
                 }
             }
 
             foreach (Thing thing in map.listerThings.AllThings.ToArray())
             {
-                if (thing.Faction == PlanetFactions.neutralPlayer)
+                if (thing.Faction == FactionValues.neutralPlayer)
                 {
-                    thing.SetFaction(PlanetFactions.enemyPlayer);
+                    thing.SetFaction(FactionValues.enemyPlayer);
                 }
             }
         }
@@ -121,9 +115,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Thing defenseSpot = map.listerThings.AllThings.Find(x => x.def.defName == "RTDefenseSpot");
             if (defenseSpot != null) defensePlace = defenseSpot.Position;
 
-            Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == PlanetFactions.enemyPlayer).ToArray();
-            LordJob_DefendBase job = new LordJob_DefendBase(PlanetFactions.enemyPlayer, defensePlace, true);
-            LordMaker.MakeNewLord(PlanetFactions.enemyPlayer, job, map, lordPawns);
+            Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == FactionValues.enemyPlayer).ToArray();
+            LordJob_DefendBase job = new LordJob_DefendBase(FactionValues.enemyPlayer, defensePlace, true);
+            LordMaker.MakeNewLord(FactionValues.enemyPlayer, job, map, lordPawns);
         }
     }
 }

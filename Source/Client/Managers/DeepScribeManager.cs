@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.Shared.JSON.Things;
-using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Serializers;
 using UnityEngine.Assertions.Must;
 using Verse;
 
@@ -21,15 +19,11 @@ namespace RimworldTogether.GameClient.Managers
         {
             List<Thing> allTransferedItems = new List<Thing>();
 
-            Action toDo = delegate
-            {
-                foreach (Pawn pawn in GetHumansFromString(transferManifestJSON)) allTransferedItems.Add(pawn);
+            foreach (Pawn pawn in GetHumansFromString(transferManifestJSON)) allTransferedItems.Add(pawn);
 
-                foreach (Pawn animal in GetAnimalsFromString(transferManifestJSON)) allTransferedItems.Add(animal);
+            foreach (Pawn animal in GetAnimalsFromString(transferManifestJSON)) allTransferedItems.Add(animal);
 
-                foreach (Thing thing in GetItemsFromString(transferManifestJSON)) allTransferedItems.Add(thing);
-            };
-            toDo.Invoke();
+            foreach (Thing thing in GetItemsFromString(transferManifestJSON)) allTransferedItems.Add(thing);
 
             return allTransferedItems.ToArray();
         }
@@ -827,7 +821,7 @@ namespace RimworldTogether.GameClient.Managers
                     try
                     {
                         Pawn human = GetHumanSimple(humanDetailsJSON);
-                        human.SetFaction(PlanetFactions.yourOnlineFaction);
+                        human.SetFaction(FactionValues.yourOnlineFaction);
 
                         GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
                     }
@@ -841,7 +835,7 @@ namespace RimworldTogether.GameClient.Managers
                     try
                     {
                         Pawn human = GetHumanSimple(humanDetailsJSON);
-                        human.SetFaction(PlanetFactions.neutralPlayer);
+                        human.SetFaction(FactionValues.neutralPlayer);
 
                         GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
                     }
@@ -858,7 +852,7 @@ namespace RimworldTogether.GameClient.Managers
                     try
                     {
                         Pawn animal = GetAnimalSimple(animalDetailsJSON);
-                        animal.SetFaction(PlanetFactions.yourOnlineFaction);
+                        animal.SetFaction(FactionValues.yourOnlineFaction);
 
                         GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
                     }
@@ -872,7 +866,7 @@ namespace RimworldTogether.GameClient.Managers
                     try
                     {
                         Pawn animal = GetAnimalSimple(animalDetailsJSON);
-                        animal.SetFaction(PlanetFactions.neutralPlayer);
+                        animal.SetFaction(FactionValues.neutralPlayer);
 
                         GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
                     }

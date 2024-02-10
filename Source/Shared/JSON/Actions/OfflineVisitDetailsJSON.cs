@@ -7,6 +7,8 @@ namespace RimworldTogether.Shared.JSON.Actions
     {
         public string offlineVisitStepMode;
 
-        public string offlineVisitData;
+        public string targetTile;
+
+        public byte[] mapDetails;
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RimworldTogether.GameClient.Misc
+﻿namespace RimworldTogether.GameClient.Misc
 {
     /*
    Copyright 2015 Pim de Witte All Rights Reserved.
@@ -27,7 +21,6 @@ namespace RimworldTogether.GameClient.Misc
     using System.Collections.Generic;
     using System;
     using System.Threading.Tasks;
-    using RimworldTogether.GameClient.Core;
 
     /// Author: Pim de Witte (pimdewitte.com) and contributors, https://github.com/PimDeWitte/UnityMainThreadDispatcher
     /// <summary>

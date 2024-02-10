@@ -1,33 +1,31 @@
 ﻿using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameClient.Managers
 {
     public static class WorldManager
     {
-        public enum WorldStepMode { Required, Existing, Saved }
-
         public static void ParseWorldPacket(Packet packet)
         {
-            WorldDetailsJSON worldDetailsJSON = Serializer.SerializeFromString<WorldDetailsJSON>(packet.contents[0]);
+            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(worldDetailsJSON.worldStepMode))
             {
-                case (int)WorldStepMode.Required:
+                case (int)CommonEnumerators.WorldStepMode.Required:
                     OnRequireWorld();
                     break;
 
-                case (int)WorldStepMode.Existing:
+                case (int)CommonEnumerators.WorldStepMode.Existing:
                     OnExistingWorld(worldDetailsJSON);
                     break;
 
-                case (int)WorldStepMode.Saved:
+                case (int)CommonEnumerators.WorldStepMode.Saved:
                     OnSavedWorld(worldDetailsJSON);
                     break;
             }

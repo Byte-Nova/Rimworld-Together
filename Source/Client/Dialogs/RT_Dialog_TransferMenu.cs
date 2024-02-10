@@ -5,6 +5,7 @@ using RimWorld;
 using RimWorld.Planet;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Values;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -38,13 +39,13 @@ namespace RimworldTogether.GameClient.Dialogs
 
         private bool allowHumans;
 
-        TransferManager.TransferLocation transferLocation;
+        CommonEnumerators.TransferLocation transferLocation;
 
         private Pawn playerNegotiator;
 
         public override QuickSearchWidget CommonSearchWidget => quickSearchWidget;
 
-        public RT_Dialog_TransferMenu(TransferManager.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
+        public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
             bool allowHumans = false)
         {
             DialogManager.dialogTransferMenu = this;
@@ -139,17 +140,17 @@ namespace RimworldTogether.GameClient.Dialogs
 
         private void OnAccept()
         {
-            if (transferLocation == TransferManager.TransferLocation.Caravan)
+            if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)TransferManager.TransferMode.Gift).ToString();
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Gift).ToString();
                     postChoosing();
                 };
 
                 Action r2 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)TransferManager.TransferMode.Trade).ToString();
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Trade).ToString();
                     postChoosing();
                 };
 
@@ -162,11 +163,11 @@ namespace RimworldTogether.GameClient.Dialogs
                 DialogManager.PushNewDialog(d1);
             }
 
-            else if (transferLocation == TransferManager.TransferLocation.Settlement)
+            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)TransferManager.TransferMode.Rebound).ToString();
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -189,9 +190,9 @@ namespace RimworldTogether.GameClient.Dialogs
         {
             Action r1 = delegate
             {
-                if (transferLocation == TransferManager.TransferLocation.Settlement)
+                if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
                 {
-                    TransferManager.RejectRequest(TransferManager.TransferMode.Trade);
+                    TransferManager.RejectRequest(CommonEnumerators.TransferMode.Trade);
                 }
 
                 TransferManager.FinishTransfer(false);
@@ -199,7 +200,7 @@ namespace RimworldTogether.GameClient.Dialogs
                 Close();
             };
 
-            if (transferLocation == TransferManager.TransferLocation.Settlement)
+            if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
                     r1, null));
@@ -217,12 +218,12 @@ namespace RimworldTogether.GameClient.Dialogs
 
         private void GetNegotiator()
         {
-            if (transferLocation == TransferManager.TransferLocation.Caravan)
+            if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
             {
                 playerNegotiator = ClientValues.chosenCaravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
 
-            else if (transferLocation == TransferManager.TransferLocation.Settlement)
+            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
                 playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
@@ -230,12 +231,12 @@ namespace RimworldTogether.GameClient.Dialogs
 
         private void SetupTrade()
         {
-            if (transferLocation == TransferManager.TransferLocation.Caravan)
+            if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
             {
                 TradeSession.SetupWith(ClientValues.chosenSettlement, playerNegotiator, true);
             }
 
-            else if (transferLocation == TransferManager.TransferLocation.Settlement)
+            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
                 TradeSession.SetupWith(Find.WorldObjects.SettlementAt(int.Parse(ClientValues.incomingManifest.fromTile)), 
                     playerNegotiator, true);
@@ -285,7 +286,7 @@ namespace RimworldTogether.GameClient.Dialogs
         {
             ClientValues.listToShowInTradesMenu = new List<Tradeable>();
 
-            if (transferLocation == TransferManager.TransferLocation.Caravan)
+            if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
             {
                 if (allowItems)
                 {
@@ -326,35 +327,49 @@ namespace RimworldTogether.GameClient.Dialogs
                 }
             }
 
-            else if (transferLocation == TransferManager.TransferLocation.Settlement)
+            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
                 Map map = Find.Maps.Find(x => x.Tile == int.Parse(ClientValues.incomingManifest.toTile));
 
+
+                //if the server allows items to be traded
                 if (allowItems)
                 {
-                    Zone[] zones = map.zoneManager.AllZones.ToArray();
-                    foreach (Zone zone in zones)
+                    //Find every item on the map that is sellable to a trader
+                    IEnumerable<Thing> enumerable = map.listerThings.AllThings.Where((Thing x) => x.def.category == ThingCategory.Item && !x.Position.Fogged(x.Map) && TradeUtility.EverPlayerSellable(x.def));
+
+                    //for every sellable item, add it to the list of items that will appear in the trade menu
+                    foreach (Thing item in enumerable)
                     {
-                        Thing[] items = zone.AllContainedThings.ToArray();
-                        foreach (Thing item in items)
-                        {
-                            if (item.def.alwaysHaulable)
-                            {
-                                Tradeable tradeable = new Tradeable();
-                                tradeable.AddThing(item, Transactor.Colony);
-                                ClientValues.listToShowInTradesMenu.Add(tradeable);
-                            }
-                        }
+                        Tradeable tradeable = new Tradeable();
+                        tradeable.AddThing(item, Transactor.Colony);
+                        ClientValues.listToShowInTradesMenu.Add(tradeable);
+
                     }
+
                 }
 
+                //Grabs pawns in the colony - this includes colonists, prisoners, and colony owned animals
                 Pawn[] pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToArray();
+
                 foreach (Pawn pawn in pawnsInMap)
                 {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(pawn))
+                    if (TransferManagerHelper.CheckIfThingIsAnimal(pawn))
                     {
+                        //if the server allows animals to be traded 
+                        if (allowAnimals)
+                        {
+                            Tradeable tradeable = new Tradeable();
+                            tradeable.AddThing(pawn, Transactor.Colony);
+                            ClientValues.listToShowInTradesMenu.Add(tradeable);
+                        }
+                    }
+                    else
+                    {
+                        //if the server allows humans to be traded
                         if (allowHumans)
                         {
+                            //if the pawn is the negotiator pawn, skip to next pawn in the list
                             if (pawn == playerNegotiator) continue;
                             else
                             {
@@ -362,16 +377,6 @@ namespace RimworldTogether.GameClient.Dialogs
                                 tradeable.AddThing(pawn, Transactor.Colony);
                                 ClientValues.listToShowInTradesMenu.Add(tradeable);
                             }
-                        }
-                    }
-
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(pawn))
-                    {
-                        if (allowAnimals)
-                        {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(pawn, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
                         }
                     }
                 }

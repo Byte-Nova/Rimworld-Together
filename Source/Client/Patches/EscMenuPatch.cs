@@ -1,10 +1,9 @@
-﻿using System.Threading.Tasks;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Misc;
 using UnityEngine;
 using Verse;
 
@@ -26,7 +25,7 @@ namespace RimworldTogether.GameClient.Patches
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     ClientValues.ToggleDisconnecting(true);
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
                 }
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 3, buttonSize.x, buttonSize.y), ""))
@@ -35,7 +34,7 @@ namespace RimworldTogether.GameClient.Patches
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     ClientValues.ToggleQuiting(true);
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
                 }
             }
 

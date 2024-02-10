@@ -1,42 +1,40 @@
-﻿using RimworldTogether.GameServer.Managers.Actions;
-using RimworldTogether.GameServer.Misc;
+﻿using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class ResponseShortcutManager
     {
-        public static void SendIllegalPacket(Client client, bool broadcast = true)
+        public static void SendIllegalPacket(ServerClient client, bool broadcast = true)
         {
-            Packet Packet = new Packet("IllegalActionPacket");
-            Network.Network.SendData(client, Packet);
+            Packet packet = Packet.CreatePacketFromJSON("IllegalActionPacket");
+            client.clientListener.SendData(packet);
             client.disconnectFlag = true;
 
             if (broadcast) Logger.WriteToConsole($"[Illegal action] > {client.username} > {client.SavedIP}", Logger.LogMode.Error);
         }
 
-        public static void SendUnavailablePacket(Client client)
+        public static void SendUnavailablePacket(ServerClient client)
         {
-            Packet packet = new Packet("UserUnavailablePacket");
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("UserUnavailablePacket");
+            client.clientListener.SendData(packet);
         }
 
-        public static void SendBreakPacket(Client client)
+        public static void SendBreakPacket(ServerClient client)
         {
-            Packet packet = new Packet("BreakPacket");
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("BreakPacket");
+            client.clientListener.SendData(packet);
         }
 
-        public static void SendNoPowerPacket(Client client, FactionManifestJSON factionManifest)
+        public static void SendNoPowerPacket(ServerClient client, FactionManifestJSON factionManifest)
         {
-            factionManifest.manifestMode = ((int)FactionManager.FactionManifestMode.NoPower).ToString();
+            factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NoPower).ToString();
 
-            string[] contents = new string[] { Serializer.SerializeToString(factionManifest) };
-            Packet packet = new Packet("FactionPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+            client.clientListener.SendData(packet);
         }
     }
 }

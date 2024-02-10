@@ -1,17 +1,15 @@
 ﻿using RimworldTogether.GameServer.Core;
 using RimworldTogether.GameServer.Files;
 using RimworldTogether.GameServer.Managers.Actions;
-using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class ServerOverallManager
     {
-        public static void SendServerOveralls(Client client)
+        public static void SendServerOveralls(ServerClient client)
         {
             ServerOverallJSON so = new ServerOverallJSON();
 
@@ -31,9 +29,8 @@ namespace RimworldTogether.GameServer.Managers
 
             so = GetActionsCost(client, so);
 
-            string[] contents = new string[] { Serializer.SerializeToString(so) };
-            Packet packet = new Packet("ServerValuesPacket", contents);
-            Network.Network.SendData(client, packet);
+            Packet packet = Packet.CreatePacketFromJSON("ServerValuesPacket", so);
+            client.clientListener.SendData(packet);
         }
 
         private static ServerOverallJSON GetServerValues(ServerOverallJSON so)
@@ -44,7 +41,7 @@ namespace RimworldTogether.GameServer.Managers
             return so;
         }
 
-        private static ServerOverallJSON GetClientValues(Client client, ServerOverallJSON so)
+        private static ServerOverallJSON GetClientValues(ServerClient client, ServerOverallJSON so)
         {
             so.isClientAdmin = client.isAdmin;
 
@@ -157,7 +154,7 @@ namespace RimworldTogether.GameServer.Managers
             return so;
         }
 
-        private static ServerOverallJSON GetServerSettlements(Client client, ServerOverallJSON so)
+        private static ServerOverallJSON GetServerSettlements(ServerClient client, ServerOverallJSON so)
         {
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
@@ -174,7 +171,7 @@ namespace RimworldTogether.GameServer.Managers
             return so;
         }
 
-        private static ServerOverallJSON GetServerSites(Client client, ServerOverallJSON so)
+        private static ServerOverallJSON GetServerSites(ServerClient client, ServerOverallJSON so)
         {
             SiteFile[] sites = SiteManager.GetAllSites();
             foreach (SiteFile site in sites)
@@ -189,7 +186,7 @@ namespace RimworldTogether.GameServer.Managers
             return so;
         }
 
-        private static ServerOverallJSON GetActionsCost(Client client, ServerOverallJSON so)
+        private static ServerOverallJSON GetActionsCost(ServerClient client, ServerOverallJSON so)
         {
             ActionValuesFile av = Program.actionValues;
 

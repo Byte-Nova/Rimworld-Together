@@ -1,21 +1,19 @@
-﻿using System;
-using RimWorld;
+﻿using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Patches;
-using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 using Verse;
+
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
     public static class EventManager
     {
-        private enum EventStepMode { Send, Receive, Recover }
+        
 
         public static string[] eventNames = new string[]
         {
@@ -34,19 +32,19 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ParseEventPacket(Packet packet)
         {
-            EventDetailsJSON eventDetailsJSON = Serializer.SerializeFromString<EventDetailsJSON>(packet.contents[0]);
+            EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(eventDetailsJSON.eventStepMode))
             {
-                case (int)EventStepMode.Send:
+                case (int)CommonEnumerators.EventStepMode.Send:
                     OnEventSent();
                     break;
 
-                case (int)EventStepMode.Receive:
+                case (int)CommonEnumerators.EventStepMode.Receive:
                     OnEventReceived(eventDetailsJSON);
                     break;
 
-                case (int)EventStepMode.Recover:
+                case (int)CommonEnumerators.EventStepMode.Recover:
                     OnRecoverEventSilver();
                     break;
             }
@@ -103,14 +101,13 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
                 EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
-                eventDetailsJSON.eventStepMode = ((int)EventStepMode.Send).ToString();
+                eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
                 eventDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
                 eventDetailsJSON.toTile = ClientValues.chosenSettlement.Tile.ToString();
                 eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();
 
-                string[] contents = new string[] { Serializer.SerializeToString(eventDetailsJSON) };
-                Packet packet = new Packet("EventPacket", contents);
-                Network.Network.SendData(packet);
+                Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+                Network.Network.serverListener.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }
@@ -250,16 +247,14 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     customLetterLabel = "Event - Trader",
                     target = map,
                     points = defaultParms.points,
-                    faction = PlanetFactions.neutralPlayer,
+                    faction = FactionValues.neutralPlayer,
                     traderKind = defaultParms.traderKind
                 };
             }
 
-            Action toDo = delegate { incidentDef.Worker.TryExecute(parms); };
-            toDo.Invoke();
+            incidentDef.Worker.TryExecute(parms);
 
-            //DEBUG
-            SavePatch.ForceSave();
+            SaveManager.ForceSave();
         }
 
         public static void OnEventSent()
@@ -268,6 +263,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             LetterManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
                 LetterDefOf.PositiveEvent);
+
+            SaveManager.ForceSave();
         }
 
         private static void OnRecoverEventSilver()

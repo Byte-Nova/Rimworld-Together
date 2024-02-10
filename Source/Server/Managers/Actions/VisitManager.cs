@@ -1,145 +1,135 @@
 ﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers.Actions
 {
     public static class VisitManager
     {
-        public enum VisitStepMode { Request, Accept, Reject, Unavailable, Action, Stop }
-
-        public static void ParseVisitPacket(Client client, Packet packet)
+        public static void ParseVisitPacket(ServerClient client, Packet packet)
         {
-            VisitDetailsJSON visitDetailsJSON = Serializer.SerializeFromString<VisitDetailsJSON>(packet.contents[0]);
+            VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
-                case (int)VisitStepMode.Request:
+                case (int)CommonEnumerators.VisitStepMode.Request:
                     SendVisitRequest(client, visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Accept:
+                case (int)CommonEnumerators.VisitStepMode.Accept:
                     AcceptVisitRequest(client, visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Reject:
+                case (int)CommonEnumerators.VisitStepMode.Reject:
                     RejectVisitRequest(client, visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Action:
+                case (int)CommonEnumerators.VisitStepMode.Action:
                     SendVisitActions(client, visitDetailsJSON);
                     break;
 
-                case (int)VisitStepMode.Stop:
+                case (int)CommonEnumerators.VisitStepMode.Stop:
                     SendVisitStop(client, visitDetailsJSON);
                     break;
             }
         }
 
-        private static void SendVisitRequest(Client client, VisitDetailsJSON visitDetailsJSON)
+        private static void SendVisitRequest(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitDetailsJSON.targetTile);
             if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client);
             else
             {
-                Client toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
-                    visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Unavailable).ToString();
-                    string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                    Packet packet = new Packet("VisitPacket", contents);
-                    Network.Network.SendData(client, packet);
+                    visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
+                    Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    client.clientListener.SendData(packet);
                 }
 
                 else
                 {
                     if (toGet.inVisitWith != null)
                     {
-                        visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Unavailable).ToString();
-                        string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                        Packet packet = new Packet("VisitPacket", contents);
-                        Network.Network.SendData(client, packet);
+                        visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
+                        Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                        client.clientListener.SendData(packet);
                     }
 
                     else
                     {
                         visitDetailsJSON.visitorName = client.username;
-                        string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                        Packet packet = new Packet("VisitPacket", contents);
-                        Network.Network.SendData(toGet, packet);
+                        Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                        toGet.clientListener.SendData(packet);
                     }
                 }
             }
         }
 
-        private static void AcceptVisitRequest(Client client, VisitDetailsJSON visitDetailsJSON)
+        private static void AcceptVisitRequest(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitDetailsJSON.fromTile);
             if (settlementFile == null) return;
             else
             {
-                Client toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null) return;
                 else
                 {
                     client.inVisitWith = toGet;
                     toGet.inVisitWith = client;
 
-                    string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                    Packet packet = new Packet("VisitPacket", contents);
-                    Network.Network.SendData(toGet, packet);
+                    Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    toGet.clientListener.SendData(packet);
                 }
             }
         }
 
-        private static void RejectVisitRequest(Client client, VisitDetailsJSON visitDetailsJSON)
+        private static void RejectVisitRequest(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitDetailsJSON.fromTile);
             if (settlementFile == null) return;
             else
             {
-                Client toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null) return;
                 else
                 {
-                    string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                    Packet packet = new Packet("VisitPacket", contents);
-                    Network.Network.SendData(toGet, packet);
+                    Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    toGet.clientListener.SendData(packet);
                 }
             }
         }
 
-        private static void SendVisitActions(Client client, VisitDetailsJSON visitDetailsJSON)
+        private static void SendVisitActions(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
             if (client.inVisitWith == null)
             {
-                visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
-                string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                Packet packet = new Packet("VisitPacket", contents);
-                Network.Network.SendData(client, packet);
+                visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
+                Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                client.clientListener.SendData(packet);
             }
 
             else
             {
-                string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-                Packet packet = new Packet("VisitPacket", contents);
-                Network.Network.SendData(client.inVisitWith, packet);
+                Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                client.inVisitWith.clientListener.SendData(packet);
             }
         }
 
-        public static void SendVisitStop(Client client, VisitDetailsJSON visitDetailsJSON)
+        public static void SendVisitStop(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
-            string[] contents = new string[] { Serializer.SerializeToString(visitDetailsJSON) };
-            Packet packet = new Packet("VisitPacket", contents);
+            Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
 
-            if (client.inVisitWith == null) Network.Network.SendData(client, packet);
+            if (client.inVisitWith == null) client.clientListener.SendData(packet);
             else
             {
-                Network.Network.SendData(client, packet);
-                Network.Network.SendData(client.inVisitWith, packet);
+                client.clientListener.SendData(packet);
+                client.inVisitWith.clientListener.SendData(packet);
 
                 client.inVisitWith.inVisitWith = null;
                 client.inVisitWith = null;

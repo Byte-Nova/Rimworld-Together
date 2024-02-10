@@ -1,51 +1,47 @@
 ﻿using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Patches;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Network;
-using System;
-using RimworldTogether.Shared.Misc;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameClient.Managers
 {
     public static class CommandManager
     {
-        public enum CommandType { Op, Deop, Ban, Disconnect, Quit, Broadcast, ForceSave }
-
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = Serializer.SerializeFromString<CommandDetailsJSON>(packet.contents[0]);
+            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(commandDetailsJSON.commandType))
             {
-                case (int)CommandType.Op:
+                case (int)CommonEnumerators.CommandType.Op:
                     OnOpCommand();
                     break;
 
-                case (int)CommandType.Deop:
+                case (int)CommonEnumerators.CommandType.Deop:
                     OnDeopCommand();
                     break;
 
-                case (int)CommandType.Ban:
+                case (int)CommonEnumerators.CommandType.Ban:
                     OnBanCommand();
                     break;
 
-                case (int)CommandType.Disconnect:
-                    PersistentPatches.DisconnectToMenu();
+                case (int)CommonEnumerators.CommandType.Disconnect:
+                    DisconnectionManager.DisconnectToMenu();
                     break;
 
-                case (int)CommandType.Quit:
-                    PersistentPatches.QuitGame();
+                case (int)CommonEnumerators.CommandType.Quit:
+                    DisconnectionManager.QuitGame();
                     break;
 
-                case (int)CommandType.Broadcast:
+                case (int)CommonEnumerators.CommandType.Broadcast:
                     OnBroadcastCommand(commandDetailsJSON);
                     break;
 
-                case (int)CommandType.ForceSave:
+                case (int)CommonEnumerators.CommandType.ForceSave:
                     OnForceSaveCommand();
                     break;
             }
@@ -54,14 +50,14 @@ namespace RimworldTogether.GameClient.Managers
         private static void OnOpCommand()
         {
             ServerValues.isAdmin = true;
-            PersistentPatches.ManageDevOptions();
+            ClientValues.ManageDevOptions();
             DialogManager.PushNewDialog(new RT_Dialog_OK("You are now an admin!"));
         }
 
         private static void OnDeopCommand()
         {
             ServerValues.isAdmin = false;
-            PersistentPatches.ManageDevOptions();
+            ClientValues.ManageDevOptions();
             DialogManager.PushNewDialog(new RT_Dialog_OK("You are no longer an admin!"));
         }
 
@@ -77,11 +73,11 @@ namespace RimworldTogether.GameClient.Managers
 
         private static void OnForceSaveCommand()
         {
-            if (!ClientValues.isReadyToPlay) PersistentPatches.DisconnectToMenu();
+            if (!ClientValues.isReadyToPlay) DisconnectionManager.DisconnectToMenu();
             else
             {
                 ClientValues.isDisconnecting = true;
-                SavePatch.ForceSave();
+                SaveManager.ForceSave();
             }
         }
     }

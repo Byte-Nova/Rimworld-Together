@@ -28,6 +28,6 @@ namespace RimworldTogether.Shared.JSON.Actions
 
         public List<string> mapMods = new List<string>();
 
-        public string deflatedMapData;
+        public byte[] mapDetails;
     }
 }

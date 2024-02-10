@@ -4,13 +4,19 @@ echo Running builder
 goto TRY
 
 :TRY
-python3 ".\Simple Builder.py"
+py ".\Simple Builder.py"
 if  errorlevel 1 goto TRY2
 goto FINISH
 
 :TRY2
 echo Path to python3 wasn't found, using default
-python ".\Simple Builder.py"
+py ".\Simple Builder.py"
+if  errorlevel 1 goto TRY3
+goto FINISH
+
+:TRY3
+echo Default path wasn't found, using "py" path
+py ".\Simple Builder.py"
 goto FINISH
 
 :FINISH

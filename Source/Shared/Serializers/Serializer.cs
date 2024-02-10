@@ -1,11 +1,33 @@
+using System;
 using System.IO;
 using Newtonsoft.Json;
 using RimworldTogether.Shared.Network;
+using Shared.Misc;
 
-namespace RimworldTogether.Shared.Misc
+namespace RimworldTogether.Shared.Serializers
 {
     public static class Serializer
     {
+        //Packets
+
+        public static string SerializePacketToString(Packet packet)
+        {
+            byte[] packetBytes = ObjectConverter.ConvertObjectToBytes(packet);
+            packetBytes = GZip.Compress(packetBytes);
+
+            return Convert.ToBase64String(packetBytes);
+        }
+
+        public static Packet SerializeStringToPacket(string serializable)
+        {
+            byte[] packetBytes = Convert.FromBase64String(serializable);
+            packetBytes = GZip.Decompress(packetBytes);
+
+            return (Packet)ObjectConverter.ConvertBytesToObject(packetBytes);
+        }
+
+        //Data
+
         public static string SerializeToString(object serializable)
         {
             return JsonConvert.SerializeObject(serializable);
@@ -16,10 +38,7 @@ namespace RimworldTogether.Shared.Misc
             return JsonConvert.DeserializeObject<T>(serializable);
         }
 
-        public static Packet SerializeToPacket(string serializable)
-        {
-            return JsonConvert.DeserializeObject<Packet>(serializable);
-        }
+        //Files
 
         public static void SerializeToFile(string path, object serializable)
         {

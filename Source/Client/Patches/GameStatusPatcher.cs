@@ -1,13 +1,11 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Core;
 using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Misc;
 using RimworldTogether.GameClient.Planet;
 using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using Shared.Misc;
 using Verse;
 
 namespace RimworldTogether.GameClient.Patches
@@ -22,19 +20,18 @@ namespace RimworldTogether.GameClient.Patches
             {
                 if (Network.Network.isConnectedToServer)
                 {
-                    PersistentPatches.ForcePermadeath();
-                    PersistentPatches.ManageDevOptions();
-                    PersistentPatches.ManageGameDifficulty();
+                    ClientValues.ForcePermadeath();
+                    ClientValues.ManageDevOptions();
+                    CustomDifficultyManager.EnforceCustomDifficulty();
 
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = __instance.CurrentMap.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Add).ToString();
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-                    Packet packet = new Packet("SettlementPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
 
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
                 }
             }
         }
@@ -47,9 +44,9 @@ namespace RimworldTogether.GameClient.Patches
             {
                 if (Network.Network.isConnectedToServer)
                 {
-                    PersistentPatches.ForcePermadeath();
-                    PersistentPatches.ManageDevOptions();
-                    PersistentPatches.ManageGameDifficulty();
+                    ClientValues.ForcePermadeath();
+                    ClientValues.ManageDevOptions();
+                    CustomDifficultyManager.EnforceCustomDifficulty();
 
                     PlanetBuilder.BuildPlanet();
 
@@ -68,13 +65,32 @@ namespace RimworldTogether.GameClient.Patches
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = caravan.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Add).ToString();
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-                    Packet packet = new Packet("SettlementPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
 
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(SettleInExistingMapUtility), "Settle")]
+        public static class SettleInMapPatch
+        {
+            [HarmonyPostfix]
+            public static void ModifyPost(Map map)
+            {
+                if (Network.Network.isConnectedToServer)
+                {
+                    SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
+                    settlementDetailsJSON.tile = map.Tile.ToString();
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+
+                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
+
+                    SaveManager.ForceSave();
                 }
             }
         }
@@ -89,13 +105,12 @@ namespace RimworldTogether.GameClient.Patches
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = settlement.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)SettlementManager.SettlementStepMode.Remove).ToString();
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
-                    string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-                    Packet packet = new Packet("SettlementPacket", contents);
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Network.Network.serverListener.SendData(packet);
 
-                    SavePatch.ForceSave();
+                    SaveManager.ForceSave();
                 }
             }
         }

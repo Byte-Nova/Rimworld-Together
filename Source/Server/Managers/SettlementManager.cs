@@ -4,28 +4,89 @@ using RimworldTogether.GameServer.Managers.Actions;
 using RimworldTogether.GameServer.Misc;
 using RimworldTogether.GameServer.Network;
 using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
 using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
 namespace RimworldTogether.GameServer.Managers
 {
     public static class SettlementManager
     {
-        public enum SettlementStepMode { Add, Remove }
-
-        public static void ParseSettlementPacket(Client client, Packet packet)
+        public static void ParseSettlementPacket(ServerClient client, Packet packet)
         {
-            SettlementDetailsJSON settlementDetailsJSON = Serializer.SerializeFromString<SettlementDetailsJSON>(packet.contents[0]);
+            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(settlementDetailsJSON.settlementStepMode))
             {
-                case (int)SettlementStepMode.Add:
+                case (int)CommonEnumerators.SettlementStepMode.Add:
                     AddSettlement(client, settlementDetailsJSON);
                     break;
 
-                case (int)SettlementStepMode.Remove:
+                case (int)CommonEnumerators.SettlementStepMode.Remove:
                     RemoveSettlement(client, settlementDetailsJSON);
                     break;
+            }
+        }
+
+        public static void AddSettlement(ServerClient client, SettlementDetailsJSON settlementDetailsJSON)
+        {
+            if (CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client);
+            else
+            {
+                settlementDetailsJSON.owner = client.username;
+
+                SettlementFile settlementFile = new SettlementFile();
+                settlementFile.tile = settlementDetailsJSON.tile;
+                settlementFile.owner = client.username;
+                Serializer.SerializeToFile(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"), settlementFile);
+
+                settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
+                {
+                    if (cClient == client) continue;
+                    else
+                    {
+                        settlementDetailsJSON.value = LikelihoodManager.GetSettlementLikelihood(cClient, settlementFile).ToString();
+
+                        Packet rPacket = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                        cClient.clientListener.SendData(rPacket);
+                    }
+                }
+
+                Logger.WriteToConsole($"[Added settlement] > {settlementFile.tile} > {client.username}", Logger.LogMode.Warning);
+            }
+        }
+
+        public static void RemoveSettlement(ServerClient client, SettlementDetailsJSON settlementDetailsJSON, bool sendRemoval = true)
+        {
+            if (!CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client);
+
+            SettlementFile settlementFile = GetSettlementFileFromTile(settlementDetailsJSON.tile);
+
+            if (sendRemoval)
+            {
+                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client);
+                else
+                {
+                    File.Delete(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"));
+
+                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
+                    Packet rPacket = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
+                    {
+                        if (cClient == client) continue;
+                        else cClient.clientListener.SendData(rPacket);
+                    }
+
+                    Logger.WriteToConsole($"[Remove settlement] > {settlementDetailsJSON.tile} > {client.username}", Logger.LogMode.Warning);
+                }
+            }
+
+            else
+            {
+                File.Delete(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"));
+
+                Logger.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", Logger.LogMode.Warning);
             }
         }
 
@@ -90,75 +151,6 @@ namespace RimworldTogether.GameServer.Managers
             }
 
             return settlementList.ToArray();
-        }
-
-        public static void AddSettlement(Client client, SettlementDetailsJSON settlementDetailsJSON)
-        {
-            if (CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client);
-            else
-            {
-                settlementDetailsJSON.owner = client.username;
-
-                SettlementFile settlementFile = new SettlementFile();
-                settlementFile.tile = settlementDetailsJSON.tile;
-                settlementFile.owner = client.username;
-                Serializer.SerializeToFile(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"), settlementFile);
-
-                settlementDetailsJSON.settlementStepMode = ((int)SettlementStepMode.Add).ToString();
-                foreach (Client cClient in Network.Network.connectedClients.ToArray())
-                {
-                    if (cClient == client) continue;
-                    else
-                    {
-                        settlementDetailsJSON.value = LikelihoodManager.GetSettlementLikelihood(cClient, settlementFile).ToString();
-
-                        string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-                        Packet rPacket = new Packet("SettlementPacket", contents);
-                        Network.Network.SendData(cClient, rPacket);
-                    }
-                }
-
-                Logger.WriteToConsole($"[Added settlement] > {settlementFile.tile} > {client.username}", Logger.LogMode.Warning);
-            }
-        }
-
-        public static void RemoveSettlement(Client client, SettlementDetailsJSON settlementDetailsJSON, bool sendRemoval = true)
-        {
-            if (!CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client);
-
-            SettlementFile settlementFile = GetSettlementFileFromTile(settlementDetailsJSON.tile);
-
-            if (sendRemoval)
-            {
-                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client);
-                else
-                {
-                    File.Delete(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"));
-
-                    SendSettlementRemoval(client, settlementDetailsJSON);
-                }
-            }
-
-            else
-            {
-                File.Delete(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"));
-
-                Logger.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", Logger.LogMode.Warning);
-            }
-        }
-
-        private static void SendSettlementRemoval(Client client, SettlementDetailsJSON settlementDetailsJSON)
-        {
-            settlementDetailsJSON.settlementStepMode = ((int)SettlementStepMode.Remove).ToString();
-            string[] contents = new string[] { Serializer.SerializeToString(settlementDetailsJSON) };
-            Packet rPacket = new Packet("SettlementPacket", contents);
-            foreach (Client cClient in Network.Network.connectedClients.ToArray())
-            {
-                if (cClient == client) continue;
-                else Network.Network.SendData(cClient, rPacket);
-            }
-
-            Logger.WriteToConsole($"[Remove settlement] > {settlementDetailsJSON.tile} > {client.username}", Logger.LogMode.Warning);
         }
     }
 }

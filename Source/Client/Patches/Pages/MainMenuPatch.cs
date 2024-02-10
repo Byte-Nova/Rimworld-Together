@@ -1,15 +1,6 @@
-﻿using System.Linq;
-using System.Threading;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
 using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
-using RimworldTogether.Shared.Network;
 using UnityEngine;
 using Verse;
 
