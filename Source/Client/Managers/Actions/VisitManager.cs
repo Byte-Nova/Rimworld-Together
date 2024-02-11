@@ -13,6 +13,7 @@ using RimworldTogether.Shared.JSON.Things;
 using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -38,7 +39,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             //This is a list of events to occur based on the contents of
-            //an incoming visit packet
+            //an incoming visit packet i.e. these are packets being recieved.
             switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
                 //caravan's request to visit settlement packet
@@ -51,12 +52,12 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     OnVisitAccept(visitDetailsJSON);
                     break;
 
-                //settlement rejects caravan visit packet
+                //settlement rejects caravan visit packet 
                 case (int)CommonEnumerators.VisitStepMode.Reject:
                     OnVisitReject();
                     break;
 
-                //saettlement is unavailable
+                //settlement is unavailable
                 case (int)CommonEnumerators.VisitStepMode.Unavailable:
                     OnVisitUnavailable();
                     break;
@@ -180,12 +181,15 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
-            Action r1 = delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); };
+
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));
-            }
-            else DialogManager.PushNewDialog(new RT_Dialog_OK("Map received", r1));
+            {DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data"));}
+            else DialogManager.PushNewDialog(new RT_Dialog_OK("Map received"));
+
+            //display wait dialog and load map.
+            DialogManager.PushNewDialog(new Dialogs.RT_Dialog_Wait("Waiting for map to Load..."));
+            VisitMap(mapDetailsJSON, visitDetailsJSON);
+            DialogManager.PopWaitDialog();
         }
 
         private static void OnVisitReject()

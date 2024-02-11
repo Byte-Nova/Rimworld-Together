@@ -56,5 +56,16 @@ namespace RimworldTogether.GameClient.Managers.Actions
         public static void PopDialog(Window window) { window?.Close(); }
 
         public static void PopWaitDialog() { dialogWait?.Close(); }
+
+        public static void WaitForDialogInput(Window window)
+        {
+            if (ClientValues.isReadyToPlay || Current.ProgramState == ProgramState.Entry)
+            {
+                previousDialog = currentDialog;
+                currentDialog = window;
+                window.forcePause = true;
+                Find.WindowStack.Add(window);
+            }
+        }
     }
 }

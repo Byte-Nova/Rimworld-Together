@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using RimWorld;
 using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
@@ -23,7 +24,6 @@ namespace RimworldTogether.GameClient.Dialogs
             DialogManager.dialogOK = this;
             this.description = description;
             this.actionOK = actionOK;
-
             forcePause = true;
             absorbInputAroundWindow = true;
 

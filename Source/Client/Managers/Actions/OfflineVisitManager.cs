@@ -64,11 +64,11 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
+                DialogManager.WaitForDialogInput(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
+            else DialogManager.WaitForDialogInput(new RT_Dialog_YesNo("Map received, continue?", r1, null));
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
+            DialogManager.WaitForDialogInput(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         private static void PrepareMapForOfflineVisit(MapDetailsJSON mapDetailsJSON)

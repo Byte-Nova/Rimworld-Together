@@ -168,11 +168,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 RWTMapGenerator.tmpGenSteps.Clear();
                 RWTMapGenerator.tmpGenSteps.AddRange(from x in genStepDefs orderby x.def.order, x.def.index select x);
 
-                Log.Message($"Does mapBeingGenerated exist? : {mapBeingGenerated != null}");
-                Log.Message($"What does NumGridCells equal? : {map.cellIndices.NumGridCells}");
                 if (mapBeingGenerated == null) { mapBeingGenerated = map; }
-                Log.Message($"Steps are: {RWTMapGenerator.tmpGenSteps[0]}");
-                Log.Message($"The number of steps are {RWTMapGenerator.tmpGenSteps.Count}");
 
                 //The classes listed in tmpGenSteps rely on MapGenerator to work.
                 //Instead of copying all the GenStep classes, we are just going to give MapGenerator the necessary varaibles
@@ -204,7 +200,10 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                         DeepProfiler.End();
                     }
                 }
+
+                //add in the custom data
                 DataToMap.addEverythingToMap(map);
+                //add fog
                 StepToRun(18, map);
             }
             finally

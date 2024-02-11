@@ -335,14 +335,18 @@ namespace RimworldTogether.GameClient.Dialogs
                 //if the server allows items to be traded
                 if (allowItems)
                 {
+
                     //Find every item on the map that is sellable to a trader
-                    IEnumerable<Thing> enumerable = map.listerThings.AllThings.Where((Thing x) => x.def.category == ThingCategory.Item && !x.Position.Fogged(x.Map) && TradeUtility.EverPlayerSellable(x.def));
+                    IEnumerable<Thing> enumerable = map.listerThings.AllThings.Where((Thing x) => (x.def.category == ThingCategory.Item) && !x.Position.Fogged(x.Map) && TradeUtility.EverPlayerSellable(x.def) || x is MinifiedThing);
 
                     //for every sellable item, add it to the list of items that will appear in the trade menu
                     foreach (Thing item in enumerable)
                     {
+                        Thing itemToAdd = item;
+                        if(item is MinifiedThing minifiedThing) { itemToAdd = minifiedThing.GetInnerIfMinified(); }
+
                         Tradeable tradeable = new Tradeable();
-                        tradeable.AddThing(item, Transactor.Colony);
+                        tradeable.AddThing(itemToAdd, Transactor.Colony);
                         ClientValues.listToShowInTradesMenu.Add(tradeable);
 
                     }
