@@ -13,7 +13,7 @@ using RimworldTogether.Shared.JSON;
 
 namespace RimworldTogether.GameClient.CustomMapGeneration
 {
-    public static class RWTMapGenerator
+    public static class RT_MapGenerator
     {
         public static Map mapBeingGenerated;
 
@@ -37,7 +37,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
         {
             get
             {
-                return RWTMapGenerator.FloatGridNamed("Elevation");
+                return RT_MapGenerator.FloatGridNamed("Elevation");
             }
         }
 
@@ -45,7 +45,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
         {
             get
             {
-                return RWTMapGenerator.FloatGridNamed("Fertility");
+                return RT_MapGenerator.FloatGridNamed("Fertility");
             }
         }
 
@@ -53,7 +53,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
         {
             get
             {
-                return RWTMapGenerator.FloatGridNamed("Caves");
+                return RT_MapGenerator.FloatGridNamed("Caves");
             }
         }
 
@@ -61,16 +61,16 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
         {
             get
             {
-                if (!RWTMapGenerator.playerStartSpotInt.IsValid)
+                if (!RT_MapGenerator.playerStartSpotInt.IsValid)
                 {
                     Log.Error("Accessing player start spot before setting it.", false);
                     return IntVec3.Zero;
                 }
-                return RWTMapGenerator.playerStartSpotInt;
+                return RT_MapGenerator.playerStartSpotInt;
             }
             set
             {
-                RWTMapGenerator.playerStartSpotInt = value;
+                RT_MapGenerator.playerStartSpotInt = value;
             }
         }
 
@@ -81,10 +81,10 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
             ProgramState programState = Current.ProgramState;
             Current.ProgramState = ProgramState.MapInitializing;
-            RWTMapGenerator.playerStartSpotInt = IntVec3.Invalid;
-            RWTMapGenerator.rootsToUnfog.Clear();
-            RWTMapGenerator.data.Clear();
-            RWTMapGenerator.mapBeingGenerated = null;
+            RT_MapGenerator.playerStartSpotInt = IntVec3.Invalid;
+            RT_MapGenerator.rootsToUnfog.Clear();
+            RT_MapGenerator.data.Clear();
+            RT_MapGenerator.mapBeingGenerated = null;
             DeepProfiler.Start("InitNewGeneratedMap");
             Rand.PushState();
             int seed = Gen.HashCombineInt(Find.World.info.Seed, parent.Tile);
@@ -100,7 +100,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 DeepProfiler.Start("Set up map");
                 Map map = new Map();
                 map.uniqueID = Find.UniqueIDsManager.GetNextMapID();
-                RWTMapGenerator.mapBeingGenerated = map;
+                RT_MapGenerator.mapBeingGenerated = map;
                 map.info.Size = mapSize;
                 map.info.parent = parent;
                 map.ConstructComponents();
@@ -125,7 +125,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 map.weatherDecider.StartInitialWeather();
                 DeepProfiler.Start("Generate contents into map");
                 Log.Message("Generate Contents into Map");
-                RWTMapGenerator.GenerateContentsIntoMap(enumerable, map, seed);
+                RT_MapGenerator.GenerateContentsIntoMap(enumerable, map, seed);
                 DeepProfiler.End();
                 Log.Message("Post Map Generate");
                 Find.Scenario.PostMapGenerate(map);
@@ -150,7 +150,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             finally
             {
                 DeepProfiler.End();
-                RWTMapGenerator.mapBeingGenerated = null;
+                RT_MapGenerator.mapBeingGenerated = null;
                 Current.ProgramState = programState;
                 Rand.PopState();
             }
@@ -159,14 +159,14 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
         public static void GenerateContentsIntoMap(IEnumerable<GenStepWithParams> genStepDefs, Map map, int seed)
         {
-            RWTMapGenerator.data.Clear();
+            RT_MapGenerator.data.Clear();
             Rand.PushState();
             try
             {
                 Rand.Seed = seed;
                 RockNoises.Init(map);
-                RWTMapGenerator.tmpGenSteps.Clear();
-                RWTMapGenerator.tmpGenSteps.AddRange(from x in genStepDefs orderby x.def.order, x.def.index select x);
+                RT_MapGenerator.tmpGenSteps.Clear();
+                RT_MapGenerator.tmpGenSteps.AddRange(from x in genStepDefs orderby x.def.order, x.def.index select x);
 
                 if (mapBeingGenerated == null) { mapBeingGenerated = map; }
 
@@ -184,11 +184,11 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 for (int j = 0; j < stepsToUse.Length; j++)
                 {
                     int i = stepsToUse[j];
-                    DeepProfiler.Start("GenStep - " + RWTMapGenerator.tmpGenSteps[i].def);
+                    DeepProfiler.Start("GenStep - " + RT_MapGenerator.tmpGenSteps[i].def);
                     try
                     {
-                        Rand.Seed = Gen.HashCombineInt(seed, RWTMapGenerator.GetSeedPart(RWTMapGenerator.tmpGenSteps, i));
-                        RWTMapGenerator.tmpGenSteps[i].def.genStep.Generate(map, RWTMapGenerator.tmpGenSteps[i].parms);
+                        Rand.Seed = Gen.HashCombineInt(seed, RT_MapGenerator.GetSeedPart(RT_MapGenerator.tmpGenSteps, i));
+                        RT_MapGenerator.tmpGenSteps[i].def.genStep.Generate(map, RT_MapGenerator.tmpGenSteps[i].parms);
                         Log.Message($"Generated step {i}");
                     }
                     catch (Exception arg)
@@ -210,14 +210,14 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             {
                 Rand.PopState();
                 RockNoises.Reset();
-                RWTMapGenerator.data.Clear();
+                RT_MapGenerator.data.Clear();
             }
         }
 
         public static T GetVar<T>(string name)
         {
             object obj;
-            if (RWTMapGenerator.data.TryGetValue(name, out obj))
+            if (RT_MapGenerator.data.TryGetValue(name, out obj))
             {
                 return (T)((object)obj);
             }
@@ -227,7 +227,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
         public static bool TryGetVar<T>(string name, out T var)
         {
             object obj;
-            if (RWTMapGenerator.data.TryGetValue(name, out obj))
+            if (RT_MapGenerator.data.TryGetValue(name, out obj))
             {
                 var = (T)((object)obj);
                 return true;
@@ -238,18 +238,18 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
         public static void SetVar<T>(string name, T var)
         {
-            RWTMapGenerator.data[name] = var;
+            RT_MapGenerator.data[name] = var;
         }
 
         public static MapGenFloatGrid FloatGridNamed(string name)
         {
-            MapGenFloatGrid var = RWTMapGenerator.GetVar<MapGenFloatGrid>(name);
+            MapGenFloatGrid var = RT_MapGenerator.GetVar<MapGenFloatGrid>(name);
             if (var != null)
             {
                 return var;
             }
-            MapGenFloatGrid mapGenFloatGrid = new MapGenFloatGrid(RWTMapGenerator.mapBeingGenerated);
-            RWTMapGenerator.SetVar<MapGenFloatGrid>(name, mapGenFloatGrid);
+            MapGenFloatGrid mapGenFloatGrid = new MapGenFloatGrid(RT_MapGenerator.mapBeingGenerated);
+            RT_MapGenerator.SetVar<MapGenFloatGrid>(name, mapGenFloatGrid);
             return mapGenFloatGrid;
         }
 
@@ -259,7 +259,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             int num = 0;
             for (int i = 0; i < index; i++)
             {
-                if (RWTMapGenerator.tmpGenSteps[i].def.genStep.SeedPart == seedPart)
+                if (RT_MapGenerator.tmpGenSteps[i].def.genStep.SeedPart == seedPart)
                 {
                     num++;
                 }
@@ -270,11 +270,11 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
         public static void StepToRun(int stepNum, Map map)
         {
             int seed = map.ConstantRandSeed;
-            DeepProfiler.Start("GenStep - " + RWTMapGenerator.tmpGenSteps[stepNum].def);
+            DeepProfiler.Start("GenStep - " + RT_MapGenerator.tmpGenSteps[stepNum].def);
             try
             {
-                Rand.Seed = Gen.HashCombineInt(seed, RWTMapGenerator.GetSeedPart(RWTMapGenerator.tmpGenSteps, stepNum));
-                RWTMapGenerator.tmpGenSteps[stepNum].def.genStep.Generate(map, RWTMapGenerator.tmpGenSteps[stepNum].parms);
+                Rand.Seed = Gen.HashCombineInt(seed, RT_MapGenerator.GetSeedPart(RT_MapGenerator.tmpGenSteps, stepNum));
+                RT_MapGenerator.tmpGenSteps[stepNum].def.genStep.Generate(map, RT_MapGenerator.tmpGenSteps[stepNum].parms);
                 Log.Message($"Generated step {stepNum}");
             }
             catch (Exception arg)

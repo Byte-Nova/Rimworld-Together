@@ -9,7 +9,7 @@ using Verse;
 
 namespace RimworldTogether.GameClient.CustomMapGeneration
 {
-    public static class RWTGetOrGenerateMapUtility
+    public static class RT_GetOrGenerateMapUtility
     {
         public static Map GetOrGenerateMap(int tile, IntVec3 size, WorldObjectDef suggestedMapParentDef)
         {
@@ -31,7 +31,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                     Find.WorldObjects.Add(mapParent);
                 }
 
-                map = RWTMapGenerator.GenerateMap(size, mapParent, mapParent.MapGeneratorDef, mapParent.ExtraGenStepDefs, null);
+                map = RT_MapGenerator.GenerateMap(size, mapParent, mapParent.MapGeneratorDef, mapParent.ExtraGenStepDefs, null);
             }
             return map;
         }

@@ -30,13 +30,18 @@ namespace RimworldTogether.GameClient.Patches
                     {
                         ScribeMetaHeaderUtility.WriteMetaHeader();
                         Game target = Current.Game;
-                        Scribe_Deep.Look(ref target, "game");
+                        Scribe_Deep.Look(ref target, "game", new object[0]);
                     }, Find.GameInfo.permadeathMode);
                     ___lastSaveTick = Find.TickManager.TicksGame;
                 }
                 catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
 
+                //send map data so players can offline visit/raid
+                Log.Message($"[Rimworld Together] > Sending maps to server");
                 MapManager.SendMapsToServer();
+
+                //send Local Save file to server
+                Log.Message($"[Rimworld Together] > Sending local save to server");
                 SaveManager.SendSavePartToServer(fileName);
 
                 return false;

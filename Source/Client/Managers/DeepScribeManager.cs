@@ -112,9 +112,6 @@ namespace RimworldTogether.GameClient.Managers
             }
 
             try {
-                Log.Message($"Does color exist? :{human.story.favoriteColor != null} :{human.story.favoriteColor}");
-                Log.Message($"Human's favorite colors as RGB floats are: {human.story.favoriteColor.Value.r},{human.story.favoriteColor.Value.g},{human.story.favoriteColor.Value.b}");
-                Log.Message($"human's favorite color as string is: {human.story.favoriteColor.ToString()}");
                 humanDetailsJSON.favoriteColor = human.story.favoriteColor.ToString();
             }
             catch (Exception e) { Log.Warning($"Failed to load favorite color from human {human.Label}. Reason: {e}"); }
@@ -786,7 +783,7 @@ namespace RimworldTogether.GameClient.Managers
             IntVec3 mapSize = DataToMap.GetMapSize(mapDetailsJSON);
 
             //create a map on the caravan's client
-            try { map = RWTGetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null); }
+            try { map = RT_GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null); }
             catch (Exception e) { Log.Warning($"Critical error generating map. Exception: {e}"); }
 
             stopWatch.Stop();

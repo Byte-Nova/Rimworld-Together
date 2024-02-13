@@ -70,7 +70,7 @@ namespace RimworldTogether.GameClient.Managers
                 Log.Message($"[Rimworld Together] > Sending save to server");
 
                 string filePath = Path.Combine(new string[] { Main.savesPath, fileName + ".rws" });
-
+                Log.Message($"[Rimworld Together] > File being sent : {filePath}");
                 Network.Network.serverListener.uploadManager = new UploadManager();
                 Network.Network.serverListener.uploadManager.PrepareUpload(filePath);
             }

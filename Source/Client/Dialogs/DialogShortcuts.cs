@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
+using Verse;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
@@ -23,6 +24,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ShowLoginOrRegisterDialogs()
         {
+            Log.Message("ShowLoginORRegisterDialogs");
             RT_Dialog_3Input a1 = new RT_Dialog_3Input(
                 "New User",
                 "Username",

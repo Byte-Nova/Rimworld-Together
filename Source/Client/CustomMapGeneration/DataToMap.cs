@@ -78,7 +78,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             //add caravan items to the map
             foreach (Thing thing in thingsToGetInThisTile)
             {
-                try { GenPlace.TryPlaceThing(thing, thing.Position, RWTMapGenerator.mapBeingGenerated, ThingPlaceMode.Direct, rot: thing.Rotation); }
+                try { GenPlace.TryPlaceThing(thing, thing.Position, RT_MapGenerator.mapBeingGenerated, ThingPlaceMode.Direct, rot: thing.Rotation); }
                 catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
             }
 
@@ -119,7 +119,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             //add Settlement items to the map
             foreach (Thing thing in thingsToGetInThisTile)
             {
-                try { GenPlace.TryPlaceThing(thing, thing.Position, RWTMapGenerator.mapBeingGenerated, ThingPlaceMode.Direct, rot: thing.Rotation); }
+                try { GenPlace.TryPlaceThing(thing, thing.Position, RT_MapGenerator.mapBeingGenerated, ThingPlaceMode.Direct, rot: thing.Rotation); }
                 catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
             }
 

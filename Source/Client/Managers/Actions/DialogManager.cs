@@ -1,4 +1,6 @@
-﻿using RimworldTogether.GameClient.Dialogs;
+﻿
+using System.Collections.Generic;
+using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Values;
 using Verse;
 
@@ -29,6 +31,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
         public static string dialog3ResultTwo;
         public static string dialog3ResultThree;
 
+        public static List<object> inputs;
+
         public static RT_Dialog_ScrollButtons dialogScrollButtons;
         public static int selectedScrollButton;
 
@@ -51,14 +55,20 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
                 Find.WindowStack.Add(window);
             }
+
+            inputs.Add((int)5);
+            inputs.Add("hello");
         }
 
-        public static void PopDialog(Window window) { window?.Close(); }
+        public static void PopDialog(Window window) { 
+            window?.Close(); 
+        }
 
-        public static void PopWaitDialog() { dialogWait?.Close(); }
+        public static void PopWaitDialog() { 
+            dialogWait?.Close(); 
+        }
 
-        public static void WaitForDialogInput(Window window)
-        {
+        public static void WaitForDialogInput(Window window){
             if (ClientValues.isReadyToPlay || Current.ProgramState == ProgramState.Entry)
             {
                 previousDialog = currentDialog;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RimWorld;
 using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
@@ -6,7 +7,7 @@ using Verse;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
-    public class RT_Dialog_1Input : Window
+    public class RT_Dialog_1Input : Window, RT_Window
     {
         public override Vector2 InitialSize => new Vector2(400f, 200f);
 
@@ -27,6 +28,8 @@ namespace RimworldTogether.GameClient.Dialogs
 
         private bool inputOneCensored;
         private string inputOneCensoredResult;
+
+        private List<object> inputList;
 
         public RT_Dialog_1Input(string title, string inputOneLabel, Action actionYes, Action actionNo, bool inputOneCensored = false)
         {
@@ -91,10 +94,16 @@ namespace RimworldTogether.GameClient.Dialogs
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
-                    inputOneCensoredResult = new string('█', inputOne.Length);
+                    inputOneCensoredResult = new string('*', inputOne.Length);
                     Text.Font = GameFont.Small;
                 }
             }
+        }
+
+        public virtual List<object> GetInputList() {
+
+
+            return inputList;
         }
     }
 }
