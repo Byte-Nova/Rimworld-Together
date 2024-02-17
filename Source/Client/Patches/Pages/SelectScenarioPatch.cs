@@ -54,7 +54,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 if (!ClientValues.isLoadingPrefabWorld || ServerValues.AllowCustomScenarios) return true;
                 else
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!", DialogManager.PopDialog));
                     return false;
                 }
             }

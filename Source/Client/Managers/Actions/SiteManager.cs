@@ -139,7 +139,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void OnSiteAccept()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
             DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
 
             SaveManager.ForceSave();
@@ -159,12 +159,12 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void OnSimpleSiteOpen(SiteDetailsJSON siteDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             if (string.IsNullOrWhiteSpace(siteDetailsJSON.workerData))
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
-                    delegate { PrepareSendPawnScreen(); }, null);
+                    PrepareSendPawnScreen, DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -172,7 +172,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             else
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You have a worker on this site, retrieve?",
-                    delegate { RequestWorkerRetrieval(siteDetailsJSON); }, null);
+                    delegate { RequestWorkerRetrieval(siteDetailsJSON); }, DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -190,7 +190,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void OnWorkerRetrieval(SiteDetailsJSON siteDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             Action r1 = delegate
             {
@@ -227,7 +227,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 if (TransferManagerHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
             }
 
-            Pawn pawnToSend = caravanHumans[DialogManager.dialogListingWithButtonResult];
+            Pawn pawnToSend = caravanHumans[(int)DialogManager.inputCache[0]];
             ClientValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
@@ -255,7 +255,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 Network.Network.serverListener.SendData(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, DialogManager.PopDialog);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -343,29 +343,29 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", RequestSiteBuild, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputCache[0]]} " +
+                $"silver, continue?", RequestSiteBuild, DialogManager.PopDialog);
 
             DialogManager.PushNewDialog(d1);
         }
 
         public static void RequestSiteBuild()
         {
-            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
+            DialogManager.PopDialog();
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputCache[0]]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!", DialogManager.PopDialog));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[(int)DialogManager.inputCache[0]]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
+                siteDetailsJSON.type = ((int)DialogManager.inputCache[0]).ToString();
                 siteDetailsJSON.isFromFaction = false;
 
                 Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);
@@ -411,29 +411,29 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", RequestSiteBuild, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputCache[0]]} " +
+                $"silver, continue?", RequestSiteBuild, DialogManager.PopDialog);
 
             DialogManager.PushNewDialog(d1);
         }
 
         public static void RequestSiteBuild()
         {
-            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
+            DialogManager.PopDialog();
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputCache[0]]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!", DialogManager.PopDialog));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[(int)DialogManager.inputCache[0]]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
+                siteDetailsJSON.type = ((int)DialogManager.inputCache[0]).ToString();
                 siteDetailsJSON.isFromFaction = true;
 
                 Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);

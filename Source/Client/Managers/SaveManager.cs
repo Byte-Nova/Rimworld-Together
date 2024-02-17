@@ -65,6 +65,13 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void SendSavePartToServer(string fileName = null)
         {
+            if(fileName == null)
+                fileName = customSaveName;
+            if (fileName == null)
+            {
+                Log.Error("[Rimworld Together] > ERROR tried sending save to server, but file name was empty");
+            }
+                
             if (Network.Network.serverListener.uploadManager == null)
             {
                 Log.Message($"[Rimworld Together] > Sending save to server");

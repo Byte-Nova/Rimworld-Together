@@ -48,7 +48,6 @@ namespace RimworldTogether.GameClient.Dialogs
         public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
             bool allowHumans = false)
         {
-            DialogManager.dialogTransferMenu = this;
             this.transferLocation = transferLocation;
             this.allowItems = allowItems;
             this.allowAnimals = allowAnimals;
@@ -155,25 +154,24 @@ namespace RimworldTogether.GameClient.Dialogs
                 };
 
                 RT_Dialog_2Button d2 = new RT_Dialog_2Button("Transfer Type", "Please choose the transfer type to use",
-                    "Gift", "Trade", r1, r2, null);
+                    "Gift", "Trade", r1, r2, DialogManager.PopDialog);
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    delegate { DialogManager.PushNewDialog(d2); }, null);
+                    delegate { DialogManager.PopDialog();  DialogManager.PushNewDialog(d2); }, DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
 
             else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
-                Action r1 = delegate
-                {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
-                    DialogManager.PopDialog(DialogManager.dialogItemListing);
-                    postChoosing();
-                };
-
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    r1, null);
+                    delegate
+                    {
+                        DialogManager.PopDialog();
+                        ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
+                        //pop yes_no dialog
+                        postChoosing();
+                    }, DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -182,7 +180,8 @@ namespace RimworldTogether.GameClient.Dialogs
             {
                 TransferManager.TakeTransferItems(transferLocation);
                 TransferManager.SendTransferRequestToServer(transferLocation);
-                Close();
+                //pop transfer menu dialog
+                DialogManager.PopDialog();
             }
         }
 
@@ -197,13 +196,13 @@ namespace RimworldTogether.GameClient.Dialogs
 
                 TransferManager.FinishTransfer(false);
 
-                Close();
+                DialogManager.PopDialog();
             };
 
             if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
-                    r1, null));
+                    r1, DialogManager.PopDialog));
             }
             else r1.Invoke();
         }

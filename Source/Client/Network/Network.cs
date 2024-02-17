@@ -21,9 +21,10 @@ namespace RimworldTogether.GameClient.Network
 
         public static void StartConnection()
         {
+            Log.Message($"should pop the wait... {Find.WindowStack[Find.WindowStack.Count-1].ToString()}");
+            DialogManager.PopDialog();
             if (TryConnectToServer())
             {
-                DialogManager.PopWaitDialog();
                 ClientValues.ManageDevOptions();
                 SiteManager.SetSiteDefs();
 
@@ -36,9 +37,8 @@ namespace RimworldTogether.GameClient.Network
 
             else
             {
-                DialogManager.PopWaitDialog();
 
-                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
+                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time", DialogManager.PopDialog);
                 DialogManager.PushNewDialog(d1);
 
                 ClearAllValues();
@@ -66,19 +66,22 @@ namespace RimworldTogether.GameClient.Network
 
         public static void DisconnectFromServer()
         {
-            Action toDo = delegate
-            {
+            //Action toDo = delegate
+           // {
                 serverListener.connection.Dispose();
 
                 Action r1 = delegate
                 {
+                    DialogManager.PopDialog();
+                    DialogManager.PopDialog();
                     if (Current.ProgramState == ProgramState.Playing)
                     {
                         DisconnectionManager.DisconnectToMenu();
                     }
+                    //DialogManager.PushNewDialog(new ImmediateWindow());
                 };
 
-                DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
+                DialogManager.PushNewDialog(new RT_Dialog_Error_List(new string[]
                 {
                         "Connection to the server has been lost!",
                         "Game will now quit to menu"
@@ -87,9 +90,9 @@ namespace RimworldTogether.GameClient.Network
                 ClearAllValues();
 
                 Log.Message($"[Rimworld Together] > Disconnected from server");
-            };
+            //};
 
-            Main.threadDispatcher.Enqueue(toDo);
+            //Main.threadDispatcher.Enqueue(toDo);
         }
 
         public static void ClearAllValues()

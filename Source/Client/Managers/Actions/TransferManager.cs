@@ -29,36 +29,36 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     break;
 
                 case (int)TransferStepMode.TradeAccept:
-                    DialogManager.PopWaitDialog();
+                    DialogManager.PopDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
                 case (int)TransferStepMode.TradeReject:
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
+                    DialogManager.PopDialog();
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!", DialogManager.PopDialog));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
                 case (int)TransferStepMode.TradeReRequest:
-                    DialogManager.PopWaitDialog();
+                    DialogManager.PopDialog();
                     ReceiveReboundRequest(transferManifestJSON);
                     break;
 
                 case (int)TransferStepMode.TradeReAccept:
-                    DialogManager.PopWaitDialog();
+                    DialogManager.PopDialog();
                     GetTransferedItemsToSettlement(DeepScribeManager.GetAllTransferedItems(ClientValues.incomingManifest));
                     break;
 
                 case (int)TransferStepMode.TradeReReject:
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
+                    DialogManager.PopDialog();
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!", DialogManager.PopDialog));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
                 case (int)TransferStepMode.Recover:
-                    DialogManager.PopWaitDialog();
+                    DialogManager.PopDialog();
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
             }

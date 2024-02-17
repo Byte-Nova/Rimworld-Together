@@ -33,7 +33,7 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void OnRequireWorld()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             ClientValues.ToggleGenerateWorld(true);
 
@@ -47,7 +47,7 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void OnExistingWorld(WorldDetailsJSON worldDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             ClientValues.ToggleLoadingPrefabWorld(true);
 
@@ -65,7 +65,7 @@ namespace RimworldTogether.GameClient.Managers
         {
             ClientValues.ToggleGenerateWorld(false);
 
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(
                 new string[] { "World file has been saved into the server!", "New connecting users will use this world when joining", "Press OK to start playing!" },

@@ -51,7 +51,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(spyCost))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!", DialogManager.PopDialog));
                 }
 
                 else
@@ -69,13 +69,13 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 }
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Spying a settlement costs {spyCost} silver, continue?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Spying a settlement costs {spyCost} silver, continue?", r1, DialogManager.PopDialog);
             DialogManager.PushNewDialog(d1);
         }
 
         private static void OnSpyAccept(SpyDetailsJSON spyDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(spyDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(mapFileJSON.mapData);
@@ -84,22 +84,22 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, DialogManager.PopDialog));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
+            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.PopDialog));
 
             DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         private static void OnSpyDeny()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             TransferManager.SendSilverToCaravan(spyCost);
 
             DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!", DialogManager.PopDialog));
         }
 
         private static void PrepareMapForSpy(MapDetailsJSON mapDetailsJSON)

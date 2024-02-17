@@ -1,5 +1,7 @@
 using System.IO;
+using System.Collections.Generic;
 using RimworldTogether.GameClient.Core;
+using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.GameClient.Files;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.Shared.Serializers;
@@ -22,17 +24,25 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void FetchConnectionDetails()
         {
+
+            DialogManager.PushNewDialog(
+                new RT_Dialog_2Input(
+                "Connection Details",
+                "IP",
+                "Port",
+                delegate { DialogShortcuts.ParseConnectionDetails(false); },
+                DialogManager.PopDialog)
+            );
+
             if (File.Exists(Main.connectionDataPath))
             {
                 ConnectionDataFile previousConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Main.connectionDataPath);
-                DialogManager.dialog2Input.inputOneResult = previousConnectionData.ip;
-                DialogManager.dialog2Input.inputTwoResult = previousConnectionData.port;
+                DialogManager.currentDialogInputs.SubstituteInputs(new List<object>() { previousConnectionData.ip, previousConnectionData.port });
             }
 
             else
             {
-                DialogManager.dialog2Input.inputOneResult = "";
-                DialogManager.dialog2Input.inputTwoResult = "";
+                DialogManager.currentDialogInputs.SubstituteInputs(new List<object>() { "", "" });
             }
         }
 
@@ -53,14 +63,12 @@ namespace RimworldTogether.GameClient.Managers
             if (File.Exists(Main.loginDataPath))
             {
                 LoginDataFile previousLoginData = Serializer.SerializeFromFile<LoginDataFile>(Main.loginDataPath);
-                DialogManager.dialog2Input.inputOneResult = previousLoginData.username;
-                DialogManager.dialog2Input.inputTwoResult = previousLoginData.password;
+                DialogManager.currentDialogInputs.SubstituteInputs(new List<object>() { previousLoginData.username, previousLoginData.password });
             }
 
             else
             {
-                DialogManager.dialog2Input.inputOneResult = "";
-                DialogManager.dialog2Input.inputTwoResult = "";
+                DialogManager.currentDialogInputs.SubstituteInputs(new List<object>() { "", "" });
             }
         }
 

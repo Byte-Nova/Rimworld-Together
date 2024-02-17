@@ -8,9 +8,10 @@ using Verse;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
-    interface RT_Window
+    public interface RT_WindowInputs
     {
+        public abstract void CacheInputs();
 
-        public abstract List<Object> GetInputList();
+        public abstract void SubstituteInputs(List<object> newInputs);
     }
 }

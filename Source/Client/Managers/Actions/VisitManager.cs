@@ -61,7 +61,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 case (int)CommonEnumerators.VisitStepMode.Unavailable:
                     OnVisitUnavailable();
                     break;
-
+                //
                 case (int)CommonEnumerators.VisitStepMode.Action:
                     VisitActionGetter.ReceiveActions(visitDetailsJSON);
                     break;
@@ -75,7 +75,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         //Runs when a caravan requests to visit
         public static void RequestVisit()
         {
-            if (ClientValues.isInVisit) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already visiting someone!"));
+            if (ClientValues.isInVisit) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already visiting someone!", DialogManager.PopDialog));
             else
             {
                 Action r1 = delegate
@@ -92,7 +92,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     Network.Network.serverListener.SendData(packet);
                 };
 
-                var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
+                var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, DialogManager.PopDialog);
                 DialogManager.PushNewDialog(d1);
             }
         }
@@ -177,7 +177,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void OnVisitAccept(VisitDetailsJSON visitDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
@@ -189,19 +189,19 @@ namespace RimworldTogether.GameClient.Managers.Actions
             //display wait dialog and load map.
             DialogManager.PushNewDialog(new Dialogs.RT_Dialog_Wait("Waiting for map to Load..."));
             VisitMap(mapDetailsJSON, visitDetailsJSON);
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
         }
 
         private static void OnVisitReject()
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!"));
+            DialogManager.PopDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!", DialogManager.PopDialog));
         }
 
         private static void OnVisitUnavailable()
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!"));
+            DialogManager.PopDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!", DialogManager.PopDialog));
         }
 
         private static void OnVisitStop()
@@ -480,6 +480,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void ReceiveActions(VisitDetailsJSON visitDetailsJSON)
         {
+            //the pawns that are not yours
             Pawn[] otherPawns = VisitManager.otherPlayerPawns.ToArray();
 
             for (int i = 0; i < otherPawns.Count(); i++)
@@ -488,7 +489,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 {
                     JobDef jobDef = VisitActionHelper.TryGetJobDefForJob(otherPawns[i], visitDetailsJSON.pawnActionDefNames[i]);
 
-                    VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitDetailsJSON, i);
+                    //VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitDetailsJSON, i);
                     //otherPawns[i].pather.
                     LocalTargetInfo localTargetInfoA = VisitActionHelper.TryGetLocalTargetInfo(otherPawns[i],
                         visitDetailsJSON.actionTargetA[i], visitDetailsJSON.actionTargetType[i]);
@@ -665,6 +666,25 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     pawn.jobs.StartJob(newJob);
                 }
             }
+        }
+
+        public static string TransformPathToString(Pawn pawn)
+        {
+            List <IntVec3> pawnPath = pawn.pather.curPath.NodesReversed;
+            int currNode = 0;
+            while (pawnPath[currNode] != null && pawnPath.Count > currNode)
+            {
+                //pawnPath[];
+                currNode++;
+            }
+            return null;
+        }
+
+        public static void GetPathFromString(VisitDetailsJSON visitDetailsJSON, string path)
+        {
+             
+
+
         }
     }
 }

@@ -7,6 +7,8 @@ using System;
 using RimworldTogether.Shared.JSON;
 using RimworldTogether.Shared.Misc;
 using Verse;
+using UnityEngine;
+using System.Data;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
@@ -14,7 +16,7 @@ namespace RimworldTogether.GameClient.Dialogs
     {
         public static void ShowRegisteredDialog()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You have been successfully registered!",
                 "You are now able to login using your new account"});
@@ -24,6 +26,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ShowLoginOrRegisterDialogs()
         {
+            Log.Message("In showLoginOrRegisterDialog");
             Log.Message("ShowLoginORRegisterDialogs");
             RT_Dialog_3Input a1 = new RT_Dialog_3Input(
                 "New User",
@@ -31,7 +34,7 @@ namespace RimworldTogether.GameClient.Dialogs
                 "Password",
                 "Confirm Password",
                 delegate { ParseRegisterUser(); },
-                delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
+                DialogManager.PopDialog,
                 false, true, true);
 
             RT_Dialog_2Input a2 = new RT_Dialog_2Input(
@@ -39,7 +42,7 @@ namespace RimworldTogether.GameClient.Dialogs
                 "Username",
                 "Password",
                 delegate { ParseLoginUser(); },
-                delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
+                DialogManager.PopDialog,
                 false, true);
 
             RT_Dialog_2Button d1 = new RT_Dialog_2Button(
@@ -52,9 +55,10 @@ namespace RimworldTogether.GameClient.Dialogs
                     DialogManager.PushNewDialog(a2);
                     PreferenceManager.FetchLoginDetails();
                 },
-                delegate { Network.Network.serverListener.disconnectFlag = true; });
+                delegate { DialogManager.PopDialog(); Network.Network.serverListener.disconnectFlag = true; });
 
             DialogManager.PushNewDialog(d1);
+            
         }
 
         public static void ShowWorldGenerationDialogs()
@@ -64,7 +68,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
                 "Separate colony", "Together with other players (TBA)", null, delegate { DialogManager.PushNewDialog(d3); },
-                delegate { DisconnectionManager.RestartGame(true); });
+                delegate { DialogManager.PopDialog(); DisconnectionManager.RestartGame(true); });
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "Welcome to the world view!",
                         "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },
@@ -75,17 +79,11 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ShowConnectDialogs()
         {
+            //Log.Message($"[Top window is: {Find.WindowStack[0].ToString()}]");
             RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
                 ClientValues.serverBrowserContainer,
                 delegate { ParseConnectionDetails(true); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
-
-            RT_Dialog_2Input a2 = new RT_Dialog_2Input(
-                "Connection Details",
-                "IP",
-                "Port",
-                delegate { ParseConnectionDetails(false); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                DialogManager.PopDialog);
 
             RT_Dialog_2Button newDialog = new RT_Dialog_2Button(
                 "Play Online",
@@ -94,11 +92,12 @@ namespace RimworldTogether.GameClient.Dialogs
                 "Direct Connect",
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
-                    DialogManager.PushNewDialog(a2);
                     PreferenceManager.FetchConnectionDetails();
                 },
-                null);
+                DialogManager.PopDialog);
 
+
+            Log.Message($"Pushing connection type dialog {Find.WindowStack.Count}");
             DialogManager.PushNewDialog(newDialog);
         }
 
@@ -110,7 +109,7 @@ namespace RimworldTogether.GameClient.Dialogs
             if (throughBrowser)
             {
                 answerSplit = ClientValues.serverBrowserContainer
-                    [DialogManager.dialogListingWithButtonResult].Split('|');
+                    [(int)DialogManager.inputCache[0]].Split('|');
 
                 if (string.IsNullOrWhiteSpace(answerSplit[0])) isInvalid = true;
                 if (string.IsNullOrWhiteSpace(answerSplit[1])) isInvalid = true;
@@ -120,10 +119,10 @@ namespace RimworldTogether.GameClient.Dialogs
 
             else
             {
-                if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultOne)) isInvalid = true;
-                if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultTwo)) isInvalid = true;
-                if (DialogManager.dialog2ResultTwo.Count() > 5) isInvalid = true;
-                if (!DialogManager.dialog2ResultTwo.All(Char.IsDigit)) isInvalid = true;
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isInvalid = true;
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isInvalid = true;
+                if (((string)DialogManager.inputCache[1]).Count() > 5) isInvalid = true;
+                if (!((string)DialogManager.inputCache[1]).All(Char.IsDigit)) isInvalid = true;
             }
 
             if (!isInvalid)
@@ -137,9 +136,9 @@ namespace RimworldTogether.GameClient.Dialogs
 
                 else
                 {
-                    Network.Network.ip = DialogManager.dialog2ResultOne;
-                    Network.Network.port = DialogManager.dialog2ResultTwo;
-                    PreferenceManager.SaveConnectionDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                    Network.Network.ip = (string)DialogManager.inputCache[0];
+                    Network.Network.port = (string)DialogManager.inputCache[1];
+                    PreferenceManager.SaveConnectionDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
                 }
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
@@ -148,7 +147,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!");
+                RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!", DialogManager.PopDialog);
                 DialogManager.PushNewDialog(d1);
             }
         }
@@ -156,20 +155,20 @@ namespace RimworldTogether.GameClient.Dialogs
         public static void ParseLoginUser()
         {
             bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultOne)) isInvalid = true;
-            if (DialogManager.dialog2ResultOne.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultTwo)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isInvalid = true;
+            if (((string)DialogManager.inputCache[0]).Any(Char.IsWhiteSpace)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isInvalid = true;
 
             if (!isInvalid)
             {
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
-                loginDetails.username = DialogManager.dialog2ResultOne;
-                loginDetails.password = Hasher.GetHash(DialogManager.dialog2ResultTwo);
+                loginDetails.username = (string)DialogManager.inputCache[0];
+                loginDetails.password = Hasher.GetHash((string)DialogManager.inputCache[1]);
                 loginDetails.clientVersion = ClientValues.versionCode;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
-                PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                PreferenceManager.SaveLoginDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
 
                 Packet packet = Packet.CreatePacketFromJSON("LoginClientPacket", loginDetails);
                 Network.Network.serverListener.SendData(packet);
@@ -179,8 +178,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Login details are invalid! Please try again!",
-                    delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                RT_Dialog_Error d1 = new RT_Dialog_Error("Login details are invalid! Please try again!", DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -189,17 +187,17 @@ namespace RimworldTogether.GameClient.Dialogs
         public static void ParseRegisterUser()
         {
             bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultOne)) isInvalid = true;
-            if (DialogManager.dialog3ResultOne.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultTwo)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultThree)) isInvalid = true;
-            if (DialogManager.dialog3ResultTwo != DialogManager.dialog3ResultThree) isInvalid = true;
+            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isInvalid = true;
+            if (((string)DialogManager.inputCache[0]).Any(Char.IsWhiteSpace)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isInvalid = true;
+            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[2])) isInvalid = true;
+            if ((string)DialogManager.inputCache[1] != (string)DialogManager.inputCache[2]) isInvalid = true;
 
             if (!isInvalid)
             {
                 JoinDetailsJSON registerDetails = new JoinDetailsJSON();
-                registerDetails.username = DialogManager.dialog3ResultOne;
-                registerDetails.password = Hasher.GetHash(DialogManager.dialog3ResultTwo);
+                registerDetails.username = (string)DialogManager.inputCache[0];
+                registerDetails.password = Hasher.GetHash((string)DialogManager.inputCache[1]);
                 registerDetails.clientVersion = ClientValues.versionCode;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
@@ -211,8 +209,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Register details are invalid! Please try again!",
-                    delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                RT_Dialog_Error d1 = new RT_Dialog_Error("Register details are invalid! Please try again!", DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }

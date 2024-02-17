@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RimWorld;
 using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
@@ -8,6 +9,7 @@ namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_2Button : Window
     {
+
         public override Vector2 InitialSize => new Vector2(350f, 250f);
 
         private string title = "";
@@ -23,9 +25,9 @@ namespace RimworldTogether.GameClient.Dialogs
         private string actionOneName;
         private string actionTwoName;
 
+
         public RT_Dialog_2Button(string title, string description, string actionOneName, string actionTwoName, Action actionOne, Action actionTwo, Action actionCancel)
         {
-            DialogManager.dialog2Button = this;
             this.title = title;
             this.description = description;
             this.actionOne = actionOne;
@@ -61,20 +63,18 @@ namespace RimworldTogether.GameClient.Dialogs
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY * 3 - 20f), new Vector2(buttonX, buttonY)), actionOneName))
             {
                 if (actionOne != null) actionOne.Invoke();
-                Close();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY * 2 - 10f), new Vector2(buttonX, buttonY)), actionTwoName))
             {
                 if (actionTwo != null) actionTwo.Invoke();
-                Close();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2 + buttonX * 0.125f, rect.yMax - buttonY), new Vector2(buttonX * 0.75f, buttonY)), "Cancel"))
             {
                 if (actionCancel != null) actionCancel.Invoke();
-                Close();
             }
         }
+
     }
 }

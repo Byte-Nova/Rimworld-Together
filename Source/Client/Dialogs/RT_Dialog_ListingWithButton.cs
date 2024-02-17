@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimworldTogether.GameClient.Managers.Actions;
@@ -7,7 +8,7 @@ using Verse;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
-    public class RT_Dialog_ListingWithButton : Window
+    public class RT_Dialog_ListingWithButton : Window, RT_WindowInputs
     {
         public override Vector2 InitialSize => new Vector2(400f, 400f);
 
@@ -29,17 +30,31 @@ namespace RimworldTogether.GameClient.Dialogs
         private float selectButtonX = 47f;
         private float selectButtonY = 25f;
 
+        private int SelectedButton;
+
+        public List<int> inputResultList;
+
+        public virtual List<object> inputList
+        {
+            get
+            {
+                List<object> returnList = new List<object>();
+                returnList.Add(SelectedButton);
+                return returnList;
+            }
+        }
+
         public RT_Dialog_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
         {
-            DialogManager.dialogButtonListing = this;
             this.title = title;
             this.description = description;
             this.elements = elements;
             this.actionClick = actionClick;
             this.actionCancel = actionCancel;
-
+            inputResultList = new List<int>(1);
             forcePause = true;
             absorbInputAroundWindow = true;
+            this.inputResultList = new List<int>() {0};
 
             soundAppear = SoundDefOf.CommsWindow_Open;
             //soundClose = SoundDefOf.CommsWindow_Close;
@@ -72,7 +87,7 @@ namespace RimworldTogether.GameClient.Dialogs
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close"))
             {
                 if (actionCancel != null) actionCancel.Invoke();
-                Close();
+                CacheInputs();
             }
         }
 
@@ -110,9 +125,41 @@ namespace RimworldTogether.GameClient.Dialogs
             Widgets.Label(fixedRect, $"{element}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
             {
-                DialogManager.dialogListingWithButtonResult = index;
+                SelectedButton = index;
                 if (actionClick != null) actionClick.Invoke();
-                Close();
+                
+            }
+        }
+
+        public virtual void CacheInputs()
+        {
+            DialogManager.inputCache = inputList;
+        }
+
+        public virtual void SubstituteInputs(List<object> newInputs)
+        {
+
+            //exception handling
+            if (newInputs.Count < 2)
+            {
+                Log.Error("[RimWorld Together] > ERROR: newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made");
+                return;
+            }
+            else if (newInputs.Count > 2)
+            {
+                Log.Warning("[RimWorld Together] > WARNING: newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used ");
+            }
+
+            //for each value in inputResultList, set it to the corrosponding value in newInputs
+            for (int index = 0; index < inputResultList.Count; index++)
+            {
+                if (newInputs[index].GetType() != inputResultList[index].GetType())
+                {
+                    Log.Error($"[RimWorld Together] > ERROR: newInputs contained non-matching types at index {index}, No changes will be made");
+                    return;
+                }
+                inputResultList[index] = inputResultList[index];
+                index++;
             }
         }
     }

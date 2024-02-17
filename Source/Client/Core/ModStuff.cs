@@ -70,7 +70,7 @@ namespace RimworldTogether.GameClient.Core
 
         private void ResetServerProgress()
         {
-            if (!Network.Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
+            if (!Network.Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!", DialogManager.PopDialog));
             else
             {
                 Action r1 = delegate 
@@ -81,7 +81,7 @@ namespace RimworldTogether.GameClient.Core
                     Network.Network.SendData(packet);
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, DialogManager.PopDialog);
                 DialogManager.PushNewDialog(d1);
             }
         }
