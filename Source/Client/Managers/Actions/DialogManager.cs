@@ -23,9 +23,13 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             if (ClientValues.isReadyToPlay || Current.ProgramState == ProgramState.Entry)
             {
+                //set the new window as the current window
                 previousDialog = currentDialog;
                 currentDialog = window;
+
+                //Get an instance of the new window as RT_WindowInputs so input info can be retrieved later
                 if(window is RT_WindowInputs) currentDialogInputs = (RT_WindowInputs)window;
+
                 Find.WindowStack.Add(window);
             }
         }

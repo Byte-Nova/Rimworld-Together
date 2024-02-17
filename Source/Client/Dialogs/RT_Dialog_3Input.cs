@@ -229,7 +229,6 @@ namespace RimworldTogether.GameClient.Dialogs
                     return;
                 }
                 inputResultList[index] = inputResultList[index];
-                index++;
             }
         }
 

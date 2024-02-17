@@ -32,7 +32,7 @@ namespace RimworldTogether.GameClient.Dialogs
         private bool inputTwoCensored;
         private string inputTwoDisplay;
 
-        public List<string> inputResultList;
+        private List<string> inputResultList;
 
         public virtual List<object> inputList
         {
@@ -91,15 +91,20 @@ namespace RimworldTogether.GameClient.Dialogs
             //draw confirm button
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
             {
-                if (actionConfirm != null) actionConfirm.Invoke();
+                if (inputResultList != null)
+                    Log.Message($"inputs are: {inputResultList[0]} and {inputResultList[1]}");
+                else Log.Message($"inputResultList is null");
+
                 CacheInputs();
+                if (actionConfirm != null) actionConfirm.Invoke();
+
             }
 
             //draw cancel button
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
             {
-                if (actionCancel != null) actionCancel.Invoke();
                 CacheInputs();
+                if (actionCancel != null) actionCancel.Invoke();
             }
         }
 
@@ -153,7 +158,10 @@ namespace RimworldTogether.GameClient.Dialogs
         }
         public virtual void CacheInputs()
         {
+
             DialogManager.inputCache = inputList;
+            Log.Message($"inputCache is {DialogManager.inputCache != null}");
+
         }
         public virtual void SubstituteInputs(List<object> newInputs)
         {
@@ -161,24 +169,25 @@ namespace RimworldTogether.GameClient.Dialogs
             //exception handling
             if (newInputs.Count < 2)
             {
-                Log.Error("[RimWorld Together] > ERROR: newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made");
+                Log.Error("[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs has too few elements; No changes will be made");
                 return;
             }
             else if (newInputs.Count > 2)
             {
-                Log.Warning("[RimWorld Together] > WARNING: newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used ");
+                Log.Warning("[RimWorld Together] > WARNING: newInputs in RT_Dialog_2Inputs.SubstituteInputs has more elements than necessary, some elements will not be used ");
             }
 
             //for each value in inputResultList, set it to the corrosponding value in newInputs
+            Log.Message($"input result count: {inputResultList.Count}");
             for (int index = 0; index < inputResultList.Count;index++)
             {
                 if (newInputs[index].GetType() != inputResultList[index].GetType()){
-                    Log.Error($"[RimWorld Together] > ERROR: newInputs contained non-matching types at index {index}, No changes will be made");
+                    Log.Error($"[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs contained non-matching types at index {index}, No changes will be made");
                     return;
                 }
                 inputResultList[index] = inputResultList[index];
-                index++;
             }
+            Log.Message($"{inputResultList[0]} : {inputResultList[1]}");
         }
     }
 }

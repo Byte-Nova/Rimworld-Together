@@ -103,29 +103,30 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ParseConnectionDetails(bool throughBrowser)
         {
-            bool isInvalid = false;
+            Log.Message($"[Rimworld Together] > Parsing connection details.  throughBrowser : {throughBrowser}");
+            bool isValid = true;
 
             string[] answerSplit = null;
             if (throughBrowser)
             {
                 answerSplit = ClientValues.serverBrowserContainer
-                    [(int)DialogManager.inputCache[0]].Split('|');
-
-                if (string.IsNullOrWhiteSpace(answerSplit[0])) isInvalid = true;
-                if (string.IsNullOrWhiteSpace(answerSplit[1])) isInvalid = true;
-                if (answerSplit[1].Count() > 5) isInvalid = true;
-                if (!answerSplit[1].All(Char.IsDigit)) isInvalid = true;
+                        [(int)DialogManager.inputCache[0]].Split('|');
+                Log.Message($"Using ip: {answerSplit[0]} and port: {answerSplit[1]}");
+                if (string.IsNullOrWhiteSpace(answerSplit[0])) isValid = false;
+                if (string.IsNullOrWhiteSpace(answerSplit[1])) isValid = false;
+                if (answerSplit[1].Count() > 5) isValid = false;
+                if (!answerSplit[1].All(Char.IsDigit)) isValid = false;
             }
 
             else
             {
-                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isInvalid = true;
-                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isInvalid = true;
-                if (((string)DialogManager.inputCache[1]).Count() > 5) isInvalid = true;
-                if (!((string)DialogManager.inputCache[1]).All(Char.IsDigit)) isInvalid = true;
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isValid = false;
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isValid = false;
+                if (((string)DialogManager.inputCache[1]).Count() > 5) isValid = false;
+                if (!((string)DialogManager.inputCache[1]).All(Char.IsDigit)) isValid = false;
             }
 
-            if (!isInvalid)
+            if (isValid)
             {
                 if (throughBrowser)
                 {
@@ -141,12 +142,14 @@ namespace RimworldTogether.GameClient.Dialogs
                     PreferenceManager.SaveConnectionDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
                 }
 
+                Log.Message($"Trying to connect to server");
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                 Network.Network.StartConnection();
             }
 
             else
             {
+                Log.Message($"Invalid connection details");
                 RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!", DialogManager.PopDialog);
                 DialogManager.PushNewDialog(d1);
             }
