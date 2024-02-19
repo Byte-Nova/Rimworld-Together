@@ -1,11 +1,6 @@
-﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers.Actions
+namespace GameServer
 {
     public static class VisitManager
     {
@@ -48,7 +43,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 {
                     visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                    client.clientListener.SendData(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
 
                 else
@@ -57,14 +52,14 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     {
                         visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
                         Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                        client.clientListener.SendData(packet);
+                        client.listener.dataQueue.Enqueue(packet);
                     }
 
                     else
                     {
                         visitDetailsJSON.visitorName = client.username;
                         Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                        toGet.clientListener.SendData(packet);
+                        toGet.listener.dataQueue.Enqueue(packet);
                     }
                 }
             }
@@ -84,7 +79,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     toGet.inVisitWith = client;
 
                     Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                    toGet.clientListener.SendData(packet);
+                    toGet.listener.dataQueue.Enqueue(packet);
                 }
             }
         }
@@ -100,7 +95,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 else
                 {
                     Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                    toGet.clientListener.SendData(packet);
+                    toGet.listener.dataQueue.Enqueue(packet);
                 }
             }
         }
@@ -111,13 +106,13 @@ namespace RimworldTogether.GameServer.Managers.Actions
             {
                 visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                client.clientListener.SendData(packet);
+                client.listener.dataQueue.Enqueue(packet);
             }
 
             else
             {
                 Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                client.inVisitWith.clientListener.SendData(packet);
+                client.inVisitWith.listener.dataQueue.Enqueue(packet);
             }
         }
 
@@ -125,11 +120,11 @@ namespace RimworldTogether.GameServer.Managers.Actions
         {
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
 
-            if (client.inVisitWith == null) client.clientListener.SendData(packet);
+            if (client.inVisitWith == null) client.listener.dataQueue.Enqueue(packet);
             else
             {
-                client.clientListener.SendData(packet);
-                client.inVisitWith.clientListener.SendData(packet);
+                client.listener.dataQueue.Enqueue(packet);
+                client.inVisitWith.listener.dataQueue.Enqueue(packet);
 
                 client.inVisitWith.inVisitWith = null;
                 client.inVisitWith = null;

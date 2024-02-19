@@ -1,12 +1,6 @@
-﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.JSON;
-using Shared.Misc;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers.Actions
+namespace GameServer
 {
     public static class SpyManager
     {
@@ -32,7 +26,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             {
                 spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
-                client.clientListener.SendData(packet);
+                client.listener.dataQueue.Enqueue(packet);
             }
 
             else
@@ -43,7 +37,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 {
                     spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
-                    client.clientListener.SendData(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
 
                 else
@@ -52,7 +46,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     spyDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
-                    client.clientListener.SendData(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
             }
         }

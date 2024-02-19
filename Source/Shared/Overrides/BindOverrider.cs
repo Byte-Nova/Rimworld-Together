@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace RimworldTogether.Shared.Misc
+namespace Shared
 {
     public class BindOverrider : SerializationBinder
     {

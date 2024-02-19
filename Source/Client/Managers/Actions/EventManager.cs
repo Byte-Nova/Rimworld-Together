@@ -1,15 +1,9 @@
 ﻿using RimWorld;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+using Shared;
 using Verse;
 
 
-namespace RimworldTogether.GameClient.Managers.Actions
+namespace GameClient
 {
     public static class EventManager
     {
@@ -107,7 +101,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }

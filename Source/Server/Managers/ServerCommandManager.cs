@@ -1,10 +1,4 @@
-﻿using RimworldTogether.GameServer.Core;
-using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.GameServer.Misc.Commands;
-using RimworldTogether.GameServer.Network;
-
-namespace RimworldTogether.GameServer.Managers
+﻿namespace GameServer
 {
     public static class ServerCommandManager
     {
@@ -231,9 +225,9 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void ListCommandAction()
         {
-            Logger.WriteToConsole($"Connected players: [{Network.Network.connectedClients.ToArray().Count()}]", Logger.LogMode.Title, false);
+            Logger.WriteToConsole($"Connected players: [{Network.connectedClients.ToArray().Count()}]", Logger.LogMode.Title, false);
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
-            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
+            foreach (ServerClient client in Network.connectedClients.ToArray())
             {
                 Logger.WriteToConsole($"{client.username} - {client.SavedIP}", Logger.LogMode.Warning, writeToLogs: false);
             }
@@ -255,7 +249,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void OpCommandAction()
         {
-            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found", 
                 Logger.LogMode.Warning);
 
@@ -292,7 +286,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void DeopCommandAction()
         {
-            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found", 
                 Logger.LogMode.Warning);
 
@@ -329,13 +323,13 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void KickCommandAction()
         {
-            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
             else
             {
-                toFind.disconnectFlag = true;
+                toFind.listener.disconnectFlag = true;
 
                 Logger.WriteToConsole($"User '{ServerCommandManager.commandParameters[0]}' has been kicked from the server",
                     Logger.LogMode.Warning);
@@ -344,7 +338,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void BanCommandAction()
         {
-            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null)
             {
                 UserFile userFile = UserManager.GetUserFileFromName(ServerCommandManager.commandParameters[0]);
@@ -369,7 +363,7 @@ namespace RimworldTogether.GameServer.Managers
             {
                 CommandManager.SendBanCommand(toFind);
 
-                toFind.disconnectFlag = true;
+                toFind.listener.disconnectFlag = true;
 
                 UserFile userFile = UserManager.GetUserFile(toFind);
                 userFile.isBanned = true;
@@ -471,7 +465,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void EventCommandAction()
         {
-            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
@@ -501,7 +495,7 @@ namespace RimworldTogether.GameServer.Managers
             {
                 if (ServerCommandManager.eventTypes[i] == ServerCommandManager.commandParameters[0])
                 {
-                    foreach (ServerClient client in Network.Network.connectedClients.ToArray())
+                    foreach (ServerClient client in Network.connectedClients.ToArray())
                     {
                         CommandManager.SendEventCommand(client, i);
                     }
@@ -612,7 +606,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void ForceSaveCommandAction()
         {
-            ServerClient toFind = Network.Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
             if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
@@ -672,12 +666,12 @@ namespace RimworldTogether.GameServer.Managers
 
             Logger.WriteToConsole($"Waiting for all saves to quit", Logger.LogMode.Warning);
 
-            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
+            foreach (ServerClient client in Network.connectedClients.ToArray())
             {
                 CommandManager.SendForceSaveCommand(client);
             }
 
-            while (Network.Network.connectedClients.ToArray().Length > 0)
+            while (Network.connectedClients.ToArray().Length > 0)
             {
                 Thread.Sleep(1);
             }

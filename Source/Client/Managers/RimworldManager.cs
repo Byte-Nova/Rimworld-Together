@@ -2,11 +2,10 @@
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
+using Shared;
 using Verse;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class RimworldManager
     {

@@ -1,6 +1,6 @@
 ﻿using HugsLib;
 
-namespace RimworldTogether.GameClient.Core
+namespace GameClient
 {
     public class Master : ModBase
     {

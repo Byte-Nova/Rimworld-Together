@@ -1,4 +1,4 @@
-﻿namespace Shared.Misc
+﻿namespace Shared
 {
     public class CommonEnumerators
     {

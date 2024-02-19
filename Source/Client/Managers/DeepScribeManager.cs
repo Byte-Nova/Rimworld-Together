@@ -2,16 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.JSON.Things;
-using RimworldTogether.Shared.Serializers;
+using Shared;
 using UnityEngine.Assertions.Must;
 using Verse;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class DeepScribeManager
     {

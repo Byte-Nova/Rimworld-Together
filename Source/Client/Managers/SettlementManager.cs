@@ -1,10 +1,6 @@
-﻿using RimworldTogether.GameClient.Planet;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+﻿using Shared;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class SettlementManager
     {

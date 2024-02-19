@@ -1,12 +1,9 @@
 ﻿using System;
 using HarmonyLib;
 using RimWorld;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
 using Verse;
 
-namespace RimworldTogether.GameClient.Patches
+namespace GameClient
 {
     [HarmonyPatch(typeof(GameDataSaveLoader), "SaveGame", typeof(string))]
     public static class SaveOnlineGame
@@ -14,14 +11,14 @@ namespace RimworldTogether.GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
-            if (!Network.Network.isConnectedToServer) return true;
+            if (!Network.isConnectedToServer) return true;
             else
             {
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
                 CustomDifficultyManager.EnforceCustomDifficulty();
 
-                SaveManager.customSaveName = $"Server - {Network.Network.ip} - {ChatManager.username}";
+                SaveManager.customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
                 fileName = SaveManager.customSaveName;
 
                 try
@@ -50,7 +47,7 @@ namespace RimworldTogether.GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!Network.Network.isConnectedToServer) return true;
+            if (!Network.isConnectedToServer) return true;
             else
             {
                 ClientValues.autosaveCurrentTicks++;

@@ -2,17 +2,11 @@
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Planet;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+using Shared;
 using Verse;
 
 
-namespace RimworldTogether.GameClient.Managers.Actions
+namespace GameClient
 {
     public static class LikelihoodManager
     {
@@ -64,7 +58,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             structureLikelihoodJSON.likelihood = value.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("LikelihoodPacket", structureLikelihoodJSON);
-            Network.Network.serverListener.SendData(packet);
+            Network.listener.dataQueue.Enqueue(packet);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement likelihood");
             DialogManager.PushNewDialog(d1);

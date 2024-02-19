@@ -1,19 +1,16 @@
-﻿using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Planet;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
+﻿using Shared;
 using System;
 using System.Reflection;
 using Verse;
 
-namespace RimworldTogether.GameClient.Network
+namespace GameClient
 {
+    //Class that handles the management of all the received packets
+
     public static class PacketHandler
     {
+        //Function that opens handles the action that the packet should do, then sends it to the correct one below
+
         public static void HandlePacket(Packet packet)
         {
             if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");

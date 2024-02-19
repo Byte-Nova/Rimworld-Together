@@ -1,11 +1,6 @@
-﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers.Actions
+namespace GameServer
 {
     public static class EventManager
     {
@@ -39,7 +34,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 {
                     eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
-                    client.clientListener.SendData(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
 
                 else
@@ -49,7 +44,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     {
                         eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
                         Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
-                        client.clientListener.SendData(packet);
+                        client.listener.dataQueue.Enqueue(packet);
                     }
 
                     else
@@ -57,11 +52,11 @@ namespace RimworldTogether.GameServer.Managers.Actions
                         target.inSafeZone = true;
 
                         Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
-                        client.clientListener.SendData(packet);
+                        client.listener.dataQueue.Enqueue(packet);
 
                         eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
                         Packet rPacket = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
-                        target.clientListener.SendData(rPacket);
+                        target.listener.dataQueue.Enqueue(rPacket);
                     }
                 }
             }

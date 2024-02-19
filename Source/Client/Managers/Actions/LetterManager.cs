@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace RimworldTogether.GameClient.Managers.Actions
+namespace GameClient
 {
     public static class LetterManager
     {

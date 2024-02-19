@@ -1,8 +1,6 @@
-﻿using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Values;
-using Verse;
+﻿using Verse;
 
-namespace RimworldTogether.GameClient.Managers.Actions
+namespace GameClient
 {
     public static class DialogManager
     {

@@ -1,11 +1,6 @@
-﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.JSON;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers.Actions
+namespace GameServer
 {
     public static class OfflineVisitManager
     {
@@ -33,7 +28,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             {
                 offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
-                client.clientListener.SendData(packet);
+                client.listener.dataQueue.Enqueue(packet);
             }
 
             else
@@ -44,7 +39,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 {
                     offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
-                    client.clientListener.SendData(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
 
                 else
@@ -53,7 +48,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     offlineVisitDetails.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
-                    client.clientListener.SendData(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
             }
         }

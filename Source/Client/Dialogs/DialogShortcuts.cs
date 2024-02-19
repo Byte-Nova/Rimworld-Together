@@ -1,13 +1,8 @@
-﻿using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Network;
-using System.Linq;
+﻿using System.Linq;
 using System;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Misc;
+using Shared;
 
-namespace RimworldTogether.GameClient.Dialogs
+namespace GameClient
 {
     public static class DialogShortcuts
     {
@@ -50,7 +45,7 @@ namespace RimworldTogether.GameClient.Dialogs
                     DialogManager.PushNewDialog(a2);
                     PreferenceManager.FetchLoginDetails();
                 },
-                delegate { Network.Network.serverListener.disconnectFlag = true; });
+                delegate { Network.listener.disconnectFlag = true; });
 
             DialogManager.PushNewDialog(d1);
         }
@@ -128,20 +123,20 @@ namespace RimworldTogether.GameClient.Dialogs
             {
                 if (throughBrowser)
                 {
-                    Network.Network.ip = answerSplit[0];
-                    Network.Network.port = answerSplit[1];
+                    Network.ip = answerSplit[0];
+                    Network.port = answerSplit[1];
                     PreferenceManager.SaveConnectionDetails(answerSplit[0], answerSplit[1]);
                 }
 
                 else
                 {
-                    Network.Network.ip = DialogManager.dialog2ResultOne;
-                    Network.Network.port = DialogManager.dialog2ResultTwo;
+                    Network.ip = DialogManager.dialog2ResultOne;
+                    Network.port = DialogManager.dialog2ResultTwo;
                     PreferenceManager.SaveConnectionDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
                 }
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Network.Network.StartConnection();
+                Network.StartConnection();
             }
 
             else
@@ -163,14 +158,14 @@ namespace RimworldTogether.GameClient.Dialogs
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
                 loginDetails.username = DialogManager.dialog2ResultOne;
                 loginDetails.password = Hasher.GetHash(DialogManager.dialog2ResultTwo);
-                loginDetails.clientVersion = ClientValues.versionCode;
+                loginDetails.clientVersion = CommonValues.executableVersion;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
                 PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromJSON("LoginClientPacket", loginDetails);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
             }
@@ -198,11 +193,11 @@ namespace RimworldTogether.GameClient.Dialogs
                 JoinDetailsJSON registerDetails = new JoinDetailsJSON();
                 registerDetails.username = DialogManager.dialog3ResultOne;
                 registerDetails.password = Hasher.GetHash(DialogManager.dialog3ResultTwo);
-                registerDetails.clientVersion = ClientValues.versionCode;
+                registerDetails.clientVersion = CommonValues.executableVersion;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 Packet packet = Packet.CreatePacketFromJSON("RegisterClientPacket", registerDetails);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
             }

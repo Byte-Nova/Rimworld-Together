@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace Shared.Misc
+namespace Shared
 {
     public static class GZip
     {

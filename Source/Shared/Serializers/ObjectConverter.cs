@@ -1,10 +1,9 @@
-﻿using RimworldTogether.Shared.Misc;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
 
-namespace RimworldTogether.Shared.Serializers
+namespace Shared
 {
     public static class ObjectConverter
     {

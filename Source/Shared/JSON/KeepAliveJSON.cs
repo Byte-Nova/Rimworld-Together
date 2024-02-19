@@ -1,6 +1,6 @@
 using System;
 
-namespace RimworldTogether.Shared.JSON
+namespace Shared
 {
     [Serializable]
     public class KeepAliveJSON

@@ -1,14 +1,10 @@
-﻿using System.Globalization;
+﻿using Shared;
+using System.Globalization;
 using System.IO;
-using RimworldTogether.GameClient.Files;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Serializers;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Core
+namespace GameClient
 {
     public class Main
     {
@@ -87,7 +83,7 @@ namespace RimworldTogether.GameClient.Core
                     threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
                     Object.Instantiate(go);
 
-                    Log.Message($"[Rimworld Together] > Created dispatcher for version {ClientValues.versionCode}");
+                    Log.Message($"[Rimworld Together] > Created dispatcher for version {CommonValues.executableVersion}");
                 }
             }
         }

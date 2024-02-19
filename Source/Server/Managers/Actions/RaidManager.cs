@@ -1,11 +1,6 @@
-﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.JSON;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers.Actions
+namespace GameServer
 {
     public static class RaidManager
     {
@@ -33,7 +28,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
             {
                 raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
-                client.clientListener.SendData(packet);
+                client.listener.dataQueue.Enqueue(packet);
             }
 
             else
@@ -44,7 +39,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                 {
                     raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Deny).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
-                    client.clientListener.SendData(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
 
                 else
@@ -53,7 +48,7 @@ namespace RimworldTogether.GameServer.Managers.Actions
                     raidDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
-                    client.clientListener.SendData(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
             }
         }

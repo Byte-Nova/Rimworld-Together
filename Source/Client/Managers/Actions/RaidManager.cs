@@ -2,19 +2,12 @@
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.JSON;
-using Shared.Misc;
+using Shared;
 using Verse;
 using Verse.AI.Group;
 
 
-namespace RimworldTogether.GameClient.Managers.Actions
+namespace GameClient
 {
     public static class RaidManager
     {
@@ -43,7 +36,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             raidDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
-            Network.Network.serverListener.SendData(packet);
+            Network.listener.dataQueue.Enqueue(packet);
         }
 
         private static void OnRaidAccept(RaidDetailsJSON raidDetailsJSON)

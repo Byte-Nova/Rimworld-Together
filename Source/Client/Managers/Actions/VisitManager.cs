@@ -4,20 +4,12 @@ using System.Linq;
 using System.Threading;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.JSON.Things;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+using Shared;
 using Verse;
 using Verse.AI;
 
 
-namespace RimworldTogether.GameClient.Managers.Actions
+namespace GameClient
 {
     public static class VisitManager
     {
@@ -77,7 +69,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(VisitThingHelper.FetchMode.Player, visitDetailsJSON);
 
                     Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                    Network.Network.serverListener.SendData(packet);
+                    Network.listener.dataQueue.Enqueue(packet);
                 };
 
                 var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
@@ -92,7 +84,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             MapDetailsJSON mapDetailsJSON = RimworldManager.GetMap(visitMap, true, false, false, true);
             visitDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetailsJSON);
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-            Network.Network.serverListener.SendData(packet);
+            Network.listener.dataQueue.Enqueue(packet);
         }
 
         private static void VisitMap(MapDetailsJSON mapDetailsJSON, VisitDetailsJSON visitDetailsJSON)
@@ -129,7 +121,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-            Network.Network.serverListener.SendData(packet);
+            Network.listener.dataQueue.Enqueue(packet);
         }
 
         private static void OnVisitRequest(VisitDetailsJSON visitDetailsJSON)
@@ -153,7 +145,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Reject).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitDetailsJSON.visitorName}, accept?", r1, r2);
@@ -455,7 +447,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Action).ToString();
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
-            Network.Network.serverListener.SendData(packet);
+            Network.listener.dataQueue.Enqueue(packet);
         }
 
         public static void ReceiveActions(VisitDetailsJSON visitDetailsJSON)

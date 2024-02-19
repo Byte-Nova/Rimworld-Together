@@ -1,13 +1,9 @@
 ﻿using HarmonyLib;
 using RimWorld;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Patches
+namespace GameClient
 {
     [HarmonyPatch(typeof(MainMenuDrawer), "DoMainMenuControls")]
     public static class EscMenuPatch
@@ -15,7 +11,7 @@ namespace RimworldTogether.GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.Network.isConnectedToServer && Current.ProgramState == ProgramState.Playing)
+            if (Network.isConnectedToServer && Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 

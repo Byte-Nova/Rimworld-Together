@@ -1,14 +1,6 @@
-﻿using RimworldTogether.GameServer.Managers.Actions;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.GameServer.Misc.Commands;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers
+namespace GameServer
 {
     public static class ChatManager
     {
@@ -63,7 +55,7 @@ namespace RimworldTogether.GameServer.Managers
             }
 
             Packet rPacket = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
-            foreach (ServerClient cClient in Network.Network.connectedClients.ToArray()) cClient.clientListener.SendData(rPacket);
+            foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.dataQueue.Enqueue(rPacket);
 
             Logger.WriteToConsole($"[Chat] > {client.username} > {chatMessagesJSON.messages[0]}");
         }
@@ -78,9 +70,9 @@ namespace RimworldTogether.GameServer.Managers
 
             Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
 
-            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
+            foreach (ServerClient client in Network.connectedClients.ToArray())
             {
-                client.clientListener.SendData(packet);
+                client.listener.dataQueue.Enqueue(packet);
             }
 
             Logger.WriteToConsole($"[Chat] > {"CONSOLE"} > {"127.0.0.1"} > {chatMessagesJSON.messages[0]}");
@@ -98,7 +90,7 @@ namespace RimworldTogether.GameServer.Managers
             }
 
             Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
-            client.clientListener.SendData(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
     }
 
@@ -147,7 +139,7 @@ namespace RimworldTogether.GameServer.Managers
 
         private static void ChatDisconnectCommandAction()
         {
-            invoker.disconnectFlag = true;
+            invoker.listener.disconnectFlag = true;
         }
 
         private static void ChatStopVisitCommandAction()

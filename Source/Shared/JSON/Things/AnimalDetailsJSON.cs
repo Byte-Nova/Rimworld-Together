@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace RimworldTogether.Shared.JSON.Things
+namespace Shared
 {
     public class AnimalDetailsJSON
     {

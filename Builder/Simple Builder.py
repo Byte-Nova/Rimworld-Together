@@ -36,13 +36,13 @@ modSteamId = "3005289691"  # Replace with your actual Steam ID
 
 # Mod Resources
 source_dir = "../ModData"
-destination_dir = f"../Build/{modSteamId}"
+destination_dir = f"Result/{modSteamId}"
 
 # Mod C# and DLLs
 source_solution = "../Source/Client/GameClient.csproj"
 dll_output_dir = "../Source/Client/bin/Debug/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
-dll_names = ["GameClient.dll", "Newtonsoft.Json.dll", "JsonDiffPatchDotNet.dll"]
+dll_names = ["GameClient.dll", "Newtonsoft.Json.dll"]
 
 # RimWorld Directory
 rimworld_dir_file = "rimworld_dir.txt"
@@ -82,13 +82,6 @@ def handle_rim_world_path(possible_rimworld_dir):
 
 def build():
     output("Building DLLs")
-
-    # Remove destination_dir for a fresh build
-    if os.path.exists(destination_dir):
-        shutil.rmtree(destination_dir)
-
-    # Copy files from source_dir to destination_dir
-    shutil.copytree(source_dir, destination_dir)
 
     # Build the C# project
     result = subprocess.run(["dotnet", "build", source_solution, "--configuration", "Debug"],

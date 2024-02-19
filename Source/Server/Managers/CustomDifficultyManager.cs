@@ -1,11 +1,6 @@
-﻿using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers
+namespace GameServer
 {
     public static class CustomDifficultyManager
     {
@@ -104,7 +99,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void SaveCustomDifficulty(DifficultyValuesFile newDifficultyValues)
         {
-            string path = Path.Combine(Core.Program.corePath, "DifficultyValues.json");
+            string path = Path.Combine(Program.corePath, "DifficultyValues.json");
 
             Serializer.SerializeToFile(path, newDifficultyValues);
 
@@ -115,13 +110,13 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void LoadCustomDifficulty()
         {
-            string path = Path.Combine(Core.Program.corePath, "DifficultyValues.json");
+            string path = Path.Combine(Program.corePath, "DifficultyValues.json");
 
-            if (File.Exists(path)) Core.Program.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
+            if (File.Exists(path)) Program.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
             else
             {
-                Core.Program.difficultyValues = new DifficultyValuesFile();
-                Serializer.SerializeToFile(path, Core.Program.difficultyValues);
+                Program.difficultyValues = new DifficultyValuesFile();
+                Serializer.SerializeToFile(path, Program.difficultyValues);
             }
 
             Logger.WriteToConsole("Loaded difficulty values");
