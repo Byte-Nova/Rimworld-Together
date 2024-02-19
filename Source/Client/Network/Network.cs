@@ -22,8 +22,8 @@ namespace GameClient
         {
             if (TryConnectToServer())
             {
-                DialogManager.PopWaitDialog();
                 ClientValues.ManageDevOptions();
+                DialogManager.PopWaitDialog();
                 SiteManager.SetSiteDefs();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
@@ -66,30 +66,17 @@ namespace GameClient
 
         public static void DisconnectFromServer()
         {
+            listener.connection.Dispose();
+
             Action toDo = delegate
             {
-                listener.connection.Dispose();
-
-                Action r1 = delegate
-                {
-                    if (Current.ProgramState == ProgramState.Playing)
-                    {
-                        DisconnectionManager.DisconnectToMenu();
-                    }
-                };
-
-                DialogManager.PushNewDialog(new RT_Dialog_Error_Loop(new string[]
-                {
-                        "Connection to the server has been lost!",
-                        "Game will now quit to menu"
-                }, r1));
-
-                ClearAllValues();
-
-                Log.Message($"[Rimworld Together] > Disconnected from server");
+                DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!", 
+                    delegate { DisconnectionManager.DisconnectToMenu(); }));
             };
 
+            ClearAllValues();
             Main.threadDispatcher.Enqueue(toDo);
+            Log.Message($"[Rimworld Together] > Disconnected from server");
         }
 
         public static void ClearAllValues()
