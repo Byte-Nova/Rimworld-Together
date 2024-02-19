@@ -54,6 +54,8 @@ namespace GameClient
                     if (dataQueue.Count() > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
+                        if (packet == null) continue;
+
                         streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
                         streamWriter.Flush();
                     }
@@ -71,10 +73,10 @@ namespace GameClient
                 while (true)
                 {
                     string data = streamReader.ReadLine();
-                    Packet receivedPacket = Serializer.SerializeStringToPacket(data);
+                    if (string.IsNullOrEmpty(data)) continue;
 
-                    Action toDo = delegate { PacketHandler.HandlePacket(receivedPacket); };
-                    Main.threadDispatcher.Enqueue(toDo);
+                    Packet receivedPacket = Serializer.SerializeStringToPacket(data);
+                    Main.threadDispatcher.Enqueue(delegate { PacketHandler.HandlePacket(receivedPacket); });
                 }
             }
 

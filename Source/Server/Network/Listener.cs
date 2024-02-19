@@ -52,6 +52,8 @@ namespace GameServer
                     if (targetClient.listener.dataQueue.Count() > 0)
                     {
                         Packet packet = targetClient.listener.dataQueue.Dequeue();
+                        if (packet == null) continue;
+
                         targetClient.listener.streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
                         targetClient.listener.streamWriter.Flush();
                     }
@@ -69,6 +71,7 @@ namespace GameServer
                 while (true)
                 {
                     string data = targetClient.listener.streamReader.ReadLine();
+                    if (string.IsNullOrEmpty(data)) continue;
 
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
                     PacketHandler.HandlePacket(targetClient, receivedPacket);
