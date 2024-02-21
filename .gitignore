@@ -396,8 +396,10 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Project
+*.idea
+rimworld_dir.txt
 Source/Client/0Harmony.dll
 Source/Client/HugsLib.dll
-.idea
-Build/
-rimworld_dir.txt
+Builder/Result/3005289691/Current/Assemblies/*.*

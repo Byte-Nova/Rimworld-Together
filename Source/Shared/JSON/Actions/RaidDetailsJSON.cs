@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RimworldTogether.Shared.JSON.Actions
+namespace Shared
 {
     [Serializable]
     public class RaidDetailsJSON

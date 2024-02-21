@@ -1,16 +1,12 @@
-﻿using RimworldTogether.GameClient.Planet;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+﻿using Shared;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class SettlementManager
     {
         public static void ParseSettlementPacket(Packet packet)
         {
-            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(settlementDetailsJSON.settlementStepMode))
             {

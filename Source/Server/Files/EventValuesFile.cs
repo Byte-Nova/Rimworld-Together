@@ -1,4 +1,4 @@
-﻿namespace RimworldTogether.GameServer.Files
+﻿namespace GameServer
 {
     [Serializable]
     public class EventValuesFile

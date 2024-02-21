@@ -1,11 +1,6 @@
-﻿using RimworldTogether.GameServer.Core;
-using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Managers.Actions;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers
+namespace GameServer
 {
     public static class ServerOverallManager
     {
@@ -30,7 +25,7 @@ namespace RimworldTogether.GameServer.Managers
             so = GetActionsCost(client, so);
 
             Packet packet = Packet.CreatePacketFromJSON("ServerValuesPacket", so);
-            client.clientListener.SendData(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
 
         private static ServerOverallJSON GetServerValues(ServerOverallJSON so)

@@ -1,14 +1,9 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Planet;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using Shared.Misc;
+using Shared;
 using Verse;
 
-namespace RimworldTogether.GameClient.Patches
+namespace GameClient
 {
     public class GameStatusPatcher
     {
@@ -18,7 +13,7 @@ namespace RimworldTogether.GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.Network.isConnectedToServer)
+                if (Network.isConnectedToServer)
                 {
                     ClientValues.ForcePermadeath();
                     ClientValues.ManageDevOptions();
@@ -29,7 +24,7 @@ namespace RimworldTogether.GameClient.Patches
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    Network.Network.serverListener.SendData(packet);
+                    Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -42,7 +37,7 @@ namespace RimworldTogether.GameClient.Patches
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.Network.isConnectedToServer)
+                if (Network.isConnectedToServer)
                 {
                     ClientValues.ForcePermadeath();
                     ClientValues.ManageDevOptions();
@@ -61,14 +56,14 @@ namespace RimworldTogether.GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Caravan caravan)
             {
-                if (Network.Network.isConnectedToServer)
+                if (Network.isConnectedToServer)
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = caravan.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    Network.Network.serverListener.SendData(packet);
+                    Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -81,14 +76,14 @@ namespace RimworldTogether.GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Map map)
             {
-                if (Network.Network.isConnectedToServer)
+                if (Network.isConnectedToServer)
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = map.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    Network.Network.serverListener.SendData(packet);
+                    Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -101,14 +96,14 @@ namespace RimworldTogether.GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.Network.isConnectedToServer)
+                if (Network.isConnectedToServer)
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = settlement.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    Network.Network.serverListener.SendData(packet);
+                    Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();
                 }

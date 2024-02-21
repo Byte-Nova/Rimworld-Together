@@ -1,4 +1,4 @@
-﻿namespace RimworldTogether.GameServer.Misc.Commands
+﻿namespace GameServer
 {
     public class ServerCommand
     {

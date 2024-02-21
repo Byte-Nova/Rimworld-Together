@@ -1,13 +1,10 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Planet;
-using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Patches.Pages
+namespace GameClient
 {
     public class SelectStartingSitePatch
     {
@@ -17,7 +14,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
             [HarmonyPrefix]
             public static bool DoPre(Page_SelectStartingSite __instance)
             {
-                if (Network.Network.isConnectedToServer)
+                if (Network.isConnectedToServer)
                 {
                     int num = TutorSystem.TutorialMode ? 4 : 5;
                     int num2 = (num < 4 || !((float)UI.screenWidth < 540f + (float)num * (150f + 10f))) ? 1 : 2;
@@ -48,7 +45,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.Network.isConnectedToServer)
+                if (Network.isConnectedToServer)
                 {
                     int num = TutorSystem.TutorialMode ? 4 : 5;
                     int num2 = (num < 4 || !((float)UI.screenWidth < 540f + (float)num * (150f + 10f))) ? 1 : 2;
@@ -76,7 +73,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.Network.isConnectedToServer)
+                if (Network.isConnectedToServer)
                 {
                     ClientValues.ToggleLoadingPrefabWorld(false);
 

@@ -1,6 +1,6 @@
-﻿using RimworldTogether.Shared.JSON;
+﻿using Shared;
 
-namespace RimworldTogether.GameClient.Planet
+namespace GameClient
 {
     public static class PlanetBuilderHelper
     {

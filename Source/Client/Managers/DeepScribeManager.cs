@@ -3,19 +3,14 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.JSON.Things;
-using RimworldTogether.Shared.Serializers;
+using Shared;
 using UnityEngine.Assertions.Must;
 using Verse;
 using RimworldTogether.GameClient.CustomMapGeneration;
 using TMPro;
 using RimworldTogether.GameClient.Misc;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class DeepScribeManager
     {

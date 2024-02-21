@@ -1,16 +1,6 @@
-﻿using RimworldTogether.GameServer.Core;
-using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Managers.Actions;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.JSON;
-using Shared.Misc;
-using Shared.Network;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers
+namespace GameServer
 {
     public static class SaveManager
     {
@@ -19,20 +9,20 @@ namespace RimworldTogether.GameServer.Managers
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
 
-            FileTransferJSON fileTransferJSON = (FileTransferJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            if (client.downloadManager == null)
+            if (client.listener.downloadManager == null)
             {
-                client.downloadManager = new DownloadManager();
-                client.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileParts);
+                client.listener.downloadManager = new DownloadManager();
+                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileParts);
             }
 
-            client.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
+            client.listener.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
 
             if (fileTransferJSON.isLastPart)
             {
-                client.downloadManager.FinishFileWrite();
-                client.downloadManager = null;
+                client.listener.downloadManager.FinishFileWrite();
+                client.listener.downloadManager = null;
 
                 byte[] saveBytes = File.ReadAllBytes(tempClientSavePath);
                 byte[] compressedSave = GZip.Compress(saveBytes);
@@ -46,7 +36,7 @@ namespace RimworldTogether.GameServer.Managers
             else
             {
                 Packet rPacket = Packet.CreatePacketFromJSON("RequestSavePartPacket");
-                client.clientListener.SendData(rPacket);
+                client.listener.dataQueue.Enqueue(rPacket);
             }
         }
 
@@ -55,30 +45,30 @@ namespace RimworldTogether.GameServer.Managers
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
 
-            if (client.uploadManager == null)
+            if (client.listener.uploadManager == null)
             {
                 Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
 
                 byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(baseClientSavePath));
                 File.WriteAllBytes(tempClientSavePath, decompressedSave);
 
-                client.uploadManager = new UploadManager();
-                client.uploadManager.PrepareUpload(tempClientSavePath);
+                client.listener.uploadManager = new UploadManager();
+                client.listener.uploadManager.PrepareUpload(tempClientSavePath);
             }
 
             FileTransferJSON fileTransferJSON = new FileTransferJSON();
-            fileTransferJSON.fileSize = client.uploadManager.fileSize;
-            fileTransferJSON.fileParts = client.uploadManager.fileParts;
-            fileTransferJSON.fileBytes = client.uploadManager.ReadFilePart();
-            fileTransferJSON.isLastPart = client.uploadManager.isLastPart;
+            fileTransferJSON.fileSize = client.listener.uploadManager.fileSize;
+            fileTransferJSON.fileParts = client.listener.uploadManager.fileParts;
+            fileTransferJSON.fileBytes = client.listener.uploadManager.ReadFilePart();
+            fileTransferJSON.isLastPart = client.listener.uploadManager.isLastPart;
 
             Packet packet = Packet.CreatePacketFromJSON("ReceiveSavePartPacket", fileTransferJSON);
-            client.clientListener.SendData(packet);
+            client.listener.dataQueue.Enqueue(packet);
 
-            if (client.uploadManager.isLastPart)
+            if (client.listener.uploadManager.isLastPart)
             {
                 File.Delete(tempClientSavePath);
-                client.uploadManager = null;
+                client.listener.uploadManager = null;
             }
         }
 
@@ -88,7 +78,7 @@ namespace RimworldTogether.GameServer.Managers
             {
                 CommandManager.SendDisconnectCommand(client);
 
-                client.disconnectFlag = true;
+                client.listener.disconnectFlag = true;
 
                 Logger.WriteToConsole($"[Save game] > {client.username} > To menu");
             }
@@ -97,7 +87,7 @@ namespace RimworldTogether.GameServer.Managers
             {
                 CommandManager.SendQuitCommand(client);
 
-                client.disconnectFlag = true;
+                client.listener.disconnectFlag = true;
 
                 Logger.WriteToConsole($"[Save game] > {client.username} > Quiting");
             }
@@ -143,7 +133,7 @@ namespace RimworldTogether.GameServer.Managers
             if (!CheckIfUserHasSave(client)) ResponseShortcutManager.SendIllegalPacket(client);
             else
             {
-                client.disconnectFlag = true;
+                client.listener.disconnectFlag = true;
 
                 string[] saves = Directory.GetFiles(Program.savesPath);
 
@@ -173,7 +163,7 @@ namespace RimworldTogether.GameServer.Managers
         public static void DeletePlayerDetails(string username)
         {
             ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
-            if (connectedUser != null) connectedUser.disconnectFlag = true;
+            if (connectedUser != null) connectedUser.listener.disconnectFlag = true;
 
             string[] saves = Directory.GetFiles(Program.savesPath);
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);

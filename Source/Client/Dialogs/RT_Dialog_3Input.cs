@@ -4,12 +4,11 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using HarmonyLib;
 using RimWorld;
-using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
 using RimworldTogether.GameClient.Misc;
 
-namespace RimworldTogether.GameClient.Dialogs
+namespace GameClient
 {
     public class RT_Dialog_3Input : Window, RT_WindowInputs
     {

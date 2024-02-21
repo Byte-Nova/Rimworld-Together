@@ -1,9 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Values;
 
-namespace RimworldTogether.GameClient.Patches
+namespace GameClient
 {
     [HarmonyPatch(typeof(Dialog_Options), "DoWindowContents")]
     public static class PatchDevMode
@@ -11,7 +9,7 @@ namespace RimworldTogether.GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.Network.isConnectedToServer) ClientValues.ManageDevOptions();
+            if (Network.isConnectedToServer) ClientValues.ManageDevOptions();
         }
     }
 
@@ -21,7 +19,7 @@ namespace RimworldTogether.GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.Network.isConnectedToServer) CustomDifficultyManager.EnforceCustomDifficulty();
+            if (Network.isConnectedToServer) CustomDifficultyManager.EnforceCustomDifficulty();
         }
     }
 }

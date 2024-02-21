@@ -1,29 +1,27 @@
-﻿using System.Net;
+﻿using Shared;
+using System.Net;
 using System.Net.Sockets;
-using RimworldTogether.GameServer.Core;
-using RimworldTogether.GameServer.Managers;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.GameServer.Network.Listener;
-using Shared.Misc;
 
-namespace RimworldTogether.GameServer.Network
+namespace GameServer
 {
+    //Main class that is used to handle the connection with the clients
+
     public static class Network
     {
-        private static TcpListener server;
+        //IP and Port that the connection will be bound to
         private static IPAddress localAddress = IPAddress.Parse(Program.serverConfig.IP);
         private static int port = int.Parse(Program.serverConfig.Port);
-        public static List<ServerClient> connectedClients = new List<ServerClient>();
 
-        public static bool isServerOpen;
+        //TCP listener that will handle the connection with the clients, and list of currently connected clients
+        private static TcpListener connection;
+        public static List<ServerClient> connectedClients = new List<ServerClient>();
 
         public static void ReadyServer()
         {
-            server = new TcpListener(localAddress, port);
-            server.Start();
-            isServerOpen = true;
+            connection = new TcpListener(localAddress, port);
+            connection.Start();
 
-            Threader.GenerateServerThread(Threader.ServerMode.Sites, Program.serverCancelationToken);
+            Threader.GenerateServerThread(Threader.ServerMode.Sites);
 
             Logger.WriteToConsole("Type 'help' to get a list of available commands");
             Logger.WriteToConsole($"Listening for users at {localAddress}:{port}");
@@ -35,14 +33,17 @@ namespace RimworldTogether.GameServer.Network
 
         private static void ListenForIncomingUsers()
         {
-            ServerClient newServerClient = new ServerClient(server.AcceptTcpClient());
-            newServerClient.clientListener = new ClientListener(newServerClient);
+            TcpClient newTCP = connection.AcceptTcpClient();
+            ServerClient newServerClient = new ServerClient(newTCP);
+            Listener newListener = new Listener(newServerClient, newTCP);
+            newServerClient.listener = newListener;
 
-            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.Listener, Program.serverCancelationToken);
-            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.Health, Program.serverCancelationToken);
-            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.KAFlag, Program.serverCancelationToken);
+            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Listener);
+            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Sender);
+            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Health);
+            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
 
-            if (Program.isClosing) newServerClient.disconnectFlag = true;
+            if (Program.isClosing) newServerClient.listener.disconnectFlag = true;
             else
             {
                 if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))
@@ -67,7 +68,7 @@ namespace RimworldTogether.GameServer.Network
             try
             {
                 connectedClients.Remove(client);
-                client.tcp.Dispose();
+                client.listener.connection.Dispose();
 
                 UserManager.SendPlayerRecount();
 

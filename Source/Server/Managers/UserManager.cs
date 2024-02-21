@@ -1,14 +1,7 @@
-﻿using RimworldTogether.GameServer.Core;
-using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Managers.Actions;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using static Shared.Misc.CommonEnumerators;
+﻿using Shared;
+using static Shared.CommonEnumerators;
 
-namespace RimworldTogether.GameServer.Managers
+namespace GameServer
 {
     public static class UserManager
     {
@@ -78,16 +71,16 @@ namespace RimworldTogether.GameServer.Managers
         public static void SendPlayerRecount()
         {
             PlayerRecountJSON playerRecountJSON = new PlayerRecountJSON();
-            playerRecountJSON.currentPlayers = Network.Network.connectedClients.ToArray().Count().ToString();
-            foreach(ServerClient client in Network.Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
+            playerRecountJSON.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
+            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
 
             Packet packet = Packet.CreatePacketFromJSON("PlayerRecountPacket", playerRecountJSON);
-            foreach (ServerClient client in Network.Network.connectedClients.ToArray()) client.clientListener.SendData(packet);
+            foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.dataQueue.Enqueue(packet);
         }
 
         public static bool CheckIfUserIsConnected(string username)
         {
-            List<ServerClient> connectedClients = Network.Network.connectedClients.ToList();
+            List<ServerClient> connectedClients = Network.connectedClients.ToList();
 
             ServerClient toGet = connectedClients.Find(x => x.username == username);
             if (toGet != null) return true;
@@ -96,7 +89,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public static ServerClient GetConnectedClientFromUsername(string username)
         {
-            List<ServerClient> connectedClients = Network.Network.connectedClients.ToList();
+            List<ServerClient> connectedClients = Network.connectedClients.ToList();
             return connectedClients.Find(x => x.username == username);
         }
 
@@ -182,9 +175,9 @@ namespace RimworldTogether.GameServer.Managers
             if (response == LoginResponse.WrongMods) loginDetailsJSON.conflictingMods = (List<string>)extraDetails;
 
             Packet packet = Packet.CreatePacketFromJSON("LoginResponsePacket", loginDetailsJSON);
-            client.clientListener.SendData(packet);
+            client.listener.dataQueue.Enqueue(packet);
 
-            client.disconnectFlag = true;
+            client.listener.disconnectFlag = true;
         }
 
         public static bool CheckWhitelist(ServerClient client)

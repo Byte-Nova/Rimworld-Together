@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Patches.Tabs
+namespace GameClient
 {
     public class PlayersUI : WITab
     {
@@ -25,7 +24,7 @@ namespace RimworldTogether.GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            if (Network.Network.isConnectedToServer)
+            if (Network.isConnectedToServer)
             {
                 tabTitle = $"Players Online [{ServerValues.currentPlayers}]";
 
