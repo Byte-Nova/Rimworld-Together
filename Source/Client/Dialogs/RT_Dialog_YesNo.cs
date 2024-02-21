@@ -52,11 +52,13 @@ namespace RimworldTogether.GameClient.Dialogs
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
             {
                 if (actionYes != null) actionYes.Invoke();
+                else DialogManager.PopDialog();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
             {
                 if (actionNo != null) actionNo.Invoke();
+                else DialogManager.PopDialog();
             }
         }
     }

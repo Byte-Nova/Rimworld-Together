@@ -66,6 +66,7 @@ namespace RimworldTogether.GameClient.Dialogs
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
             {
                 if (actionOK != null) actionOK.Invoke();
+                else DialogManager.PopDialog();
             }
         }
 

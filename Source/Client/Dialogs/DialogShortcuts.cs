@@ -9,6 +9,7 @@ using RimworldTogether.Shared.Misc;
 using Verse;
 using UnityEngine;
 using System.Data;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
@@ -26,8 +27,8 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ShowLoginOrRegisterDialogs()
         {
-            Log.Message("In showLoginOrRegisterDialog");
-            Log.Message("ShowLoginORRegisterDialogs");
+            Logs.Message("In showLoginOrRegisterDialog");
+            Logs.Message("ShowLoginORRegisterDialogs");
             RT_Dialog_3Input a1 = new RT_Dialog_3Input(
                 "New User",
                 "Username",
@@ -55,7 +56,7 @@ namespace RimworldTogether.GameClient.Dialogs
                     DialogManager.PushNewDialog(a2);
                     PreferenceManager.FetchLoginDetails();
                 },
-                delegate { DialogManager.PopDialog(); Network.Network.serverListener.disconnectFlag = true; });
+                delegate { DialogManager.PopDialog();  Network.Network.serverListener.disconnectFlag = true; });
 
             DialogManager.PushNewDialog(d1);
             
@@ -63,12 +64,11 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ShowWorldGenerationDialogs()
         {
-            RT_Dialog_OK d3 = new RT_Dialog_OK("This feature is not implemented yet!",
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+            RT_Dialog_OK d3 = new RT_Dialog_OK("This feature is not implemented yet!", DialogManager.PopDialog);
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
                 "Separate colony", "Together with other players (TBA)", null, delegate { DialogManager.PushNewDialog(d3); },
-                delegate { DialogManager.PopDialog(); DisconnectionManager.RestartGame(true); });
+                delegate { DialogManager.PopDialog();  DisconnectionManager.RestartGame(true); });
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "Welcome to the world view!",
                         "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },
@@ -79,7 +79,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ShowConnectDialogs()
         {
-            //Log.Message($"[Top window is: {Find.WindowStack[0].ToString()}]");
+            //Logs.Message($"[Top window is: {Find.WindowStack[0].ToString()}]");
             RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
                 ClientValues.serverBrowserContainer,
                 delegate { ParseConnectionDetails(true); },
@@ -97,13 +97,13 @@ namespace RimworldTogether.GameClient.Dialogs
                 DialogManager.PopDialog);
 
 
-            Log.Message($"Pushing connection type dialog {Find.WindowStack.Count}");
+            Logs.Message($"Pushing connection type dialog {Find.WindowStack.Count}");
             DialogManager.PushNewDialog(newDialog);
         }
 
         public static void ParseConnectionDetails(bool throughBrowser)
         {
-            Log.Message($"[Rimworld Together] > Parsing connection details.  throughBrowser : {throughBrowser}");
+            Logs.Message($"[Rimworld Together] > Parsing connection details.  throughBrowser : {throughBrowser}");
             bool isValid = true;
 
             string[] answerSplit = null;
@@ -111,7 +111,7 @@ namespace RimworldTogether.GameClient.Dialogs
             {
                 answerSplit = ClientValues.serverBrowserContainer
                         [(int)DialogManager.inputCache[0]].Split('|');
-                Log.Message($"Using ip: {answerSplit[0]} and port: {answerSplit[1]}");
+                Logs.Message($"Using ip: {answerSplit[0]} and port: {answerSplit[1]}");
                 if (string.IsNullOrWhiteSpace(answerSplit[0])) isValid = false;
                 if (string.IsNullOrWhiteSpace(answerSplit[1])) isValid = false;
                 if (answerSplit[1].Count() > 5) isValid = false;
@@ -142,14 +142,14 @@ namespace RimworldTogether.GameClient.Dialogs
                     PreferenceManager.SaveConnectionDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
                 }
 
-                Log.Message($"Trying to connect to server");
+                Logs.Message($"Trying to connect to server");
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                 Network.Network.StartConnection();
             }
 
             else
             {
-                Log.Message($"Invalid connection details");
+                Logs.Message($"Invalid connection details");
                 RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!", DialogManager.PopDialog);
                 DialogManager.PushNewDialog(d1);
             }
@@ -189,14 +189,14 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public static void ParseRegisterUser()
         {
-            bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isInvalid = true;
-            if (((string)DialogManager.inputCache[0]).Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isInvalid = true;
-            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[2])) isInvalid = true;
-            if ((string)DialogManager.inputCache[1] != (string)DialogManager.inputCache[2]) isInvalid = true;
+            bool isValid = true;
+            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isValid = false;
+            if (((string)DialogManager.inputCache[0]).Any(Char.IsWhiteSpace)) isValid = false;
+            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isValid = false;
+            if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[2])) isValid = false;
+            if ((string)DialogManager.inputCache[1] != (string)DialogManager.inputCache[2]) isValid = false;
 
-            if (!isInvalid)
+            if (isValid)
             {
                 JoinDetailsJSON registerDetails = new JoinDetailsJSON();
                 registerDetails.username = (string)DialogManager.inputCache[0];
@@ -205,8 +205,10 @@ namespace RimworldTogether.GameClient.Dialogs
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 Packet packet = Packet.CreatePacketFromJSON("RegisterClientPacket", registerDetails);
-                Network.Network.serverListener.SendData(packet);
 
+                Logs.Message("attempting to send parse register data");
+                Network.Network.serverListener.SendData(packet);
+                Logs.Message("sent parse register data");
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
             }
 
@@ -216,6 +218,45 @@ namespace RimworldTogether.GameClient.Dialogs
 
                 DialogManager.PushNewDialog(d1);
             }
+        }
+
+        //changes in a textField are check based on string length, but if the contents of a text field are replaced,
+        //i.e. 1234 -> 1255 where 34 are instantly replace with 55
+        //we can't tell anything has changed on length. This function will change the characters that have been repalced
+        public static string replaceNonCensoredSymbols(string recievingString, string giftingString, bool Censored, string censorSymbol)
+        {
+            string StringA = recievingString; string currCharA;
+            string StringB = giftingString; string currCharB;
+            string returnString = "";
+            if (Censored)
+            {
+                for (int i = 0; i < giftingString.Length; i++)
+                {
+                    currCharA = StringA.Substring(0, 1);
+                    currCharB = StringB.Substring(0, 1);
+                    if (StringA.Length > 0) StringA = StringA.Substring(1, StringA.Length - 1);
+                    if (StringB.Length > 0) StringB = StringB.Substring(1, StringB.Length - 1);
+                    if (currCharB.ToString() == censorSymbol)
+                        returnString += currCharA;
+                    else
+                        returnString += currCharB;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < giftingString.Length; i++)
+                {
+                    currCharA = StringA.Substring(0, 1);
+                    currCharB = StringB.Substring(0, 1);
+                    if (StringA.Length > 0) StringA = StringA.Substring(1, StringA.Length - 1);
+                    if (StringB.Length > 0) StringB = StringB.Substring(1, StringB.Length - 1);
+                    if (currCharA == currCharB)
+                        returnString += currCharA;
+                    else
+                        returnString += currCharB;
+                }
+            }
+            return returnString;
         }
     }
 }

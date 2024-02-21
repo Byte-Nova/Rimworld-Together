@@ -10,6 +10,7 @@ using RimworldTogether.Shared.Serializers;
 using RimworldTogether.Shared.JSON.Things;
 using RimworldTogether.Shared.JSON.Actions;
 using RimworldTogether.GameClient.Values;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.CustomMapGeneration
 {
@@ -52,7 +53,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 DataToMap.addTerrainAndRoofingToMap(map, mapDetailsJSON);
             }catch(Exception e)
             {
-                Log.Message(e.ToString());
+                Logs.Message(e.ToString());
             }
         }
 
@@ -79,11 +80,11 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             foreach (Thing thing in thingsToGetInThisTile)
             {
                 try { GenPlace.TryPlaceThing(thing, thing.Position, RT_MapGenerator.mapBeingGenerated, ThingPlaceMode.Direct, rot: thing.Rotation); }
-                catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
+                catch { Logs.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
             }
 
             stopWatch.Stop();
-            Log.Message($"{"adding caravan items to Map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            Logs.Message($"{"adding caravan items to Map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
             stopWatch.Reset();
         }
 
@@ -120,11 +121,11 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             foreach (Thing thing in thingsToGetInThisTile)
             {
                 try { GenPlace.TryPlaceThing(thing, thing.Position, RT_MapGenerator.mapBeingGenerated, ThingPlaceMode.Direct, rot: thing.Rotation); }
-                catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
+                catch { Logs.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
             }
 
             stopWatch.Stop();
-            Log.Message($"{"adding Settlement items to Map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            Logs.Message($"{"adding Settlement items to Map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
             
         }
 
@@ -147,7 +148,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
                     GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
                 }
-                catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
+                catch { Logs.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
             }
 
             foreach (string str in mapDetailsJSON.playerHumanDetailsJSON)
@@ -161,11 +162,11 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
                     GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
                 }
-                catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
+                catch { Logs.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
             }
 
             stopWatch.Stop();
-            Log.Message($"{"Spawning items took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            Logs.Message($"{"Spawning items took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
             
 
         }
@@ -191,12 +192,12 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
                     GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
                 }
-                catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+                catch { Logs.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
             }
 
             
             stopWatch.Stop();
-            Log.Message($"{"spawning Caravan animals to Map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            Logs.Message($"{"spawning Caravan animals to Map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
 
         }
 
@@ -218,11 +219,11 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
                     GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
                 }
-                catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+                catch { Logs.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
             }
 
             stopWatch.Stop();
-            Log.Message($"{"spawning Settlement animals to Map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            Logs.Message($"{"spawning Settlement animals to Map took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
 
 
         }
@@ -249,7 +250,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                         map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
 
                     }
-                    catch { Log.Warning($"Failed to set terrain at {vectorToCheck}"); }
+                    catch { Logs.Warning($"Failed to set terrain at {vectorToCheck}"); }
 
                     //get and place roofs
                     try
@@ -259,7 +260,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
 
                         map.roofGrid.SetRoof(vectorToCheck, roofToUse);
                     }
-                    catch { Log.Warning($"Failed to set roof at {vectorToCheck}"); }
+                    catch { Logs.Warning($"Failed to set roof at {vectorToCheck}"); }
 
                     index++;
                 }
@@ -268,7 +269,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             map.roofGrid.Drawer.SetDirty();
 
             stopWatch.Stop();
-            Log.Message($"{"Adding Terrain and Roofing took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            Logs.Message($"{"Adding Terrain and Roofing took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
 
 
         }

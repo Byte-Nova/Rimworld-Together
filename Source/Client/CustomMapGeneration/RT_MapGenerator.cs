@@ -10,6 +10,7 @@ using Verse;
 using Verse.Noise;
 using RimworldTogether.GameClient.CustomMapGeneration;
 using RimworldTogether.Shared.JSON;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.CustomMapGeneration
 {
@@ -63,7 +64,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             {
                 if (!RT_MapGenerator.playerStartSpotInt.IsValid)
                 {
-                    Log.Error("Accessing player start spot before setting it.", false);
+                    Logs.Error("Accessing player start spot before setting it.", false);
                     return IntVec3.Zero;
                 }
                 return RT_MapGenerator.playerStartSpotInt;
@@ -94,7 +95,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             {
                 if (parent != null && parent.HasMap)
                 {
-                    Log.Error("Tried to generate a new map and set " + parent + " as its parent, but this world object already has a map. One world object can't have more than 1 map.", false);
+                    Logs.Error("Tried to generate a new map and set " + parent + " as its parent, but this world object already has a map. One world object can't have more than 1 map.", false);
                     parent = null;
                 }
                 DeepProfiler.Start("Set up map");
@@ -112,7 +113,7 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 }
                 if (mapGenerator == null)
                 {
-                    Log.Error("Attempted to generate map without generator; falling back on encounter map", false);
+                    Logs.Error("Attempted to generate map without generator; falling back on encounter map", false);
                     mapGenerator = MapGeneratorDefOf.Encounter;
                 }
                 IEnumerable<GenStepWithParams> enumerable = from x in mapGenerator.genSteps
@@ -124,16 +125,16 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 map.areaManager.AddStartingAreas();
                 map.weatherDecider.StartInitialWeather();
                 DeepProfiler.Start("Generate contents into map");
-                Log.Message("Generate Contents into Map");
+                Logs.Message("Generate Contents into Map");
                 RT_MapGenerator.GenerateContentsIntoMap(enumerable, map, seed);
                 DeepProfiler.End();
-                Log.Message("Post Map Generate");
+                Logs.Message("Post Map Generate");
                 Find.Scenario.PostMapGenerate(map);
                 DeepProfiler.Start("Finalize map init");
-                Log.Message("Finalize map init");
+                Logs.Message("Finalize map init");
 
 
-                Log.Message($"Map{map.mapDrawer}");
+                Logs.Message($"Map{map.mapDrawer}");
 
                
                 map.FinalizeInit();
@@ -177,8 +178,8 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                 int[] stepsToUse = {0,1,3,4,15};
                 if(map == null)
                 {
-                    Log.Message("Map is null during gen steps");
-                }else { Log.Message("Map is currently not null"); }
+                    Logs.Message("Map is null during gen steps");
+                }else { Logs.Message("Map is currently not null"); }
 
 
                 for (int j = 0; j < stepsToUse.Length; j++)
@@ -189,11 +190,11 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
                     {
                         Rand.Seed = Gen.HashCombineInt(seed, RT_MapGenerator.GetSeedPart(RT_MapGenerator.tmpGenSteps, i));
                         RT_MapGenerator.tmpGenSteps[i].def.genStep.Generate(map, RT_MapGenerator.tmpGenSteps[i].parms);
-                        Log.Message($"Generated step {i}");
+                        Logs.Message($"Generated step {i}");
                     }
                     catch (Exception arg)
                     {
-                        Log.Error("Error in GenStep: " + arg, false);
+                        Logs.Error("Error in GenStep: " + arg, false);
                     }
                     finally
                     {
@@ -275,11 +276,11 @@ namespace RimworldTogether.GameClient.CustomMapGeneration
             {
                 Rand.Seed = Gen.HashCombineInt(seed, RT_MapGenerator.GetSeedPart(RT_MapGenerator.tmpGenSteps, stepNum));
                 RT_MapGenerator.tmpGenSteps[stepNum].def.genStep.Generate(map, RT_MapGenerator.tmpGenSteps[stepNum].parms);
-                Log.Message($"Generated step {stepNum}");
+                Logs.Message($"Generated step {stepNum}");
             }
             catch (Exception arg)
             {
-                Log.Error("Error in GenStep: " + arg, false);
+                Logs.Error("Error in GenStep: " + arg, false);
             }
             finally
             {

@@ -5,6 +5,7 @@ using RimworldTogether.GameClient.Managers;
 using RimworldTogether.GameClient.Managers.Actions;
 using RimworldTogether.GameClient.Values;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Patches
 {
@@ -34,14 +35,14 @@ namespace RimworldTogether.GameClient.Patches
                     }, Find.GameInfo.permadeathMode);
                     ___lastSaveTick = Find.TickManager.TicksGame;
                 }
-                catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
+                catch (Exception ex) { Logs.Error("Exception while saving game: " + ex); }
 
                 //send map data so players can offline visit/raid
-                Log.Message($"[Rimworld Together] > Sending maps to server");
+                Logs.Message($"[Rimworld Together] > Sending maps to server");
                 MapManager.SendMapsToServer();
 
                 //send Local Save file to server
-                Log.Message($"[Rimworld Together] > Sending local save to server");
+                Logs.Message($"[Rimworld Together] > Sending local save to server");
                 SaveManager.SendSavePartToServer(fileName);
 
                 return false;

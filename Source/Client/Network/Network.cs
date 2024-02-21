@@ -21,7 +21,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static void StartConnection()
         {
-            Log.Message($"should pop the wait... {Find.WindowStack[Find.WindowStack.Count-1].ToString()}");
+            Logs.Message($"should pop the wait... {Find.WindowStack[Find.WindowStack.Count-1].ToString()}");
             DialogManager.PopDialog();
             if (TryConnectToServer())
             {
@@ -32,7 +32,7 @@ namespace RimworldTogether.GameClient.Network
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                Log.Message($"[Rimworld Together] > Connected to server");
+                Logs.Message($"[Rimworld Together] > Connected to server");
             }
 
             else
@@ -72,8 +72,7 @@ namespace RimworldTogether.GameClient.Network
 
                 Action r1 = delegate
                 {
-                    DialogManager.PopDialog();
-                    DialogManager.PopDialog();
+                    DialogManager.clearStack();
                     if (Current.ProgramState == ProgramState.Playing)
                     {
                         DisconnectionManager.DisconnectToMenu();
@@ -89,7 +88,7 @@ namespace RimworldTogether.GameClient.Network
 
                 ClearAllValues();
 
-                Log.Message($"[Rimworld Together] > Disconnected from server");
+                Logs.Message($"[Rimworld Together] > Disconnected from server");
             //};
 
             //Main.threadDispatcher.Enqueue(toDo);

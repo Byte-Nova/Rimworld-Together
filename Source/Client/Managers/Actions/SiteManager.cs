@@ -12,6 +12,7 @@ using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 
 namespace RimworldTogether.GameClient.Managers.Actions
@@ -59,7 +60,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch 
             {
-                Log.Warning("Server didn't have site rewards set, defaulting to 0");
+                Logs.Warning("Server didn't have site rewards set, defaulting to 0");
 
                 siteRewardCount = new int[9]
                 {
@@ -332,7 +333,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch 
             {
-                Log.Warning("Server didn't have personal site prices set, defaulting to 0");
+                Logs.Warning("Server didn't have personal site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {
@@ -400,7 +401,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch
             {
-                Log.Warning("Server didn't have faction site prices set, defaulting to 0");
+                Logs.Warning("Server didn't have faction site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {

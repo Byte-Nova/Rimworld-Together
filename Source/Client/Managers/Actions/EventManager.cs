@@ -7,6 +7,7 @@ using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 
 namespace RimworldTogether.GameClient.Managers.Actions
@@ -70,7 +71,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch 
             { 
-                Log.Warning("Server didn't have event prices set, defaulting to 0");
+                Logs.Warning("Server didn't have event prices set, defaulting to 0");
 
                 eventCosts = new int[9]
                 {

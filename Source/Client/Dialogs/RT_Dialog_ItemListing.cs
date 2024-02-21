@@ -158,7 +158,7 @@ namespace RimworldTogether.GameClient.Dialogs
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }
 
-                Close();
+                DialogManager.PopDialog();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",
@@ -171,7 +171,7 @@ namespace RimworldTogether.GameClient.Dialogs
             {
                 TransferManager.RejectRequest(transferMode);
 
-                Close();
+                DialogManager.PopDialog();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",

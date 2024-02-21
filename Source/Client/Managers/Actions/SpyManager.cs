@@ -10,6 +10,7 @@ using RimworldTogether.Shared.Serializers;
 using Shared.JSON;
 using Shared.Misc;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 
 namespace RimworldTogether.GameClient.Managers.Actions
@@ -39,7 +40,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             try { spyCost = int.Parse(serverOverallJSON.SpyCost); }
             catch
             {
-                Log.Warning("Server didn't have spy cost set, defaulting to 0");
+                Logs.Warning("Server didn't have spy cost set, defaulting to 0");
 
                 spyCost = 0;
             }

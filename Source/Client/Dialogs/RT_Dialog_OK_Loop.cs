@@ -63,6 +63,7 @@ namespace RimworldTogether.GameClient.Dialogs
                 else
                 {
                     if (actionOK != null) actionOK.Invoke();
+                    else DialogManager.PopDialog();
                 }
             }
         }

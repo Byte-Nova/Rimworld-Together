@@ -63,16 +63,19 @@ namespace RimworldTogether.GameClient.Dialogs
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY * 3 - 20f), new Vector2(buttonX, buttonY)), actionOneName))
             {
                 if (actionOne != null) actionOne.Invoke();
+                else DialogManager.PopDialog();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY * 2 - 10f), new Vector2(buttonX, buttonY)), actionTwoName))
             {
                 if (actionTwo != null) actionTwo.Invoke();
+                else DialogManager.PopDialog();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2 + buttonX * 0.125f, rect.yMax - buttonY), new Vector2(buttonX * 0.75f, buttonY)), "Cancel"))
             {
                 if (actionCancel != null) actionCancel.Invoke();
+                else DialogManager.PopDialog();
             }
         }
 

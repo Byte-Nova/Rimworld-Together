@@ -5,6 +5,7 @@ using RimWorld;
 using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
@@ -85,6 +86,7 @@ namespace RimworldTogether.GameClient.Dialogs
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
             {
                 if (actionCancel != null) actionCancel.Invoke();
+                else DialogManager.PopDialog();
             }
         }
 
@@ -129,6 +131,7 @@ namespace RimworldTogether.GameClient.Dialogs
                     if (buttonNames[i] == buttonName)
                     {
                         selectedScrollButton = i;
+                        CacheInputs();
                         actionSelect.Invoke();
                     }
                 }
@@ -145,23 +148,23 @@ namespace RimworldTogether.GameClient.Dialogs
             //exception handling
             if (newInputs.Count < 2)
             {
-                Log.Error("[RimWorld Together] > ERROR: newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made");
+                Logs.Error("[RimWorld Together] > ERROR: newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made");
                 return;
             }
             else if (newInputs.Count > 2)
             {
-                Log.Warning("[RimWorld Together] > WARNING: newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used ");
+                Logs.Warning("[RimWorld Together] > WARNING: newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used ");
             }
 
             //for each value in inputResultList, set it to the corrosponding value in newInputs
             for (int index = 0; index < inputResultList.Count; index++)
             {
-                if (newInputs[index].GetType() != inputResultList[index].GetType())
+                if (inputResultList[index].GetType() != newInputs[index].GetType())
                 {
-                    Log.Error($"[RimWorld Together] > ERROR: newInputs contained non-matching types at index {index}, No changes will be made");
+                    Logs.Error($"[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs contained non-matching types at index {index}, No changes will be made");
                     return;
                 }
-                inputResultList[index] = inputResultList[index];
+                inputResultList[index] = (int)newInputs[index];
             }
         }
     }

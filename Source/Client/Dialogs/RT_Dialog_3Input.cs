@@ -7,6 +7,7 @@ using RimWorld;
 using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Dialogs
 {
@@ -29,6 +30,9 @@ namespace RimworldTogether.GameClient.Dialogs
         private string inputTwoLabel;
         private string inputThreeLabel;
 
+        private char censorSymbol = '*';
+        private string Str_censorSymbol = "";
+
         private bool inputOneCensored;
         private string inputOneDisplay;
 
@@ -45,9 +49,9 @@ namespace RimworldTogether.GameClient.Dialogs
             get
             {
                 List<object> returnList = new List<object>(3);
-                returnList[0] = inputResultList[0];
-                returnList[1] = inputResultList[1];
-                returnList[2] = inputResultList[2];
+                returnList.Add(inputResultList[0]);
+                returnList.Add(inputResultList[1]);
+                returnList.Add(inputResultList[2]);
                 return returnList;
             }
         }
@@ -56,7 +60,7 @@ namespace RimworldTogether.GameClient.Dialogs
             Action actionConfirm, Action actionCancel, bool inputOneCensored = false, bool inputTwoCensored = false,
             bool inputThreeCensored = false)
         {
-
+            this.Str_censorSymbol = censorSymbol.ToString();
             this.title = title;
             this.actionConfirm = actionConfirm;
             this.actionCancel = actionCancel;
@@ -111,15 +115,18 @@ namespace RimworldTogether.GameClient.Dialogs
             //draw confirm button
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
             {
-                if (actionConfirm != null) actionConfirm.Invoke();
+                Logs.Message(inputResultList[0]);
                 CacheInputs();
+                if (actionConfirm != null) actionConfirm.Invoke();
+                else DialogManager.PopDialog();
             }
 
             //draw cancel button
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
             {
-                if (actionCancel != null) actionCancel.Invoke();
                 CacheInputs();
+                if (actionCancel != null) actionCancel.Invoke();
+                else DialogManager.PopDialog();
             }
 
         }
@@ -141,12 +148,12 @@ namespace RimworldTogether.GameClient.Dialogs
 
             //Draw the textField using input display string
             Text.Font = GameFont.Small;
-            inputOneDisplay = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputOneDisplay);
+            string inputDisplayBefore = inputOneDisplay;
+            inputOneDisplay = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputDisplayBefore);
 
             //if new input is detected, add it to the final input string
             if ((inputOneDisplay.Length > inputResultList[0].Length) && (inputOneDisplay.Length <= 32)) inputResultList[0] += inputOneDisplay.Substring(inputResultList[0].Length);
-            if (inputOneDisplay.Length < inputResultList[0].Length) inputResultList[0] = inputResultList[0].Substring(0, inputOneDisplay.Length);
-
+            else if (inputDisplayBefore != inputOneDisplay) inputResultList[0] = DialogShortcuts.replaceNonCensoredSymbols(inputResultList[0],inputOneDisplay, inputOneCensored,Str_censorSymbol);
         }
 
         private void DrawInputTwo(float centeredX, float labelDif, float normalDif)
@@ -166,11 +173,12 @@ namespace RimworldTogether.GameClient.Dialogs
 
             //Draw the textField using inputTwoDisplay
             Text.Font = GameFont.Small;
+            string inputDisplayBefore = inputOneDisplay;
             inputTwoDisplay = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputTwoDisplay);
 
             //if new input is detected, add it to the final input string
             if ((inputTwoDisplay.Length > inputResultList[1].Length) && (inputTwoDisplay.Length <= 32)) inputResultList[1] += inputTwoDisplay.Substring(inputResultList[1].Length);
-            if (inputTwoDisplay.Length < inputResultList[1].Length) inputResultList[1] = inputResultList[1].Substring(0, inputTwoDisplay.Length);
+            else if (inputDisplayBefore != inputTwoDisplay) inputResultList[1] = DialogShortcuts.replaceNonCensoredSymbols(inputResultList[1], inputTwoDisplay, inputTwoCensored, Str_censorSymbol);
 
 
         }
@@ -192,11 +200,12 @@ namespace RimworldTogether.GameClient.Dialogs
 
             //Draw the textField using inputThreeDisplay
             Text.Font = GameFont.Small;
-            inputThreeDisplay = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputTwoDisplay);
+            string inputDisplayBefore = inputOneDisplay;
+            inputThreeDisplay = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputThreeDisplay);
 
             //if new input is detected, add it to the final input string
             if ((inputThreeDisplay.Length > inputResultList[2].Length) && (inputThreeDisplay.Length <= 32)) inputResultList[2] += inputThreeDisplay.Substring(inputResultList[2].Length);
-            if (inputThreeDisplay.Length < inputResultList[2].Length) inputResultList[2] = inputResultList[2].Substring(0, inputThreeDisplay.Length);
+            else if (inputDisplayBefore != inputThreeDisplay) inputResultList[2] = DialogShortcuts.replaceNonCensoredSymbols(inputResultList[2], inputThreeDisplay, inputThreeCensored, Str_censorSymbol);
 
 
         }
@@ -212,24 +221,26 @@ namespace RimworldTogether.GameClient.Dialogs
             //exception handling
             if (newInputs.Count < 2)
             {
-                Log.Error("[RimWorld Together] > ERROR: newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made");
+                Logs.Error("[RimWorld Together] > ERROR: newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made");
                 return;
             }
             else if (newInputs.Count > 2)
             {
-                Log.Warning("[RimWorld Together] > WARNING: newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used ");
+                Logs.Warning("[RimWorld Together] > WARNING: newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used ");
             }
 
             //for each value in inputResultList, set it to the corrosponding value in newInputs
             for (int index = 0; index < inputResultList.Count; index++)
             {
-                if (newInputs[index].GetType() != inputResultList[index].GetType())
+                if (inputResultList[index].GetType() != newInputs[index].GetType())
                 {
-                    Log.Error($"[RimWorld Together] > ERROR: newInputs contained non-matching types at index {index}, No changes will be made");
+                    Logs.Error($"[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs contained non-matching types at index {index}, No changes will be made");
                     return;
                 }
-                inputResultList[index] = inputResultList[index];
+                inputResultList[index] = (string)newInputs[index];
+                
             }
+            
         }
 
     }

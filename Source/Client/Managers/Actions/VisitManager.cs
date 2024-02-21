@@ -80,16 +80,20 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 Action r1 = delegate
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
-
+                    Logs.Message("pushing waiting for visit in request visit");
+                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response..."));
+                    Logs.Message("creating VisitDetailsJson");
                     VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
                     visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Request).ToString();
                     visitDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
                     visitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
                     visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(VisitThingHelper.FetchMode.Player, visitDetailsJSON);
 
+                    Logs.Message("creating packet");
                     Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    Logs.Message("Attempting to send data");
                     Network.Network.serverListener.SendData(packet);
+                    Logs.Message("[Rimworld Together] > Sent Data");
                 };
 
                 var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, DialogManager.PopDialog);
@@ -123,21 +127,20 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             ClientValues.ToggleVisit(true);
 
+
+
             Threader.GenerateThread(Threader.Mode.Visit);
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {
                 "You are now in online visit mode!",
                 "Visit mode allows you to visit another player's base",
                 "To stop the visit use /sv in the chat"
-            });
+            }, DialogManager.clearStack);
             DialogManager.PushNewDialog(d1);
         }
 
         public static void StopVisit()
         {
-            //TODO
-            //Implement this
-
             ClientValues.isInVisit = false;
 
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
@@ -151,6 +154,8 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             Action r1 = delegate
             {
+
+                DialogManager.PopDialog();
                 VisitThingHelper.SetMapForVisit(VisitThingHelper.FetchMode.Host, visitDetailsJSON: visitDetailsJSON);
                 VisitThingHelper.GetMapPawns(VisitThingHelper.FetchMode.Host, visitDetailsJSON);
                 visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(VisitThingHelper.FetchMode.Host, visitDetailsJSON);
@@ -160,7 +165,6 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 VisitThingHelper.GetMapItems();
 
                 ClientValues.ToggleVisit(true);
-
                 Threader.GenerateThread(Threader.Mode.Visit);
             };
 
@@ -169,6 +173,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Reject).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
                 Network.Network.serverListener.SendData(packet);
+                DialogManager.PopDialog();
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitDetailsJSON.visitorName}, accept?", r1, r2);
@@ -178,18 +183,21 @@ namespace RimworldTogether.GameClient.Managers.Actions
         private static void OnVisitAccept(VisitDetailsJSON visitDetailsJSON)
         {
             DialogManager.PopDialog();
-
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
+            Action r1 = delegate
+            {
+                //display wait dialog and load map.
+                DialogManager.PushNewDialog(new Dialogs.RT_Dialog_Wait("Waiting for map to Load..."));
+                Thread.Sleep(10);
+                VisitMap(mapDetailsJSON, visitDetailsJSON);
+            };
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
-            {DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data"));}
-            else DialogManager.PushNewDialog(new RT_Dialog_OK("Map received"));
+            {DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));}
+            else DialogManager.PushNewDialog(new RT_Dialog_OK("Map received", r1));
 
-            //display wait dialog and load map.
-            DialogManager.PushNewDialog(new Dialogs.RT_Dialog_Wait("Waiting for map to Load..."));
-            VisitMap(mapDetailsJSON, visitDetailsJSON);
-            DialogManager.PopDialog();
+            
         }
 
         private static void OnVisitReject()
@@ -446,6 +454,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             }
         }
 
+        //Grab Actions and send them
         private static void ActionClockTick()
         {
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
@@ -470,7 +479,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
                     visitDetailsJSON.pawnPositions.Add($"{pawn.Position.x}|{pawn.Position.y}|{pawn.Position.z}");
                 }
-                catch { Log.Warning($"Couldn't get job for {pawn}"); }
+                catch { Logs.Warning($"Couldn't get job for {pawn}"); }
             }
 
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Action).ToString();
@@ -478,6 +487,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             Network.Network.serverListener.SendData(packet);
         }
 
+        //Retrieve Actions and handle them
         public static void ReceiveActions(VisitDetailsJSON visitDetailsJSON)
         {
             //the pawns that are not yours
@@ -489,7 +499,14 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 {
                     JobDef jobDef = VisitActionHelper.TryGetJobDefForJob(otherPawns[i], visitDetailsJSON.pawnActionDefNames[i]);
 
+                    IntVec3 pawnPos = VisitActionHelper.GetPawnPosition(visitDetailsJSON, i);
                     //VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitDetailsJSON, i);
+                    if (Math.Sqrt((pawnPos.x - otherPawns[i].Position.x)*(pawnPos.x - otherPawns[i].Position.x) + (pawnPos.z - otherPawns[i].Position.z) * (pawnPos.z - otherPawns[i].Position.z)) > 3)
+                    {
+                        VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitDetailsJSON, i);
+
+                    }
+                    
                     //otherPawns[i].pather.
                     LocalTargetInfo localTargetInfoA = VisitActionHelper.TryGetLocalTargetInfo(otherPawns[i],
                         visitDetailsJSON.actionTargetA[i], visitDetailsJSON.actionTargetType[i]);
@@ -501,7 +518,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     VisitActionHelper.ChangeCurrentJobIfNeeded(otherPawns[i], newJob);
 
                 }
-                catch { Log.Warning($"Couldn't set job for {otherPawns[i]}"); }
+                catch { Logs.Warning($"Couldn't set job for {otherPawns[i]}"); }
             }
         }
     }
@@ -556,7 +573,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     toReturn = $"{targetInfo.Cell.x}|{targetInfo.Cell.y}|{targetInfo.Cell.z}";
                 }
             }
-            catch { Log.Error($"failed to parse {targetInfo}"); }
+            catch { Logs.Error($"failed to parse {targetInfo}"); }
 
             return toReturn;
         }
@@ -597,7 +614,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                         break;
                 }
             }
-            catch { Log.Error($"Failed to get target from {toReadFrom} as {actionTargetType}"); }
+            catch { Logs.Error($"Failed to get target from {toReadFrom} as {actionTargetType}"); }
 
             return target;
         }
@@ -605,7 +622,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         public static JobDef TryGetJobDefForJob(Pawn pawnForJob, string jobDefName)
         {
             try { return DefDatabase<JobDef>.AllDefs.ToList().Find(fetch => fetch.defName == jobDefName); }
-            catch { Log.Warning($"Couldn't get job def of {pawnForJob.Label}"); }
+            catch { Logs.Warning($"Couldn't get job def of {pawnForJob.Label}"); }
 
             return null;
         }
@@ -613,7 +630,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         public static LocalTargetInfo TryGetLocalTargetInfo(Pawn pawnForJob, string actionTarget, string actionTargetType)
         {
             try { return GetActionTargetFromString(actionTarget, actionTargetType); }
-            catch { Log.Warning($"Couldn't get job target for {pawnForJob.Label}"); }
+            catch { Logs.Warning($"Couldn't get job target for {pawnForJob.Label}"); }
 
             return null;
         }
@@ -621,7 +638,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
         public static Job TryCreateNewJob(Pawn pawnForJob, JobDef jobDef, LocalTargetInfo localTargetA)
         {
             try { return JobMaker.MakeJob(jobDef, localTargetA); }
-            catch { Log.Warning($"Couldn't create job for {pawnForJob.Label}"); }
+            catch { Logs.Warning($"Couldn't create job for {pawnForJob.Label}"); }
 
             return null;
         }
@@ -634,7 +651,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 if (job.def == JobDefOf.Wait_Combat) pawn.drafter.Drafted = true;
                 else pawn.drafter.Drafted = false;
             }
-            catch { Log.Warning($"Couldn't draft {pawn}"); }
+            catch { Logs.Warning($"Couldn't draft {pawn}"); }
         }
 
         public static void TryChangePawnPosition(Pawn pawn, VisitDetailsJSON visitDetailsJSON, int index)
@@ -646,7 +663,13 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 pawn.pather.Notify_Teleported_Int();
                 pawn.Position = updatedPosition;
             }
-            catch { Log.Warning($"Couldn't give position to {pawn}"); }
+            catch { Logs.Warning($"Couldn't give position to {pawn}"); }
+        }
+
+        public static IntVec3 GetPawnPosition(VisitDetailsJSON visitDetailsJSON, int index)
+        {
+            string[] positionSplit = visitDetailsJSON.pawnPositions[index].Split('|');
+           return new IntVec3(int.Parse(positionSplit[0]), int.Parse(positionSplit[1]), int.Parse(positionSplit[2]));
         }
 
         public static void ChangeCurrentJobIfNeeded(Pawn pawn, Job newJob)

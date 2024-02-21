@@ -13,6 +13,7 @@ using Shared.Misc;
 using Verse;
 using Verse.Sound;
 using static Shared.Misc.CommonEnumerators;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
@@ -156,7 +157,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch
             {
-                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -279,7 +280,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch
             {
-                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -299,7 +300,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch
             {
-                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 

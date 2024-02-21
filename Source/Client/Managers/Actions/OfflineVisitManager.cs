@@ -68,7 +68,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             }
             else DialogManager.WaitForDialogInput(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.PopDialog));
 
-            DialogManager.WaitForDialogInput(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
+            DialogManager.WaitForDialogInput(new RT_Dialog_OK("Game might hang temporarily depending on map complexity", DialogManager.PopDialog));
         }
 
         private static void PrepareMapForOfflineVisit(MapDetailsJSON mapDetailsJSON)

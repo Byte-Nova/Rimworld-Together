@@ -47,7 +47,10 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void OnExistingWorld(WorldDetailsJSON worldDetailsJSON)
         {
-            DialogManager.PopDialog();
+            //The save is finally finished downloading, 
+            //clear the window stack
+            //(loading a save clears rimworlds windowStack, but not ours)
+            DialogManager.clearStack();
 
             ClientValues.ToggleLoadingPrefabWorld(true);
 
