@@ -5,7 +5,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
 
 
 namespace GameClient

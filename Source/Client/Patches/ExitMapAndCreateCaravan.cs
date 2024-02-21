@@ -1,19 +1,13 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Misc;
-using RimworldTogether.GameClient.Values;
+using GameClient;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using UnityEngine;
 using Verse;
 
 
-namespace RimworldTogether.GameClient.Patches
+namespace GameClient
 {
     [HarmonyPatch(typeof(CaravanExitMapUtility), "ExitMapAndCreateCaravan", new[] { typeof(IEnumerable < Pawn >), typeof(Faction) , typeof(int), typeof(int), typeof(int), typeof(bool) } )]
     internal class ExitMapAndCreateCaravan
@@ -22,7 +16,7 @@ namespace RimworldTogether.GameClient.Patches
         public static void Postfix()
         {
             //for every human pawn in the player's faction contained in the map
-            List<Pawn> playersPawns = VisitManager.visitMap.mapPawns.AllPawns
+            List<Pawn> playersPawns = OnlineVisitManager.visitMap.mapPawns.AllPawns
                     .FindAll(fetch => TransferManagerHelper.CheckIfThingIsHuman(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -31,8 +25,8 @@ namespace RimworldTogether.GameClient.Patches
             //if pawns still exist on the map, then don't stop the visit.
             if (playersPawns.Count > 0 ) { return; }
 
-            Current.Game.DeinitAndRemoveMap(VisitManager.visitMap);
-            VisitManager.StopVisit();
+            Current.Game.DeinitAndRemoveMap(OnlineVisitManager.visitMap);
+            OnlineVisitManager.StopVisit();
         }
     }
 }

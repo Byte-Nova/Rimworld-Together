@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Verse;
+﻿using System.Collections.Generic;
 
 
-namespace RimworldTogether.GameClient.Dialogs
+namespace GameClient
 {
     public interface RT_WindowInputs
     {

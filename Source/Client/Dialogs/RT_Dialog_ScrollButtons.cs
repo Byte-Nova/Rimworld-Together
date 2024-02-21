@@ -4,7 +4,7 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
 
 namespace GameClient
 {

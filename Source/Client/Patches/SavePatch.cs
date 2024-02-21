@@ -2,7 +2,7 @@
 using HarmonyLib;
 using RimWorld;
 using Verse;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
 
 namespace GameClient
 {

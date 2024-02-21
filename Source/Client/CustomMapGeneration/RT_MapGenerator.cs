@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RimWorld;
 using RimWorld.Planet;
 using Verse;
-using Verse.Noise;
-using RimworldTogether.GameClient.CustomMapGeneration;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
 
-namespace RimworldTogether.GameClient.CustomMapGeneration
+namespace GameClient
 {
     public static class RT_MapGenerator
     {

@@ -3,25 +3,19 @@ using System.Linq;
 using System.Threading;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON.Actions;
-using RimworldTogether.Shared.JSON.Things;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
 using Verse;
 using Verse.Sound;
-using static Shared.Misc.CommonEnumerators;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
+using Shared;
+using static Shared.CommonEnumerators;
 
-namespace RimworldTogether.GameClient.Managers.Actions
+namespace GameClient
 {
     public static class TransferManager
     {
         public static void ParseTransferPacket(Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(transferManifestJSON.transferStepMode))
             {
@@ -109,7 +103,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.outgoingManifest);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
@@ -117,7 +111,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeReRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.outgoingManifest);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
 
             else if (transferLocation == TransferLocation.Pod)
@@ -125,7 +119,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.outgoingManifest);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
         }
 
@@ -320,7 +314,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReject).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
 
             else if (transferMode == TransferMode.Pod)
@@ -333,7 +327,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReReject).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
 
                 RecoverTradeItems(TransferLocation.Caravan);
             }

@@ -44,7 +44,7 @@ namespace GameClient
             //The save is finally finished downloading, 
             //clear the window stack
             //(loading a save clears rimworlds windowStack, but not ours)
-            DialogManager.clearStack();
+            DialogManager.ClearStack();
 
             ClientValues.ToggleLoadingPrefabWorld(true);
 

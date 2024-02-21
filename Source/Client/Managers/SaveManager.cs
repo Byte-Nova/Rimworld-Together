@@ -1,19 +1,12 @@
 ﻿using HarmonyLib;
 using RimWorld;
-using RimworldTogether.GameClient.Core;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.JSON;
-using Shared.Misc;
-using Shared.Network;
 using System.IO;
 using System.Reflection;
 using Verse;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
+using Shared;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class SaveManager
     {
@@ -34,30 +27,30 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void ReceiveSavePartFromServer(Packet packet)
         {
-            FileTransferJSON fileTransferJSON = (FileTransferJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            if (Network.Network.serverListener.downloadManager == null)
+            if (Network.listener.downloadManager == null)
             {
                 Logs.Message($"[Rimworld Together] > Receiving save from server");
 
-                customSaveName = $"Server - {Network.Network.ip} - {ChatManager.username}";
-                string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
+                customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+                string filePath = Path.Combine(new string[] { Master.savesPath, customSaveName + ".rws" });
 
-                Network.Network.serverListener.downloadManager = new DownloadManager();
-                Network.Network.serverListener.downloadManager.PrepareDownload(filePath, fileTransferJSON.fileParts);
+                Network.listener.downloadManager = new DownloadManager();
+                Network.listener.downloadManager.PrepareDownload(filePath, fileTransferJSON.fileParts);
             }
 
-            Network.Network.serverListener.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
+            Network.listener.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
 
             if (fileTransferJSON.isLastPart)
             {
-                Network.Network.serverListener.downloadManager.FinishFileWrite();
-                Network.Network.serverListener.downloadManager = null;
+                Network.listener.downloadManager.FinishFileWrite();
+                Network.listener.downloadManager = null;
 
                 //The save is finally finished downloading, 
                 //clear the window stack
                 //(loading a save clears rimworlds windowStack, but not ours)
-                DialogManager.clearStack();
+                DialogManager.ClearStack();
 
                 GameDataSaveLoader.LoadGame(customSaveName);
             }
@@ -65,34 +58,30 @@ namespace RimworldTogether.GameClient.Managers
             else
             {
                 Packet rPacket = Packet.CreatePacketFromJSON("RequestSavePartPacket");
-                Network.Network.serverListener.SendData(rPacket);
+                Network.listener.dataQueue.Enqueue(rPacket);
             }
         }
 
         public static void SendSavePartToServer(string fileName = null)
         {
-            if(fileName == null)
-                fileName = customSaveName;
-            if (fileName == null)
-            {
-                Logs.Error("[Rimworld Together] > ERROR tried sending save to server, but file name was empty");
-            }
+            if (fileName == null) fileName = customSaveName;
+            if (fileName == null) Logs.Error("[Rimworld Together] > ERROR tried sending save to server, but file name was empty");
                 
-            if (Network.Network.serverListener.uploadManager == null)
+            if (Network.listener.uploadManager == null)
             {
                 Logs.Message($"[Rimworld Together] > Sending save to server");
 
-                string filePath = Path.Combine(new string[] { Main.savesPath, fileName + ".rws" });
+                string filePath = Path.Combine(new string[] { Master.savesPath, fileName + ".rws" });
                 Logs.Message($"[Rimworld Together] > File being sent : {filePath}");
-                Network.Network.serverListener.uploadManager = new UploadManager();
-                Network.Network.serverListener.uploadManager.PrepareUpload(filePath);
+                Network.listener.uploadManager = new UploadManager();
+                Network.listener.uploadManager.PrepareUpload(filePath);
             }
 
             FileTransferJSON fileTransferJSON = new FileTransferJSON();
-            fileTransferJSON.fileSize = Network.Network.serverListener.uploadManager.fileSize;
-            fileTransferJSON.fileParts = Network.Network.serverListener.uploadManager.fileParts;
-            fileTransferJSON.fileBytes = Network.Network.serverListener.uploadManager.ReadFilePart();
-            fileTransferJSON.isLastPart = Network.Network.serverListener.uploadManager.isLastPart;
+            fileTransferJSON.fileSize = Network.listener.uploadManager.fileSize;
+            fileTransferJSON.fileParts = Network.listener.uploadManager.fileParts;
+            fileTransferJSON.fileBytes = Network.listener.uploadManager.ReadFilePart();
+            fileTransferJSON.isLastPart = Network.listener.uploadManager.isLastPart;
 
             if (ClientValues.isDisconnecting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Disconnect).ToString();
             else if (ClientValues.isQuiting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Quit).ToString();
@@ -100,12 +89,9 @@ namespace RimworldTogether.GameClient.Managers
             else fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveStepMode.Autosave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("ReceiveSavePartPacket", fileTransferJSON);
-            Network.Network.serverListener.SendData(packet);
+            Network.listener.dataQueue.Enqueue(packet);
 
-            if (Network.Network.serverListener.uploadManager.isLastPart)
-            {
-                Network.Network.serverListener.uploadManager = null;
-            }
+            if (Network.listener.uploadManager.isLastPart) Network.listener.uploadManager = null;
         }
     }
 }

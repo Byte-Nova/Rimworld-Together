@@ -1,10 +1,9 @@
-﻿using HugsLib;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using UnityEngine;
-using Verse.AI;
 using Verse;
 using Shared;
+using GameClient;
 
 namespace GameClient
 {
@@ -44,6 +43,8 @@ namespace GameClient
             savesPath = GenFilePaths.SavedGamesFolderPath;
 
             if (!Directory.Exists(modPath)) Directory.CreateDirectory(modPath);
+
+            Logs.PrepareFileName(modPath);
         }
 
         public static void LoadClientPreferences()

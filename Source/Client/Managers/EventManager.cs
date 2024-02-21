@@ -1,7 +1,7 @@
 ﻿using RimWorld;
 using Shared;
 using Verse;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
 
 
 namespace GameClient

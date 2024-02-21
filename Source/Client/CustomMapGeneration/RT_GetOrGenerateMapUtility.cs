@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
+﻿using RimWorld;
 using RimWorld.Planet;
 using Verse;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
 
-namespace RimworldTogether.GameClient.CustomMapGeneration
+namespace GameClient
 {
     public static class RT_GetOrGenerateMapUtility
     {

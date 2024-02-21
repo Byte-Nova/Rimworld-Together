@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using RimworldTogether.GameClient.Misc;
+using GameClient;
 
 namespace GameClient
 {
