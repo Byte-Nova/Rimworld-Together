@@ -11,6 +11,7 @@ using Shared.Network;
 using System.IO;
 using System.Reflection;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Managers
 {
@@ -37,7 +38,7 @@ namespace RimworldTogether.GameClient.Managers
 
             if (Network.Network.serverListener.downloadManager == null)
             {
-                Log.Message($"[Rimworld Together] > Receiving save from server");
+                Logs.Message($"[Rimworld Together] > Receiving save from server");
 
                 customSaveName = $"Server - {Network.Network.ip} - {ChatManager.username}";
                 string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
@@ -53,6 +54,11 @@ namespace RimworldTogether.GameClient.Managers
                 Network.Network.serverListener.downloadManager.FinishFileWrite();
                 Network.Network.serverListener.downloadManager = null;
 
+                //The save is finally finished downloading, 
+                //clear the window stack
+                //(loading a save clears rimworlds windowStack, but not ours)
+                DialogManager.clearStack();
+
                 GameDataSaveLoader.LoadGame(customSaveName);
             }
 
@@ -65,12 +71,19 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void SendSavePartToServer(string fileName = null)
         {
+            if(fileName == null)
+                fileName = customSaveName;
+            if (fileName == null)
+            {
+                Logs.Error("[Rimworld Together] > ERROR tried sending save to server, but file name was empty");
+            }
+                
             if (Network.Network.serverListener.uploadManager == null)
             {
-                Log.Message($"[Rimworld Together] > Sending save to server");
+                Logs.Message($"[Rimworld Together] > Sending save to server");
 
                 string filePath = Path.Combine(new string[] { Main.savesPath, fileName + ".rws" });
-
+                Logs.Message($"[Rimworld Together] > File being sent : {filePath}");
                 Network.Network.serverListener.uploadManager = new UploadManager();
                 Network.Network.serverListener.uploadManager.PrepareUpload(filePath);
             }

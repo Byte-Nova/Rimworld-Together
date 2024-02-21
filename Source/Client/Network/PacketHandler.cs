@@ -9,6 +9,7 @@ using RimworldTogether.Shared.Serializers;
 using System;
 using System.Reflection;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Network
 {
@@ -16,7 +17,7 @@ namespace RimworldTogether.GameClient.Network
     {
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");
+            if (ClientValues.verboseBool) Logs.Message($"[Header] > {packet.header}");
 
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);
@@ -90,7 +91,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static void BreakPacket(Packet packet)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
         }
 
         public static void RequestSavePartPacket(Packet packet)
@@ -110,7 +111,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static void LikelihoodPacket(Packet packet)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
             LikelihoodManager.ChangeStructureLikelihood(packet);
         }
 
@@ -121,14 +122,14 @@ namespace RimworldTogether.GameClient.Network
 
         public static void IllegalActionPacket(Packet packet)
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Kicked for ilegal actions!"));
+            DialogManager.PopDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Kicked for ilegal actions!", DialogManager.PopDialog));
         }
 
         public static void UserUnavailablePacket(Packet packet)
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+            DialogManager.PopDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!", DialogManager.PopDialog));
         }
 
         public static void ServerValuesPacket(Packet packet)

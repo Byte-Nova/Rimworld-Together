@@ -23,7 +23,6 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public RT_Dialog_OK_Loop(string[] descriptionLoop, Action actionOK = null)
         {
-            DialogManager.dialogOKLoop = this;
             this.descriptionLoop = descriptionLoop;
             this.actionOK = actionOK;
 
@@ -64,7 +63,7 @@ namespace RimworldTogether.GameClient.Dialogs
                 else
                 {
                     if (actionOK != null) actionOK.Invoke();
-                    Close();
+                    else DialogManager.PopDialog();
                 }
             }
         }

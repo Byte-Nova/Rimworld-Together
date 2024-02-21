@@ -48,14 +48,14 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void OnOfflineVisitDeny()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!", DialogManager.PopDialog));
         }
 
         private static void OnRequestAccepted(OfflineVisitDetailsJSON offlineVisitDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(mapFileJSON.mapData);
@@ -64,16 +64,16 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
+                DialogManager.WaitForDialogInput(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, DialogManager.PopDialog));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
+            else DialogManager.WaitForDialogInput(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.PopDialog));
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
+            DialogManager.WaitForDialogInput(new RT_Dialog_OK("Game might hang temporarily depending on map complexity", DialogManager.PopDialog));
         }
 
         private static void PrepareMapForOfflineVisit(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, false, true, true, false);
+            Map map = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, false, true, true, false);
 
             HandleMapFactions(map);
 

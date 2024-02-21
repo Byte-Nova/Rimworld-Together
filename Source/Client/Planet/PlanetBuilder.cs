@@ -8,6 +8,7 @@ using RimworldTogether.GameClient.Values;
 using RimworldTogether.Shared.JSON;
 using Shared.Misc;
 using Verse;
+using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Planet
 {
@@ -83,7 +84,7 @@ namespace RimworldTogether.GameClient.Planet
 
                 catch (Exception e)
                 {
-                    Log.Error($"Failed to build settlement at {PlanetBuilderHelper.tempSettlementTiles[i]}. " +
+                    Logs.Error($"Failed to build settlement at {PlanetBuilderHelper.tempSettlementTiles[i]}. " +
                         $"Reason: {e}");
                 }
             }
@@ -150,7 +151,7 @@ namespace RimworldTogether.GameClient.Planet
 
                 catch (Exception e)
                 {
-                    Log.Error($"Failed to spawn site at {PlanetBuilderHelper.tempSiteTiles[i]}. Reason: {e}");
+                    Logs.Error($"Failed to spawn site at {PlanetBuilderHelper.tempSiteTiles[i]}. Reason: {e}");
                 };
             }
         }
@@ -169,7 +170,7 @@ namespace RimworldTogether.GameClient.Planet
                     playerSettlements.Add(newSettlement);
                     Find.WorldObjects.Add(newSettlement);
                 }
-                catch (Exception e) { Log.Error($"Failed to spawn settlement at {newSettlementJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logs.Error($"Failed to spawn settlement at {newSettlementJSON.tile}. Reason: {e}"); }
             }
         }
 
@@ -184,7 +185,7 @@ namespace RimworldTogether.GameClient.Planet
                     playerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Log.Error($"Failed to remove settlement at {newSettlementJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logs.Error($"Failed to remove settlement at {newSettlementJSON.tile}. Reason: {e}"); }
             }
         }
 
@@ -208,7 +209,7 @@ namespace RimworldTogether.GameClient.Planet
 
                 catch (Exception e)
                 {
-                    Log.Error($"Failed to spawn site at {siteDetailsJSON.tile}. Reason: {e}");
+                    Logs.Error($"Failed to spawn site at {siteDetailsJSON.tile}. Reason: {e}");
                 };
             }
         }
@@ -224,7 +225,7 @@ namespace RimworldTogether.GameClient.Planet
                     playerSites.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Log.Message($"Failed to remove site at {siteDetailsJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logs.Message($"Failed to remove site at {siteDetailsJSON.tile}. Reason: {e}"); }
             }
         }
 

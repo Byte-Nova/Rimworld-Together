@@ -101,7 +101,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                             CommonEnumerators.LikelihoodTarget.Settlement); };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                            "Enemy", "Neutral", "Ally", r1, r2, r3, DialogManager.PopDialog);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -231,7 +231,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                             "Online", "Offline",
                             delegate { VisitManager.RequestVisit(); },
                             delegate { OfflineVisitManager.OnOfflineVisitAccept(); },
-                            null);
+                            DialogManager.PopDialog);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -251,7 +251,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!", DialogManager.PopDialog));
                     }
                 };
 
@@ -266,7 +266,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                         ClientValues.chosenCaravan = caravan;
 
                         RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
-                            EventManager.eventNames, EventManager.ShowSendEventDialog, null);
+                            EventManager.eventNames, EventManager.ShowSendEventDialog, DialogManager.PopDialog);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -297,7 +297,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                         };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                            "Enemy", "Neutral", "Ally", r1, r2, r3, DialogManager.PopDialog);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -392,7 +392,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                             CommonEnumerators.LikelihoodTarget.Site); };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                            "Enemy", "Neutral", "Ally", r1, r2, r3, DialogManager.PopDialog);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -456,7 +456,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                             ClientValues.chosenCaravan = __instance;
 
                             RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Personal Sites", "Available sites to build",
-                                SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, null);
+                                SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, DialogManager.PopDialog);
 
                             DialogManager.PushNewDialog(d1);
                         }
@@ -472,7 +472,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                             ClientValues.chosenCaravan = __instance;
 
                             RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Faction Sites", "Available sites to build",
-                                SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, null);
+                                SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, DialogManager.PopDialog);
 
                             DialogManager.PushNewDialog(d1);
                         }
@@ -509,7 +509,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                             };
 
                             RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
-                                "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                                "Enemy", "Neutral", "Ally", r1, r2, r3, DialogManager.PopDialog);
 
                             DialogManager.PushNewDialog(d1);
                         }
