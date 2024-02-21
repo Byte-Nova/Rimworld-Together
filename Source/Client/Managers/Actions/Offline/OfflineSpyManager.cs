@@ -7,13 +7,13 @@ using Verse;
 
 namespace GameClient
 {
-    public static class SpyManager
+    public static class OfflineSpyManager
     {
         public static int spyCost;
 
         public static void ParseSpyPacket(Packet packet)
         {
-            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(spyDetailsJSON.spyStepMode))
             {
@@ -70,8 +70,8 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(spyDetailsJSON.mapDetails);
-            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(mapFileJSON.mapData);
+            MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(spyDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
             Action r1 = delegate { PrepareMapForSpy(mapDetailsJSON); };
 

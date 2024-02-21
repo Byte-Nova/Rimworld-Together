@@ -96,7 +96,7 @@ namespace GameClient
 
         public static void ParseSitePacket(Packet packet)
         {
-            SiteDetailsJSON siteDetailsJSON = (SiteDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            SiteDetailsJSON siteDetailsJSON = (SiteDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(siteDetailsJSON.siteStep))
             {

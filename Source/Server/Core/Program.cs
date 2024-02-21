@@ -3,8 +3,12 @@ using System.Globalization;
 
 namespace GameServer
 {
+    //Class with all the critical variables for the client to work
+
     public static class Program
     {
+        //Paths
+
         public static string mainPath;
         public static string corePath;
         public static string mapsPath;
@@ -20,9 +24,13 @@ namespace GameServer
         public static string optionalModsPath;
         public static string forbiddenModsPath;
 
+        //Lists
+
         public static List<string> loadedRequiredMods = new List<string>();
         public static List<string> loadedOptionalMods = new List<string>();
         public static List<string> loadedForbiddenMods = new List<string>();
+
+        //References
 
         public static WhitelistFile whitelist;
         public static SiteValuesFile siteValues;
@@ -33,19 +41,15 @@ namespace GameServer
         public static ActionValuesFile actionValues;
         public static DifficultyValuesFile difficultyValues;
 
+        //Booleans
+
         public static bool isClosing;
 
         public static void Main()
         {
-            try
-            {
-                QuickEdit quickEdit = new QuickEdit();
-                quickEdit.DisableQuickEdit();
-            }
-            catch { };
-
             Console.ForegroundColor = ConsoleColor.White;
 
+            TryDisablyQuickEdit();
             SetPaths();
             SetCulture();
             LoadResources();
@@ -57,33 +61,14 @@ namespace GameServer
             while (true) Thread.Sleep(1);
         }
 
-        public static void LoadResources()
+        private static void TryDisablyQuickEdit()
         {
-            Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", Logger.LogMode.Title);
-            Logger.WriteToConsole($"Loading all necessary resources", Logger.LogMode.Title);
-            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
-
-            LoadSiteValues();
-            LoadEventValues();
-            LoadServerConfig();
-            LoadServerValues();
-            LoadActionValues();
-            ModManager.LoadMods();
-            WorldManager.LoadWorldFile();
-            WhitelistManager.LoadServerWhitelist();
-            CustomDifficultyManager.LoadCustomDifficulty();
-
-            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
-        }
-
-        private static void SetCulture()
-        {
-            CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
-            CultureInfo.CurrentUICulture = new CultureInfo("en-US", false);
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
-            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
-
-            Logger.WriteToConsole($"Loading server culture > [{CultureInfo.CurrentCulture}]", Logger.LogMode.Title);
+            try
+            {
+                QuickEdit quickEdit = new QuickEdit();
+                quickEdit.DisableQuickEdit();
+            }
+            catch { };
         }
 
         private static void SetPaths()
@@ -116,6 +101,35 @@ namespace GameServer
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
             if (!Directory.Exists(optionalModsPath)) Directory.CreateDirectory(optionalModsPath);
             if (!Directory.Exists(forbiddenModsPath)) Directory.CreateDirectory(forbiddenModsPath);
+        }
+
+        private static void SetCulture()
+        {
+            CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
+            CultureInfo.CurrentUICulture = new CultureInfo("en-US", false);
+            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
+            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
+
+            Logger.WriteToConsole($"Loading server culture > [{CultureInfo.CurrentCulture}]", Logger.LogMode.Title);
+        }
+
+        public static void LoadResources()
+        {
+            Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Loading all necessary resources", Logger.LogMode.Title);
+            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
+
+            LoadSiteValues();
+            LoadEventValues();
+            LoadServerConfig();
+            LoadServerValues();
+            LoadActionValues();
+            ModManager.LoadMods();
+            WorldManager.LoadWorldFile();
+            WhitelistManager.LoadServerWhitelist();
+            CustomDifficultyManager.LoadCustomDifficulty();
+
+            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
         }
 
         private static void LoadServerConfig()

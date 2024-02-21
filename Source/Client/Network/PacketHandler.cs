@@ -15,9 +15,15 @@ namespace GameClient
         {
             if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");
 
-            Type toUse = typeof(PacketHandler);
-            MethodInfo methodInfo = toUse.GetMethod(packet.header);
-            methodInfo.Invoke(packet.header, new object[] { packet });
+            Action toDo = delegate
+            {
+                Type toUse = typeof(PacketHandler);
+                MethodInfo methodInfo = toUse.GetMethod(packet.header);
+                methodInfo.Invoke(packet.header, new object[] { packet });
+            };
+
+            if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
+            else toDo();
         }
 
         public static void KeepAlivePacket(Packet packet)
@@ -52,7 +58,7 @@ namespace GameClient
 
         public static void VisitPacket(Packet packet)
         {
-            VisitManager.ParseVisitPacket(packet);
+            OnlineVisitManager.ParseVisitPacket(packet);
         }
 
         public static void OfflineVisitPacket(Packet packet)
@@ -62,7 +68,7 @@ namespace GameClient
 
         public static void RaidPacket(Packet packet)
         {
-            RaidManager.ParseRaidPacket(packet);
+            OfflineRaidManager.ParseRaidPacket(packet);
         }
 
         public static void SettlementPacket(Packet packet)
@@ -72,7 +78,7 @@ namespace GameClient
 
         public static void SpyPacket(Packet packet)
         {
-            SpyManager.ParseSpyPacket(packet);
+            OfflineSpyManager.ParseSpyPacket(packet);
         }
 
         public static void SitePacket(Packet packet)
@@ -130,13 +136,13 @@ namespace GameClient
 
         public static void ServerValuesPacket(Packet packet)
         {
-            ServerOverallJSON serverOverallJSON = (ServerOverallJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            ServerOverallJSON serverOverallJSON = (ServerOverallJSON)Serializer.ConvertBytesToObject(packet.contents);
             ServerValues.SetServerParameters(serverOverallJSON);
             ServerValues.SetAccountDetails(serverOverallJSON);
             PlanetBuilderHelper.SetWorldFeatures(serverOverallJSON);
             EventManager.SetEventPrices(serverOverallJSON);
             SiteManager.SetSiteDetails(serverOverallJSON);
-            SpyManager.SetSpyCost(serverOverallJSON);
+            OfflineSpyManager.SetSpyCost(serverOverallJSON);
             CustomDifficultyManager.SetCustomDifficulty(serverOverallJSON);
         }
     }

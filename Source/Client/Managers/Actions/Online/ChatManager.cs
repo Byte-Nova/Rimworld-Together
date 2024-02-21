@@ -55,7 +55,7 @@ namespace GameClient
 
         public static void ReceiveMessages(Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             for (int i = 0; i < chatMessagesJSON.usernames.Count(); i++)
             {

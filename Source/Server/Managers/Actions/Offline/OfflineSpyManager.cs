@@ -2,11 +2,11 @@
 
 namespace GameServer
 {
-    public static class SpyManager
+    public static class OfflineSpyManager
     {
         public static void ParseSpyPacket(ServerClient client, Packet packet)
         {
-            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(spyDetailsJSON.spyStepMode))
             {
@@ -43,7 +43,7 @@ namespace GameServer
                 else
                 {
                     MapFileJSON mapDetails = MapManager.GetUserMapFromTile(spyDetailsJSON.targetTile);
-                    spyDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
+                    spyDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);

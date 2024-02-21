@@ -75,7 +75,7 @@ namespace GameClient
             };
 
             ClearAllValues();
-            Main.threadDispatcher.Enqueue(toDo);
+            Master.threadDispatcher.Enqueue(toDo);
             Log.Message($"[Rimworld Together] > Disconnected from server");
         }
 

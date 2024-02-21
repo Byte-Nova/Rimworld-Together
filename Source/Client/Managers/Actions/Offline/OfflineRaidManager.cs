@@ -9,11 +9,11 @@ using Verse.AI.Group;
 
 namespace GameClient
 {
-    public static class RaidManager
+    public static class OfflineRaidManager
     {
         public static void ParseRaidPacket(Packet packet)
         {
-            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(raidDetailsJSON.raidStepMode))
             {
@@ -43,8 +43,8 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(raidDetailsJSON.mapDetails);
-            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(mapFileJSON.mapData);
+            MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(raidDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
             Action r1 = delegate { PrepareMapForRaid(mapDetailsJSON); };
 

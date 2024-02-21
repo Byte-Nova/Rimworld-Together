@@ -70,6 +70,8 @@ namespace GameServer
             {
                 while (true)
                 {
+                    Thread.Sleep(1);
+
                     string data = targetClient.listener.streamReader.ReadLine();
                     if (string.IsNullOrEmpty(data)) continue;
 
@@ -114,7 +116,7 @@ namespace GameServer
             {
                 while (true)
                 {
-                    Thread.Sleep(30000);
+                    Thread.Sleep(10000);
 
                     if (targetClient.listener.KAFlag) targetClient.listener.KAFlag = false;
                     else targetClient.listener.disconnectFlag = true;

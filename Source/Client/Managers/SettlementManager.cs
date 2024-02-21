@@ -6,7 +6,7 @@ namespace GameClient
     {
         public static void ParseSettlementPacket(Packet packet)
         {
-            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(settlementDetailsJSON.settlementStepMode))
             {

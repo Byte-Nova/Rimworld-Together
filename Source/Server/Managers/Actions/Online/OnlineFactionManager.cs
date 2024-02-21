@@ -2,11 +2,11 @@
 
 namespace GameServer
 {
-    public static class FactionManager
+    public static class OnlineFactionManager
     {
         public static void ParseFactionPacket(ServerClient client, Packet packet)
         {
-            FactionManifestJSON factionManifest = (FactionManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            FactionManifestJSON factionManifest = (FactionManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(factionManifest.manifestMode))
             {

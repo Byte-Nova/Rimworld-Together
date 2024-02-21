@@ -72,11 +72,13 @@ namespace GameClient
             {
                 while (true)
                 {
+                    Thread.Sleep(1);
+
                     string data = streamReader.ReadLine();
                     if (string.IsNullOrEmpty(data)) continue;
 
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
-                    Main.threadDispatcher.Enqueue(delegate { PacketHandler.HandlePacket(receivedPacket); });
+                    PacketHandler.HandlePacket(receivedPacket);
                 }
             }
 

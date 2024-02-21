@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void ParseSitePacket(ServerClient client, Packet packet)
         {
-            SiteDetailsJSON siteDetailsJSON = (SiteDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            SiteDetailsJSON siteDetailsJSON = (SiteDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(siteDetailsJSON.siteStep))
             {
@@ -127,9 +127,9 @@ namespace GameServer
 
                 if (siteDetailsJSON.isFromFaction)
                 {
-                    FactionFile factionFile = FactionManager.GetFactionFromClient(client);
+                    FactionFile factionFile = OnlineFactionManager.GetFactionFromClient(client);
 
-                    if (FactionManager.GetMemberRank(factionFile, client.username) == CommonEnumerators.FactionRanks.Member)
+                    if (OnlineFactionManager.GetMemberRank(factionFile, client.username) == CommonEnumerators.FactionRanks.Member)
                     {
                         ResponseShortcutManager.SendNoPowerPacket(client, new FactionManifestJSON());
                         return;
@@ -168,9 +168,9 @@ namespace GameServer
                 if (siteFile.factionName != client.factionName) ResponseShortcutManager.SendIllegalPacket(client);
                 else
                 {
-                    FactionFile factionFile = FactionManager.GetFactionFromClient(client);
+                    FactionFile factionFile = OnlineFactionManager.GetFactionFromClient(client);
 
-                    if (FactionManager.GetMemberRank(factionFile, client.username) !=
+                    if (OnlineFactionManager.GetMemberRank(factionFile, client.username) !=
                         CommonEnumerators.FactionRanks.Member) DestroySiteFromFile(siteFile);
 
                     else ResponseShortcutManager.SendNoPowerPacket(client, new FactionManifestJSON());
@@ -214,7 +214,7 @@ namespace GameServer
             SiteFile siteFile = GetSiteFileFromTile(siteDetailsJSON.tile);
 
             if (siteFile.owner != client.username &&
-                FactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
+                OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
                 ResponseShortcutManager.SendIllegalPacket(client);
             }
@@ -231,7 +231,7 @@ namespace GameServer
             SiteFile siteFile = GetSiteFileFromTile(siteDetailsJSON.tile);
 
             if (siteFile.owner != client.username &&
-                FactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
+                OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
                 ResponseShortcutManager.SendIllegalPacket(client);
             }

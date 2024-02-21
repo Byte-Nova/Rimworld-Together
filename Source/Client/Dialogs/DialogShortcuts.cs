@@ -157,7 +157,7 @@ namespace GameClient
             {
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
                 loginDetails.username = DialogManager.dialog2ResultOne;
-                loginDetails.password = Hasher.GetHash(DialogManager.dialog2ResultTwo);
+                loginDetails.password = Hasher.GetHashFromString(DialogManager.dialog2ResultTwo);
                 loginDetails.clientVersion = CommonValues.executableVersion;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
@@ -192,7 +192,7 @@ namespace GameClient
             {
                 JoinDetailsJSON registerDetails = new JoinDetailsJSON();
                 registerDetails.username = DialogManager.dialog3ResultOne;
-                registerDetails.password = Hasher.GetHash(DialogManager.dialog3ResultTwo);
+                registerDetails.password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
                 registerDetails.clientVersion = CommonValues.executableVersion;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 

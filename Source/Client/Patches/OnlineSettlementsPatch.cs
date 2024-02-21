@@ -29,7 +29,7 @@ namespace GameClient
             {
                 if (ClientValues.isInVisit)
                 {
-                    if (VisitManager.otherPlayerPawns.Contains(___pawn))
+                    if (OnlineVisitManager.otherPlayerPawns.Contains(___pawn))
                     {
                         if (newJob.exitMapOnArrival) return false;
                     }

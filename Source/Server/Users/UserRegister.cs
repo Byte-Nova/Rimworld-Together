@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void TryRegisterUser(ServerClient client, Packet packet)
         {
-            JoinDetailsJSON registerDetails = (JoinDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            JoinDetailsJSON registerDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
             client.username = registerDetails.username;
             client.password = registerDetails.password;
 
@@ -59,7 +59,7 @@ namespace GameServer
 
         private static string GetNewUIDForUser(ServerClient client)
         {
-            return Hasher.GetHash(client.username);
+            return Hasher.GetHashFromString(client.username);
         }
     }
 }

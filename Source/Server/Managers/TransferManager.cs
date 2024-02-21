@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void ParseTransferPacket(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(transferManifestJSON.transferStepMode))
             {
@@ -80,7 +80,7 @@ namespace GameServer
 
         public static void RejectTransfer(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
@@ -100,7 +100,7 @@ namespace GameServer
 
         public static void TransferThingsRebound(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.toTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
@@ -120,7 +120,7 @@ namespace GameServer
 
         public static void AcceptReboundTransfer(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
             
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
@@ -140,7 +140,7 @@ namespace GameServer
 
         public static void RejectReboundTransfer(ServerClient client, Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))

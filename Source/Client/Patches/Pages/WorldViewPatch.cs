@@ -194,7 +194,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        SpyManager.RequestSpy();
+                        OfflineSpyManager.RequestSpy();
                     }
                 };
 
@@ -208,7 +208,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        RaidManager.RequestRaid();
+                        OfflineRaidManager.RequestRaid();
                     }
                 };
 
@@ -224,7 +224,7 @@ namespace GameClient
 
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
                             "Online", "Offline",
-                            delegate { VisitManager.RequestVisit(); },
+                            delegate { OnlineVisitManager.RequestVisit(); },
                             delegate { OfflineVisitManager.OnOfflineVisitAccept(); },
                             null);
 
@@ -242,7 +242,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckForAnySocialPawn(RimworldManager.SearchLocation.Caravan))
+                        if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Caravan))
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }

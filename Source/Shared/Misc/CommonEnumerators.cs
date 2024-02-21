@@ -2,6 +2,10 @@
 {
     public class CommonEnumerators
     {
+        public enum FetchMode { Host, Player }
+
+        public enum SearchLocation { Caravan, Settlement }
+
         //Commands
 
         public enum CommandType { Op, Deop, Ban, Disconnect, Quit, Broadcast, ForceSave }

@@ -11,7 +11,7 @@ namespace GameServer
 
         public static void ParseClientMessages(ServerClient client, Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
             
             for(int i = 0; i < chatMessagesJSON.messages.Count(); i++)
             {
@@ -22,7 +22,7 @@ namespace GameServer
 
         public static void ExecuteCommand(ServerClient client, Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             ChatCommand toFind = ChatCommandManager.chatCommands.ToList().Find(x => x.prefix == chatMessagesJSON.messages[0]);
             if (toFind == null) SendMessagesToClient(client, new string[] { "Command was not found" });
@@ -38,7 +38,7 @@ namespace GameServer
 
         public static void BroadcastClientMessages(ServerClient client, Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
             for(int i = 0; i < chatMessagesJSON.messages.Count(); i++)
             {
                 if (client.isAdmin)
@@ -147,7 +147,7 @@ namespace GameServer
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
 
-            VisitManager.SendVisitStop(invoker, visitDetailsJSON);
+            OnlineVisitManager.SendVisitStop(invoker, visitDetailsJSON);
         }
     }
 }

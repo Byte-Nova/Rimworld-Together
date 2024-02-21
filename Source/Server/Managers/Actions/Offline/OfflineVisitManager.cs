@@ -4,19 +4,17 @@ namespace GameServer
 {
     public static class OfflineVisitManager
     {
-        private enum OfflineVisitStepMode { Request, Deny }
-
         public static void ParseOfflineVisitPacket(ServerClient client, Packet packet)
         {
-            OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(offlineVisitDetails.offlineVisitStepMode))
             {
-                case (int)OfflineVisitStepMode.Request:
+                case (int)CommonEnumerators.OfflineVisitStepMode.Request:
                     SendRequestedMap(client, offlineVisitDetails);
                     break;
 
-                case (int)OfflineVisitStepMode.Deny:
+                case (int)CommonEnumerators.OfflineVisitStepMode.Deny:
                     //Nothing goes here
                     break;
             }
@@ -26,7 +24,7 @@ namespace GameServer
         {
             if (!MapManager.CheckIfMapExists(offlineVisitDetails.targetTile))
             {
-                offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
+                offlineVisitDetails.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
                 client.listener.dataQueue.Enqueue(packet);
             }
@@ -37,7 +35,7 @@ namespace GameServer
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    offlineVisitDetails.offlineVisitStepMode = ((int)OfflineVisitStepMode.Deny).ToString();
+                    offlineVisitDetails.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
                     client.listener.dataQueue.Enqueue(packet);
                 }
@@ -45,7 +43,7 @@ namespace GameServer
                 else
                 {
                     MapFileJSON mapDetails = MapManager.GetUserMapFromTile(offlineVisitDetails.targetTile);
-                    offlineVisitDetails.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
+                    offlineVisitDetails.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
                     client.listener.dataQueue.Enqueue(packet);

@@ -2,11 +2,11 @@
 
 namespace GameServer
 {
-    public static class VisitManager
+    public static class OnlineVisitManager
     {
         public static void ParseVisitPacket(ServerClient client, Packet packet)
         {
-            VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(visitDetailsJSON.visitStepMode))
             {

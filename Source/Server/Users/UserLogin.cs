@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void TryLoginUser(ServerClient client, Packet packet)
         {
-            JoinDetailsJSON loginDetails = (JoinDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            JoinDetailsJSON loginDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
             client.username = loginDetails.username;
             client.password = loginDetails.password;
 

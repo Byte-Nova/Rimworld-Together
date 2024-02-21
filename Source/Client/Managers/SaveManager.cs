@@ -26,14 +26,14 @@ namespace GameClient
 
         public static void ReceiveSavePartFromServer(Packet packet)
         {
-            FileTransferJSON fileTransferJSON = (FileTransferJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             if (Network.listener.downloadManager == null)
             {
                 Log.Message($"[Rimworld Together] > Receiving save from server");
 
                 customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
-                string filePath = Path.Combine(new string[] { Main.savesPath, customSaveName + ".rws" });
+                string filePath = Path.Combine(new string[] { Master.savesPath, customSaveName + ".rws" });
 
                 Network.listener.downloadManager = new DownloadManager();
                 Network.listener.downloadManager.PrepareDownload(filePath, fileTransferJSON.fileParts);
@@ -62,7 +62,7 @@ namespace GameClient
             {
                 Log.Message($"[Rimworld Together] > Sending save to server");
 
-                string filePath = Path.Combine(new string[] { Main.savesPath, fileName + ".rws" });
+                string filePath = Path.Combine(new string[] { Master.savesPath, fileName + ".rws" });
 
                 Network.listener.uploadManager = new UploadManager();
                 Network.listener.uploadManager.PrepareUpload(filePath);

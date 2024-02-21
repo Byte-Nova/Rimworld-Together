@@ -22,7 +22,7 @@ namespace GameClient
 
             MapFileJSON mapFileJSON = new MapFileJSON();
             mapFileJSON.mapTile = mapDetailsJSON.mapTile;
-            mapFileJSON.mapData = ObjectConverter.ConvertObjectToBytes(mapDetailsJSON);
+            mapFileJSON.mapData = Serializer.ConvertObjectToBytes(mapDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON("MapPacket", mapFileJSON);
             Network.listener.dataQueue.Enqueue(packet);

@@ -7,7 +7,7 @@ namespace GameClient
     {
         public static void ParseWorldPacket(Packet packet)
         {
-            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(worldDetailsJSON.worldStepMode))
             {

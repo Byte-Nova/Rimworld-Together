@@ -2,21 +2,19 @@
 
 namespace GameServer
 {
-    public static class RaidManager
+    public static class OfflineRaidManager
     {
-        private enum RaidStepMode { Request, Deny }
-
         public static void ParseRaidPacket(ServerClient client, Packet packet)
         {
-            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(raidDetailsJSON.raidStepMode))
             {
-                case (int)RaidStepMode.Request:
+                case (int)CommonEnumerators.RaidStepMode.Request:
                     SendRequestedMap(client, raidDetailsJSON);
                     break;
 
-                case (int)RaidStepMode.Deny:
+                case (int)CommonEnumerators.RaidStepMode.Deny:
                     //Do nothing
                     break;
             }
@@ -26,7 +24,7 @@ namespace GameServer
         {
             if (!MapManager.CheckIfMapExists(raidDetailsJSON.targetTile))
             {
-                raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Deny).ToString();
+                raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
                 client.listener.dataQueue.Enqueue(packet);
             }
@@ -37,7 +35,7 @@ namespace GameServer
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    raidDetailsJSON.raidStepMode = ((int)RaidStepMode.Deny).ToString();
+                    raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
                     Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);
                 }
@@ -45,7 +43,7 @@ namespace GameServer
                 else
                 {
                     MapFileJSON mapDetails = MapManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
-                    raidDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetails);
+                    raidDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);

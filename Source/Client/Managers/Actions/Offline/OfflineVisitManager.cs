@@ -13,7 +13,7 @@ namespace GameClient
     {
         public static void ParseOfflineVisitPacket(Packet packet)
         {
-            OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(offlineVisitDetails.offlineVisitStepMode))
             {
@@ -50,8 +50,8 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapFileJSON mapFileJSON = (MapFileJSON)ObjectConverter.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
-            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(mapFileJSON.mapData);
+            MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
             Action r1 = delegate { PrepareMapForOfflineVisit(mapDetailsJSON); };
 

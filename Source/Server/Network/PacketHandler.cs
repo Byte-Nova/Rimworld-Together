@@ -60,7 +60,7 @@ namespace GameServer
 
         public static void VisitPacket(ServerClient client, Packet packet)
         {
-            VisitManager.ParseVisitPacket(client, packet);
+            OnlineVisitManager.ParseVisitPacket(client, packet);
         }
 
         public static void OfflineVisitPacket(ServerClient client, Packet packet)
@@ -75,7 +75,7 @@ namespace GameServer
 
         public static void FactionPacket(ServerClient client, Packet packet)
         {
-            FactionManager.ParseFactionPacket(client, packet);
+            OnlineFactionManager.ParseFactionPacket(client, packet);
         }
 
         public static void MapPacket(ServerClient client, Packet packet)
@@ -85,12 +85,12 @@ namespace GameServer
 
         public static void RaidPacket(ServerClient client, Packet packet)
         {
-            RaidManager.ParseRaidPacket(client, packet);
+            OfflineRaidManager.ParseRaidPacket(client, packet);
         }
 
         public static void SpyPacket(ServerClient client, Packet packet)
         {
-            SpyManager.ParseSpyPacket(client, packet);
+            OfflineSpyManager.ParseSpyPacket(client, packet);
         }
 
         public static void SettlementPacket(ServerClient client, Packet packet)

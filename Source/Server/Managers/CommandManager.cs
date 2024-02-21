@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(commandDetailsJSON.commandType))
             {

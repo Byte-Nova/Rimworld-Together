@@ -14,7 +14,7 @@ namespace GameClient
     {
         public static void ParseTransferPacket(Packet packet)
         {
-            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(transferManifestJSON.transferStepMode))
             {

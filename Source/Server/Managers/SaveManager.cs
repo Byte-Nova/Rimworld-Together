@@ -9,7 +9,7 @@ namespace GameServer
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
 
-            FileTransferJSON fileTransferJSON = (FileTransferJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             if (client.listener.downloadManager == null)
             {

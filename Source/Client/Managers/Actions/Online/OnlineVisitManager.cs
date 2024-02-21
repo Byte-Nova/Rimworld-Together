@@ -7,11 +7,12 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using Verse.AI;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
 {
-    public static class VisitManager
+    public static class OnlineVisitManager
     {
         public static List<Pawn> playerPawns = new List<Pawn>();
 
@@ -23,31 +24,31 @@ namespace GameClient
 
         public static void ParseVisitPacket(Packet packet)
         {
-            VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
-                case (int)CommonEnumerators.VisitStepMode.Request:
+                case (int)VisitStepMode.Request:
                     OnVisitRequest(visitDetailsJSON);
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Accept:
+                case (int)VisitStepMode.Accept:
                     OnVisitAccept(visitDetailsJSON);
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Reject:
+                case (int)VisitStepMode.Reject:
                     OnVisitReject();
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Unavailable:
+                case (int)VisitStepMode.Unavailable:
                     OnVisitUnavailable();
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Action:
+                case (int)VisitStepMode.Action:
                     VisitActionGetter.ReceiveActions(visitDetailsJSON);
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Stop:
+                case (int)VisitStepMode.Stop:
                     OnVisitStop();
                     break;
             }
@@ -63,10 +64,10 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
 
                     VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
-                    visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Request).ToString();
+                    visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Request).ToString();
                     visitDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
                     visitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
-                    visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(VisitThingHelper.FetchMode.Player, visitDetailsJSON);
+                    visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(FetchMode.Player, visitDetailsJSON);
 
                     Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
@@ -79,21 +80,21 @@ namespace GameClient
 
         private static void SendRequestedMap(VisitDetailsJSON visitDetailsJSON)
         {
-            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Accept).ToString();
+            visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Accept).ToString();
 
             MapDetailsJSON mapDetailsJSON = RimworldManager.GetMap(visitMap, true, false, false, true);
-            visitDetailsJSON.mapDetails = ObjectConverter.ConvertObjectToBytes(mapDetailsJSON);
+            visitDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetailsJSON);
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
 
         private static void VisitMap(MapDetailsJSON mapDetailsJSON, VisitDetailsJSON visitDetailsJSON)
         {
-            VisitThingHelper.SetMapForVisit(VisitThingHelper.FetchMode.Player, mapDetailsJSON: mapDetailsJSON);
+            VisitThingHelper.SetMapForVisit(FetchMode.Player, mapDetailsJSON: mapDetailsJSON);
 
-            VisitThingHelper.GetCaravanPawns(VisitThingHelper.FetchMode.Player);
+            VisitThingHelper.GetCaravanPawns(FetchMode.Player);
 
-            VisitThingHelper.SpawnPawnsForVisit(VisitThingHelper.FetchMode.Player, visitDetailsJSON);
+            VisitThingHelper.SpawnPawnsForVisit(FetchMode.Player, visitDetailsJSON);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, visitMap, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
@@ -118,7 +119,7 @@ namespace GameClient
             //Implement this
 
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
-            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
+            visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
@@ -128,10 +129,10 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                VisitThingHelper.SetMapForVisit(VisitThingHelper.FetchMode.Host, visitDetailsJSON: visitDetailsJSON);
-                VisitThingHelper.GetMapPawns(VisitThingHelper.FetchMode.Host, visitDetailsJSON);
-                visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(VisitThingHelper.FetchMode.Host, visitDetailsJSON);
-                VisitThingHelper.SpawnPawnsForVisit(VisitThingHelper.FetchMode.Host, visitDetailsJSON);
+                VisitThingHelper.SetMapForVisit(FetchMode.Host, visitDetailsJSON: visitDetailsJSON);
+                VisitThingHelper.GetMapPawns(FetchMode.Host, visitDetailsJSON);
+                visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(FetchMode.Host, visitDetailsJSON);
+                VisitThingHelper.SpawnPawnsForVisit(FetchMode.Host, visitDetailsJSON);
                 SendRequestedMap(visitDetailsJSON);
 
                 VisitThingHelper.GetMapItems();
@@ -143,7 +144,7 @@ namespace GameClient
 
             Action r2 = delegate
             {
-                visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Reject).ToString();
+                visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Reject).ToString();
                 Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
@@ -156,7 +157,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)ObjectConverter.ConvertBytesToObject(visitDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
             Action r1 = delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); };
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
@@ -194,18 +195,16 @@ namespace GameClient
 
     public static class VisitThingHelper
     {
-        public enum FetchMode { Host, Player }
-
         public static void GetMapPawns(FetchMode mode, VisitDetailsJSON visitDetailsJSON)
         {
             if (mode == FetchMode.Host)
             {
-                List<Pawn> mapHumans = VisitManager.visitMap.mapPawns.AllPawns
+                List<Pawn> mapHumans = OnlineVisitManager.visitMap.mapPawns.AllPawns
                     .FindAll(fetch => TransferManagerHelper.CheckIfThingIsHuman(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<Pawn> mapAnimals = VisitManager.visitMap.mapPawns.AllPawns
+                List<Pawn> mapAnimals = OnlineVisitManager.visitMap.mapPawns.AllPawns
                     .FindAll(fetch => TransferManagerHelper.CheckIfThingIsAnimal(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -214,7 +213,7 @@ namespace GameClient
                 foreach (Pawn pawn in mapHumans) allPawns.Add(pawn);
                 foreach (Pawn pawn in mapAnimals) allPawns.Add(pawn);
 
-                VisitManager.playerPawns = allPawns.ToList();
+                OnlineVisitManager.playerPawns = allPawns.ToList();
             }
 
             else if (mode == FetchMode.Player)
@@ -237,7 +236,7 @@ namespace GameClient
                     pawnList.Add(animal);
                 }
 
-                VisitManager.otherPlayerPawns = pawnList.ToList();
+                OnlineVisitManager.otherPlayerPawns = pawnList.ToList();
             }
         }
 
@@ -261,7 +260,7 @@ namespace GameClient
                     pawnList.Add(animal);
                 }
 
-                VisitManager.otherPlayerPawns = pawnList.ToList();
+                OnlineVisitManager.otherPlayerPawns = pawnList.ToList();
             }
 
             else if (mode == FetchMode.Player)
@@ -280,25 +279,25 @@ namespace GameClient
                 foreach (Pawn pawn in caravanHumans) allPawns.Add(pawn);
                 foreach (Pawn pawn in caravanAnimals) allPawns.Add(pawn);
 
-                VisitManager.playerPawns = allPawns;
+                OnlineVisitManager.playerPawns = allPawns;
             }
         }
 
         public static void GetMapItems()
         {
-            VisitManager.mapThings.Clear();
+            OnlineVisitManager.mapThings.Clear();
 
-            for (int z = 0; z < VisitManager.visitMap.Size.z; ++z)
+            for (int z = 0; z < OnlineVisitManager.visitMap.Size.z; ++z)
             {
-                for (int x = 0; x < VisitManager.visitMap.Size.x; ++x)
+                for (int x = 0; x < OnlineVisitManager.visitMap.Size.x; ++x)
                 {
-                    IntVec3 vectorToCheck = new IntVec3(x, VisitManager.visitMap.Size.y, z);
+                    IntVec3 vectorToCheck = new IntVec3(x, OnlineVisitManager.visitMap.Size.y, z);
 
-                    foreach (Thing thing in VisitManager.visitMap.thingGrid.ThingsListAt(vectorToCheck).ToList())
+                    foreach (Thing thing in OnlineVisitManager.visitMap.thingGrid.ThingsListAt(vectorToCheck).ToList())
                     {
                         if (TransferManagerHelper.CheckIfThingIsHuman(thing)) continue;
                         else if (TransferManagerHelper.CheckIfThingIsAnimal(thing)) continue;
-                        else VisitManager.mapThings.Add(thing);
+                        else OnlineVisitManager.mapThings.Add(thing);
                     }
                 }
             }
@@ -308,12 +307,12 @@ namespace GameClient
         {
             if (mode == FetchMode.Host)
             {
-                VisitManager.visitMap = Find.Maps.Find(fetch => fetch.Tile == int.Parse(visitDetailsJSON.targetTile));
+                OnlineVisitManager.visitMap = Find.Maps.Find(fetch => fetch.Tile == int.Parse(visitDetailsJSON.targetTile));
             }
 
             else if (mode == FetchMode.Player)
             {
-                VisitManager.visitMap = DeepScribeManager.GetMapSimple(mapDetailsJSON, true, false, false, false);
+                OnlineVisitManager.visitMap = DeepScribeManager.GetMapSimple(mapDetailsJSON, true, false, false, false);
             }
         }
 
@@ -321,7 +320,7 @@ namespace GameClient
         {
             if (mode == FetchMode.Host)
             {
-                List<Pawn> mapHumans = VisitManager.visitMap.mapPawns.AllPawns
+                List<Pawn> mapHumans = OnlineVisitManager.visitMap.mapPawns.AllPawns
                     .FindAll(fetch => TransferManagerHelper.CheckIfThingIsHuman(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -334,7 +333,7 @@ namespace GameClient
                 }
                 visitDetailsJSON.mapHumans = humanStringList;
 
-                List<Pawn> mapAnimals = VisitManager.visitMap.mapPawns.AllPawns
+                List<Pawn> mapAnimals = OnlineVisitManager.visitMap.mapPawns.AllPawns
                     .FindAll(fetch => TransferManagerHelper.CheckIfThingIsAnimal(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -385,20 +384,20 @@ namespace GameClient
             if (mode == FetchMode.Host)
             {
                 GetCaravanPawns(FetchMode.Host, visitDetailsJSON);
-                foreach (Pawn pawn in VisitManager.otherPlayerPawns)
+                foreach (Pawn pawn in OnlineVisitManager.otherPlayerPawns)
                 {
                     pawn.SetFaction(FactionValues.allyPlayer);
-                    GenSpawn.Spawn(pawn, VisitManager.visitMap.Center, VisitManager.visitMap, Rot4.Random);
+                    GenSpawn.Spawn(pawn, OnlineVisitManager.visitMap.Center, OnlineVisitManager.visitMap, Rot4.Random);
                 }
             }
 
             else if (mode == FetchMode.Player)
             {
                 GetMapPawns(FetchMode.Player, visitDetailsJSON);
-                foreach (Pawn pawn in VisitManager.otherPlayerPawns)
+                foreach (Pawn pawn in OnlineVisitManager.otherPlayerPawns)
                 {
                     pawn.SetFaction(FactionValues.allyPlayer);
-                    GenSpawn.Spawn(pawn, VisitManager.visitMap.Center, VisitManager.visitMap, Rot4.Random);
+                    GenSpawn.Spawn(pawn, OnlineVisitManager.visitMap.Center, OnlineVisitManager.visitMap, Rot4.Random);
                 }
             }
         }
@@ -422,7 +421,7 @@ namespace GameClient
         {
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
 
-            foreach (Pawn pawn in VisitManager.playerPawns.ToArray())
+            foreach (Pawn pawn in OnlineVisitManager.playerPawns.ToArray())
             {
                 try
                 {
@@ -445,14 +444,14 @@ namespace GameClient
                 catch { Log.Warning($"Couldn't get job for {pawn}"); }
             }
 
-            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Action).ToString();
+            visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Action).ToString();
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
 
         public static void ReceiveActions(VisitDetailsJSON visitDetailsJSON)
         {
-            Pawn[] otherPawns = VisitManager.otherPlayerPawns.ToArray();
+            Pawn[] otherPawns = OnlineVisitManager.otherPlayerPawns.ToArray();
 
             for (int i = 0; i < otherPawns.Count(); i++)
             {
@@ -489,19 +488,19 @@ namespace GameClient
                 {
                     if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Thing))
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Human).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Human).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(targetInfo.Pawn));
                     }
 
                     else if (TransferManagerHelper.CheckIfThingIsAnimal(targetInfo.Thing))
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Animal).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformAnimalToString(targetInfo.Pawn));
                     }
 
                     else
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Thing).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Thing).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformItemToString(targetInfo.Thing, 1));
                     }
                 }
@@ -510,20 +509,20 @@ namespace GameClient
                 {
                     if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Pawn))
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Human).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Human).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(targetInfo.Pawn));
                     }
 
                     else
                     {
-                        visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Animal).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
                         toReturn = Serializer.SerializeToString(DeepScribeManager.TransformAnimalToString(targetInfo.Pawn));
                     }
                 }
 
                 else if (targetInfo.Cell != null)
                 {
-                    visitDetailsJSON.actionTargetType.Add(((int)CommonEnumerators.ActionTargetType.Cell).ToString());
+                    visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Cell).ToString());
                     toReturn = $"{targetInfo.Cell.x}|{targetInfo.Cell.y}|{targetInfo.Cell.z}";
                 }
             }
@@ -540,28 +539,28 @@ namespace GameClient
             {
                 switch (int.Parse(actionTargetType))
                 {
-                    case (int)CommonEnumerators.ActionTargetType.Thing:
+                    case (int)ActionTargetType.Thing:
                         ItemDetailsJSON itemDetailsJSON = Serializer.SerializeFromString<ItemDetailsJSON>(toReadFrom);
                         Thing thingToCompare = DeepScribeManager.GetItemSimple(itemDetailsJSON);
-                        Thing realThing = VisitManager.mapThings.Find(fetch => fetch.Position == thingToCompare.Position && fetch.def.defName == thingToCompare.def.defName);
+                        Thing realThing = OnlineVisitManager.mapThings.Find(fetch => fetch.Position == thingToCompare.Position && fetch.def.defName == thingToCompare.def.defName);
                         if (realThing != null) target = new LocalTargetInfo(realThing);
                         break;
 
-                    case (int)CommonEnumerators.ActionTargetType.Human:
+                    case (int)ActionTargetType.Human:
                         HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(toReadFrom);
                         Pawn humanToCompare = DeepScribeManager.GetHumanSimple(humanDetailsJSON);
-                        Pawn realHuman = VisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == humanToCompare.Position);
+                        Pawn realHuman = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == humanToCompare.Position);
                         if (realHuman != null) target = new LocalTargetInfo(realHuman);
                         break;
 
-                    case (int)CommonEnumerators.ActionTargetType.Animal:
+                    case (int)ActionTargetType.Animal:
                         AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(toReadFrom); ;
                         Pawn animalToCompare = DeepScribeManager.GetAnimalSimple(animalDetailsJSON);
-                        Pawn realAnimal = VisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == animalToCompare.Position);
+                        Pawn realAnimal = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == animalToCompare.Position);
                         if (realAnimal != null) target = new LocalTargetInfo(realAnimal);
                         break;
 
-                    case (int)CommonEnumerators.ActionTargetType.Cell:
+                    case (int)ActionTargetType.Cell:
                         string[] cellCoords = toReadFrom.Split('|');
                         IntVec3 cell = new IntVec3(int.Parse(cellCoords[0]), int.Parse(cellCoords[1]), int.Parse(cellCoords[2]));
                         if (cell != null) target = new LocalTargetInfo(cell);

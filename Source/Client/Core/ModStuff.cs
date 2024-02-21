@@ -42,7 +42,7 @@ namespace GameClient
             listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info on the logs");
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open"))
             {
-                try { System.Diagnostics.Process.Start(Main.mainPath); } catch { }
+                try { System.Diagnostics.Process.Start(Master.mainPath); } catch { }
             }
 
             listingStandard.GapLine();

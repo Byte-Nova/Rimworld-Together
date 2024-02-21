@@ -26,7 +26,7 @@ namespace GameClient
 
         public static void ParseEventPacket(Packet packet)
         {
-            EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(eventDetailsJSON.eventStepMode))
             {

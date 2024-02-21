@@ -4,18 +4,16 @@ namespace GameServer
 {
     public static class LikelihoodManager
     {
-        private enum Likelihoods { Enemy, Neutral, Ally, Faction, Personal }
-
         public static void ChangeUserLikelihoods(ServerClient client, Packet packet)
         {
-            StructureLikelihoodJSON structureLikelihoodJSON = (StructureLikelihoodJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            StructureLikelihoodJSON structureLikelihoodJSON = (StructureLikelihoodJSON)Serializer.ConvertBytesToObject(packet.contents);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(structureLikelihoodJSON.tile);
             SiteFile siteFile = SiteManager.GetSiteFileFromTile(structureLikelihoodJSON.tile);
 
             if (settlementFile != null) structureLikelihoodJSON.owner = settlementFile.owner;
             else structureLikelihoodJSON.owner = siteFile.owner;
 
-            if (client.hasFaction && FactionManager.GetFactionFromClient(client).factionMembers.Contains(structureLikelihoodJSON.owner))
+            if (client.hasFaction && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(structureLikelihoodJSON.owner))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
@@ -24,7 +22,7 @@ namespace GameServer
             client.enemyPlayers.Remove(structureLikelihoodJSON.owner);
             client.allyPlayers.Remove(structureLikelihoodJSON.owner);
 
-            if (structureLikelihoodJSON.likelihood == ((int)Likelihoods.Enemy).ToString())
+            if (structureLikelihoodJSON.likelihood == ((int)CommonEnumerators.Likelihoods.Enemy).ToString())
             {
                 if (!client.enemyPlayers.Contains(structureLikelihoodJSON.owner))
                 {
@@ -32,7 +30,7 @@ namespace GameServer
                 }
             }
 
-            else if (structureLikelihoodJSON.likelihood == ((int)Likelihoods.Ally).ToString())
+            else if (structureLikelihoodJSON.likelihood == ((int)CommonEnumerators.Likelihoods.Ally).ToString())
             {
                 if (!client.allyPlayers.Contains(structureLikelihoodJSON.owner))
                 {
@@ -90,68 +88,68 @@ namespace GameServer
             if (settlementFile != null) usernameToCheck = settlementFile.owner;
             else usernameToCheck = siteFile.owner;
 
-            if (client.hasFaction && FactionManager.GetFactionFromFactionName(client.factionName).factionMembers.Contains(usernameToCheck))
+            if (client.hasFaction && OnlineFactionManager.GetFactionFromFactionName(client.factionName).factionMembers.Contains(usernameToCheck))
             {
-                if (usernameToCheck == client.username) return (int)Likelihoods.Personal;
-                else return (int)Likelihoods.Faction;
+                if (usernameToCheck == client.username) return (int)CommonEnumerators.Likelihoods.Personal;
+                else return (int)CommonEnumerators.Likelihoods.Faction;
             }
 
-            else if (client.enemyPlayers.Contains(usernameToCheck)) return (int)Likelihoods.Enemy;
-            else if (client.allyPlayers.Contains(usernameToCheck)) return (int)Likelihoods.Ally;
-            else return (int)Likelihoods.Neutral;
+            else if (client.enemyPlayers.Contains(usernameToCheck)) return (int)CommonEnumerators.Likelihoods.Enemy;
+            else if (client.allyPlayers.Contains(usernameToCheck)) return (int)CommonEnumerators.Likelihoods.Ally;
+            else return (int)CommonEnumerators.Likelihoods.Neutral;
         }
 
         public static int GetSettlementLikelihood(ServerClient client, SettlementFile settlement)
         {
-            if (client.hasFaction && FactionManager.GetFactionFromFactionName(client.factionName).factionMembers.Contains(settlement.owner))
+            if (client.hasFaction && OnlineFactionManager.GetFactionFromFactionName(client.factionName).factionMembers.Contains(settlement.owner))
             {
-                if (settlement.owner == client.username) return (int)Likelihoods.Personal;
-                else return (int)Likelihoods.Faction;
+                if (settlement.owner == client.username) return (int)CommonEnumerators.Likelihoods.Personal;
+                else return (int)CommonEnumerators.Likelihoods.Faction;
             }
 
-            else if (client.enemyPlayers.Contains(settlement.owner)) return (int)Likelihoods.Enemy;
-            else if (client.allyPlayers.Contains(settlement.owner)) return (int)Likelihoods.Ally;
-            else if (settlement.owner == client.username) return (int)Likelihoods.Personal;
-            else return (int)Likelihoods.Neutral;
+            else if (client.enemyPlayers.Contains(settlement.owner)) return (int)CommonEnumerators.Likelihoods.Enemy;
+            else if (client.allyPlayers.Contains(settlement.owner)) return (int)CommonEnumerators.Likelihoods.Ally;
+            else if (settlement.owner == client.username) return (int)CommonEnumerators.Likelihoods.Personal;
+            else return (int)CommonEnumerators.Likelihoods.Neutral;
         }
 
         public static int GetSiteLikelihood(ServerClient client, SiteFile site)
         {
             if (site.isFromFaction)
             {
-                if (client.hasFaction && client.factionName == site.factionName) return (int)Likelihoods.Faction;
+                if (client.hasFaction && client.factionName == site.factionName) return (int)CommonEnumerators.Likelihoods.Faction;
 
-                else if (client.enemyPlayers.Contains(site.owner)) return (int)Likelihoods.Enemy;
+                else if (client.enemyPlayers.Contains(site.owner)) return (int)CommonEnumerators.Likelihoods.Enemy;
 
-                else if (client.allyPlayers.Contains(site.owner)) return (int)Likelihoods.Ally;
+                else if (client.allyPlayers.Contains(site.owner)) return (int)CommonEnumerators.Likelihoods.Ally;
 
-                FactionFile factionFile = FactionManager.GetFactionFromFactionName(site.factionName);
+                FactionFile factionFile = OnlineFactionManager.GetFactionFromFactionName(site.factionName);
 
                 foreach(string str in client.enemyPlayers)
                 {
-                    if (FactionManager.CheckIfUserIsInFaction(factionFile, str))
+                    if (OnlineFactionManager.CheckIfUserIsInFaction(factionFile, str))
                     {
-                        return (int)Likelihoods.Enemy;
+                        return (int)CommonEnumerators.Likelihoods.Enemy;
                     }
                 }
 
                 foreach (string str in client.allyPlayers)
                 {
-                    if (FactionManager.CheckIfUserIsInFaction(factionFile, str))
+                    if (OnlineFactionManager.CheckIfUserIsInFaction(factionFile, str))
                     {
-                        return (int)Likelihoods.Ally;
+                        return (int)CommonEnumerators.Likelihoods.Ally;
                     }
                 }
 
-                return (int)Likelihoods.Neutral;
+                return (int)CommonEnumerators.Likelihoods.Neutral;
             }
 
             else
             {
-                if (site.owner == client.username) return (int)Likelihoods.Personal;
-                else if (client.enemyPlayers.Contains(site.owner)) return (int)Likelihoods.Enemy;
-                else if (client.allyPlayers.Contains(site.owner)) return (int)Likelihoods.Ally;
-                else return (int)Likelihoods.Neutral;
+                if (site.owner == client.username) return (int)CommonEnumerators.Likelihoods.Personal;
+                else if (client.enemyPlayers.Contains(site.owner)) return (int)CommonEnumerators.Likelihoods.Enemy;
+                else if (client.allyPlayers.Contains(site.owner)) return (int)CommonEnumerators.Likelihoods.Ally;
+                else return (int)CommonEnumerators.Likelihoods.Neutral;
             }
         }
 

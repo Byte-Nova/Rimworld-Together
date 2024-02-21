@@ -9,11 +9,9 @@ namespace GameClient
 {
     public static class RimworldManager
     {
-        public enum SearchLocation { Caravan, Settlement }
-
-        public static bool CheckForAnySocialPawn(SearchLocation location)
+        public static bool CheckForAnySocialPawn(CommonEnumerators.SearchLocation location)
         {
-            if (location == SearchLocation.Caravan)
+            if (location == CommonEnumerators.SearchLocation.Caravan)
             {
                 Caravan caravan = ClientValues.chosenCaravan;
 
@@ -21,7 +19,7 @@ namespace GameClient
                 if (playerNegotiator != null) return true;
             }
 
-            else if (location == SearchLocation.Settlement)
+            else if (location == CommonEnumerators.SearchLocation.Settlement)
             {
                 Map map = Find.AnyPlayerHomeMap;
 

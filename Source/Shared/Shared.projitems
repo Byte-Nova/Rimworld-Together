@@ -26,7 +26,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Overrides\BindOverrider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serializers\ObjectConverter.cs" />
     <Compile Include="..\Shared\JSON\CustomDifficultyValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\FactionManifestJSON.cs" />
     <Compile Include="..\Shared\JSON\JoinDetailsJSON.cs" />
@@ -41,7 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\ItemDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\WorldDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serializers\Serializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
   </ItemGroup>
   <ItemGroup>

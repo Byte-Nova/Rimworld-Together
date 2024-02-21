@@ -9,7 +9,7 @@ namespace GameClient
     {
         public static void ParseFactionPacket(Packet packet)
         {
-            FactionManifestJSON factionManifest = (FactionManifestJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            FactionManifestJSON factionManifest = (FactionManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(factionManifest.manifestMode))
             {
