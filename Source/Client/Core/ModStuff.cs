@@ -78,7 +78,7 @@ namespace RimworldTogether.GameClient.Core
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
 
                     Packet packet = new Packet("ResetSavePacket");
-                    Network.Network.serverListener.SendData(packet);
+                    Network.Network.SendData(packet);
                 };
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, DialogManager.PopDialog);

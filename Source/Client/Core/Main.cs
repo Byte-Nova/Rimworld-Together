@@ -60,6 +60,7 @@ namespace RimworldTogether.GameClient.Core
 
                 //prepare file name for logger
                 Misc.Logs.prepareFileName(modPath);
+
             }
 
             private static void LoadClientPreferences()

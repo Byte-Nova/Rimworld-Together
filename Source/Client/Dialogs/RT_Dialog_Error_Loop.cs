@@ -23,6 +23,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public RT_Dialog_Error_Loop(string[] descriptionLoop, Action actionOK = null)
         {
+            DialogManager.dialogErrorLoop = this;
             this.descriptionLoop = descriptionLoop;
             this.actionOK = actionOK;
 
