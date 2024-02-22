@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
@@ -11,9 +10,6 @@ using RimworldTogether.Shared.JSON.Things;
 using RimworldTogether.Shared.Serializers;
 using UnityEngine.Assertions.Must;
 using Verse;
-using RimworldTogether.GameClient.CustomMapGeneration;
-using TMPro;
-using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Managers
 {
@@ -53,7 +49,7 @@ namespace RimworldTogether.GameClient.Managers
                 humanDetailsJSON.FaceTattooDefName = human.style.FaceTattoo.defName.ToString();
                 humanDetailsJSON.BodyTattooDefName = human.style.BodyTattoo.defName.ToString();
             }
-            catch (Exception e) { Logs.Warning($"Failed to load biological details from human {human.Label}. Reason: {e}"); }
+            catch (Exception e) { Log.Warning($"Failed to load biological details from human {human.Label}. Reason: {e}"); }
 
             if (human.health.hediffSet.hediffs.Count() > 0)
             {
@@ -69,7 +65,7 @@ namespace RimworldTogether.GameClient.Managers
                         humanDetailsJSON.hediffSeverity.Add(hd.Severity.ToString());
                         humanDetailsJSON.heddifPermanent.Add(hd.IsPermanent());
                     }
-                    catch (Exception e) { Logs.Warning($"Failed to load heddif {hd} from human {human.Label}. Reason: {e}"); }
+                    catch (Exception e) { Log.Warning($"Failed to load heddif {hd} from human {human.Label}. Reason: {e}"); }
                 }
             }
 
@@ -81,7 +77,7 @@ namespace RimworldTogether.GameClient.Managers
                 if (human.genes.CustomXenotype != null) humanDetailsJSON.customXenotypeName = human.genes.xenotypeName.ToString();
                 else humanDetailsJSON.customXenotypeName = "null";
             }
-            catch (Exception e) { Logs.Warning($"Failed to load xenotype from human {human.Label}. Reason: {e}"); }
+            catch (Exception e) { Log.Warning($"Failed to load xenotype from human {human.Label}. Reason: {e}"); }
 
             if (human.genes.Xenogenes.Count() > 0)
             {
@@ -96,7 +92,7 @@ namespace RimworldTogether.GameClient.Managers
                             humanDetailsJSON.geneAbilityDefNames.Add(ability.defName);
                         }
                     }
-                    catch (Exception e) { Logs.Warning($"Failed to load gene {gene} from human {human.Label}. Reason: {e}"); }
+                    catch (Exception e) { Log.Warning($"Failed to load gene {gene} from human {human.Label}. Reason: {e}"); }
                 }
             }
 
@@ -108,15 +104,12 @@ namespace RimworldTogether.GameClient.Managers
                     {
                         humanDetailsJSON.endogeneDefNames.Add(endogene.def.defName.ToString());
                     }
-                    catch (Exception e) { Logs.Warning($"Failed to load endogene {endogene} from human {human.Label}. Reason: {e}"); }
+                    catch (Exception e) { Log.Warning($"Failed to load endogene {endogene} from human {human.Label}. Reason: {e}"); }
                 }
             }
 
-            try {
-                if(human.story.favoriteColor != null)
-                    humanDetailsJSON.favoriteColor = human.story.favoriteColor.ToString();
-            }
-            catch (Exception e) { Logs.Warning($"Failed to load favorite color from human {human.Label}. Reason: {e}"); }
+            try { humanDetailsJSON.favoriteColor = human.story.favoriteColor.ToString(); }
+            catch (Exception e) { Log.Warning($"Failed to load favorite color from human {human.Label}. Reason: {e}"); }
 
             try
             {
@@ -126,7 +119,7 @@ namespace RimworldTogether.GameClient.Managers
                 if (human.story.Adulthood != null) humanDetailsJSON.adulthoodStory = human.story.Adulthood.defName.ToString();
                 else humanDetailsJSON.adulthoodStory = "null";
             }
-            catch (Exception e) { Logs.Warning($"Failed to load backstories from human {human.Label}. Reason: {e}"); }
+            catch (Exception e) { Log.Warning($"Failed to load backstories from human {human.Label}. Reason: {e}"); }
 
             if (human.skills.skills.Count() > 0)
             {
@@ -138,7 +131,7 @@ namespace RimworldTogether.GameClient.Managers
                         humanDetailsJSON.skillLevels.Add(skill.levelInt.ToString());
                         humanDetailsJSON.passions.Add(skill.passion.ToString());
                     }
-                    catch (Exception e) { Logs.Warning($"Failed to load skill {skill} from human {human.Label}. Reason: {e}"); }
+                    catch (Exception e) { Log.Warning($"Failed to load skill {skill} from human {human.Label}. Reason: {e}"); }
                 }
             }
 
@@ -151,7 +144,7 @@ namespace RimworldTogether.GameClient.Managers
                         humanDetailsJSON.traitDefNames.Add(trait.def.defName);
                         humanDetailsJSON.traitDegrees.Add(trait.Degree.ToString());
                     }
-                    catch (Exception e) { Logs.Warning($"Failed to load trait {trait} from human {human.Label}. Reason: {e}"); }
+                    catch (Exception e) { Log.Warning($"Failed to load trait {trait} from human {human.Label}. Reason: {e}"); }
                 }
             }
 
@@ -165,7 +158,7 @@ namespace RimworldTogether.GameClient.Managers
                         humanDetailsJSON.deflatedApparels.Add(thingString);
                         humanDetailsJSON.apparelWornByCorpse.Add(ap.WornByCorpse);
                     }
-                    catch (Exception e) { Logs.Warning($"Failed to load apparel {ap} from human {human.Label}. Reason: {e}"); }
+                    catch (Exception e) { Log.Warning($"Failed to load apparel {ap} from human {human.Label}. Reason: {e}"); }
                 }
             }
 
@@ -178,7 +171,7 @@ namespace RimworldTogether.GameClient.Managers
                     string thingString = Serializer.SerializeToString(TransformItemToString(weapon, weapon.stackCount));
                     humanDetailsJSON.deflatedWeapon = thingString;
                 }
-                catch (Exception e) { Logs.Warning($"Failed to load weapon from human {human.Label}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to load weapon from human {human.Label}. Reason: {e}"); }
             }
 
             if (human.inventory.innerContainer.Count() == 0 || !passInventory) { }
@@ -195,7 +188,7 @@ namespace RimworldTogether.GameClient.Managers
             catch
             {
                 humanDetailsJSON.position = "null";
-                Logs.Message("Failed to set human position");
+                Log.Message("Failed to set human position");
             }
 
             return humanDetailsJSON;
@@ -238,58 +231,40 @@ namespace RimworldTogether.GameClient.Managers
 
                     human.story.bodyType = DefDatabase<BodyTypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.bodyTypeDefName);
 
-                    if (ModsConfig.IdeologyActive)
-                    {
-                        human.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.FaceTattooDefName);
+                    human.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.FaceTattooDefName);
 
-                        human.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.BodyTattooDefName);
-                    }
+                    human.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.BodyTattooDefName);
                 }
-                catch (Exception e) { Logs.Warning($"Failed to load biological details in human {humanDetails.name}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to load biological details in human {humanDetails.name}. Reason: {e}"); }
 
-                //parse colors
                 try
                 {
-                    float r = 0;
-                    float g = 0;
-                    float b = 0;
-                    float a = 0;
-                    if (humanDetails.hairColor != null)
-                    {
-                        string hairColor = humanDetails.hairColor.Replace("RGBA(", "").Replace(")", "");
-                        string[] isolatedHair = hairColor.Split(',');
-                         r = float.Parse(isolatedHair[0]);
-                         g = float.Parse(isolatedHair[1]);
-                         b = float.Parse(isolatedHair[2]);
-                         a = float.Parse(isolatedHair[3]);
-                        human.story.HairColor = new UnityEngine.Color(r, g, b, a);
-                    }
+                    string hairColor = humanDetails.hairColor.Replace("RGBA(", "").Replace(")", "");
+                    string[] isolatedHair = hairColor.Split(',');
+                    float r = float.Parse(isolatedHair[0]);
+                    float g = float.Parse(isolatedHair[1]);
+                    float b = float.Parse(isolatedHair[2]);
+                    float a = float.Parse(isolatedHair[3]);
+                    human.story.HairColor = new UnityEngine.Color(r, g, b, a);
 
-                    if (humanDetails.skinColor != null)
-                    {
-                        string skinColor = humanDetails.skinColor.Replace("RGBA(", "").Replace(")", "");
-                        string[] isolatedSkin = skinColor.Split(',');
-                        r = float.Parse(isolatedSkin[0]);
-                        g = float.Parse(isolatedSkin[1]);
-                        b = float.Parse(isolatedSkin[2]);
-                        a = float.Parse(isolatedSkin[3]);
-                        human.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
-                    }
+                    string skinColor = humanDetails.skinColor.Replace("RGBA(", "").Replace(")", "");
+                    string[] isolatedSkin = skinColor.Split(',');
+                    r = float.Parse(isolatedSkin[0]);
+                    g = float.Parse(isolatedSkin[1]);
+                    b = float.Parse(isolatedSkin[2]);
+                    a = float.Parse(isolatedSkin[3]);
+                    human.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
 
-                    if(humanDetails.favoriteColor != null) {
                     string favoriteColor = humanDetails.favoriteColor.Replace("RGBA(", "").Replace(")", "");
-                    
-                        string[] isolatedFavoriteColor = favoriteColor.Split(',');
-                        r = float.Parse(isolatedFavoriteColor[0]);
-                        g = float.Parse(isolatedFavoriteColor[1]);
-                        b = float.Parse(isolatedFavoriteColor[2]);
-                        a = float.Parse(isolatedFavoriteColor[3]);
-                        human.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
-                    }
+                    string[] isolatedFavoriteColor = favoriteColor.Split(',');
+                    r = float.Parse(isolatedFavoriteColor[0]);
+                    g = float.Parse(isolatedFavoriteColor[1]);
+                    b = float.Parse(isolatedFavoriteColor[2]);
+                    a = float.Parse(isolatedFavoriteColor[3]);
+                    human.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
                 }
-                catch (Exception e) { Logs.Warning($"Failed to load colors in human {humanDetails.name}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to load colors in human {humanDetails.name}. Reason: {e}"); }
 
-                //parse story
                 try
                 {
                     if (humanDetails.childhoodStory != "null")
@@ -302,9 +277,8 @@ namespace RimworldTogether.GameClient.Managers
                         human.story.Adulthood = DefDatabase<BackstoryDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.adulthoodStory);
                     }
                 }
-                catch (Exception e) { Logs.Warning($"Failed to load stories in human {humanDetails.name}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to load stories in human {humanDetails.name}. Reason: {e}"); }
 
-                //parse xenotype
                 try
                 {
                     if (humanDetails.xenotypeDefName != "null")
@@ -317,9 +291,8 @@ namespace RimworldTogether.GameClient.Managers
                         human.genes.xenotypeName = humanDetails.customXenotypeName;
                     }
                 }
-                catch (Exception e) { Logs.Warning($"Failed to load xenotypes in human {humanDetails.name}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to load xenotypes in human {humanDetails.name}. Reason: {e}"); }
 
-                //parse skills
                 if (humanDetails.skillDefNames.Count() > 0)
                 {
                     for (int i2 = 0; i2 < humanDetails.skillDefNames.Count(); i2++)
@@ -331,18 +304,16 @@ namespace RimworldTogether.GameClient.Managers
                             Enum.TryParse(humanDetails.passions[i2], true, out Passion passion);
                             human.skills.skills[i2].passion = passion;
                         }
-                        catch (Exception e) { Logs.Warning($"Failed to load skill {humanDetails.skillDefNames[i2]} to human {humanDetails.name}. Reason: {e}"); }
+                        catch (Exception e) { Log.Warning($"Failed to load skill {humanDetails.skillDefNames[i2]} to human {humanDetails.name}. Reason: {e}"); }
                     }
                 }
 
-                //remove traits
                 try
                 {
                     human.story.traits.allTraits.Clear();
                 }
-                catch (Exception e) { Logs.Warning($"Failed to remove traits of human {humanDetails.name}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to remove traits of human {humanDetails.name}. Reason: {e}"); }
 
-                //parse traits
                 if (humanDetails.traitDefNames.Count() > 0)
                 {
                     for (int i3 = 0; i3 < humanDetails.traitDefNames.Count(); i3++)
@@ -353,19 +324,17 @@ namespace RimworldTogether.GameClient.Managers
                             Trait trait = new Trait(traitDef, int.Parse(humanDetails.traitDegrees[i3]));
                             human.story.traits.GainTrait(trait);
                         }
-                        catch (Exception e) { Logs.Warning($"Failed to load trait {humanDetails.traitDefNames[i3]} to human {humanDetails.name}. Reason: {e}"); }
+                        catch (Exception e) { Log.Warning($"Failed to load trait {humanDetails.traitDefNames[i3]} to human {humanDetails.name}. Reason: {e}"); }
                     }
                 }
 
-                //remove hediffs
                 try
                 {
                     human.health.RemoveAllHediffs();
                     human.health.Reset();
                 }
-                catch (Exception e) { Logs.Warning($"Failed to remove heddifs of human {humanDetails.name}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to remove heddifs of human {humanDetails.name}. Reason: {e}"); }
 
-                //parse hediffs
                 if (humanDetails.hediffDefNames.Count() > 0)
                 {
                     for (int i4 = 0; i4 < humanDetails.hediffDefNames.Count(); i4++)
@@ -390,19 +359,17 @@ namespace RimworldTogether.GameClient.Managers
 
                             human.health.AddHediff(hediff);
                         }
-                        catch (Exception e) { Logs.Warning($"Failed to load heddif in {humanDetails.hediffPartDefName[i4]} to human {humanDetails.name}. Reason: {e}"); }
+                        catch (Exception e) { Log.Warning($"Failed to load heddif in {humanDetails.hediffPartDefName[i4]} to human {humanDetails.name}. Reason: {e}"); }
                     }
                 }
 
-                //remove apparel
                 try
                 {
                     human.apparel.DestroyAll();
                     human.apparel.DropAllOrMoveAllToInventory();
                 }
-                catch (Exception e) { Logs.Warning($"Failed to destroy apparel in human {humanDetails.name}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to destroy apparel in human {humanDetails.name}. Reason: {e}"); }
 
-                //parse apparel
                 if (humanDetails.deflatedApparels.Count() > 0)
                 {
                     for (int i5 = 0; i5 < humanDetails.deflatedApparels.Count(); i5++)
@@ -416,18 +383,16 @@ namespace RimworldTogether.GameClient.Managers
 
                             human.apparel.Wear(apparel);
                         }
-                        catch { Logs.Warning($"Failed to load apparel in human {humanDetails.name}"); }
+                        catch { Log.Warning($"Failed to load apparel in human {humanDetails.name}"); }
                     }
                 }
 
-                //remove equipement
                 try
                 {
                     human.equipment.DestroyAllEquipment();
                 }
-                catch (Exception e) { Logs.Warning($"Failed to destroy equipment in human {humanDetails.name}. Reason: {e}"); }
+                catch (Exception e) { Log.Warning($"Failed to destroy equipment in human {humanDetails.name}. Reason: {e}"); }
 
-                //parse equipment
                 if (humanDetails.deflatedWeapon != "null")
                 {
                     try
@@ -435,10 +400,9 @@ namespace RimworldTogether.GameClient.Managers
                         ThingWithComps thing = (ThingWithComps)GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(humanDetails.deflatedWeapon));
                         human.equipment.AddEquipment(thing);
                     }
-                    catch { Logs.Warning($"Failed to load weapon in human {humanDetails.name}"); }
+                    catch { Log.Warning($"Failed to load weapon in human {humanDetails.name}"); }
                 }
 
-                //parse inventory
                 if (humanDetails.deflatedInventoryItems.Count() > 0)
                 {
                     foreach (string str in humanDetails.deflatedInventoryItems)
@@ -448,11 +412,10 @@ namespace RimworldTogether.GameClient.Managers
                             Thing thing = GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
                             human.inventory.TryAddAndUnforbid(thing);
                         }
-                        catch { Logs.Warning($"Failed to add thing to pawn {human.Label}"); }
+                        catch { Log.Warning($"Failed to add thing to pawn {human.Label}"); }
                     }
                 }
 
-                //parse position
                 if (humanDetails.position != "null")
                 {
                     try
@@ -462,10 +425,10 @@ namespace RimworldTogether.GameClient.Managers
                         human.Position = new IntVec3(int.Parse(positionSplit[0]), int.Parse(positionSplit[1]),
                             int.Parse(positionSplit[2]));
                     }
-                    catch { Logs.Message($"Failed to set human position in human {human.Label}"); }
+                    catch { Log.Message($"Failed to set human position in human {human.Label}"); }
                 }
             }
-            catch (Exception e) { Logs.Error($"Failed to load human {humanDetails.name}. Reason: {e}"); }
+            catch (Exception e) { Log.Error($"Failed to load human {humanDetails.name}. Reason: {e}"); }
 
             return human;
         }
@@ -498,7 +461,7 @@ namespace RimworldTogether.GameClient.Managers
                         animalDetailsJSON.hediffSeverity.Add(hd.Severity.ToString());
                         animalDetailsJSON.heddifPermanent.Add(hd.IsPermanent());
                     }
-                    catch (Exception e) { Logs.Warning($"Failed to get headdifs from animal {animal.Name}. Exception: {e}"); }
+                    catch (Exception e) { Log.Warning($"Failed to get headdifs from animal {animal.Name}. Exception: {e}"); }
                 }
             }
 
@@ -517,7 +480,7 @@ namespace RimworldTogether.GameClient.Managers
             if (animalDetailsJSON.position != "null")
             {
                 try { animalDetailsJSON.position = $"{animal.Position.x}|{animal.Position.y}|{animal.Position.z}"; }
-                catch { Logs.Message("Failed to set pawn position"); }
+                catch { Log.Message("Failed to set pawn position"); }
             }
 
             return animalDetailsJSON;
@@ -559,7 +522,7 @@ namespace RimworldTogether.GameClient.Managers
                     animal.health.RemoveAllHediffs();
                     animal.health.Reset();
                 }
-                catch { Logs.Warning($"Failed to remove heddifs of animal {animalDetails.name}."); }
+                catch { Log.Warning($"Failed to remove heddifs of animal {animalDetails.name}."); }
 
                 if (animalDetails.hediffDefNames.Count() > 0)
                 {
@@ -585,7 +548,7 @@ namespace RimworldTogether.GameClient.Managers
 
                             animal.health.AddHediff(hediff);
                         }
-                        catch (Exception e) { Logs.Warning($"Failed to load heddif in {animalDetails.hediffPart[i2]} in animal {animalDetails.defName}. Reason: {e}"); }
+                        catch (Exception e) { Log.Warning($"Failed to load heddif in {animalDetails.hediffPart[i2]} in animal {animalDetails.defName}. Reason: {e}"); }
                     }
                 }
 
@@ -611,9 +574,9 @@ namespace RimworldTogether.GameClient.Managers
                     animal.Position = new IntVec3(int.Parse(positionSplit[0]), int.Parse(positionSplit[1]),
                         int.Parse(positionSplit[2]));
                 }
-                catch { Logs.Warning($"Failed to set animal position in animal {animal.Label}"); }
+                catch { Log.Warning($"Failed to set animal position in animal {animal.Label}"); }
             }
-            catch (Exception e) { Logs.Error($"Failed to load animal {animalDetails.defName}. Reason: {e}"); }
+            catch (Exception e) { Log.Error($"Failed to load animal {animalDetails.defName}. Reason: {e}"); }
 
             return animal;
         }
@@ -636,14 +599,14 @@ namespace RimworldTogether.GameClient.Managers
                 itemDetailsJSON.hitpoints = thing.HitPoints.ToString();
 
                 try { itemDetailsJSON.position = $"{thing.Position.x}|{thing.Position.y}|{thing.Position.z}"; }
-                catch { Logs.Message("Failed to set thing position"); }
+                catch { Log.Message("Failed to set thing position"); }
 
                 itemDetailsJSON.rotation = thing.Rotation.AsInt.ToString();
 
                 if (TransferManagerHelper.CheckIfThingIsMinified(thing)) itemDetailsJSON.isMinified = true;
                 else itemDetailsJSON.isMinified = false;
             }
-            catch (Exception e) { Logs.Warning($"Failed to get item details from item {thing.Label}. Exception: {e}"); }
+            catch (Exception e) { Log.Warning($"Failed to get item details from item {thing.Label}. Exception: {e}"); }
 
             return itemDetailsJSON;
         }
@@ -675,11 +638,11 @@ namespace RimworldTogether.GameClient.Managers
                 toGet = ThingMaker.MakeThing(thingDef, defMaterial);
 
                 try { toGet.stackCount = int.Parse(itemDetails.quantity); }
-                catch { Logs.Warning($"Failed to load item quantity for {itemDetails.defName}"); }
+                catch { Log.Warning($"Failed to load item quantity for {itemDetails.defName}"); }
 
                 if (toGet.stackCount == 0)
                 {
-                    Logs.Warning($"Item {itemDetails.defName} had a stack of 0, returning");
+                    Log.Warning($"Item {itemDetails.defName} had a stack of 0, returning");
                     return null;
                 }
 
@@ -694,13 +657,13 @@ namespace RimworldTogether.GameClient.Managers
                             compQuality.SetQuality(iCategory, ArtGenerationContext.Outsider);
                         }
                     }
-                    catch { Logs.Warning($"Failed to load item quality for {itemDetails.defName}"); }
+                    catch { Log.Warning($"Failed to load item quality for {itemDetails.defName}"); }
                 }
 
                 if (itemDetails.hitpoints != "null")
                 {
                     try { toGet.HitPoints = int.Parse(itemDetails.hitpoints); }
-                    catch { Logs.Warning($"Failed to load item hitpoints for {itemDetails.defName}"); }
+                    catch { Log.Warning($"Failed to load item hitpoints for {itemDetails.defName}"); }
                 }
 
                 if (itemDetails.position != "null")
@@ -714,12 +677,12 @@ namespace RimworldTogether.GameClient.Managers
 
                         toGet.Rotation = new Rot4(int.Parse(itemDetails.rotation));
                     }
-                    catch { Logs.Warning($"Failed to load item position for {itemDetails.defName}"); }
+                    catch { Log.Warning($"Failed to load item position for {itemDetails.defName}"); }
                 }
 
                 if (itemDetails.isMinified) toGet.TryMakeMinified();
             }
-            catch (Exception e) { Logs.Error($"Failed to load item {itemDetails.defName}. Reason: {e}"); }
+            catch (Exception e) { Log.Error($"Failed to load item {itemDetails.defName}. Reason: {e}"); }
 
             return toGet;
         }
@@ -736,7 +699,7 @@ namespace RimworldTogether.GameClient.Managers
             {
                 for (int x = 0; x < map.Size.x; ++x)
                 {
-                    IntVec3 vectorToCheck = new IntVec3(x, 0, z);
+                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
                     mapDetailsJSON.tileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
 
@@ -784,26 +747,173 @@ namespace RimworldTogether.GameClient.Managers
             return mapDetailsJSON;
         }
 
-        //generates a map from a mapDetailsJSON file
-        public static Map GenerateCustomMap(MapDetailsJSON mapDetailsJSON, bool containItems, bool containHumans, bool containAnimals, bool lessLoot)
+        public static Map GetMapSimple(MapDetailsJSON mapDetailsJSON, bool containItems, bool containHumans, bool containAnimals, bool lessLoot)
         {
-            System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
-            stopWatch.Start();
-
             Map map = null;
-            DataToMap.SpawnItems = containItems;
-            DataToMap.SpawnHumans = containHumans;
-            DataToMap.SpawnAnimals = containAnimals;
-            DataToMap.lessSettlementLoot = lessLoot;
-            DataToMap.mapDetails = mapDetailsJSON;
-            IntVec3 mapSize = DataToMap.GetMapSize(mapDetailsJSON);
 
-            //create a map on the caravan's client
-            try { map = RT_GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null); }
-            catch (Exception e) { Logs.Warning($"Critical error generating map. Exception: {e}"); }
+            string[] splitSize = mapDetailsJSON.mapSize.Split('|');
 
-            stopWatch.Stop();
-            Logs.Message($"{"Total map generation took",-40} {stopWatch.ElapsedMilliseconds,-10} ms");
+            IntVec3 mapSize = new IntVec3(int.Parse(splitSize[0]), int.Parse(splitSize[1]),
+                int.Parse(splitSize[2]));
+
+            try { map = GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null); }
+            catch (Exception e) { Log.Warning($"Critical error generating map. Exception: {e}"); }
+
+            map.fogGrid.ClearAllFog();
+
+            List<Thing> thingList = map.listerThings.AllThings.ToList();
+            foreach (Thing thing in thingList)
+            {
+                try
+                {
+                    if (TransferManagerHelper.CheckIfThingIsHuman(thing)) thing.Destroy();
+                    else if (TransferManagerHelper.CheckIfThingIsAnimal(thing)) thing.Destroy();
+                    else if (thing.def.destroyable) thing.Destroy();
+                }
+                catch { Log.Warning($"Failed to destroy thing {thing.def.defName} at {thing.Position}"); }
+            }
+
+            List<Thing> thingsToGetInThisTile = new List<Thing>();
+
+            foreach (string str in mapDetailsJSON.itemDetailsJSONS)
+            {
+                try
+                {
+                    Thing toGet = GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
+                    thingsToGetInThisTile.Add(toGet);
+                }
+                catch { }
+            }
+
+            if (containItems)
+            {
+                Random rnd = new Random();
+
+                foreach (string str in mapDetailsJSON.playerItemDetailsJSON)
+                {
+                    try
+                    {
+                        Thing toGet = GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
+
+                        if (lessLoot)
+                        {
+                            if (rnd.Next(1, 100) > 70) thingsToGetInThisTile.Add(toGet);
+                            else continue;
+                        }
+                        else thingsToGetInThisTile.Add(toGet);
+                    }
+                    catch { }
+                }
+            }
+            
+            foreach (Thing thing in thingsToGetInThisTile)
+            {
+                try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot:thing.Rotation); }
+                catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
+            }
+
+            if (containHumans)
+            {
+                foreach (string str in mapDetailsJSON.humanDetailsJSONS)
+                {
+                    HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
+
+                    try
+                    {
+                        Pawn human = GetHumanSimple(humanDetailsJSON);
+                        human.SetFaction(FactionValues.yourOnlineFaction);
+
+                        GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
+                    }
+                    catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
+                }
+
+                foreach (string str in mapDetailsJSON.playerHumanDetailsJSON)
+                {
+                    HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
+
+                    try
+                    {
+                        Pawn human = GetHumanSimple(humanDetailsJSON);
+                        human.SetFaction(FactionValues.neutralPlayer);
+
+                        GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
+                    }
+                    catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
+                }
+            }
+
+            if (containAnimals)
+            {
+                foreach (string str in mapDetailsJSON.animalDetailsJSON)
+                {
+                    AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
+
+                    try
+                    {
+                        Pawn animal = GetAnimalSimple(animalDetailsJSON);
+                        animal.SetFaction(FactionValues.yourOnlineFaction);
+
+                        GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
+                    }
+                    catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+                }
+
+                foreach (string str in mapDetailsJSON.playerAnimalDetailsJSON)
+                {
+                    AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
+
+                    try
+                    {
+                        Pawn animal = GetAnimalSimple(animalDetailsJSON);
+                        animal.SetFaction(FactionValues.neutralPlayer);
+
+                        GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
+                    }
+                    catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+                }
+            }
+
+            int index = 0;
+            for (int z = 0; z < map.Size.z; ++z)
+            {
+                for (int x = 0; x < map.Size.x; ++x)
+                {
+                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+
+                    try
+                    {
+                        TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
+                            mapDetailsJSON.tileDefNames[index]);
+                        map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
+
+                    }
+                    catch { Log.Warning($"Failed to set terrain at {vectorToCheck}"); }
+
+                    try
+                    {
+                        RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
+                                    mapDetailsJSON.roofDefNames[index]);
+
+                        map.roofGrid.SetRoof(vectorToCheck, roofToUse);
+                    }
+                    catch { Log.Warning($"Failed to set roof at {vectorToCheck}"); }
+
+                    index++;
+                }
+            }
+
+            map.roofCollapseBuffer.Clear();
+            map.roofGrid.Drawer.SetDirty();
+
+            CellIndices cellIndices = map.cellIndices;
+            if (map.fogGrid.fogGrid == null) map.fogGrid.fogGrid = new bool[cellIndices.NumGridCells];
+            foreach (IntVec3 allCell in map.AllCells) map.fogGrid.fogGrid[cellIndices.CellToIndex(allCell)] = true;
+            if (Current.ProgramState == ProgramState.Playing) map.roofGrid.Drawer.SetDirty();
+
+            FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
+            List<IntVec3> rootsToUnfog = MapGenerator.rootsToUnfog;
+            for (int i = 0; i < rootsToUnfog.Count; i++) FloodFillerFog.FloodUnfog(rootsToUnfog[i], map);
 
             return map;
         }

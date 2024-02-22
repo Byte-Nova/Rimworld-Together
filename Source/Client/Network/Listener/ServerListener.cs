@@ -10,7 +10,6 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using Verse;
-using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Network.Listener
 {
@@ -69,7 +68,7 @@ namespace RimworldTogether.GameClient.Network.Listener
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Logs.Error($"[Rimworld Together] > {e}");
+                if (ClientValues.verboseBool)  Log.Error($"[Rimworld Together] > {e}");
 
                 disconnectFlag = true;
             }

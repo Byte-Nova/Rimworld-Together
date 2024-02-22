@@ -30,7 +30,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 if (factionToUse == FactionValues.enemyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as enemy!", DialogManager.PopDialog);
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as enemy!");
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 0);
@@ -40,7 +40,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 if (factionToUse == FactionValues.neutralPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as neutral!", DialogManager.PopDialog);
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as neutral!");
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 1);
@@ -50,7 +50,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             {
                 if (factionToUse == FactionValues.allyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as ally!", DialogManager.PopDialog);
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as ally!");
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 2);

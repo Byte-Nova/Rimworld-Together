@@ -33,7 +33,7 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void OnRequireWorld()
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             ClientValues.ToggleGenerateWorld(true);
 
@@ -47,10 +47,7 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void OnExistingWorld(WorldDetailsJSON worldDetailsJSON)
         {
-            //The save is finally finished downloading, 
-            //clear the window stack
-            //(loading a save clears rimworlds windowStack, but not ours)
-            DialogManager.clearStack();
+            DialogManager.PopWaitDialog();
 
             ClientValues.ToggleLoadingPrefabWorld(true);
 
@@ -68,7 +65,7 @@ namespace RimworldTogether.GameClient.Managers
         {
             ClientValues.ToggleGenerateWorld(false);
 
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(
                 new string[] { "World file has been saved into the server!", "New connecting users will use this world when joining", "Press OK to start playing!" },

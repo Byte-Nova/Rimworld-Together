@@ -86,16 +86,16 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 Network.Network.serverListener.SendData(packet);
             };
 
-            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to LEAVE your faction?", r2, DialogManager.PopDialog);
+            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to LEAVE your faction?", r2, null);
 
-            RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("Are you sure you want to DELETE your faction?", r1, DialogManager.PopDialog);
+            RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("Are you sure you want to DELETE your faction?", r1, null);
 
             RT_Dialog_3Button d1 = new RT_Dialog_3Button("Faction Management", "Manage your faction from here",
                 "Members", "Delete", "Leave",
                 delegate { r3(); },
                 delegate { DialogManager.PushNewDialog(d2); },
                 delegate { DialogManager.PushNewDialog(d3); },
-                 DialogManager.PopDialog);
+                null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -104,9 +104,9 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             Action r2 = delegate
             {
-                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0]))
+                if (string.IsNullOrWhiteSpace(DialogManager.dialog1ResultOne) || DialogManager.dialog1ResultOne.Length > 32)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Faction name is invalid! Please try again!", DialogManager.PopDialog));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("Faction name is invalid! Please try again!"));
                 }
 
                 else
@@ -115,16 +115,16 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
                     FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                     factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Create).ToString();
-                    factionManifestJSON.manifestDetails = (string)DialogManager.inputCache[0];
+                    factionManifestJSON.manifestDetails = DialogManager.dialog1ResultOne;
 
                     Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
                     Network.Network.serverListener.SendData(packet);
                 }
             };
-            RT_Dialog_1Input d2 = new RT_Dialog_1Input("New Faction Name", "Input the name of your new faction", r2, DialogManager.PopDialog);
+            RT_Dialog_1Input d2 = new RT_Dialog_1Input("New Faction Name", "Input the name of your new faction", r2, null);
 
             Action r1 = delegate { DialogManager.PushNewDialog(d2); };
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You are not a member of any faction! Create one?", r1, DialogManager.PopDialog);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You are not a member of any faction! Create one?", r1, null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -162,25 +162,28 @@ namespace RimworldTogether.GameClient.Managers.Actions
             };
 
             RT_Dialog_YesNo d5 = new RT_Dialog_YesNo("Are you sure you want to demote this player?", 
-                r2, DialogManager.PopDialog);
+                r2,
+                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
             RT_Dialog_YesNo d4 = new RT_Dialog_YesNo("Are you sure you want to promote this player?", 
-                r1, DialogManager.PopDialog);
+                r1,
+                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
             RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to kick this player?", 
-                r3, DialogManager.PopDialog);
+                r3,
+                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("Power Management Menu", "Choose what you want to manage",
                 "Promote", "Demote",
                 delegate { DialogManager.PushNewDialog(d4); },
                 delegate { DialogManager.PushNewDialog(d5); },
-                DialogManager.PopDialog);
+                null);
 
             RT_Dialog_2Button d1 = new RT_Dialog_2Button("Management Menu", "Choose what you want to manage", 
                 "Powers", "Kick", 
                 delegate { DialogManager.PushNewDialog(d2); }, 
-                delegate { DialogManager.PushNewDialog(d3); },
-                DialogManager.PopDialog);
+                delegate { DialogManager.PushNewDialog(d3); }, 
+                null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -197,7 +200,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 Network.Network.serverListener.SendData(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to invite this player to your faction?", r1, DialogManager.PopDialog);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to invite this player to your faction?", r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -211,7 +214,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 "You can now access its menu through the same button"
             };
 
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(messages);
             DialogManager.PushNewDialog(d1);
         }
@@ -220,20 +223,20 @@ namespace RimworldTogether.GameClient.Managers.Actions
         {
             ServerValues.hasFaction = false;
 
-            if (!ClientValues.isInTransfer) DialogManager.PopDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Your faction has been deleted!", DialogManager.PopDialog));
+            if (!ClientValues.isInTransfer) DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Your faction has been deleted!"));
         }
 
         private static void OnFactionNameInUse()
         {
-            DialogManager.PopDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("That faction name is already in use!", DialogManager.PopDialog));
+            DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("That faction name is already in use!"));
         }
 
         private static void OnFactionNoPower()
         {
-            DialogManager.PopDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("You don't have enough power for this action!", DialogManager.PopDialog));
+            DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Error("You don't have enough power for this action!"));
         }
 
         private static void OnFactionGetInvited(FactionManifestJSON factionManifest)
@@ -261,12 +264,12 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void OnFactionAdminProtection()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Error("You can't do this action as a faction admin!", DialogManager.PopDialog));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("You can't do this action as a faction admin!"));
         }
 
         private static void OnFactionMemberList(FactionManifestJSON factionManifest)
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             List<string> unraveledDetails = new List<string>();
             for (int i = 0; i < factionManifest.manifestComplexDetails.Count(); i++)

@@ -33,6 +33,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
         {
+            DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
             this.transferMode = transferMode;
 
@@ -138,7 +139,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
                     else
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!", DialogManager.PopDialog));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
                         TransferManager.RejectRequest(transferMode);
                     }
                 }
@@ -158,11 +159,11 @@ namespace RimworldTogether.GameClient.Dialogs
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }
 
-                DialogManager.PopDialog();
+                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",
-                r1, DialogManager.PopDialog));
+                r1, null));
         }
 
         private void OnReject()
@@ -171,11 +172,11 @@ namespace RimworldTogether.GameClient.Dialogs
             {
                 TransferManager.RejectRequest(transferMode);
 
-                DialogManager.PopDialog();
+                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
-                r1, DialogManager.PopDialog));
+                r1, null));
         }
     }
 }

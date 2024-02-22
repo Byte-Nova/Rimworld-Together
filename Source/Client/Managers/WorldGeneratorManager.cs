@@ -7,7 +7,6 @@ using RimworldTogether.GameClient.Dialogs;
 using RimworldTogether.Shared.JSON;
 using Verse;
 using Verse.Profile;
-using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Managers
 {
@@ -53,7 +52,7 @@ namespace RimworldTogether.GameClient.Managers
 
                 catch (Exception e) 
                 {
-                    Logs.Warning($"Error when trying to add faction into world, perhaps missing?" +
+                    Log.Warning($"Error when trying to add faction into world, perhaps missing?" +
                         $" Exception: {e}");
                 }
             }

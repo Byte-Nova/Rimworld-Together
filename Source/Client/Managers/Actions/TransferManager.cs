@@ -13,7 +13,6 @@ using Shared.Misc;
 using Verse;
 using Verse.Sound;
 using static Shared.Misc.CommonEnumerators;
-using RimworldTogether.GameClient.Misc;
 
 namespace RimworldTogether.GameClient.Managers.Actions
 {
@@ -30,36 +29,36 @@ namespace RimworldTogether.GameClient.Managers.Actions
                     break;
 
                 case (int)TransferStepMode.TradeAccept:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
                 case (int)TransferStepMode.TradeReject:
-                    DialogManager.PopDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!", DialogManager.PopDialog));
+                    DialogManager.PopWaitDialog();
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
                 case (int)TransferStepMode.TradeReRequest:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     ReceiveReboundRequest(transferManifestJSON);
                     break;
 
                 case (int)TransferStepMode.TradeReAccept:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     GetTransferedItemsToSettlement(DeepScribeManager.GetAllTransferedItems(ClientValues.incomingManifest));
                     break;
 
                 case (int)TransferStepMode.TradeReReject:
-                    DialogManager.PopDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!", DialogManager.PopDialog));
+                    DialogManager.PopWaitDialog();
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
                 case (int)TransferStepMode.Recover:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
             }
@@ -157,7 +156,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -280,7 +279,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -300,7 +299,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 

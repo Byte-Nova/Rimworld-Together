@@ -12,7 +12,6 @@ using RimworldTogether.Shared.Network;
 using RimworldTogether.Shared.Serializers;
 using Shared.Misc;
 using Verse;
-using RimworldTogether.GameClient.Misc;
 
 
 namespace RimworldTogether.GameClient.Managers.Actions
@@ -60,7 +59,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch 
             {
-                Logs.Warning("Server didn't have site rewards set, defaulting to 0");
+                Log.Warning("Server didn't have site rewards set, defaulting to 0");
 
                 siteRewardCount = new int[9]
                 {
@@ -140,7 +139,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void OnSiteAccept()
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
             DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
 
             SaveManager.ForceSave();
@@ -160,12 +159,12 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void OnSimpleSiteOpen(SiteDetailsJSON siteDetailsJSON)
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             if (string.IsNullOrWhiteSpace(siteDetailsJSON.workerData))
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
-                    PrepareSendPawnScreen, DialogManager.PopDialog);
+                    delegate { PrepareSendPawnScreen(); }, null);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -173,7 +172,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
             else
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You have a worker on this site, retrieve?",
-                    delegate { RequestWorkerRetrieval(siteDetailsJSON); }, DialogManager.PopDialog);
+                    delegate { RequestWorkerRetrieval(siteDetailsJSON); }, null);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -191,7 +190,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         private static void OnWorkerRetrieval(SiteDetailsJSON siteDetailsJSON)
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             Action r1 = delegate
             {
@@ -228,7 +227,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 if (TransferManagerHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
             }
 
-            Pawn pawnToSend = caravanHumans[(int)DialogManager.inputCache[0]];
+            Pawn pawnToSend = caravanHumans[DialogManager.dialogListingWithButtonResult];
             ClientValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
@@ -256,7 +255,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
                 Network.Network.serverListener.SendData(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, DialogManager.PopDialog);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -333,7 +332,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch 
             {
-                Logs.Warning("Server didn't have personal site prices set, defaulting to 0");
+                Log.Warning("Server didn't have personal site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {
@@ -344,29 +343,29 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputCache[0]]} " +
-                $"silver, continue?", RequestSiteBuild, DialogManager.PopDialog);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
+                $"silver, continue?", RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
         }
 
         public static void RequestSiteBuild()
         {
-            DialogManager.PopDialog();
+            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputCache[0]]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!", DialogManager.PopDialog));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[(int)DialogManager.inputCache[0]]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteDetailsJSON.type = ((int)DialogManager.inputCache[0]).ToString();
+                siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
                 siteDetailsJSON.isFromFaction = false;
 
                 Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);
@@ -401,7 +400,7 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
             catch
             {
-                Logs.Warning("Server didn't have faction site prices set, defaulting to 0");
+                Log.Warning("Server didn't have faction site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {
@@ -412,29 +411,29 @@ namespace RimworldTogether.GameClient.Managers.Actions
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputCache[0]]} " +
-                $"silver, continue?", RequestSiteBuild, DialogManager.PopDialog);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
+                $"silver, continue?", RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
         }
 
         public static void RequestSiteBuild()
         {
-            DialogManager.PopDialog();
+            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputCache[0]]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!", DialogManager.PopDialog));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[(int)DialogManager.inputCache[0]]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteDetailsJSON.type = ((int)DialogManager.inputCache[0]).ToString();
+                siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
                 siteDetailsJSON.isFromFaction = true;
 
                 Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);

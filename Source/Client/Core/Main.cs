@@ -57,10 +57,6 @@ namespace RimworldTogether.GameClient.Core
                 savesPath = GenFilePaths.SavedGamesFolderPath;
 
                 if (!Directory.Exists(modPath)) Directory.CreateDirectory(modPath);
-
-                //prepare file name for logger
-                Misc.Logs.prepareFileName(modPath);
-
             }
 
             private static void LoadClientPreferences()
@@ -91,7 +87,7 @@ namespace RimworldTogether.GameClient.Core
                     threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
                     Object.Instantiate(go);
 
-                    Logs.Message($"[Rimworld Together] > Created dispatcher for version {ClientValues.versionCode}");
+                    Log.Message($"[Rimworld Together] > Created dispatcher for version {ClientValues.versionCode}");
                 }
             }
         }
