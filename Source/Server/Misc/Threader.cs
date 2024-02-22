@@ -1,32 +1,59 @@
-﻿namespace GameServer
+﻿using RimworldTogether.GameServer.Managers;
+using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Network.Listener;
+
+namespace RimworldTogether.GameServer.Misc
 {
     public static class Threader
     {
-        public enum ServerMode { Start, Sites, Console }
-
-        public static Task GenerateServerThread(ServerMode mode)
+        public enum ServerMode
         {
-            return mode switch
-            {
-                ServerMode.Start => Task.Run(Network.ReadyServer),
-                ServerMode.Sites => Task.Run(SiteManager.StartSiteTicker),
-                ServerMode.Console => Task.Run(ServerCommandManager.ListenForServerCommands),
-                _ => throw new NotImplementedException(),
-            };
+            Start,
+            Sites,
+            Console
         }
 
-        public enum ClientMode { Listener, Sender, Health, KAFlag }
-
-        public static Task GenerateClientThread(Listener listener, ClientMode mode)
+        public static Task GenerateServerThread(ServerMode mode, CancellationToken cancellationToken)
         {
-            return mode switch
+            switch (mode)
             {
-                ClientMode.Listener => Task.Run(listener.Listen),
-                ClientMode.Sender => Task.Run(listener.SendData),
-                ClientMode.Health => Task.Run(listener.CheckConnectionHealth),
-                ClientMode.KAFlag => Task.Run(listener.CheckKAFlag),
-                _ => throw new NotImplementedException(),
-            };
+                case ServerMode.Start:
+                    return Task.Run(Network.Network.ReadyServer, cancellationToken);
+
+                case ServerMode.Sites:
+                    return Task.Run(SiteManager.StartSiteTicker, cancellationToken);
+
+                case ServerMode.Console:
+                    return Task.Run(ServerCommandManager.ListenForServerCommands, cancellationToken);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public enum ClientMode
+        {
+            Listener,
+            Health,
+            KAFlag
+        }
+
+        public static Task GenerateClientThread(ClientListener listener, ClientMode mode, CancellationToken cancellationToken)
+        {
+            switch (mode)
+            {
+                case ClientMode.Listener:
+                    return Task.Run(listener.ListenToClient, cancellationToken);
+
+                case ClientMode.Health:
+                    return Task.Run(listener.CheckForConnectionHealth, cancellationToken);
+
+                case ClientMode.KAFlag:
+                    return Task.Run(listener.CheckForKAFlag, cancellationToken);
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

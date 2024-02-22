@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_TransferMenu : Window
     {

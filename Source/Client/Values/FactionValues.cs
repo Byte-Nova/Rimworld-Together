@@ -3,7 +3,7 @@ using System.Linq;
 using RimWorld;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Values
 {
     public static class FactionValues
     {

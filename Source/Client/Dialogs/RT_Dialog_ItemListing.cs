@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Linq;
 using RimWorld;
-using Shared;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.Network;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_ItemListing : Window
     {
@@ -127,7 +131,7 @@ namespace GameClient
 
                 else if (transferMode == CommonEnumerators.TransferMode.Trade)
                 {
-                    if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Settlement))
+                    if (RimworldManager.CheckForAnySocialPawn(RimworldManager.SearchLocation.Settlement))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
                     }
@@ -149,7 +153,7 @@ namespace GameClient
                     ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.Network.serverListener.SendData(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }

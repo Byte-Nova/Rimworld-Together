@@ -1,6 +1,6 @@
 using System;
 
-namespace Shared
+namespace RimworldTogether.Shared.JSON
 {
     [Serializable]
     public class DifficultyValuesJSON

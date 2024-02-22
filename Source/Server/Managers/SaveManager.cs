@@ -1,6 +1,16 @@
-﻿using Shared;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
+using Shared.Misc;
+using Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class SaveManager
     {
@@ -9,20 +19,20 @@ namespace GameServer
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
 
-            FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
+            FileTransferJSON fileTransferJSON = (FileTransferJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
-            if (client.listener.downloadManager == null)
+            if (client.downloadManager == null)
             {
-                client.listener.downloadManager = new DownloadManager();
-                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileParts);
+                client.downloadManager = new DownloadManager();
+                client.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileParts);
             }
 
-            client.listener.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
+            client.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
 
             if (fileTransferJSON.isLastPart)
             {
-                client.listener.downloadManager.FinishFileWrite();
-                client.listener.downloadManager = null;
+                client.downloadManager.FinishFileWrite();
+                client.downloadManager = null;
 
                 byte[] saveBytes = File.ReadAllBytes(tempClientSavePath);
                 byte[] compressedSave = GZip.Compress(saveBytes);
@@ -36,7 +46,7 @@ namespace GameServer
             else
             {
                 Packet rPacket = Packet.CreatePacketFromJSON("RequestSavePartPacket");
-                client.listener.dataQueue.Enqueue(rPacket);
+                client.clientListener.SendData(rPacket);
             }
         }
 
@@ -45,30 +55,30 @@ namespace GameServer
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
 
-            if (client.listener.uploadManager == null)
+            if (client.uploadManager == null)
             {
                 Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
 
                 byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(baseClientSavePath));
                 File.WriteAllBytes(tempClientSavePath, decompressedSave);
 
-                client.listener.uploadManager = new UploadManager();
-                client.listener.uploadManager.PrepareUpload(tempClientSavePath);
+                client.uploadManager = new UploadManager();
+                client.uploadManager.PrepareUpload(tempClientSavePath);
             }
 
             FileTransferJSON fileTransferJSON = new FileTransferJSON();
-            fileTransferJSON.fileSize = client.listener.uploadManager.fileSize;
-            fileTransferJSON.fileParts = client.listener.uploadManager.fileParts;
-            fileTransferJSON.fileBytes = client.listener.uploadManager.ReadFilePart();
-            fileTransferJSON.isLastPart = client.listener.uploadManager.isLastPart;
+            fileTransferJSON.fileSize = client.uploadManager.fileSize;
+            fileTransferJSON.fileParts = client.uploadManager.fileParts;
+            fileTransferJSON.fileBytes = client.uploadManager.ReadFilePart();
+            fileTransferJSON.isLastPart = client.uploadManager.isLastPart;
 
             Packet packet = Packet.CreatePacketFromJSON("ReceiveSavePartPacket", fileTransferJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.clientListener.SendData(packet);
 
-            if (client.listener.uploadManager.isLastPart)
+            if (client.uploadManager.isLastPart)
             {
                 File.Delete(tempClientSavePath);
-                client.listener.uploadManager = null;
+                client.uploadManager = null;
             }
         }
 
@@ -78,7 +88,7 @@ namespace GameServer
             {
                 CommandManager.SendDisconnectCommand(client);
 
-                client.listener.disconnectFlag = true;
+                client.disconnectFlag = true;
 
                 Logger.WriteToConsole($"[Save game] > {client.username} > To menu");
             }
@@ -87,7 +97,7 @@ namespace GameServer
             {
                 CommandManager.SendQuitCommand(client);
 
-                client.listener.disconnectFlag = true;
+                client.disconnectFlag = true;
 
                 Logger.WriteToConsole($"[Save game] > {client.username} > Quiting");
             }
@@ -133,7 +143,7 @@ namespace GameServer
             if (!CheckIfUserHasSave(client)) ResponseShortcutManager.SendIllegalPacket(client);
             else
             {
-                client.listener.disconnectFlag = true;
+                client.disconnectFlag = true;
 
                 string[] saves = Directory.GetFiles(Program.savesPath);
 
@@ -163,7 +173,7 @@ namespace GameServer
         public static void DeletePlayerDetails(string username)
         {
             ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
-            if (connectedUser != null) connectedUser.listener.disconnectFlag = true;
+            if (connectedUser != null) connectedUser.disconnectFlag = true;
 
             string[] saves = Directory.GetFiles(Program.savesPath);
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);

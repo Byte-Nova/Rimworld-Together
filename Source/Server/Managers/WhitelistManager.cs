@@ -1,6 +1,9 @@
-﻿using Shared;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.Shared.Serializers;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class WhitelistManager
     {

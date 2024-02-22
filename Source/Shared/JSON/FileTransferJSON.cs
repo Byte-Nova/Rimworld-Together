@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Shared
+namespace Shared.JSON
 {
     [Serializable]
     public class FileTransferJSON

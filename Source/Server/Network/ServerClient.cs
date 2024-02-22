@@ -1,19 +1,27 @@
-﻿using Shared;
+﻿using RimworldTogether.GameServer.Network.Listener;
+using Shared.Network;
 using System.Net;
 using System.Net.Sockets;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Network
 {
-    //Class object for the client connecting into the server. Contains all important data about it
-
     public class ServerClient
     {
-        //Reference to the listener instance of this client
-        [NonSerialized] public Listener listener;
+        [NonSerialized] public TcpClient tcp;
+        [NonSerialized] public NetworkStream networkStream;
+        [NonSerialized] public StreamWriter streamWriter;
+        [NonSerialized] public StreamReader streamReader;
 
-        public string username = "Unknown";
+        [NonSerialized] public ClientListener clientListener;
+        [NonSerialized] public UploadManager uploadManager;
+        [NonSerialized] public DownloadManager downloadManager;
+
+        [NonSerialized] public bool disconnectFlag;
+        [NonSerialized] public bool KAFlag;
 
         public string uid;
+
+        public string username = "Unknown";
 
         public string password;
 
@@ -26,6 +34,8 @@ namespace GameServer
         public bool isBanned;
 
         [NonSerialized] public ServerClient inVisitWith;
+
+        [NonSerialized] public bool isBusy;
 
         [NonSerialized] public bool inSafeZone;
 
@@ -40,7 +50,15 @@ namespace GameServer
         public ServerClient(TcpClient tcp)
         {
             if (tcp == null) return;
-            else SavedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
+            else
+            {
+                this.tcp = tcp;
+                networkStream = tcp.GetStream();
+                streamWriter = new StreamWriter(networkStream);
+                streamReader = new StreamReader(networkStream);
+
+                SavedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
+            }
         }
     }
 }

@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using HarmonyLib;
 using RimWorld;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Patches.Pages
 {
     public class SelectScenarioPatch
     {
@@ -22,7 +25,7 @@ namespace GameClient
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                     {
                         __instance.Close();
-                        Network.listener.disconnectFlag = true;
+                        Network.Network.serverListener.disconnectFlag = true;
                     }
                 }
 

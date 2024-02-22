@@ -1,12 +1,17 @@
-﻿using Shared;
+﻿using RimworldTogether.GameServer.Managers;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Users
 {
     public static class UserLogin
     {
         public static void TryLoginUser(ServerClient client, Packet packet)
         {
-            JoinDetailsJSON loginDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            JoinDetailsJSON loginDetails = (JoinDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             client.username = loginDetails.username;
             client.password = loginDetails.password;
 
@@ -47,7 +52,7 @@ namespace GameServer
 
         private static void RemoveOldClientIfAny(ServerClient client)
         {
-            foreach (ServerClient cClient in Network.connectedClients.ToArray())
+            foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
             {
                 if (cClient == client) continue;
                 else

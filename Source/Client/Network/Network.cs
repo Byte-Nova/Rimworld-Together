@@ -1,44 +1,44 @@
 ﻿using System;
+using RimworldTogether.GameClient.Core;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Misc;
+using RimworldTogether.GameClient.Network.Listener;
+using RimworldTogether.GameClient.Values;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Network
 {
-    //Main class that is used to handle the connection with the server
-
     public static class Network
     {
-        //IP and Port that the connection will be bound to
+        public static ServerListener serverListener;
         public static string ip = "";
         public static string port = "";
 
-        //TCP listener that will handle the connection with the server
-        public static Listener listener;
-
-        //Useful booleans to check connection status with the server
         public static bool isConnectedToServer;
         public static bool isTryingToConnect;
 
         public static void StartConnection()
         {
+            Logs.Message($"should pop the wait... {Find.WindowStack[Find.WindowStack.Count-1].ToString()}");
+            DialogManager.PopDialog();
             if (TryConnectToServer())
             {
                 ClientValues.ManageDevOptions();
-                DialogManager.PopWaitDialog();
                 SiteManager.SetSiteDefs();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
-                Threader.GenerateThread(Threader.Mode.Sender);
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                Log.Message($"[Rimworld Together] > Connected to server");
+                Logs.Message($"[Rimworld Together] > Connected to server");
             }
 
             else
             {
-                DialogManager.PopWaitDialog();
 
-                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
+                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time", DialogManager.PopDialog);
                 DialogManager.PushNewDialog(d1);
 
                 ClearAllValues();
@@ -56,7 +56,7 @@ namespace GameClient
 
                     isConnectedToServer = true;
 
-                    listener = new Listener(new(ip, int.Parse(port)));
+                    serverListener = new ServerListener(new(ip, int.Parse(port)));
 
                     return true;
                 }
@@ -66,17 +66,32 @@ namespace GameClient
 
         public static void DisconnectFromServer()
         {
-            listener.connection.Dispose();
+            //Action toDo = delegate
+           // {
+                serverListener.connection.Dispose();
 
-            Action toDo = delegate
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!", 
-                    delegate { DisconnectionManager.DisconnectToMenu(); }));
-            };
+                Action r1 = delegate
+                {
+                    DialogManager.clearStack();
+                    if (Current.ProgramState == ProgramState.Playing)
+                    {
+                        DisconnectionManager.DisconnectToMenu();
+                    }
+                    //DialogManager.PushNewDialog(new ImmediateWindow());
+                };
 
-            ClearAllValues();
-            Master.threadDispatcher.Enqueue(toDo);
-            Log.Message($"[Rimworld Together] > Disconnected from server");
+                DialogManager.PushNewDialog(new RT_Dialog_Error_List(new string[]
+                {
+                        "Connection to the server has been lost!",
+                        "Game will now quit to menu"
+                }, r1));
+
+                ClearAllValues();
+
+                Logs.Message($"[Rimworld Together] > Disconnected from server");
+            //};
+
+            //Main.threadDispatcher.Enqueue(toDo);
         }
 
         public static void ClearAllValues()

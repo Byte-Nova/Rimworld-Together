@@ -1,10 +1,14 @@
 ﻿using System.Linq;
 using HarmonyLib;
 using RimWorld;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(Page_SelectStoryteller), "PreOpen")]
     public static class PatchDifficultyOverrrive
@@ -89,7 +93,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref StorytellerDef chosenStoryteller, ref DifficultyDef difficulty, ref Difficulty difficultyValues, Listing_Standard infoListing)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (!Network.Network.isConnectedToServer) return true;
             else
             {
                 if (DifficultyValues.UseCustomDifficulty)

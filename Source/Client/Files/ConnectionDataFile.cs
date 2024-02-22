@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Files
 {
     [Serializable]
     public class ConnectionDataFile

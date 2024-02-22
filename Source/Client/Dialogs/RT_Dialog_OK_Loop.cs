@@ -1,9 +1,10 @@
 ﻿using System;
 using RimWorld;
+using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_OK_Loop : Window
     {

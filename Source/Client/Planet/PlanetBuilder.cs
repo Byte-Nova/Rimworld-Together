@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using Shared.Misc;
 using Verse;
 using RimworldTogether.GameClient.Misc;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Planet
 {
     public static class PlanetBuilder
     {

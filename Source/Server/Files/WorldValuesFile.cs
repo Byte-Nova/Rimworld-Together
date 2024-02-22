@@ -1,4 +1,4 @@
-﻿namespace GameServer
+﻿namespace RimworldTogether.GameServer.Files
 {
     [Serializable]
     public class WorldValuesFile

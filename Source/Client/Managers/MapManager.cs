@@ -1,7 +1,10 @@
-﻿using Shared;
+﻿using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.JSON;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Managers
 {
     public static class MapManager
     {
@@ -22,10 +25,10 @@ namespace GameClient
 
             MapFileJSON mapFileJSON = new MapFileJSON();
             mapFileJSON.mapTile = mapDetailsJSON.mapTile;
-            mapFileJSON.mapData = Serializer.ConvertObjectToBytes(mapDetailsJSON);
+            mapFileJSON.mapData = ObjectConverter.ConvertObjectToBytes(mapDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON("MapPacket", mapFileJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.Network.serverListener.SendData(packet);
         }
     }
 }

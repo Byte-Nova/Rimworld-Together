@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Misc
 {
     public static class XmlParser
     {

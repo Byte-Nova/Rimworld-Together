@@ -1,7 +1,8 @@
-﻿using Shared;
+﻿using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Managers
 {
     public static class CustomDifficultyManager
     {
@@ -163,7 +164,7 @@ namespace GameClient
             difficultyValuesJSON.WastepackInfestationChanceFactor = Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor;
 
             Packet packet = Packet.CreatePacketFromJSON("CustomDifficultyPacket", difficultyValuesJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.Network.serverListener.SendData(packet);
         }
 
         public static void EnforceCustomDifficulty()

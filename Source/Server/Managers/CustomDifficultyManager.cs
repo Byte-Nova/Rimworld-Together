@@ -1,12 +1,17 @@
-﻿using Shared;
+﻿using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class CustomDifficultyManager
     {
         public static void ParseDifficultyPacket(ServerClient client, Packet packet)
         {
-            DifficultyValuesJSON difficultyValuesJSON = (DifficultyValuesJSON)Serializer.ConvertBytesToObject(packet.contents);
+            DifficultyValuesJSON difficultyValuesJSON = (DifficultyValuesJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
             SetCustomDifficulty(client, difficultyValuesJSON);
         }
 
@@ -99,7 +104,7 @@ namespace GameServer
 
         public static void SaveCustomDifficulty(DifficultyValuesFile newDifficultyValues)
         {
-            string path = Path.Combine(Program.corePath, "DifficultyValues.json");
+            string path = Path.Combine(Core.Program.corePath, "DifficultyValues.json");
 
             Serializer.SerializeToFile(path, newDifficultyValues);
 
@@ -110,13 +115,13 @@ namespace GameServer
 
         public static void LoadCustomDifficulty()
         {
-            string path = Path.Combine(Program.corePath, "DifficultyValues.json");
+            string path = Path.Combine(Core.Program.corePath, "DifficultyValues.json");
 
-            if (File.Exists(path)) Program.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
+            if (File.Exists(path)) Core.Program.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
             else
             {
-                Program.difficultyValues = new DifficultyValuesFile();
-                Serializer.SerializeToFile(path, Program.difficultyValues);
+                Core.Program.difficultyValues = new DifficultyValuesFile();
+                Serializer.SerializeToFile(path, Core.Program.difficultyValues);
             }
 
             Logger.WriteToConsole("Loaded difficulty values");

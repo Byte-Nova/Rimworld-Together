@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using RimworldTogether.GameServer.Core;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Misc
 {
     public static class Logger
     {

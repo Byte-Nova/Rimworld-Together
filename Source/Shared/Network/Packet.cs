@@ -1,28 +1,29 @@
-﻿using System;
+﻿using RimworldTogether.Shared.Serializers;
+using System;
 
-namespace Shared
+namespace RimworldTogether.Shared.Network
 {
     [Serializable]
     public class Packet
     {
         public string header;
-        public byte[] contents;
-        public bool requiresMainThread;
 
-        public Packet(string header, byte[] contents, bool requiresMainThread)
+        public byte[] contents;
+
+        public Packet(string header, byte[] contents = null)
         {
             this.header = header;
+
             this.contents = contents;
-            this.requiresMainThread = requiresMainThread;
         }
 
-        public static Packet CreatePacketFromJSON(string header, object jsonToUse = null, bool requiresMainThread = true)
+        public static Packet CreatePacketFromJSON(string pointer, object jsonToUse = null)
         {
-            if (jsonToUse == null) return new Packet(header, null, requiresMainThread);
+            if (jsonToUse == null) return new Packet(pointer, null);
             else
             {
-                byte[] contents = Serializer.ConvertObjectToBytes(jsonToUse);
-                return new Packet(header, contents, requiresMainThread);
+                byte[] contents = ObjectConverter.ConvertObjectToBytes(jsonToUse);
+                return new Packet(pointer, contents);
             }
         }
     }

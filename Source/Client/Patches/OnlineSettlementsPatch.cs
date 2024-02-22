@@ -1,9 +1,12 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
 using Verse;
 using Verse.AI;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Patches
 {
     [HarmonyPatch(typeof(SettlementDefeatUtility), "CheckDefeated")]
     public static class PatchSettlementJoin
@@ -11,7 +14,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Settlement factionBase)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (!Network.Network.isConnectedToServer) return true;
 
             if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
 
@@ -25,11 +28,11 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Job newJob, Pawn ___pawn)
         {
-            if (Network.isConnectedToServer)
+            if (Network.Network.isConnectedToServer)
             {
                 if (ClientValues.isInVisit)
                 {
-                    if (OnlineVisitManager.otherPlayerPawns.Contains(___pawn))
+                    if (VisitManager.otherPlayerPawns.Contains(___pawn))
                     {
                         if (newJob.exitMapOnArrival) return false;
                     }
@@ -49,7 +52,7 @@ namespace GameClient
     //    [HarmonyPrefix]
     //    public static bool DoPre(ref int __result)
     //    {
-    //        if (Network.isConnectedToServer)
+    //        if (Network.Network.isConnectedToServer)
     //        {
     //            __result = 25;
 

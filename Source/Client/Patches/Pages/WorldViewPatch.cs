@@ -4,11 +4,16 @@ using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Patches.Tabs;
+using RimworldTogether.GameClient.Values;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(WorldInspectPane), "SetInitialSizeAndPosition")]
     public static class AddSideTabs
@@ -16,7 +21,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref WITab[] ___TileTabs)
         {
-            if (___TileTabs.Count() != 5 && Network.isConnectedToServer)
+            if (___TileTabs.Count() != 5 && Network.Network.isConnectedToServer)
             {
                 ___TileTabs = new WITab[5]
                 {
@@ -38,7 +43,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref int tile, ref List<Pair<Settlement, int>> outOffsets)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (!Network.Network.isConnectedToServer) return true;
             else
             {
                 int maxDist = SettlementProximityGoodwillUtility.MaxDist;
@@ -70,7 +75,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance)
         {
-            if (!Network.isConnectedToServer) return;
+            if (!Network.Network.isConnectedToServer) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
@@ -169,7 +174,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance, Caravan caravan)
         {
-            if (!Network.isConnectedToServer) return;
+            if (!Network.Network.isConnectedToServer) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
@@ -194,7 +199,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        OfflineSpyManager.RequestSpy();
+                        SpyManager.RequestSpy();
                     }
                 };
 
@@ -208,7 +213,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        OfflineRaidManager.RequestRaid();
+                        RaidManager.RequestRaid();
                     }
                 };
 
@@ -224,7 +229,7 @@ namespace GameClient
 
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
                             "Online", "Offline",
-                            delegate { OnlineVisitManager.RequestVisit(); },
+                            delegate { VisitManager.RequestVisit(); },
                             delegate { OfflineVisitManager.OnOfflineVisitAccept(); },
                             DialogManager.PopDialog);
 
@@ -242,7 +247,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Caravan))
+                        if (RimworldManager.CheckForAnySocialPawn(RimworldManager.SearchLocation.Caravan))
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }
@@ -361,7 +366,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Site __instance)
         {
-            if (!Network.isConnectedToServer) return;
+            if (!Network.Network.isConnectedToServer) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
@@ -433,7 +438,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<Gizmo> __result, Caravan __instance)
         {
-            if (Network.isConnectedToServer && RimworldManager.CheckIfPlayerHasMap())
+            if (Network.Network.isConnectedToServer && RimworldManager.CheckIfPlayerHasMap())
             {
                 Site presentSite = Find.World.worldObjects.Sites.ToList().Find(x => x.Tile == __instance.Tile);
                 Settlement presentSettlement = Find.World.worldObjects.Settlements.ToList().Find(x => x.Tile == __instance.Tile);
@@ -568,7 +573,7 @@ namespace GameClient
                 var floatMenuList = __result.ToList();
                 floatMenuList.Clear();
 
-                if (Network.isConnectedToServer)
+                if (Network.Network.isConnectedToServer)
                 {
                     ClientValues.chosenSettlement = settlement;
                     ClientValues.chosendPods = representative;
@@ -611,7 +616,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result)
         {
-            if (!Network.isConnectedToServer) return;
+            if (!Network.Network.isConnectedToServer) return;
 
             var gizmoList = __result.ToList();
             List<Gizmo> removeList = new List<Gizmo>();

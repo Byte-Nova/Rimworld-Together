@@ -1,8 +1,10 @@
 ﻿using RimWorld;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Patches.Tabs
 {
     public class ChatTab : MainTabWindow
     {

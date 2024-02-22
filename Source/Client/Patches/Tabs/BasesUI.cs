@@ -1,10 +1,13 @@
 ﻿using System.Linq;
 using RimWorld.Planet;
-using Shared;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Planet;
+using RimworldTogether.GameClient.Values;
+using Shared.Misc;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Patches.Tabs
 {
     public class BasesUI : WITab
     {
@@ -24,7 +27,7 @@ namespace GameClient
 
         protected override void FillTab()
         {
-            if (Network.isConnectedToServer)
+            if (Network.Network.isConnectedToServer)
             {
                 tabTitle = $"Player Bases [{PlanetBuilder.playerSettlements.Count()}]";
 
@@ -100,8 +103,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        LikelihoodManager.TryRequestLikelihood(Shared.CommonEnumerators.Likelihoods.Enemy,
-                            Shared.CommonEnumerators.LikelihoodTarget.Settlement);
+                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
 
                         break;
                     }

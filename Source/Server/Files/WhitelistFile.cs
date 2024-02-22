@@ -1,4 +1,4 @@
-﻿namespace GameServer
+﻿namespace RimworldTogether.GameServer.Files
 {
     public class WhitelistFile
     {

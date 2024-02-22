@@ -1,12 +1,20 @@
-﻿using Shared;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Files;
+using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class SettlementManager
     {
         public static void ParseSettlementPacket(ServerClient client, Packet packet)
         {
-            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(settlementDetailsJSON.settlementStepMode))
             {
@@ -33,7 +41,7 @@ namespace GameServer
                 Serializer.SerializeToFile(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"), settlementFile);
 
                 settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
-                foreach (ServerClient cClient in Network.connectedClients.ToArray())
+                foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
                 {
                     if (cClient == client) continue;
                     else
@@ -41,7 +49,7 @@ namespace GameServer
                         settlementDetailsJSON.value = LikelihoodManager.GetSettlementLikelihood(cClient, settlementFile).ToString();
 
                         Packet rPacket = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                        cClient.listener.dataQueue.Enqueue(rPacket);
+                        cClient.clientListener.SendData(rPacket);
                     }
                 }
 
@@ -64,10 +72,10 @@ namespace GameServer
 
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
                     Packet rPacket = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    foreach (ServerClient cClient in Network.connectedClients.ToArray())
+                    foreach (ServerClient cClient in Network.Network.connectedClients.ToArray())
                     {
                         if (cClient == client) continue;
-                        else cClient.listener.dataQueue.Enqueue(rPacket);
+                        else cClient.clientListener.SendData(rPacket);
                     }
 
                     Logger.WriteToConsole($"[Remove settlement] > {settlementDetailsJSON.tile} > {client.username}", Logger.LogMode.Warning);

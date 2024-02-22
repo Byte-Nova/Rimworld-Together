@@ -2,16 +2,19 @@
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Managers
 {
     public static class RimworldManager
     {
-        public static bool CheckForAnySocialPawn(CommonEnumerators.SearchLocation location)
+        public enum SearchLocation { Caravan, Settlement }
+
+        public static bool CheckForAnySocialPawn(SearchLocation location)
         {
-            if (location == CommonEnumerators.SearchLocation.Caravan)
+            if (location == SearchLocation.Caravan)
             {
                 Caravan caravan = ClientValues.chosenCaravan;
 
@@ -19,7 +22,7 @@ namespace GameClient
                 if (playerNegotiator != null) return true;
             }
 
-            else if (location == CommonEnumerators.SearchLocation.Settlement)
+            else if (location == SearchLocation.Settlement)
             {
                 Map map = Find.AnyPlayerHomeMap;
 

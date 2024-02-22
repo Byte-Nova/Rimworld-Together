@@ -1,6 +1,10 @@
-﻿using Shared;
+﻿using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using Shared.Misc;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Managers
 {
     public static class ModManager
     {

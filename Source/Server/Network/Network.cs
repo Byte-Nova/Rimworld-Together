@@ -1,27 +1,29 @@
-﻿using Shared;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
+using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Managers;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Network.Listener;
+using Shared.Misc;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Network
 {
-    //Main class that is used to handle the connection with the clients
-
     public static class Network
     {
-        //IP and Port that the connection will be bound to
+        private static TcpListener server;
         private static IPAddress localAddress = IPAddress.Parse(Program.serverConfig.IP);
         private static int port = int.Parse(Program.serverConfig.Port);
-
-        //TCP listener that will handle the connection with the clients, and list of currently connected clients
-        private static TcpListener connection;
         public static List<ServerClient> connectedClients = new List<ServerClient>();
+
+        public static bool isServerOpen;
 
         public static void ReadyServer()
         {
-            connection = new TcpListener(localAddress, port);
-            connection.Start();
+            server = new TcpListener(localAddress, port);
+            server.Start();
+            isServerOpen = true;
 
-            Threader.GenerateServerThread(Threader.ServerMode.Sites);
+            Threader.GenerateServerThread(Threader.ServerMode.Sites, Program.serverCancelationToken);
 
             Logger.WriteToConsole("Type 'help' to get a list of available commands");
             Logger.WriteToConsole($"Listening for users at {localAddress}:{port}");
@@ -33,17 +35,14 @@ namespace GameServer
 
         private static void ListenForIncomingUsers()
         {
-            TcpClient newTCP = connection.AcceptTcpClient();
-            ServerClient newServerClient = new ServerClient(newTCP);
-            Listener newListener = new Listener(newServerClient, newTCP);
-            newServerClient.listener = newListener;
+            ServerClient newServerClient = new ServerClient(server.AcceptTcpClient());
+            newServerClient.clientListener = new ClientListener(newServerClient);
 
-            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Listener);
-            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Sender);
-            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Health);
-            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
+            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.Listener, Program.serverCancelationToken);
+            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.Health, Program.serverCancelationToken);
+            Threader.GenerateClientThread(newServerClient.clientListener, Threader.ClientMode.KAFlag, Program.serverCancelationToken);
 
-            if (Program.isClosing) newServerClient.listener.disconnectFlag = true;
+            if (Program.isClosing) newServerClient.disconnectFlag = true;
             else
             {
                 if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))
@@ -68,7 +67,7 @@ namespace GameServer
             try
             {
                 connectedClients.Remove(client);
-                client.listener.connection.Dispose();
+                client.tcp.Dispose();
 
                 UserManager.SendPlayerRecount();
 

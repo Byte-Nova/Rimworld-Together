@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RimworldTogether.GameClient.Dialogs;
+using RimworldTogether.Shared.JSON;
 using Verse;
 using Verse.Profile;
 using RimworldTogether.GameClient.Misc;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Managers
 {
     public static class WorldGeneratorManager
     {

@@ -1,12 +1,18 @@
-﻿using Shared;
+﻿using RimworldTogether.GameServer.Network;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.Shared.Network;
+using RimworldTogether.Shared.Serializers;
+using Shared.Misc;
 
-namespace GameServer
+
+namespace RimworldTogether.GameServer.Managers
 {
     public static class CommandManager
     {
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(commandDetailsJSON.commandType))
             {
@@ -42,7 +48,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Op).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.clientListener.SendData(packet);
         }
 
         public static void SendDeOpCommand(ServerClient client)
@@ -51,7 +57,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Deop).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.clientListener.SendData(packet);
 
         }
 
@@ -61,7 +67,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Ban).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.clientListener.SendData(packet);
 
         }
 
@@ -71,7 +77,8 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Disconnect).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.clientListener.SendData(packet);
+
         }
 
         public static void SendQuitCommand(ServerClient client)
@@ -80,7 +87,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Quit).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.clientListener.SendData(packet);
         }
 
         public static void SendEventCommand(ServerClient client, int eventID)
@@ -90,7 +97,7 @@ namespace GameServer
             eventDetailsJSON.eventID = eventID.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.clientListener.SendData(packet);
         }
 
         public static void SendBroadcastCommand(string str)
@@ -100,9 +107,9 @@ namespace GameServer
             commandDetailsJSON.commandDetails = str;
 
             Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
-            foreach (ServerClient client in Network.connectedClients.ToArray())
+            foreach (ServerClient client in Network.Network.connectedClients.ToArray())
             {
-                client.listener.dataQueue.Enqueue(packet);
+                client.clientListener.SendData(packet);
             }
         }
 
@@ -112,7 +119,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.clientListener.SendData(packet);
         }
     }
 }

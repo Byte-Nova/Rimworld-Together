@@ -1,37 +1,37 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace Shared
+namespace Shared.Misc
 {
-    //Class in charge of managing compression/decompression of bytes
-
     public static class GZip
     {
-        //Compresses a given byte array into a smaller version
-
         public static byte[] Compress(byte[] bytes)
         {
-            using MemoryStream memoryStream = new MemoryStream();
-            using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal))
+            using (var memoryStream = new MemoryStream())
             {
-                gzipStream.Write(bytes, 0, bytes.Length);
+                using (var gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal))
+                {
+                    gzipStream.Write(bytes, 0, bytes.Length);
+                }
+
+                return memoryStream.ToArray();
             }
-
-            return memoryStream.ToArray();
         }
-
-        //Decompresses a given byte array into the original version
 
         public static byte[] Decompress(byte[] bytes)
         {
-            using MemoryStream memoryStream = new MemoryStream(bytes);
-            using MemoryStream outputStream = new MemoryStream();
-            using (GZipStream decompressStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+            using (var memoryStream = new MemoryStream(bytes))
             {
-                decompressStream.CopyTo(outputStream);
-            }
+                using (var outputStream = new MemoryStream())
+                {
+                    using (var decompressStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+                    {
+                        decompressStream.CopyTo(outputStream);
+                    }
 
-            return outputStream.ToArray();
+                    return outputStream.ToArray();
+                }
+            }
         }
     }
 }

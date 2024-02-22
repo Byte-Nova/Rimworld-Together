@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.Shared.JSON.Actions;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Values
 {
     public static class ClientValues
     {
@@ -45,6 +46,7 @@ namespace GameClient
         public static int autosaveDays = 1;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = autosaveDays * 60000f;
+        public static string versionCode = "1.0.8";
 
         public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
 

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using RimWorld;
+using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_Listing : Window
     {

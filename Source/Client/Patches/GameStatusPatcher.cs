@@ -1,9 +1,14 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
-using Shared;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Planet;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Network;
+using Shared.Misc;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Patches
 {
     public class GameStatusPatcher
     {
@@ -13,7 +18,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.isConnectedToServer)
+                if (Network.Network.isConnectedToServer)
                 {
                     ClientValues.ForcePermadeath();
                     ClientValues.ManageDevOptions();
@@ -24,7 +29,7 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.Network.serverListener.SendData(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -37,7 +42,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.isConnectedToServer)
+                if (Network.Network.isConnectedToServer)
                 {
                     ClientValues.ForcePermadeath();
                     ClientValues.ManageDevOptions();
@@ -56,14 +61,14 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Caravan caravan)
             {
-                if (Network.isConnectedToServer)
+                if (Network.Network.isConnectedToServer)
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = caravan.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.Network.serverListener.SendData(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -76,14 +81,14 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Map map)
             {
-                if (Network.isConnectedToServer)
+                if (Network.Network.isConnectedToServer)
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = map.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.Network.serverListener.SendData(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -96,14 +101,14 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.isConnectedToServer)
+                if (Network.Network.isConnectedToServer)
                 {
                     SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
                     settlementDetailsJSON.tile = settlement.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.Network.serverListener.SendData(packet);
 
                     SaveManager.ForceSave();
                 }

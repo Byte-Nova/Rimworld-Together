@@ -1,14 +1,15 @@
-﻿using Shared;
-using System.Reflection;
+﻿using System.Reflection;
+using RimworldTogether.GameServer.Core;
+using RimworldTogether.GameServer.Managers;
+using RimworldTogether.GameServer.Managers.Actions;
+using RimworldTogether.GameServer.Misc;
+using RimworldTogether.GameServer.Users;
+using RimworldTogether.Shared.Network;
 
-namespace GameServer
+namespace RimworldTogether.GameServer.Network
 {
-    //Class that handles the management of all the received packets
-
     public static class PacketHandler
     {
-        //Function that opens handles the action that the packet should do, then sends it to the correct one below
-
         public static void HandlePacket(ServerClient client, Packet packet)
         {
             if (Program.serverConfig.verboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}");
@@ -20,7 +21,7 @@ namespace GameServer
 
         public static void KeepAlivePacket(ServerClient client, Packet packet)
         {
-            client.listener.KAFlag = true;
+            client.KAFlag = true;
         }
 
         public static void LoginClientPacket(ServerClient client, Packet packet)
@@ -60,7 +61,7 @@ namespace GameServer
 
         public static void VisitPacket(ServerClient client, Packet packet)
         {
-            OnlineVisitManager.ParseVisitPacket(client, packet);
+            VisitManager.ParseVisitPacket(client, packet);
         }
 
         public static void OfflineVisitPacket(ServerClient client, Packet packet)
@@ -75,7 +76,7 @@ namespace GameServer
 
         public static void FactionPacket(ServerClient client, Packet packet)
         {
-            OnlineFactionManager.ParseFactionPacket(client, packet);
+            FactionManager.ParseFactionPacket(client, packet);
         }
 
         public static void MapPacket(ServerClient client, Packet packet)
@@ -85,12 +86,12 @@ namespace GameServer
 
         public static void RaidPacket(ServerClient client, Packet packet)
         {
-            OfflineRaidManager.ParseRaidPacket(client, packet);
+            RaidManager.ParseRaidPacket(client, packet);
         }
 
         public static void SpyPacket(ServerClient client, Packet packet)
         {
-            OfflineSpyManager.ParseSpyPacket(client, packet);
+            SpyManager.ParseSpyPacket(client, packet);
         }
 
         public static void SettlementPacket(ServerClient client, Packet packet)

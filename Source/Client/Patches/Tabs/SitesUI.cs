@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using RimWorld.Planet;
+using RimworldTogether.GameClient.Planet;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Patches.Tabs
 {
     public class SitesUI : WITab
     {
@@ -23,7 +24,7 @@ namespace GameClient
 
         protected override void FillTab()
         {
-            if (Network.isConnectedToServer)
+            if (Network.Network.isConnectedToServer)
             {
                 tabTitle = $"Player Sites [{PlanetBuilder.playerSites.Count()}]";
 
