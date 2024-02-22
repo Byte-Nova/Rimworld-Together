@@ -1,14 +1,10 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.Network;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Core
+namespace GameClient
 {
     public class ModStuff : Mod
     {
@@ -26,7 +22,7 @@ namespace RimworldTogether.GameClient.Core
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
 
-            listingStandard.Label("Running version: " + ClientValues.versionCode);
+            listingStandard.Label("Running version: " + CommonValues.executableVersion);
 
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
@@ -46,7 +42,7 @@ namespace RimworldTogether.GameClient.Core
             listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info on the logs");
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open"))
             {
-                try { System.Diagnostics.Process.Start(Main.mainPath); } catch { }
+                try { System.Diagnostics.Process.Start(Master.mainPath); } catch { }
             }
 
             listingStandard.GapLine();
@@ -70,15 +66,15 @@ namespace RimworldTogether.GameClient.Core
 
         private void ResetServerProgress()
         {
-            if (!Network.Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
+            if (!Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
             else
             {
                 Action r1 = delegate 
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
 
-                    Packet packet = new Packet("ResetSavePacket");
-                    Network.Network.SendData(packet);
+                    Packet packet = Packet.CreatePacketFromJSON("ResetSavePacket");
+                    Network.listener.dataQueue.Enqueue(packet);
                 };
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);

@@ -16,7 +16,7 @@ The server runs utilizing the .NET 7.0 libraries, therefore you will need to hav
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, I'm sure modern e-toasters could run it.
 
 ## Server Installation
-First, navigate towards the download section of this page and download the desired server version. We will always suggest the latest one as it usually comes with all the new bleeding edge features that old ones don't have: https://github.com/Nova-Atomic/Rimworld-Together/releases/latest
+First, navigate towards the download section of this page and download the desired server version. We will always suggest the latest one as it usually comes with all the new bleeding edge features that old ones don't have: https://github.com/Byte-Nova/Rimworld-Together/releases/latest
 
 Then, place the server files somewhere where the server will be able to operate freely without any system/antivirus intervention (This is specially needed for linux users).
 
@@ -37,7 +37,7 @@ On first launch, the server will also generate the "MODS" folder, inside of it w
 
 To install mods, directly dump the mod folder (The one with the numbers in the title if grabing from Steam) inside whichever folder you choose.
   
-If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Nova-Atomic/Library
+If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Byte-Nova/Library
 
 ## Enabling Core & DLCs
 To enable the use of Core and DLCs in the server, fetch the zip file called "Extras" from this repository and treat them as a folder of a normal mod and place them wherever you please in the mod folders.

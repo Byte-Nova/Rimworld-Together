@@ -1,26 +1,29 @@
-﻿using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Planet;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
+﻿using Shared;
 using System;
 using System.Reflection;
 using Verse;
 
-namespace RimworldTogether.GameClient.Network
+namespace GameClient
 {
+    //Class that handles the management of all the received packets
+
     public static class PacketHandler
     {
+        //Function that opens handles the action that the packet should do, then sends it to the correct one below
+
         public static void HandlePacket(Packet packet)
         {
             if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");
 
-            Type toUse = typeof(PacketHandler);
-            MethodInfo methodInfo = toUse.GetMethod(packet.header);
-            methodInfo.Invoke(packet.header, new object[] { packet });
+            Action toDo = delegate
+            {
+                Type toUse = typeof(PacketHandler);
+                MethodInfo methodInfo = toUse.GetMethod(packet.header);
+                methodInfo.Invoke(packet.header, new object[] { packet });
+            };
+
+            if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
+            else toDo();
         }
 
         public static void KeepAlivePacket(Packet packet)
@@ -55,7 +58,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static void VisitPacket(Packet packet)
         {
-            VisitManager.ParseVisitPacket(packet);
+            OnlineVisitManager.ParseVisitPacket(packet);
         }
 
         public static void OfflineVisitPacket(Packet packet)
@@ -65,7 +68,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static void RaidPacket(Packet packet)
         {
-            RaidManager.ParseRaidPacket(packet);
+            OfflineRaidManager.ParseRaidPacket(packet);
         }
 
         public static void SettlementPacket(Packet packet)
@@ -75,7 +78,7 @@ namespace RimworldTogether.GameClient.Network
 
         public static void SpyPacket(Packet packet)
         {
-            SpyManager.ParseSpyPacket(packet);
+            OfflineSpyManager.ParseSpyPacket(packet);
         }
 
         public static void SitePacket(Packet packet)
@@ -133,13 +136,13 @@ namespace RimworldTogether.GameClient.Network
 
         public static void ServerValuesPacket(Packet packet)
         {
-            ServerOverallJSON serverOverallJSON = (ServerOverallJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            ServerOverallJSON serverOverallJSON = (ServerOverallJSON)Serializer.ConvertBytesToObject(packet.contents);
             ServerValues.SetServerParameters(serverOverallJSON);
             ServerValues.SetAccountDetails(serverOverallJSON);
             PlanetBuilderHelper.SetWorldFeatures(serverOverallJSON);
             EventManager.SetEventPrices(serverOverallJSON);
             SiteManager.SetSiteDetails(serverOverallJSON);
-            SpyManager.SetSpyCost(serverOverallJSON);
+            OfflineSpyManager.SetSpyCost(serverOverallJSON);
             CustomDifficultyManager.SetCustomDifficulty(serverOverallJSON);
         }
     }

@@ -1,11 +1,6 @@
-﻿using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+﻿using Shared;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class LoginManager
     {
@@ -13,7 +8,7 @@ namespace RimworldTogether.GameClient.Managers
         {
             DialogManager.PopWaitDialog();
 
-            JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(loginDetailsJSON.tryResponse))
             {

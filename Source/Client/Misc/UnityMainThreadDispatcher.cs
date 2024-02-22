@@ -1,4 +1,4 @@
-﻿namespace RimworldTogether.GameClient.Misc
+﻿namespace GameClient
 {
     /*
    Copyright 2015 Pim de Witte All Rights Reserved.

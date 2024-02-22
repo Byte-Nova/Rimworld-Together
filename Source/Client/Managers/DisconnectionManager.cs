@@ -1,10 +1,7 @@
-﻿using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 using Verse;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class DisconnectionManager
     {

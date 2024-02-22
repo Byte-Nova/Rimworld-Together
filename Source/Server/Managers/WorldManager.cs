@@ -1,13 +1,6 @@
-﻿using RimworldTogether.GameServer.Core;
-using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.GameServer.Network;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Misc;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Managers
+namespace GameServer
 {
     public static class WorldManager
     {
@@ -17,7 +10,7 @@ namespace RimworldTogether.GameServer.Managers
 
         public static void ParseWorldPacket(ServerClient client, Packet packet)
         {
-            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(worldDetailsJSON.worldStepMode))
             {
@@ -55,7 +48,7 @@ namespace RimworldTogether.GameServer.Managers
 
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Saved).ToString();
             Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
-            client.clientListener.SendData(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
 
         public static void RequireWorldFile(ServerClient client)
@@ -64,7 +57,7 @@ namespace RimworldTogether.GameServer.Managers
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
-            client.clientListener.SendData(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
 
         public static void SendWorldFile(ServerClient client)
@@ -82,7 +75,7 @@ namespace RimworldTogether.GameServer.Managers
             worldDetailsJSON.Factions = worldValues.Factions;
 
             Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
-            client.clientListener.SendData(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
 
         public static void LoadWorldFile()

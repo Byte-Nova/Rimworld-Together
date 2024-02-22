@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace RimworldTogether.Shared.Misc
+namespace Shared
 {
+    //Class that overrides the default binary formatter settings for it to work with both frameworks
+
     public class BindOverrider : SerializationBinder
     {
         private static readonly string neutralAssembly = "NA";

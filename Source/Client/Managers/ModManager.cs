@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Shared;
+using System.Collections.Generic;
 using System.Linq;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
 using Verse;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class ModManager
     {
@@ -22,7 +18,7 @@ namespace RimworldTogether.GameClient.Managers
 
         public static void GetConflictingMods(Packet packet)
         {
-            JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)ObjectConverter.ConvertBytesToObject(packet.contents);
+            JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
                 loginDetailsJSON.conflictingMods.ToArray()));

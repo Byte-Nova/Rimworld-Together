@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <RootNamespace>RimworldTogether.GameClient</RootNamespace>
+    <RootNamespace>GameClient</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
@@ -22,14 +22,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
     <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3901" />
     <PackageReference Include="Lib.Harmony" Version="2.2.2" />
     <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib" Version="10.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+	
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	<Exec Condition="$([MSBuild]::IsOSPlatform('Windows'))" Command="copy /Y &quot;$(ProjectDir)..\Patched\Newtonsoft.Json.dll&quot; &quot;$(TargetDir)Newtonsoft.Json.dll&quot;" />
-	<Exec Condition="$([MSBuild]::IsOSPlatform('Linux'))" Command="cp -T &quot;$(ProjectDir)..\Patched\Newtonsoft.Json.dll&quot; &quot;$(TargetDir)Newtonsoft.Json.dll&quot;" />
-  </Target>
 </Project>

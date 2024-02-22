@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Shared.Network
+namespace Shared
 {
     public class DownloadManager
     {
