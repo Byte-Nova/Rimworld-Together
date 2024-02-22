@@ -25,7 +25,6 @@ namespace GameClient
             closeOnCancel = false;
         }
 
-
         public override void DoWindowContents(Rect rect)
         {
             AllowCloseDialog();

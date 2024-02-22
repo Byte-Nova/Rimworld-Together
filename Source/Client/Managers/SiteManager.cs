@@ -5,7 +5,6 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
-using GameClient;
 
 
 namespace GameClient
@@ -106,11 +105,11 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Build:
-                    PlanetBuilder.SpawnSingleSite(siteDetailsJSON);
+                    PlanetManager.SpawnSingleSite(siteDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Destroy:
-                    PlanetBuilder.RemoveSingleSite(siteDetailsJSON);
+                    PlanetManager.RemoveSingleSite(siteDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Info:

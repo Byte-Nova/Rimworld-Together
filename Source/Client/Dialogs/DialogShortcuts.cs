@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System;
 using Verse;
-using GameClient;
 using Shared;
 
 namespace GameClient

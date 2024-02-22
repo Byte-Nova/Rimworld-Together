@@ -5,18 +5,38 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
-using GameClient;
 
 namespace GameClient
 {
-    public static class PlanetBuilder
+    public static class PlanetManager
     {
         public static List<Settlement> playerSettlements = new List<Settlement>();
 
         public static List<Site> playerSites = new List<Site>();
 
-        public static void BuildPlanet()
+        public static void ParseSettlementPacket(Packet packet)
         {
+            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+
+            switch (int.Parse(settlementDetailsJSON.settlementStepMode))
+            {
+                case (int)CommonEnumerators.SettlementStepMode.Add:
+                    SpawnSingleSettlement(settlementDetailsJSON);
+                    break;
+
+                case (int)CommonEnumerators.SettlementStepMode.Remove:
+                    RemoveSingleSettlement(settlementDetailsJSON);
+                    break;
+            }
+        }
+
+        public static void BuildPlayerPlanetFeatures()
+        {
+            FactionValues.FindPlayerFactionsInWorld();
+
+            RemoveOldSettlements();
+            RemoveOldSites();
+
             SpawnPlayerSettlements();
             SpawnPlayerSites();
         }
@@ -62,18 +82,14 @@ namespace GameClient
 
         private static void SpawnPlayerSettlements()
         {
-            FactionValues.FindPlayerFactionsInWorld();
-
-            RemoveOldSettlements();
-
-            for (int i = 0; i < PlanetBuilderHelper.tempSettlementTiles.Count(); i++)
+            for (int i = 0; i < PlanetManagerHelper.tempSettlementTiles.Count(); i++)
             {
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = int.Parse(PlanetBuilderHelper.tempSettlementTiles[i]);
-                    settlement.Name = $"{PlanetBuilderHelper.tempSettlementOwners[i]}'s settlement";
-                    settlement.SetFaction(GetPlayerFaction(int.Parse(PlanetBuilderHelper.tempSettlementLikelihoods[i])));
+                    settlement.Tile = int.Parse(PlanetManagerHelper.tempSettlementTiles[i]);
+                    settlement.Name = $"{PlanetManagerHelper.tempSettlementOwners[i]}'s settlement";
+                    settlement.SetFaction(GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSettlementLikelihoods[i])));
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
@@ -81,7 +97,7 @@ namespace GameClient
 
                 catch (Exception e)
                 {
-                    Logs.Error($"Failed to build settlement at {PlanetBuilderHelper.tempSettlementTiles[i]}. " +
+                    Logs.Error($"Failed to build settlement at {PlanetManagerHelper.tempSettlementTiles[i]}. " +
                         $"Reason: {e}");
                 }
             }
@@ -128,19 +144,17 @@ namespace GameClient
 
         private static void SpawnPlayerSites()
         {
-            RemoveOldSites();
-
-            for (int i = 0; i < PlanetBuilderHelper.tempSiteTiles.Count(); i++)
+            for (int i = 0; i < PlanetManagerHelper.tempSiteTiles.Count(); i++)
             {
                 try
                 {
-                    SitePartDef siteDef = SiteManager.GetDefForNewSite(int.Parse(PlanetBuilderHelper.tempSiteTypes[i]),
-                        PlanetBuilderHelper.tempSiteIsFromFactions[i]);
+                    SitePartDef siteDef = SiteManager.GetDefForNewSite(int.Parse(PlanetManagerHelper.tempSiteTypes[i]),
+                        PlanetManagerHelper.tempSiteIsFromFactions[i]);
 
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: int.Parse(PlanetBuilderHelper.tempSiteTiles[i]),
+                        tile: int.Parse(PlanetManagerHelper.tempSiteTiles[i]),
                         threatPoints: 1000,
-                        faction: GetPlayerFaction(int.Parse(PlanetBuilderHelper.tempSiteLikelihoods[i])));
+                        faction: GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSiteLikelihoods[i])));
 
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
@@ -148,7 +162,7 @@ namespace GameClient
 
                 catch (Exception e)
                 {
-                    Logs.Error($"Failed to spawn site at {PlanetBuilderHelper.tempSiteTiles[i]}. Reason: {e}");
+                    Logs.Error($"Failed to spawn site at {PlanetManagerHelper.tempSiteTiles[i]}. Reason: {e}");
                 };
             }
         }
@@ -253,6 +267,38 @@ namespace GameClient
             }
 
             return factionToUse;
+        }
+    }
+
+    public static class PlanetManagerHelper
+    {
+        public static string[] tempSettlementTiles;
+
+        public static string[] tempSettlementOwners;
+
+        public static string[] tempSettlementLikelihoods;
+
+        public static string[] tempSiteTiles;
+
+        public static string[] tempSiteOwners;
+
+        public static string[] tempSiteLikelihoods;
+
+        public static string[] tempSiteTypes;
+
+        public static bool[] tempSiteIsFromFactions;
+
+        public static void SetWorldFeatures(ServerOverallJSON serverOverallJSON)
+        {
+            tempSettlementTiles = serverOverallJSON.settlementTiles.ToArray();
+            tempSettlementOwners = serverOverallJSON.settlementOwners.ToArray();
+            tempSettlementLikelihoods = serverOverallJSON.settlementLikelihoods.ToArray();
+
+            tempSiteTiles = serverOverallJSON.siteTiles.ToArray();
+            tempSiteOwners = serverOverallJSON.siteOwners.ToArray();
+            tempSiteLikelihoods = serverOverallJSON.siteLikelihoods.ToArray();
+            tempSiteTypes = serverOverallJSON.siteTypes.ToArray();
+            tempSiteIsFromFactions = serverOverallJSON.isFromFactions.ToArray();
         }
     }
 }

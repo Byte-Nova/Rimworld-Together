@@ -3,7 +3,6 @@ using System.IO;
 using UnityEngine;
 using Verse;
 using Shared;
-using GameClient;
 
 namespace GameClient
 {
@@ -44,7 +43,8 @@ namespace GameClient
 
             if (!Directory.Exists(modPath)) Directory.CreateDirectory(modPath);
 
-            Logs.PrepareFileName(modPath);
+            try { Logs.PrepareFileName(modPath); }
+            catch { Log.Warning("Logger function failed to initialize"); }
         }
 
         public static void LoadClientPreferences()

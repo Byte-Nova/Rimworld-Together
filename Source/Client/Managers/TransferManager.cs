@@ -5,7 +5,6 @@ using RimWorld;
 using RimWorld.Planet;
 using Verse;
 using Verse.Sound;
-using GameClient;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -219,6 +218,8 @@ namespace GameClient
             ClientValues.incomingManifest = new TransferManifestJSON();
             ClientValues.outgoingManifest = new TransferManifestJSON();
             ClientValues.ToggleTransfer(false);
+
+            DialogManager.ClearStack();
         }
 
         public static void ReceiveTransferRequest(TransferManifestJSON transferManifestJSON)

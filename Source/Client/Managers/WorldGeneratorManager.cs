@@ -6,7 +6,6 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using Verse.Profile;
-using GameClient;
 
 namespace GameClient
 {

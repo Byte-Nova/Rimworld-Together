@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using GameClient;
 
 namespace GameClient
 {
@@ -165,28 +164,29 @@ namespace GameClient
             else if (inputDisplayBefore != inputTwoDisplay) inputResultList[1] = DialogShortcuts.replaceNonCensoredSymbols(inputResultList[1], inputTwoDisplay, inputTwoCensored, Str_censorSymbol);
 
         }
+
         public virtual void CacheInputs()
         {
-
             DialogManager.inputCache = inputList;
             Logs.Message($"inputCache is {DialogManager.inputCache != null}");
-
         }
+
         public virtual void SubstituteInputs(List<object> newInputs)
         {
+            //Exception handling
 
-            //exception handling
             if (newInputs.Count < 2)
             {
                 Logs.Error("[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs has too few elements; No changes will be made");
                 return;
             }
+
             else if (newInputs.Count > 2)
             {
                 Logs.Warning("[RimWorld Together] > WARNING: newInputs in RT_Dialog_2Inputs.SubstituteInputs has more elements than necessary, some elements will not be used ");
             }
 
-            //for each value in inputResultList, set it to the corrosponding value in newInputs
+            //For each value in inputResultList, set it to the corrosponding value in newInputs
             Logs.Message($"input result count: {inputResultList.Count}");
             for (int index = 0; index < inputResultList.Count;index++)
             {
@@ -195,8 +195,10 @@ namespace GameClient
                     Logs.Error($"[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs contained non-matching types at index {index}, No changes will be made");
                     return;
                 }
+
                 inputResultList[index] = (string)newInputs[index];
             }
+
             Logs.Message($"{inputResultList[0]} : {inputResultList[1]}");
         }
     }

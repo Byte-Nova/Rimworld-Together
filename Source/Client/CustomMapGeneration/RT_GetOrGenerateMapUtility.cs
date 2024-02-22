@@ -1,7 +1,6 @@
 ﻿using RimWorld;
 using RimWorld.Planet;
 using Verse;
-using GameClient;
 
 namespace GameClient
 {

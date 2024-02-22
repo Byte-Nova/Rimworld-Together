@@ -2,8 +2,12 @@
 
 namespace GameServer
 {
+    //Class that handles all the save functions of the server
+
     public static class SaveManager
     {
+        //Receives a save part from the client
+
         public static void ReceiveSavePartFromClient(ServerClient client, Packet packet)
         {
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
@@ -40,6 +44,8 @@ namespace GameServer
             }
         }
 
+        //Sends a save part towards the client
+
         public static void SendSavePartToClient(ServerClient client)
         {
             string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
@@ -72,6 +78,8 @@ namespace GameServer
             }
         }
 
+        //Gets executed whenever the client finishes saving
+
         private static void OnUserSave(ServerClient client, FileTransferJSON fileTransferJSON)
         {
             if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
@@ -100,6 +108,8 @@ namespace GameServer
             else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");
         }
 
+        //Checks if the user has any save data available
+
         public static bool CheckIfUserHasSave(ServerClient client)
         {
             string[] saves = Directory.GetFiles(Program.savesPath);
@@ -114,6 +124,8 @@ namespace GameServer
             return false;
         }
 
+        //Gets a save from a specific user
+
         public static byte[] GetUserSaveFromUsername(string username)
         {
             string[] saves = Directory.GetFiles(Program.savesPath);
@@ -127,6 +139,8 @@ namespace GameServer
 
             return null;
         }
+
+        //Resets the save of a specific user
 
         public static void ResetClientSave(ServerClient client)
         {
@@ -159,6 +173,8 @@ namespace GameServer
                 }
             }
         }
+
+        //Deletes all player details in the server
 
         public static void DeletePlayerDetails(string username)
         {

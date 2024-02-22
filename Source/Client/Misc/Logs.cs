@@ -39,7 +39,7 @@ namespace GameClient
             //Write warning to player.log file
             Log.Warning(message);
 
-            //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
+            //Write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
             WriteMessage(message);
 
             semaphore.Release();
@@ -54,7 +54,7 @@ namespace GameClient
             //Write warning to player.log file
             Log.Error(message, ignoreStopLoggingLimit);
 
-            //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
+            //Write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
             WriteMessage(message);
 
             semaphore.Release();
@@ -100,15 +100,15 @@ namespace GameClient
                     }
                 }
 
-                //if no Log file is available,
-                //set LogFilePath to a new log file
+                //If no Log file is available,
+                //Set LogFilePath to a new log file
                 if (LogFilePath == null)
                 {
                     LogFile = $"Log{IdDict.Count + 1}.log";
                     LogFilePath = Path.Combine(ModFolder, LogFile);
                 }
 
-                //update the Instance List. 
+                //Update the Instance List. 
                 using (StreamWriter w = File.CreateText(InstanceListFile))
                 {
                     foreach (string file in IdDict.Keys)
@@ -119,11 +119,11 @@ namespace GameClient
                     w.WriteLine($"{LogFile} {Process.GetCurrentProcess().Id}");
                 }
 
-                //erase the log file
+                //Erase the log file
                 File.Delete(LogFilePath);
             }
 
-            //if the instance file does not exist, create it and add in the first entry
+            //If the instance file does not exist, create it and add in the first entry
             else
             {
                 using (StreamWriter w = File.CreateText(InstanceListFile))

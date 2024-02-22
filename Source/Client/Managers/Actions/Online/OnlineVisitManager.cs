@@ -307,7 +307,7 @@ namespace GameClient
 
             else if (mode == FetchMode.Player)
             {
-                OnlineVisitManager.visitMap = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, true, false, false, false);
+                OnlineVisitManager.visitMap = DeepScribeManager.GetMapSimple(mapDetailsJSON, true, false, false, false);
             }
         }
 

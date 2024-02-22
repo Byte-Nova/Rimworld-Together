@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Collections.Generic;
 using Verse;
-using GameClient;
 
 namespace GameClient
 {
@@ -24,27 +23,24 @@ namespace GameClient
 
         public static void PushNewDialog(Window window)
         {
-            if (ClientValues.isReadyToPlay || Current.ProgramState == ProgramState.Entry)
+            try
             {
-                try
-                {
-                    Logs.Message($"[Rimworld Together] > Pushing {window.ToString()}");
+                Logs.Message($"[Rimworld Together] > Pushing {window.ToString()}");
 
-                    //Hide the current window
-                    if (windowStack.Count > 0) Find.WindowStack.TryRemove(windowStack.Peek());
+                //Hide the current window
+                if (windowStack.Count > 0) Find.WindowStack.TryRemove(windowStack.Peek());
 
-                    //Add the new window to the internal stack
-                    windowStack.Push(window);
+                //Add the new window to the internal stack
+                windowStack.Push(window);
 
-                    //Get an instance of the new window as RT_WindowInputs so input info can be retrieved later
-                    if (window is RT_WindowInputs) currentDialogInputs = (RT_WindowInputs)window;
+                //Get an instance of the new window as RT_WindowInputs so input info can be retrieved later
+                if (window is RT_WindowInputs) currentDialogInputs = (RT_WindowInputs)window;
 
-                    //Draw the new window
-                    Find.WindowStack.Add(window);
-                    listWindows();
-                }
-                catch (System.Exception ex) { Logs.Message(ex.ToString()); }
+                //Draw the new window
+                Find.WindowStack.Add(window);
+                listWindows();
             }
+            catch (System.Exception ex) { Logs.Message(ex.ToString()); }
         }
 
         public static void ClearInternalStack()

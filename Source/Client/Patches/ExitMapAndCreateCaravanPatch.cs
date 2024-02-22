@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using GameClient;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
@@ -29,6 +28,7 @@ namespace GameClient
             if (playersPawns.Count > 0 ) { return; }
 
             Current.Game.DeinitAndRemoveMap(OnlineVisitManager.visitMap);
+
             OnlineVisitManager.StopVisit();
         }
     }
