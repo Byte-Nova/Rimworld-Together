@@ -51,7 +51,6 @@ namespace GameClient
             DialogManager.PopDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
-
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
             Action r1 = delegate { PrepareMapForOfflineVisit(mapDetailsJSON); };
@@ -60,39 +59,28 @@ namespace GameClient
             {
                 DialogManager.WaitForDialogInput(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, DialogManager.PopDialog));
             }
-            else DialogManager.WaitForDialogInput(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.ClearStack));
+            else DialogManager.WaitForDialogInput(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.PopDialog));
 
-            DialogManager.WaitForDialogInput(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
+            DialogManager.WaitForDialogInput(new RT_Dialog_OK("Game might hang temporarily depending on map complexity", DialogManager.PopDialog));
         }
 
         private static void PrepareMapForOfflineVisit(MapDetailsJSON mapDetailsJSON)
         {
-            Log.Warning("Here");
-
             Map map = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, false, true, true, false);
 
-            Log.Warning("Here 2");
-
             HandleMapFactions(map);
-
-            Log.Warning("Here 3");
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
 
-            Log.Warning("Here 4");
-
             PrepareMapLord(map);
-
-            Log.Warning("Here 5");
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {
                 "You are now in offline visit mode!",
                 "This mode allows you to visit an offline player!",
                 "To stop the visit exit the map creating a caravan"
-            }, delegate { DialogManager.ClearStack(); });
-
+            });
             DialogManager.PushNewDialog(d1);
         }
 

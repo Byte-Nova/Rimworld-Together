@@ -78,9 +78,9 @@ namespace GameClient
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, DialogManager.ClearStack));
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, DialogManager.PopDialog));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.ClearStack));
+            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.PopDialog));
 
             DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
@@ -110,7 +110,7 @@ namespace GameClient
                 "You are now in spy mode!",
                 "Spy mode allows you to check out another player's base",
                 "To stop the spy exit the map creating a caravan"
-            }, delegate { DialogManager.ClearStack(); });
+            });
             DialogManager.PushNewDialog(d1);
         }
 

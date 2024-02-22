@@ -96,7 +96,7 @@ namespace GameClient
                             CommonEnumerators.LikelihoodTarget.Settlement); };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, DialogManager.ClearStack);
+                            "Enemy", "Neutral", "Ally", r1, r2, r3, DialogManager.PopDialog);
 
                         DialogManager.PushNewDialog(d1);
                     }

@@ -28,7 +28,7 @@ namespace GameClient
 
         public override void DoWindowContents(Rect rect)
         {
-            AllowCloseDialog();
+            //AllowCloseDialog();
 
             float centeredX = rect.width / 2;
             float horizontalLineDif = Text.CalcSize(description).y + StandardMargin / 2;
