@@ -155,7 +155,7 @@ namespace GameClient
 
         private static void OnVisitAccept(VisitDetailsJSON visitDetailsJSON)
         {
-            DialogManager.PopDialog(DialogManager.currentDialog);
+            DialogManager.PopWaitDialog();
 
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
@@ -169,13 +169,13 @@ namespace GameClient
 
         private static void OnVisitReject()
         {
-            DialogManager.PopDialog(DialogManager.currentDialog);
+            DialogManager.PopWaitDialog();
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!"));
         }
 
         private static void OnVisitUnavailable()
         {
-            DialogManager.PopDialog(DialogManager.currentDialog);
+            DialogManager.PopWaitDialog();
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!"));
         }
 
@@ -312,7 +312,7 @@ namespace GameClient
 
             else if (mode == FetchMode.Player)
             {
-                OnlineVisitManager.visitMap = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, true, false, false, false);
+                OnlineVisitManager.visitMap = DeepScribeManager.GetMapSimple(mapDetailsJSON, true, false, false, false);
             }
         }
 

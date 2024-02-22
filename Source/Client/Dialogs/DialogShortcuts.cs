@@ -1,10 +1,17 @@
-﻿using System.Linq;
+﻿using RimworldTogether.GameClient.Managers;
+using RimworldTogether.GameClient.Managers.Actions;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.Shared.Network;
+using System.Linq;
 using System;
+using RimworldTogether.Shared.JSON;
+using RimworldTogether.Shared.Misc;
 using Verse;
-using GameClient;
-using Shared;
+using UnityEngine;
+using System.Data;
+using RimworldTogether.GameClient.Misc;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Dialogs
 {
     public static class DialogShortcuts
     {
@@ -49,7 +56,7 @@ namespace GameClient
                     DialogManager.PushNewDialog(a2);
                     PreferenceManager.FetchLoginDetails();
                 },
-                delegate { DialogManager.PopDialog();  Network.listener.disconnectFlag = true; });
+                delegate { DialogManager.PopDialog();  Network.Network.serverListener.disconnectFlag = true; });
 
             DialogManager.PushNewDialog(d1);
             
@@ -60,11 +67,11 @@ namespace GameClient
             RT_Dialog_OK d3 = new RT_Dialog_OK("This feature is not implemented yet!", DialogManager.PopDialog);
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
-                "Separate colony", "Together with other players (TBA)", delegate { DialogManager.ClearStack(); },
-                delegate { DialogManager.PushNewDialog(d3); }, delegate { DisconnectionManager.RestartGame(true); });
+                "Separate colony", "Together with other players (TBA)", null, delegate { DialogManager.PushNewDialog(d3); },
+                delegate { DialogManager.PopDialog();  DisconnectionManager.RestartGame(true); });
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "Welcome to the world view!",
-                "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },
+                        "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },
                 delegate { DialogManager.PushNewDialog(d2); });
 
             DialogManager.PushNewDialog(d1);
@@ -84,11 +91,13 @@ namespace GameClient
                 "Server Browser",
                 "Direct Connect",
                 delegate { DialogManager.PushNewDialog(a1); },
-                delegate { PreferenceManager.FetchConnectionDetails(); },
+                delegate {
+                    PreferenceManager.FetchConnectionDetails();
+                },
                 DialogManager.PopDialog);
 
 
-            //Logs.Message($"Pushing connection type dialog {Find.WindowStack.Count}");
+            Logs.Message($"Pushing connection type dialog {Find.WindowStack.Count}");
             DialogManager.PushNewDialog(newDialog);
         }
 
@@ -121,21 +130,21 @@ namespace GameClient
             {
                 if (throughBrowser)
                 {
-                    Network.ip = answerSplit[0];
-                    Network.port = answerSplit[1];
+                    Network.Network.ip = answerSplit[0];
+                    Network.Network.port = answerSplit[1];
                     PreferenceManager.SaveConnectionDetails(answerSplit[0], answerSplit[1]);
                 }
 
                 else
                 {
-                    Network.ip = (string)DialogManager.inputCache[0];
-                    Network.port = (string)DialogManager.inputCache[1];
+                    Network.Network.ip = (string)DialogManager.inputCache[0];
+                    Network.Network.port = (string)DialogManager.inputCache[1];
                     PreferenceManager.SaveConnectionDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
                 }
 
                 Logs.Message($"Trying to connect to server");
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Network.StartConnection();
+                Network.Network.StartConnection();
             }
 
             else
@@ -157,15 +166,15 @@ namespace GameClient
             {
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
                 loginDetails.username = (string)DialogManager.inputCache[0];
-                loginDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
-                loginDetails.clientVersion = CommonValues.executableVersion;
+                loginDetails.password = Hasher.GetHash((string)DialogManager.inputCache[1]);
+                loginDetails.clientVersion = ClientValues.versionCode;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
                 PreferenceManager.SaveLoginDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
 
                 Packet packet = Packet.CreatePacketFromJSON("LoginClientPacket", loginDetails);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.Network.serverListener.SendData(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
             }
@@ -191,14 +200,14 @@ namespace GameClient
             {
                 JoinDetailsJSON registerDetails = new JoinDetailsJSON();
                 registerDetails.username = (string)DialogManager.inputCache[0];
-                registerDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
-                registerDetails.clientVersion = CommonValues.executableVersion;
+                registerDetails.password = Hasher.GetHash((string)DialogManager.inputCache[1]);
+                registerDetails.clientVersion = ClientValues.versionCode;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 Packet packet = Packet.CreatePacketFromJSON("RegisterClientPacket", registerDetails);
 
                 Logs.Message("attempting to send parse register data");
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.Network.serverListener.SendData(packet);
                 Logs.Message("sent parse register data");
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
             }

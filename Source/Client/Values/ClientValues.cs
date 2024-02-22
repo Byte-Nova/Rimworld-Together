@@ -28,7 +28,6 @@ namespace GameClient
 
         //Do not change manually
         public static bool verboseBool;
-        public static bool extremeVerboseBool;
 
         public static bool isInTransfer;
 

@@ -1,14 +1,22 @@
-﻿using System;
+﻿using RimworldTogether.Shared.JSON;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Verse;
-using GameClient;
-using Shared;
+using RimworldTogether.GameClient.Managers;
+using RimworldTogether.Shared.Serializers;
+using RimworldTogether.Shared.JSON.Things;
+using RimworldTogether.Shared.JSON.Actions;
+using RimworldTogether.GameClient.Values;
+using RimworldTogether.GameClient.Misc;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.CustomMapGeneration
 {
     public static class DataToMap
     {
+
         public static Map mapToTransferDataTo;
         public static MapDetailsJSON mapDetails;
         public static bool SpawnItems;
