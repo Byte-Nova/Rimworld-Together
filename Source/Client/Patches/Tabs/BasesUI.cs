@@ -1,13 +1,10 @@
 ﻿using System.Linq;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Planet;
-using RimworldTogether.GameClient.Values;
-using Shared.Misc;
+using Shared;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Patches.Tabs
+namespace GameClient
 {
     public class BasesUI : WITab
     {
@@ -27,9 +24,9 @@ namespace RimworldTogether.GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            if (Network.Network.isConnectedToServer)
+            if (Network.isConnectedToServer)
             {
-                tabTitle = $"Player Bases [{PlanetBuilder.playerSettlements.Count()}]";
+                tabTitle = $"Player Bases [{PlanetManager.playerSettlements.Count()}]";
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -45,7 +42,7 @@ namespace RimworldTogether.GameClient.Patches.Tabs
 
         private void GenerateList(Rect mainRect)
         {
-            var orderedDictionary = PlanetBuilder.playerSettlements.OrderBy(x => x.Name);
+            var orderedDictionary = PlanetManager.playerSettlements.OrderBy(x => x.Name);
 
             float height = 6f + (float)orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
@@ -103,8 +100,8 @@ namespace RimworldTogether.GameClient.Patches.Tabs
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
-                            CommonEnumerators.LikelihoodTarget.Settlement);
+                        LikelihoodManager.TryRequestLikelihood(Shared.CommonEnumerators.Likelihoods.Enemy,
+                            Shared.CommonEnumerators.LikelihoodTarget.Settlement);
 
                         break;
                     }

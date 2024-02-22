@@ -1,47 +1,67 @@
-﻿using System.Globalization;
-using RimworldTogether.GameServer.Files;
-using RimworldTogether.GameServer.Managers;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.Shared.Serializers;
+﻿using Shared;
+using System.Globalization;
 
-namespace RimworldTogether.GameServer.Core
+namespace GameServer
 {
+    //Class with all the critical variables for the client to work
+
     public static class Program
     {
+        //Paths
+
         public static string mainPath;
         public static string corePath;
-        public static string usersPath;
-        public static string settlementsPath;
-        public static string savesPath;
         public static string mapsPath;
         public static string logsPath;
+        public static string usersPath;
+        public static string savesPath;
         public static string sitesPath;
         public static string factionsPath;
+        public static string settlementsPath;
 
         public static string modsPath;
         public static string requiredModsPath;
         public static string optionalModsPath;
         public static string forbiddenModsPath;
 
+        //Lists
+
         public static List<string> loadedRequiredMods = new List<string>();
         public static List<string> loadedOptionalMods = new List<string>();
         public static List<string> loadedForbiddenMods = new List<string>();
 
+        //References
+
+        public static WhitelistFile whitelist;
+        public static SiteValuesFile siteValues;
+        public static WorldValuesFile worldValues;
+        public static EventValuesFile eventValues;
         public static ServerConfigFile serverConfig;
         public static ServerValuesFile serverValues;
-        public static WorldValuesFile worldValues;
-        public static DifficultyValuesFile difficultyValues;
-        public static EventValuesFile eventValues;
-        public static SiteValuesFile siteValues;
         public static ActionValuesFile actionValues;
-        public static WhitelistFile whitelist;
+        public static DifficultyValuesFile difficultyValues;
 
-        public static string serverVersion = "1.1.1";
+        //Booleans
 
-        public static CancellationToken serverCancelationToken;
         public static bool isClosing;
 
         public static void Main()
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+
+            TryDisablyQuickEdit();
+            SetPaths();
+            SetCulture();
+            LoadResources();
+            Titler.ChangeTitle();
+
+            Threader.GenerateServerThread(Threader.ServerMode.Start);
+            Threader.GenerateServerThread(Threader.ServerMode.Console);
+
+            while (true) Thread.Sleep(1);
+        }
+
+        private static void TryDisablyQuickEdit()
         {
             try
             {
@@ -49,37 +69,38 @@ namespace RimworldTogether.GameServer.Core
                 quickEdit.DisableQuickEdit();
             }
             catch { };
-
-            Console.ForegroundColor = ConsoleColor.White;
-
-            LoadResources();
-            Threader.GenerateServerThread(Threader.ServerMode.Start, serverCancelationToken);
-            Threader.GenerateServerThread(Threader.ServerMode.Console, serverCancelationToken);
-
-            while (true) Thread.Sleep(1);
         }
 
-        public static void LoadResources()
+        private static void SetPaths()
         {
-            SetPaths();
+            mainPath = Directory.GetCurrentDirectory();
+            corePath = Path.Combine(mainPath, "Core");
+            mapsPath = Path.Combine(mainPath, "Maps");
+            logsPath = Path.Combine(mainPath, "Logs");
+            usersPath = Path.Combine(mainPath, "Users");
+            savesPath = Path.Combine(mainPath, "Saves");
+            sitesPath = Path.Combine(mainPath, "Sites");
+            factionsPath = Path.Combine(mainPath, "Factions");
+            settlementsPath = Path.Combine(mainPath, "Settlements");
 
-            Logger.WriteToConsole($"Loading all necessary resources", Logger.LogMode.Title);
-            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
+            modsPath = Path.Combine(mainPath, "Mods");
+            requiredModsPath = Path.Combine(modsPath, "Required");
+            optionalModsPath = Path.Combine(modsPath, "Optional");
+            forbiddenModsPath = Path.Combine(modsPath, "Forbidden");
 
-            SetCulture();
-            CustomDifficultyManager.LoadCustomDifficulty();
-            LoadServerConfig();
-            LoadServerValues();
-            LoadEventValues();
-            LoadSiteValues();
-            WorldManager.LoadWorldFile();
-            LoadActionValues();
-            WhitelistManager.LoadServerWhitelist();
-            ModManager.LoadMods();
+            if (!Directory.Exists(corePath)) Directory.CreateDirectory(corePath);
+            if (!Directory.Exists(usersPath)) Directory.CreateDirectory(usersPath);
+            if (!Directory.Exists(savesPath)) Directory.CreateDirectory(savesPath);
+            if (!Directory.Exists(mapsPath)) Directory.CreateDirectory(mapsPath);
+            if (!Directory.Exists(logsPath)) Directory.CreateDirectory(logsPath);
+            if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
+            if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
+            if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
 
-            Titler.ChangeTitle();
-
-            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
+            if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
+            if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
+            if (!Directory.Exists(optionalModsPath)) Directory.CreateDirectory(optionalModsPath);
+            if (!Directory.Exists(forbiddenModsPath)) Directory.CreateDirectory(forbiddenModsPath);
         }
 
         private static void SetCulture()
@@ -89,39 +110,26 @@ namespace RimworldTogether.GameServer.Core
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
 
-            Logger.WriteToConsole($"Loaded server culture > [{CultureInfo.CurrentCulture}]");
+            Logger.WriteToConsole($"Loading server culture > [{CultureInfo.CurrentCulture}]", Logger.LogMode.Title);
         }
 
-        private static void SetPaths()
+        public static void LoadResources()
         {
-            mainPath = Directory.GetCurrentDirectory();
-            corePath = Path.Combine(mainPath, "Core");
-            usersPath = Path.Combine(mainPath, "Users");
-            settlementsPath = Path.Combine(mainPath, "Settlements");
-            savesPath = Path.Combine(mainPath, "Saves");
-            mapsPath = Path.Combine(mainPath, "Maps");
-            logsPath = Path.Combine(mainPath, "Logs");
-            sitesPath = Path.Combine(mainPath, "Sites");
-            factionsPath = Path.Combine(mainPath, "Factions");
+            Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Loading all necessary resources", Logger.LogMode.Title);
+            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
 
-            modsPath = Path.Combine(mainPath, "Mods");
-            requiredModsPath = Path.Combine(modsPath, "Required");
-            optionalModsPath = Path.Combine(modsPath, "Optional");
-            forbiddenModsPath = Path.Combine(modsPath, "Forbidden");
+            LoadSiteValues();
+            LoadEventValues();
+            LoadServerConfig();
+            LoadServerValues();
+            LoadActionValues();
+            ModManager.LoadMods();
+            WorldManager.LoadWorldFile();
+            WhitelistManager.LoadServerWhitelist();
+            CustomDifficultyManager.LoadCustomDifficulty();
 
-            if (!Directory.Exists(corePath)) Directory.CreateDirectory(corePath);
-            if (!Directory.Exists(usersPath)) Directory.CreateDirectory(usersPath);
-            if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
-            if (!Directory.Exists(savesPath)) Directory.CreateDirectory(savesPath);
-            if (!Directory.Exists(mapsPath)) Directory.CreateDirectory(mapsPath);
-            if (!Directory.Exists(logsPath)) Directory.CreateDirectory(logsPath);
-            if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
-            if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
-
-            if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
-            if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
-            if (!Directory.Exists(optionalModsPath)) Directory.CreateDirectory(optionalModsPath);
-            if (!Directory.Exists(forbiddenModsPath)) Directory.CreateDirectory(forbiddenModsPath);
+            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
         }
 
         private static void LoadServerConfig()

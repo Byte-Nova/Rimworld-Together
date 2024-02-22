@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Planet;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Patches.Tabs
+namespace GameClient
 {
     public class SitesUI : WITab
     {
@@ -24,9 +23,9 @@ namespace RimworldTogether.GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            if (Network.Network.isConnectedToServer)
+            if (Network.isConnectedToServer)
             {
-                tabTitle = $"Player Sites [{PlanetBuilder.playerSites.Count()}]";
+                tabTitle = $"Player Sites [{PlanetManager.playerSites.Count()}]";
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -42,7 +41,7 @@ namespace RimworldTogether.GameClient.Patches.Tabs
 
         private void GenerateList(Rect mainRect)
         {
-            var orderedDictionary = PlanetBuilder.playerSites.OrderBy(x => x.Label);
+            var orderedDictionary = PlanetManager.playerSites.OrderBy(x => x.Label);
 
             float height = 6f + (float)orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);

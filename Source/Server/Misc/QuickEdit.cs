@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace RimworldTogether.GameServer.Misc
+namespace GameServer
 {
     public class QuickEdit
     {

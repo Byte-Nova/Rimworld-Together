@@ -1,30 +1,27 @@
+using Shared;
 using System.IO;
-using RimworldTogether.GameClient.Core;
-using RimworldTogether.GameClient.Files;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.Shared.Serializers;
 
-namespace RimworldTogether.GameClient.Managers
+namespace GameClient
 {
     public static class PreferenceManager
     {
         public static void SaveConnectionDetails(string ip, string port)
         {
             ConnectionDataFile newConnectionData;
-            if (File.Exists(Main.connectionDataPath)) newConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Main.connectionDataPath);
+            if (File.Exists(Master.connectionDataPath)) newConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
             else newConnectionData = new ConnectionDataFile();
 
             newConnectionData.ip = ip;
             newConnectionData.port = port;
 
-            Serializer.SerializeToFile(Main.connectionDataPath, newConnectionData);
+            Serializer.SerializeToFile(Master.connectionDataPath, newConnectionData);
         }
 
         public static void FetchConnectionDetails()
         {
-            if (File.Exists(Main.connectionDataPath))
+            if (File.Exists(Master.connectionDataPath))
             {
-                ConnectionDataFile previousConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Main.connectionDataPath);
+                ConnectionDataFile previousConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
                 DialogManager.dialog2Input.inputOneResult = previousConnectionData.ip;
                 DialogManager.dialog2Input.inputTwoResult = previousConnectionData.port;
             }
@@ -39,20 +36,20 @@ namespace RimworldTogether.GameClient.Managers
         public static void SaveLoginDetails(string username, string password)
         {
             LoginDataFile newLoginData;
-            if (File.Exists(Main.loginDataPath)) newLoginData = Serializer.SerializeFromFile<LoginDataFile>(Main.loginDataPath);
+            if (File.Exists(Master.loginDataPath)) newLoginData = Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
             else newLoginData = new LoginDataFile();
 
             newLoginData.username = username;
             newLoginData.password = password;
 
-            Serializer.SerializeToFile(Main.loginDataPath, newLoginData);
+            Serializer.SerializeToFile(Master.loginDataPath, newLoginData);
         }
 
         public static void FetchLoginDetails()
         {
-            if (File.Exists(Main.loginDataPath))
+            if (File.Exists(Master.loginDataPath))
             {
-                LoginDataFile previousLoginData = Serializer.SerializeFromFile<LoginDataFile>(Main.loginDataPath);
+                LoginDataFile previousLoginData = Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
                 DialogManager.dialog2Input.inputOneResult = previousLoginData.username;
                 DialogManager.dialog2Input.inputTwoResult = previousLoginData.password;
             }
@@ -67,12 +64,12 @@ namespace RimworldTogether.GameClient.Managers
         public static void SaveClientPreferences(string autosaveInterval)
         {
             ClientPreferencesFile newClientPreferences;
-            if (File.Exists(Main.clientPreferencesPath)) newClientPreferences = Serializer.SerializeFromFile<ClientPreferencesFile>(Main.clientPreferencesPath);
+            if (File.Exists(Master.clientPreferencesPath)) newClientPreferences = Serializer.SerializeFromFile<ClientPreferencesFile>(Master.clientPreferencesPath);
             else newClientPreferences = new ClientPreferencesFile();
 
             newClientPreferences.AutosaveInterval = autosaveInterval;
 
-            Serializer.SerializeToFile(Main.clientPreferencesPath, newClientPreferences);
+            Serializer.SerializeToFile(Master.clientPreferencesPath, newClientPreferences);
         }
     }
 }

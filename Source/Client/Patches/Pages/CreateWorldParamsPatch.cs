@@ -2,17 +2,11 @@
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Managers;
-using RimworldTogether.GameClient.Managers.Actions;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using Shared.Misc;
+using Shared;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Patches.Pages
+namespace GameClient
 {
     public class CreateWorldParamsPatch
     {
@@ -30,7 +24,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
                         __instance.Close();
-                        Network.Network.serverListener.disconnectFlag = true;
+                        Network.listener.disconnectFlag = true;
                     }
 
                     buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
@@ -85,7 +79,7 @@ namespace RimworldTogether.GameClient.Patches.Pages
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server to accept world"));
 
                 Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
-                Network.Network.serverListener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
         }
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace RimworldTogether.Shared.JSON.Things
+namespace Shared
 {
     [Serializable]
     public class ItemDetailsJSON

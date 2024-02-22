@@ -1,45 +1,23 @@
-using System.Threading;
-using RimworldTogether.GameClient.Managers.Actions;
+using System;
+using System.Threading.Tasks;
 
-namespace RimworldTogether.GameClient.Misc
+namespace GameClient
 {
     public static class Threader
     {
-        public enum Mode { Listener, Health, KASender, Visit }
+        public enum Mode { Listener, Sender, Health, KASender, Visit }
 
-        public static void GenerateThread(Mode mode)
+        public static Task GenerateThread(Mode mode)
         {
-            if (mode == Mode.Listener)
+            return mode switch
             {
-                Thread thread = new Thread(() => Network.Network.serverListener.ListenToServer());
-                thread.IsBackground = true;
-                thread.Name = "Listen";
-                thread.Start();
-            }
-
-            else if (mode == Mode.Health)
-            {
-                Thread thread = new Thread(() => Network.Network.serverListener.CheckForConnectionHealth());
-                thread.IsBackground = true;
-                thread.Name = "Health";
-                thread.Start();
-            }
-
-            else if (mode == Mode.KASender)
-            {
-                Thread thread = new Thread(() => Network.Network.serverListener.SendKAFlag());
-                thread.IsBackground = true;
-                thread.Name = "KASender";
-                thread.Start();
-            }
-
-            else if (mode == Mode.Visit)
-            {
-                Thread thread = new Thread(() => VisitActionGetter.StartActionClock());
-                thread.IsBackground = true;
-                thread.Name = "Visit";
-                thread.Start();
-            }
+                Mode.Listener => Task.Run(Network.listener.Listen),
+                Mode.Sender => Task.Run(Network.listener.SendData),
+                Mode.Health => Task.Run(Network.listener.CheckConnectionHealth),
+                Mode.KASender => Task.Run(Network.listener.SendKAFlag),
+                Mode.Visit => Task.Run(VisitActionGetter.StartActionClock),
+                _ => throw new NotImplementedException(),
+            };
         }
     }
 }
