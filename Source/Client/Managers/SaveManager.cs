@@ -3,19 +3,14 @@ using RimWorld;
 using System.IO;
 using System.Reflection;
 using Verse;
+using GameClient;
 using Shared;
 
 namespace GameClient
 {
-    //Class that handles all the save functions of the client
-
     public static class SaveManager
     {
-        //Unique custom name for the mod save
-
         public static string customSaveName = "ServerSave";
-
-        //Forces the game into saving the current progress
 
         public static void ForceSave()
         {
@@ -29,8 +24,6 @@ namespace GameClient
                 ClientValues.ToggleSaving(false);
             }
         }
-
-        //Receives a save part from the server
 
         public static void ReceiveSavePartFromServer(Packet packet)
         {
@@ -54,6 +47,9 @@ namespace GameClient
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
 
+                //The save is finally finished downloading, 
+                //clear the window stack
+                //(loading a save clears rimworlds windowStack, but not ours)
                 DialogManager.ClearStack();
 
                 GameDataSaveLoader.LoadGame(customSaveName);
@@ -65,8 +61,6 @@ namespace GameClient
                 Network.listener.dataQueue.Enqueue(rPacket);
             }
         }
-
-        //Sends a save part towards the server
 
         public static void SendSavePartToServer(string fileName = null)
         {

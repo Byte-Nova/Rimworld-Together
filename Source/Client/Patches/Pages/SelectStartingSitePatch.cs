@@ -77,7 +77,7 @@ namespace GameClient
                 {
                     ClientValues.ToggleLoadingPrefabWorld(false);
 
-                    PlanetManager.BuildPlayerPlanetFeatures();
+                    PlanetBuilder.BuildPlanet();
 
                     ClientValues.ToggleReadyToPlay(true);
                 }

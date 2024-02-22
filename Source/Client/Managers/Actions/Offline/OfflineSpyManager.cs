@@ -3,6 +3,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using GameClient;
 
 
 namespace GameClient
@@ -97,7 +98,7 @@ namespace GameClient
 
         private static void PrepareMapForSpy(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, false, false, false, false);
+            Map map = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, false, false, false, false);
 
             HandleMapFactions(map);
 

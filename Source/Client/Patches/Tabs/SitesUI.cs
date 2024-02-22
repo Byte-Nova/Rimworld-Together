@@ -25,7 +25,7 @@ namespace GameClient
         {
             if (Network.isConnectedToServer)
             {
-                tabTitle = $"Player Sites [{PlanetManager.playerSites.Count()}]";
+                tabTitle = $"Player Sites [{PlanetBuilder.playerSites.Count()}]";
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -41,7 +41,7 @@ namespace GameClient
 
         private void GenerateList(Rect mainRect)
         {
-            var orderedDictionary = PlanetManager.playerSites.OrderBy(x => x.Label);
+            var orderedDictionary = PlanetBuilder.playerSites.OrderBy(x => x.Label);
 
             float height = 6f + (float)orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);

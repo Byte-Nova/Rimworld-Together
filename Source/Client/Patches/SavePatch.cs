@@ -2,6 +2,7 @@
 using HarmonyLib;
 using RimWorld;
 using Verse;
+using GameClient;
 
 namespace GameClient
 {

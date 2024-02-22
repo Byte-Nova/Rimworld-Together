@@ -152,7 +152,7 @@ namespace GameClient
                 };
 
                 RT_Dialog_2Button d2 = new RT_Dialog_2Button("Transfer Type", "Please choose the transfer type to use",
-                    "Gift", "Trade", r1, r2, DialogManager.ClearStack);
+                    "Gift", "Trade", r1, r2, DialogManager.PopDialog);
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
                     delegate { DialogManager.PopDialog();  DialogManager.PushNewDialog(d2); }, DialogManager.PopDialog);

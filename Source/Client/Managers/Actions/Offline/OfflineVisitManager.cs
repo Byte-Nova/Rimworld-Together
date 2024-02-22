@@ -67,14 +67,24 @@ namespace GameClient
 
         private static void PrepareMapForOfflineVisit(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, false, true, true, false);
+            Log.Warning("Here");
+
+            Map map = DeepScribeManager.GenerateCustomMap(mapDetailsJSON, false, true, true, false);
+
+            Log.Warning("Here 2");
 
             HandleMapFactions(map);
+
+            Log.Warning("Here 3");
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
 
+            Log.Warning("Here 4");
+
             PrepareMapLord(map);
+
+            Log.Warning("Here 5");
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {

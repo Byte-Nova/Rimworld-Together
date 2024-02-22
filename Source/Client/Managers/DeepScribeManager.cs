@@ -5,6 +5,7 @@ using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
 using Verse;
+using GameClient;
 
 namespace GameClient
 {

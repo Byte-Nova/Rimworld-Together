@@ -43,7 +43,7 @@ namespace GameClient
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
-                    PlanetManager.BuildPlayerPlanetFeatures();
+                    PlanetBuilder.BuildPlanet();
 
                     ClientValues.ToggleReadyToPlay(true);
                 }

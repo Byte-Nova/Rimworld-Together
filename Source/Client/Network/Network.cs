@@ -35,8 +35,9 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time", DialogManager.ClearStack);
+                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
                 DialogManager.PushNewDialog(d1);
+
                 ClearAllValues();
             }
         }
