@@ -73,7 +73,7 @@ namespace GameClient
                     Network.listener.dataQueue.Enqueue(packet);
                 };
 
-                var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
+                var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, DialogManager.ClearStack);
                 DialogManager.PushNewDialog(d1);
             }
         }
@@ -115,9 +115,6 @@ namespace GameClient
 
         public static void StopVisit()
         {
-            //TODO
-            //Implement this
-
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
 
@@ -169,14 +166,12 @@ namespace GameClient
 
         private static void OnVisitReject()
         {
-            DialogManager.PopDialog(DialogManager.currentDialog);
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!", DialogManager.ClearStack));
         }
 
         private static void OnVisitUnavailable()
         {
-            DialogManager.PopDialog(DialogManager.currentDialog);
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!", DialogManager.ClearStack));
         }
 
         private static void OnVisitStop()

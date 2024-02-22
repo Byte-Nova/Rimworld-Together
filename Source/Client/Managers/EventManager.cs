@@ -256,8 +256,7 @@ namespace GameClient
         {
             DialogManager.PopDialog();
 
-            LetterManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
-                LetterDefOf.PositiveEvent);
+            LetterManager.GenerateLetter("Event sent!", "Your event has been sent and received!", LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();
         }
@@ -268,7 +267,7 @@ namespace GameClient
 
             TransferManager.SendSilverToCaravan(eventCosts[(int)DialogManager.inputCache[0]]);
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered", DialogManager.ClearStack));
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!", DialogManager.PopDialog));
         }
