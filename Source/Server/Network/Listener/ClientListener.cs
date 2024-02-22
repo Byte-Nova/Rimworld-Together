@@ -1,9 +1,6 @@
-﻿using RimworldTogether.GameServer.Core;
-using RimworldTogether.GameServer.Misc;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
+﻿using Shared;
 
-namespace RimworldTogether.GameServer.Network.Listener
+namespace GameServer
 {
     public class ClientListener
     {
@@ -13,18 +10,12 @@ namespace RimworldTogether.GameServer.Network.Listener
 
         public void SendData(Packet packet)
         {
-            while (targetClient.isBusy) Thread.Sleep(100);
-
             try
             {
-                targetClient.isBusy = true;
-
-                targetClient.streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
-                targetClient.streamWriter.Flush();
-
-                targetClient.isBusy = false;
+                targetClient.listener.streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
+                targetClient.listener.streamWriter.Flush();
             }
-            catch { targetClient.disconnectFlag = true; }
+            catch { targetClient.listener.disconnectFlag = true; }
         }
 
         public void ListenToClient()
@@ -33,7 +24,7 @@ namespace RimworldTogether.GameServer.Network.Listener
             {
                 while (true)
                 {
-                    string data = targetClient.streamReader.ReadLine();
+                    string data = targetClient.listener.streamReader.ReadLine();
 
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
                     PacketHandler.HandlePacket(targetClient, receivedPacket);
@@ -44,7 +35,7 @@ namespace RimworldTogether.GameServer.Network.Listener
             {
                 if (Program.serverConfig.verboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
 
-                targetClient.disconnectFlag = true;
+                targetClient.listener.disconnectFlag = true;
             }
         }
 
@@ -56,7 +47,7 @@ namespace RimworldTogether.GameServer.Network.Listener
                 {
                     Thread.Sleep(100);
 
-                    if (targetClient.disconnectFlag) break;
+                    if (targetClient.listener.disconnectFlag) break;
                 }
             }
             catch { }
@@ -66,7 +57,7 @@ namespace RimworldTogether.GameServer.Network.Listener
 
         public void CheckForKAFlag()
         {
-            targetClient.KAFlag = false;
+            targetClient.listener.KAFlag = false;
 
             try
             {
@@ -74,8 +65,8 @@ namespace RimworldTogether.GameServer.Network.Listener
                 {
                     Thread.Sleep(30000);
 
-                    if (targetClient.KAFlag) targetClient.KAFlag = false;
-                    else targetClient.disconnectFlag = true;
+                    if (targetClient.listener.KAFlag) targetClient.listener.KAFlag = false;
+                    else targetClient.listener.disconnectFlag = true;
                 }
             }
             catch { }

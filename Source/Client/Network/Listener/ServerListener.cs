@@ -1,17 +1,11 @@
-﻿using RimworldTogether.GameClient.Core;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Values;
-using RimworldTogether.Shared.JSON;
-using RimworldTogether.Shared.Network;
-using RimworldTogether.Shared.Serializers;
-using Shared.Network;
+﻿using Shared;
 using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using Verse;
 
-namespace RimworldTogether.GameClient.Network.Listener
+namespace GameClient
 {
     public class ServerListener
     {
@@ -62,7 +56,7 @@ namespace RimworldTogether.GameClient.Network.Listener
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
 
                     Action toDo = delegate { PacketHandler.HandlePacket(receivedPacket); };
-                    Main.threadDispatcher.Enqueue(toDo);
+                    Master.threadDispatcher.Enqueue(toDo);
                 }
             }
 
