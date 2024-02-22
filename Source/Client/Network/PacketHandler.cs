@@ -73,7 +73,7 @@ namespace GameClient
 
         public static void SettlementPacket(Packet packet)
         {
-            SettlementManager.ParseSettlementPacket(packet);
+            PlanetManager.ParseSettlementPacket(packet);
         }
 
         public static void SpyPacket(Packet packet)
@@ -139,7 +139,7 @@ namespace GameClient
             ServerOverallJSON serverOverallJSON = (ServerOverallJSON)Serializer.ConvertBytesToObject(packet.contents);
             ServerValues.SetServerParameters(serverOverallJSON);
             ServerValues.SetAccountDetails(serverOverallJSON);
-            PlanetBuilderHelper.SetWorldFeatures(serverOverallJSON);
+            PlanetManagerHelper.SetWorldFeatures(serverOverallJSON);
             EventManager.SetEventPrices(serverOverallJSON);
             SiteManager.SetSiteDetails(serverOverallJSON);
             OfflineSpyManager.SetSpyCost(serverOverallJSON);

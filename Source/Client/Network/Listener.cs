@@ -105,7 +105,7 @@ namespace GameClient
             }
             catch { }
 
-            Network.DisconnectFromServer();
+            Master.threadDispatcher.Enqueue(delegate { Network.DisconnectFromServer(); });
         }
 
         //Runs in a separate thread and sends alive pings towards the server

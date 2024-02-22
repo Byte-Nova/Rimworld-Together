@@ -81,15 +81,15 @@ namespace GameClient
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                PlanetBuilder.playerSettlements.Remove(toChange[i]);
+                PlanetManager.playerSettlements.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                 newSettlement.Tile = toChange[i].Tile;
                 newSettlement.Name = toChange[i].Name;
-                newSettlement.SetFaction(PlanetBuilder.GetPlayerFaction(int.Parse(structureLikelihoodJSON.settlementLikelihoods[i])));
+                newSettlement.SetFaction(PlanetManager.GetPlayerFaction(int.Parse(structureLikelihoodJSON.settlementLikelihoods[i])));
 
-                PlanetBuilder.playerSettlements.Add(newSettlement);
+                PlanetManager.playerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
             }
         }
@@ -104,15 +104,15 @@ namespace GameClient
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                PlanetBuilder.playerSites.Remove(toChange[i]);
+                PlanetManager.playerSites.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
                             tile: toChange[i].Tile,
                             threatPoints: 1000,
-                            faction: PlanetBuilder.GetPlayerFaction(int.Parse(structureLikelihoodJSON.siteLikelihoods[i])));
+                            faction: PlanetManager.GetPlayerFaction(int.Parse(structureLikelihoodJSON.siteLikelihoods[i])));
 
-                PlanetBuilder.playerSites.Add(newSite);
+                PlanetManager.playerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);
             }
         }

@@ -68,15 +68,12 @@ namespace GameClient
         {
             listener.connection.Dispose();
 
-            Action toDo = delegate
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!", 
-                    delegate { DisconnectionManager.DisconnectToMenu(); }));
-            };
-
             ClearAllValues();
-            Master.threadDispatcher.Enqueue(toDo);
+
             Log.Message($"[Rimworld Together] > Disconnected from server");
+
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
+                delegate { DisconnectionManager.DisconnectToMenu(); }));
         }
 
         public static void ClearAllValues()

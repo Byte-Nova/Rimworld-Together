@@ -89,8 +89,7 @@ namespace GameClient
                 delegate {
                     DialogManager.PushNewDialog(a2);
                     PreferenceManager.FetchConnectionDetails();
-                },
-                null);
+                }, null);
 
             DialogManager.PushNewDialog(newDialog);
         }
@@ -102,8 +101,7 @@ namespace GameClient
             string[] answerSplit = null;
             if (throughBrowser)
             {
-                answerSplit = ClientValues.serverBrowserContainer
-                    [DialogManager.dialogListingWithButtonResult].Split('|');
+                answerSplit = ClientValues.serverBrowserContainer[DialogManager.dialogListingWithButtonResult].Split('|');
 
                 if (string.IsNullOrWhiteSpace(answerSplit[0])) isInvalid = true;
                 if (string.IsNullOrWhiteSpace(answerSplit[1])) isInvalid = true;

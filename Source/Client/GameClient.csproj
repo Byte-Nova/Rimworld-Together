@@ -32,6 +32,10 @@
       <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Planet\" />
+  </ItemGroup>
 	
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
 </Project>
