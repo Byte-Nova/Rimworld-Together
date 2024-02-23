@@ -1,10 +1,15 @@
 using Shared;
 using System.IO;
+using UnityEngine;
 
 namespace GameClient
 {
+    //Class that handles saving and loading client preferences into the game
+
     public static class PreferenceManager
     {
+        //Saves the connection details
+
         public static void SaveConnectionDetails(string ip, string port)
         {
             ConnectionDataFile newConnectionData;
@@ -17,7 +22,9 @@ namespace GameClient
             Serializer.SerializeToFile(Master.connectionDataPath, newConnectionData);
         }
 
-        public static void FetchConnectionDetails()
+        //Loads the connection details
+
+        public static void LoadConnectionDetails()
         {
             if (File.Exists(Master.connectionDataPath))
             {
@@ -33,6 +40,8 @@ namespace GameClient
             }
         }
 
+        //Saves the login details
+
         public static void SaveLoginDetails(string username, string password)
         {
             LoginDataFile newLoginData;
@@ -45,7 +54,9 @@ namespace GameClient
             Serializer.SerializeToFile(Master.loginDataPath, newLoginData);
         }
 
-        public static void FetchLoginDetails()
+        //Loads the login details
+
+        public static void LoadLoginDetails()
         {
             if (File.Exists(Master.loginDataPath))
             {
@@ -61,6 +72,8 @@ namespace GameClient
             }
         }
 
+        //Saves the client preferences
+
         public static void SaveClientPreferences(string autosaveInterval)
         {
             ClientPreferencesFile newClientPreferences;
@@ -70,6 +83,28 @@ namespace GameClient
             newClientPreferences.AutosaveInterval = autosaveInterval;
 
             Serializer.SerializeToFile(Master.clientPreferencesPath, newClientPreferences);
+        }
+
+        //Loads client preferences
+
+        public static void LoadClientPreferences()
+        {
+            ClientPreferencesFile newPreferences;
+
+            if (File.Exists(Master.clientPreferencesPath))
+            {
+                newPreferences = Serializer.SerializeFromFile<ClientPreferencesFile>(Master.clientPreferencesPath);
+                ClientValues.autosaveDays = int.Parse(newPreferences.AutosaveInterval);
+                ClientValues.autosaveInternalTicks = Mathf.RoundToInt(ClientValues.autosaveDays * 60000f);
+            }
+
+            else
+            {
+                ClientValues.autosaveDays = 3;
+                ClientValues.autosaveInternalTicks = Mathf.RoundToInt(ClientValues.autosaveDays * 60000f);
+
+                SaveClientPreferences(ClientValues.autosaveDays.ToString());
+            }
         }
     }
 }

@@ -84,7 +84,7 @@ def build():
     output("Building DLLs")
 
     # Build the C# project
-    result = subprocess.run(["dotnet", "build", source_solution, "--configuration", "Debug"],
+    result = subprocess.run(["dotnet", "build", source_solution, "--configuration", "Release"],
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
     if printCompileLog:

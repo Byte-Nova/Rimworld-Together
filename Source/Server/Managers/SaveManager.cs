@@ -89,12 +89,7 @@ namespace GameServer
 
                 client.listener.disconnectFlag = true;
 
-                Logger.WriteToConsole($"[Save game] > {client.username} > Quiting");
-            }
-
-            else if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Transfer).ToString())
-            {
-                Logger.WriteToConsole($"[Save game] > {client.username} > Item transfer");
+                Logger.WriteToConsole($"[Save game] > {client.username} > To desktop");
             }
 
             else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");

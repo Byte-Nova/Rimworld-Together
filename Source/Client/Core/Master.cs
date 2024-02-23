@@ -46,26 +46,6 @@ namespace GameClient
             if (!Directory.Exists(modPath)) Directory.CreateDirectory(modPath);
         }
 
-        public static void LoadClientPreferences()
-        {
-            ClientPreferencesFile newPreferences;
-
-            if (File.Exists(clientPreferencesPath))
-            {
-                newPreferences = Serializer.SerializeFromFile<ClientPreferencesFile>(clientPreferencesPath);
-                ClientValues.autosaveDays = int.Parse(newPreferences.AutosaveInterval);
-                ClientValues.autosaveInternalTicks = Mathf.RoundToInt(ClientValues.autosaveDays * 60000f);
-            }
-
-            else
-            {
-                ClientValues.autosaveDays = 3;
-                ClientValues.autosaveInternalTicks = Mathf.RoundToInt(ClientValues.autosaveDays * 60000f);
-
-                PreferenceManager.SaveClientPreferences(ClientValues.autosaveDays.ToString());
-            }
-        }
-
         public static void CreateUnityDispatcher()
         {
             if (threadDispatcher == null)

@@ -225,7 +225,7 @@ namespace GameClient
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
                             "Online", "Offline",
                             delegate { OnlineVisitManager.RequestVisit(); },
-                            delegate { OfflineVisitManager.OnOfflineVisitAccept(); },
+                            delegate { OfflineVisitManager.RequestOfflineVisit(); },
                             null);
 
                         DialogManager.PushNewDialog(d1);

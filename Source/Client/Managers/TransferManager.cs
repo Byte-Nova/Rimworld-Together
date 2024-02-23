@@ -10,8 +10,12 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    //Class that handles all the thing transfers between clients in the mod
+
     public static class TransferManager
     {
+        //Parses the packet into useful orders
+
         public static void ParseTransferPacket(Packet packet)
         {
             TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
@@ -58,12 +62,21 @@ namespace GameClient
             }
         }
 
-        public static void TakeTransferItems(CommonEnumerators.TransferLocation transferLocation)
+        //Takes transferable items from desired location
+
+        public static void TakeTransferItems(TransferLocation transferLocation)
         {
             ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
 
-            if (transferLocation == CommonEnumerators.TransferLocation.Caravan) ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
-            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement) ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile.ToString();
+            if (transferLocation == TransferLocation.Caravan)
+            {
+                ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
+            }
+
+            else if (transferLocation == TransferLocation.Settlement)
+            {
+                ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile.ToString();
+            }
 
             if (TradeSession.deal.TryExecute(out bool actuallyTraded))
             {
@@ -75,6 +88,8 @@ namespace GameClient
                 }
             }
         }
+
+        //Takes transferable items from drop pods
 
         public static void TakeTransferItemsFromPods(CompLaunchable representative)
         {
@@ -92,6 +107,8 @@ namespace GameClient
                 }
             }
         }
+
+        //Sends a transfer request to the server
 
         public static void SendTransferRequestToServer(TransferLocation transferLocation)
         {
@@ -121,6 +138,8 @@ namespace GameClient
                 Network.listener.dataQueue.Enqueue(packet);
             }
         }
+
+        //Recovers transfered items when trade fails
 
         public static void RecoverTradeItems(TransferLocation transferLocation)
         {
@@ -158,6 +177,8 @@ namespace GameClient
             }
         }
 
+        //Receives the transfered items into the settlement
+
         public static void GetTransferedItemsToSettlement(Thing[] things, bool success = true, bool customMap = true, bool invokeMessage = true)
         {
             Action r1 = delegate
@@ -166,7 +187,7 @@ namespace GameClient
                 if (customMap) map = Find.Maps.Find(x => x.Tile == int.Parse(ClientValues.incomingManifest.toTile));
                 else map = Find.AnyPlayerHomeMap;
 
-                IntVec3 location = GetTransferLocationInMap(map);
+                IntVec3 location = TransferManagerHelper.GetTransferLocationInMap(map);
 
                 foreach (Thing thing in things)
                 {
@@ -184,6 +205,8 @@ namespace GameClient
             }
             else r1.Invoke();
         }
+
+        //Receives the transfered items into the caravan
 
         public static void GetTransferedItemsToCaravan(Thing[] things, bool success = true, bool invokeMessage = true)
         {
@@ -211,6 +234,8 @@ namespace GameClient
             else r1.Invoke();
         }
 
+        //Finishes the transfer order
+
         public static void FinishTransfer(bool success)
         {
             if (success) SaveManager.ForceSave();
@@ -219,6 +244,8 @@ namespace GameClient
             ClientValues.outgoingManifest = new TransferManifestJSON();
             ClientValues.ToggleTransfer(false);
         }
+
+        //Executes when receiving a transfer request
 
         public static void ReceiveTransferRequest(TransferManifestJSON transferManifestJSON)
         {
@@ -281,6 +308,8 @@ namespace GameClient
             }        
         }
 
+        //Executes after receiving a rebound transfer request
+
         public static void ReceiveReboundRequest(TransferManifestJSON transferManifestJSON)
         {
             try
@@ -300,6 +329,8 @@ namespace GameClient
                 ReceiveReboundRequest(transferManifestJSON);
             }
         }
+
+        //Executes when rejecting a transfer request
 
         public static void RejectRequest(TransferMode transferMode)
         {
@@ -334,6 +365,107 @@ namespace GameClient
             FinishTransfer(false);
         }
 
+        //Sends silver into caravan
+
+        public static void SendSilverToCaravan(int quantity)
+        {
+            ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
+            itemDetailsJSON.defName = ThingDefOf.Silver.defName;
+            itemDetailsJSON.materialDefName = "null";
+            itemDetailsJSON.quantity = quantity.ToString();
+            itemDetailsJSON.quality = "1";
+            itemDetailsJSON.hitpoints = "100";
+            itemDetailsJSON.isMinified = false;
+
+            Thing silverToRecover = ThingScribeManager.GetItemSimple(itemDetailsJSON);
+            ClientValues.chosenCaravan.AddPawnOrItem(silverToRecover, false);
+        }
+
+        //Launchs the drop pods with the desired transfer request
+
+        public static void LaunchDropPods()
+        {
+            ClientValues.chosendPods.TryLaunch(ClientValues.chosenSettlement.Tile, 
+                new TransportPodsArrivalAction_GiveGift(ClientValues.chosenSettlement));
+        }
+    }
+
+    //Helper class of the TransferManager class
+
+    public static class TransferManagerHelper
+    {
+        //Checks if transferable thing is a human
+
+        public static bool CheckIfThingIsHuman(Thing thing)
+        {
+            if (thing.def.defName == "Human") return true;
+            else return false;
+        }
+
+        //Checks if transferable thing is an animal
+
+        public static bool CheckIfThingIsAnimal(Thing thing)
+        {
+            PawnKindDef animal = DefDatabase<PawnKindDef>.AllDefs.ToList().Find(fetch => fetch.defName == thing.def.defName);
+            if (animal != null) return true;
+            else return false;
+        }
+
+        //Checks if transferable thing has a material
+
+        public static bool CheckIfThingHasMaterial(Thing thing)
+        {
+            if (thing.Stuff != null) return true;
+            else return false;
+        }
+
+        //Gets the quality of a transferable thing
+
+        public static string GetThingQuality(Thing thing)
+        {
+            QualityCategory qc = QualityCategory.Normal;
+            thing.TryGetQuality(out qc);
+
+            return ((int)qc).ToString();
+        }
+
+        //Checks if transferable thing is minified
+
+        public static bool CheckIfThingIsMinified(Thing thing)
+        {
+            if (thing.def == ThingDefOf.MinifiedThing || thing.def == ThingDefOf.MinifiedTree) return true;
+            else return false;
+        }
+
+        //Adds desired thing into transfer manifest
+
+        public static void AddThingToTransferManifest(Thing thing, int thingCount)
+        {
+            if (CheckIfThingIsHuman(thing))
+            {
+                Pawn pawn = thing as Pawn;
+
+                ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.SerializeToString
+                    (HumanScribeManager.TransformHumanToString(pawn, false)));
+            }
+
+            else if (CheckIfThingIsAnimal(thing))
+            {
+                Pawn pawn = thing as Pawn;
+
+                ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.SerializeToString
+                    (AnimalScribeManager.TransformAnimalToString(pawn)));
+            }
+
+            else
+            {
+                ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.SerializeToString
+                    (ThingScribeManager.TransformItemToString(thing, thingCount)));
+            }
+        }
+
+        //Gets the transfer location in the desired map
+
         public static IntVec3 GetTransferLocationInMap(Map map)
         {
             Thing tradingSpot = map.listerThings.AllThings.Find(x => x.def.defName == "RTTransferSpot");
@@ -347,87 +479,6 @@ namespace GameClient
                 DialogManager.PushNewDialog(d1);
 
                 return new IntVec3(map.Center.x, map.Center.y, map.Center.z);
-            }
-        }
-
-        public static void SendSilverToCaravan(int quantity)
-        {
-            ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
-            itemDetailsJSON.defName = ThingDefOf.Silver.defName;
-            itemDetailsJSON.materialDefName = "null";
-            itemDetailsJSON.quantity = quantity.ToString();
-            itemDetailsJSON.quality = "1";
-            itemDetailsJSON.hitpoints = "100";
-            itemDetailsJSON.isMinified = false;
-
-            Thing silverToRecover = DeepScribeManager.GetItemSimple(itemDetailsJSON);
-            ClientValues.chosenCaravan.AddPawnOrItem(silverToRecover, false);
-        }
-
-        public static void LaunchDropPods()
-        {
-            ClientValues.chosendPods.TryLaunch(
-                ClientValues.chosenSettlement.Tile, new TransportPodsArrivalAction_GiveGift(ClientValues.chosenSettlement));
-        }
-    }
-
-    public static class TransferManagerHelper
-    {
-        public static bool CheckIfThingIsHuman(Thing thing)
-        {
-            if (thing.def.defName == "Human") return true;
-            else return false;
-        }
-
-        public static bool CheckIfThingIsAnimal(Thing thing)
-        {
-            PawnKindDef animal = DefDatabase<PawnKindDef>.AllDefs.ToList().Find(fetch => fetch.defName == thing.def.defName);
-            if (animal != null) return true;
-            else return false;
-        }
-
-        public static bool CheckIfThingHasMaterial(Thing thing)
-        {
-            if (thing.Stuff != null) return true;
-            else return false;
-        }
-
-        public static string GetThingQuality(Thing thing)
-        {
-            QualityCategory qc = QualityCategory.Normal;
-            thing.TryGetQuality(out qc);
-
-            return ((int)qc).ToString();
-        }
-
-        public static bool CheckIfThingIsMinified(Thing thing)
-        {
-            if (thing.def == ThingDefOf.MinifiedThing || thing.def == ThingDefOf.MinifiedTree) return true;
-            else return false;
-        }
-
-        public static void AddThingToTransferManifest(Thing thing, int thingCount)
-        {
-            if (CheckIfThingIsHuman(thing))
-            {
-                Pawn pawn = thing as Pawn;
-
-                ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.SerializeToString
-                    (DeepScribeManager.TransformHumanToString(pawn, false)));
-            }
-
-            else if (CheckIfThingIsAnimal(thing))
-            {
-                Pawn pawn = thing as Pawn;
-
-                ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.SerializeToString
-                    (DeepScribeManager.TransformAnimalToString(pawn)));
-            }
-
-            else
-            {
-                ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.SerializeToString
-                    (DeepScribeManager.TransformItemToString(thing, thingCount)));
             }
         }
     }

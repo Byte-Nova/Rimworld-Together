@@ -2,8 +2,12 @@
 
 namespace GameClient
 {
+    //Class that handles loging responses from the server
+
     public static class LoginManager
     {
+        //Parses the received packet into an order
+
         public static void ReceiveLoginResponse(Packet packet)
         {
             DialogManager.PopWaitDialog();

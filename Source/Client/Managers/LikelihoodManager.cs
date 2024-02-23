@@ -8,8 +8,12 @@ using Verse;
 
 namespace GameClient
 {
+    //Class that handles settlement and site player likelihoods
+
     public static class LikelihoodManager
     {
+        //Tries to request a likelihood change depending on the values given
+
         public static void TryRequestLikelihood(CommonEnumerators.Likelihoods type, CommonEnumerators.LikelihoodTarget target)
         {
             int tileToUse = 0;
@@ -51,6 +55,8 @@ namespace GameClient
             }
         }
 
+        //Requests a structure likelihood change to the server
+
         public static void RequestChangeStructureLikelihood(int structureTile, int value)
         {
             StructureLikelihoodJSON structureLikelihoodJSON = new StructureLikelihoodJSON();
@@ -64,12 +70,16 @@ namespace GameClient
             DialogManager.PushNewDialog(d1);
         }
 
+        //Changes a structure likelihood from a packet
+
         public static void ChangeStructureLikelihood(Packet packet)
         {
             StructureLikelihoodJSON structureLikelihoodJSON = (StructureLikelihoodJSON)Serializer.ConvertBytesToObject(packet.contents);
             ChangeSettlementLikelihoods(structureLikelihoodJSON);
             ChangeSiteLikelihoods(structureLikelihoodJSON);
         }
+
+        //Changes a settlement likelihood from a request
 
         private static void ChangeSettlementLikelihoods(StructureLikelihoodJSON structureLikelihoodJSON)
         {
@@ -93,6 +103,8 @@ namespace GameClient
                 Find.WorldObjects.Add(newSettlement);
             }
         }
+
+        //Changes a site likelihood from a request
 
         private static void ChangeSiteLikelihoods(StructureLikelihoodJSON structureLikelihoodJSON)
         {

@@ -6,11 +6,14 @@ using Shared;
 using Verse;
 using Verse.AI.Group;
 
-
 namespace GameClient
 {
+    //Class that handles all functions of the offline raid feature
+
     public static class OfflineRaidManager
     {
+        //Parses a packet into a useful order
+
         public static void ParseRaidPacket(Packet packet)
         {
             RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
@@ -27,6 +30,8 @@ namespace GameClient
             }
         }
 
+        //Requests a raid to the server
+
         public static void RequestRaid()
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
@@ -38,6 +43,8 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
+
+        //Executes when raid request is accepted
 
         private static void OnRaidAccept(RaidDetailsJSON raidDetailsJSON)
         {
@@ -57,6 +64,8 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
+        //Executes when raid request is denied
+
         private static void OnRaidDeny()
         {
             DialogManager.PopWaitDialog();
@@ -64,9 +73,11 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
         }
 
+        //Prepares a map for the raid order from a request
+
         private static void PrepareMapForRaid(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, true, true, true, true);
+            Map map = MapScribeManager.GetMapSimple(mapDetailsJSON, true, true, true, true);
 
             HandleMapFactions(map);
 
@@ -82,6 +93,8 @@ namespace GameClient
             });
             DialogManager.PushNewDialog(d1);
         }
+
+        //Handles the factions of a desired map for the raid order
 
         private static void HandleMapFactions(Map map)
         {
@@ -101,6 +114,8 @@ namespace GameClient
                 }
             }
         }
+
+        //Prepares the map lords of a desired map for the raid order
 
         private static void PrepareMapLord(Map map)
         {

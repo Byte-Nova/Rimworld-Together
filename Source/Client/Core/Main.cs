@@ -22,8 +22,9 @@ namespace GameClient
             {
                 Master.PrepareCulture();
                 Master.PreparePaths();
-                Master.LoadClientPreferences();
                 Master.CreateUnityDispatcher();
+
+                PreferenceManager.LoadClientPreferences();
             }
         }
     }

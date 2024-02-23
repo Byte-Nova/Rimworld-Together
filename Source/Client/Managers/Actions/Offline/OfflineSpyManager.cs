@@ -7,9 +7,15 @@ using Verse;
 
 namespace GameClient
 {
+    //Class that handles all functions from the offline spy feature
+
     public static class OfflineSpyManager
     {
+        //Cost of the spy feature to use
+
         public static int spyCost;
+
+        //Parses a packet into useful orders
 
         public static void ParseSpyPacket(Packet packet)
         {
@@ -27,6 +33,8 @@ namespace GameClient
             }
         }
 
+        //Sets the cost of the spying function from the server
+
         public static void SetSpyCost(ServerOverallJSON serverOverallJSON)
         {
             try { spyCost = int.Parse(serverOverallJSON.SpyCost); }
@@ -37,6 +45,8 @@ namespace GameClient
                 spyCost = 0;
             }
         }
+
+        //Requests a server order to the server
 
         public static void RequestSpy()
         {
@@ -66,6 +76,8 @@ namespace GameClient
             DialogManager.PushNewDialog(d1);
         }
 
+        //Executes after being confirmed a spy order
+
         private static void OnSpyAccept(SpyDetailsJSON spyDetailsJSON)
         {
             DialogManager.PopWaitDialog();
@@ -84,6 +96,8 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
+        //Executes after being denied a spy order
+
         private static void OnSpyDeny()
         {
             DialogManager.PopWaitDialog();
@@ -95,9 +109,11 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
         }
 
+        //Prepares a given map for the spy order
+
         private static void PrepareMapForSpy(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, false, false, false, false);
+            Map map = MapScribeManager.GetMapSimple(mapDetailsJSON, false, false, false, false);
 
             HandleMapFactions(map);
 
@@ -112,6 +128,8 @@ namespace GameClient
             });
             DialogManager.PushNewDialog(d1);
         }
+
+        //Handles the factions of the desired map for the spy order
 
         private static void HandleMapFactions(Map map)
         {

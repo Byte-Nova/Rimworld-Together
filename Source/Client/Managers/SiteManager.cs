@@ -187,7 +187,7 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = DeepScribeManager.GetHumanSimple(Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
+                Pawn pawnToRetrieve = HumanScribeManager.GetHumanSimple(Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
                 TransferManager.GetTransferedItemsToCaravan(new Thing[] { pawnToRetrieve }, true, false);
 
                 SaveManager.ForceSave();
@@ -226,7 +226,7 @@ namespace GameClient
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
             siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
             siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Deposit).ToString();
-            siteDetailsJSON.workerData = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(pawnToSend));
+            siteDetailsJSON.workerData = Serializer.SerializeToString(HumanScribeManager.TransformHumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromJSON("SitePacket", siteDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
@@ -270,7 +270,7 @@ namespace GameClient
                 {
                     TransferManager.GetTransferedItemsToSettlement(rewards, true, false, false);
 
-                    LetterManager.GenerateLetter("Site Rewards", "You have received site rewards!", LetterDefOf.PositiveEvent);
+                    RimworldManager.GenerateLetter("Site Rewards", "You have received site rewards!", LetterDefOf.PositiveEvent);
                 }
             }
         }
@@ -291,7 +291,7 @@ namespace GameClient
                     {
                         itemDetailsJSON.defName = siteRewardDefNames[i];
                         itemDetailsJSON.quantity = siteRewardCount[i].ToString();
-                        if (siteRewardCount[i] > 0) thingsToGet.Add(DeepScribeManager.GetItemSimple(itemDetailsJSON));
+                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.GetItemSimple(itemDetailsJSON));
                         break;
                     }
                 }

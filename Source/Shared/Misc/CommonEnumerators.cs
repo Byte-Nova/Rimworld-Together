@@ -75,9 +75,7 @@
 
         //Saving
 
-        public enum SaveStepMode { Disconnect, Quit, Autosave, Transfer, Event }
-
-        public enum SaveMode { Disconnect, Quit, Autosave, Transfer, Event }
+        public enum SaveMode { Disconnect, Quit, Autosave }
 
         //Chat
 

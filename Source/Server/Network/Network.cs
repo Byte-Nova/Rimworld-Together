@@ -16,6 +16,8 @@ namespace GameServer
         private static TcpListener connection;
         public static List<ServerClient> connectedClients = new List<ServerClient>();
 
+        //Entry point function of the network class
+
         public static void ReadyServer()
         {
             connection = new TcpListener(localAddress, port);
@@ -30,6 +32,8 @@ namespace GameServer
 
             while (true) ListenForIncomingUsers();
         }
+
+        //Listens for any user that might connect and executes all required tasks  with it
 
         private static void ListenForIncomingUsers()
         {
@@ -62,6 +66,8 @@ namespace GameServer
                 }
             }
         }
+
+        //Kicks specified client from the server
 
         public static void KickClient(ServerClient client)
         {

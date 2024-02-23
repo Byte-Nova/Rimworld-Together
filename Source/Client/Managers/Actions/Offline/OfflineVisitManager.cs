@@ -9,8 +9,12 @@ using Verse.AI.Group;
 
 namespace GameClient
 {
+    //Handles all the functions of the offline visit feature
+
     public static class OfflineVisitManager
     {
+        //Parses packets into useful orders
+
         public static void ParseOfflineVisitPacket(Packet packet)
         {
             OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
@@ -27,7 +31,9 @@ namespace GameClient
             }
         }
 
-        public static void OnOfflineVisitAccept()
+        //Requests a raid to the server
+
+        public static void RequestOfflineVisit()
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
@@ -39,12 +45,16 @@ namespace GameClient
             Network.listener.dataQueue.Enqueue(packet);
         }
 
+        //Executes when offline visit is denied
+
         private static void OnOfflineVisitDeny()
         {
             DialogManager.PopWaitDialog();
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
         }
+
+        //Executes when offline visit is accepted
 
         private static void OnRequestAccepted(OfflineVisitDetailsJSON offlineVisitDetailsJSON)
         {
@@ -64,9 +74,11 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
+        //Prepares a map for the offline visit feature from a request
+
         private static void PrepareMapForOfflineVisit(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = DeepScribeManager.GetMapSimple(mapDetailsJSON, false, true, true, false);
+            Map map = MapScribeManager.GetMapSimple(mapDetailsJSON, false, true, true, false);
 
             HandleMapFactions(map);
 
@@ -83,6 +95,8 @@ namespace GameClient
             });
             DialogManager.PushNewDialog(d1);
         }
+
+        //Handles the factions of a desired map for the offline visit
 
         private static void HandleMapFactions(Map map)
         {
@@ -102,6 +116,8 @@ namespace GameClient
                 }
             }
         }
+
+        //Prepares the map lord of a desired map for the offline visit
 
         private static void PrepareMapLord(Map map)
         {

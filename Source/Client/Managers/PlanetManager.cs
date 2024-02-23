@@ -8,11 +8,15 @@ using Verse;
 
 namespace GameClient
 {
+    //Class that handles all the planet functions for the mod
+
     public static class PlanetManager
     {
         public static List<Settlement> playerSettlements = new List<Settlement>();
 
         public static List<Site> playerSites = new List<Site>();
+
+        //Parses the required packet into a useful order
 
         public static void ParseSettlementPacket(Packet packet)
         {
@@ -30,6 +34,8 @@ namespace GameClient
             }
         }
 
+        //Regenerates the planet of player objects
+
         public static void BuildPlanet()
         {
             FactionValues.FindPlayerFactionsInWorld();
@@ -40,6 +46,8 @@ namespace GameClient
             SpawnPlayerSettlements();
             SpawnPlayerSites();
         }
+
+        //Removes old player settlements
 
         private static void RemoveOldSettlements()
         {
@@ -80,6 +88,8 @@ namespace GameClient
             }
         }
 
+        //Spawns player settlements
+
         private static void SpawnPlayerSettlements()
         {
             for (int i = 0; i < PlanetManagerHelper.tempSettlementTiles.Count(); i++)
@@ -102,6 +112,8 @@ namespace GameClient
                 }
             }
         }
+
+        //Removes old player sites
 
         private static void RemoveOldSites()
         {
@@ -142,6 +154,8 @@ namespace GameClient
             }
         }
 
+        //Spawns player sites
+
         private static void SpawnPlayerSites()
         {
             for (int i = 0; i < PlanetManagerHelper.tempSiteTiles.Count(); i++)
@@ -167,6 +181,8 @@ namespace GameClient
             }
         }
 
+        //Spawns a player settlement from a request
+
         public static void SpawnSingleSettlement(SettlementDetailsJSON newSettlementJSON)
         {
             if (ClientValues.isReadyToPlay)
@@ -185,6 +201,8 @@ namespace GameClient
             }
         }
 
+        //Removes a player settlement from a request
+
         public static void RemoveSingleSettlement(SettlementDetailsJSON newSettlementJSON)
         {
             if (ClientValues.isReadyToPlay)
@@ -199,6 +217,8 @@ namespace GameClient
                 catch (Exception e) { Log.Error($"Failed to remove settlement at {newSettlementJSON.tile}. Reason: {e}"); }
             }
         }
+
+        //Spawns a player site from a request
 
         public static void SpawnSingleSite(SiteDetailsJSON siteDetailsJSON)
         {
@@ -225,6 +245,8 @@ namespace GameClient
             }
         }
 
+        //Removes a player site from a request
+
         public static void RemoveSingleSite(SiteDetailsJSON siteDetailsJSON)
         {
             if (ClientValues.isReadyToPlay)
@@ -239,6 +261,8 @@ namespace GameClient
                 catch (Exception e) { Log.Message($"Failed to remove site at {siteDetailsJSON.tile}. Reason: {e}"); }
             }
         }
+
+        //Returns an online faction depending on the value
 
         public static Faction GetPlayerFaction(int value)
         {
@@ -270,6 +294,8 @@ namespace GameClient
             return factionToUse;
         }
     }
+
+    //Helper class for the PlanetManager class
 
     public static class PlanetManagerHelper
     {

@@ -33,7 +33,7 @@ namespace GameClient
                 }
                 catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
 
-                MapManager.SendMapsToServer();
+                MapManager.SendPlayerMapsToServer();
                 SaveManager.SendSavePartToServer(fileName);
 
                 return false;

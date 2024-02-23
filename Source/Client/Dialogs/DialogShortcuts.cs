@@ -43,7 +43,7 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    PreferenceManager.FetchLoginDetails();
+                    PreferenceManager.LoadLoginDetails();
                 },
                 delegate { Network.listener.disconnectFlag = true; });
 
@@ -88,7 +88,7 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    PreferenceManager.FetchConnectionDetails();
+                    PreferenceManager.LoadConnectionDetails();
                 }, null);
 
             DialogManager.PushNewDialog(newDialog);

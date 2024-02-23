@@ -37,22 +37,6 @@ namespace GameClient
             else return false;
         }
 
-        public static bool CheckIfPlayerHasCommsConsole()
-        {
-            Map[] playerMaps = Find.Maps.FindAll(x => x.ParentFaction == RimWorld.Faction.OfPlayer).ToArray();
-
-            foreach(Map map in playerMaps)
-            {
-                Thing[] mapThings = map.listerThings.AllThings.ToArray();
-                foreach(Thing thing in mapThings)
-                {
-                    if (thing.def.defName == "CommsConsole") return true;
-                }
-            }
-
-            return false;
-        }
-
         public static bool CheckIfHasEnoughSilverInCaravan(int requiredQuantity)
         {
             if (requiredQuantity == 0) return true;
@@ -91,31 +75,11 @@ namespace GameClient
             }
         }
 
-        public static Map[] GetMapsWithCommsConsole()
+        public static void GenerateLetter(string title, string description, LetterDef letterType)
         {
-            Map[] playerMaps = Find.Maps.FindAll(x => x.ParentFaction == RimWorld.Faction.OfPlayer).ToArray();
-
-            List<Map> mapsWithComms = new List<Map>();
-
-            foreach (Map map in playerMaps)
-            {
-                Thing[] mapThings = map.listerThings.AllThings.ToArray();
-                foreach (Thing thing in mapThings)
-                {
-                    if (thing.def.defName == "CommsConsole") mapsWithComms.Add(map);
-                }
-            }
-
-            return mapsWithComms.ToArray();
-        }
-
-        public static MapDetailsJSON GetMap(Map map, bool includeItems, bool includeHumans, bool includeAnimals, bool includeMods)
-        {
-            MapDetailsJSON mapDetailsJSON = DeepScribeManager.TransformMapToString(map, includeItems, includeHumans, includeAnimals);
-
-            if (includeMods) mapDetailsJSON.mapMods = ModManager.GetRunningModList().ToList();
-
-            return mapDetailsJSON;
+            Find.LetterStack.ReceiveLetter(title,
+                description,
+                letterType);
         }
     }
 }

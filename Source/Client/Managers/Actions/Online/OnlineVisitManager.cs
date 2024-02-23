@@ -82,7 +82,7 @@ namespace GameClient
         {
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Accept).ToString();
 
-            MapDetailsJSON mapDetailsJSON = RimworldManager.GetMap(visitMap, true, false, false, true);
+            MapDetailsJSON mapDetailsJSON = MapManager.ParseMap(visitMap, true, false, false, true);
             visitDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetailsJSON);
             Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
@@ -223,7 +223,7 @@ namespace GameClient
                 foreach (string str in visitDetailsJSON.mapHumans)
                 {
                     HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
-                    Pawn human = DeepScribeManager.GetHumanSimple(humanDetailsJSON);
+                    Pawn human = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
 
                     pawnList.Add(human);
                 }
@@ -231,7 +231,7 @@ namespace GameClient
                 foreach (string str in visitDetailsJSON.mapAnimals)
                 {
                     AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
-                    Pawn animal = DeepScribeManager.GetAnimalSimple(animalDetailsJSON);
+                    Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
 
                     pawnList.Add(animal);
                 }
@@ -249,14 +249,14 @@ namespace GameClient
                 foreach (string str in visitDetailsJSON.caravanHumans)
                 {
                     HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
-                    Pawn human = DeepScribeManager.GetHumanSimple(humanDetailsJSON);
+                    Pawn human = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
                     pawnList.Add(human);
                 }
 
                 foreach (string str in visitDetailsJSON.caravanAnimals)
                 {
                     AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
-                    Pawn animal = DeepScribeManager.GetAnimalSimple(animalDetailsJSON);
+                    Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
                     pawnList.Add(animal);
                 }
 
@@ -312,7 +312,7 @@ namespace GameClient
 
             else if (mode == FetchMode.Player)
             {
-                OnlineVisitManager.visitMap = DeepScribeManager.GetMapSimple(mapDetailsJSON, true, false, false, false);
+                OnlineVisitManager.visitMap = MapScribeManager.GetMapSimple(mapDetailsJSON, true, false, false, false);
             }
         }
 
@@ -328,7 +328,7 @@ namespace GameClient
                 List<string> humanStringList = new List<string>();
                 foreach (Pawn human in mapHumans)
                 {
-                    string humanString = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(human));
+                    string humanString = Serializer.SerializeToString(HumanScribeManager.TransformHumanToString(human));
                     humanStringList.Add(humanString);
                 }
                 visitDetailsJSON.mapHumans = humanStringList;
@@ -341,7 +341,7 @@ namespace GameClient
                 List<string> animalStringList = new List<string>();
                 foreach (Pawn animal in mapAnimals)
                 {
-                    string animalString = Serializer.SerializeToString(DeepScribeManager.TransformAnimalToString(animal));
+                    string animalString = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(animal));
                     animalStringList.Add(animalString);
                 }
                 visitDetailsJSON.mapAnimals = animalStringList;
@@ -357,7 +357,7 @@ namespace GameClient
                 List<string> humanStringList = new List<string>();
                 foreach (Pawn human in caravanHumans)
                 {
-                    string humanString = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(human));
+                    string humanString = Serializer.SerializeToString(HumanScribeManager.TransformHumanToString(human));
                     humanStringList.Add(humanString);
                 }
                 visitDetailsJSON.caravanHumans = humanStringList;
@@ -370,7 +370,7 @@ namespace GameClient
                 List<string> animalStringList = new List<string>();
                 foreach (Pawn animal in caravanAnimals)
                 {
-                    string animalString = Serializer.SerializeToString(DeepScribeManager.TransformAnimalToString(animal));
+                    string animalString = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(animal));
                     animalStringList.Add(animalString);
                 }
                 visitDetailsJSON.caravanAnimals = animalStringList;
@@ -489,19 +489,19 @@ namespace GameClient
                     if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Thing))
                     {
                         visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Human).ToString());
-                        toReturn = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(targetInfo.Pawn));
+                        toReturn = Serializer.SerializeToString(HumanScribeManager.TransformHumanToString(targetInfo.Pawn));
                     }
 
                     else if (TransferManagerHelper.CheckIfThingIsAnimal(targetInfo.Thing))
                     {
                         visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
-                        toReturn = Serializer.SerializeToString(DeepScribeManager.TransformAnimalToString(targetInfo.Pawn));
+                        toReturn = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(targetInfo.Pawn));
                     }
 
                     else
                     {
                         visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Thing).ToString());
-                        toReturn = Serializer.SerializeToString(DeepScribeManager.TransformItemToString(targetInfo.Thing, 1));
+                        toReturn = Serializer.SerializeToString(ThingScribeManager.TransformItemToString(targetInfo.Thing, 1));
                     }
                 }
 
@@ -510,13 +510,13 @@ namespace GameClient
                     if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Pawn))
                     {
                         visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Human).ToString());
-                        toReturn = Serializer.SerializeToString(DeepScribeManager.TransformHumanToString(targetInfo.Pawn));
+                        toReturn = Serializer.SerializeToString(HumanScribeManager.TransformHumanToString(targetInfo.Pawn));
                     }
 
                     else
                     {
                         visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
-                        toReturn = Serializer.SerializeToString(DeepScribeManager.TransformAnimalToString(targetInfo.Pawn));
+                        toReturn = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(targetInfo.Pawn));
                     }
                 }
 
@@ -541,21 +541,21 @@ namespace GameClient
                 {
                     case (int)ActionTargetType.Thing:
                         ItemDetailsJSON itemDetailsJSON = Serializer.SerializeFromString<ItemDetailsJSON>(toReadFrom);
-                        Thing thingToCompare = DeepScribeManager.GetItemSimple(itemDetailsJSON);
+                        Thing thingToCompare = ThingScribeManager.GetItemSimple(itemDetailsJSON);
                         Thing realThing = OnlineVisitManager.mapThings.Find(fetch => fetch.Position == thingToCompare.Position && fetch.def.defName == thingToCompare.def.defName);
                         if (realThing != null) target = new LocalTargetInfo(realThing);
                         break;
 
                     case (int)ActionTargetType.Human:
                         HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(toReadFrom);
-                        Pawn humanToCompare = DeepScribeManager.GetHumanSimple(humanDetailsJSON);
+                        Pawn humanToCompare = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
                         Pawn realHuman = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == humanToCompare.Position);
                         if (realHuman != null) target = new LocalTargetInfo(realHuman);
                         break;
 
                     case (int)ActionTargetType.Animal:
                         AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(toReadFrom); ;
-                        Pawn animalToCompare = DeepScribeManager.GetAnimalSimple(animalDetailsJSON);
+                        Pawn animalToCompare = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
                         Pawn realAnimal = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == animalToCompare.Position);
                         if (realAnimal != null) target = new LocalTargetInfo(realAnimal);
                         break;

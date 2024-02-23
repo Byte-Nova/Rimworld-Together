@@ -115,48 +115,50 @@ namespace GameClient
         public static void LoadEvent(int eventID)
         {
             IncidentDef incidentDef = null;
-            IncidentParms parms = null;
             Map map = Find.AnyPlayerHomeMap;
+
+            IncidentParms parms = null;
+            IncidentParms defaultParms = null;
 
             if (eventID == 0)
             {
                 incidentDef = IncidentDefOf.RaidEnemy;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
+                    raidArrivalMode = defaultParms.raidArrivalMode,
+                    raidStrategy = defaultParms.raidStrategy,
                     customLetterLabel = "Event - Raid",
-                    target = map,
                     points = defaultParms.points,
                     faction = Faction.OfPirates,
-                    raidStrategy = defaultParms.raidStrategy,
-                    raidArrivalMode = defaultParms.raidArrivalMode,
+                    target = map
                 };
             }
 
             else if (eventID == 1)
             {
                 incidentDef = IncidentDefOf.Infestation;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
                     customLetterLabel = "Event - Infestation",
-                    target = Find.AnyPlayerHomeMap,
                     points = defaultParms.points,
+                    target = map
                 };
             }
 
             else if (eventID == 2)
             {
                 incidentDef = IncidentDefOf.MechCluster;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
                     customLetterLabel = "Event - Cluster",
-                    target = map,
-                    points = defaultParms.points
+                    points = defaultParms.points,
+                    target = map
                 };
             }
 
@@ -168,81 +170,82 @@ namespace GameClient
                 }
 
                 incidentDef = IncidentDefOf.ToxicFallout;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
                     customLetterLabel = "Event - Fallout",
-                    target = map,
-                    points = defaultParms.points
+                    points = defaultParms.points,
+                    target = map
                 };
             }
 
             else if (eventID == 4)
             {
                 incidentDef = IncidentDefOf.ManhunterPack;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
                     customLetterLabel = "Event - Manhunter",
-                    target = Find.AnyPlayerHomeMap,
-                    points = defaultParms.points
+                    points = defaultParms.points,
+                    target = map
                 };
             }
 
             else if (eventID == 5)
             {
                 incidentDef = IncidentDefOf.WandererJoin;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
                     customLetterLabel = "Event - Wanderer",
-                    target = map,
-                    points = defaultParms.points
+                    points = defaultParms.points,
+                    target = map
                 };
             }
 
             else if (eventID == 6)
             {
                 incidentDef = IncidentDefOf.FarmAnimalsWanderIn;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
                     customLetterLabel = "Event - Animals",
-                    target = Find.AnyPlayerHomeMap,
-                    points = defaultParms.points
+                    points = defaultParms.points,
+                    target = map
                 };
             }
 
             else if (eventID == 7)
             {
                 incidentDef = IncidentDefOf.ShipChunkDrop;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
+                    customLetterLabel = "Event - Space Chunks",
+                    points = defaultParms.points,
                     target = map,
-                    points = defaultParms.points
                 };
 
-                LetterManager.GenerateLetter("Event - Space Chunks", "Space chunks", LetterDefOf.PositiveEvent);
+                RimworldManager.GenerateLetter("Event - Space Chunks", "Space chunks", LetterDefOf.PositiveEvent);
             }
 
             else if (eventID == 8)
             {
                 incidentDef = IncidentDefOf.TraderCaravanArrival;
-                IncidentParms defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, Find.AnyPlayerHomeMap);
+                defaultParms = StorytellerUtility.DefaultParmsNow(incidentDef.category, map);
 
                 parms = new IncidentParms
                 {
-                    customLetterLabel = "Event - Trader",
-                    target = map,
-                    points = defaultParms.points,
                     faction = FactionValues.neutralPlayer,
-                    traderKind = defaultParms.traderKind
+                    customLetterLabel = "Event - Trader",
+                    traderKind = defaultParms.traderKind,
+                    points = defaultParms.points,
+                    target = map
                 };
             }
 
@@ -255,7 +258,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            LetterManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
+            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
                 LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();
