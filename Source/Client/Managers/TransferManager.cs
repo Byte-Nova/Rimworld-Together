@@ -377,7 +377,7 @@ namespace GameClient
             itemDetailsJSON.hitpoints = "100";
             itemDetailsJSON.isMinified = false;
 
-            Thing silverToRecover = ThingScribeManager.GetItemSimple(itemDetailsJSON);
+            Thing silverToRecover = ThingScribeManager.StringToItem(itemDetailsJSON);
             ClientValues.chosenCaravan.AddPawnOrItem(silverToRecover, false);
         }
 
@@ -446,7 +446,7 @@ namespace GameClient
                 Pawn pawn = thing as Pawn;
 
                 ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.SerializeToString
-                    (HumanScribeManager.TransformHumanToString(pawn, false)));
+                    (HumanScribeManager.HumanToString(pawn, false)));
             }
 
             else if (CheckIfThingIsAnimal(thing))
@@ -460,7 +460,7 @@ namespace GameClient
             else
             {
                 ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.SerializeToString
-                    (ThingScribeManager.TransformItemToString(thing, thingCount)));
+                    (ThingScribeManager.ItemToString(thing, thingCount)));
             }
         }
 

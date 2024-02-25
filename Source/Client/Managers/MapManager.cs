@@ -39,7 +39,7 @@ namespace GameClient
 
         public static MapDetailsJSON ParseMap(Map map, bool includeItems, bool includeHumans, bool includeAnimals, bool includeMods)
         {
-            MapDetailsJSON mapDetailsJSON = MapScribeManager.TransformMapToString(map, includeItems, includeHumans, includeAnimals);
+            MapDetailsJSON mapDetailsJSON = MapScribeManager.MapToString(map, includeItems, includeHumans, includeAnimals);
 
             if (includeMods) mapDetailsJSON.mapMods = ModManager.GetRunningModList().ToList();
 

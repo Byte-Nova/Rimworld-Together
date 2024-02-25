@@ -77,7 +77,7 @@ namespace GameClient
 
         private static void PrepareMapForRaid(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = MapScribeManager.GetMapSimple(mapDetailsJSON, true, true, true, true);
+            Map map = MapScribeManager.StringToMap(mapDetailsJSON, true, true, true, true);
 
             HandleMapFactions(map);
 

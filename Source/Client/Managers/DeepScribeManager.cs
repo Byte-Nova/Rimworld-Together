@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using UnityEngine.Assertions.Must;
 using Verse;
 using Verse.Noise;
+using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient
 {
@@ -32,11 +34,25 @@ namespace GameClient
 
     public static class HumanScribeManager
     {
-        public static HumanDetailsJSON TransformHumanToString(Pawn pawn, bool passInventory = true)
+        //Functions
+
+        public static Pawn[] GetHumansFromString(TransferManifestJSON transferManifestJSON)
+        {
+            List<Pawn> humans = new List<Pawn>();
+
+            for (int i = 0; i < transferManifestJSON.humanDetailsJSONS.Count(); i++)
+            {
+                HumanDetailsJSON humanDetails = Serializer.SerializeFromString<HumanDetailsJSON>(transferManifestJSON.humanDetailsJSONS[i]);
+
+                humans.Add(StringToHuman(humanDetails));
+            }
+
+            return humans.ToArray();
+        }
+
+        public static HumanDetailsJSON HumanToString(Pawn pawn, bool passInventory = true)
         {
             HumanDetailsJSON humanDetailsJSON = new HumanDetailsJSON();
-
-            GetPawnBioDetails(pawn, humanDetailsJSON);
 
             GetPawnHediffs(pawn, humanDetailsJSON);
 
@@ -45,6 +61,8 @@ namespace GameClient
             GetPawnXenogenes(pawn, humanDetailsJSON);
 
             GetPawnEndogenes(pawn, humanDetailsJSON);
+
+            GetPawnBioDetails(pawn, humanDetailsJSON);
 
             GetPawnFavoriteColor(pawn, humanDetailsJSON);
 
@@ -62,249 +80,49 @@ namespace GameClient
 
             GetPawnPosition(pawn, humanDetailsJSON);
 
+            GetPawnRotation(pawn, humanDetailsJSON);
+
             return humanDetailsJSON;
         }
 
-        public static Pawn[] GetHumansFromString(TransferManifestJSON transferManifestJSON)
-        {
-            List<Pawn> humans = new List<Pawn>();
-
-            for (int i = 0; i < transferManifestJSON.humanDetailsJSONS.Count(); i++)
-            {
-                HumanDetailsJSON humanDetails = Serializer.SerializeFromString<HumanDetailsJSON>(transferManifestJSON.humanDetailsJSONS[i]);
-
-                humans.Add(GetHumanSimple(humanDetails));
-            }
-
-            return humans.ToArray();
-        }
-
-        public static Pawn GetHumanSimple(HumanDetailsJSON humanDetails)
+        public static Pawn StringToHuman(HumanDetailsJSON humanDetailsJSON)
         {
             Pawn human = PawnGenerator.GeneratePawn(PawnKindDefOf.Colonist, Faction.OfPlayer);
 
-            try
-            {
-                try
-                {
-                    human.Name = new NameSingle(humanDetails.name);
-                    human.ageTracker.AgeBiologicalTicks = long.Parse(humanDetails.biologicalAge);
-                    human.ageTracker.AgeChronologicalTicks = long.Parse(humanDetails.chronologicalAge);
+            SetPawnHediffs(human, humanDetailsJSON);
 
-                    Enum.TryParse(humanDetails.gender, true, out Gender humanGender);
-                    human.gender = humanGender;
+            SetPawnXenotype(human, humanDetailsJSON);
 
-                    human.story.hairDef = DefDatabase<HairDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.hairDefName);
+            SetPawnXenogenes(human, humanDetailsJSON);
 
-                    human.story.headType = DefDatabase<HeadTypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.headTypeDefName);
+            SetPawnEndogenes(human, humanDetailsJSON);
 
-                    human.style.beardDef = DefDatabase<BeardDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.beardDefName);
+            SetPawnBioDetails(human, humanDetailsJSON);
 
-                    human.story.bodyType = DefDatabase<BodyTypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.bodyTypeDefName);
+            SetPawnFavoriteColor(human, humanDetailsJSON);
 
-                    human.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.FaceTattooDefName);
+            SetPawnStory(human, humanDetailsJSON);
 
-                    human.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.BodyTattooDefName);
-                }
-                catch (Exception e) { Log.Warning($"Failed to load biological details in human {humanDetails.name}. Reason: {e}"); }
+            SetPawnSkills(human, humanDetailsJSON);
 
-                try
-                {
-                    string hairColor = humanDetails.hairColor.Replace("RGBA(", "").Replace(")", "");
-                    string[] isolatedHair = hairColor.Split(',');
-                    float r = float.Parse(isolatedHair[0]);
-                    float g = float.Parse(isolatedHair[1]);
-                    float b = float.Parse(isolatedHair[2]);
-                    float a = float.Parse(isolatedHair[3]);
-                    human.story.HairColor = new UnityEngine.Color(r, g, b, a);
+            SetPawnTraits(human, humanDetailsJSON);
 
-                    string skinColor = humanDetails.skinColor.Replace("RGBA(", "").Replace(")", "");
-                    string[] isolatedSkin = skinColor.Split(',');
-                    r = float.Parse(isolatedSkin[0]);
-                    g = float.Parse(isolatedSkin[1]);
-                    b = float.Parse(isolatedSkin[2]);
-                    a = float.Parse(isolatedSkin[3]);
-                    human.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
+            SetPawnApparel(human, humanDetailsJSON);
 
-                    string favoriteColor = humanDetails.favoriteColor.Replace("RGBA(", "").Replace(")", "");
-                    string[] isolatedFavoriteColor = favoriteColor.Split(',');
-                    r = float.Parse(isolatedFavoriteColor[0]);
-                    g = float.Parse(isolatedFavoriteColor[1]);
-                    b = float.Parse(isolatedFavoriteColor[2]);
-                    a = float.Parse(isolatedFavoriteColor[3]);
-                    human.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
-                }
-                catch (Exception e) { Log.Warning($"Failed to load colors in human {humanDetails.name}. Reason: {e}"); }
+            SetPawnEquipment(human, humanDetailsJSON);
 
-                try
-                {
-                    if (humanDetails.childhoodStory != "null")
-                    {
-                        human.story.Childhood = DefDatabase<BackstoryDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.childhoodStory);
-                    }
+            SetPawnInventory(human, humanDetailsJSON);
 
-                    if (humanDetails.adulthoodStory != "null")
-                    {
-                        human.story.Adulthood = DefDatabase<BackstoryDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.adulthoodStory);
-                    }
-                }
-                catch (Exception e) { Log.Warning($"Failed to load stories in human {humanDetails.name}. Reason: {e}"); }
+            SetPawnPosition(human, humanDetailsJSON);
 
-                try
-                {
-                    if (humanDetails.xenotypeDefName != "null")
-                    {
-                        human.genes.SetXenotype(DefDatabase<XenotypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.xenotypeDefName));
-                    }
-
-                    if (humanDetails.customXenotypeName != "null")
-                    {
-                        human.genes.xenotypeName = humanDetails.customXenotypeName;
-                    }
-                }
-                catch (Exception e) { Log.Warning($"Failed to load xenotypes in human {humanDetails.name}. Reason: {e}"); }
-
-                if (humanDetails.skillDefNames.Count() > 0)
-                {
-                    for (int i2 = 0; i2 < humanDetails.skillDefNames.Count(); i2++)
-                    {
-                        try
-                        {
-                            human.skills.skills[i2].levelInt = int.Parse(humanDetails.skillLevels[i2]);
-
-                            Enum.TryParse(humanDetails.passions[i2], true, out Passion passion);
-                            human.skills.skills[i2].passion = passion;
-                        }
-                        catch (Exception e) { Log.Warning($"Failed to load skill {humanDetails.skillDefNames[i2]} to human {humanDetails.name}. Reason: {e}"); }
-                    }
-                }
-
-                try
-                {
-                    human.story.traits.allTraits.Clear();
-                }
-                catch (Exception e) { Log.Warning($"Failed to remove traits of human {humanDetails.name}. Reason: {e}"); }
-
-                if (humanDetails.traitDefNames.Count() > 0)
-                {
-                    for (int i3 = 0; i3 < humanDetails.traitDefNames.Count(); i3++)
-                    {
-                        try
-                        {
-                            TraitDef traitDef = DefDatabase<TraitDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.traitDefNames[i3]);
-                            Trait trait = new Trait(traitDef, int.Parse(humanDetails.traitDegrees[i3]));
-                            human.story.traits.GainTrait(trait);
-                        }
-                        catch (Exception e) { Log.Warning($"Failed to load trait {humanDetails.traitDefNames[i3]} to human {humanDetails.name}. Reason: {e}"); }
-                    }
-                }
-
-                try
-                {
-                    human.health.RemoveAllHediffs();
-                    human.health.Reset();
-                }
-                catch (Exception e) { Log.Warning($"Failed to remove heddifs of human {humanDetails.name}. Reason: {e}"); }
-
-                if (humanDetails.hediffDefNames.Count() > 0)
-                {
-                    for (int i4 = 0; i4 < humanDetails.hediffDefNames.Count(); i4++)
-                    {
-                        try
-                        {
-                            HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.ToList().Find(x => x.defName == humanDetails.hediffDefNames[i4]);
-
-                            BodyPartRecord bodyPart = null;
-                            if (humanDetails.hediffPartDefName[i4] == "null") bodyPart = null;
-                            else bodyPart = human.RaceProps.body.AllParts.ToList().Find(x => x.def.defName == humanDetails.hediffPartDefName[i4]);
-
-                            Hediff hediff = HediffMaker.MakeHediff(hediffDef, human, bodyPart);
-
-                            hediff.Severity = float.Parse(humanDetails.hediffSeverity[i4]);
-
-                            if (humanDetails.heddifPermanent[i4])
-                            {
-                                HediffComp_GetsPermanent hediffComp = hediff.TryGetComp<HediffComp_GetsPermanent>();
-                                hediffComp.IsPermanent = true;
-                            }
-
-                            human.health.AddHediff(hediff);
-                        }
-                        catch (Exception e) { Log.Warning($"Failed to load heddif in {humanDetails.hediffPartDefName[i4]} to human {humanDetails.name}. Reason: {e}"); }
-                    }
-                }
-
-                try
-                {
-                    human.apparel.DestroyAll();
-                    human.apparel.DropAllOrMoveAllToInventory();
-                }
-                catch (Exception e) { Log.Warning($"Failed to destroy apparel in human {humanDetails.name}. Reason: {e}"); }
-
-                if (humanDetails.deflatedApparels.Count() > 0)
-                {
-                    for (int i5 = 0; i5 < humanDetails.deflatedApparels.Count(); i5++)
-                    {
-                        try
-                        {
-                            Apparel apparel = (Apparel)ThingScribeManager.GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(humanDetails.deflatedApparels[i5]));
-
-                            if (humanDetails.apparelWornByCorpse[i5]) apparel.WornByCorpse.MustBeTrue();
-                            else apparel.WornByCorpse.MustBeFalse();
-
-                            human.apparel.Wear(apparel);
-                        }
-                        catch { Log.Warning($"Failed to load apparel in human {humanDetails.name}"); }
-                    }
-                }
-
-                try
-                {
-                    human.equipment.DestroyAllEquipment();
-                }
-                catch (Exception e) { Log.Warning($"Failed to destroy equipment in human {humanDetails.name}. Reason: {e}"); }
-
-                if (humanDetails.deflatedWeapon != "null")
-                {
-                    try
-                    {
-                        ThingWithComps thing = (ThingWithComps)ThingScribeManager.GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(humanDetails.deflatedWeapon));
-                        human.equipment.AddEquipment(thing);
-                    }
-                    catch { Log.Warning($"Failed to load weapon in human {humanDetails.name}"); }
-                }
-
-                if (humanDetails.deflatedInventoryItems.Count() > 0)
-                {
-                    foreach (string str in humanDetails.deflatedInventoryItems)
-                    {
-                        try
-                        {
-                            Thing thing = ThingScribeManager.GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
-                            human.inventory.TryAddAndUnforbid(thing);
-                        }
-                        catch { Log.Warning($"Failed to add thing to pawn {human.Label}"); }
-                    }
-                }
-
-                if (humanDetails.position != "null")
-                {
-                    try
-                    {
-                        string[] positionSplit = humanDetails.position.Split('|');
-
-                        human.Position = new IntVec3(int.Parse(positionSplit[0]), int.Parse(positionSplit[1]),
-                            int.Parse(positionSplit[2]));
-                    }
-                    catch { Log.Message($"Failed to set human position in human {human.Label}"); }
-                }
-            }
-            catch (Exception e) { Log.Error($"Failed to load human {humanDetails.name}. Reason: {e}"); }
+            SetPawnRotation(human, humanDetailsJSON);
 
             return human;
         }
 
-        public static void GetPawnBioDetails(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        //Getters
+
+        private static void GetPawnBioDetails(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try
             {
@@ -326,7 +144,7 @@ namespace GameClient
             catch (Exception e) { Log.Warning($"Failed to load biological details from human {pawn.Label}. Reason: {e}"); }
         }
 
-        public static void GetPawnHediffs(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnHediffs(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.health.hediffSet.hediffs.Count() > 0)
             {
@@ -347,7 +165,7 @@ namespace GameClient
             }
         }
 
-        public static void GetPawnXenotype(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnXenotype(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try
             {
@@ -360,48 +178,37 @@ namespace GameClient
             catch (Exception e) { Log.Warning($"Failed to load xenotype from human {pawn.Label}. Reason: {e}"); }
         }
 
-        public static void GetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.genes.Xenogenes.Count() > 0)
             {
                 foreach (Gene gene in pawn.genes.Xenogenes)
                 {
-                    try
-                    {
-                        humanDetailsJSON.geneDefNames.Add(gene.def.defName);
-
-                        foreach (AbilityDef ability in gene.def.abilities)
-                        {
-                            humanDetailsJSON.geneAbilityDefNames.Add(ability.defName);
-                        }
-                    }
+                    try { humanDetailsJSON.xenogeneDefNames.Add(gene.def.defName); }
                     catch (Exception e) { Log.Warning($"Failed to load gene {gene} from human {pawn.Label}. Reason: {e}"); }
                 }
             }
         }
 
-        public static void GetPawnEndogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnEndogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.genes.Endogenes.Count() > 0)
             {
                 foreach (Gene endogene in pawn.genes.Endogenes)
                 {
-                    try
-                    {
-                        humanDetailsJSON.endogeneDefNames.Add(endogene.def.defName.ToString());
-                    }
+                    try { humanDetailsJSON.endogeneDefNames.Add(endogene.def.defName.ToString()); }
                     catch (Exception e) { Log.Warning($"Failed to load endogene {endogene} from human {pawn.Label}. Reason: {e}"); }
                 }
             }
         }
 
-        public static void GetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { humanDetailsJSON.favoriteColor = pawn.story.favoriteColor.ToString(); }
             catch (Exception e) { Log.Warning($"Failed to load favorite color from human {pawn.Label}. Reason: {e}"); }
         }
 
-        public static void GetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try
             {
@@ -414,7 +221,7 @@ namespace GameClient
             catch (Exception e) { Log.Warning($"Failed to load backstories from human {pawn.Label}. Reason: {e}"); }
         }
 
-        public static void GetPawnSkills(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnSkills(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.skills.skills.Count() > 0)
             {
@@ -431,7 +238,7 @@ namespace GameClient
             }
         }
 
-        public static void GetPawnTraits(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnTraits(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.story.traits.allTraits.Count() > 0)
             {
@@ -447,7 +254,7 @@ namespace GameClient
             }
         }
 
-        public static void GetPawnApparel(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnApparel(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.apparel.WornApparel.Count() > 0)
             {
@@ -455,8 +262,8 @@ namespace GameClient
                 {
                     try
                     {
-                        string thingString = Serializer.SerializeToString(ThingScribeManager.TransformItemToString(ap, 1));
-                        humanDetailsJSON.deflatedApparels.Add(thingString);
+                        ItemDetailsJSON itemDetailsJSON = ThingScribeManager.ItemToString(ap, 1);
+                        humanDetailsJSON.equippedApparel.Add(itemDetailsJSON);
                         humanDetailsJSON.apparelWornByCorpse.Add(ap.WornByCorpse);
                     }
                     catch (Exception e) { Log.Warning($"Failed to load apparel {ap} from human {pawn.Label}. Reason: {e}"); }
@@ -464,41 +271,330 @@ namespace GameClient
             }
         }
 
-        public static void GetPawnEquipment(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnEquipment(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
-            if (pawn.equipment.Primary == null) humanDetailsJSON.deflatedWeapon = "null";
-            else
+            if (pawn.equipment.Primary != null)
             {
                 try
                 {
                     ThingWithComps weapon = pawn.equipment.Primary;
-                    string thingString = Serializer.SerializeToString(ThingScribeManager.TransformItemToString(weapon, weapon.stackCount));
-                    humanDetailsJSON.deflatedWeapon = thingString;
+                    ItemDetailsJSON weaponDetails = ThingScribeManager.ItemToString(weapon, weapon.stackCount);
+                    humanDetailsJSON.equippedWeapon = weaponDetails;
                 }
                 catch (Exception e) { Log.Warning($"Failed to load weapon from human {pawn.Label}. Reason: {e}"); }
             }
         }
 
-        public static void GetPawnInventory(Pawn pawn, HumanDetailsJSON humanDetailsJSON, bool passInventory)
+        private static void GetPawnInventory(Pawn pawn, HumanDetailsJSON humanDetailsJSON, bool passInventory)
         {
             if (pawn.inventory.innerContainer.Count() == 0 || !passInventory) { }
             else
             {
                 foreach (Thing thing in pawn.inventory.innerContainer)
                 {
-                    string thingString = Serializer.SerializeToString(ThingScribeManager.TransformItemToString(thing, thing.stackCount));
-                    humanDetailsJSON.deflatedInventoryItems.Add(thingString);
+                    ItemDetailsJSON itemDetailsJSON = ThingScribeManager.ItemToString(thing, thing.stackCount);
+                    humanDetailsJSON.inventoryItems.Add(itemDetailsJSON);
                 }
             }
         }
 
-        public static void GetPawnPosition(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        private static void GetPawnPosition(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
-            try { humanDetailsJSON.position = $"{pawn.Position.x}|{pawn.Position.y}|{pawn.Position.z}"; }
-            catch
+            try
             {
-                humanDetailsJSON.position = "null";
-                Log.Message("Failed to set human position");
+                humanDetailsJSON.position = new string[] { pawn.Position.x.ToString(),
+                    pawn.Position.y.ToString(), pawn.Position.z.ToString() };
+            }
+            catch { Log.Message("Failed to set human position"); }
+        }
+
+        private static void GetPawnRotation(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try { humanDetailsJSON.rotation = pawn.Rotation.AsInt.ToString(); }
+            catch { Log.Message("Failed to get human rotation"); }
+        }
+
+        //Setters
+
+        private static void SetPawnBioDetails(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                pawn.Name = new NameSingle(humanDetailsJSON.name);
+                pawn.ageTracker.AgeBiologicalTicks = long.Parse(humanDetailsJSON.biologicalAge);
+                pawn.ageTracker.AgeChronologicalTicks = long.Parse(humanDetailsJSON.chronologicalAge);
+
+                Enum.TryParse(humanDetailsJSON.gender, true, out Gender humanGender);
+                pawn.gender = humanGender;
+
+                pawn.story.hairDef = DefDatabase<HairDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.hairDefName);
+                pawn.story.headType = DefDatabase<HeadTypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.headTypeDefName);
+                pawn.style.beardDef = DefDatabase<BeardDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.beardDefName);
+                pawn.story.bodyType = DefDatabase<BodyTypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.bodyTypeDefName);
+                pawn.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.FaceTattooDefName);
+                pawn.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.BodyTattooDefName);
+
+                string hairColor = humanDetailsJSON.hairColor.Replace("RGBA(", "").Replace(")", "");
+                string[] isolatedHair = hairColor.Split(',');
+                float r = float.Parse(isolatedHair[0]);
+                float g = float.Parse(isolatedHair[1]);
+                float b = float.Parse(isolatedHair[2]);
+                float a = float.Parse(isolatedHair[3]);
+                pawn.story.HairColor = new UnityEngine.Color(r, g, b, a);
+
+                string skinColor = humanDetailsJSON.skinColor.Replace("RGBA(", "").Replace(")", "");
+                string[] isolatedSkin = skinColor.Split(',');
+                r = float.Parse(isolatedSkin[0]);
+                g = float.Parse(isolatedSkin[1]);
+                b = float.Parse(isolatedSkin[2]);
+                a = float.Parse(isolatedSkin[3]);
+                pawn.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
+            }
+            catch (Exception e) { Log.Warning($"Failed to load biological details in human {humanDetailsJSON.name}. Reason: {e}"); }
+        }
+
+        private static void SetPawnHediffs(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                pawn.health.RemoveAllHediffs();
+                pawn.health.Reset();
+            }
+            catch (Exception e) { Log.Warning($"Failed to remove heddifs of human {humanDetailsJSON.name}. Reason: {e}"); }
+
+            if (humanDetailsJSON.hediffDefNames.Count() > 0)
+            {
+                for (int i4 = 0; i4 < humanDetailsJSON.hediffDefNames.Count(); i4++)
+                {
+                    try
+                    {
+                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.hediffDefNames[i4]);
+
+                        BodyPartRecord bodyPart = null;
+                        if (humanDetailsJSON.hediffPartDefName[i4] == "null") bodyPart = null;
+                        else bodyPart = pawn.RaceProps.body.AllParts.ToList().Find(x => x.def.defName == humanDetailsJSON.hediffPartDefName[i4]);
+
+                        Hediff hediff = HediffMaker.MakeHediff(hediffDef, pawn, bodyPart);
+
+                        hediff.Severity = float.Parse(humanDetailsJSON.hediffSeverity[i4]);
+
+                        if (humanDetailsJSON.heddifPermanent[i4])
+                        {
+                            HediffComp_GetsPermanent hediffComp = hediff.TryGetComp<HediffComp_GetsPermanent>();
+                            hediffComp.IsPermanent = true;
+                        }
+
+                        pawn.health.AddHediff(hediff);
+                    }
+                    catch (Exception e) { Log.Warning($"Failed to load heddif in {humanDetailsJSON.hediffPartDefName[i4]} to human {humanDetailsJSON.name}. Reason: {e}"); }
+                }
+            }
+        }
+
+        private static void SetPawnXenotype(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                if (humanDetailsJSON.xenotypeDefName != "null")
+                {
+                    pawn.genes.SetXenotype(DefDatabase<XenotypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.xenotypeDefName));
+                }
+
+                if (humanDetailsJSON.customXenotypeName != "null")
+                {
+                    pawn.genes.xenotypeName = humanDetailsJSON.customXenotypeName;
+                }
+            }
+            catch (Exception e) { Log.Warning($"Failed to load xenotypes in human {humanDetailsJSON.name}. Reason: {e}"); }
+        }
+
+        private static void SetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                if (humanDetailsJSON.xenogeneDefNames.Count() > 0)
+                {
+                    foreach(string str in humanDetailsJSON.xenogeneDefNames)
+                    {
+                        GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
+                        pawn.genes.AddGene(def, true);
+                    }
+                }
+            }
+            catch { Log.Warning($"Failed to load xenogenes for human {humanDetailsJSON.name}"); }
+        }
+
+        private static void SetPawnEndogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                if (humanDetailsJSON.endogeneDefNames.Count() > 0)
+                {
+                    foreach (string str in humanDetailsJSON.endogeneDefNames)
+                    {
+                        GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
+                        pawn.genes.AddGene(def, false);
+                    }
+                }
+            }
+            catch { Log.Warning($"Failed to load endogenes for human {humanDetailsJSON.name}"); }
+        }
+
+        private static void SetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                float r;
+                float g;
+                float b;
+                float a;
+
+                string favoriteColor = humanDetailsJSON.favoriteColor.Replace("RGBA(", "").Replace(")", "");
+                string[] isolatedFavoriteColor = favoriteColor.Split(',');
+                r = float.Parse(isolatedFavoriteColor[0]);
+                g = float.Parse(isolatedFavoriteColor[1]);
+                b = float.Parse(isolatedFavoriteColor[2]);
+                a = float.Parse(isolatedFavoriteColor[3]);
+                pawn.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
+            }
+            catch (Exception e) { Log.Warning($"Failed to load colors in human {humanDetailsJSON.name}. Reason: {e}"); }
+        }
+
+        private static void SetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                if (humanDetailsJSON.childhoodStory != "null")
+                {
+                    pawn.story.Childhood = DefDatabase<BackstoryDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.childhoodStory);
+                }
+
+                if (humanDetailsJSON.adulthoodStory != "null")
+                {
+                    pawn.story.Adulthood = DefDatabase<BackstoryDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.adulthoodStory);
+                }
+            }
+            catch (Exception e) { Log.Warning($"Failed to load stories in human {humanDetailsJSON.name}. Reason: {e}"); }
+        }
+
+        private static void SetPawnSkills(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            if (humanDetailsJSON.skillDefNames.Count() > 0)
+            {
+                for (int i2 = 0; i2 < humanDetailsJSON.skillDefNames.Count(); i2++)
+                {
+                    try
+                    {
+                        pawn.skills.skills[i2].levelInt = int.Parse(humanDetailsJSON.skillLevels[i2]);
+
+                        Enum.TryParse(humanDetailsJSON.passions[i2], true, out Passion passion);
+                        pawn.skills.skills[i2].passion = passion;
+                    }
+                    catch (Exception e) { Log.Warning($"Failed to load skill {humanDetailsJSON.skillDefNames[i2]} to human {humanDetailsJSON.name}. Reason: {e}"); }
+                }
+            }
+        }
+
+        private static void SetPawnTraits(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try { pawn.story.traits.allTraits.Clear(); }
+            catch (Exception e) { Log.Warning($"Failed to remove traits of human {humanDetailsJSON.name}. Reason: {e}"); }
+
+            if (humanDetailsJSON.traitDefNames.Count() > 0)
+            {
+                for (int i3 = 0; i3 < humanDetailsJSON.traitDefNames.Count(); i3++)
+                {
+                    try
+                    {
+                        TraitDef traitDef = DefDatabase<TraitDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.traitDefNames[i3]);
+                        Trait trait = new Trait(traitDef, int.Parse(humanDetailsJSON.traitDegrees[i3]));
+                        pawn.story.traits.GainTrait(trait);
+                    }
+                    catch (Exception e) { Log.Warning($"Failed to load trait {humanDetailsJSON.traitDefNames[i3]} to human {humanDetailsJSON.name}. Reason: {e}"); }
+                }
+            }
+        }
+
+        private static void SetPawnApparel(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                pawn.apparel.DestroyAll();
+                pawn.apparel.DropAllOrMoveAllToInventory();
+            }
+            catch (Exception e) { Log.Warning($"Failed to destroy apparel in human {humanDetailsJSON.name}. Reason: {e}"); }
+
+            if (humanDetailsJSON.equippedApparel.Count() > 0)
+            {
+                for (int i5 = 0; i5 < humanDetailsJSON.equippedApparel.Count(); i5++)
+                {
+                    try
+                    {
+                        Apparel apparel = (Apparel)ThingScribeManager.StringToItem(humanDetailsJSON.equippedApparel[i5]);
+                        if (humanDetailsJSON.apparelWornByCorpse[i5]) apparel.WornByCorpse.MustBeTrue();
+                        else apparel.WornByCorpse.MustBeFalse();
+
+                        pawn.apparel.Wear(apparel);
+                    }
+                    catch { Log.Warning($"Failed to load apparel in human {humanDetailsJSON.name}"); }
+                }
+            }
+        }
+
+        private static void SetPawnEquipment(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try
+            {
+                pawn.equipment.DestroyAllEquipment();
+            }
+            catch (Exception e) { Log.Warning($"Failed to destroy equipment in human {humanDetailsJSON.name}. Reason: {e}"); }
+
+            if (humanDetailsJSON.equippedWeapon != null)
+            {
+                try
+                {
+                    ThingWithComps thing = (ThingWithComps)ThingScribeManager.StringToItem(humanDetailsJSON.equippedWeapon);
+                    pawn.equipment.AddEquipment(thing);
+                }
+                catch { Log.Warning($"Failed to load weapon in human {humanDetailsJSON.name}"); }
+            }
+        }
+
+        private static void SetPawnInventory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            if (humanDetailsJSON.inventoryItems.Count() > 0)
+            {
+                foreach (ItemDetailsJSON item in humanDetailsJSON.inventoryItems)
+                {
+                    try
+                    {
+                        Thing thing = ThingScribeManager.StringToItem(item);
+                        pawn.inventory.TryAddAndUnforbid(thing);
+                    }
+                    catch { Log.Warning($"Failed to add thing to pawn {pawn.Label}"); }
+                }
+            }
+        }
+
+        private static void SetPawnPosition(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            if (humanDetailsJSON.position != null)
+            {
+                try
+                {
+                    pawn.Position = new IntVec3(int.Parse(humanDetailsJSON.position[0]), int.Parse(humanDetailsJSON.position[1]),
+                        int.Parse(humanDetailsJSON.position[2]));
+                }
+                catch { Log.Message($"Failed to set position in human {pawn.Label}"); }
+            }
+        }
+
+        private static void SetPawnRotation(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            if (humanDetailsJSON.rotation != "null")
+            {
+                try { pawn.Rotation = new Rot4(int.Parse(humanDetailsJSON.rotation)); }
+                catch { Log.Message($"Failed to set rotation in human {pawn.Label}"); }
             }
         }
     }
@@ -514,7 +610,7 @@ namespace GameClient
             try
             {
                 animalDetailsJSON.defName = animal.def.defName;
-                animalDetailsJSON.name = animal.Name.ToString();
+                animalDetailsJSON.name = animal.LabelShortCap.ToString();
                 animalDetailsJSON.biologicalAge = animal.ageTracker.AgeBiologicalTicks.ToString();
                 animalDetailsJSON.chronologicalAge = animal.ageTracker.AgeChronologicalTicks.ToString();
                 animalDetailsJSON.gender = animal.gender.ToString();
@@ -551,11 +647,15 @@ namespace GameClient
                 catch { }
             }
 
-            if (animalDetailsJSON.position != "null")
+            try
             {
-                try { animalDetailsJSON.position = $"{animal.Position.x}|{animal.Position.y}|{animal.Position.z}"; }
-                catch { Log.Message("Failed to set pawn position"); }
+                animalDetailsJSON.position = new string[] { animal.Position.x.ToString(),
+                        animal.Position.y.ToString(), animal.Position.z.ToString() };
             }
+            catch { Log.Message("Failed to get animal position"); }
+
+            try { animalDetailsJSON.rotation = animal.Rotation.AsInt.ToString(); }
+            catch { Log.Message("Failed to get animal rotation"); }
 
             return animalDetailsJSON;
         }
@@ -641,14 +741,24 @@ namespace GameClient
                     }
                 }
 
-                try
+                if (animal.Position != null)
                 {
-                    string[] positionSplit = animalDetails.position.Split('|');
-
-                    animal.Position = new IntVec3(int.Parse(positionSplit[0]), int.Parse(positionSplit[1]),
-                        int.Parse(positionSplit[2]));
+                    try
+                    {
+                        animal.Position = new IntVec3(int.Parse(animalDetails.position[0]), int.Parse(animalDetails.position[1]),
+                            int.Parse(animalDetails.position[2]));
+                    }
+                    catch { Log.Warning($"Failed to set position in animal {animal.Label}"); }
                 }
-                catch { Log.Warning($"Failed to set animal position in animal {animal.Label}"); }
+
+                if (animalDetails.rotation != "null")
+                {
+                    try
+                    {
+                        animal.Rotation = new Rot4(int.Parse(animalDetails.rotation));
+                    }
+                    catch { Log.Message($"Failed to set rotation in animal {animal.Label}"); }
+                }
             }
             catch (Exception e) { Log.Error($"Failed to load animal {animalDetails.defName}. Reason: {e}"); }
 
@@ -660,7 +770,23 @@ namespace GameClient
 
     public static class ThingScribeManager
     {
-        public static ItemDetailsJSON TransformItemToString(Thing thing, int thingCount)
+        //Functions
+
+        public static Thing[] GetItemsFromString(TransferManifestJSON transferManifestJSON)
+        {
+            List<Thing> things = new List<Thing>();
+
+            for (int i = 0; i < transferManifestJSON.itemDetailsJSONS.Count(); i++)
+            {
+                ItemDetailsJSON itemDetailsJSON = Serializer.SerializeFromString<ItemDetailsJSON>(transferManifestJSON.itemDetailsJSONS[i]);
+
+                things.Add(StringToItem(itemDetailsJSON));
+            }
+
+            return things.ToArray();
+        }
+
+        public static ItemDetailsJSON ItemToString(Thing thing, int thingCount)
         {
             ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
 
@@ -677,10 +803,15 @@ namespace GameClient
 
                 itemDetailsJSON.hitpoints = thing.HitPoints.ToString();
 
-                try { itemDetailsJSON.position = $"{thing.Position.x}|{thing.Position.y}|{thing.Position.z}"; }
-                catch { Log.Message("Failed to set thing position"); }
+                try
+                {
+                    itemDetailsJSON.position = new string[] { thing.Position.x.ToString(),
+                        thing.Position.y.ToString(), thing.Position.z.ToString() };
+                }
+                catch { Log.Warning($"Failed to get position of thing {itemDetailsJSON.defName}"); }
 
-                itemDetailsJSON.rotation = thing.Rotation.AsInt.ToString();
+                try { itemDetailsJSON.rotation = thing.Rotation.AsInt.ToString(); }
+                catch { Log.Warning($"Failed to get rotation of thing {itemDetailsJSON.defName}"); }
 
                 if (TransferManagerHelper.CheckIfThingIsMinified(thing)) itemDetailsJSON.isMinified = true;
                 else itemDetailsJSON.isMinified = false;
@@ -690,21 +821,7 @@ namespace GameClient
             return itemDetailsJSON;
         }
 
-        public static Thing[] GetItemsFromString(TransferManifestJSON transferManifestJSON)
-        {
-            List<Thing> things = new List<Thing>();
-
-            for (int i = 0; i < transferManifestJSON.itemDetailsJSONS.Count(); i++)
-            {
-                ItemDetailsJSON itemDetailsJSON = Serializer.SerializeFromString<ItemDetailsJSON>(transferManifestJSON.itemDetailsJSONS[i]);
-
-                things.Add(GetItemSimple(itemDetailsJSON));
-            }
-
-            return things.ToArray();
-        }
-
-        public static Thing GetItemSimple(ItemDetailsJSON itemDetails)
+        public static Thing StringToItem(ItemDetailsJSON itemDetails)
         {
             Thing toGet = null;
             ThingDef thingDef = null;
@@ -745,23 +862,25 @@ namespace GameClient
                     catch { Log.Warning($"Failed to load item hitpoints for {itemDetails.defName}"); }
                 }
 
-                if (itemDetails.position != "null")
+                if (itemDetails.position != null)
                 {
                     try
                     {
-                        string[] positionSplit = itemDetails.position.Split('|');
-
-                        toGet.Position = new IntVec3(int.Parse(positionSplit[0]), int.Parse(positionSplit[1]),
-                            int.Parse(positionSplit[2]));
-
-                        toGet.Rotation = new Rot4(int.Parse(itemDetails.rotation));
+                        toGet.Position = new IntVec3(int.Parse(itemDetails.position[0]), int.Parse(itemDetails.position[1]),
+                            int.Parse(itemDetails.position[2]));
                     }
-                    catch { Log.Warning($"Failed to load item position for {itemDetails.defName}"); }
+                    catch { Log.Warning($"Failed to set position for item {itemDetails.defName}"); }
+                }
+
+                if (itemDetails.rotation != "null")
+                {
+                    try { toGet.Rotation = new Rot4(int.Parse(itemDetails.rotation)); }
+                    catch { Log.Warning($"Failed to set rotation for item {itemDetails.defName}"); }
                 }
 
                 if (itemDetails.isMinified) toGet.TryMakeMinified();
             }
-            catch (Exception e) { Log.Error($"Failed to load item {itemDetails.defName}. Reason: {e}"); }
+            catch (Exception e) { Log.Error($"Failed to set item {itemDetails.defName}. Reason: {e}"); }
 
             return toGet;
         }
@@ -773,7 +892,7 @@ namespace GameClient
     {
         //Functions
 
-        public static MapDetailsJSON TransformMapToString(Map map, bool containsItems, bool containsHumans, bool containsAnimals)
+        public static MapDetailsJSON MapToString(Map map, bool containsItems, bool containsHumans, bool containsAnimals)
         {
             MapDetailsJSON mapDetailsJSON = new MapDetailsJSON();
 
@@ -786,9 +905,9 @@ namespace GameClient
             return mapDetailsJSON;
         }
 
-        public static Map GetMapSimple(MapDetailsJSON mapDetailsJSON, bool containsItems, bool containsHumans, bool containsAnimals, bool lessLoot)
+        public static Map StringToMap(MapDetailsJSON mapDetailsJSON, bool containsItems, bool containsHumans, bool containsAnimals, bool lessLoot)
         {
-            Map map = CreateEmptyMap(mapDetailsJSON);
+            Map map = SetEmptyMap(mapDetailsJSON);
 
             SetMapThings(mapDetailsJSON, map, containsItems, lessLoot);
 
@@ -833,9 +952,9 @@ namespace GameClient
                         {
                             if (containsHumans)
                             {
-                                string humanString = Serializer.SerializeToString(HumanScribeManager.TransformHumanToString(thing as Pawn));
-                                if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.playerHumanDetailsJSON.Add(humanString);
-                                else mapDetailsJSON.humanDetailsJSONS.Add(humanString);
+                                HumanDetailsJSON humanDetailsJSON = HumanScribeManager.HumanToString(thing as Pawn);
+                                if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.factionHumans.Add(humanDetailsJSON);
+                                else mapDetailsJSON.nonFactionHumans.Add(humanDetailsJSON);
                             }
                         }
 
@@ -843,23 +962,22 @@ namespace GameClient
                         {
                             if (containsAnimals)
                             {
-                                string animalString = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(thing as Pawn));
-                                if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.playerAnimalDetailsJSON.Add(animalString);
-                                else mapDetailsJSON.animalDetailsJSON.Add(animalString);
+                                AnimalDetailsJSON animalDetailsJSON = AnimalScribeManager.TransformAnimalToString(thing as Pawn);
+                                if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.factionAnimals.Add(animalDetailsJSON);
+                                else mapDetailsJSON.nonFactionAnimals.Add(animalDetailsJSON);
                             }
                         }
 
                         else
                         {
-                            ItemDetailsJSON itemDetailsJSON = ThingScribeManager.TransformItemToString(thing, thing.stackCount);
-                            string thingString = Serializer.SerializeToString(itemDetailsJSON);
+                            ItemDetailsJSON itemDetailsJSON = ThingScribeManager.ItemToString(thing, thing.stackCount);
 
                             if (thing.def.alwaysHaulable)
                             {
-                                if (containsItems) mapDetailsJSON.playerItemDetailsJSON.Add(thingString);
+                                if (containsItems) mapDetailsJSON.factionThings.Add(itemDetailsJSON);
                                 else continue;
                             }
-                            else mapDetailsJSON.itemDetailsJSONS.Add(thingString);
+                            else mapDetailsJSON.nonFactionThings.Add(itemDetailsJSON);
                         }
                     }
 
@@ -871,7 +989,7 @@ namespace GameClient
 
         //Setters
 
-        private static Map CreateEmptyMap(MapDetailsJSON mapDetailsJSON)
+        private static Map SetEmptyMap(MapDetailsJSON mapDetailsJSON)
         {
             string[] splitSize = mapDetailsJSON.mapSize.Split('|');
 
@@ -885,11 +1003,11 @@ namespace GameClient
         {
             List<Thing> thingsToGetInThisTile = new List<Thing>();
 
-            foreach (string str in mapDetailsJSON.itemDetailsJSONS)
+            foreach (ItemDetailsJSON item in mapDetailsJSON.nonFactionThings)
             {
                 try
                 {
-                    Thing toGet = ThingScribeManager.GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
+                    Thing toGet = ThingScribeManager.StringToItem(item);
                     thingsToGetInThisTile.Add(toGet);
                 }
                 catch { }
@@ -899,11 +1017,11 @@ namespace GameClient
             {
                 Random rnd = new Random();
 
-                foreach (string str in mapDetailsJSON.playerItemDetailsJSON)
+                foreach (ItemDetailsJSON item in mapDetailsJSON.factionThings)
                 {
                     try
                     {
-                        Thing toGet = ThingScribeManager.GetItemSimple(Serializer.SerializeFromString<ItemDetailsJSON>(str));
+                        Thing toGet = ThingScribeManager.StringToItem(item);
 
                         if (lessLoot)
                         {
@@ -925,63 +1043,55 @@ namespace GameClient
 
         private static void SetMapHumans(MapDetailsJSON mapDetailsJSON, Map map)
         {
-            foreach (string str in mapDetailsJSON.humanDetailsJSONS)
+            foreach (HumanDetailsJSON pawn in mapDetailsJSON.nonFactionHumans)
             {
-                HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
-
                 try
                 {
-                    Pawn human = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
+                    Pawn human = HumanScribeManager.StringToHuman(pawn);
                     human.SetFaction(FactionValues.yourOnlineFaction);
 
-                    GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
+                    GenSpawn.Spawn(human, human.Position, map, human.Rotation);
                 }
-                catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
+                catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
             }
 
-            foreach (string str in mapDetailsJSON.playerHumanDetailsJSON)
+            foreach (HumanDetailsJSON pawn in mapDetailsJSON.factionHumans)
             {
-                HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
-
                 try
                 {
-                    Pawn human = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
+                    Pawn human = HumanScribeManager.StringToHuman(pawn);
                     human.SetFaction(FactionValues.neutralPlayer);
 
-                    GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
+                    GenSpawn.Spawn(human, human.Position, map, human.Rotation);
                 }
-                catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
+                catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
             }
         }
 
         private static void SetMapAnimals(MapDetailsJSON mapDetailsJSON, Map map)
         {
-            foreach (string str in mapDetailsJSON.animalDetailsJSON)
+            foreach (AnimalDetailsJSON pawn in mapDetailsJSON.nonFactionAnimals)
             {
-                AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
-
                 try
                 {
-                    Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
+                    Pawn animal = AnimalScribeManager.GetAnimalSimple(pawn);
                     animal.SetFaction(FactionValues.yourOnlineFaction);
 
-                    GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
+                    GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
                 }
-                catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+                catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
             }
 
-            foreach (string str in mapDetailsJSON.playerAnimalDetailsJSON)
+            foreach (AnimalDetailsJSON pawn in mapDetailsJSON.factionAnimals)
             {
-                AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
-
                 try
                 {
-                    Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
+                    Pawn animal = AnimalScribeManager.GetAnimalSimple(pawn);
                     animal.SetFaction(FactionValues.neutralPlayer);
 
-                    GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
+                    GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
                 }
-                catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+                catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
             }
         }
 

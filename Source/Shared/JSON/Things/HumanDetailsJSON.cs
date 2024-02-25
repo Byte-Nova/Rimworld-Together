@@ -4,8 +4,11 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
+
     public class HumanDetailsJSON
     {
+        //Bio
+
         public string defName;
         public string name;
         public string biologicalAge;
@@ -21,36 +24,53 @@ namespace Shared
         public string FaceTattooDefName;
         public string BodyTattooDefName;
 
+        //Hediffs
+
         public List<string> hediffDefNames = new List<string>();
         public List<string> hediffPartDefName = new List<string>();
         public List<string> hediffSeverity = new List<string>();
         public List<bool> heddifPermanent = new List<bool>();
 
+        //Xenotypes
+
         public string xenotypeDefName;
         public string customXenotypeName;
 
-        public List<string> geneDefNames = new List<string>();
-        public List<string> endogeneDefNames = new List<string>();
-        public List<string> geneAbilityDefNames = new List<string>();
+        //Genes
 
-        public string favoriteColor;
+        public List<string> xenogeneDefNames = new List<string>();
+        public List<string> endogeneDefNames = new List<string>();
+
+        //Stories
+
         public string childhoodStory;
         public string adulthoodStory;
+
+        //Skills
 
         public List<string> skillDefNames = new List<string>();
         public List<string> skillLevels = new List<string>();
         public List<string> passions = new List<string>();
 
+        //Traits
+
         public List<string> traitDefNames = new List<string>();
         public List<string> traitDegrees = new List<string>();
 
-        public List<string> deflatedApparels = new List<string>();
+        //Apparel
+
+        public List<ItemDetailsJSON> equippedApparel = new List<ItemDetailsJSON>();
         public List<bool> apparelWornByCorpse = new List<bool>();
 
-        public string deflatedWeapon;
+        //Equipment
 
-        public List<string> deflatedInventoryItems = new List<string>();
+        public ItemDetailsJSON equippedWeapon;
+        public List<ItemDetailsJSON> inventoryItems = new List<ItemDetailsJSON>();
 
-        public string position;
+        //Misc
+
+        public string favoriteColor;
+        public string[] position;
+        public string rotation;
     }
 }

@@ -187,7 +187,7 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.GetHumanSimple(Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
                 TransferManager.GetTransferedItemsToCaravan(new Thing[] { pawnToRetrieve }, true, false);
 
                 SaveManager.ForceSave();
@@ -226,7 +226,7 @@ namespace GameClient
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
             siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
             siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Deposit).ToString();
-            siteDetailsJSON.workerData = Serializer.SerializeToString(HumanScribeManager.TransformHumanToString(pawnToSend));
+            siteDetailsJSON.workerData = Serializer.SerializeToString(HumanScribeManager.HumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
@@ -281,7 +281,6 @@ namespace GameClient
             List<Thing> thingsToGet = new List<Thing>();
             itemDetailsJSON.quality = "null";
             itemDetailsJSON.hitpoints = "null";
-            itemDetailsJSON.position = "null";
 
             foreach (Site site in sites)
             {
@@ -291,7 +290,7 @@ namespace GameClient
                     {
                         itemDetailsJSON.defName = siteRewardDefNames[i];
                         itemDetailsJSON.quantity = siteRewardCount[i].ToString();
-                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.GetItemSimple(itemDetailsJSON));
+                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(itemDetailsJSON));
                         break;
                     }
                 }

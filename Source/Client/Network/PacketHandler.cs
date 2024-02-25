@@ -26,11 +26,6 @@ namespace GameClient
             else toDo();
         }
 
-        public static void KeepAlivePacket(Packet packet)
-        {
-            //EMPTY
-        }
-
         public static void LoginResponsePacket(Packet packet)
         {
             LoginManager.ReceiveLoginResponse(packet);
@@ -147,6 +142,11 @@ namespace GameClient
         }
 
         //Empty functions
+
+        public static void KeepAlivePacket()
+        {
+            //EMPTY
+        }
 
         public static void ResetSavePacket()
         {
