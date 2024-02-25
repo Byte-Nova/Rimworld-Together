@@ -97,7 +97,7 @@ namespace GameClient
                 Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                 newSettlement.Tile = toChange[i].Tile;
                 newSettlement.Name = toChange[i].Name;
-                newSettlement.SetFaction(PlanetManager.GetPlayerFaction(int.Parse(structureLikelihoodJSON.settlementLikelihoods[i])));
+                newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(structureLikelihoodJSON.settlementLikelihoods[i])));
 
                 PlanetManager.playerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
@@ -122,7 +122,7 @@ namespace GameClient
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
                             tile: toChange[i].Tile,
                             threatPoints: 1000,
-                            faction: PlanetManager.GetPlayerFaction(int.Parse(structureLikelihoodJSON.siteLikelihoods[i])));
+                            faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(structureLikelihoodJSON.siteLikelihoods[i])));
 
                 PlanetManager.playerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);
