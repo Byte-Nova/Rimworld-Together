@@ -67,7 +67,7 @@ namespace GameClient
                     spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
                     spyDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
                 }
             };
@@ -127,6 +127,8 @@ namespace GameClient
                 "To stop the spy exit the map creating a caravan"
             });
             DialogManager.PushNewDialog(d1);
+
+            FloodFillerFog.DebugRefogMap(map);
         }
 
         //Handles the factions of the desired map for the spy order

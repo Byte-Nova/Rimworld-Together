@@ -56,7 +56,7 @@ namespace GameClient
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.MemberList).ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 
@@ -66,7 +66,7 @@ namespace GameClient
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.RemoveMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 
@@ -77,7 +77,7 @@ namespace GameClient
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Delete).ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 
@@ -112,7 +112,7 @@ namespace GameClient
                     factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Create).ToString();
                     factionManifestJSON.manifestDetails = DialogManager.dialog1ResultOne;
 
-                    Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                     Network.listener.dataQueue.Enqueue(packet);
                 }
             };
@@ -132,7 +132,7 @@ namespace GameClient
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Promote).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 
@@ -142,7 +142,7 @@ namespace GameClient
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Demote).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 
@@ -152,7 +152,7 @@ namespace GameClient
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.RemoveMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 
@@ -191,7 +191,7 @@ namespace GameClient
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.AddMember).ToString();
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifestJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 
@@ -242,7 +242,7 @@ namespace GameClient
 
                 factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.AcceptInvite).ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 

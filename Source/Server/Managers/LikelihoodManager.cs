@@ -75,7 +75,7 @@ namespace GameServer
             userFile.allyPlayers = client.allyPlayers;
             UserManager.SaveUserFile(client, userFile);
 
-            Packet rPacket = Packet.CreatePacketFromJSON("LikelihoodPacket", structureLikelihoodJSON);
+            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.LikelihoodPacket), structureLikelihoodJSON);
             client.listener.dataQueue.Enqueue(rPacket);
         }
 
@@ -227,7 +227,7 @@ namespace GameServer
                 structureLikelihoodJSON.siteLikelihoods.Add(GetSiteLikelihood(client, site).ToString());
             }
 
-            Packet packet = Packet.CreatePacketFromJSON("LikelihoodPacket", structureLikelihoodJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LikelihoodPacket), structureLikelihoodJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
     }

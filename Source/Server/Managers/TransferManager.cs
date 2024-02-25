@@ -49,7 +49,7 @@ namespace GameServer
                     else
                     {
                         transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.Recover).ToString();
-                        Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                         client.listener.dataQueue.Enqueue(rPacket);
                     }
                 }
@@ -59,20 +59,20 @@ namespace GameServer
                     if (int.Parse(transferManifestJSON.transferMode) == (int)CommonEnumerators.TransferMode.Gift)
                     {
                         transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeAccept).ToString();
-                        Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                         client.listener.dataQueue.Enqueue(rPacket);
                     }
 
                     else if (int.Parse(transferManifestJSON.transferMode) == (int)CommonEnumerators.TransferMode.Pod)
                     {
                         transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeAccept).ToString();
-                        Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                         client.listener.dataQueue.Enqueue(rPacket);
                     }
 
                     transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeRequest).ToString();
                     string[] contents2 = new string[] { Serializer.SerializeToString(transferManifestJSON) };
-                    Packet rPacket2 = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                    Packet rPacket2 = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                     UserManager.GetConnectedClientFromUsername(settlement.owner).listener.dataQueue.Enqueue(rPacket2);
                 }
             }
@@ -86,14 +86,14 @@ namespace GameServer
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.Recover).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 client.listener.dataQueue.Enqueue(rPacket);
             }
 
             else
             {
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReject).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.dataQueue.Enqueue(rPacket);
             }
         }
@@ -106,14 +106,14 @@ namespace GameServer
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReReject).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 client.listener.dataQueue.Enqueue(rPacket);
             }
 
             else
             {
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReRequest).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.dataQueue.Enqueue(rPacket);
             }
         }
@@ -126,14 +126,14 @@ namespace GameServer
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.Recover).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 client.listener.dataQueue.Enqueue(rPacket);
             }
 
             else
             {
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.dataQueue.Enqueue(rPacket);
             }
         }
@@ -146,14 +146,14 @@ namespace GameServer
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.Recover).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 client.listener.dataQueue.Enqueue(rPacket);
             }
 
             else
             {
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReReject).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON("TransferPacket", transferManifestJSON);
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.dataQueue.Enqueue(rPacket);
             }
         }

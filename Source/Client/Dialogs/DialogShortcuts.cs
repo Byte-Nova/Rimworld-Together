@@ -162,7 +162,7 @@ namespace GameClient
                 ChatManager.username = loginDetails.username;
                 PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
-                Packet packet = Packet.CreatePacketFromJSON("LoginClientPacket", loginDetails);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
                 Network.listener.dataQueue.Enqueue(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
@@ -194,7 +194,7 @@ namespace GameClient
                 registerDetails.clientVersion = CommonValues.executableVersion;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
-                Packet packet = Packet.CreatePacketFromJSON("RegisterClientPacket", registerDetails);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
                 Network.listener.dataQueue.Enqueue(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));

@@ -101,6 +101,16 @@ namespace GameClient
                     settlement.Name = $"{PlanetManagerHelper.tempSettlementOwners[i]}'s settlement";
                     settlement.SetFaction(GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSettlementLikelihoods[i])));
 
+                    MapGeneratorDef[] defs = DefDatabase<MapGeneratorDef>.AllDefs.ToArray();
+                    foreach (MapGeneratorDef def in defs) 
+                    { 
+                        if (def.defName == "Empty")
+                        {
+                            settlement.def.mapGenerator = def;
+                            break;
+                        }
+                    }
+
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }

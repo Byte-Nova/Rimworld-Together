@@ -54,7 +54,7 @@ namespace GameServer
                 }
             }
 
-            Packet rPacket = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
+            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
             foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.dataQueue.Enqueue(rPacket);
 
             Logger.WriteToConsole($"[Chat] > {client.username} > {chatMessagesJSON.messages[0]}");
@@ -68,7 +68,7 @@ namespace GameServer
             chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
             chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
 
-            Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
 
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
@@ -89,7 +89,7 @@ namespace GameServer
                 chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
             }
 
-            Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
     }

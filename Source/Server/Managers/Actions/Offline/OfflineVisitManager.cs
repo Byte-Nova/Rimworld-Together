@@ -25,7 +25,7 @@ namespace GameServer
             if (!MapManager.CheckIfMapExists(offlineVisitDetails.targetTile))
             {
                 offlineVisitDetails.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
-                Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
                 client.listener.dataQueue.Enqueue(packet);
             }
 
@@ -36,7 +36,7 @@ namespace GameServer
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     offlineVisitDetails.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
                     client.listener.dataQueue.Enqueue(packet);
                 }
 
@@ -45,7 +45,7 @@ namespace GameServer
                     MapFileJSON mapDetails = MapManager.GetUserMapFromTile(offlineVisitDetails.targetTile);
                     offlineVisitDetails.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
-                    Packet packet = Packet.CreatePacketFromJSON("OfflineVisitPacket", offlineVisitDetails);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
                     client.listener.dataQueue.Enqueue(packet);
                 }
             }

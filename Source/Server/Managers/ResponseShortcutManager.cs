@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void SendIllegalPacket(ServerClient client, bool broadcast = true)
         {
-            Packet packet = Packet.CreatePacketFromJSON("IllegalActionPacket");
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.IllegalActionPacket));
             client.listener.dataQueue.Enqueue(packet);
             client.listener.disconnectFlag = true;
 
@@ -15,13 +15,13 @@ namespace GameServer
 
         public static void SendUnavailablePacket(ServerClient client)
         {
-            Packet packet = Packet.CreatePacketFromJSON("UserUnavailablePacket");
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.UserUnavailablePacket));
             client.listener.dataQueue.Enqueue(packet);
         }
 
         public static void SendBreakPacket(ServerClient client)
         {
-            Packet packet = Packet.CreatePacketFromJSON("BreakPacket");
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.BreakPacket));
             client.listener.dataQueue.Enqueue(packet);
         }
 
@@ -29,7 +29,7 @@ namespace GameServer
         {
             factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NoPower).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("FactionPacket", factionManifest);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
             client.listener.dataQueue.Enqueue(packet);
         }
     }

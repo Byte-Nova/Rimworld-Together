@@ -47,7 +47,7 @@ namespace GameServer
             Program.worldValues = worldValues;
 
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Saved).ToString();
-            Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
 
@@ -56,7 +56,7 @@ namespace GameServer
             WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
 
@@ -74,7 +74,7 @@ namespace GameServer
             worldDetailsJSON.Pollution = worldValues.Pollution;
             worldDetailsJSON.Factions = worldValues.Factions;
 
-            Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
 

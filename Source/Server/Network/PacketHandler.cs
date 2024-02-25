@@ -117,5 +117,42 @@ namespace GameServer
         {
             SaveManager.ResetClientSave(client);
         }
+
+        //Empty functions
+
+        public static void UserUnavailablePacket()
+        {
+            //Empty
+        }
+
+        public static void IllegalActionPacket()
+        {
+            //Empty
+        }
+
+        public static void BreakPacket()
+        {
+            //Empty
+        }
+
+        public static void PlayerRecountPacket()
+        {
+            //Empty
+        }
+
+        public static void ServerValuesPacket()
+        {
+            //Empty
+        }
+
+        public static void CommandPacket()
+        {
+            //Empty
+        }
+
+        public static void LoginResponsePacket()
+        {
+            //Empty
+        }
     }
 }

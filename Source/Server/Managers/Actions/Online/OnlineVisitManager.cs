@@ -42,7 +42,7 @@ namespace GameServer
                 if (toGet == null)
                 {
                     visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);
                 }
 
@@ -51,14 +51,14 @@ namespace GameServer
                     if (toGet.inVisitWith != null)
                     {
                         visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
-                        Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                         client.listener.dataQueue.Enqueue(packet);
                     }
 
                     else
                     {
                         visitDetailsJSON.visitorName = client.username;
-                        Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                         toGet.listener.dataQueue.Enqueue(packet);
                     }
                 }
@@ -78,7 +78,7 @@ namespace GameServer
                     client.inVisitWith = toGet;
                     toGet.inVisitWith = client;
 
-                    Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     toGet.listener.dataQueue.Enqueue(packet);
                 }
             }
@@ -94,7 +94,7 @@ namespace GameServer
                 if (toGet == null) return;
                 else
                 {
-                    Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     toGet.listener.dataQueue.Enqueue(packet);
                 }
             }
@@ -105,20 +105,20 @@ namespace GameServer
             if (client.inVisitWith == null)
             {
                 visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
-                Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                 client.listener.dataQueue.Enqueue(packet);
             }
 
             else
             {
-                Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                 client.inVisitWith.listener.dataQueue.Enqueue(packet);
             }
         }
 
         public static void SendVisitStop(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
-            Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
 
             if (client.inVisitWith == null) client.listener.dataQueue.Enqueue(packet);
             else

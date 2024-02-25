@@ -25,7 +25,7 @@ namespace GameServer
             if (!MapManager.CheckIfMapExists(raidDetailsJSON.targetTile))
             {
                 raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
-                Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
                 client.listener.dataQueue.Enqueue(packet);
             }
 
@@ -36,7 +36,7 @@ namespace GameServer
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);
                 }
 
@@ -45,7 +45,7 @@ namespace GameServer
                     MapFileJSON mapDetails = MapManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
                     raidDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
-                    Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);
                 }
             }

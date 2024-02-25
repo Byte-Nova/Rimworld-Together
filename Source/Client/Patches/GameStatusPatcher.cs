@@ -23,7 +23,7 @@ namespace GameClient
                     settlementDetailsJSON.tile = __instance.CurrentMap.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();
@@ -62,7 +62,7 @@ namespace GameClient
                     settlementDetailsJSON.tile = caravan.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();
@@ -82,7 +82,7 @@ namespace GameClient
                     settlementDetailsJSON.tile = map.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();
@@ -102,7 +102,7 @@ namespace GameClient
                     settlementDetailsJSON.tile = settlement.Tile.ToString();
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();

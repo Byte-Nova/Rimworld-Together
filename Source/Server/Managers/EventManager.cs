@@ -33,7 +33,7 @@ namespace GameServer
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
                     eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);
                 }
 
@@ -43,7 +43,7 @@ namespace GameServer
                     if (target.inSafeZone)
                     {
                         eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
-                        Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
                         client.listener.dataQueue.Enqueue(packet);
                     }
 
@@ -51,11 +51,11 @@ namespace GameServer
                     {
                         target.inSafeZone = true;
 
-                        Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
                         client.listener.dataQueue.Enqueue(packet);
 
                         eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
-                        Packet rPacket = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
                         target.listener.dataQueue.Enqueue(rPacket);
                     }
                 }

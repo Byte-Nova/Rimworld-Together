@@ -100,7 +100,7 @@ namespace GameClient
                 eventDetailsJSON.toTile = ClientValues.chosenSettlement.Tile.ToString();
                 eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
                 Network.listener.dataQueue.Enqueue(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));

@@ -149,7 +149,7 @@ namespace GameClient
                 {
                     ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                     Network.listener.dataQueue.Enqueue(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);

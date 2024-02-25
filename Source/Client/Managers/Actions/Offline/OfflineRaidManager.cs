@@ -40,7 +40,7 @@ namespace GameClient
             raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
             raidDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("RaidPacket", raidDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
 

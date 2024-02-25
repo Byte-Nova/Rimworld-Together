@@ -41,7 +41,7 @@ namespace GameServer
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Op).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
 
@@ -50,7 +50,7 @@ namespace GameServer
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Deop).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
 
         }
@@ -60,7 +60,7 @@ namespace GameServer
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Ban).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
 
         }
@@ -70,7 +70,7 @@ namespace GameServer
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Disconnect).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
 
@@ -79,7 +79,7 @@ namespace GameServer
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Quit).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
 
@@ -89,7 +89,7 @@ namespace GameServer
             eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
             eventDetailsJSON.eventID = eventID.ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("EventPacket", eventDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
 
@@ -99,7 +99,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Broadcast).ToString();
             commandDetailsJSON.commandDetails = str;
 
-            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
                 client.listener.dataQueue.Enqueue(packet);
@@ -111,7 +111,7 @@ namespace GameServer
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("CommandPacket", commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
         }
     }

@@ -25,7 +25,7 @@ namespace GameServer
             if (!MapManager.CheckIfMapExists(spyDetailsJSON.targetTile))
             {
                 spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
-                Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
                 client.listener.dataQueue.Enqueue(packet);
             }
 
@@ -36,7 +36,7 @@ namespace GameServer
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);
                 }
 
@@ -45,7 +45,7 @@ namespace GameServer
                     MapFileJSON mapDetails = MapManager.GetUserMapFromTile(spyDetailsJSON.targetTile);
                     spyDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
-                    Packet packet = Packet.CreatePacketFromJSON("SpyPacket", spyDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);
                 }
             }

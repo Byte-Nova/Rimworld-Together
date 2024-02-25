@@ -73,7 +73,7 @@ namespace GameClient
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
 
-                    Packet packet = Packet.CreatePacketFromJSON("ResetSavePacket");
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ResetSavePacket));
                     Network.listener.dataQueue.Enqueue(packet);
                 };
 

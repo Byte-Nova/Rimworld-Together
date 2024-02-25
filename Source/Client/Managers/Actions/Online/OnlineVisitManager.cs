@@ -69,7 +69,7 @@ namespace GameClient
                     visitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
                     visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(FetchMode.Player, visitDetailsJSON);
 
-                    Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
                 };
 
@@ -84,7 +84,7 @@ namespace GameClient
 
             MapDetailsJSON mapDetailsJSON = MapManager.ParseMap(visitMap, true, false, false, true);
             visitDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetailsJSON);
-            Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
 
@@ -121,7 +121,7 @@ namespace GameClient
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
 
@@ -145,7 +145,7 @@ namespace GameClient
             Action r2 = delegate
             {
                 visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Reject).ToString();
-                Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             };
 
@@ -445,7 +445,7 @@ namespace GameClient
             }
 
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Action).ToString();
-            Packet packet = Packet.CreatePacketFromJSON("VisitPacket", visitDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
 

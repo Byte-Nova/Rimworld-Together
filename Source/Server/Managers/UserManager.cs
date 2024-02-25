@@ -74,7 +74,7 @@ namespace GameServer
             playerRecountJSON.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
             foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
 
-            Packet packet = Packet.CreatePacketFromJSON("PlayerRecountPacket", playerRecountJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.PlayerRecountPacket), playerRecountJSON);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.dataQueue.Enqueue(packet);
         }
 
@@ -174,7 +174,7 @@ namespace GameServer
 
             if (response == LoginResponse.WrongMods) loginDetailsJSON.conflictingMods = (List<string>)extraDetails;
 
-            Packet packet = Packet.CreatePacketFromJSON("LoginResponsePacket", loginDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
 
             client.listener.disconnectFlag = true;

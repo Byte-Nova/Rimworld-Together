@@ -31,7 +31,7 @@ namespace GameClient
             mapFileJSON.mapTile = mapDetailsJSON.mapTile;
             mapFileJSON.mapData = Serializer.ConvertObjectToBytes(mapDetailsJSON);
 
-            Packet packet = Packet.CreatePacketFromJSON("MapPacket", mapFileJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
 

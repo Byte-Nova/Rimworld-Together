@@ -40,7 +40,7 @@ namespace GameServer
                     {
                         settlementDetailsJSON.value = LikelihoodManager.GetSettlementLikelihood(cClient, settlementFile).ToString();
 
-                        Packet rPacket = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
                         cClient.listener.dataQueue.Enqueue(rPacket);
                     }
                 }
@@ -63,7 +63,7 @@ namespace GameServer
                     File.Delete(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"));
 
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
-                    Packet rPacket = Packet.CreatePacketFromJSON("SettlementPacket", settlementDetailsJSON);
+                    Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
                     foreach (ServerClient cClient in Network.connectedClients.ToArray())
                     {
                         if (cClient == client) continue;

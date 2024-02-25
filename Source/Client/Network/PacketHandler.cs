@@ -145,5 +145,32 @@ namespace GameClient
             OfflineSpyManager.SetSpyCost(serverOverallJSON);
             CustomDifficultyManager.SetCustomDifficulty(serverOverallJSON);
         }
+
+        //Empty functions
+
+        public static void ResetSavePacket()
+        {
+            //Empty
+        }
+
+        public static void MapPacket()
+        {
+            //Empty
+        }
+
+        public static void RegisterClientPacket()
+        {
+            //Empty
+        }
+
+        public static void LoginClientPacket()
+        {
+            //Empty
+        }
+
+        public static void CustomDifficultyPacket()
+        {
+            //Empty
+        }
     }
 }

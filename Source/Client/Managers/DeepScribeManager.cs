@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
+using RimWorld.Planet;
 using Shared;
 using UnityEngine.Assertions.Must;
 using Verse;
+using Verse.Noise;
 
 namespace GameClient
 {
@@ -34,31 +36,31 @@ namespace GameClient
         {
             HumanDetailsJSON humanDetailsJSON = new HumanDetailsJSON();
 
-            humanDetailsJSON = GetPawnBioDetails(pawn, humanDetailsJSON);
+            GetPawnBioDetails(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnHediffs(pawn, humanDetailsJSON);
+            GetPawnHediffs(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnXenotype(pawn, humanDetailsJSON);
+            GetPawnXenotype(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnXenogenes(pawn, humanDetailsJSON);
+            GetPawnXenogenes(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnEndogenes(pawn, humanDetailsJSON);
+            GetPawnEndogenes(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnFavoriteColor(pawn, humanDetailsJSON);
+            GetPawnFavoriteColor(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnStory(pawn, humanDetailsJSON);
+            GetPawnStory(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnSkills(pawn, humanDetailsJSON);
+            GetPawnSkills(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnTraits(pawn, humanDetailsJSON);
+            GetPawnTraits(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnApparel(pawn, humanDetailsJSON);
+            GetPawnApparel(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnEquipment(pawn, humanDetailsJSON);
+            GetPawnEquipment(pawn, humanDetailsJSON);
 
-            humanDetailsJSON = GetPawnInventory(pawn, humanDetailsJSON, passInventory);
+            GetPawnInventory(pawn, humanDetailsJSON, passInventory);
 
-            humanDetailsJSON = GetPawnPosition(pawn, humanDetailsJSON);
+            GetPawnPosition(pawn, humanDetailsJSON);
 
             return humanDetailsJSON;
         }
@@ -302,7 +304,7 @@ namespace GameClient
             return human;
         }
 
-        public static HumanDetailsJSON GetPawnBioDetails(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnBioDetails(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try
             {
@@ -322,11 +324,9 @@ namespace GameClient
                 humanDetailsJSON.BodyTattooDefName = pawn.style.BodyTattoo.defName.ToString();
             }
             catch (Exception e) { Log.Warning($"Failed to load biological details from human {pawn.Label}. Reason: {e}"); }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnHediffs(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnHediffs(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.health.hediffSet.hediffs.Count() > 0)
             {
@@ -345,11 +345,9 @@ namespace GameClient
                     catch (Exception e) { Log.Warning($"Failed to load heddif {hd} from human {pawn.Label}. Reason: {e}"); }
                 }
             }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnXenotype(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnXenotype(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try
             {
@@ -360,11 +358,9 @@ namespace GameClient
                 else humanDetailsJSON.customXenotypeName = "null";
             }
             catch (Exception e) { Log.Warning($"Failed to load xenotype from human {pawn.Label}. Reason: {e}"); }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.genes.Xenogenes.Count() > 0)
             {
@@ -382,11 +378,9 @@ namespace GameClient
                     catch (Exception e) { Log.Warning($"Failed to load gene {gene} from human {pawn.Label}. Reason: {e}"); }
                 }
             }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnEndogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnEndogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.genes.Endogenes.Count() > 0)
             {
@@ -399,19 +393,15 @@ namespace GameClient
                     catch (Exception e) { Log.Warning($"Failed to load endogene {endogene} from human {pawn.Label}. Reason: {e}"); }
                 }
             }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { humanDetailsJSON.favoriteColor = pawn.story.favoriteColor.ToString(); }
             catch (Exception e) { Log.Warning($"Failed to load favorite color from human {pawn.Label}. Reason: {e}"); }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try
             {
@@ -422,11 +412,9 @@ namespace GameClient
                 else humanDetailsJSON.adulthoodStory = "null";
             }
             catch (Exception e) { Log.Warning($"Failed to load backstories from human {pawn.Label}. Reason: {e}"); }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnSkills(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnSkills(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.skills.skills.Count() > 0)
             {
@@ -441,11 +429,9 @@ namespace GameClient
                     catch (Exception e) { Log.Warning($"Failed to load skill {skill} from human {pawn.Label}. Reason: {e}"); }
                 }
             }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnTraits(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnTraits(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.story.traits.allTraits.Count() > 0)
             {
@@ -459,11 +445,9 @@ namespace GameClient
                     catch (Exception e) { Log.Warning($"Failed to load trait {trait} from human {pawn.Label}. Reason: {e}"); }
                 }
             }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnApparel(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnApparel(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.apparel.WornApparel.Count() > 0)
             {
@@ -478,11 +462,9 @@ namespace GameClient
                     catch (Exception e) { Log.Warning($"Failed to load apparel {ap} from human {pawn.Label}. Reason: {e}"); }
                 }
             }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnEquipment(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnEquipment(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             if (pawn.equipment.Primary == null) humanDetailsJSON.deflatedWeapon = "null";
             else
@@ -495,11 +477,9 @@ namespace GameClient
                 }
                 catch (Exception e) { Log.Warning($"Failed to load weapon from human {pawn.Label}. Reason: {e}"); }
             }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnInventory(Pawn pawn, HumanDetailsJSON humanDetailsJSON, bool passInventory)
+        public static void GetPawnInventory(Pawn pawn, HumanDetailsJSON humanDetailsJSON, bool passInventory)
         {
             if (pawn.inventory.innerContainer.Count() == 0 || !passInventory) { }
             else
@@ -510,11 +490,9 @@ namespace GameClient
                     humanDetailsJSON.deflatedInventoryItems.Add(thingString);
                 }
             }
-
-            return humanDetailsJSON;
         }
 
-        public static HumanDetailsJSON GetPawnPosition(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        public static void GetPawnPosition(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { humanDetailsJSON.position = $"{pawn.Position.x}|{pawn.Position.y}|{pawn.Position.z}"; }
             catch
@@ -522,8 +500,6 @@ namespace GameClient
                 humanDetailsJSON.position = "null";
                 Log.Message("Failed to set human position");
             }
-
-            return humanDetailsJSON;
         }
     }
 
@@ -795,14 +771,54 @@ namespace GameClient
 
     public static class MapScribeManager
     {
-        public static MapDetailsJSON TransformMapToString(Map map, bool containItems, bool containHumans, bool containAnimals)
+        //Functions
+
+        public static MapDetailsJSON TransformMapToString(Map map, bool containsItems, bool containsHumans, bool containsAnimals)
         {
             MapDetailsJSON mapDetailsJSON = new MapDetailsJSON();
 
+            GetMapTile(mapDetailsJSON, map);
+
+            GetMapSize(mapDetailsJSON, map);
+
+            GetMapThings(mapDetailsJSON, map, containsItems, containsHumans, containsAnimals);
+
+            return mapDetailsJSON;
+        }
+
+        public static Map GetMapSimple(MapDetailsJSON mapDetailsJSON, bool containsItems, bool containsHumans, bool containsAnimals, bool lessLoot)
+        {
+            Map map = CreateEmptyMap(mapDetailsJSON);
+
+            SetMapThings(mapDetailsJSON, map, containsItems, lessLoot);
+
+            if (containsHumans) SetMapHumans(mapDetailsJSON, map);
+
+            if (containsAnimals) SetMapAnimals(mapDetailsJSON, map);
+
+            SetMapTerrain(mapDetailsJSON, map);
+
+            SetMapFog(map);
+
+            SetMapRoof(map);
+
+            return map;
+        }
+
+        //Getters
+
+        private static void GetMapTile(MapDetailsJSON mapDetailsJSON, Map map)
+        {
             mapDetailsJSON.mapTile = map.Tile.ToString();
+        }
 
+        private static void GetMapSize(MapDetailsJSON mapDetailsJSON, Map map)
+        {
             mapDetailsJSON.mapSize = $"{map.Size.x}|{map.Size.y}|{map.Size.z}";
+        }
 
+        private static void GetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool containsItems, bool containsHumans, bool containsAnimals)
+        {
             for (int z = 0; z < map.Size.z; ++z)
             {
                 for (int x = 0; x < map.Size.x; ++x)
@@ -815,7 +831,7 @@ namespace GameClient
                     {
                         if (TransferManagerHelper.CheckIfThingIsHuman(thing))
                         {
-                            if (containHumans)
+                            if (containsHumans)
                             {
                                 string humanString = Serializer.SerializeToString(HumanScribeManager.TransformHumanToString(thing as Pawn));
                                 if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.playerHumanDetailsJSON.Add(humanString);
@@ -825,7 +841,7 @@ namespace GameClient
 
                         else if (TransferManagerHelper.CheckIfThingIsAnimal(thing))
                         {
-                            if (containAnimals)
+                            if (containsAnimals)
                             {
                                 string animalString = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(thing as Pawn));
                                 if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.playerAnimalDetailsJSON.Add(animalString);
@@ -840,7 +856,7 @@ namespace GameClient
 
                             if (thing.def.alwaysHaulable)
                             {
-                                if (containItems) mapDetailsJSON.playerItemDetailsJSON.Add(thingString);
+                                if (containsItems) mapDetailsJSON.playerItemDetailsJSON.Add(thingString);
                                 else continue;
                             }
                             else mapDetailsJSON.itemDetailsJSONS.Add(thingString);
@@ -851,36 +867,22 @@ namespace GameClient
                     else mapDetailsJSON.roofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
                 }
             }
-
-            return mapDetailsJSON;
         }
 
-        public static Map GetMapSimple(MapDetailsJSON mapDetailsJSON, bool containItems, bool containHumans, bool containAnimals, bool lessLoot)
-        {
-            Map map = null;
+        //Setters
 
+        private static Map CreateEmptyMap(MapDetailsJSON mapDetailsJSON)
+        {
             string[] splitSize = mapDetailsJSON.mapSize.Split('|');
 
             IntVec3 mapSize = new IntVec3(int.Parse(splitSize[0]), int.Parse(splitSize[1]),
                 int.Parse(splitSize[2]));
 
-            try { map = GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null); }
-            catch (Exception e) { Log.Warning($"Critical error generating map. Exception: {e}"); }
+            return GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null);
+        }
 
-            map.fogGrid.ClearAllFog();
-
-            List<Thing> thingList = map.listerThings.AllThings.ToList();
-            foreach (Thing thing in thingList)
-            {
-                try
-                {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(thing)) thing.Destroy();
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(thing)) thing.Destroy();
-                    else if (thing.def.destroyable) thing.Destroy();
-                }
-                catch { Log.Warning($"Failed to destroy thing {thing.def.defName} at {thing.Position}"); }
-            }
-
+        private static void SetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool containsItems, bool lessLoot)
+        {
             List<Thing> thingsToGetInThisTile = new List<Thing>();
 
             foreach (string str in mapDetailsJSON.itemDetailsJSONS)
@@ -893,7 +895,7 @@ namespace GameClient
                 catch { }
             }
 
-            if (containItems)
+            if (containsItems)
             {
                 Random rnd = new Random();
 
@@ -919,70 +921,74 @@ namespace GameClient
                 try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation); }
                 catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
             }
+        }
 
-            if (containHumans)
+        private static void SetMapHumans(MapDetailsJSON mapDetailsJSON, Map map)
+        {
+            foreach (string str in mapDetailsJSON.humanDetailsJSONS)
             {
-                foreach (string str in mapDetailsJSON.humanDetailsJSONS)
+                HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
+
+                try
                 {
-                    HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
+                    Pawn human = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
+                    human.SetFaction(FactionValues.yourOnlineFaction);
 
-                    try
-                    {
-                        Pawn human = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
-                        human.SetFaction(FactionValues.yourOnlineFaction);
-
-                        GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
-                    }
-                    catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
+                    GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
                 }
-
-                foreach (string str in mapDetailsJSON.playerHumanDetailsJSON)
-                {
-                    HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
-
-                    try
-                    {
-                        Pawn human = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
-                        human.SetFaction(FactionValues.neutralPlayer);
-
-                        GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
-                    }
-                    catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
-                }
+                catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
             }
 
-            if (containAnimals)
+            foreach (string str in mapDetailsJSON.playerHumanDetailsJSON)
             {
-                foreach (string str in mapDetailsJSON.animalDetailsJSON)
+                HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
+
+                try
                 {
-                    AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
+                    Pawn human = HumanScribeManager.GetHumanSimple(humanDetailsJSON);
+                    human.SetFaction(FactionValues.neutralPlayer);
 
-                    try
-                    {
-                        Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
-                        animal.SetFaction(FactionValues.yourOnlineFaction);
-
-                        GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
-                    }
-                    catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+                    GenSpawn.Spawn(human, human.Position, map, Rot4.Random);
                 }
+                catch { Log.Warning($"Failed to spawn human {humanDetailsJSON.name}"); }
+            }
+        }
 
-                foreach (string str in mapDetailsJSON.playerAnimalDetailsJSON)
+        private static void SetMapAnimals(MapDetailsJSON mapDetailsJSON, Map map)
+        {
+            foreach (string str in mapDetailsJSON.animalDetailsJSON)
+            {
+                AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
+
+                try
                 {
-                    AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
+                    Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
+                    animal.SetFaction(FactionValues.yourOnlineFaction);
 
-                    try
-                    {
-                        Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
-                        animal.SetFaction(FactionValues.neutralPlayer);
-
-                        GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
-                    }
-                    catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+                    GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
                 }
+                catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
             }
 
+            foreach (string str in mapDetailsJSON.playerAnimalDetailsJSON)
+            {
+                AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
+
+                try
+                {
+                    Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
+                    animal.SetFaction(FactionValues.neutralPlayer);
+
+                    GenSpawn.Spawn(animal, animal.Position, map, Rot4.Random);
+                }
+                catch { Log.Warning($"Failed to spawn animal {animalDetailsJSON.name}"); }
+            }
+        }
+
+        private static void SetMapTerrain(MapDetailsJSON mapDetailsJSON, Map map)
+        {
             int index = 0;
+
             for (int z = 0; z < map.Size.z; ++z)
             {
                 for (int x = 0; x < map.Size.x; ++x)
@@ -993,6 +999,7 @@ namespace GameClient
                     {
                         TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
                             mapDetailsJSON.tileDefNames[index]);
+
                         map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
 
                     }
@@ -1010,20 +1017,17 @@ namespace GameClient
                     index++;
                 }
             }
+        }
 
+        private static void SetMapFog(Map map)
+        {
+            FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
+        }
+
+        private static void SetMapRoof(Map map)
+        {
             map.roofCollapseBuffer.Clear();
             map.roofGrid.Drawer.SetDirty();
-
-            CellIndices cellIndices = map.cellIndices;
-            if (map.fogGrid.fogGrid == null) map.fogGrid.fogGrid = new bool[cellIndices.NumGridCells];
-            foreach (IntVec3 allCell in map.AllCells) map.fogGrid.fogGrid[cellIndices.CellToIndex(allCell)] = true;
-            if (Current.ProgramState == ProgramState.Playing) map.roofGrid.Drawer.SetDirty();
-
-            FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
-            List<IntVec3> rootsToUnfog = MapGenerator.rootsToUnfog;
-            for (int i = 0; i < rootsToUnfog.Count; i++) FloodFillerFog.FloodUnfog(rootsToUnfog[i], map);
-
-            return map;
         }
     }
 }

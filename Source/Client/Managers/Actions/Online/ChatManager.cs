@@ -49,7 +49,7 @@ namespace GameClient
             chatMessagesJSON.usernames.Add(username);
             chatMessagesJSON.messages.Add(messageToSend);
 
-            Packet packet = Packet.CreatePacketFromJSON("ChatPacket", chatMessagesJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
             Network.listener.dataQueue.Enqueue(packet);
         }
 

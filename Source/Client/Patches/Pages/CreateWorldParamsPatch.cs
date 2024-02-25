@@ -78,7 +78,7 @@ namespace GameClient
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server to accept world"));
 
-                Packet packet = Packet.CreatePacketFromJSON("WorldPacket", worldDetailsJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
                 Network.listener.dataQueue.Enqueue(packet);
             }
         }
