@@ -231,7 +231,7 @@ namespace GameClient
                 foreach (string str in visitDetailsJSON.mapAnimals)
                 {
                     AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
-                    Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
+                    Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
 
                     pawnList.Add(animal);
                 }
@@ -256,7 +256,7 @@ namespace GameClient
                 foreach (string str in visitDetailsJSON.caravanAnimals)
                 {
                     AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
-                    Pawn animal = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
+                    Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
                     pawnList.Add(animal);
                 }
 
@@ -341,7 +341,7 @@ namespace GameClient
                 List<string> animalStringList = new List<string>();
                 foreach (Pawn animal in mapAnimals)
                 {
-                    string animalString = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(animal));
+                    string animalString = Serializer.SerializeToString(AnimalScribeManager.AnimalToString(animal));
                     animalStringList.Add(animalString);
                 }
                 visitDetailsJSON.mapAnimals = animalStringList;
@@ -370,7 +370,7 @@ namespace GameClient
                 List<string> animalStringList = new List<string>();
                 foreach (Pawn animal in caravanAnimals)
                 {
-                    string animalString = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(animal));
+                    string animalString = Serializer.SerializeToString(AnimalScribeManager.AnimalToString(animal));
                     animalStringList.Add(animalString);
                 }
                 visitDetailsJSON.caravanAnimals = animalStringList;
@@ -495,7 +495,7 @@ namespace GameClient
                     else if (TransferManagerHelper.CheckIfThingIsAnimal(targetInfo.Thing))
                     {
                         visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
-                        toReturn = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(targetInfo.Pawn));
+                        toReturn = Serializer.SerializeToString(AnimalScribeManager.AnimalToString(targetInfo.Pawn));
                     }
 
                     else
@@ -516,7 +516,7 @@ namespace GameClient
                     else
                     {
                         visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
-                        toReturn = Serializer.SerializeToString(AnimalScribeManager.TransformAnimalToString(targetInfo.Pawn));
+                        toReturn = Serializer.SerializeToString(AnimalScribeManager.AnimalToString(targetInfo.Pawn));
                     }
                 }
 
@@ -555,7 +555,7 @@ namespace GameClient
 
                     case (int)ActionTargetType.Animal:
                         AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(toReadFrom); ;
-                        Pawn animalToCompare = AnimalScribeManager.GetAnimalSimple(animalDetailsJSON);
+                        Pawn animalToCompare = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
                         Pawn realAnimal = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == animalToCompare.Position);
                         if (realAnimal != null) target = new LocalTargetInfo(realAnimal);
                         break;

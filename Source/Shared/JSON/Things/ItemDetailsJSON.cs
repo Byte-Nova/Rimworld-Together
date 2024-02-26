@@ -8,13 +8,13 @@ namespace Shared
     {
         public string defName;
         public string materialDefName;
-        public string quantity;
+        public int quantity;
         public string quality;
 
         public bool isMinified;
-        public string hitpoints;
+        public int hitpoints;
 
         public string[] position;
-        public string rotation;
+        public int rotation;
     }
 }

@@ -81,10 +81,7 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);
             Network.listener.dataQueue.Enqueue(packet);
 
-            if (Network.listener.uploadManager.isLastPart)
-            {
-                Network.listener.uploadManager = null;
-            }
+            if (Network.listener.uploadManager.isLastPart) Network.listener.uploadManager = null;
         }
     }
 }
