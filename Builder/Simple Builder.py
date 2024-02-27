@@ -52,7 +52,7 @@ rimworld_dir = ""
 printCompileLog = True
 
 
-def handle_rim_world_path(possible_rimworld_dir):
+def handle_rimworld_path(possible_rimworld_dir):
     global rimworld_dir
 
     output(f"Checking {possible_rimworld_dir}")
@@ -136,7 +136,7 @@ def run():
 
     # Copy mod to each path if it exists
     for default_rimworld_dir in default_rimworld_dirs:
-        if handle_rim_world_path(default_rimworld_dir):
+        if handle_rimworld_path(default_rimworld_dir):
             break  # Early out, if we found a RimWorld path just use that
 
     if rimworld_dir == "":
@@ -148,7 +148,7 @@ def run():
             error("No RimWorld directory provided", 1, 1)
             exit(2)
 
-        handle_rim_world_path(directory)
+        handle_rimworld_path(directory)
 
     # If no directory found, end here
     if rimworld_dir == "":
@@ -159,9 +159,16 @@ def run():
     f.write(rimworld_dir)
     f.close()
 
+
+def execute_rimworld():
+    os.startfile("C:/Program Files (x86)/Steam/steamapps/common/RimWorld/RimWorldWin64.exe")
+
+
 try:
     build()
     run()
+    execute_rimworld()
+    
 except Exception as e:
     error(e, 1, 1)
     exit(1)

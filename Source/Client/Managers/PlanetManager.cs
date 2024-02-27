@@ -39,12 +39,15 @@ namespace GameClient
         public static void BuildPlanet()
         {
             FactionValues.FindPlayerFactionsInWorld();
+            PlanetManagerHelper.GetDefaultGenerators();
 
             RemoveOldSettlements();
             RemoveOldSites();
 
             SpawnPlayerSettlements();
             SpawnPlayerSites();
+
+            PlanetManagerHelper.SetDefaultGenerators();
         }
 
         //Removes old player settlements
@@ -100,7 +103,7 @@ namespace GameClient
                     settlement.Tile = int.Parse(PlanetManagerHelper.tempSettlementTiles[i]);
                     settlement.Name = $"{PlanetManagerHelper.tempSettlementOwners[i]}'s settlement";
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSettlementLikelihoods[i])));
-                    settlement.def.mapGenerator = DefDatabase<MapGeneratorDef>.AllDefs.First(fetch => fetch.defName == "Empty");
+                    settlement.def.mapGenerator = PlanetManagerHelper.emptyGenerator;
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
@@ -171,7 +174,7 @@ namespace GameClient
                         threatPoints: 1000,
                         faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSiteLikelihoods[i])));
 
-                    site.def.mapGenerator = DefDatabase<MapGeneratorDef>.AllDefs.First(fetch => fetch.defName == "Empty");
+                    site.def.mapGenerator = PlanetManagerHelper.emptyGenerator;
 
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
@@ -196,13 +199,15 @@ namespace GameClient
                     settlement.Tile = int.Parse(newSettlementJSON.tile);
                     settlement.Name = $"{newSettlementJSON.owner}'s settlement";
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(newSettlementJSON.value)));
-                    settlement.def.mapGenerator = DefDatabase<MapGeneratorDef>.AllDefs.First(fetch => fetch.defName == "Empty");
+                    settlement.def.mapGenerator = PlanetManagerHelper.emptyGenerator;
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
                 catch (Exception e) { Log.Error($"Failed to spawn settlement at {newSettlementJSON.tile}. Reason: {e}"); }
             }
+
+            PlanetManagerHelper.SetDefaultGenerators();
         }
 
         //Removes a player settlement from a request
@@ -238,17 +243,15 @@ namespace GameClient
                         threatPoints: 1000,
                         faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(siteDetailsJSON.likelihood)));
 
-                    site.def.mapGenerator = DefDatabase<MapGeneratorDef>.AllDefs.First(fetch => fetch.defName == "Empty");
+                    site.def.mapGenerator = PlanetManagerHelper.emptyGenerator;
 
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
                 }
-
-                catch (Exception e)
-                {
-                    Log.Error($"Failed to spawn site at {siteDetailsJSON.tile}. Reason: {e}");
-                };
+                catch (Exception e) { Log.Error($"Failed to spawn site at {siteDetailsJSON.tile}. Reason: {e}"); }
             }
+
+            PlanetManagerHelper.SetDefaultGenerators();
         }
 
         //Removes a player site from a request
@@ -288,6 +291,10 @@ namespace GameClient
         public static string[] tempSiteTypes;
 
         public static bool[] tempSiteIsFromFactions;
+
+        public static MapGeneratorDef emptyGenerator;
+        public static MapGeneratorDef defaultSettlementGenerator;
+        public static MapGeneratorDef defaultSiteGenerator;
 
         public static void SetWorldFeatures(ServerOverallJSON serverOverallJSON)
         {
@@ -332,6 +339,30 @@ namespace GameClient
             }
 
             return factionToUse;
+        }
+
+        //Gets the default generator for the map builder
+
+        public static void GetDefaultGenerators()
+        {
+            emptyGenerator = DefDatabase<MapGeneratorDef>.AllDefs.First(fetch => fetch.defName == "Empty");
+
+            WorldObjectDef settlement = WorldObjectDefOf.Settlement;
+            defaultSettlementGenerator = settlement.mapGenerator;
+
+            WorldObjectDef site = WorldObjectDefOf.Site;
+            defaultSiteGenerator = site.mapGenerator;
+        }
+
+        //Sets the default generator for the map builder
+
+        public static void SetDefaultGenerators()
+        {
+            WorldObjectDef settlement = WorldObjectDefOf.Settlement;
+            settlement.mapGenerator = defaultSettlementGenerator;
+
+            WorldObjectDef site = WorldObjectDefOf.Site;
+            site.mapGenerator = defaultSiteGenerator;
         }
     }
 }

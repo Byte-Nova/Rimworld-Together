@@ -1,6 +1,8 @@
 ﻿using Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -32,9 +34,13 @@ namespace GameClient
             {
                 ShowAutosaveFloatMenu();
             }
-            if (listingStandard.ButtonTextLabeled("[When Playing] Delete current progress", "Delete"))
+
+
+            listingStandard.GapLine();
+            listingStandard.Label("Misc");
+            if (listingStandard.ButtonText("Convert save for server use"))
             {
-                ResetServerProgress();
+                ShowConvertMenu();
             }
 
             listingStandard.GapLine();
@@ -57,29 +63,11 @@ namespace GameClient
             }
             if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open"))
             {
-                try { System.Diagnostics.Process.Start("https://github.com/Nova-Atomic/Rimworld-Together"); } catch { }
+                try { System.Diagnostics.Process.Start("https://github.com/Byte-Nova/Rimworld-Together"); } catch { }
             }
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
-        }
-
-        private void ResetServerProgress()
-        {
-            if (!Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
-            else
-            {
-                Action r1 = delegate 
-                {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
-
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ResetSavePacket));
-                    Network.listener.dataQueue.Enqueue(packet);
-                };
-
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);
-                DialogManager.PushNewDialog(d1);
-            }
         }
 
         private void ShowAutosaveFloatMenu()
@@ -103,6 +91,30 @@ namespace GameClient
                     ClientValues.autosaveInternalTicks = Mathf.RoundToInt(tuple.Item2 * 60000f);
 
                     PreferenceManager.SaveClientPreferences(ClientValues.autosaveDays.ToString());
+                });
+
+                list.Add(item);
+            }
+
+            Find.WindowStack.Add(new FloatMenu(list));
+        }
+
+        private void ShowConvertMenu()
+        {
+            List<FloatMenuOption> list = new List<FloatMenuOption>();
+
+            foreach(string str in Directory.GetFiles(Master.savesPath).Where(fetch => fetch.EndsWith(".rws")))
+            {
+                FloatMenuOption item = new FloatMenuOption(Path.GetFileNameWithoutExtension(str), delegate
+                {
+                    string toConvertPath = str;
+                    string conversionPath = str.Replace(".rws", ".mpsave");
+
+                    byte[] compressedBytes = GZip.Compress(File.ReadAllBytes(toConvertPath));
+                    File.WriteAllBytes(conversionPath, compressedBytes);
+
+                    RT_Dialog_OK d2 = new RT_Dialog_OK("Save was converted successfully");
+                    DialogManager.PushNewDialog(d2);
                 });
 
                 list.Add(item);

@@ -41,6 +41,7 @@ namespace GameClient
                 {
                     ClientValues.ForcePermadeath();
                     ClientValues.ManageDevOptions();
+
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
                     PlanetManager.BuildPlanet();
