@@ -919,21 +919,23 @@ namespace GameClient
         {
             ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
 
-            GetItemName(thing, itemDetailsJSON);
+            Thing toUse = null;
+            if (GetItemMinified(thing, itemDetailsJSON)) toUse = thing.GetInnerIfMinified();
+            else toUse = thing;
 
-            GetItemMaterial(thing, itemDetailsJSON);
+            GetItemName(toUse, itemDetailsJSON);
 
-            GetItemQuantity(thing, itemDetailsJSON, thingCount);
+            GetItemMaterial(toUse, itemDetailsJSON);
 
-            GetItemQuality(thing, itemDetailsJSON);
+            GetItemQuantity(toUse, itemDetailsJSON, thingCount);
 
-            GetItemHitpoints(thing, itemDetailsJSON);
+            GetItemQuality(toUse, itemDetailsJSON);
 
-            GetItemPosition(thing, itemDetailsJSON);
+            GetItemHitpoints(toUse, itemDetailsJSON);
 
-            GetItemRotation(thing, itemDetailsJSON);
+            GetItemPosition(toUse, itemDetailsJSON);
 
-            GetItemMinified(thing, itemDetailsJSON);
+            GetItemRotation(toUse, itemDetailsJSON);
 
             return itemDetailsJSON;
         }
@@ -1009,14 +1011,16 @@ namespace GameClient
             catch { Log.Warning($"Failed to get rotation of thing {thing.def.defName}"); }
         }
 
-        private static void GetItemMinified(Thing thing, ItemDetailsJSON itemDetailsJSON)
+        private static bool GetItemMinified(Thing thing, ItemDetailsJSON itemDetailsJSON)
         {
             try 
             {
-                if (TransferManagerHelper.CheckIfThingIsMinified(thing)) itemDetailsJSON.isMinified = true;
-                else itemDetailsJSON.isMinified = false;
+                itemDetailsJSON.isMinified = TransferManagerHelper.CheckIfThingIsMinified(thing);
+                return itemDetailsJSON.isMinified;
             }
             catch { Log.Warning($"Failed to get minified of thing {thing.def.defName}"); }
+
+            return false;
         }
 
         //Setters
@@ -1086,7 +1090,7 @@ namespace GameClient
         {
             if (itemDetailsJSON.isMinified)
             {
-                try { thing.TryMakeMinified(); }
+                try { thing.MakeMinified(); }
                 catch { Log.Warning($"Failed to set minified for item {itemDetailsJSON.defName}"); }
             }
         }

@@ -331,7 +331,10 @@ namespace GameClient
 
                 if (allowItems)
                 {
-                    IEnumerable<Thing> enumerable = map.listerThings.AllThings.Where((Thing x) => x.def.category == ThingCategory.Item && !x.Position.Fogged(x.Map) && TradeUtility.EverPlayerSellable(x.def));
+                    IEnumerable<Thing> enumerable = map.listerThings.AllThings.Where((Thing x) => 
+                        x.def.category != ThingCategory.Pawn && 
+                        !x.Position.Fogged(x.Map) && 
+                        TradeUtility.EverPlayerSellable(x.def));
 
                     foreach (Thing item in enumerable)
                     {
