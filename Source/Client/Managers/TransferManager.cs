@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using RimWorld;
@@ -46,7 +47,7 @@ namespace GameClient
 
                 case (int)TransferStepMode.TradeReAccept:
                     DialogManager.PopWaitDialog();
-                    GetTransferedItemsToSettlement(DeepScribeManager.GetAllTransferedItems(ClientValues.incomingManifest));
+                    GetTransferedItemsToSettlement(TransferManagerHelper.GetAllTransferedItems(ClientValues.incomingManifest));
                     break;
 
                 case (int)TransferStepMode.TradeReReject:
@@ -147,7 +148,7 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    Thing[] toRecover = DeepScribeManager.GetAllTransferedItems(ClientValues.outgoingManifest);
+                    Thing[] toRecover = TransferManagerHelper.GetAllTransferedItems(ClientValues.outgoingManifest);
 
                     if (transferLocation == TransferLocation.Caravan)
                     {
@@ -264,19 +265,19 @@ namespace GameClient
                     {
                         if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Gift)
                         {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(DeepScribeManager.GetAllTransferedItems(transferManifestJSON), TransferMode.Gift);
+                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferManifestJSON), TransferMode.Gift);
                             DialogManager.PushNewDialog(d1);
                         }
 
                         else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Trade)
                         {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(DeepScribeManager.GetAllTransferedItems(transferManifestJSON), TransferMode.Trade);
+                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferManifestJSON), TransferMode.Trade);
                             DialogManager.PushNewDialog(d1);
                         }
 
                         else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
                         {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(DeepScribeManager.GetAllTransferedItems(transferManifestJSON), TransferMode.Pod);
+                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferManifestJSON), TransferMode.Pod);
                             DialogManager.PushNewDialog(d1);
                         }
                     };
@@ -316,7 +317,7 @@ namespace GameClient
             {
                 ClientValues.incomingManifest = transferManifestJSON;
 
-                RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(DeepScribeManager.GetAllTransferedItems(transferManifestJSON), TransferMode.Rebound);
+                RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferManifestJSON), TransferMode.Rebound);
                 DialogManager.PushNewDialog(d1);
             }
 
@@ -372,9 +373,9 @@ namespace GameClient
             ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
             itemDetailsJSON.defName = ThingDefOf.Silver.defName;
             itemDetailsJSON.materialDefName = "null";
-            itemDetailsJSON.quantity = quantity.ToString();
+            itemDetailsJSON.quantity = quantity;
             itemDetailsJSON.quality = "1";
-            itemDetailsJSON.hitpoints = "100";
+            itemDetailsJSON.hitpoints = 100;
             itemDetailsJSON.isMinified = false;
 
             Thing silverToRecover = ThingScribeManager.StringToItem(itemDetailsJSON);
@@ -454,7 +455,7 @@ namespace GameClient
                 Pawn pawn = thing as Pawn;
 
                 ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.SerializeToString
-                    (AnimalScribeManager.TransformAnimalToString(pawn)));
+                    (AnimalScribeManager.AnimalToString(pawn)));
             }
 
             else
@@ -480,6 +481,19 @@ namespace GameClient
 
                 return new IntVec3(map.Center.x, map.Center.y, map.Center.z);
             }
+        }
+
+        public static Thing[] GetAllTransferedItems(TransferManifestJSON transferManifestJSON)
+        {
+            List<Thing> allTransferedItems = new List<Thing>();
+
+            foreach (Pawn pawn in HumanScribeManager.GetHumansFromString(transferManifestJSON)) allTransferedItems.Add(pawn);
+
+            foreach (Pawn animal in AnimalScribeManager.GetAnimalsFromString(transferManifestJSON)) allTransferedItems.Add(animal);
+
+            foreach (Thing thing in ThingScribeManager.GetItemsFromString(transferManifestJSON)) allTransferedItems.Add(thing);
+
+            return allTransferedItems.ToArray();
         }
     }
 }

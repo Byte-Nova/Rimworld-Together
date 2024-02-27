@@ -277,20 +277,20 @@ namespace GameClient
 
         private static Thing[] GetSiteRewards(Site[] sites)
         {
-            ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
             List<Thing> thingsToGet = new List<Thing>();
-            itemDetailsJSON.quality = "null";
-            itemDetailsJSON.hitpoints = "null";
-
             foreach (Site site in sites)
             {
                 for (int i = 0; i < siteDefs.Count(); i++)
                 {
                     if (site.MainSitePartDef == siteDefs[i])
                     {
+                        ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
                         itemDetailsJSON.defName = siteRewardDefNames[i];
-                        itemDetailsJSON.quantity = siteRewardCount[i].ToString();
+                        itemDetailsJSON.quantity = siteRewardCount[i];
+                        itemDetailsJSON.quality = "null";
+
                         if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(itemDetailsJSON));
+
                         break;
                     }
                 }

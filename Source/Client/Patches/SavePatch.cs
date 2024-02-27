@@ -54,7 +54,6 @@ namespace GameClient
                 if (ClientValues.autosaveCurrentTicks >= ClientValues.autosaveInternalTicks && !GameDataSaveLoader.SavingIsTemporarilyDisabled)
                 {
                     SaveManager.ForceSave();
-
                     ClientValues.autosaveCurrentTicks = 0;
                 }
 

@@ -14,6 +14,8 @@ namespace Shared
         public string biologicalAge;
         public string chronologicalAge;
         public string gender;
+        public string factionDef;
+        public string kindDef;
 
         public string hairDefName;
         public string hairColor;
@@ -71,6 +73,6 @@ namespace Shared
 
         public string favoriteColor;
         public string[] position;
-        public string rotation;
+        public int rotation;
     }
 }

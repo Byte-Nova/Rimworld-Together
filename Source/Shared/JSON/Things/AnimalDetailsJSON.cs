@@ -14,11 +14,13 @@ namespace Shared
         public string biologicalAge;
         public string chronologicalAge;
         public string gender;
+        public string factionDef;
+        public string kindDef;
 
         //Hediffs
 
         public List<string> hediffDefNames = new List<string>();
-        public List<string> hediffPart = new List<string>();
+        public List<string> hediffPartDefName = new List<string>();
         public List<string> hediffSeverity = new List<string>();
         public List<bool> heddifPermanent = new List<bool>();
 
@@ -32,6 +34,6 @@ namespace Shared
         //Misc
 
         public string[] position;
-        public string rotation;
+        public int rotation;
     }
 }
