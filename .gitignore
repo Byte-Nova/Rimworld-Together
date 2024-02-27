@@ -403,3 +403,5 @@ rimworld_dir.txt
 Source/Client/0Harmony.dll
 Source/Client/HugsLib.dll
 Builder/Result/3005289691/Current/Assemblies/*.*
+Builder/Deploy Builder.py
+Builder/RunDeployBuilder.bat

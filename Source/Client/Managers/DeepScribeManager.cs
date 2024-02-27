@@ -996,7 +996,10 @@ namespace GameClient
             IntVec3 mapSize = new IntVec3(int.Parse(splitSize[0]), int.Parse(splitSize[1]),
                 int.Parse(splitSize[2]));
 
-            return GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null);
+            PlanetManagerHelper.SetOverrideGenerators();
+            Map toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null);
+            PlanetManagerHelper.SetDefaultGenerators();
+            return toReturn;
         }
 
         private static void SetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool containsItems, bool lessLoot)
