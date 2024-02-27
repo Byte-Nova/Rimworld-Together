@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -286,9 +287,10 @@ namespace GameClient
 
             if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
             {
+                List<Thing> caravanItems = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan);
+
                 if (allowItems)
                 {
-                    List<Thing> caravanItems = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan);
                     foreach (Thing item in caravanItems)
                     {
                         Tradeable tradeable = new Tradeable();
@@ -297,29 +299,32 @@ namespace GameClient
                     }
                 }
 
-                foreach (Pawn pawn in ClientValues.chosenCaravan.pawns)
+                if (allowHumans || allowAnimals)
                 {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(pawn))
+                    foreach (Pawn pawn in ClientValues.chosenCaravan.pawns)
                     {
-                        if (allowHumans)
+                        if (TransferManagerHelper.CheckIfThingIsHuman(pawn))
                         {
-                            if (pawn == playerNegotiator) continue;
-                            else
+                            if (allowHumans)
+                            {
+                                if (pawn == playerNegotiator) continue;
+                                else
+                                {
+                                    Tradeable tradeable = new Tradeable();
+                                    tradeable.AddThing(pawn, Transactor.Colony);
+                                    ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                }
+                            }
+                        }
+
+                        else if (TransferManagerHelper.CheckIfThingIsAnimal(pawn))
+                        {
+                            if (allowAnimals)
                             {
                                 Tradeable tradeable = new Tradeable();
                                 tradeable.AddThing(pawn, Transactor.Colony);
                                 ClientValues.listToShowInTradesMenu.Add(tradeable);
                             }
-                        }
-                    }
-
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(pawn))
-                    {
-                        if (allowAnimals)
-                        {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(pawn, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
                         }
                     }
                 }
@@ -329,45 +334,48 @@ namespace GameClient
             {
                 Map map = Find.Maps.Find(x => x.Tile == int.Parse(ClientValues.incomingManifest.toTile));
 
+                List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
+                pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
+
+                List<Thing> thingsInMap = map.listerThings.AllThings.Where((Thing x) =>
+                    x.def.category != ThingCategory.Pawn && !x.Position.Fogged(x.Map)
+                    && TradeUtility.EverPlayerSellable(x.def)).ToList();
+
                 if (allowItems)
                 {
-                    IEnumerable<Thing> enumerable = map.listerThings.AllThings.Where((Thing x) => 
-                        x.def.category != ThingCategory.Pawn && 
-                        !x.Position.Fogged(x.Map) && 
-                        TradeUtility.EverPlayerSellable(x.def));
-
-                    foreach (Thing item in enumerable)
+                    foreach(Thing thing in thingsInMap)
                     {
                         Tradeable tradeable = new Tradeable();
-                        tradeable.AddThing(item, Transactor.Colony);
+                        tradeable.AddThing(thing, Transactor.Colony);
                         ClientValues.listToShowInTradesMenu.Add(tradeable);
                     }
                 }
 
-                Pawn[] pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToArray();
-
-                foreach (Pawn pawn in pawnsInMap)
+                if (allowHumans || allowAnimals)
                 {
-                    if (TransferManagerHelper.CheckIfThingIsAnimal(pawn))
+                    foreach (Pawn pawn in pawnsInMap)
                     {
-                        if (allowAnimals)
+                        if (TransferManagerHelper.CheckIfThingIsAnimal(pawn))
                         {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(pawn, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
-                        }
-                    }
-
-                    else
-                    {
-                        if (allowHumans)
-                        {
-                            if (pawn == playerNegotiator) continue;
-                            else
+                            if (allowAnimals)
                             {
                                 Tradeable tradeable = new Tradeable();
                                 tradeable.AddThing(pawn, Transactor.Colony);
                                 ClientValues.listToShowInTradesMenu.Add(tradeable);
+                            }
+                        }
+
+                        else
+                        {
+                            if (allowHumans)
+                            {
+                                if (pawn == playerNegotiator) continue;
+                                else
+                                {
+                                    Tradeable tradeable = new Tradeable();
+                                    tradeable.AddThing(pawn, Transactor.Colony);
+                                    ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                }
                             }
                         }
                     }

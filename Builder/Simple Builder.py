@@ -21,8 +21,10 @@ import subprocess
 import time
 from tkinter import filedialog
 
+
 # Enable Console Colors
 os.system('color')
+
 
 # Import External Packages
 try:
@@ -31,12 +33,15 @@ except Exception as e:
     error(e, 1, 1)
     exit(1)
 
+
 # Mod ID
 modSteamId = "3005289691"  # Replace with your actual Steam ID
+
 
 # Mod Resources
 source_dir = "../ModData"
 destination_dir = f"Result/{modSteamId}"
+
 
 # Mod C# and DLLs
 source_solution = "../Source/Client/GameClient.csproj"
@@ -44,9 +49,11 @@ dll_output_dir = "../Source/Client/bin/Release/net472/"
 dll_destination_dir = os.path.join(destination_dir, "Current/Assemblies/")
 dll_names = ["GameClient.dll", "Newtonsoft.Json.dll"]
 
+
 # RimWorld Directory
 rimworld_dir_file = "rimworld_dir.txt"
 rimworld_dir = ""
+
 
 # Debug Flags
 printCompileLog = True
@@ -160,17 +167,10 @@ def run():
     f.close()
 
 
-def execute_rimworld():
-    os.startfile("C:/Program Files (x86)/Steam/steamapps/common/RimWorld/RimWorldWin64.exe")
-
-
 try:
     build()
     run()
-    execute_rimworld()
     
 except Exception as e:
     error(e, 1, 1)
     exit(1)
-
-exit(0)
