@@ -402,5 +402,3 @@ FodyWeavers.xsd
 rimworld_dir.txt
 Source/Client/0Harmony.dll
 Source/Client/HugsLib.dll
-Builder/RunDeployBuilder.bat
-Builder/DeployBuilder.py

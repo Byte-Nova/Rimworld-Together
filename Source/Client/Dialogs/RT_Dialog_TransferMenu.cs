@@ -5,6 +5,7 @@ using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Steamworks;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -19,30 +20,25 @@ namespace GameClient
 
         public string description = "Select the items you wish to transfer";
 
+        private float buttonX = 100f;
+
+        private float buttonY = 37f;
+
         private int startAcceptingInputAtFrame;
 
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
-        private float buttonX = 100f;
-        private float buttonY = 37f;
+        private Vector2 scrollPosition = Vector2.zero;
 
         private List<Tradeable> cachedTradeables;
 
-        private Vector2 scrollPosition = Vector2.zero;
-
-        private QuickSearchWidget quickSearchWidget = new QuickSearchWidget();
-
-        private bool allowItems;
-
-        private bool allowAnimals;
-
-        private bool allowHumans;
+        private Pawn playerNegotiator;
 
         CommonEnumerators.TransferLocation transferLocation;
 
-        private Pawn playerNegotiator;
-
-        public override QuickSearchWidget CommonSearchWidget => quickSearchWidget;
+        private bool allowItems;
+        private bool allowAnimals;
+        private bool allowHumans;
 
         public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
             bool allowHumans = false)
@@ -74,8 +70,6 @@ namespace GameClient
             GenerateTradeList();
 
             LoadAllAvailableTradeables();
-
-            SetupSearchWidget();
 
             SetupTrade();
         }
@@ -337,9 +331,17 @@ namespace GameClient
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
 
-                List<Thing> thingsInMap = map.listerThings.AllThings.Where((Thing x) =>
-                    x.def.category != ThingCategory.Pawn && !x.Position.Fogged(x.Map)
-                    && TradeUtility.EverPlayerSellable(x.def)).ToList();
+                List<Thing> thingsInMap = new List<Thing>();
+                foreach(Zone zone in map.zoneManager.AllZones)
+                {
+                    foreach(Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                    {
+                        if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
+                        {
+                            thingsInMap.Add(thing);
+                        }
+                    }
+                }
 
                 if (allowItems)
                 {
@@ -385,22 +387,12 @@ namespace GameClient
 
         public void LoadAllAvailableTradeables()
         {
-            cachedTradeables = (from tr in ClientValues.listToShowInTradesMenu
-                                where quickSearchWidget.filter.Matches(tr.Label)
-                                orderby 0 descending
-                                select tr)
+            cachedTradeables = (from tr in ClientValues.listToShowInTradesMenu 
+                                orderby 0 descending select tr)
                                 .ThenBy((Tradeable tr) => tr.ThingDef.label)
                                 .ThenBy((Tradeable tr) => tr.AnyThing.TryGetQuality(out QualityCategory qc) ? ((int)qc) : (-1))
                                 .ThenBy((Tradeable tr) => tr.AnyThing.HitPoints)
                                 .ToList();
-
-            quickSearchWidget.noResultsMatched = !cachedTradeables.Any();
-        }
-
-        private void SetupSearchWidget()
-        {
-            commonSearchWidgetOffset.x = InitialSize.x - 50;
-            commonSearchWidgetOffset.y = InitialSize.y - 50;
         }
     }
 }

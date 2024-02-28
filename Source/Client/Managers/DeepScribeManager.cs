@@ -1090,8 +1090,9 @@ namespace GameClient
         {
             if (itemDetailsJSON.isMinified)
             {
-                try { thing.MakeMinified(); }
-                catch { Log.Warning($"Failed to set minified for item {itemDetailsJSON.defName}"); }
+                //INFO
+                //This function is where you should transform the item back into a minified.
+                //However, this isn't needed and is likely to cause issues with caravans if used
             }
         }
     }

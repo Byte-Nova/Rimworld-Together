@@ -167,10 +167,14 @@ def run():
     f.close()
 
 
+def open_rimworld():
+    subprocess.run([rimworld_dir + '/RimWorldWin64.exe'])
+
+
 try:
     build()
     run()
-
+    open_rimworld()
     
 except Exception as e:
     error(e, 1, 1)
