@@ -445,7 +445,8 @@ namespace GameClient
 
         private static void SetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
-            pawn.genes.Xenogenes.Clear();
+            try { pawn.genes.Xenogenes.Clear(); }
+            catch { Log.Warning($"Failed to clear xenogenes for human {humanDetailsJSON.name}"); }
 
             if (humanDetailsJSON.xenogeneDefNames.Count() > 0)
             {
@@ -463,7 +464,8 @@ namespace GameClient
 
         private static void SetPawnEndogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
-            pawn.genes.Endogenes.Clear();
+            try { pawn.genes.Endogenes.Clear(); }
+            catch { Log.Warning($"Failed to clear endogenes for human {humanDetailsJSON.name}"); }
 
             if (humanDetailsJSON.endogeneDefNames.Count() > 0)
             {

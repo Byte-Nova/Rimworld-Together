@@ -127,6 +127,10 @@ namespace GameClient
                 case (int)CommonEnumerators.SiteStepMode.Reward:
                     ReceiveSitesRewards(siteDetailsJSON);
                     break;
+
+                case (int)CommonEnumerators.SiteStepMode.WorkerError:
+                    OnWorkerError();
+                    break;
             }
         }
 
@@ -187,8 +191,10 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
-                TransferManager.GetTransferedItemsToCaravan(new Thing[] { pawnToRetrieve }, true, false);
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(
+                    Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
+
+                TransferManagerHelper.TransferPawnIntoCaravan(pawnToRetrieve);
 
                 SaveManager.ForceSave();
             };
@@ -250,6 +256,11 @@ namespace GameClient
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
             DialogManager.PushNewDialog(d1);
+        }
+
+        private static void OnWorkerError()
+        {
+            DialogManager.PushNewDialog(new RT_Dialog_Error("The site has a worker inside!"));
         }
 
         private static void ReceiveSitesRewards(SiteDetailsJSON siteDetailsJSON)
@@ -352,7 +363,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
@@ -420,7 +431,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();

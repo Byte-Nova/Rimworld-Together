@@ -32,5 +32,14 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
             client.listener.dataQueue.Enqueue(packet);
         }
+
+        public static void SendWorkerInsidePacket(ServerClient client)
+        {
+            SiteDetailsJSON siteDetails = new SiteDetailsJSON();
+            siteDetails.siteStep = ((int)CommonEnumerators.SiteStepMode.WorkerError).ToString();
+
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetails);
+            client.listener.dataQueue.Enqueue(packet);
+        }
     }
 }

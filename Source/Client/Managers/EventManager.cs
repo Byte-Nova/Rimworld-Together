@@ -92,7 +92,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
+                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
                 EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
                 eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
@@ -268,7 +268,9 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            TransferManager.SendSilverToCaravan(eventCosts[DialogManager.selectedScrollButton]);
+            Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
+            silverToReturn.stackCount = eventCosts[DialogManager.selectedScrollButton];
+            TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
             DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
 

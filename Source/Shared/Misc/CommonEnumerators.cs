@@ -57,7 +57,7 @@
 
         //Sites
 
-        public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward }
+        public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward, WorkerError }
 
         //Spying
 

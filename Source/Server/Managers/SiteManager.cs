@@ -180,6 +180,7 @@ namespace GameServer
             else
             {
                 if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client);
+                else if (siteFile.workerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);
                 else DestroySiteFromFile(siteFile);
             }
         }
@@ -213,8 +214,12 @@ namespace GameServer
         {
             SiteFile siteFile = GetSiteFileFromTile(siteDetailsJSON.tile);
 
-            if (siteFile.owner != client.username &&
-                OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
+            if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
+            {
+                ResponseShortcutManager.SendIllegalPacket(client);
+            }
+
+            else if (siteFile.workerData != null)
             {
                 ResponseShortcutManager.SendIllegalPacket(client);
             }
@@ -230,8 +235,12 @@ namespace GameServer
         {
             SiteFile siteFile = GetSiteFileFromTile(siteDetailsJSON.tile);
 
-            if (siteFile.owner != client.username &&
-                OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
+            if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
+            {
+                ResponseShortcutManager.SendIllegalPacket(client);
+            }
+
+            else if (siteFile.workerData == null)
             {
                 ResponseShortcutManager.SendIllegalPacket(client);
             }
@@ -239,8 +248,7 @@ namespace GameServer
             else
             {
                 siteDetailsJSON.workerData = siteFile.workerData;
-                siteFile.workerData = "";
-
+                siteFile.workerData = null;
                 SaveSite(siteFile);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);

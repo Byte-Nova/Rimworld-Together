@@ -218,10 +218,12 @@ namespace GameClient
                     if (TransferManagerHelper.CheckIfThingIsHuman(thing) || TransferManagerHelper.CheckIfThingIsAnimal(thing))
                     {
                         Find.WorldPawns.PassToWorld(thing as Pawn);
-                        thing.SetFaction(Faction.OfPlayer);
-                    }
 
-                    ClientValues.chosenCaravan.AddPawnOrItem(thing, true);
+                        thing.SetFaction(Faction.OfPlayer);
+
+                        TransferManagerHelper.TransferPawnIntoCaravan(thing as Pawn);
+                    }
+                    else TransferManagerHelper.TransferItemIntoCaravan(thing);
                 }
 
                 FinishTransfer(success);
@@ -366,22 +368,6 @@ namespace GameClient
             FinishTransfer(false);
         }
 
-        //Sends silver into caravan
-
-        public static void SendSilverToCaravan(int quantity)
-        {
-            ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
-            itemDetailsJSON.defName = ThingDefOf.Silver.defName;
-            itemDetailsJSON.materialDefName = "null";
-            itemDetailsJSON.quantity = quantity;
-            itemDetailsJSON.quality = "1";
-            itemDetailsJSON.hitpoints = 100;
-            itemDetailsJSON.isMinified = false;
-
-            Thing silverToRecover = ThingScribeManager.StringToItem(itemDetailsJSON);
-            ClientValues.chosenCaravan.AddPawnOrItem(silverToRecover, false);
-        }
-
         //Launchs the drop pods with the desired transfer request
 
         public static void LaunchDropPods()
@@ -448,6 +434,11 @@ namespace GameClient
 
                 ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.SerializeToString
                     (HumanScribeManager.HumanToString(pawn, false)));
+
+                if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
+                {
+                    Find.WorldPawns.RemovePawn(pawn);
+                }
             }
 
             else if (CheckIfThingIsAnimal(thing))
@@ -456,6 +447,11 @@ namespace GameClient
 
                 ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.SerializeToString
                     (AnimalScribeManager.AnimalToString(pawn)));
+
+                if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
+                {
+                    Find.WorldPawns.RemovePawn(pawn);
+                }
             }
 
             else
@@ -483,6 +479,8 @@ namespace GameClient
             }
         }
 
+        //Gets all the transfered items from the transfer into usable objects
+
         public static Thing[] GetAllTransferedItems(TransferManifestJSON transferManifestJSON)
         {
             List<Thing> allTransferedItems = new List<Thing>();
@@ -494,6 +492,53 @@ namespace GameClient
             foreach (Thing thing in ThingScribeManager.GetItemsFromString(transferManifestJSON)) allTransferedItems.Add(thing);
 
             return allTransferedItems.ToArray();
+        }
+
+        //Transfers a pawn into the caravan
+
+        public static void TransferPawnIntoCaravan(Pawn pawnToTransfer)
+        {
+            if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawnToTransfer))
+            {
+                Find.WorldPawns.PassToWorld(pawnToTransfer);
+            }
+
+            ClientValues.chosenCaravan.AddPawn(pawnToTransfer, false);
+        }
+
+        //Transfers an item into the caravan
+
+        public static void TransferItemIntoCaravan(Thing thingToTransfer)
+        {
+            if (thingToTransfer.stackCount == 0) return;
+
+            ClientValues.chosenCaravan.AddPawnOrItem(thingToTransfer, false);
+        }
+
+        //Removes an item from the caravan
+
+        public static void RemoveThingFromCaravan(ThingDef thingDef, int requiredQuantity)
+        {
+            if (requiredQuantity == 0) return;
+
+            List<Thing> caravanQuantity = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan)
+                .FindAll(x => x.def == thingDef);
+
+            int takenQuantity = 0;
+            foreach (Thing unit in caravanQuantity)
+            {
+                if (takenQuantity + unit.stackCount >= requiredQuantity)
+                {
+                    unit.holdingOwner.Take(unit, requiredQuantity - takenQuantity);
+                    break;
+                }
+
+                else if (takenQuantity + unit.stackCount < requiredQuantity)
+                {
+                    unit.holdingOwner.Take(unit, unit.stackCount);
+                    takenQuantity += unit.stackCount;
+                }
+            }
         }
     }
 }

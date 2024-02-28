@@ -51,30 +51,6 @@ namespace GameClient
             else return false;
         }
 
-        public static void RemoveThingFromCaravan(ThingDef thingDef, int requiredQuantity)
-        {
-            if (requiredQuantity == 0) return;
-
-            List<Thing> caravanQuantity = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan)
-                .FindAll(x => x.def == thingDef);
-
-            int takenQuantity = 0;
-            foreach (Thing unit in caravanQuantity)
-            {
-                if (takenQuantity + unit.stackCount >= requiredQuantity)
-                {
-                    unit.holdingOwner.Take(unit, requiredQuantity - takenQuantity);
-                    break;
-                }
-
-                else if (takenQuantity + unit.stackCount < requiredQuantity)
-                {
-                    unit.holdingOwner.Take(unit, unit.stackCount);
-                    takenQuantity += unit.stackCount;
-                }
-            }
-        }
-
         public static void GenerateLetter(string title, string description, LetterDef letterType)
         {
             Find.LetterStack.ReceiveLetter(title,

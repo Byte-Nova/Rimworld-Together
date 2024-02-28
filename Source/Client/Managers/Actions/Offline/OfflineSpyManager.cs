@@ -59,7 +59,7 @@ namespace GameClient
 
                 else
                 {
-                    RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost);
+                    TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost);
 
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
@@ -102,7 +102,9 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            TransferManager.SendSilverToCaravan(spyCost);
+            Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
+            silverToReturn.stackCount = spyCost;
+            TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
             DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
 
