@@ -158,7 +158,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            if (string.IsNullOrWhiteSpace(siteDetailsJSON.workerData))
+            if (siteDetailsJSON.workerData == null)
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
                     delegate { PrepareSendPawnScreen(); }, null);
@@ -191,8 +191,8 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(
-                    Serializer.SerializeFromString<HumanDetailsJSON>(siteDetailsJSON.workerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman((HumanDetailsJSON)Serializer.
+                    ConvertBytesToObject(siteDetailsJSON.workerData));
 
                 TransferManagerHelper.TransferPawnIntoCaravan(pawnToRetrieve);
 
@@ -232,7 +232,7 @@ namespace GameClient
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
             siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
             siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Deposit).ToString();
-            siteDetailsJSON.workerData = Serializer.SerializeToString(HumanScribeManager.HumanToString(pawnToSend));
+            siteDetailsJSON.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);

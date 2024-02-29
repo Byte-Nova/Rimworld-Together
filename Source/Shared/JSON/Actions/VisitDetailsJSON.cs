@@ -11,7 +11,6 @@ namespace Shared
         public string visitorName;
 
         public string fromTile;
-
         public string targetTile;
 
         public List<string> mapHumans = new List<string>();
@@ -23,11 +22,9 @@ namespace Shared
         public List<string> pawnActionDefNames = new List<string>();
         public List<string> actionTargetA = new List<string>();
         public List<string> actionTargetType = new List<string>();
-
         public List<string> pawnPositions = new List<string>();
 
-        public List<string> mapMods = new List<string>();
-
         public byte[] mapDetails;
+        public List<string> mapMods = new List<string>();
     }
 }

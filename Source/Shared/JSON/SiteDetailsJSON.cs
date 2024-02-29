@@ -14,7 +14,7 @@ namespace Shared
 
         public string owner;
 
-        public string workerData;
+        public byte[] workerData;
 
         public string likelihood;
 

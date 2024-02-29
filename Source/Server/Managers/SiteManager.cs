@@ -280,10 +280,9 @@ namespace GameServer
                 List<SiteFile> playerSites = sites.ToList().FindAll(x => x.owner == client.username);
                 foreach (SiteFile site in playerSites)
                 {
-                    if (!string.IsNullOrWhiteSpace(site.workerData) && !site.isFromFaction)
+                    if (site.workerData != null && !site.isFromFaction)
                     {
                         siteDetailsJSON.sitesWithRewards.Add(site.tile);
-                        continue;
                     }
                 }
 

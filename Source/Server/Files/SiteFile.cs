@@ -11,7 +11,7 @@ namespace GameServer
 
         public string type;
 
-        public string workerData;
+        public byte[] workerData;
 
         public bool isFromFaction;
 

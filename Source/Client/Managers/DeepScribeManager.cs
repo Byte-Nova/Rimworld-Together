@@ -24,7 +24,7 @@ namespace GameClient
 
             for (int i = 0; i < transferManifestJSON.humanDetailsJSONS.Count(); i++)
             {
-                HumanDetailsJSON humanDetails = Serializer.SerializeFromString<HumanDetailsJSON>(transferManifestJSON.humanDetailsJSONS[i]);
+                HumanDetailsJSON humanDetails = (HumanDetailsJSON)Serializer.ConvertBytesToObject(transferManifestJSON.humanDetailsJSONS[i]);
 
                 humans.Add(StringToHuman(humanDetails));
             }
@@ -410,7 +410,7 @@ namespace GameClient
                                 x.def.defName == humanDetailsJSON.hediffPartDefName[i]);
                         }
 
-                        Hediff hediff = HediffMaker.MakeHediff(hediffDef, pawn, bodyPart);
+                        Hediff hediff = HediffMaker.MakeHediff(hediffDef, pawn);
                         hediff.Severity = float.Parse(humanDetailsJSON.hediffSeverity[i]);
 
                         if (humanDetailsJSON.heddifPermanent[i])
@@ -419,7 +419,7 @@ namespace GameClient
                             hediffComp.IsPermanent = true;
                         }
 
-                        pawn.health.AddHediff(hediff);
+                        pawn.health.AddHediff(hediff, bodyPart);
                     }
                     catch { Log.Warning($"Failed to set heddif in {humanDetailsJSON.hediffPartDefName[i]} to human {humanDetailsJSON.name}"); }
                 }
@@ -646,7 +646,7 @@ namespace GameClient
 
             for (int i = 0; i < transferManifestJSON.animalDetailsJSON.Count(); i++)
             {
-                AnimalDetailsJSON animalDetails = Serializer.SerializeFromString<AnimalDetailsJSON>(transferManifestJSON.animalDetailsJSON[i]);
+                AnimalDetailsJSON animalDetails = (AnimalDetailsJSON)Serializer.ConvertBytesToObject(transferManifestJSON.animalDetailsJSON[i]);
 
                 animals.Add(StringToAnimal(animalDetails));
             }
@@ -909,7 +909,7 @@ namespace GameClient
 
             for (int i = 0; i < transferManifestJSON.itemDetailsJSONS.Count(); i++)
             {
-                ItemDetailsJSON itemDetailsJSON = Serializer.SerializeFromString<ItemDetailsJSON>(transferManifestJSON.itemDetailsJSONS[i]);
+                ItemDetailsJSON itemDetailsJSON = (ItemDetailsJSON)Serializer.ConvertBytesToObject(transferManifestJSON.itemDetailsJSONS[i]);
 
                 things.Add(StringToItem(itemDetailsJSON));
             }

@@ -58,6 +58,7 @@ namespace GameClient
 
                 case (int)TransferStepMode.Recover:
                     DialogManager.PopWaitDialog();
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
             }
@@ -83,7 +84,7 @@ namespace GameClient
             {
                 SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
 
-                if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
+                if (transferLocation == TransferLocation.Caravan)
                 {
                     TradeSession.playerNegotiator.GetCaravan().RecacheImmobilizedNow();
                 }
@@ -146,26 +147,22 @@ namespace GameClient
         {
             try
             {
-                Action r1 = delegate
+                Thing[] toRecover = TransferManagerHelper.GetAllTransferedItems(ClientValues.outgoingManifest);
+
+                if (transferLocation == TransferLocation.Caravan)
                 {
-                    Thing[] toRecover = TransferManagerHelper.GetAllTransferedItems(ClientValues.outgoingManifest);
+                    GetTransferedItemsToCaravan(toRecover, false);
+                }
 
-                    if (transferLocation == TransferLocation.Caravan)
-                    {
-                        GetTransferedItemsToCaravan(toRecover, false);
-                    }
+                else if (transferLocation == TransferLocation.Settlement)
+                {
+                    GetTransferedItemsToSettlement(toRecover, false);
+                }
 
-                    else if (transferLocation == TransferLocation.Settlement)
-                    {
-                        GetTransferedItemsToSettlement(toRecover, false);
-                    }
-
-                    else if (transferLocation == TransferLocation.Pod)
-                    {
-                        //Do nothing
-                    }
-                };
-                r1.Invoke();
+                else if (transferLocation == TransferLocation.Pod)
+                {
+                    //Do nothing
+                }
             }
 
             catch
@@ -215,14 +212,16 @@ namespace GameClient
             {
                 foreach (Thing thing in things)
                 {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(thing) || TransferManagerHelper.CheckIfThingIsAnimal(thing))
+                    if (TransferManagerHelper.CheckIfThingIsHuman(thing))
                     {
-                        Find.WorldPawns.PassToWorld(thing as Pawn);
-
-                        thing.SetFaction(Faction.OfPlayer);
-
                         TransferManagerHelper.TransferPawnIntoCaravan(thing as Pawn);
                     }
+
+                    else if (TransferManagerHelper.CheckIfThingIsAnimal(thing))
+                    {
+                        TransferManagerHelper.TransferPawnIntoCaravan(thing as Pawn);
+                    }
+
                     else TransferManagerHelper.TransferItemIntoCaravan(thing);
                 }
 
@@ -432,7 +431,7 @@ namespace GameClient
             {
                 Pawn pawn = thing as Pawn;
 
-                ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.SerializeToString
+                ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.ConvertObjectToBytes
                     (HumanScribeManager.HumanToString(pawn, false)));
 
                 if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
@@ -445,7 +444,7 @@ namespace GameClient
             {
                 Pawn pawn = thing as Pawn;
 
-                ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.SerializeToString
+                ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.ConvertObjectToBytes
                     (AnimalScribeManager.AnimalToString(pawn)));
 
                 if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
@@ -456,7 +455,7 @@ namespace GameClient
 
             else
             {
-                ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.SerializeToString
+                ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.ConvertObjectToBytes
                     (ThingScribeManager.ItemToString(thing, thingCount)));
             }
         }
@@ -503,6 +502,7 @@ namespace GameClient
                 Find.WorldPawns.PassToWorld(pawnToTransfer);
             }
 
+            pawnToTransfer.SetFaction(Faction.OfPlayer);
             ClientValues.chosenCaravan.AddPawn(pawnToTransfer, false);
         }
 
