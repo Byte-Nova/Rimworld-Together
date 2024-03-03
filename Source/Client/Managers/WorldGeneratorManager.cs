@@ -51,7 +51,7 @@ namespace GameClient
 
                 catch (Exception e) 
                 {
-                    Log.Warning($"Error when trying to add faction into world, perhaps missing?" +
+                    Logs.Warning($"Error when trying to add faction into world, perhaps missing?" +
                         $" Exception: {e}");
                 }
             }

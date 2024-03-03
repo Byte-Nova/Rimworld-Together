@@ -44,6 +44,8 @@ namespace GameClient
             savesPath = GenFilePaths.SavedGamesFolderPath;
 
             if (!Directory.Exists(modPath)) Directory.CreateDirectory(modPath);
+
+            Logs.prepareFileName(modPath);
         }
 
         public static void CreateUnityDispatcher()
@@ -54,7 +56,7 @@ namespace GameClient
                 threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
                 Object.Instantiate(go);
 
-                Log.Message($"[Rimworld Together] > Created dispatcher for version {CommonValues.executableVersion}");
+                Logs.Message($"[Rimworld Together] > Created dispatcher for version {CommonValues.executableVersion}");
             }
         }
     }
