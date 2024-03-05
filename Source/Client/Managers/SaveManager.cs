@@ -20,7 +20,6 @@ namespace GameClient
                 FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
                 FticksSinceSave.SetValue(Current.Game.autosaver, 0);
                 Current.Game.autosaver.DoAutosave();
-                ClientValues.ToggleSaving(false);
             }
         }
 

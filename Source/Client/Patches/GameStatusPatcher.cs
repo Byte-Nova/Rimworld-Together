@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
@@ -26,7 +27,8 @@ namespace GameClient
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
 
-                    SaveManager.ForceSave();
+                    if (ClientValues.requireSaveManipulation) WorldGeneratorManager.GetWorldFromServer();
+                    else SaveManager.ForceSave();
                 }
             }
         }

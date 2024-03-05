@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -19,6 +20,8 @@ namespace GameClient
         public static bool isQuiting;
 
         public static bool isReadyToPlay;
+
+        public static bool requireSaveManipulation;
 
         //Do not change manually
         public static bool autoDenyTransfers;
@@ -73,6 +76,8 @@ namespace GameClient
         public static void ToggleVisit(bool mode) { isInVisit = mode; }
 
         public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
+
+        public static void ToggleRequireSaveManipulation(bool mode) { requireSaveManipulation = mode; }
 
         public static void CleanValues()
         {

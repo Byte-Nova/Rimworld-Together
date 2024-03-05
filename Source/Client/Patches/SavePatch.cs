@@ -33,8 +33,13 @@ namespace GameClient
                 }
                 catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
 
-                MapManager.SendPlayerMapsToServer();
-                SaveManager.SendSavePartToServer(fileName);
+                if (!ClientValues.needsToGenerateWorld && !ClientValues.requireSaveManipulation)
+                {
+                    MapManager.SendPlayerMapsToServer();
+                    SaveManager.SendSavePartToServer(fileName);
+                }
+
+                ClientValues.ToggleSaving(false);
 
                 return false;
             }

@@ -30,10 +30,12 @@ namespace GameClient
                     buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
-                        PassArgumentsToServer(___seedString, ___planetCoverage, ___rainfall, ___temperature, ___population, 
-                            ___factions, ___pollution);
-
                         __instance.Close();
+
+                        WorldGeneratorManager.SetValuesForWorld(___seedString, ___planetCoverage, ___rainfall,
+                            ___temperature, ___population, ___factions, ___pollution);
+
+                        WorldGeneratorManager.GeneratePatchedWorld(true);
                     }
 
                     return true;
@@ -55,32 +57,6 @@ namespace GameClient
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Generate")) { }
                 }
             }
-
-            public static void PassArgumentsToServer(string seedString, float planetCoverage, OverallRainfall rainfall, 
-                OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
-            {
-                WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-                worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
-                worldDetailsJSON.SeedString = seedString;
-                worldDetailsJSON.PlanetCoverage = planetCoverage;
-                worldDetailsJSON.Rainfall = (float)rainfall;
-                worldDetailsJSON.Temperature = (float)temperature;
-                worldDetailsJSON.Population = (float)population;
-                worldDetailsJSON.Pollution = pollution;
-
-                foreach (FactionDef def in factions) worldDetailsJSON.Factions.Add(def.defName.ToString());
-
-                FactionValues.SetPlayerFactionDefs();
-                worldDetailsJSON.Factions.Add(FactionValues.neutralPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(FactionValues.allyPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(FactionValues.enemyPlayerDef.defName);
-                worldDetailsJSON.Factions.Add(FactionValues.yourOnlineFactionDef.defName);
-
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server to accept world"));
-
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
-                Network.listener.dataQueue.Enqueue(packet);
-            }
         }
 
         [HarmonyPatch(typeof(Page_CreateWorldParams), "PostOpen")]
@@ -93,7 +69,9 @@ namespace GameClient
                 else
                 {
                     __instance.Close();
-                    WorldGeneratorManager.GeneratePatchedWorld();
+
+                    WorldGeneratorManager.GeneratePatchedWorld(false);
+
                     return false;
                 }
             }

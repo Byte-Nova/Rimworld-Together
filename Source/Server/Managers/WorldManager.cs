@@ -21,10 +21,6 @@ namespace GameServer
                 case (int)CommonEnumerators.WorldStepMode.Existing:
                     //Do nothing
                     break;
-
-                case (int)CommonEnumerators.WorldStepMode.Saved:
-                    //Do nothing
-                    break;
             }
         }
 
@@ -33,22 +29,32 @@ namespace GameServer
         public static void SaveWorldPrefab(ServerClient client, WorldDetailsJSON worldDetailsJSON)
         {
             WorldValuesFile worldValues = new WorldValuesFile();
-            worldValues.SeedString = worldDetailsJSON.SeedString;
-            worldValues.PlanetCoverage = worldDetailsJSON.PlanetCoverage;
-            worldValues.Rainfall = worldDetailsJSON.Rainfall;
-            worldValues.Temperature = worldDetailsJSON.Temperature;
-            worldValues.Population = worldDetailsJSON.Population;
-            worldValues.Pollution = worldDetailsJSON.Pollution;
-            worldValues.Factions = worldDetailsJSON.Factions;
+            worldValues.seedString = worldDetailsJSON.seedString;
+            worldValues.planetCoverage = worldDetailsJSON.planetCoverage;
+            worldValues.rainfall = worldDetailsJSON.rainfall;
+            worldValues.temperature = worldDetailsJSON.temperature;
+            worldValues.population = worldDetailsJSON.population;
+            worldValues.pollution = worldDetailsJSON.pollution;
+            worldValues.factions = worldDetailsJSON.factions;
 
-            Serializer.SerializeToFile(worldFilePath, worldValues);
-            Logger.WriteToConsole($"[Save world] > {client.username}", Logger.LogMode.Title);
+            worldValues.tileBiomeDeflate = worldDetailsJSON.tileBiomeDeflate;
+            worldValues.tileElevationDeflate = worldDetailsJSON.tileElevationDeflate;
+            worldValues.tileHillinessDeflate = worldDetailsJSON.tileHillinessDeflate;
+            worldValues.tileTemperatureDeflate = worldDetailsJSON.tileTemperatureDeflate;
+            worldValues.tileRainfallDeflate = worldDetailsJSON.tileRainfallDeflate;
+            worldValues.tileSwampinessDeflate = worldDetailsJSON.tileSwampinessDeflate;
+            worldValues.tileFeatureDeflate = worldDetailsJSON.tileFeatureDeflate;
+            worldValues.tilePollutionDeflate = worldDetailsJSON.tilePollutionDeflate;
+            worldValues.tileRoadOriginsDeflate = worldDetailsJSON.tileRoadOriginsDeflate;
+            worldValues.tileRoadAdjacencyDeflate = worldDetailsJSON.tileRoadAdjacencyDeflate;
+            worldValues.tileRoadDefDeflate = worldDetailsJSON.tileRoadDefDeflate;
+            worldValues.tileRiverOriginsDeflate = worldDetailsJSON.tileRiverOriginsDeflate;
+            worldValues.tileRiverAdjacencyDeflate = worldDetailsJSON.tileRiverAdjacencyDeflate;
+            worldValues.tileRiverDefDeflate = worldDetailsJSON.tileRiverDefDeflate;
 
             Program.worldValues = worldValues;
-
-            worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Saved).ToString();
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            Serializer.SerializeToFile(worldFilePath, worldValues);
+            Logger.WriteToConsole($"[Save world] > {client.username}", Logger.LogMode.Title);
         }
 
         public static void RequireWorldFile(ServerClient client)
@@ -66,13 +72,29 @@ namespace GameServer
 
             WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
-            worldDetailsJSON.SeedString = worldValues.SeedString;
-            worldDetailsJSON.PlanetCoverage = worldValues.PlanetCoverage;
-            worldDetailsJSON.Rainfall = worldValues.Rainfall;
-            worldDetailsJSON.Temperature = worldValues.Temperature;
-            worldDetailsJSON.Population = worldValues.Population;
-            worldDetailsJSON.Pollution = worldValues.Pollution;
-            worldDetailsJSON.Factions = worldValues.Factions;
+
+            worldDetailsJSON.seedString = worldValues.seedString;
+            worldDetailsJSON.planetCoverage = worldValues.planetCoverage;
+            worldDetailsJSON.rainfall = worldValues.rainfall;
+            worldDetailsJSON.temperature = worldValues.temperature;
+            worldDetailsJSON.population = worldValues.population;
+            worldDetailsJSON.pollution = worldValues.pollution;
+            worldDetailsJSON.factions = worldValues.factions;
+
+            worldDetailsJSON.tileBiomeDeflate = worldValues.tileBiomeDeflate;
+            worldDetailsJSON.tileElevationDeflate = worldValues.tileElevationDeflate;
+            worldDetailsJSON.tileHillinessDeflate = worldValues.tileHillinessDeflate;
+            worldDetailsJSON.tileTemperatureDeflate = worldValues.tileTemperatureDeflate;
+            worldDetailsJSON.tileRainfallDeflate = worldValues.tileRainfallDeflate;
+            worldDetailsJSON.tileSwampinessDeflate = worldValues.tileSwampinessDeflate;
+            worldDetailsJSON.tileFeatureDeflate = worldValues.tileFeatureDeflate;
+            worldDetailsJSON.tilePollutionDeflate = worldValues.tilePollutionDeflate;
+            worldDetailsJSON.tileRoadOriginsDeflate = worldValues.tileRoadOriginsDeflate;
+            worldDetailsJSON.tileRoadAdjacencyDeflate = worldValues.tileRoadAdjacencyDeflate;
+            worldDetailsJSON.tileRoadDefDeflate = worldValues.tileRoadDefDeflate;
+            worldDetailsJSON.tileRiverOriginsDeflate = worldValues.tileRiverOriginsDeflate;
+            worldDetailsJSON.tileRiverAdjacencyDeflate = worldValues.tileRiverAdjacencyDeflate;
+            worldDetailsJSON.tileRiverDefDeflate = worldValues.tileRiverDefDeflate;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
