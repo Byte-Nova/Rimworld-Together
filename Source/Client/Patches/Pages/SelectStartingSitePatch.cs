@@ -75,8 +75,6 @@ namespace GameClient
             {
                 if (Network.isConnectedToServer)
                 {
-                    ClientValues.ToggleLoadingPrefabWorld(false);
-
                     PlanetManager.BuildPlanet();
 
                     ClientValues.ToggleReadyToPlay(true);

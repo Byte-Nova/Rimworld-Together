@@ -32,7 +32,7 @@ namespace GameClient
                     {
                         __instance.Close();
 
-                        WorldGeneratorManager.SetValuesForWorld(___seedString, ___planetCoverage, ___rainfall,
+                        WorldGeneratorManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall,
                             ___temperature, ___population, ___factions, ___pollution);
 
                         WorldGeneratorManager.GeneratePatchedWorld(true);
@@ -65,7 +65,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Page_CreateWorldParams __instance)
             {
-                if (!ClientValues.isLoadingPrefabWorld) return true;
+                if (ClientValues.needsToGenerateWorld) return true;
                 else
                 {
                     __instance.Close();

@@ -12,11 +12,10 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if (ClientValues.isLoadingPrefabWorld && DifficultyValues.UseCustomDifficulty)
+            if (DifficultyValues.UseCustomDifficulty)
             {
                 ___difficulty = DifficultyDefOf.Rough;
                 ___difficultyValues = new Difficulty(___difficulty);
-
                 Find.GameInitData.permadeathChosen = true;
             }
 
@@ -30,7 +29,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (ClientValues.isLoadingPrefabWorld)
+            if (!ClientValues.needsToGenerateWorld)
             {
                 Text.Font = GameFont.Small;
                 Vector2 buttonSize = new Vector2(150f, 38f);

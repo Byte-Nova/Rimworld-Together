@@ -7,7 +7,7 @@ using Verse;
 
 namespace GameClient
 {
-    public static class XMLParser
+    public static class XmlParser
     {
         public static string GetDataFromXML(string path, string elementName)
         {

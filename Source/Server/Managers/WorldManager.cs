@@ -30,6 +30,7 @@ namespace GameServer
         {
             WorldValuesFile worldValues = new WorldValuesFile();
             worldValues.seedString = worldDetailsJSON.seedString;
+            worldValues.persistentRandomValue = worldDetailsJSON.persistentRandomValue;
             worldValues.planetCoverage = worldDetailsJSON.planetCoverage;
             worldValues.rainfall = worldDetailsJSON.rainfall;
             worldValues.temperature = worldDetailsJSON.temperature;
@@ -74,6 +75,7 @@ namespace GameServer
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
 
             worldDetailsJSON.seedString = worldValues.seedString;
+            worldDetailsJSON.persistentRandomValue = worldValues.persistentRandomValue;
             worldDetailsJSON.planetCoverage = worldValues.planetCoverage;
             worldDetailsJSON.rainfall = worldValues.rainfall;
             worldDetailsJSON.temperature = worldValues.temperature;

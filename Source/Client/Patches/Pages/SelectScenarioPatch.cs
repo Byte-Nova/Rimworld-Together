@@ -15,7 +15,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, Page_SelectScenario __instance)
             {
-                if (ClientValues.isLoadingPrefabWorld)
+                if (Network.isConnectedToServer)
                 {
                     Vector2 buttonSize = new Vector2(150f, 38f);
                     Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
@@ -32,7 +32,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost(Rect rect)
             {
-                if (ClientValues.isLoadingPrefabWorld)
+                if (Network.isConnectedToServer)
                 {
                     Text.Font = GameFont.Small;
                     Vector2 buttonSize = new Vector2(150f, 38f);
@@ -48,7 +48,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre()
             {
-                if (!ClientValues.isLoadingPrefabWorld || ServerValues.AllowCustomScenarios) return true;
+                if (ServerValues.AllowCustomScenarios) return true;
                 else
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!"));
@@ -67,7 +67,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, ref Scenario ___curScen)
             {
-                if (!ClientValues.isLoadingPrefabWorld || ServerValues.AllowCustomScenarios) return true;
+                if (ServerValues.AllowCustomScenarios) return true;
                 else
                 {
                     if (curScen != null) ___curScen = curScen;

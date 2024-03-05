@@ -9,6 +9,7 @@ namespace Shared
         public string worldStepMode;
 
         public string seedString;
+        public int persistentRandomValue;
         public string planetCoverage;
         public string rainfall;
         public string temperature;

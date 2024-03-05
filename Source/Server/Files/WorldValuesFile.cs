@@ -4,6 +4,7 @@
     public class WorldValuesFile
     {
         public string seedString;
+        public int persistentRandomValue;
         public string planetCoverage;
         public string rainfall;
         public string temperature;

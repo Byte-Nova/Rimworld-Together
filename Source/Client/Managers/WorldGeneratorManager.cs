@@ -13,6 +13,7 @@ namespace GameClient
     public static class WorldGeneratorManager
     {
         public static string seedString;
+        public static int persistentRandomValue;
         public static float planetCoverage;
         public static OverallRainfall rainfall;
         public static OverallTemperature temperature;
@@ -25,9 +26,10 @@ namespace GameClient
                                                                       orderby x.order, x.index
                                                                       select x;
 
-        public static void SetValuesForWorld(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
+        public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
             WorldGeneratorManager.seedString = seedString;
+            WorldGeneratorManager.persistentRandomValue = 0;
             WorldGeneratorManager.planetCoverage = planetCoverage;
             WorldGeneratorManager.rainfall = rainfall;
             WorldGeneratorManager.temperature = temperature;
@@ -44,6 +46,7 @@ namespace GameClient
         public static void SetValuesFromServer(WorldDetailsJSON worldDetailsJSON)
         {
             seedString = worldDetailsJSON.seedString;
+            persistentRandomValue = worldDetailsJSON.persistentRandomValue;
             planetCoverage = float.Parse(worldDetailsJSON.planetCoverage);
             rainfall = (OverallRainfall)int.Parse(worldDetailsJSON.rainfall);
             temperature = (OverallTemperature)int.Parse(worldDetailsJSON.temperature);
@@ -67,16 +70,10 @@ namespace GameClient
                 Current.Game.World = GenerateWorld();
                 LongEventHandler.ExecuteWhenFinished(delegate
                 {
-                    if (firstGeneration)
-                    {
-                        SendWorldToServer();
-                        PostWorldGeneration();
-                        ClientValues.ToggleGenerateWorld(false);
-                    }
+                    PostWorldGeneration();
 
-                    else
+                    if (!firstGeneration)
                     {
-                        PostWorldGeneration();
                         ClientValues.ToggleRequireSaveManipulation(true);
                     }
                 });
@@ -85,11 +82,10 @@ namespace GameClient
 
         private static World GenerateWorld()
         {
-            Rand.PushState();
-            Rand.Seed = GenText.StableStringHash(seedString);
-
+            Rand.PushState(0);
             Current.CreatingWorld = new World();
             Current.CreatingWorld.info.seedString = seedString;
+            Current.CreatingWorld.info.persistentRandomValue = persistentRandomValue;
             Current.CreatingWorld.info.planetCoverage = planetCoverage;
             Current.CreatingWorld.info.overallRainfall = rainfall;
             Current.CreatingWorld.info.overallTemperature = temperature;
@@ -112,14 +108,13 @@ namespace GameClient
             return Current.CreatingWorld;
         }
 
-        private static void SendWorldToServer()
+        public static void SendWorldToServer()
         {
-            SaveManager.ForceSave();
-
             WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
             worldDetailsJSON.seedString = seedString;
+            worldDetailsJSON.persistentRandomValue = Find.World.info.persistentRandomValue;
             worldDetailsJSON.planetCoverage = planetCoverage.ToString();
             worldDetailsJSON.rainfall = ((int)rainfall).ToString();
             worldDetailsJSON.temperature = ((int)temperature).ToString(); ;
@@ -132,20 +127,20 @@ namespace GameClient
             }
 
             string filePath = Path.Combine(new string[] { Master.savesPath, SaveManager.customSaveName + ".rws" });
-            worldDetailsJSON.tileBiomeDeflate = XMLParser.GetDataFromXML(filePath, "tileBiomeDeflate");
-            worldDetailsJSON.tileElevationDeflate = XMLParser.GetDataFromXML(filePath, "tileElevationDeflate");
-            worldDetailsJSON.tileHillinessDeflate = XMLParser.GetDataFromXML(filePath, "tileHillinessDeflate");
-            worldDetailsJSON.tileTemperatureDeflate = XMLParser.GetDataFromXML(filePath, "tileTemperatureDeflate");
-            worldDetailsJSON.tileRainfallDeflate = XMLParser.GetDataFromXML(filePath, "tileRainfallDeflate");
-            worldDetailsJSON.tileSwampinessDeflate = XMLParser.GetDataFromXML(filePath, "tileSwampinessDeflate");
-            worldDetailsJSON.tileFeatureDeflate = XMLParser.GetDataFromXML(filePath, "tileFeatureDeflate");
-            worldDetailsJSON.tilePollutionDeflate = XMLParser.GetDataFromXML(filePath, "tilePollutionDeflate");
-            worldDetailsJSON.tileRoadOriginsDeflate = XMLParser.GetDataFromXML(filePath, "tileRoadOriginsDeflate");
-            worldDetailsJSON.tileRoadAdjacencyDeflate = XMLParser.GetDataFromXML(filePath, "tileRoadAdjacencyDeflate");
-            worldDetailsJSON.tileRoadDefDeflate = XMLParser.GetDataFromXML(filePath, "tileRoadDefDeflate");
-            worldDetailsJSON.tileRiverOriginsDeflate = XMLParser.GetDataFromXML(filePath, "tileRiverOriginsDeflate");
-            worldDetailsJSON.tileRiverAdjacencyDeflate = XMLParser.GetDataFromXML(filePath, "tileRiverAdjacencyDeflate");
-            worldDetailsJSON.tileRiverDefDeflate = XMLParser.GetDataFromXML(filePath, "tileRiverDefDeflate");
+            worldDetailsJSON.tileBiomeDeflate = XmlParser.GetDataFromXML(filePath, "tileBiomeDeflate");
+            worldDetailsJSON.tileElevationDeflate = XmlParser.GetDataFromXML(filePath, "tileElevationDeflate");
+            worldDetailsJSON.tileHillinessDeflate = XmlParser.GetDataFromXML(filePath, "tileHillinessDeflate");
+            worldDetailsJSON.tileTemperatureDeflate = XmlParser.GetDataFromXML(filePath, "tileTemperatureDeflate");
+            worldDetailsJSON.tileRainfallDeflate = XmlParser.GetDataFromXML(filePath, "tileRainfallDeflate");
+            worldDetailsJSON.tileSwampinessDeflate = XmlParser.GetDataFromXML(filePath, "tileSwampinessDeflate");
+            worldDetailsJSON.tileFeatureDeflate = XmlParser.GetDataFromXML(filePath, "tileFeatureDeflate");
+            worldDetailsJSON.tilePollutionDeflate = XmlParser.GetDataFromXML(filePath, "tilePollutionDeflate");
+            worldDetailsJSON.tileRoadOriginsDeflate = XmlParser.GetDataFromXML(filePath, "tileRoadOriginsDeflate");
+            worldDetailsJSON.tileRoadAdjacencyDeflate = XmlParser.GetDataFromXML(filePath, "tileRoadAdjacencyDeflate");
+            worldDetailsJSON.tileRoadDefDeflate = XmlParser.GetDataFromXML(filePath, "tileRoadDefDeflate");
+            worldDetailsJSON.tileRiverOriginsDeflate = XmlParser.GetDataFromXML(filePath, "tileRiverOriginsDeflate");
+            worldDetailsJSON.tileRiverAdjacencyDeflate = XmlParser.GetDataFromXML(filePath, "tileRiverAdjacencyDeflate");
+            worldDetailsJSON.tileRiverDefDeflate = XmlParser.GetDataFromXML(filePath, "tileRiverDefDeflate");
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
@@ -153,26 +148,24 @@ namespace GameClient
 
         public static void GetWorldFromServer()
         {
-            WorldDetailsJSON worldDetailsJSON = cachedWorldDetails;
             SaveManager.ForceSave();
 
             string filePath = Path.Combine(new string[] { Master.savesPath, SaveManager.customSaveName + ".rws" });
-            XMLParser.SetDataIntoXML(filePath, "tileBiomeDeflate", worldDetailsJSON.tileBiomeDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileElevationDeflate", worldDetailsJSON.tileElevationDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileHillinessDeflate", worldDetailsJSON.tileHillinessDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileTemperatureDeflate", worldDetailsJSON.tileTemperatureDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileRainfallDeflate", worldDetailsJSON.tileRainfallDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileSwampinessDeflate", worldDetailsJSON.tileSwampinessDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileFeatureDeflate", worldDetailsJSON.tileFeatureDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tilePollutionDeflate", worldDetailsJSON.tilePollutionDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileRoadOriginsDeflate", worldDetailsJSON.tileRoadOriginsDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileRoadAdjacencyDeflate", worldDetailsJSON.tileRoadAdjacencyDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileRoadDefDeflate", worldDetailsJSON.tileRoadDefDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileRiverOriginsDeflate", worldDetailsJSON.tileRiverOriginsDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileRiverAdjacencyDeflate", worldDetailsJSON.tileRiverAdjacencyDeflate);
-            XMLParser.SetDataIntoXML(filePath, "tileRiverDefDeflate", worldDetailsJSON.tileRiverDefDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileBiomeDeflate", cachedWorldDetails.tileBiomeDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileElevationDeflate", cachedWorldDetails.tileElevationDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileHillinessDeflate", cachedWorldDetails.tileHillinessDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileTemperatureDeflate", cachedWorldDetails.tileTemperatureDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileRainfallDeflate", cachedWorldDetails.tileRainfallDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileSwampinessDeflate", cachedWorldDetails.tileSwampinessDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileFeatureDeflate", cachedWorldDetails.tileFeatureDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tilePollutionDeflate", cachedWorldDetails.tilePollutionDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileRoadOriginsDeflate", cachedWorldDetails.tileRoadOriginsDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileRoadAdjacencyDeflate", cachedWorldDetails.tileRoadAdjacencyDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileRoadDefDeflate", cachedWorldDetails.tileRoadDefDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileRiverOriginsDeflate", cachedWorldDetails.tileRiverOriginsDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileRiverAdjacencyDeflate", cachedWorldDetails.tileRiverAdjacencyDeflate);
+            XmlParser.SetDataIntoXML(filePath, "tileRiverDefDeflate", cachedWorldDetails.tileRiverDefDeflate);
 
-            ClientValues.ToggleRequireSaveManipulation(false);
             GameDataSaveLoader.LoadGame(SaveManager.customSaveName);
         }
 

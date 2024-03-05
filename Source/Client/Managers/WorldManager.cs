@@ -42,8 +42,6 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            ClientValues.ToggleLoadingPrefabWorld(true);
-
             WorldGeneratorManager.SetValuesFromServer(worldDetailsJSON);
 
             DialogManager.PushNewDialog(new Page_SelectScenario());

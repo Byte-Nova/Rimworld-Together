@@ -48,6 +48,7 @@ namespace GameServer
             Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
 
             if (Program.isClosing) newServerClient.listener.disconnectFlag = true;
+            else if (Program.worldValues == null && connectedClients.Count() > 0) newServerClient.listener.disconnectFlag = true;
             else
             {
                 if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))

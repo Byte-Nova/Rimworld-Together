@@ -11,8 +11,6 @@ namespace GameClient
     {
         public static bool needsToGenerateWorld;
 
-        public static bool isLoadingPrefabWorld;
-
         public static bool isSaving;
 
         public static bool isDisconnecting;
@@ -61,8 +59,6 @@ namespace GameClient
 
         public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
 
-        public static void ToggleLoadingPrefabWorld(bool mode) { isLoadingPrefabWorld = mode; }
-
         public static void ToggleSaving(bool mode) { isSaving = mode; }
 
         public static void ToggleDisconnecting(bool mode) { isDisconnecting = mode; }
@@ -81,14 +77,14 @@ namespace GameClient
 
         public static void CleanValues()
         {
-            needsToGenerateWorld = false;
-            isLoadingPrefabWorld = false;
-            isSaving = false;
-            isDisconnecting = false;
-            isQuiting = false;
-            isReadyToPlay = false;
-            isInTransfer = false;
-            isInVisit = false;
+            ToggleGenerateWorld(false);
+            ToggleSaving(false);
+            ToggleDisconnecting(false);
+            ToggleQuiting(false);
+            ToggleReadyToPlay(false);
+            ToggleTransfer(false);
+            ToggleVisit(false);
+            ToggleRequireSaveManipulation(false);
 
             chosenSettlement = null;
             chosenCaravan = null;
