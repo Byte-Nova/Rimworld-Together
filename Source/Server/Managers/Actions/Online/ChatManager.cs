@@ -145,7 +145,7 @@ namespace GameServer
         private static void ChatStopVisitCommandAction()
         {
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
-            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
+            visitDetailsJSON.visitStepMode = (int)CommonEnumerators.VisitStepMode.Stop;
 
             OnlineVisitManager.SendVisitStop(invoker, visitDetailsJSON);
         }

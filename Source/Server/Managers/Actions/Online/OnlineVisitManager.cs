@@ -8,7 +8,7 @@ namespace GameServer
         {
             VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(visitDetailsJSON.visitStepMode))
+            switch (visitDetailsJSON.visitStepMode)
             {
                 case (int)CommonEnumerators.VisitStepMode.Request:
                     SendVisitRequest(client, visitDetailsJSON);
@@ -41,7 +41,7 @@ namespace GameServer
                 ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
-                    visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
+                    visitDetailsJSON.visitStepMode = (int)CommonEnumerators.VisitStepMode.Unavailable;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     client.listener.dataQueue.Enqueue(packet);
                 }
@@ -50,7 +50,7 @@ namespace GameServer
                 {
                     if (toGet.inVisitWith != null)
                     {
-                        visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
+                        visitDetailsJSON.visitStepMode = (int)CommonEnumerators.VisitStepMode.Unavailable;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                         client.listener.dataQueue.Enqueue(packet);
                     }
@@ -104,7 +104,7 @@ namespace GameServer
         {
             if (client.inVisitWith == null)
             {
-                visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
+                visitDetailsJSON.visitStepMode = (int)CommonEnumerators.VisitStepMode.Stop;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                 client.listener.dataQueue.Enqueue(packet);
             }
