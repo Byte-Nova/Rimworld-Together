@@ -34,7 +34,7 @@ namespace GameServer
 
         public static bool CheckIfTileIsInUse(string tileToCheck)
         {
-            string[] sites = Directory.GetFiles(Program.sitesPath);
+            string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
@@ -72,14 +72,14 @@ namespace GameServer
 
         public static void SaveSite(SiteFile siteFile)
         {
-            Serializer.SerializeToFile(Path.Combine(Program.sitesPath, siteFile.tile + ".json"), siteFile);
+            Serializer.SerializeToFile(Path.Combine(Master.sitesPath, siteFile.tile + ".json"), siteFile);
         }
 
         public static SiteFile[] GetAllSites()
         {
             List<SiteFile> sitesList = new List<SiteFile>();
 
-            string[] sites = Directory.GetFiles(Program.sitesPath);
+            string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
                 sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
@@ -92,7 +92,7 @@ namespace GameServer
         {
             List<SiteFile> sitesList = new List<SiteFile>();
 
-            string[] sites = Directory.GetFiles(Program.sitesPath);
+            string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
@@ -107,7 +107,7 @@ namespace GameServer
 
         public static SiteFile GetSiteFileFromTile(string tileToGet)
         {
-            string[] sites = Directory.GetFiles(Program.sitesPath);
+            string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
@@ -194,7 +194,7 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.dataQueue.Enqueue(packet);
 
-            File.Delete(Path.Combine(Program.sitesPath, siteFile.tile + ".json"));
+            File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + ".json"));
             Logger.WriteToConsole($"[Destroyed site] > {siteFile.tile}", Logger.LogMode.Warning);
         }
 

@@ -6,7 +6,7 @@ using Verse;
 
 namespace GameClient
 {
-    public class SelectStartingSitePatch
+    public class SelectStartingSitePatches
     {
         [HarmonyPatch(typeof(Page_SelectStartingSite), "DoCustomBottomButtons")]
         public static class PathSelectStartingSitePage
@@ -75,8 +75,6 @@ namespace GameClient
             {
                 if (Network.isConnectedToServer)
                 {
-                    ClientValues.ToggleLoadingPrefabWorld(false);
-
                     PlanetManager.BuildPlanet();
 
                     ClientValues.ToggleReadyToPlay(true);

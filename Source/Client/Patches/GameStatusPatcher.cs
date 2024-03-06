@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
@@ -27,6 +28,20 @@ namespace GameClient
                     Network.listener.dataQueue.Enqueue(packet);
 
                     SaveManager.ForceSave();
+
+                    if (ClientValues.requireSaveManipulation)
+                    {
+                        RT_Dialog_OK d1 = new RT_Dialog_OK("Save will reload to ensure synchronization",
+                            delegate { WorldGeneratorManager.GetWorldFromServer(); });
+
+                        DialogManager.PushNewDialog(d1);
+                    }
+
+                    if (ClientValues.needsToGenerateWorld)
+                    {
+                        WorldGeneratorManager.SendWorldToServer();
+                        ClientValues.ToggleGenerateWorld(false);
+                    }
                 }
             }
         }
@@ -41,12 +56,17 @@ namespace GameClient
                 {
                     ClientValues.ForcePermadeath();
                     ClientValues.ManageDevOptions();
-
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
                     PlanetManager.BuildPlanet();
 
                     ClientValues.ToggleReadyToPlay(true);
+
+                    if (ClientValues.requireSaveManipulation)
+                    {
+                        ClientValues.ToggleRequireSaveManipulation(false);
+                        SaveManager.ForceSave();
+                    }
                 }
             }
         }

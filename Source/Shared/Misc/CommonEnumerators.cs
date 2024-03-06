@@ -102,6 +102,6 @@
 
         //World generation
 
-        public enum WorldStepMode { Required, Existing, Saved }
+        public enum WorldStepMode { Required, Existing }
     }
 }

@@ -5,7 +5,7 @@ namespace GameServer
 {
     //Class with all the critical variables for the client to work
 
-    public static class Program
+    public static class Master
     {
         //Paths
 
@@ -53,7 +53,7 @@ namespace GameServer
             SetPaths();
             SetCulture();
             LoadResources();
-            Titler.ChangeTitle();
+            ChangeTitle();
 
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
@@ -143,7 +143,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverConfig);
             }
 
-            Logger.WriteToConsole("Loaded server configs");
+            Logger.WriteToConsole("Loaded server configs", Logger.LogMode.Warning);
         }
 
         private static void LoadServerValues()
@@ -157,7 +157,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverValues);
             }
 
-            Logger.WriteToConsole("Loaded server values");
+            Logger.WriteToConsole("Loaded server values", Logger.LogMode.Warning);
         }
 
         private static void LoadEventValues()
@@ -171,7 +171,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, eventValues);
             }
 
-            Logger.WriteToConsole("Loaded event values");
+            Logger.WriteToConsole("Loaded event values", Logger.LogMode.Warning);
         }
 
         private static void LoadSiteValues()
@@ -185,7 +185,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, siteValues);
             }
 
-            Logger.WriteToConsole("Loaded site values");
+            Logger.WriteToConsole("Loaded site values", Logger.LogMode.Warning);
         }
 
         private static void LoadActionValues()
@@ -199,7 +199,13 @@ namespace GameServer
                 Serializer.SerializeToFile(path, actionValues);
             }
 
-            Logger.WriteToConsole("Loaded action values");
+            Logger.WriteToConsole("Loaded action values", Logger.LogMode.Warning);
+        }
+
+        public static void ChangeTitle()
+        {
+            Console.Title = $"Rimworld Together {CommonValues.executableVersion} - " +
+                $"Players [{Network.connectedClients.Count}/{serverConfig.MaxPlayers}]";
         }
     }
 }

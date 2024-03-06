@@ -59,17 +59,27 @@ namespace GameServer
 
                 newDifficultyValues.DiseaseIntervalFactor = difficultyValuesJSON.DiseaseIntervalFactor;
 
+                newDifficultyValues.EnemyReproductionRateFactor = difficultyValuesJSON.EnemyReproductionRateFactor;
+
                 newDifficultyValues.DeepDrillInfestationChanceFactor = difficultyValuesJSON.DeepDrillInfestationChanceFactor;
 
                 newDifficultyValues.FriendlyFireChanceFactor = difficultyValuesJSON.FriendlyFireChanceFactor;
 
                 newDifficultyValues.AllowInstantKillChance = difficultyValuesJSON.AllowInstantKillChance;
 
+                newDifficultyValues.PeacefulTemples = difficultyValuesJSON.PeacefulTemples;
+
+                newDifficultyValues.AllowCaveHives = difficultyValuesJSON.AllowCaveHives;
+
+                newDifficultyValues.UnwaveringPrisoners = difficultyValuesJSON.UnwaveringPrisoners;
+
                 newDifficultyValues.AllowTraps = difficultyValuesJSON.AllowTraps;
 
                 newDifficultyValues.AllowTurrets = difficultyValuesJSON.AllowTurrets;
 
                 newDifficultyValues.AllowMortars = difficultyValuesJSON.AllowMortars;
+
+                newDifficultyValues.ClassicMortars = difficultyValuesJSON.ClassicMortars;
 
                 newDifficultyValues.AdaptationEffectFactor = difficultyValuesJSON.AdaptationEffectFactor;
 
@@ -99,27 +109,25 @@ namespace GameServer
 
         public static void SaveCustomDifficulty(DifficultyValuesFile newDifficultyValues)
         {
-            string path = Path.Combine(Program.corePath, "DifficultyValues.json");
+            string path = Path.Combine(Master.corePath, "DifficultyValues.json");
 
             Serializer.SerializeToFile(path, newDifficultyValues);
-
-            Logger.WriteToConsole("Saved difficulty values");
 
             LoadCustomDifficulty();
         }
 
         public static void LoadCustomDifficulty()
         {
-            string path = Path.Combine(Program.corePath, "DifficultyValues.json");
+            string path = Path.Combine(Master.corePath, "DifficultyValues.json");
 
-            if (File.Exists(path)) Program.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
+            if (File.Exists(path)) Master.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
             else
             {
-                Program.difficultyValues = new DifficultyValuesFile();
-                Serializer.SerializeToFile(path, Program.difficultyValues);
+                Master.difficultyValues = new DifficultyValuesFile();
+                Serializer.SerializeToFile(path, Master.difficultyValues);
             }
 
-            Logger.WriteToConsole("Loaded difficulty values");
+            Logger.WriteToConsole("Loaded difficulty values", Logger.LogMode.Warning);
         }
     }
 }

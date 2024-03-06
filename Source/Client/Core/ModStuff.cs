@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using RimWorld;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,34 +38,22 @@ namespace GameClient
 
 
             listingStandard.GapLine();
-            listingStandard.Label("Misc");
-            if (listingStandard.ButtonText("Convert save for server use"))
-            {
-                ShowConvertMenu();
-            }
+            listingStandard.Label("Compatibility");
+            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertMenu(); }
+            if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
+            if (listingStandard.ButtonTextLabeled("[When Playing] Get server world file", "Get")) { GenerateWorldFile(); }
+            if (listingStandard.ButtonTextLabeled("Open server worlds folder", "Open")) StartProcess(Master.worldSavesFolderPath);
 
             listingStandard.GapLine();
             listingStandard.Label("Experimental");
             listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info on the logs");
-            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open"))
-            {
-                try { System.Diagnostics.Process.Start(Master.mainPath); } catch { }
-            }
+            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.mainPath);
 
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
-            if (listingStandard.ButtonTextLabeled("Check the mod's wiki!", "Open"))
-            {
-                try { System.Diagnostics.Process.Start("https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki"); } catch { }
-            }
-            if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open"))
-            {
-                try { System.Diagnostics.Process.Start("https://discord.gg/NCsArSaqBW"); } catch { }
-            }
-            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open"))
-            {
-                try { System.Diagnostics.Process.Start("https://github.com/Byte-Nova/Rimworld-Together"); } catch { }
-            }
+            if (listingStandard.ButtonTextLabeled("Check the mod's wiki!", "Open")) StartProcess("https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki");
+            if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/NCsArSaqBW");
+            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
@@ -103,7 +92,7 @@ namespace GameClient
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
-            foreach(string str in Directory.GetFiles(Master.savesPath).Where(fetch => fetch.EndsWith(".rws")))
+            foreach(string str in Directory.GetFiles(Master.savesFolderPath).Where(fetch => fetch.EndsWith(".rws")))
             {
                 FloatMenuOption item = new FloatMenuOption(Path.GetFileNameWithoutExtension(str), delegate
                 {
@@ -121,6 +110,56 @@ namespace GameClient
             }
 
             Find.WindowStack.Add(new FloatMenu(list));
+        }
+
+        private void GenerateWorldFile()
+        {
+            if (Network.isConnectedToServer)
+            {
+                WorldValuesFile worldValuesFile = new WorldValuesFile();
+
+                worldValuesFile.seedString = Find.World.info.seedString;
+                worldValuesFile.persistentRandomValue = Find.World.info.persistentRandomValue;
+                worldValuesFile.planetCoverage = Find.World.info.planetCoverage.ToString();
+                worldValuesFile.rainfall = ((int)Find.World.info.overallRainfall).ToString();
+                worldValuesFile.temperature = ((int)Find.World.info.overallTemperature).ToString(); ;
+                worldValuesFile.population = ((int)Find.World.info.overallPopulation).ToString();
+                worldValuesFile.pollution = Find.World.info.pollution.ToString();
+
+                foreach (Faction faction in Find.World.factionManager.AllFactions)
+                {
+                    if (faction.def == Faction.OfPlayer.def) continue;
+                    else worldValuesFile.factions.Add(faction.def.defName);
+                }
+
+                WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
+                XmlParser.GetWorldXmlData(worldDetailsJSON);
+
+                worldValuesFile.tileBiomeDeflate = worldDetailsJSON.tileBiomeDeflate;
+                worldValuesFile.tileElevationDeflate = worldDetailsJSON.tileElevationDeflate;
+                worldValuesFile.tileHillinessDeflate = worldDetailsJSON.tileHillinessDeflate;
+                worldValuesFile.tileTemperatureDeflate = worldDetailsJSON.tileTemperatureDeflate;
+                worldValuesFile.tileRainfallDeflate = worldDetailsJSON.tileRainfallDeflate;
+                worldValuesFile.tileSwampinessDeflate = worldDetailsJSON.tileSwampinessDeflate;
+                worldValuesFile.tileFeatureDeflate = worldDetailsJSON.tileFeatureDeflate;
+                worldValuesFile.tilePollutionDeflate = worldDetailsJSON.tilePollutionDeflate;
+                worldValuesFile.tileRoadOriginsDeflate = worldDetailsJSON.tileRoadOriginsDeflate;
+                worldValuesFile.tileRoadAdjacencyDeflate = worldDetailsJSON.tileRoadAdjacencyDeflate;
+                worldValuesFile.tileRoadDefDeflate = worldDetailsJSON.tileRoadDefDeflate;
+                worldValuesFile.tileRiverOriginsDeflate = worldDetailsJSON.tileRiverOriginsDeflate;
+                worldValuesFile.tileRiverAdjacencyDeflate = worldDetailsJSON.tileRiverAdjacencyDeflate;
+                worldValuesFile.tileRiverDefDeflate = worldDetailsJSON.tileRiverDefDeflate;
+
+                Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
+
+                DialogManager.PushNewDialog(new RT_Dialog_OK("World file was saved correctly!"));
+            }
+        }
+
+        private void StartProcess(string processPath)
+        {
+            try { System.Diagnostics.Process.Start(processPath); } 
+            catch { Log.Warning($"Failed to start process {processPath}"); }
         }
     }
 }

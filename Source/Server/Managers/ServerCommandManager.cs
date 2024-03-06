@@ -433,30 +433,30 @@
 
         private static void ReloadCommandAction()
         {
-            Program.LoadResources();
+            Master.LoadResources();
         }
 
         private static void ModListCommandAction()
         {
-            Logger.WriteToConsole($"Required Mods: [{Program.loadedRequiredMods.Count()}]", Logger.LogMode.Title, false);
+            Logger.WriteToConsole($"Required Mods: [{Master.loadedRequiredMods.Count()}]", Logger.LogMode.Title, false);
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
-            foreach (string str in Program.loadedRequiredMods)
+            foreach (string str in Master.loadedRequiredMods)
             {
                 Logger.WriteToConsole($"{str}", Logger.LogMode.Warning, writeToLogs: false);
             }
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
 
-            Logger.WriteToConsole($"Optional Mods: [{Program.loadedOptionalMods.Count()}]", Logger.LogMode.Title, false);
+            Logger.WriteToConsole($"Optional Mods: [{Master.loadedOptionalMods.Count()}]", Logger.LogMode.Title, false);
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
-            foreach (string str in Program.loadedOptionalMods)
+            foreach (string str in Master.loadedOptionalMods)
             {
                 Logger.WriteToConsole($"{str}", Logger.LogMode.Warning, writeToLogs: false);
             }
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
 
-            Logger.WriteToConsole($"Forbidden Mods: [{Program.loadedForbiddenMods.Count()}]", Logger.LogMode.Title, false);
+            Logger.WriteToConsole($"Forbidden Mods: [{Master.loadedForbiddenMods.Count()}]", Logger.LogMode.Title, false);
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
-            foreach (string str in Program.loadedForbiddenMods)
+            foreach (string str in Master.loadedForbiddenMods)
             {
                 Logger.WriteToConsole($"{str}", Logger.LogMode.Warning, writeToLogs: false);
             }
@@ -538,9 +538,9 @@
 
         private static void WhitelistCommandAction()
         {
-            Logger.WriteToConsole($"Whitelisted usernames: [{Program.whitelist.WhitelistedUsers.Count()}]", Logger.LogMode.Title, false);
+            Logger.WriteToConsole($"Whitelisted usernames: [{Master.whitelist.WhitelistedUsers.Count()}]", Logger.LogMode.Title, false);
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
-            foreach (string str in Program.whitelist.WhitelistedUsers)
+            foreach (string str in Master.whitelist.WhitelistedUsers)
             {
                 Logger.WriteToConsole($"{str}", Logger.LogMode.Warning, writeToLogs: false);
             }
@@ -561,7 +561,7 @@
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (Program.whitelist.WhitelistedUsers.Contains(userFile.username))
+                if (Master.whitelist.WhitelistedUsers.Contains(userFile.username))
                 {
                     Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' " +
                         $"was already whitelisted", Logger.LogMode.Warning);
@@ -587,7 +587,7 @@
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (!Program.whitelist.WhitelistedUsers.Contains(userFile.username))
+                if (!Master.whitelist.WhitelistedUsers.Contains(userFile.username))
                 {
                     Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' " +
                         $"was not whitelisted", Logger.LogMode.Warning);
@@ -630,15 +630,15 @@
 
         private static void EnableDifficultyCommandAction()
         {
-            if (Program.difficultyValues.UseCustomDifficulty == true)
+            if (Master.difficultyValues.UseCustomDifficulty == true)
             {
                 Logger.WriteToConsole($"[ERROR] > Custom difficulty was already enabled", Logger.LogMode.Warning);
             }
 
             else
             {
-                Program.difficultyValues.UseCustomDifficulty = true;
-                CustomDifficultyManager.SaveCustomDifficulty(Program.difficultyValues);
+                Master.difficultyValues.UseCustomDifficulty = true;
+                CustomDifficultyManager.SaveCustomDifficulty(Master.difficultyValues);
 
                 Logger.WriteToConsole($"Custom difficulty is now enabled", Logger.LogMode.Warning);
             }
@@ -646,15 +646,15 @@
 
         private static void DisableDifficultyCommandAction()
         {
-            if (Program.difficultyValues.UseCustomDifficulty == false)
+            if (Master.difficultyValues.UseCustomDifficulty == false)
             {
                 Logger.WriteToConsole($"[ERROR] > Custom difficulty was already disabled", Logger.LogMode.Warning);
             }
 
             else
             {
-                Program.difficultyValues.UseCustomDifficulty = false;
-                CustomDifficultyManager.SaveCustomDifficulty(Program.difficultyValues);
+                Master.difficultyValues.UseCustomDifficulty = false;
+                CustomDifficultyManager.SaveCustomDifficulty(Master.difficultyValues);
 
                 Logger.WriteToConsole($"Custom difficulty is now disabled", Logger.LogMode.Warning);
             }
@@ -662,7 +662,7 @@
 
         private static void QuitCommandAction()
         {
-            Program.isClosing = true;
+            Master.isClosing = true;
 
             Logger.WriteToConsole($"Waiting for all saves to quit", Logger.LogMode.Warning);
 

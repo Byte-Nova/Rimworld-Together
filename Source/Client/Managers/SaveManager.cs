@@ -20,7 +20,6 @@ namespace GameClient
                 FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
                 FticksSinceSave.SetValue(Current.Game.autosaver, 0);
                 Current.Game.autosaver.DoAutosave();
-                ClientValues.ToggleSaving(false);
             }
         }
 
@@ -33,7 +32,7 @@ namespace GameClient
                 Log.Message($"[Rimworld Together] > Receiving save from server");
 
                 customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
-                string filePath = Path.Combine(new string[] { Master.savesPath, customSaveName + ".rws" });
+                string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
 
                 Network.listener.downloadManager = new DownloadManager();
                 Network.listener.downloadManager.PrepareDownload(filePath, fileTransferJSON.fileParts);
@@ -62,7 +61,7 @@ namespace GameClient
             {
                 Log.Message($"[Rimworld Together] > Sending save to server");
 
-                string filePath = Path.Combine(new string[] { Master.savesPath, fileName + ".rws" });
+                string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
 
                 Network.listener.uploadManager = new UploadManager();
                 Network.listener.uploadManager.PrepareUpload(filePath);

@@ -40,7 +40,7 @@ namespace GameServer
 
         private static bool TryFetchAlreadyRegistered(ServerClient client)
         {
-            string[] existingUsers = Directory.GetFiles(Program.usersPath);
+            string[] existingUsers = Directory.GetFiles(Master.usersPath);
 
             foreach (string user in existingUsers)
             {

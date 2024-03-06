@@ -24,6 +24,8 @@ namespace GameClient
                 Master.PreparePaths();
                 Master.CreateUnityDispatcher();
 
+                FactionValues.SetPlayerFactionDefs();
+
                 PreferenceManager.LoadClientPreferences();
             }
         }
