@@ -1118,15 +1118,15 @@ namespace GameClient
             return mapDetailsJSON;
         }
 
-        public static Map StringToMap(MapDetailsJSON mapDetailsJSON, bool containsItems, bool containsHumans, bool containsAnimals, bool lessLoot)
+        public static Map StringToMap(MapDetailsJSON mapDetailsJSON, bool doItems, bool doFactionHumans, bool doNonFactionHumans, bool doAnimals, bool doNonFactionAnimals, bool lessLoot)
         {
             Map map = SetEmptyMap(mapDetailsJSON);
 
-            SetMapThings(mapDetailsJSON, map, containsItems, lessLoot);
+            SetMapThings(mapDetailsJSON, map, doItems, lessLoot);
 
-            if (containsHumans) SetMapHumans(mapDetailsJSON, map);
+            if (doFactionHumans || doNonFactionHumans) SetMapHumans(mapDetailsJSON, map, doFactionHumans, doNonFactionHumans);
 
-            if (containsAnimals) SetMapAnimals(mapDetailsJSON, map);
+            if (doAnimals || doNonFactionAnimals) SetMapAnimals(mapDetailsJSON, map, doAnimals, doNonFactionAnimals);
 
             SetMapTerrain(mapDetailsJSON, map);
 
@@ -1215,7 +1215,7 @@ namespace GameClient
             return toReturn;
         }
 
-        private static void SetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool containsItems, bool lessLoot)
+        private static void SetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool doItems, bool lessLoot)
         {
             List<Thing> thingsToGetInThisTile = new List<Thing>();
 
@@ -1229,7 +1229,7 @@ namespace GameClient
                 catch { }
             }
 
-            if (containsItems)
+            if (doItems)
             {
                 Random rnd = new Random();
 
@@ -1257,53 +1257,65 @@ namespace GameClient
             }
         }
 
-        private static void SetMapHumans(MapDetailsJSON mapDetailsJSON, Map map)
+        private static void SetMapHumans(MapDetailsJSON mapDetailsJSON, Map map, bool doHumans, bool doNonFactionHumans)
         {
-            foreach (HumanDetailsJSON pawn in mapDetailsJSON.nonFactionHumans)
+            if (doNonFactionHumans)
             {
-                try
+                foreach (HumanDetailsJSON pawn in mapDetailsJSON.nonFactionHumans)
                 {
-                    Pawn human = HumanScribeManager.StringToHuman(pawn);
-                    GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                    try
+                    {
+                        Pawn human = HumanScribeManager.StringToHuman(pawn);
+                        GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                    }
+                    catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
                 }
-                catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
             }
 
-            foreach (HumanDetailsJSON pawn in mapDetailsJSON.factionHumans)
+            if (doHumans)
             {
-                try
+                foreach (HumanDetailsJSON pawn in mapDetailsJSON.factionHumans)
                 {
-                    Pawn human = HumanScribeManager.StringToHuman(pawn);
-                    human.SetFaction(FactionValues.neutralPlayer);
+                    try
+                    {
+                        Pawn human = HumanScribeManager.StringToHuman(pawn);
+                        human.SetFaction(FactionValues.neutralPlayer);
 
-                    GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                        GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                    }
+                    catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
                 }
-                catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
             }
         }
 
-        private static void SetMapAnimals(MapDetailsJSON mapDetailsJSON, Map map)
+        private static void SetMapAnimals(MapDetailsJSON mapDetailsJSON, Map map, bool doAnimals, bool doNonFactionAnimals)
         {
-            foreach (AnimalDetailsJSON pawn in mapDetailsJSON.nonFactionAnimals)
+            if (doNonFactionAnimals)
             {
-                try
+                foreach (AnimalDetailsJSON pawn in mapDetailsJSON.nonFactionAnimals)
                 {
-                    Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
-                    GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                    try
+                    {
+                        Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
+                        GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                    }
+                    catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
                 }
-                catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
             }
 
-            foreach (AnimalDetailsJSON pawn in mapDetailsJSON.factionAnimals)
+            if (doAnimals)
             {
-                try
+                foreach (AnimalDetailsJSON pawn in mapDetailsJSON.factionAnimals)
                 {
-                    Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
-                    animal.SetFaction(FactionValues.neutralPlayer);
+                    try
+                    {
+                        Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
+                        animal.SetFaction(FactionValues.neutralPlayer);
 
-                    GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                        GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                    }
+                    catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
                 }
-                catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
             }
         }
 

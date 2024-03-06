@@ -86,9 +86,10 @@ namespace GameClient
 
         private static void VisitMap(MapDetailsJSON mapDetailsJSON, VisitDetailsJSON visitDetailsJSON)
         {
-            visitMap = OnlineVisitHelper.GetMapForVisit(mapDetailsJSON);
+            visitMap = OnlineVisitHelper.GetMapForVisit(FetchMode.Player, mapDetailsJSON);
             factionPawns = OnlineVisitHelper.GetCaravanPawns(FetchMode.Player, null);
             mapThings = OnlineVisitHelper.GetMapThings(visitMap);
+            Log.Warning(mapThings.Count().ToString());
             syncedTime = false;
 
             VisitThingHelper.SpawnPawnsForVisit(FetchMode.Player, visitDetailsJSON);
@@ -129,9 +130,10 @@ namespace GameClient
                 MapDetailsJSON mapDetailsJSON = MapScribeManager.MapToString(Find.Maps.Find(fetch => 
                     fetch.Tile == ClientValues.chosenSettlement.Tile), true, false, false);
 
-                visitMap = OnlineVisitHelper.GetMapForVisit(mapDetailsJSON);
+                visitMap = OnlineVisitHelper.GetMapForVisit(FetchMode.Host, mapDetailsJSON);
                 factionPawns = OnlineVisitHelper.GetMapPawns(FetchMode.Host, null);
                 mapThings = OnlineVisitHelper.GetMapThings(visitMap);
+                Log.Warning(mapThings.Count().ToString());
                 syncedTime = true;
 
                 SendRequestedMap(visitDetailsJSON);
@@ -195,7 +197,7 @@ namespace GameClient
             visitDetailsJSON.mapHumans = OnlineVisitHelper.GetHumansForVisit(FetchMode.Host);
             visitDetailsJSON.mapAnimals = OnlineVisitHelper.GetAnimalsForVisit(FetchMode.Host);
 
-            MapDetailsJSON mapDetailsJSON = MapScribeManager.MapToString(visitMap, true, true, true);
+            MapDetailsJSON mapDetailsJSON = MapManager.ParseMap(visitMap, true, true, true, true);
             visitDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
@@ -528,9 +530,10 @@ namespace GameClient
             return toReturn;
         }
 
-        public static Map GetMapForVisit(MapDetailsJSON mapDetailsJSON)
+        public static Map GetMapForVisit(FetchMode mode, MapDetailsJSON mapDetailsJSON)
         {
-            return MapScribeManager.StringToMap(mapDetailsJSON, true, true, true, false);
+            if (mode == FetchMode.Host) return MapScribeManager.StringToMap(mapDetailsJSON, false, false, false, false, false, false);
+            else return MapScribeManager.StringToMap(mapDetailsJSON, true, false, true, false, true, false);
         }
 
         public static List<byte[]> GetHumansForVisit(FetchMode mode)

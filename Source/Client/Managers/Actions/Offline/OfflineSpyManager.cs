@@ -115,7 +115,7 @@ namespace GameClient
 
         private static void PrepareMapForSpy(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, false, false, false);
+            Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, false, false, false, false, false);
 
             HandleMapFactions(map);
 
