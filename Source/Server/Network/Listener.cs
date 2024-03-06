@@ -96,7 +96,7 @@ namespace GameServer
             {
                 while (true)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(1);
 
                     if (targetClient.listener.disconnectFlag) break;
                 }
@@ -116,7 +116,7 @@ namespace GameServer
             {
                 while (true)
                 {
-                    Thread.Sleep(10000);
+                    Thread.Sleep(5000);
 
                     if (targetClient.listener.KAFlag) targetClient.listener.KAFlag = false;
                     else targetClient.listener.disconnectFlag = true;
