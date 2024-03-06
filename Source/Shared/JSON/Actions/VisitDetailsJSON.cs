@@ -12,14 +12,15 @@ namespace Shared
         public string fromTile;
         public string targetTile;
 
-        public List<string> mapHumans = new List<string>();
-        public List<string> mapAnimals = new List<string>();
+        public List<byte[]> mapHumans = new List<byte[]>();
+        public List<byte[]> mapAnimals = new List<byte[]>();
 
-        public List<string> caravanHumans = new List<string>();
-        public List<string> caravanAnimals = new List<string>();
+        public List<byte[]> caravanHumans = new List<byte[]>();
+        public List<byte[]> caravanAnimals = new List<byte[]>();
 
         public List<string> pawnActionDefNames = new List<string>();
         public List<string> actionTargetA = new List<string>();
+        public List<int> actionTargetIndex = new List<int>();
         public List<int> actionTargetType = new List<int>();
 
         public List<bool> isDrafted = new List<bool>();
