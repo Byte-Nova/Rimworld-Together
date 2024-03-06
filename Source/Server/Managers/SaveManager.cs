@@ -6,8 +6,8 @@ namespace GameServer
     {
         public static void ReceiveSavePartFromClient(ServerClient client, Packet packet)
         {
-            string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
-            string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
+            string baseClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsave");
+            string tempClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsavetemp");
 
             FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
 
@@ -42,8 +42,8 @@ namespace GameServer
 
         public static void SendSavePartToClient(ServerClient client)
         {
-            string baseClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsave");
-            string tempClientSavePath = Path.Combine(Program.savesPath, client.username + ".mpsavetemp");
+            string baseClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsave");
+            string tempClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsavetemp");
 
             if (client.listener.uploadManager == null)
             {
@@ -97,7 +97,7 @@ namespace GameServer
 
         public static bool CheckIfUserHasSave(ServerClient client)
         {
-            string[] saves = Directory.GetFiles(Program.savesPath);
+            string[] saves = Directory.GetFiles(Master.savesPath);
             foreach(string save in saves)
             {
                 if (Path.GetFileNameWithoutExtension(save) == client.username)
@@ -111,7 +111,7 @@ namespace GameServer
 
         public static byte[] GetUserSaveFromUsername(string username)
         {
-            string[] saves = Directory.GetFiles(Program.savesPath);
+            string[] saves = Directory.GetFiles(Master.savesPath);
             foreach (string save in saves)
             {
                 if (Path.GetFileNameWithoutExtension(save) == username)
@@ -130,7 +130,7 @@ namespace GameServer
             {
                 client.listener.disconnectFlag = true;
 
-                string[] saves = Directory.GetFiles(Program.savesPath);
+                string[] saves = Directory.GetFiles(Master.savesPath);
 
                 string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == client.username);
                 if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
@@ -160,7 +160,7 @@ namespace GameServer
             ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
             if (connectedUser != null) connectedUser.listener.disconnectFlag = true;
 
-            string[] saves = Directory.GetFiles(Program.savesPath);
+            string[] saves = Directory.GetFiles(Master.savesPath);
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);
             if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 

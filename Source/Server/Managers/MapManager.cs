@@ -10,7 +10,7 @@ namespace GameServer
             mapFileJSON.mapOwner = client.username;
 
             byte[] compressedMapBytes = GZip.Compress(Serializer.ConvertObjectToBytes(mapFileJSON));
-            File.WriteAllBytes(Path.Combine(Program.mapsPath, mapFileJSON.mapTile + ".mpmap"), compressedMapBytes);
+            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileJSON.mapTile + ".mpmap"), compressedMapBytes);
 
             Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileJSON.mapTile}");
         }
@@ -19,7 +19,7 @@ namespace GameServer
         {
             if (mapFile == null) return;
 
-            File.Delete(Path.Combine(Program.mapsPath, mapFile.mapTile + ".json"));
+            File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + ".json"));
 
             Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", Logger.LogMode.Warning);
         }
@@ -28,7 +28,7 @@ namespace GameServer
         {
             List<MapFileJSON> mapDetails = new List<MapFileJSON>();
 
-            string[] maps = Directory.GetFiles(Program.mapsPath);
+            string[] maps = Directory.GetFiles(Master.mapsPath);
             foreach (string str in maps)
             {
                 byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(str));

@@ -6,7 +6,7 @@ using Verse;
 
 namespace GameClient
 {
-    public class SelectStartingSitePatch
+    public class SelectStartingSitePatches
     {
         [HarmonyPatch(typeof(Page_SelectStartingSite), "DoCustomBottomButtons")]
         public static class PathSelectStartingSitePage

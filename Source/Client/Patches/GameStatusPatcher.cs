@@ -27,8 +27,9 @@ namespace GameClient
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
                     Network.listener.dataQueue.Enqueue(packet);
 
-                    if (!ClientValues.requireSaveManipulation) SaveManager.ForceSave();
-                    else
+                    SaveManager.ForceSave();
+
+                    if (ClientValues.requireSaveManipulation)
                     {
                         RT_Dialog_OK d1 = new RT_Dialog_OK("Save will reload to ensure synchronization",
                             delegate { WorldGeneratorManager.GetWorldFromServer(); });

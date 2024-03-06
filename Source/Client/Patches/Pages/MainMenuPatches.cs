@@ -5,7 +5,7 @@ using Verse;
 
 namespace GameClient
 {
-    public class MainMenuPatch
+    public class MainMenuPatches
     {
         [HarmonyPatch(typeof(MainMenuDrawer), "DoMainMenuControls")]
         public static class PatchButton

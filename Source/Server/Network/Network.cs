@@ -9,8 +9,8 @@ namespace GameServer
     public static class Network
     {
         //IP and Port that the connection will be bound to
-        private static IPAddress localAddress = IPAddress.Parse(Program.serverConfig.IP);
-        private static int port = int.Parse(Program.serverConfig.Port);
+        private static IPAddress localAddress = IPAddress.Parse(Master.serverConfig.IP);
+        private static int port = int.Parse(Master.serverConfig.Port);
 
         //TCP listener that will handle the connection with the clients, and list of currently connected clients
         private static TcpListener connection;
@@ -25,10 +25,10 @@ namespace GameServer
 
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
 
-            Logger.WriteToConsole("Type 'help' to get a list of available commands");
-            Logger.WriteToConsole($"Listening for users at {localAddress}:{port}");
-            Logger.WriteToConsole("Server launched");
-            Titler.ChangeTitle();
+            Logger.WriteToConsole("Type 'help' to get a list of available commands", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"Listening for users at {localAddress}:{port}", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Server launched", Logger.LogMode.Warning);
+            Master.ChangeTitle();
 
             while (true) ListenForIncomingUsers();
         }
@@ -47,11 +47,11 @@ namespace GameServer
             Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Health);
             Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
 
-            if (Program.isClosing) newServerClient.listener.disconnectFlag = true;
-            else if (Program.worldValues == null && connectedClients.Count() > 0) newServerClient.listener.disconnectFlag = true;
+            if (Master.isClosing) newServerClient.listener.disconnectFlag = true;
+            else if (Master.worldValues == null && connectedClients.Count() > 0) newServerClient.listener.disconnectFlag = true;
             else
             {
-                if (connectedClients.ToArray().Count() >= int.Parse(Program.serverConfig.MaxPlayers))
+                if (connectedClients.ToArray().Count() >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
                     UserManager_Joinings.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
                     Logger.WriteToConsole($"[Warning] > Server Full", Logger.LogMode.Warning);
@@ -61,7 +61,7 @@ namespace GameServer
                 {
                     connectedClients.Add(newServerClient);
 
-                    Titler.ChangeTitle();
+                    Master.ChangeTitle();
 
                     Logger.WriteToConsole($"[Connect] > {newServerClient.username} | {newServerClient.SavedIP}");
                 }
@@ -79,7 +79,7 @@ namespace GameServer
 
                 UserManager.SendPlayerRecount();
 
-                Titler.ChangeTitle();
+                Master.ChangeTitle();
 
                 Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
             }

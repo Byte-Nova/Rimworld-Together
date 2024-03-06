@@ -1,4 +1,7 @@
-﻿namespace GameServer
+﻿using System;
+using System.Collections.Generic;
+
+namespace Shared
 {
     [Serializable]
     public class WorldValuesFile

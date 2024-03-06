@@ -7,7 +7,7 @@ using Verse.Sound;
 
 namespace GameClient
 {
-    public class SelectScenarioPatch
+    public class SelectScenarioPatches
     {
         [HarmonyPatch(typeof(Page_SelectScenario), "DoWindowContents")]
         public static class PatchSelectScenarioPage

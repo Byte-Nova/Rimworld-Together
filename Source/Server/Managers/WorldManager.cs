@@ -6,7 +6,7 @@ namespace GameServer
     {
         private static string worldFileName = "WorldValues.json";
 
-        private static string worldFilePath = Path.Combine(Program.corePath, worldFileName);
+        private static string worldFilePath = Path.Combine(Master.corePath, worldFileName);
 
         public static void ParseWorldPacket(ServerClient client, Packet packet)
         {
@@ -53,7 +53,7 @@ namespace GameServer
             worldValues.tileRiverAdjacencyDeflate = worldDetailsJSON.tileRiverAdjacencyDeflate;
             worldValues.tileRiverDefDeflate = worldDetailsJSON.tileRiverDefDeflate;
 
-            Program.worldValues = worldValues;
+            Master.worldValues = worldValues;
             Serializer.SerializeToFile(worldFilePath, worldValues);
             Logger.WriteToConsole($"[Save world] > {client.username}", Logger.LogMode.Title);
         }
@@ -69,7 +69,7 @@ namespace GameServer
 
         public static void SendWorldFile(ServerClient client)
         {
-            WorldValuesFile worldValues = Program.worldValues;
+            WorldValuesFile worldValues = Master.worldValues;
 
             WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
@@ -106,9 +106,9 @@ namespace GameServer
         {
             if (File.Exists(worldFilePath))
             {
-                Program.worldValues = Serializer.SerializeFromFile<WorldValuesFile>(worldFilePath);
+                Master.worldValues = Serializer.SerializeFromFile<WorldValuesFile>(worldFilePath);
 
-                Logger.WriteToConsole("Loaded world values");
+                Logger.WriteToConsole("Loaded world values", Logger.LogMode.Warning);
             }
 
             else Logger.WriteToConsole("[Warning] > World is missing. Join server to create it", Logger.LogMode.Warning);   

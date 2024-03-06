@@ -8,7 +8,7 @@ using Verse;
 
 namespace GameClient
 {
-    public class CreateWorldParamsPatch
+    public class CreateWorldParamsPatches
     {
         [HarmonyPatch(typeof(Page_CreateWorldParams), "DoWindowContents")]
         public static class PatchWhenHost

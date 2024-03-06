@@ -20,11 +20,12 @@ namespace GameClient
         //Paths
 
         public static string mainPath;
-        public static string modPath;
+        public static string modFolderPath;
         public static string connectionDataPath;
         public static string loginDataPath;
         public static string clientPreferencesPath;
-        public static string savesPath;
+        public static string savesFolderPath;
+        public static string worldSavesFolderPath;
 
         public static void PrepareCulture()
         {
@@ -37,13 +38,16 @@ namespace GameClient
         public static void PreparePaths()
         {
             mainPath = GenFilePaths.SaveDataFolderPath;
-            modPath = Path.Combine(mainPath, "Rimworld Together");
-            connectionDataPath = Path.Combine(modPath, "ConnectionData.json");
-            loginDataPath = Path.Combine(modPath, "LoginData.json");
-            clientPreferencesPath = Path.Combine(modPath, "Preferences.json");
-            savesPath = GenFilePaths.SavedGamesFolderPath;
+            modFolderPath = Path.Combine(mainPath, "Rimworld Together");
 
-            if (!Directory.Exists(modPath)) Directory.CreateDirectory(modPath);
+            worldSavesFolderPath = Path.Combine(modFolderPath, "Saved Server Worlds");
+            connectionDataPath = Path.Combine(modFolderPath, "ConnectionData.json");
+            clientPreferencesPath = Path.Combine(modFolderPath, "Preferences.json");
+            loginDataPath = Path.Combine(modFolderPath, "LoginData.json");
+            savesFolderPath = GenFilePaths.SavedGamesFolderPath;
+
+            if (!Directory.Exists(modFolderPath)) Directory.CreateDirectory(modFolderPath);
+            if (!Directory.Exists(worldSavesFolderPath)) Directory.CreateDirectory(worldSavesFolderPath);
         }
 
         public static void CreateUnityDispatcher()

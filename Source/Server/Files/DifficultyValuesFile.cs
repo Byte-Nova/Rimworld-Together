@@ -47,17 +47,27 @@
 
         public float DiseaseIntervalFactor = 1.0f;
 
+        public float EnemyReproductionRateFactor = 1.0f;
+
         public float DeepDrillInfestationChanceFactor = 1.0f;
 
         public float FriendlyFireChanceFactor = 0.4f;
 
         public float AllowInstantKillChance = 1.0f;
 
+        public bool PeacefulTemples = false;
+
+        public bool AllowCaveHives = true;
+
+        public bool UnwaveringPrisoners = true;
+
         public bool AllowTraps = true;
 
         public bool AllowTurrets = true;
 
         public bool AllowMortars = true;
+
+        public bool ClassicMortars = false;
 
         public float AdaptationEffectFactor = 0.9f;
 

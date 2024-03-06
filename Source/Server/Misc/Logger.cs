@@ -37,7 +37,7 @@ namespace GameServer
 
             DateTime dateTime = DateTime.Now.Date;
             string nowFileName = (dateTime.Month + "-" + dateTime.Day + "-" + dateTime.Year).ToString();
-            string nowFullPath = Program.logsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+            string nowFullPath = Master.logsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();

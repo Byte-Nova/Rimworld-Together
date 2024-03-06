@@ -72,10 +72,7 @@ namespace GameClient
                 {
                     PostWorldGeneration();
 
-                    if (!firstGeneration)
-                    {
-                        ClientValues.ToggleRequireSaveManipulation(true);
-                    }
+                    if (!firstGeneration) ClientValues.ToggleRequireSaveManipulation(true);
                 });
             }, "GeneratingWorld", doAsynchronously: true, null);
         }
@@ -126,21 +123,7 @@ namespace GameClient
                 worldDetailsJSON.factions.Add(faction.defName);
             }
 
-            string filePath = Path.Combine(new string[] { Master.savesPath, SaveManager.customSaveName + ".rws" });
-            worldDetailsJSON.tileBiomeDeflate = XmlParser.GetDataFromXML(filePath, "tileBiomeDeflate");
-            worldDetailsJSON.tileElevationDeflate = XmlParser.GetDataFromXML(filePath, "tileElevationDeflate");
-            worldDetailsJSON.tileHillinessDeflate = XmlParser.GetDataFromXML(filePath, "tileHillinessDeflate");
-            worldDetailsJSON.tileTemperatureDeflate = XmlParser.GetDataFromXML(filePath, "tileTemperatureDeflate");
-            worldDetailsJSON.tileRainfallDeflate = XmlParser.GetDataFromXML(filePath, "tileRainfallDeflate");
-            worldDetailsJSON.tileSwampinessDeflate = XmlParser.GetDataFromXML(filePath, "tileSwampinessDeflate");
-            worldDetailsJSON.tileFeatureDeflate = XmlParser.GetDataFromXML(filePath, "tileFeatureDeflate");
-            worldDetailsJSON.tilePollutionDeflate = XmlParser.GetDataFromXML(filePath, "tilePollutionDeflate");
-            worldDetailsJSON.tileRoadOriginsDeflate = XmlParser.GetDataFromXML(filePath, "tileRoadOriginsDeflate");
-            worldDetailsJSON.tileRoadAdjacencyDeflate = XmlParser.GetDataFromXML(filePath, "tileRoadAdjacencyDeflate");
-            worldDetailsJSON.tileRoadDefDeflate = XmlParser.GetDataFromXML(filePath, "tileRoadDefDeflate");
-            worldDetailsJSON.tileRiverOriginsDeflate = XmlParser.GetDataFromXML(filePath, "tileRiverOriginsDeflate");
-            worldDetailsJSON.tileRiverAdjacencyDeflate = XmlParser.GetDataFromXML(filePath, "tileRiverAdjacencyDeflate");
-            worldDetailsJSON.tileRiverDefDeflate = XmlParser.GetDataFromXML(filePath, "tileRiverDefDeflate");
+            worldDetailsJSON = XmlParser.GetWorldXmlData(worldDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             Network.listener.dataQueue.Enqueue(packet);
@@ -148,24 +131,7 @@ namespace GameClient
 
         public static void GetWorldFromServer()
         {
-            SaveManager.ForceSave();
-
-            string filePath = Path.Combine(new string[] { Master.savesPath, SaveManager.customSaveName + ".rws" });
-            XmlParser.SetDataIntoXML(filePath, "tileBiomeDeflate", cachedWorldDetails.tileBiomeDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileElevationDeflate", cachedWorldDetails.tileElevationDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileHillinessDeflate", cachedWorldDetails.tileHillinessDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileTemperatureDeflate", cachedWorldDetails.tileTemperatureDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileRainfallDeflate", cachedWorldDetails.tileRainfallDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileSwampinessDeflate", cachedWorldDetails.tileSwampinessDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileFeatureDeflate", cachedWorldDetails.tileFeatureDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tilePollutionDeflate", cachedWorldDetails.tilePollutionDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileRoadOriginsDeflate", cachedWorldDetails.tileRoadOriginsDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileRoadAdjacencyDeflate", cachedWorldDetails.tileRoadAdjacencyDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileRoadDefDeflate", cachedWorldDetails.tileRoadDefDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileRiverOriginsDeflate", cachedWorldDetails.tileRiverOriginsDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileRiverAdjacencyDeflate", cachedWorldDetails.tileRiverAdjacencyDeflate);
-            XmlParser.SetDataIntoXML(filePath, "tileRiverDefDeflate", cachedWorldDetails.tileRiverDefDeflate);
-
+            XmlParser.ModifyWorldXml(cachedWorldDetails);
             GameDataSaveLoader.LoadGame(SaveManager.customSaveName);
         }
 

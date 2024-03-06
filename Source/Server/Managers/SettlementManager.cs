@@ -30,7 +30,7 @@ namespace GameServer
                 SettlementFile settlementFile = new SettlementFile();
                 settlementFile.tile = settlementDetailsJSON.tile;
                 settlementFile.owner = client.username;
-                Serializer.SerializeToFile(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"), settlementFile);
+                Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"), settlementFile);
 
                 settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
                 foreach (ServerClient cClient in Network.connectedClients.ToArray())
@@ -60,7 +60,7 @@ namespace GameServer
                 if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client);
                 else
                 {
-                    File.Delete(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"));
+                    File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
 
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
                     Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
@@ -76,7 +76,7 @@ namespace GameServer
 
             else
             {
-                File.Delete(Path.Combine(Program.settlementsPath, settlementFile.tile + ".json"));
+                File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
 
                 Logger.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", Logger.LogMode.Warning);
             }
@@ -84,7 +84,7 @@ namespace GameServer
 
         public static bool CheckIfTileIsInUse(string tileToCheck)
         {
-            string[] settlements = Directory.GetFiles(Program.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach(string settlement in settlements)
             {
                 SettlementFile settlementJSON = Serializer.SerializeFromFile<SettlementFile>(settlement);
@@ -96,7 +96,7 @@ namespace GameServer
 
         public static SettlementFile GetSettlementFileFromTile(string tileToGet)
         {
-            string[] settlements = Directory.GetFiles(Program.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
@@ -108,7 +108,7 @@ namespace GameServer
 
         public static SettlementFile GetSettlementFileFromUsername(string usernameToGet)
         {
-            string[] settlements = Directory.GetFiles(Program.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
@@ -122,7 +122,7 @@ namespace GameServer
         {
             List<SettlementFile> settlementList = new List<SettlementFile>();
 
-            string[] settlements = Directory.GetFiles(Program.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
                 settlementList.Add(Serializer.SerializeFromFile<SettlementFile>(settlement));
@@ -135,7 +135,7 @@ namespace GameServer
         {
             List<SettlementFile> settlementList = new List<SettlementFile>();
 
-            string[] settlements = Directory.GetFiles(Program.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
