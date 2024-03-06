@@ -30,7 +30,7 @@ namespace GameServer
 
         private static ServerOverallJSON GetServerValues(ServerOverallJSON so)
         {
-            ServerValuesFile svf = Program.serverValues;
+            ServerValuesFile svf = Master.serverValues;
             so.AllowCustomScenarios = svf.AllowCustomScenarios;
 
             return so;
@@ -47,7 +47,7 @@ namespace GameServer
 
         private static ServerOverallJSON GetEventCosts(ServerOverallJSON so)
         {
-            EventValuesFile ev = Program.eventValues;
+            EventValuesFile ev = Master.eventValues;
             so.RaidCost = ev.RaidCost;
             so.InfestationCost = ev.InfestationCost;
             so.MechClusterCost = ev.MechClusterCost;
@@ -63,7 +63,7 @@ namespace GameServer
 
         private static ServerOverallJSON GetSiteDetails(ServerOverallJSON so)
         {
-            SiteValuesFile sv = Program.siteValues;
+            SiteValuesFile sv = Master.siteValues;
             so.PersonalFarmlandCost = sv.PersonalFarmlandCost;
             so.FactionFarmlandCost = sv.FactionFarmlandCost;
             so.FarmlandRewardCount = sv.FarmlandRewardCount;
@@ -105,7 +105,7 @@ namespace GameServer
 
         private static ServerOverallJSON GetServerDifficulty(ServerOverallJSON so)
         {
-            DifficultyValuesFile dv = Program.difficultyValues;
+            DifficultyValuesFile dv = Master.difficultyValues;
             so.UsingCustomDifficulty = dv.UseCustomDifficulty;
             so.ThreatScale = dv.ThreatScale;
             so.ThreatScale = dv.ThreatScale;
@@ -129,12 +129,17 @@ namespace GameServer
             so.ManhunterChanceOnDamageFactor = dv.ManhunterChanceOnDamageFactor;
             so.PlayerPawnInfectionChanceFactor = dv.PlayerPawnInfectionChanceFactor;
             so.DiseaseIntervalFactor = dv.DiseaseIntervalFactor;
+            so.EnemyReproductionRateFactor = dv.EnemyReproductionRateFactor;
             so.DeepDrillInfestationChanceFactor = dv.DeepDrillInfestationChanceFactor;
             so.FriendlyFireChanceFactor = dv.FriendlyFireChanceFactor;
             so.AllowInstantKillChance = dv.AllowInstantKillChance;
+            so.PeacefulTemples = dv.PeacefulTemples;
+            so.AllowCaveHives = dv.AllowCaveHives;
+            so.UnwaveringPrisoners = dv.UnwaveringPrisoners;
             so.AllowTraps = dv.AllowTraps;
             so.AllowTurrets = dv.AllowTurrets;
             so.AllowMortars = dv.AllowMortars;
+            so.ClassicMortars = dv.ClassicMortars;
             so.AdaptationEffectFactor = dv.AdaptationEffectFactor;
             so.AdaptationGrowthRateFactorOverZero = dv.AdaptationGrowthRateFactorOverZero;
             so.FixedWealthMode = dv.FixedWealthMode;
@@ -183,7 +188,7 @@ namespace GameServer
 
         private static ServerOverallJSON GetActionsCost(ServerClient client, ServerOverallJSON so)
         {
-            ActionValuesFile av = Program.actionValues;
+            ActionValuesFile av = Master.actionValues;
 
             so.SpyCost = av.SpyCost;
 

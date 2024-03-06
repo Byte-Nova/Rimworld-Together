@@ -23,7 +23,7 @@ namespace GameServer
 
         public static UserFile GetUserFile(ServerClient client)
         {
-            string[] userFiles = Directory.GetFiles(Program.usersPath);
+            string[] userFiles = Directory.GetFiles(Master.usersPath);
 
             foreach(string userFile in userFiles)
             {
@@ -36,7 +36,7 @@ namespace GameServer
 
         public static UserFile GetUserFileFromName(string username)
         {
-            string[] userFiles = Directory.GetFiles(Program.usersPath);
+            string[] userFiles = Directory.GetFiles(Master.usersPath);
 
             foreach (string userFile in userFiles)
             {
@@ -51,20 +51,20 @@ namespace GameServer
         {
             List<UserFile> userFiles = new List<UserFile>();
 
-            string[] paths = Directory.GetFiles(Program.usersPath);
+            string[] paths = Directory.GetFiles(Master.usersPath);
             foreach (string path in paths) userFiles.Add(Serializer.SerializeFromFile<UserFile>(path));
             return userFiles.ToArray();
         }
 
         public static void SaveUserFile(ServerClient client, UserFile userFile)
         {
-            string savePath = Path.Combine(Program.usersPath, client.username + ".json");
+            string savePath = Path.Combine(Master.usersPath, client.username + ".json");
             Serializer.SerializeToFile(savePath, userFile);
         }
 
         public static void SaveUserFileFromName(string username, UserFile userFile)
         {
-            string savePath = Path.Combine(Program.usersPath, username + ".json");
+            string savePath = Path.Combine(Master.usersPath, username + ".json");
             Serializer.SerializeToFile(savePath, userFile);
         }
 
@@ -95,7 +95,7 @@ namespace GameServer
 
         public static bool CheckIfUserExists(ServerClient client)
         {
-            string[] existingUsers = Directory.GetFiles(Program.usersPath);
+            string[] existingUsers = Directory.GetFiles(Master.usersPath);
 
             foreach (string user in existingUsers)
             {
@@ -182,10 +182,10 @@ namespace GameServer
 
         public static bool CheckWhitelist(ServerClient client)
         {
-            if (!Program.whitelist.UseWhitelist) return true;
+            if (!Master.whitelist.UseWhitelist) return true;
             else
             {
-                foreach(string str in Program.whitelist.WhitelistedUsers)
+                foreach(string str in Master.whitelist.WhitelistedUsers)
                 {
                     if (str == client.username) return true;
                 }

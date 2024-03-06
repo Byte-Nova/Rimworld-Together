@@ -40,23 +40,4 @@ namespace GameClient
             return true;
         }
     }
-
-    //TODO
-    //Check online sites working without this patch
-
-    //[HarmonyPatch(typeof(SitePartWorker_Outpost), "GetEnemiesCount")]
-    //public static class PatchPawnGroupMakerDisplay
-    //{
-    //    [HarmonyPrefix]
-    //    public static bool DoPre(ref int __result)
-    //    {
-    //        if (Network.isConnectedToServer)
-    //        {
-    //            __result = 25;
-
-    //            return false;
-    //        }
-    //        else return true;
-    //    }
-    //}
 }

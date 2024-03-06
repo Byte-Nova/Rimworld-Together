@@ -44,12 +44,17 @@ namespace Shared
         public float ManhunterChanceOnDamageFactor;
         public float PlayerPawnInfectionChanceFactor;
         public float DiseaseIntervalFactor;
+        public float EnemyReproductionRateFactor;
         public float DeepDrillInfestationChanceFactor;
         public float FriendlyFireChanceFactor;
         public float AllowInstantKillChance;
+        public bool PeacefulTemples;
+        public bool AllowCaveHives;
+        public bool UnwaveringPrisoners;
         public bool AllowTraps;
         public bool AllowTurrets;
         public bool AllowMortars;
+        public bool ClassicMortars;
         public float AdaptationEffectFactor;
         public float AdaptationGrowthRateFactorOverZero;
         public bool FixedWealthMode;

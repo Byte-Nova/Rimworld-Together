@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void AddUserToWhitelist(string username)
         {
-            Program.whitelist.WhitelistedUsers.Add(username);
+            Master.whitelist.WhitelistedUsers.Add(username);
 
             SaveWhitelistFile();
 
@@ -16,7 +16,7 @@ namespace GameServer
 
         public static void RemoveUserFromWhitelist(string username)
         {
-            Program.whitelist.WhitelistedUsers.Remove(username);
+            Master.whitelist.WhitelistedUsers.Remove(username);
 
             SaveWhitelistFile();
 
@@ -26,32 +26,32 @@ namespace GameServer
 
         public static void ToggleWhitelist()
         {
-            Program.whitelist.UseWhitelist = !Program.whitelist.UseWhitelist;
+            Master.whitelist.UseWhitelist = !Master.whitelist.UseWhitelist;
 
             SaveWhitelistFile();
 
-            if (Program.whitelist.UseWhitelist) Logger.WriteToConsole("Whitelist is now ON", Logger.LogMode.Warning);
+            if (Master.whitelist.UseWhitelist) Logger.WriteToConsole("Whitelist is now ON", Logger.LogMode.Warning);
             else Logger.WriteToConsole("Whitelist is now OFF", Logger.LogMode.Warning);
         }
 
         private static void SaveWhitelistFile()
         {
-            Serializer.SerializeToFile(Path.Combine(Program.corePath, "Whitelist.json"), 
-                Program.whitelist);
+            Serializer.SerializeToFile(Path.Combine(Master.corePath, "Whitelist.json"), 
+                Master.whitelist);
         }
 
         public static void LoadServerWhitelist()
         {
-            string path = Path.Combine(Program.corePath, "Whitelist.json");
+            string path = Path.Combine(Master.corePath, "Whitelist.json");
 
-            if (File.Exists(path)) Program.whitelist = Serializer.SerializeFromFile<WhitelistFile>(path);
+            if (File.Exists(path)) Master.whitelist = Serializer.SerializeFromFile<WhitelistFile>(path);
             else
             {
-                Program.whitelist = new WhitelistFile();
-                Serializer.SerializeToFile(path, Program.whitelist);
+                Master.whitelist = new WhitelistFile();
+                Serializer.SerializeToFile(path, Master.whitelist);
             }
 
-            Logger.WriteToConsole("Loaded server whitelist");
+            Logger.WriteToConsole("Loaded server whitelist", Logger.LogMode.Warning);
         }
     }
 }

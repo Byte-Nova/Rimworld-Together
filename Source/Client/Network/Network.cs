@@ -24,7 +24,6 @@ namespace GameClient
         {
             if (TryConnectToServer())
             {
-                ClientValues.ManageDevOptions();
                 DialogManager.PopWaitDialog();
                 SiteManager.SetSiteDefs();
 

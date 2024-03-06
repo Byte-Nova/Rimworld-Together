@@ -9,8 +9,6 @@ namespace Shared
 
         public string mapTile;
 
-        public string mapMode;
-
         public byte[] mapData;
     }
 }

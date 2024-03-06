@@ -4,10 +4,8 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class WorldDetailsJSON
+    public class WorldValuesFile
     {
-        public string worldStepMode;
-
         public string seedString;
         public int persistentRandomValue;
         public string planetCoverage;
