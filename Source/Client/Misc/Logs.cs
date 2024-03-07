@@ -18,7 +18,7 @@ namespace GameClient
         public static void Message(string message)
         {
             //Write message to player.log file
-            Logs.Message(message);
+            Log.Message(message);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
             writeMessage(message);
@@ -27,7 +27,7 @@ namespace GameClient
         public static void Warning(string message)
         {
             //Write warning to player.log file
-            Logs.Warning(message);
+            Log.Warning(message);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
             writeMessage(message);
@@ -36,7 +36,7 @@ namespace GameClient
         public static void Error(string message, bool ignoreStopLoggingLimit = true)
         {
             //Write warning to player.log file
-            Logs.Error(message, ignoreStopLoggingLimit);
+            Log.Error(message, ignoreStopLoggingLimit);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
             writeMessage(message);
@@ -53,10 +53,11 @@ namespace GameClient
 
         public static void prepareFileName(string ModFolder)
         {
-
+            Log.Message("preparing Logger InstanceList");
             //get Instance file path
             InstanceListFile = Path.Combine(ModFolder, "InstanceList.txt");
 
+            Log.Message("Finding free Log file");
             Dictionary<string, int> IdDict = new Dictionary<string, int>();
             if (File.Exists(InstanceListFile))
             {
@@ -67,6 +68,7 @@ namespace GameClient
 
                     //check if the process is currently running
                     if (Process.GetProcessById(IdDict[file]).HasExited){
+                        Log.Message("Free log file found");
                         IdDict.Remove(file);
                         LogFile = file;
                         LogFilePath = Path.Combine(ModFolder, file);
@@ -75,6 +77,7 @@ namespace GameClient
                     //check if the process which is running is a rimworld process
                     else if (Process.GetProcessById(IdDict[file]).ProcessName != Process.GetCurrentProcess().ProcessName)
                     {
+                        Log.Message("Free log file found");
                         IdDict.Remove(file);
                         LogFile = file;
                         LogFilePath = Path.Combine(ModFolder, file);
@@ -87,11 +90,13 @@ namespace GameClient
                 //set LogFilePath to a new log file
                 if (LogFilePath == null)
                 {
+                    Log.Message("Created a new log file");
                     LogFile = $"Log{IdDict.Count + 1}.log";
                     LogFilePath = Path.Combine(ModFolder, LogFile);
                 }
 
                 //update the Instance List. 
+                Log.Message("Updating Instance List");
                 using (StreamWriter w = File.CreateText(InstanceListFile))
                 {
                     foreach (string file in IdDict.Keys)
@@ -108,11 +113,16 @@ namespace GameClient
             //if the instance file does not exist, create it and add in the first entry
             else
             {
+                Log.Message("Creating Instance List");
+                Log.Message("Created new log file");
                 using (StreamWriter w = File.CreateText(InstanceListFile))
                 {
                     w.WriteLine($"Log1.log {Process.GetCurrentProcess().Id}");
                 }
             }
+            Log.Message("Successfully prepared log paths");
+            Log.Message($"Log path: {LogFilePath}");
+            return;
         }
 
         private static Dictionary<string,int> getLogCheckout(string InstanceListFile)

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using RimWorld;
+using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_3Button : Window
     {
@@ -24,9 +26,17 @@ namespace GameClient
         private string actionTwoName;
         private string actionThreeName;
 
+        public virtual List<object> inputList
+        {
+            get
+            {
+                DialogManager.inputCache = inputList;
+                return inputList;
+            }
+        }
+
         public RT_Dialog_3Button(string title, string description, string actionOneName, string actionTwoName, string actionThreeName, Action actionOne, Action actionTwo, Action actionThree, Action actionCancel)
         {
-            DialogManager.dialog3Button = this;
             this.title = title;
             this.description = description;
             this.actionOne = actionOne;
@@ -64,25 +74,25 @@ namespace GameClient
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY * 4 - 30f), new Vector2(buttonX, buttonY)), actionOneName))
             {
                 if (actionOne != null) actionOne.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY * 3 - 20f), new Vector2(buttonX, buttonY)), actionTwoName))
             {
                 if (actionTwo != null) actionTwo.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY * 2 - 10f), new Vector2(buttonX, buttonY)), actionThreeName))
             {
                 if (actionThree != null) actionThree.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2 + buttonX * 0.125f, rect.yMax - buttonY), new Vector2(buttonX * 0.75f, buttonY)), "Cancel"))
             {
                 if (actionCancel != null) actionCancel.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
         }
     }

@@ -1,9 +1,10 @@
 ﻿using System;
 using RimWorld;
+using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace RimworldTogether.GameClient.Dialogs
 {
     public class RT_Dialog_OK_Loop : Window
     {
@@ -22,7 +23,6 @@ namespace GameClient
 
         public RT_Dialog_OK_Loop(string[] descriptionLoop, Action actionOK = null)
         {
-            DialogManager.dialogOKLoop = this;
             this.descriptionLoop = descriptionLoop;
             this.actionOK = actionOK;
 
@@ -63,7 +63,7 @@ namespace GameClient
                 else
                 {
                     if (actionOK != null) actionOK.Invoke();
-                    Close();
+                    else DialogManager.PopDialog();
                 }
             }
         }

@@ -46,6 +46,7 @@ namespace GameClient
             if (!Directory.Exists(modPath)) Directory.CreateDirectory(modPath);
 
             Logs.prepareFileName(modPath);
+
         }
 
         public static void CreateUnityDispatcher()
