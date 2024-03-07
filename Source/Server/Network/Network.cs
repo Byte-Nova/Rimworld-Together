@@ -75,7 +75,7 @@ namespace GameServer
             try
             {
                 connectedClients.Remove(client);
-                client.listener.connection.Close();
+                client.listener.DestroyConnection();
 
                 UserManager.SendPlayerRecount();
 

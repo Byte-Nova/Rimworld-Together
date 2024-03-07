@@ -124,5 +124,14 @@ namespace GameServer
             }
             catch { }
         }
+
+        //Forcefully ends the connection with the client and any important process associated with it
+
+        public void DestroyConnection()
+        {
+            connection.Close();
+            uploadManager?.fileStream.Close();
+            downloadManager?.fileStream.Close();
+        }
     }
 }

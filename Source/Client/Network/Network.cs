@@ -71,7 +71,7 @@ namespace GameClient
 
         public static void DisconnectFromServer()
         {
-            listener.connection.Close();
+            listener.DestroyConnection();
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
                 delegate { DisconnectionManager.DisconnectToMenu(); }));
