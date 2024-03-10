@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-  <RTDefenseSpot.label>Зона защиты</RTDefenseSpot.label>
-  <RTDefenseSpot.description>Обозначает место, где пешки будут защищаться, пока ты не в сети. Применяется только при рейде других игроков</RTDefenseSpot.description>
-</LanguageData>
