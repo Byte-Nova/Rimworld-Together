@@ -123,7 +123,7 @@ namespace GameClient
             worldDetailsJSON = XmlParser.GetWorldXmlData(worldDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         public static void GetWorldFromServer()

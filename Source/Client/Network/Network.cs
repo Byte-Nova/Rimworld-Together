@@ -70,7 +70,7 @@ namespace GameClient
 
         public static void DisconnectFromServer()
         {
-            listener.connection.Close();
+            listener.DestroyConnection();
 
             Log.Message($"[Rimworld Together] > Disconnected from server");
 

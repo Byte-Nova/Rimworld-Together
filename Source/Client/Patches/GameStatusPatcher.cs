@@ -24,7 +24,7 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
 
@@ -83,7 +83,7 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -103,7 +103,7 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -123,7 +123,7 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
                 }
