@@ -1,5 +1,4 @@
-﻿using UnityEngine.SceneManagement;
-using Verse;
+﻿using Verse;
 
 namespace GameClient
 {
@@ -19,8 +18,8 @@ namespace GameClient
 
             if (Current.ProgramState != ProgramState.Entry)
             {
-                SceneManager.LoadScene(0, LoadSceneMode.Single);
-                Current.ProgramState = ProgramState.Entry;
+                LongEventHandler.QueueLongEvent(delegate { }, 
+                    "Entry", "", doAsynchronously: false, null);
             }
         }
 

@@ -1,6 +1,5 @@
 ﻿using Shared;
 using System.Globalization;
-using System.Net;
 
 namespace GameServer
 {
