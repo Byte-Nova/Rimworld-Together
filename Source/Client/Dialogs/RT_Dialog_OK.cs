@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading;
 using RimWorld;
-using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Dialogs
+namespace GameClient
 {
     public class RT_Dialog_OK : Window
     {

@@ -1,12 +1,9 @@
 ﻿using System.Threading;
 using System.Collections.Generic;
-using RimworldTogether.GameClient.Dialogs;
-using RimworldTogether.GameClient.Values;
 using Verse;
-using RimworldTogether.GameClient.Misc;
 using System.Linq;
 
-namespace RimworldTogether.GameClient.Managers.Actions
+namespace GameClient
 {
     public static class DialogManager
     {

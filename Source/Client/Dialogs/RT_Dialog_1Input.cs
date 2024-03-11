@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using RimWorld;
-using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
-using RimworldTogether.GameClient.Misc;
 
-namespace RimworldTogether.GameClient.Dialogs
+namespace GameClient
 {
     public class RT_Dialog_1Input : Window, RT_WindowInputs
     {

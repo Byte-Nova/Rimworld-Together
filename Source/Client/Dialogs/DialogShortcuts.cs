@@ -84,7 +84,7 @@ namespace GameClient
                 "Direct Connect",
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
-                    PreferenceManager.FetchConnectionDetails();
+                    PreferenceManager.LoadConnectionDetails();
                 },
                 DialogManager.PopDialog);
 
@@ -158,8 +158,8 @@ namespace GameClient
             {
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
                 loginDetails.username = (string)DialogManager.inputCache[0];
-                loginDetails.password = Hasher.GetHash((string)DialogManager.inputCache[1]);
-                loginDetails.clientVersion = ClientValues.versionCode;
+                loginDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
+                loginDetails.clientVersion = ClientValues.exec;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
