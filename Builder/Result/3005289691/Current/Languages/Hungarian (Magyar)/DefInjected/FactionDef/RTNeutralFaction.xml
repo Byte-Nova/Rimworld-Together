@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-	<RTNeutral.label>Neutral Player Settlements</RTNeutral.label>
-	<RTNeutral.description>An online faction</RTNeutral.description>
-	<RTNeutral.fixedName>Neutral Player Settlements</RTNeutral.fixedName>
-	<RTNeutral.leaderTitle>leader</RTNeutral.leaderTitle>
-	<RTNeutral.pawnSingular>colonist</RTNeutral.pawnSingular>
-	<RTNeutral.pawnsPlural>colonists</RTNeutral.pawnsPlural>
+	<RTNeutral.label>Semleges Játékosok Települései</RTNeutral.label>
+	<RTNeutral.description>Egy online, semleges frakció.</RTNeutral.description>
+	<RTNeutral.fixedName>Semleges Játékosok Települései</RTNeutral.fixedName>
+	<RTNeutral.leaderTitle>főnök</RTNeutral.leaderTitle>
+	<RTNeutral.pawnSingular>kolonista</RTNeutral.pawnSingular>
+	<RTNeutral.pawnsPlural>kolonisták</RTNeutral.pawnsPlural>
 </LanguageData>

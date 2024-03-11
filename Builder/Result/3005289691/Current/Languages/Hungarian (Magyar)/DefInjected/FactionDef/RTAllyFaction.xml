@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-	<RTAlly.label>Ally Player Settlements</RTAlly.label>
-	<RTAlly.description>An online faction</RTAlly.description>
-	<RTAlly.fixedName>Ally Player Settlements</RTAlly.fixedName>
-	<RTAlly.leaderTitle>leader</RTAlly.leaderTitle>
-	<RTAlly.pawnSingular>colonist</RTAlly.pawnSingular>
-	<RTAlly.pawnsPlural>colonists</RTAlly.pawnsPlural>
+	<RTAlly.label>Szövetséges Játékosok Települései</RTAlly.label>
+	<RTAlly.description>Egy online, szövetséges frakció.</RTAlly.description>
+	<RTAlly.fixedName>Szövetséges Játékosok Települései</RTAlly.fixedName>
+	<RTAlly.leaderTitle>főnök</RTAlly.leaderTitle>
+	<RTAlly.pawnSingular>kolonista</RTAlly.pawnSingular>
+	<RTAlly.pawnsPlural>kolonisták</RTAlly.pawnsPlural>
 </LanguageData>
