@@ -42,7 +42,7 @@ namespace GameClient
             offlineVisitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         //Executes when offline visit is denied

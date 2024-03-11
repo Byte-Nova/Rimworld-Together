@@ -34,7 +34,7 @@ namespace GameServer
                 {
                     eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
-                    client.listener.dataQueue.Enqueue(packet);
+                    client.listener.EnqueuePacket(packet);
                 }
 
                 else
@@ -44,7 +44,7 @@ namespace GameServer
                     {
                         eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
-                        client.listener.dataQueue.Enqueue(packet);
+                        client.listener.EnqueuePacket(packet);
                     }
 
                     else
@@ -52,11 +52,11 @@ namespace GameServer
                         target.inSafeZone = true;
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
-                        client.listener.dataQueue.Enqueue(packet);
+                        client.listener.EnqueuePacket(packet);
 
                         eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
                         Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
-                        target.listener.dataQueue.Enqueue(rPacket);
+                        target.listener.EnqueuePacket(rPacket);
                     }
                 }
             }

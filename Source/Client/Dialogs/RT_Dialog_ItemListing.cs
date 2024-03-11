@@ -1,10 +1,9 @@
-﻿using System.Linq;
-using System;
-using Shared;
+﻿using System;
+using System.Linq;
 using RimWorld;
-using Verse;
-using System.Collections.Generic;
+using Shared;
 using UnityEngine;
+using Verse;
 
 namespace GameClient
 {
@@ -30,6 +29,7 @@ namespace GameClient
 
         public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
         {
+            DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
             this.transferMode = transferMode;
 
@@ -135,7 +135,7 @@ namespace GameClient
 
                     else
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!", DialogManager.PopDialog));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
                         TransferManager.RejectRequest(transferMode);
                     }
                 }
@@ -155,11 +155,11 @@ namespace GameClient
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }
 
-                DialogManager.PopDialog();
+                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",
-                r1, DialogManager.PopDialog));
+                r1, null));
         }
 
         private void OnReject()
@@ -168,11 +168,11 @@ namespace GameClient
             {
                 TransferManager.RejectRequest(transferMode);
 
-                DialogManager.PopDialog();
+                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
-                r1, DialogManager.PopDialog));
+                r1, null));
         }
     }
 }

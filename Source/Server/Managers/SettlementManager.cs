@@ -41,7 +41,7 @@ namespace GameServer
                         settlementDetailsJSON.value = LikelihoodManager.GetSettlementLikelihood(cClient, settlementFile).ToString();
 
                         Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                        cClient.listener.dataQueue.Enqueue(rPacket);
+                        cClient.listener.EnqueuePacket(rPacket);
                     }
                 }
 
@@ -67,7 +67,7 @@ namespace GameServer
                     foreach (ServerClient cClient in Network.connectedClients.ToArray())
                     {
                         if (cClient == client) continue;
-                        else cClient.listener.dataQueue.Enqueue(rPacket);
+                        else cClient.listener.EnqueuePacket(rPacket);
                     }
 
                     Logger.WriteToConsole($"[Remove settlement] > {settlementDetailsJSON.tile} > {client.username}", Logger.LogMode.Warning);

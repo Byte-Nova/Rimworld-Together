@@ -2,7 +2,6 @@
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
 using UnityEngine;
 using Verse;
 

@@ -41,7 +41,7 @@ namespace GameClient
             raidDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         //Executes when raid request is accepted

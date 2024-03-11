@@ -4,7 +4,6 @@ using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
-using UnityEngine.UIElements;
 using Verse;
 
 namespace GameClient
