@@ -43,7 +43,7 @@ namespace GameServer
                 {
                     visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                    client.listener.dataQueue.Enqueue(packet);
+                    client.listener.EnqueuePacket(packet);
                 }
 
                 else
@@ -52,14 +52,14 @@ namespace GameServer
                     {
                         visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                        client.listener.dataQueue.Enqueue(packet);
+                        client.listener.EnqueuePacket(packet);
                     }
 
                     else
                     {
                         visitDetailsJSON.visitorName = client.username;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                        toGet.listener.dataQueue.Enqueue(packet);
+                        toGet.listener.EnqueuePacket(packet);
                     }
                 }
             }
@@ -79,7 +79,7 @@ namespace GameServer
                     toGet.inVisitWith = client;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                    toGet.listener.dataQueue.Enqueue(packet);
+                    toGet.listener.EnqueuePacket(packet);
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace GameServer
                 else
                 {
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                    toGet.listener.dataQueue.Enqueue(packet);
+                    toGet.listener.EnqueuePacket(packet);
                 }
             }
         }
@@ -106,13 +106,13 @@ namespace GameServer
             {
                 visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                client.listener.dataQueue.Enqueue(packet);
+                client.listener.EnqueuePacket(packet);
             }
 
             else
             {
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                client.inVisitWith.listener.dataQueue.Enqueue(packet);
+                client.inVisitWith.listener.EnqueuePacket(packet);
             }
         }
 
@@ -120,11 +120,11 @@ namespace GameServer
         {
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
 
-            if (client.inVisitWith == null) client.listener.dataQueue.Enqueue(packet);
+            if (client.inVisitWith == null) client.listener.EnqueuePacket(packet);
             else
             {
-                client.listener.dataQueue.Enqueue(packet);
-                client.inVisitWith.listener.dataQueue.Enqueue(packet);
+                client.listener.EnqueuePacket(packet);
+                client.inVisitWith.listener.EnqueuePacket(packet);
 
                 client.inVisitWith.inVisitWith = null;
                 client.inVisitWith = null;

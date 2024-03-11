@@ -41,6 +41,14 @@ namespace GameClient
             streamReader = new StreamReader(networkStream);
         }
 
+        //Enqueues a new packet into the data queue if needed
+
+        public void EnqueuePacket(Packet packet)
+        {
+            if (disconnectFlag) return;
+            else dataQueue.Enqueue(packet);
+        }
+
         //Runs in a separate thread and sends all queued packets through the connection
 
         public void SendData()
@@ -105,6 +113,10 @@ namespace GameClient
             }
             catch { }
 
+            //TODO
+            //Figure out if this is actually needed
+            Thread.Sleep(1000);
+
             Master.threadDispatcher.Enqueue(delegate { Network.DisconnectFromServer(); });
         }
 
@@ -120,7 +132,7 @@ namespace GameClient
 
                     KeepAliveJSON keepAliveJSON = new KeepAliveJSON();
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.KeepAlivePacket), keepAliveJSON);
-                    dataQueue.Enqueue(packet);
+                    EnqueuePacket(packet);
                 }
             }
             catch { }

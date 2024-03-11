@@ -70,7 +70,7 @@ namespace GameClient
                     visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(FetchMode.Player, visitDetailsJSON);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
                 };
 
                 var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
@@ -85,7 +85,7 @@ namespace GameClient
             MapDetailsJSON mapDetailsJSON = MapManager.ParseMap(visitMap, true, false, false, true);
             visitDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetailsJSON);
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         private static void VisitMap(MapDetailsJSON mapDetailsJSON, VisitDetailsJSON visitDetailsJSON)
@@ -122,7 +122,7 @@ namespace GameClient
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         private static void OnVisitRequest(VisitDetailsJSON visitDetailsJSON)
@@ -146,7 +146,7 @@ namespace GameClient
             {
                 visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Reject).ToString();
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitDetailsJSON.visitorName}, accept?", r1, r2);
@@ -446,7 +446,7 @@ namespace GameClient
 
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Action).ToString();
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         public static void ReceiveActions(VisitDetailsJSON visitDetailsJSON)

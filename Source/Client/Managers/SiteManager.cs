@@ -151,7 +151,7 @@ namespace GameClient
             siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Info).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         public static void OnSimpleSiteOpen(SiteDetailsJSON siteDetailsJSON)
@@ -182,7 +182,7 @@ namespace GameClient
             siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Retrieve).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         private static void OnWorkerRetrieval(SiteDetailsJSON siteDetailsJSON)
@@ -235,7 +235,7 @@ namespace GameClient
             siteDetailsJSON.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
 
             if (caravanHumans.Count == 1) ClientValues.chosenCaravan.Destroy();
 
@@ -251,7 +251,7 @@ namespace GameClient
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Destroy).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
@@ -372,7 +372,7 @@ namespace GameClient
                 siteDetailsJSON.isFromFaction = false;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
             }
@@ -440,7 +440,7 @@ namespace GameClient
                 siteDetailsJSON.isFromFaction = true;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
             }

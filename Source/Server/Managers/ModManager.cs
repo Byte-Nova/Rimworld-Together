@@ -111,6 +111,7 @@ namespace GameServer
 
                 else
                 {
+                    Logger.WriteToConsole($"[Mod Mismatch] > {client.username}", Logger.LogMode.Warning);
                     UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }

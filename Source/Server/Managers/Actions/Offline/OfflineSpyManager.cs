@@ -26,7 +26,7 @@ namespace GameServer
             {
                 spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
-                client.listener.dataQueue.Enqueue(packet);
+                client.listener.EnqueuePacket(packet);
             }
 
             else
@@ -37,7 +37,7 @@ namespace GameServer
                 {
                     spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
-                    client.listener.dataQueue.Enqueue(packet);
+                    client.listener.EnqueuePacket(packet);
                 }
 
                 else
@@ -46,7 +46,7 @@ namespace GameServer
                     spyDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
-                    client.listener.dataQueue.Enqueue(packet);
+                    client.listener.EnqueuePacket(packet);
                 }
             }
         }

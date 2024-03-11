@@ -17,8 +17,11 @@ namespace GameClient
             ServerValues.CleanValues();
             ClientValues.ToggleDisconnecting(false);
 
-            SceneManager.LoadScene(0, LoadSceneMode.Single);
-            Current.ProgramState = ProgramState.Entry;
+            if (Current.ProgramState != ProgramState.Entry)
+            {
+                SceneManager.LoadScene(0, LoadSceneMode.Single);
+                Current.ProgramState = ProgramState.Entry;
+            }
         }
 
         //Kicks the client into closing the game

@@ -163,7 +163,7 @@ namespace GameClient
                 PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
             }
@@ -195,7 +195,7 @@ namespace GameClient
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
             }

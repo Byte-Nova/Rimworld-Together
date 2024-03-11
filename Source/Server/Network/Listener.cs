@@ -39,6 +39,14 @@ namespace GameServer
             streamReader = new StreamReader(networkStream);
         }
 
+        //Enqueues a new packet into the data queue if needed
+
+        public void EnqueuePacket(Packet packet)
+        {
+            if (disconnectFlag) return;
+            else dataQueue.Enqueue(packet);
+        }
+
         //Runs in a separate thread and sends all queued packets through the connection
 
         public void SendData()
@@ -49,17 +57,17 @@ namespace GameServer
                 {
                     Thread.Sleep(1);
 
-                    if (targetClient.listener.dataQueue.Count() > 0)
+                    if (dataQueue.Count() > 0)
                     {
-                        Packet packet = targetClient.listener.dataQueue.Dequeue();
+                        Packet packet = dataQueue.Dequeue();
                         if (packet == null) continue;
 
-                        targetClient.listener.streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
-                        targetClient.listener.streamWriter.Flush();
+                        streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
+                        streamWriter.Flush();
                     }
                 }
             }
-            catch { targetClient.listener.disconnectFlag = true; }
+            catch { disconnectFlag = true; }
         }
 
         //Runs in a separate thread and listens for any kind of information being sent through the connection
@@ -72,7 +80,7 @@ namespace GameServer
                 {
                     Thread.Sleep(1);
 
-                    string data = targetClient.listener.streamReader.ReadLine();
+                    string data = streamReader.ReadLine();
                     if (string.IsNullOrEmpty(data)) continue;
 
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
@@ -84,7 +92,7 @@ namespace GameServer
             {
                 if (Master.serverConfig.verboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
 
-                targetClient.listener.disconnectFlag = true;
+                disconnectFlag = true;
             }
         }
 
@@ -98,10 +106,12 @@ namespace GameServer
                 {
                     Thread.Sleep(1);
 
-                    if (targetClient.listener.disconnectFlag) break;
+                    if (disconnectFlag) break;
                 }
             }
             catch { }
+
+            Thread.Sleep(1000);
 
             Network.KickClient(targetClient);
         }
@@ -110,7 +120,7 @@ namespace GameServer
 
         public void CheckKAFlag()
         {
-            targetClient.listener.KAFlag = false;
+            KAFlag = false;
 
             try
             {
@@ -118,11 +128,13 @@ namespace GameServer
                 {
                     Thread.Sleep(5000);
 
-                    if (targetClient.listener.KAFlag) targetClient.listener.KAFlag = false;
-                    else targetClient.listener.disconnectFlag = true;
+                    if (KAFlag) KAFlag = false;
+                    else break;
                 }
             }
             catch { }
+
+            disconnectFlag = true;
         }
 
         //Forcefully ends the connection with the client and any important process associated with it

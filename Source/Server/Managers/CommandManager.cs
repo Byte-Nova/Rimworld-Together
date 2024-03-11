@@ -30,7 +30,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Op).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.listener.EnqueuePacket(packet);
         }
 
         public static void SendDeOpCommand(ServerClient client)
@@ -39,7 +39,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Deop).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.listener.EnqueuePacket(packet);
 
         }
 
@@ -50,7 +50,7 @@ namespace GameServer
             eventDetailsJSON.eventID = eventID.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.listener.EnqueuePacket(packet);
         }
 
         public static void SendBroadcastCommand(string str)
@@ -62,7 +62,7 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
-                client.listener.dataQueue.Enqueue(packet);
+                client.listener.EnqueuePacket(packet);
             }
         }
 
@@ -72,7 +72,7 @@ namespace GameServer
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.listener.EnqueuePacket(packet);
         }
     }
 }

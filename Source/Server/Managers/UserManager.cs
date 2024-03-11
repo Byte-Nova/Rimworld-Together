@@ -75,7 +75,7 @@ namespace GameServer
             foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.PlayerRecountPacket), playerRecountJSON);
-            foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.dataQueue.Enqueue(packet);
+            foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
         }
 
         public static bool CheckIfUserIsConnected(string username)
@@ -184,7 +184,7 @@ namespace GameServer
             if (response == LoginResponse.WrongMods) loginDetailsJSON.conflictingMods = (List<string>)extraDetails;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.listener.EnqueuePacket(packet);
             client.listener.disconnectFlag = true;
         }
 
