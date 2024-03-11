@@ -32,7 +32,7 @@ namespace GameClient
             mapFileJSON.mapData = Serializer.ConvertObjectToBytes(mapDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         //Parses a desired map into an usable mod class

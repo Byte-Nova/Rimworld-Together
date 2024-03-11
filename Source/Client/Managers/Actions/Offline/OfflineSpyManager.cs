@@ -68,7 +68,7 @@ namespace GameClient
                     spyDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
                 }
             };
 

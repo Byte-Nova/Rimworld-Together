@@ -51,7 +51,7 @@ namespace GameClient
             else
             {
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
-                Network.listener.dataQueue.Enqueue(rPacket);
+                Network.listener.EnqueuePacket(rPacket);
             }
         }
 
@@ -73,12 +73,11 @@ namespace GameClient
             fileTransferJSON.fileBytes = Network.listener.uploadManager.ReadFilePart();
             fileTransferJSON.isLastPart = Network.listener.uploadManager.isLastPart;
 
-            if (ClientValues.isDisconnecting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
-            else if (ClientValues.isQuiting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Quit).ToString();
+            if (ClientValues.isDisconnecting || ClientValues.isQuiting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
             else fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
 
             if (Network.listener.uploadManager.isLastPart) Network.listener.uploadManager = null;
         }
