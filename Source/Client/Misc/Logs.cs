@@ -21,7 +21,7 @@ namespace GameClient
             Log.Message(message);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
-            writeMessage(message);
+            //writeMessage(message);
         }
 
         public static void Warning(string message)
@@ -30,7 +30,7 @@ namespace GameClient
             Log.Warning(message);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
-            writeMessage(message);
+            //writeMessage(message);
         }
 
         public static void Error(string message, bool ignoreStopLoggingLimit = true)
@@ -39,7 +39,7 @@ namespace GameClient
             Log.Error(message, ignoreStopLoggingLimit);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
-            writeMessage(message);
+            //writeMessage(message);
         }
 
         private static void writeMessage(string message)
