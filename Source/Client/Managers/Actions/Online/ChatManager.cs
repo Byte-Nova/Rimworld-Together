@@ -50,7 +50,7 @@ namespace GameClient
             chatMessagesJSON.messages.Add(messageToSend);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.dataQueue.Enqueue(packet);
         }
 
         public static void ReceiveMessages(Packet packet)

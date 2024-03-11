@@ -64,7 +64,7 @@ namespace GameClient
             structureLikelihoodJSON.likelihood = value.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LikelihoodPacket), structureLikelihoodJSON);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.dataQueue.Enqueue(packet);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement likelihood");
             DialogManager.PushNewDialog(d1);

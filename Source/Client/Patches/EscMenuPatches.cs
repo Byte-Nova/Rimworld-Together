@@ -62,7 +62,7 @@ namespace GameClient
                             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
 
                             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ResetSavePacket));
-                            Network.listener.EnqueuePacket(packet);
+                            Network.listener.dataQueue.Enqueue(packet);
                         };
 
                         RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);

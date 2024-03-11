@@ -29,7 +29,6 @@ namespace GameClient
 
         public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
         {
-            DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
             this.transferMode = transferMode;
 

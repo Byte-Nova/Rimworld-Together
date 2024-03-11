@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using System;
 using Shared;
+using NAudio.Codecs;
+using Verse;
 
 namespace GameClient
 {
@@ -8,7 +10,7 @@ namespace GameClient
     {
         public static void ShowRegisteredDialog()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You have been successfully registered!",
                 "You are now able to login using your new account"});
@@ -23,8 +25,8 @@ namespace GameClient
                 "Username",
                 "Password",
                 "Confirm Password",
-                delegate { ParseRegisterUser(); },
-                delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
+                delegate { ParseConnectionDetails(true); },
+                DialogManager.PopDialog ,
                 false, true, true);
 
             RT_Dialog_2Input a2 = new RT_Dialog_2Input(
@@ -32,7 +34,7 @@ namespace GameClient
                 "Username",
                 "Password",
                 delegate { ParseLoginUser(); },
-                delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
+                DialogManager.PopDialog,
                 false, true);
 
             RT_Dialog_2Button d1 = new RT_Dialog_2Button(
@@ -101,7 +103,7 @@ namespace GameClient
             string[] answerSplit = null;
             if (throughBrowser)
             {
-                answerSplit = ClientValues.serverBrowserContainer[DialogManager.dialogListingWithButtonResult].Split('|');
+                answerSplit = ClientValues.serverBrowserContainer[(int)DialogManager.inputCache[0]].Split('|');
 
                 if (string.IsNullOrWhiteSpace(answerSplit[0])) isInvalid = true;
                 if (string.IsNullOrWhiteSpace(answerSplit[1])) isInvalid = true;
@@ -111,10 +113,10 @@ namespace GameClient
 
             else
             {
-                if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultOne)) isInvalid = true;
-                if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultTwo)) isInvalid = true;
-                if (DialogManager.dialog2ResultTwo.Count() > 5) isInvalid = true;
-                if (!DialogManager.dialog2ResultTwo.All(Char.IsDigit)) isInvalid = true;
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isInvalid = true;
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isInvalid = true;
+                if (((string)DialogManager.inputCache[0]).Count() > 5) isInvalid = true;
+                if (!((string)DialogManager.inputCache[1]).All(Char.IsDigit)) isInvalid = true;
             }
 
             if (!isInvalid)
@@ -128,9 +130,9 @@ namespace GameClient
 
                 else
                 {
-                    Network.ip = DialogManager.dialog2ResultOne;
-                    Network.port = DialogManager.dialog2ResultTwo;
-                    PreferenceManager.SaveConnectionDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                    Network.ip = ((string)DialogManager.inputCache[0]);
+                    Network.port = ((string)DialogManager.inputCache[0]);
+                    PreferenceManager.SaveConnectionDetails(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[0]));
                 }
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
@@ -147,9 +149,9 @@ namespace GameClient
         public static void ParseLoginUser()
         {
             bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultOne)) isInvalid = true;
-            if (DialogManager.dialog2ResultOne.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultTwo)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[0]))) isInvalid = true;
+            if (((string)DialogManager.inputCache[0]).Any(Char.IsWhiteSpace)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[0]))) isInvalid = true;
 
             if (!isInvalid)
             {
@@ -160,7 +162,7 @@ namespace GameClient
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
-                PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                PreferenceManager.SaveLoginDetails(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[0]));
 
                 Packet packet = Packet.CreatePacketFromJSON("LoginClientPacket", loginDetails);
                 Network.listener.dataQueue.Enqueue(packet);
@@ -180,11 +182,11 @@ namespace GameClient
         public static void ParseRegisterUser()
         {
             bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultOne)) isInvalid = true;
-            if (DialogManager.dialog3ResultOne.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultTwo)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultThree)) isInvalid = true;
-            if (DialogManager.dialog3ResultTwo != DialogManager.dialog3ResultThree) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[0]))) isInvalid = true;
+            if (((string)DialogManager.inputCache[0]).Any(Char.IsWhiteSpace)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[1]))) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[2]))) isInvalid = true;
+            if (((string)DialogManager.inputCache[1]) != ((string)DialogManager.inputCache[2])) isInvalid = true;
 
             if (!isInvalid)
             {
@@ -209,6 +211,46 @@ namespace GameClient
 
                 DialogManager.PushNewDialog(d1);
             }
+        }
+
+
+        //changes in a textField are check based on string length, but if the contents of a text field are replaced,
+        //i.e. 1234 -> 1255 where 34 are instantly replace with 55
+        //we can't tell anything has changed on length. This function will change the characters that have been repalced
+        public static string replaceNonCensoredSymbols(string recievingString, string giftingString, bool Censored, string censorSymbol)
+        {
+            string StringA = recievingString; string currCharA;
+            string StringB = giftingString; string currCharB;
+            string returnString = "";
+            if (Censored)
+            {
+                for (int i = 0; i < giftingString.Length; i++)
+                {
+                    currCharA = StringA.Substring(0, 1);
+                    currCharB = StringB.Substring(0, 1);
+                    if (StringA.Length > 0) StringA = StringA.Substring(1, StringA.Length - 1);
+                    if (StringB.Length > 0) StringB = StringB.Substring(1, StringB.Length - 1);
+                    if (currCharB.ToString() == censorSymbol)
+                        returnString += currCharA;
+                    else
+                        returnString += currCharB;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < giftingString.Length; i++)
+                {
+                    currCharA = StringA.Substring(0, 1);
+                    currCharB = StringB.Substring(0, 1);
+                    if (StringA.Length > 0) StringA = StringA.Substring(1, StringA.Length - 1);
+                    if (StringB.Length > 0) StringB = StringB.Substring(1, StringB.Length - 1);
+                    if (currCharA == currCharB)
+                        returnString += currCharA;
+                    else
+                        returnString += currCharB;
+                }
+            }
+            return returnString;
         }
     }
 }
