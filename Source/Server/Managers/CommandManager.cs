@@ -18,18 +18,6 @@ namespace GameServer
                     //Do nothing
                     break;
 
-                case (int)CommonEnumerators.CommandType.Ban:
-                    //Do nothing
-                    break;
-
-                case (int)CommonEnumerators.CommandType.Disconnect:
-                    //Do nothing
-                    break;
-
-                case (int)CommonEnumerators.CommandType.Quit:
-                    //Do nothing
-                    break;
-
                 case (int)CommonEnumerators.CommandType.Broadcast:
                     //Do nothing
                     break;
@@ -53,34 +41,6 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
 
-        }
-
-        public static void SendBanCommand(ServerClient client)
-        {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Ban).ToString();
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
-
-        }
-
-        public static void SendDisconnectCommand(ServerClient client)
-        {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Disconnect).ToString();
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
-        }
-
-        public static void SendQuitCommand(ServerClient client)
-        {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Quit).ToString();
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
-            client.listener.dataQueue.Enqueue(packet);
         }
 
         public static void SendEventCommand(ServerClient client, int eventID)

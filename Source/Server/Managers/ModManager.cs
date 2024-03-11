@@ -102,7 +102,7 @@ namespace GameServer
 
             else
             {
-                if(client.isAdmin)
+                if (client.isAdmin)
                 {
                     Logger.WriteToConsole($"[Mod bypass] > {client.username}", Logger.LogMode.Warning);
                     client.runningMods = loginDetailsJSON.runningMods;
@@ -111,7 +111,7 @@ namespace GameServer
 
                 else
                 {
-                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.WrongMods, conflictingMods);
+                    UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }
             }

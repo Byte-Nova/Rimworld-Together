@@ -93,28 +93,39 @@ namespace GameServer
             return connectedClients.Find(x => x.username == username);
         }
 
-        public static bool CheckIfUserExists(ServerClient client)
+        public static bool CheckIfUserExists(ServerClient client, JoinDetailsJSON details, LoginMode mode)
         {
             string[] existingUsers = Directory.GetFiles(Master.usersPath);
 
             foreach (string user in existingUsers)
             {
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.username != client.username) continue;
-                else
+                if (existingUser.username.ToLower() == details.username.ToLower())
                 {
-                    if (existingUser.password == client.password) return true;
-                    else
-                    {
-                        UserManager_Joinings.SendLoginResponse(client, LoginResponse.InvalidLogin);
-
-                        return false;
-                    }
+                    if (mode == LoginMode.Register) SendLoginResponse(client, LoginResponse.RegisterInUse);
+                    return true;
                 }
             }
 
-            UserManager_Joinings.SendLoginResponse(client, LoginResponse.InvalidLogin);
+            if (mode == LoginMode.Login) SendLoginResponse(client, LoginResponse.InvalidLogin);
+            return false;
+        }
 
+        public static bool CheckIfUserAuthCorrect(ServerClient client, JoinDetailsJSON details)
+        {
+            string[] existingUsers = Directory.GetFiles(Master.usersPath);
+
+            foreach (string user in existingUsers)
+            {
+                UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
+                if (existingUser.username == details.username)
+                {
+                    if (existingUser.password == details.password) return true;
+                    else break;
+                }
+            }
+
+            SendLoginResponse(client, LoginResponse.InvalidLogin);
             return false;
         }
 
@@ -123,7 +134,7 @@ namespace GameServer
             if (!client.isBanned) return false;
             else
             {
-                UserManager_Joinings.SendLoginResponse(client, LoginResponse.BannedLogin);
+                SendLoginResponse(client, LoginResponse.BannedLogin);
                 return true;
             }
         }
@@ -146,17 +157,15 @@ namespace GameServer
 
             return tilesToExclude.ToArray();
         }
-    }
 
-    public static class UserManager_Joinings
-    {
-        public static bool CheckLoginDetails(ServerClient client, LoginMode mode)
+        public static bool CheckLoginDetails(ServerClient client, JoinDetailsJSON details, LoginMode mode)
         {
             bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(client.username)) isInvalid = true;
-            if (client.username.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(client.password)) isInvalid = true;
-            if (client.username.Length > 32) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(details.username)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(details.password)) isInvalid = true;
+            if (details.username.Any(Char.IsWhiteSpace)) isInvalid = true;
+            if (details.username.Length > 32) isInvalid = true;
+            if (details.password.Length > 64) isInvalid = true;
 
             if (!isInvalid) return true;
             else
@@ -176,7 +185,6 @@ namespace GameServer
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginDetailsJSON);
             client.listener.dataQueue.Enqueue(packet);
-
             client.listener.disconnectFlag = true;
         }
 
@@ -185,14 +193,13 @@ namespace GameServer
             if (!Master.whitelist.UseWhitelist) return true;
             else
             {
-                foreach(string str in Master.whitelist.WhitelistedUsers)
+                foreach (string str in Master.whitelist.WhitelistedUsers)
                 {
                     if (str == client.username) return true;
                 }
             }
 
             SendLoginResponse(client, LoginResponse.Whitelist);
-
             return false;
         }
     }

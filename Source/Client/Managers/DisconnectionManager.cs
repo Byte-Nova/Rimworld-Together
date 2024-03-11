@@ -11,8 +11,8 @@ namespace GameClient
 
         public static void DisconnectToMenu()
         {
-            ChatManager.ClearChat();
-            Network.ClearAllValues();
+            Network.CleanValues();
+            ChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
             ClientValues.ToggleDisconnecting(false);

@@ -111,10 +111,10 @@ namespace GameClient
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
             worldDetailsJSON.seedString = seedString;
-            worldDetailsJSON.persistentRandomValue = Find.World.info.persistentRandomValue;
+            worldDetailsJSON.persistentRandomValue = persistentRandomValue;
             worldDetailsJSON.planetCoverage = planetCoverage.ToString();
             worldDetailsJSON.rainfall = ((int)rainfall).ToString();
-            worldDetailsJSON.temperature = ((int)temperature).ToString(); ;
+            worldDetailsJSON.temperature = ((int)temperature).ToString();
             worldDetailsJSON.population = ((int)population).ToString();
             worldDetailsJSON.pollution = pollution.ToString();
            

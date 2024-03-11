@@ -91,7 +91,7 @@ namespace GameClient
             }
         }
 
-        public static void ClearChat()
+        public static void CleanChat()
         {
             currentChatInput = "";
             chatMessageCache.Clear();

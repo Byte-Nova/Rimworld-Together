@@ -7,20 +7,23 @@ namespace GameServer
         public static void TryLoginUser(ServerClient client, Packet packet)
         {
             JoinDetailsJSON loginDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+
+            if (!UserManager.CheckLoginDetails(client, loginDetails, CommonEnumerators.LoginMode.Login)) return;
+
+            if (!UserManager.CheckIfUserExists(client, loginDetails, CommonEnumerators.LoginMode.Login)) return;
+
+            if (!UserManager.CheckIfUserAuthCorrect(client, loginDetails)) return;
+
             client.username = loginDetails.username;
             client.password = loginDetails.password;
 
-            if (!UserManager_Joinings.CheckWhitelist(client)) return;
-
-            if (!UserManager_Joinings.CheckLoginDetails(client, CommonEnumerators.LoginMode.Login)) return;
-
-            if (!UserManager.CheckIfUserExists(client)) return;
-
             UserManager.LoadDataFromFile(client);
 
-            if (ModManager.CheckIfModConflict(client, loginDetails)) return;
-
             if (UserManager.CheckIfUserBanned(client)) return;
+
+            if (!UserManager.CheckWhitelist(client)) return;
+
+            if (ModManager.CheckIfModConflict(client, loginDetails)) return;
 
             RemoveOldClientIfAny(client);
 
@@ -54,7 +57,7 @@ namespace GameServer
                 {
                     if (cClient.username == client.username)
                     {
-                        UserManager_Joinings.SendLoginResponse(cClient, CommonEnumerators.LoginResponse.ExtraLogin);
+                        UserManager.SendLoginResponse(cClient, CommonEnumerators.LoginResponse.ExtraLogin);
                     }
                 }
             }
