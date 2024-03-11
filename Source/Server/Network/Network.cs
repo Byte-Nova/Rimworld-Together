@@ -53,7 +53,7 @@ namespace GameServer
             {
                 if (connectedClients.ToArray().Count() >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
-                    UserManager_Joinings.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
+                    UserManager.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
                     Logger.WriteToConsole($"[Warning] > Server Full", Logger.LogMode.Warning);
                 }
 
@@ -75,7 +75,7 @@ namespace GameServer
             try
             {
                 connectedClients.Remove(client);
-                client.listener.connection.Close();
+                client.listener.DestroyConnection();
 
                 UserManager.SendPlayerRecount();
 

@@ -4,7 +4,7 @@ namespace Shared
 {
     public class UploadManager
     {
-        private FileStream fileStream;
+        public FileStream fileStream;
         private FileInfo fileInfo;
 
         public string filePath;

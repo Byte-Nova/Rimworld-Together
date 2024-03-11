@@ -57,7 +57,7 @@ namespace GameClient
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.MemberList).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             Action r2 = delegate
@@ -67,7 +67,7 @@ namespace GameClient
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             Action r1 = delegate
@@ -78,7 +78,7 @@ namespace GameClient
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Delete).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to LEAVE your faction?", r2, null);
@@ -113,7 +113,7 @@ namespace GameClient
                     factionManifestJSON.manifestDetails = DialogManager.dialog1ResultOne;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
                 }
             };
             RT_Dialog_1Input d2 = new RT_Dialog_1Input("New Faction Name", "Input the name of your new faction", r2, null);
@@ -133,7 +133,7 @@ namespace GameClient
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             Action r2 = delegate
@@ -143,7 +143,7 @@ namespace GameClient
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             Action r3 = delegate
@@ -153,7 +153,7 @@ namespace GameClient
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo d5 = new RT_Dialog_YesNo("Are you sure you want to demote this player?", 
@@ -192,7 +192,7 @@ namespace GameClient
                 factionManifestJSON.manifestDetails = ClientValues.chosenSettlement.Tile.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to invite this player to your faction?", r1, null);
@@ -243,7 +243,7 @@ namespace GameClient
                 factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.AcceptInvite).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest.manifestDetails}, accept?", r1, null);

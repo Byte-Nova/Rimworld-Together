@@ -26,7 +26,7 @@ namespace GameServer
             {
                 raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
-                client.listener.dataQueue.Enqueue(packet);
+                client.listener.EnqueuePacket(packet);
             }
 
             else
@@ -37,7 +37,7 @@ namespace GameServer
                 {
                     raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
-                    client.listener.dataQueue.Enqueue(packet);
+                    client.listener.EnqueuePacket(packet);
                 }
 
                 else
@@ -46,7 +46,7 @@ namespace GameServer
                     raidDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
-                    client.listener.dataQueue.Enqueue(packet);
+                    client.listener.EnqueuePacket(packet);
                 }
             }
         }
