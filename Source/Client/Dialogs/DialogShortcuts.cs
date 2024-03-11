@@ -25,7 +25,7 @@ namespace GameClient
                 "Username",
                 "Password",
                 "Confirm Password",
-                delegate { ParseConnectionDetails(false); },
+                delegate { ParseConnectionDetails(true); },
                 DialogManager.PopDialog ,
                 false, true, true);
 
@@ -55,7 +55,7 @@ namespace GameClient
         public static void ShowWorldGenerationDialogs()
         {
             RT_Dialog_OK d3 = new RT_Dialog_OK("This feature is not implemented yet!",
-                DialogManager.PopDialog);
+                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
                 "Separate colony", "Together with other players (TBA)", null, delegate { DialogManager.PushNewDialog(d3); },
@@ -73,14 +73,14 @@ namespace GameClient
             RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
                 ClientValues.serverBrowserContainer,
                 delegate { ParseConnectionDetails(true); },
-                DialogManager.PopDialog);
+                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
             RT_Dialog_2Input a2 = new RT_Dialog_2Input(
                 "Connection Details",
                 "IP",
                 "Port",
                 delegate { ParseConnectionDetails(false); },
-                DialogManager.PopDialog);
+                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
             RT_Dialog_2Button newDialog = new RT_Dialog_2Button(
                 "Play Online",
