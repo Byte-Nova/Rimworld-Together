@@ -75,7 +75,7 @@ namespace GameClient
 
         public static void ShowSendEventDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This event will cost you {eventCosts[DialogManager.selectedScrollButton]} " +
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This event will cost you {eventCosts[(int)DialogManager.inputCache[0]]} " +
                 $"silver, continue?", SendEvent, null);
 
             DialogManager.PushNewDialog(d1);
@@ -83,22 +83,22 @@ namespace GameClient
 
         public static void SendEvent()
         {
-            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
+            DialogManager.PopDialog();
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(eventCosts[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(eventCosts[(int)DialogManager.inputCache[0]]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
+                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[(int)DialogManager.inputCache[0]]);
 
                 EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
                 eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
                 eventDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
                 eventDetailsJSON.toTile = ClientValues.chosenSettlement.Tile.ToString();
-                eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();
+                eventDetailsJSON.eventID = ((int)DialogManager.inputCache[0]).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
                 Network.listener.dataQueue.Enqueue(packet);
@@ -256,7 +256,7 @@ namespace GameClient
 
         public static void OnEventSent()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             RimworldManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
                 LetterDefOf.PositiveEvent);
@@ -266,10 +266,10 @@ namespace GameClient
 
         private static void OnRecoverEventSilver()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
-            silverToReturn.stackCount = eventCosts[DialogManager.selectedScrollButton];
+            silverToReturn.stackCount = eventCosts[(int)DialogManager.inputCache[0]];
             TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
             DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));

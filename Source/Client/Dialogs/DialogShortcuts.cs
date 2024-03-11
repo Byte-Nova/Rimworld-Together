@@ -159,14 +159,14 @@ namespace GameClient
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
                 loginDetails.username = (string)DialogManager.inputCache[0];
                 loginDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
-                loginDetails.clientVersion = ClientValues.exec;
+                loginDetails.clientVersion = CommonValues.executableVersion;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
                 PreferenceManager.SaveLoginDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
 
                 Packet packet = Packet.CreatePacketFromJSON("LoginClientPacket", loginDetails);
-                Network.listener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
             }
@@ -192,14 +192,14 @@ namespace GameClient
             {
                 JoinDetailsJSON registerDetails = new JoinDetailsJSON();
                 registerDetails.username = (string)DialogManager.inputCache[0];
-                registerDetails.password = Hasher.GetHash((string)DialogManager.inputCache[1]);
-                registerDetails.clientVersion = ClientValues.versionCode;
+                registerDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
+                registerDetails.clientVersion = CommonValues.executableVersion;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 Packet packet = Packet.CreatePacketFromJSON("RegisterClientPacket", registerDetails);
 
                 Logs.Message("attempting to send parse register data");
-                Network.listener.SendData(packet);
+                Network.listener.dataQueue.Enqueue(packet);
                 Logs.Message("sent parse register data");
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
             }

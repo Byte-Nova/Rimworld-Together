@@ -99,7 +99,7 @@ namespace GameClient
         {
             Action r2 = delegate
             {
-                if (string.IsNullOrWhiteSpace(DialogManager.dialog1ResultOne) || DialogManager.dialog1ResultOne.Length > 32)
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0]) || ((string)DialogManager.inputCache[0]).Length > 32)
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Faction name is invalid! Please try again!"));
                 }
@@ -110,7 +110,7 @@ namespace GameClient
 
                     FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                     factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Create).ToString();
-                    factionManifestJSON.manifestDetails = DialogManager.dialog1ResultOne;
+                    factionManifestJSON.manifestDetails = (string)DialogManager.inputCache[0];
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                     Network.listener.dataQueue.Enqueue(packet);
@@ -209,7 +209,7 @@ namespace GameClient
                 "You can now access its menu through the same button"
             };
 
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(messages);
             DialogManager.PushNewDialog(d1);
         }
@@ -218,19 +218,19 @@ namespace GameClient
         {
             ServerValues.hasFaction = false;
 
-            if (!ClientValues.isInTransfer) DialogManager.PopWaitDialog();
+            if (!ClientValues.isInTransfer) DialogManager.PopDialog();
             DialogManager.PushNewDialog(new RT_Dialog_Error("Your faction has been deleted!"));
         }
 
         private static void OnFactionNameInUse()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
             DialogManager.PushNewDialog(new RT_Dialog_Error("That faction name is already in use!"));
         }
 
         private static void OnFactionNoPower()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
             DialogManager.PushNewDialog(new RT_Dialog_Error("You don't have enough power for this action!"));
         }
 
@@ -264,7 +264,7 @@ namespace GameClient
 
         private static void OnFactionMemberList(FactionManifestJSON factionManifest)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             List<string> unraveledDetails = new List<string>();
             for (int i = 0; i < factionManifest.manifestComplexDetails.Count(); i++)

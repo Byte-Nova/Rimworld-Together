@@ -48,7 +48,7 @@ namespace GameClient
 
             
 
-            Logs.prepareFileName(modPath);
+            Logs.prepareFileName(modFolderPath);
 
             if (!Directory.Exists(modFolderPath)) Directory.CreateDirectory(modFolderPath);
             if (!Directory.Exists(worldSavesFolderPath)) Directory.CreateDirectory(worldSavesFolderPath);

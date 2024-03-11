@@ -155,7 +155,7 @@ namespace GameClient
 
         private static void OnVisitAccept(VisitDetailsJSON visitDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
@@ -169,13 +169,13 @@ namespace GameClient
 
         private static void OnVisitReject()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!"));
         }
 
         private static void OnVisitUnavailable()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!"));
         }
 

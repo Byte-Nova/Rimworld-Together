@@ -10,7 +10,7 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
@@ -45,7 +45,7 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.ServerFull:
-                    DialogManager.PopDialog(DialogManager.dialog2Button);
+                    DialogManager.PopDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Server is full!"));
                     break;
 
