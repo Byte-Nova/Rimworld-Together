@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+	<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-	<RTAlly.label>Ally Player Settlements</RTAlly.label>
-	<RTAlly.description>An online faction</RTAlly.description>
-	<RTAlly.fixedName>Ally Player Settlements</RTAlly.fixedName>
-	<RTAlly.leaderTitle>leader</RTAlly.leaderTitle>
-	<RTAlly.pawnSingular>colonist</RTAlly.pawnSingular>
-	<RTAlly.pawnsPlural>colonists</RTAlly.pawnsPlural>
+	<RTAlly.label>Colonie Joueur alliée</RTAlly.label>
+	<RTAlly.description>Une colonie d'une faction d'un joueur alliée.</RTAlly.description>
+	<RTAlly.fixedName>Colonie Joueur alliée</RTAlly.fixedName>
+	<RTAlly.leaderTitle>chef</RTAlly.leaderTitle>
+	<RTAlly.pawnSingular>colon</RTAlly.pawnSingular>
+	<RTAlly.pawnsPlural>colons</RTAlly.pawnsPlural>
 </LanguageData>

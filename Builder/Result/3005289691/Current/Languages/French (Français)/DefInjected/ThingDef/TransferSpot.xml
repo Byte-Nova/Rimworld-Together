@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-  <RTTransferSpot.label>Transfer Drop Spot</RTTransferSpot.label>
-  <RTTransferSpot.description>Designates a spot for goods to land. Only applies to player trades!</RTTransferSpot.description>
+  <RTTransferSpot.label>Lieu d'Échange</RTTransferSpot.label>
+  <RTTransferSpot.description>Lieu ou les produits des autres joueurs vont arrivés</RTTransferSpot.description>
 </LanguageData>
