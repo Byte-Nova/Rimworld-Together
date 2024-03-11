@@ -46,6 +46,10 @@ namespace GameClient
             loginDataPath = Path.Combine(modFolderPath, "LoginData.json");
             savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
+            
+
+            Logs.prepareFileName(modPath);
+
             if (!Directory.Exists(modFolderPath)) Directory.CreateDirectory(modFolderPath);
             if (!Directory.Exists(worldSavesFolderPath)) Directory.CreateDirectory(worldSavesFolderPath);
         }
@@ -58,7 +62,7 @@ namespace GameClient
                 threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
                 Object.Instantiate(go);
 
-                Log.Message($"[Rimworld Together] > Created dispatcher for version {CommonValues.executableVersion}");
+                Logs.Message($"[Rimworld Together] > Created dispatcher for version {CommonValues.executableVersion}");
             }
         }
     }

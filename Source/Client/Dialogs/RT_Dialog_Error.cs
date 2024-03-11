@@ -19,7 +19,6 @@ namespace GameClient
 
         public RT_Dialog_Error(string description, Action actionOK = null)
         {
-            DialogManager.dialogError = this;
             this.description = description;
             this.actionOK = actionOK;
 
@@ -50,7 +49,7 @@ namespace GameClient
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
             {
                 if (actionOK != null) actionOK.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
         }
     }
