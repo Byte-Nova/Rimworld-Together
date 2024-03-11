@@ -16,6 +16,6 @@ namespace Shared
 
         public List<string> runningMods = new List<string>();
 
-        public List<string> extraDetails = new List<string>();
+        public List<string> conflictingMods = new List<string>();
     }
 }

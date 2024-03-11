@@ -4,7 +4,7 @@ namespace Shared
 {
     public class DownloadManager
     {
-        public FileStream fileStream;
+        private FileStream fileStream;
 
         public string filePath;
         public double fileSize;

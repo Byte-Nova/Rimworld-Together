@@ -26,7 +26,7 @@ namespace GameServer
             {
                 offlineVisitDetails.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
-                client.listener.EnqueuePacket(packet);
+                client.listener.dataQueue.Enqueue(packet);
             }
 
             else
@@ -37,7 +37,7 @@ namespace GameServer
                 {
                     offlineVisitDetails.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
-                    client.listener.EnqueuePacket(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
 
                 else
@@ -46,7 +46,7 @@ namespace GameServer
                     offlineVisitDetails.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
-                    client.listener.EnqueuePacket(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
             }
         }

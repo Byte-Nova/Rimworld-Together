@@ -1,4 +1,6 @@
-﻿namespace GameServer
+﻿using Shared;
+
+namespace GameServer
 {
     [Serializable]
     public class SiteFile

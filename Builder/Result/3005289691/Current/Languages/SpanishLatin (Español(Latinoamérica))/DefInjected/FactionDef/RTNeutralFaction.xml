@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTNeutral.label>Asentamiento Neutral</RTNeutral.label>
-	<RTNeutral.description>Una facción multijugador</RTNeutral.description>
-	<RTNeutral.fixedName>Asentamiento Neutral</RTNeutral.fixedName>
-	<RTNeutral.leaderTitle>líder</RTNeutral.leaderTitle>
-	<RTNeutral.pawnSingular>colono</RTNeutral.pawnSingular>
-	<RTNeutral.pawnsPlural>colonos</RTNeutral.pawnsPlural>
-</LanguageData>

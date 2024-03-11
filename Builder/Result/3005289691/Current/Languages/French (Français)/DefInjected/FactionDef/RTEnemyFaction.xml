@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTEnemy.label>Colonie Joueur Ennemie</RTEnemy.label>
-	<RTEnemy.description>Une colonie d'une faction d'un joueur ennemie.</RTEnemy.description>
-	<RTEnemy.fixedName>Colonie Joueur Ennemie</RTEnemy.fixedName>
-	<RTEnemy.leaderTitle>chef</RTEnemy.leaderTitle>
-	<RTEnemy.pawnSingular>colon</RTEnemy.pawnSingular>
-	<RTEnemy.pawnsPlural>colons</RTEnemy.pawnsPlural>
-</LanguageData>

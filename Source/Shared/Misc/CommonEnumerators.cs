@@ -8,7 +8,7 @@
 
         //Commands
 
-        public enum CommandType { Op, Deop, Broadcast, ForceSave }
+        public enum CommandType { Op, Deop, Ban, Disconnect, Quit, Broadcast, ForceSave }
 
         //Events
 
@@ -75,7 +75,7 @@
 
         //Saving
 
-        public enum SaveMode { Disconnect, Autosave }
+        public enum SaveMode { Disconnect, Quit, Autosave }
 
         //Chat
 
@@ -97,8 +97,7 @@
             ExtraLogin, 
             WrongMods, 
             ServerFull,
-            Whitelist,
-            WrongVersion
+            Whitelist
         }
 
         //World generation

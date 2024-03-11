@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using Verse.Profile;
 
 namespace GameClient
 {
@@ -108,10 +111,10 @@ namespace GameClient
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
             worldDetailsJSON.seedString = seedString;
-            worldDetailsJSON.persistentRandomValue = persistentRandomValue;
+            worldDetailsJSON.persistentRandomValue = Find.World.info.persistentRandomValue;
             worldDetailsJSON.planetCoverage = planetCoverage.ToString();
             worldDetailsJSON.rainfall = ((int)rainfall).ToString();
-            worldDetailsJSON.temperature = ((int)temperature).ToString();
+            worldDetailsJSON.temperature = ((int)temperature).ToString(); ;
             worldDetailsJSON.population = ((int)population).ToString();
             worldDetailsJSON.pollution = pollution.ToString();
            
@@ -123,7 +126,7 @@ namespace GameClient
             worldDetailsJSON = XmlParser.GetWorldXmlData(worldDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.dataQueue.Enqueue(packet);
         }
 
         public static void GetWorldFromServer()

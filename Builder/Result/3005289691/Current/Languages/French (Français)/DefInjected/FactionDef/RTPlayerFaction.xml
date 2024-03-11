@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTFaction.label>Colonie Joueur</RTFaction.label>
-	<RTFaction.description>Une Colonie d'une faction d'un joueur.</RTFaction.description>
-	<RTFaction.fixedName>Colonie Joueur</RTFaction.fixedName>
-	<RTFaction.leaderTitle>chef</RTFaction.leaderTitle>
-	<RTFaction.pawnSingular>colon</RTFaction.pawnSingular>
-	<RTFaction.pawnsPlural>colons</RTFaction.pawnsPlural>
-</LanguageData>

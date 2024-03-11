@@ -76,7 +76,7 @@ namespace GameServer
             UserManager.SaveUserFile(client, userFile);
 
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.LikelihoodPacket), structureLikelihoodJSON);
-            client.listener.EnqueuePacket(rPacket);
+            client.listener.dataQueue.Enqueue(rPacket);
         }
 
         public static int GetLikelihoodFromTile(ServerClient client, string tileToCheck)
@@ -228,7 +228,7 @@ namespace GameServer
             }
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LikelihoodPacket), structureLikelihoodJSON);
-            client.listener.EnqueuePacket(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
     }
 }

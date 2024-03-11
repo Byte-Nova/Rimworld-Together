@@ -64,7 +64,7 @@ namespace GameServer
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
-            client.listener.EnqueuePacket(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
 
         public static void SendWorldFile(ServerClient client)
@@ -99,7 +99,7 @@ namespace GameServer
             worldDetailsJSON.tileRiverDefDeflate = worldValues.tileRiverDefDeflate;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
-            client.listener.EnqueuePacket(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
 
         public static void LoadWorldFile()

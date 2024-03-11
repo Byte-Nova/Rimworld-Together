@@ -128,7 +128,7 @@ namespace GameServer
                 factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NameInUse).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-                client.listener.EnqueuePacket(packet);
+                client.listener.dataQueue.Enqueue(packet);
             }
 
             else
@@ -150,7 +150,7 @@ namespace GameServer
                 UserManager.SaveUserFile(client, userFile);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-                client.listener.EnqueuePacket(packet);
+                client.listener.dataQueue.Enqueue(packet);
 
                 Logger.WriteToConsole($"[Created faction] > {client.username} > {factionFile.factionName}", Logger.LogMode.Warning);
             }
@@ -192,7 +192,7 @@ namespace GameServer
                         {
                             cClient.hasFaction = false;
                             cClient.factionName = "";
-                            cClient.listener.EnqueuePacket(packet);
+                            cClient.listener.dataQueue.Enqueue(packet);
 
                             LikelihoodManager.UpdateClientLikelihoods(cClient);
                         }
@@ -234,7 +234,7 @@ namespace GameServer
                             {
                                 factionManifest.manifestDetails = factionFile.factionName;
                                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-                                toAdd.listener.EnqueuePacket(packet);
+                                toAdd.listener.dataQueue.Enqueue(packet);
                             }
                         }
                     }
@@ -302,7 +302,7 @@ namespace GameServer
                 {
                     factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.AdminProtection).ToString();
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-                    client.listener.EnqueuePacket(packet);
+                    client.listener.dataQueue.Enqueue(packet);
                 }
                 else RemoveFromFaction();
             }
@@ -318,7 +318,7 @@ namespace GameServer
                         toRemove.factionName = "";
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-                        toRemove.listener.EnqueuePacket(packet);
+                        toRemove.listener.dataQueue.Enqueue(packet);
 
                         LikelihoodManager.UpdateClientLikelihoods(toRemove);
                     }
@@ -454,7 +454,7 @@ namespace GameServer
             }
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-            client.listener.EnqueuePacket(packet);
+            client.listener.dataQueue.Enqueue(packet);
         }
     }
 }

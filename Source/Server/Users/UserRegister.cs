@@ -7,34 +7,54 @@ namespace GameServer
         public static void TryRegisterUser(ServerClient client, Packet packet)
         {
             JoinDetailsJSON registerDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
-
-            if (!UserManager.CheckIfUserUpdated(client, registerDetails)) return;
-
-            if (!UserManager.CheckLoginDetails(client, registerDetails, CommonEnumerators.LoginMode.Register)) return;
-
-            if (UserManager.CheckIfUserExists(client, registerDetails, CommonEnumerators.LoginMode.Register)) return;
-
             client.username = registerDetails.username;
             client.password = registerDetails.password;
 
-            UserFile userFile = new UserFile();
-            userFile.uid = GetNewUIDForUser(client);
-            userFile.username = client.username;
-            userFile.password = client.password;
+            if (!UserManager_Joinings.CheckLoginDetails(client, CommonEnumerators.LoginMode.Register)) return;
 
-            try
+            if (TryFetchAlreadyRegistered(client)) return;
+            else
             {
-                UserManager.SaveUserFile(client, userFile);
-                UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterSuccess);
+                UserFile userFile = new UserFile();
+                userFile.uid = GetNewUIDForUser(client);
+                userFile.username = client.username;
+                userFile.password = client.password;
 
-                Logger.WriteToConsole($"[Registered] > {client.username}");
+                try
+                {
+                    UserManager.SaveUserFile(client, userFile);
+
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterSuccess);
+
+                    Logger.WriteToConsole($"[Registered] > {client.username}");
+                }
+
+                catch 
+                {
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError);
+
+                    return;
+                }
+            }
+        }
+
+        private static bool TryFetchAlreadyRegistered(ServerClient client)
+        {
+            string[] existingUsers = Directory.GetFiles(Master.usersPath);
+
+            foreach (string user in existingUsers)
+            {
+                UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
+                if (existingUser.username.ToLower() != client.username.ToLower()) continue;
+                else
+                {
+                    UserManager_Joinings.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterInUse);
+
+                    return true;
+                }
             }
 
-            catch
-            {
-                UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError);
-                return;
-            }
+            return false;
         }
 
         private static string GetNewUIDForUser(ServerClient client)

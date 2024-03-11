@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTAlly.label>Colonie Joueur alliée</RTAlly.label>
-	<RTAlly.description>Une colonie d'une faction d'un joueur alliée.</RTAlly.description>
-	<RTAlly.fixedName>Colonie Joueur alliée</RTAlly.fixedName>
-	<RTAlly.leaderTitle>chef</RTAlly.leaderTitle>
-	<RTAlly.pawnSingular>colon</RTAlly.pawnSingular>
-	<RTAlly.pawnsPlural>colons</RTAlly.pawnsPlural>
-</LanguageData>

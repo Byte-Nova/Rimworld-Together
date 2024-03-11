@@ -121,7 +121,7 @@ namespace GameClient
                 ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
@@ -129,7 +129,7 @@ namespace GameClient
                 ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeReRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
 
             else if (transferLocation == TransferLocation.Pod)
@@ -137,7 +137,7 @@ namespace GameClient
                 ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
         }
 
@@ -346,7 +346,7 @@ namespace GameClient
                 ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReject).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.dataQueue.Enqueue(packet);
             }
 
             else if (transferMode == TransferMode.Pod)
@@ -359,7 +359,7 @@ namespace GameClient
                 ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReReject).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.dataQueue.Enqueue(packet);
 
                 RecoverTradeItems(TransferLocation.Caravan);
             }

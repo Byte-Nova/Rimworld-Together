@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTAlly.label>Ally Player Settlements</RTAlly.label>
-	<RTAlly.description>An online faction</RTAlly.description>
-	<RTAlly.fixedName>Ally Player Settlements</RTAlly.fixedName>
-	<RTAlly.leaderTitle>leader</RTAlly.leaderTitle>
-	<RTAlly.pawnSingular>colonist</RTAlly.pawnSingular>
-	<RTAlly.pawnsPlural>colonists</RTAlly.pawnsPlural>
-</LanguageData>

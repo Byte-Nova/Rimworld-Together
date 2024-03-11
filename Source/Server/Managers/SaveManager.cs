@@ -36,7 +36,7 @@ namespace GameServer
             else
             {
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
-                client.listener.EnqueuePacket(rPacket);
+                client.listener.dataQueue.Enqueue(rPacket);
             }
         }
 
@@ -63,7 +63,7 @@ namespace GameServer
             fileTransferJSON.isLastPart = client.listener.uploadManager.isLastPart;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);
-            client.listener.EnqueuePacket(packet);
+            client.listener.dataQueue.Enqueue(packet);
 
             if (client.listener.uploadManager.isLastPart)
             {
@@ -76,9 +76,22 @@ namespace GameServer
         {
             if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
             {
+                CommandManager.SendDisconnectCommand(client);
+
                 client.listener.disconnectFlag = true;
-                Logger.WriteToConsole($"[Save game] > {client.username} > Disconnect");
+
+                Logger.WriteToConsole($"[Save game] > {client.username} > To menu");
             }
+
+            else if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Quit).ToString())
+            {
+                CommandManager.SendQuitCommand(client);
+
+                client.listener.disconnectFlag = true;
+
+                Logger.WriteToConsole($"[Save game] > {client.username} > To desktop");
+            }
+
             else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");
         }
 

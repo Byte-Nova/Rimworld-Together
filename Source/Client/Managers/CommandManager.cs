@@ -23,6 +23,18 @@ namespace GameClient
                     OnDeopCommand();
                     break;
 
+                case (int)CommonEnumerators.CommandType.Ban:
+                    OnBanCommand();
+                    break;
+
+                case (int)CommonEnumerators.CommandType.Disconnect:
+                    DisconnectionManager.DisconnectToMenu();
+                    break;
+
+                case (int)CommonEnumerators.CommandType.Quit:
+                    DisconnectionManager.QuitGame();
+                    break;
+
                 case (int)CommonEnumerators.CommandType.Broadcast:
                     OnBroadcastCommand(commandDetailsJSON);
                     break;
@@ -47,6 +59,11 @@ namespace GameClient
             ServerValues.isAdmin = false;
             ClientValues.ManageDevOptions();
             DialogManager.PushNewDialog(new RT_Dialog_OK("You are no longer an admin!"));
+        }
+
+        private static void OnBanCommand()
+        {
+            DialogManager.PushNewDialog(new RT_Dialog_OK("You have been banned from the server!"));
         }
 
         private static void OnBroadcastCommand(CommandDetailsJSON commandDetailsJSON)

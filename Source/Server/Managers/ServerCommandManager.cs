@@ -165,11 +165,11 @@
             DeletePlayerCommandAction);
 
         private static ServerCommand enableDifficultyCommand = new ServerCommand("enabledifficulty", 0,
-            "Enables custom difficulty in the server",
+            "Locks an editable save for use [WIP]",
             EnableDifficultyCommandAction);
 
         private static ServerCommand disableDifficultyCommand = new ServerCommand("disabledifficulty", 0,
-            "Disables custom difficulty in the server",
+            "Locks an editable save for use [WIP]",
             DisableDifficultyCommandAction);
 
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
@@ -206,6 +206,8 @@
             deletePlayerCommand,
             enableDifficultyCommand,
             disableDifficultyCommand,
+            //lockSaveCommand,
+            //unlockSaveCommand,
             quitCommand,
             forceQuitCommand
         };
@@ -359,6 +361,8 @@
 
             else
             {
+                CommandManager.SendBanCommand(toFind);
+
                 toFind.listener.disconnectFlag = true;
 
                 UserFile userFile = UserManager.GetUserFile(toFind);

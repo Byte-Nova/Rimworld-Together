@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTEnemy.label>Enemy Player Settlements</RTEnemy.label>
-	<RTEnemy.description>An online faction</RTEnemy.description>
-	<RTEnemy.fixedName>Enemy Player Settlements</RTEnemy.fixedName>
-	<RTEnemy.leaderTitle>leader</RTEnemy.leaderTitle>
-	<RTEnemy.pawnSingular>colonist</RTEnemy.pawnSingular>
-	<RTEnemy.pawnsPlural>colonists</RTEnemy.pawnsPlural>
-</LanguageData>

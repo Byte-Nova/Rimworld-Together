@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTFaction.label>Asentamiento De Gremio</RTFaction.label>
-	<RTFaction.description>Una facción multijugador</RTFaction.description>
-	<RTFaction.fixedName>Asentamiento De Gremio</RTFaction.fixedName>
-	<RTFaction.leaderTitle>líder</RTFaction.leaderTitle>
-	<RTFaction.pawnSingular>colono</RTFaction.pawnSingular>
-	<RTFaction.pawnsPlural>colonos</RTFaction.pawnsPlural>
-</LanguageData>

@@ -1,4 +1,5 @@
-﻿using Verse;
+﻿using UnityEngine.SceneManagement;
+using Verse;
 
 namespace GameClient
 {
@@ -10,17 +11,14 @@ namespace GameClient
 
         public static void DisconnectToMenu()
         {
-            Network.CleanValues();
-            ChatManager.CleanChat();
+            ChatManager.ClearChat();
+            Network.ClearAllValues();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
             ClientValues.ToggleDisconnecting(false);
 
-            if (Current.ProgramState != ProgramState.Entry)
-            {
-                LongEventHandler.QueueLongEvent(delegate { }, 
-                    "Entry", "", doAsynchronously: false, null);
-            }
+            SceneManager.LoadScene(0, LoadSceneMode.Single);
+            Current.ProgramState = ProgramState.Entry;
         }
 
         //Kicks the client into closing the game

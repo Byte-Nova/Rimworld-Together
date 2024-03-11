@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTEnemy.label>Asentamiento Enemigo</RTEnemy.label>
-	<RTEnemy.description>Una facción multijugador</RTEnemy.description>
-	<RTEnemy.fixedName>Asentamiento Enemigo</RTEnemy.fixedName>
-	<RTEnemy.leaderTitle>líder</RTEnemy.leaderTitle>
-	<RTEnemy.pawnSingular>colono</RTEnemy.pawnSingular>
-	<RTEnemy.pawnsPlural>colonos</RTEnemy.pawnsPlural>
-</LanguageData>
