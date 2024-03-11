@@ -97,7 +97,8 @@
             ExtraLogin, 
             WrongMods, 
             ServerFull,
-            Whitelist
+            Whitelist,
+            WrongVersion
         }
 
         //World generation

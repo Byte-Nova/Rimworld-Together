@@ -8,6 +8,8 @@ namespace GameServer
         {
             JoinDetailsJSON loginDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
+            if (!UserManager.CheckIfUserUpdated(client, loginDetails)) return;
+
             if (!UserManager.CheckLoginDetails(client, loginDetails, CommonEnumerators.LoginMode.Login)) return;
 
             if (!UserManager.CheckIfUserExists(client, loginDetails, CommonEnumerators.LoginMode.Login)) return;

@@ -113,8 +113,6 @@ namespace GameClient
             }
             catch { }
 
-            //TODO
-            //Figure out if this is actually needed
             Thread.Sleep(1000);
 
             Master.threadDispatcher.Enqueue(delegate { Network.DisconnectFromServer(); });

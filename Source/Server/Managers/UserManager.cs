@@ -181,7 +181,8 @@ namespace GameServer
             JoinDetailsJSON loginDetailsJSON = new JoinDetailsJSON();
             loginDetailsJSON.tryResponse = ((int)response).ToString();
 
-            if (response == LoginResponse.WrongMods) loginDetailsJSON.conflictingMods = (List<string>)extraDetails;
+            if (response == LoginResponse.WrongMods) loginDetailsJSON.extraDetails = (List<string>)extraDetails;
+            else if (response == LoginResponse.WrongVersion) loginDetailsJSON.extraDetails = new List<string>() { CommonValues.executableVersion };
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginDetailsJSON);
             client.listener.EnqueuePacket(packet);
@@ -201,6 +202,17 @@ namespace GameServer
 
             SendLoginResponse(client, LoginResponse.Whitelist);
             return false;
+        }
+
+        public static bool CheckIfUserUpdated(ServerClient client, JoinDetailsJSON loginDetails)
+        {
+            if (loginDetails.clientVersion != CommonValues.executableVersion) return true;
+            else
+            {
+                Logger.WriteToConsole($"[Version Mismatch] > {client.username}", Logger.LogMode.Warning);
+                SendLoginResponse(client, LoginResponse.WrongVersion);
+                return false;
+            }
         }
     }
 }
