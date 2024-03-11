@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using RimWorld;
-using RimworldTogether.GameClient.Managers.Actions;
 using UnityEngine;
 using Verse;
 
-namespace RimworldTogether.GameClient.Dialogs
+namespace GameClient
 {
     public class RT_Dialog_Listing : Window
     {
@@ -27,6 +26,7 @@ namespace RimworldTogether.GameClient.Dialogs
 
         public RT_Dialog_Listing(string title, string description, string[] elements, Action actionOK = null)
         {
+            DialogManager.dialogListing = this;
             this.title = title;
             this.description = description;
             this.elements = elements;
@@ -66,7 +66,7 @@ namespace RimworldTogether.GameClient.Dialogs
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
             {
                 if (actionOK != null) actionOK.Invoke();
-                else DialogManager.PopDialog();
+                Close();
             }
         }
 

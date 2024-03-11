@@ -52,7 +52,7 @@ namespace GameClient
 
             catch 
             {
-                Logs.Warning("Server didn't have site rewards set, defaulting to 0");
+                Log.Warning("Server didn't have site rewards set, defaulting to 0");
 
                 siteRewardCount = new int[9]
                 {
@@ -335,7 +335,7 @@ namespace GameClient
 
             catch 
             {
-                Logs.Warning("Server didn't have personal site prices set, defaulting to 0");
+                Log.Warning("Server didn't have personal site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {
@@ -403,7 +403,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Server didn't have faction site prices set, defaulting to 0");
+                Log.Warning("Server didn't have faction site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {

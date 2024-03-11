@@ -167,7 +167,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -302,7 +302,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -324,7 +324,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 

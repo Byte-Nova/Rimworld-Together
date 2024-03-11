@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -20,8 +19,10 @@ namespace GameClient
 
         public RT_Dialog_OK(string description, Action actionOK = null)
         {
+            DialogManager.dialogOK = this;
             this.description = description;
             this.actionOK = actionOK;
+
             forcePause = true;
             absorbInputAroundWindow = true;
 
@@ -49,7 +50,7 @@ namespace GameClient
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
             {
                 if (actionOK != null) actionOK.Invoke();
-                else DialogManager.PopDialog();
+                Close();
             }
         }
     }

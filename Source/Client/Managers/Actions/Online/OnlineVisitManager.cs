@@ -441,7 +441,7 @@ namespace GameClient
 
                     visitDetailsJSON.pawnPositions.Add($"{pawn.Position.x}|{pawn.Position.y}|{pawn.Position.z}");
                 }
-                catch { Logs.Warning($"Couldn't get job for {pawn}"); }
+                catch { Log.Warning($"Couldn't get job for {pawn}"); }
             }
 
             visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Action).ToString();
@@ -471,7 +471,7 @@ namespace GameClient
                     VisitActionHelper.ChangeCurrentJobIfNeeded(otherPawns[i], newJob);
 
                 }
-                catch { Logs.Warning($"Couldn't set job for {otherPawns[i]}"); }
+                catch { Log.Warning($"Couldn't set job for {otherPawns[i]}"); }
             }
         }
     }
@@ -526,7 +526,7 @@ namespace GameClient
                     toReturn = $"{targetInfo.Cell.x}|{targetInfo.Cell.y}|{targetInfo.Cell.z}";
                 }
             }
-            catch { Logs.Error($"failed to parse {targetInfo}"); }
+            catch { Log.Error($"failed to parse {targetInfo}"); }
 
             return toReturn;
         }
@@ -567,7 +567,7 @@ namespace GameClient
                         break;
                 }
             }
-            catch { Logs.Error($"Failed to get target from {toReadFrom} as {actionTargetType}"); }
+            catch { Log.Error($"Failed to get target from {toReadFrom} as {actionTargetType}"); }
 
             return target;
         }
@@ -575,7 +575,7 @@ namespace GameClient
         public static JobDef TryGetJobDefForJob(Pawn pawnForJob, string jobDefName)
         {
             try { return DefDatabase<JobDef>.AllDefs.ToList().Find(fetch => fetch.defName == jobDefName); }
-            catch { Logs.Warning($"Couldn't get job def of {pawnForJob.Label}"); }
+            catch { Log.Warning($"Couldn't get job def of {pawnForJob.Label}"); }
 
             return null;
         }
@@ -583,7 +583,7 @@ namespace GameClient
         public static LocalTargetInfo TryGetLocalTargetInfo(Pawn pawnForJob, string actionTarget, string actionTargetType)
         {
             try { return GetActionTargetFromString(actionTarget, actionTargetType); }
-            catch { Logs.Warning($"Couldn't get job target for {pawnForJob.Label}"); }
+            catch { Log.Warning($"Couldn't get job target for {pawnForJob.Label}"); }
 
             return null;
         }
@@ -591,7 +591,7 @@ namespace GameClient
         public static Job TryCreateNewJob(Pawn pawnForJob, JobDef jobDef, LocalTargetInfo localTargetA)
         {
             try { return JobMaker.MakeJob(jobDef, localTargetA); }
-            catch { Logs.Warning($"Couldn't create job for {pawnForJob.Label}"); }
+            catch { Log.Warning($"Couldn't create job for {pawnForJob.Label}"); }
 
             return null;
         }
@@ -604,7 +604,7 @@ namespace GameClient
                 if (job.def == JobDefOf.Wait_Combat) pawn.drafter.Drafted = true;
                 else pawn.drafter.Drafted = false;
             }
-            catch { Logs.Warning($"Couldn't draft {pawn}"); }
+            catch { Log.Warning($"Couldn't draft {pawn}"); }
         }
 
         public static void TryChangePawnPosition(Pawn pawn, VisitDetailsJSON visitDetailsJSON, int index)
@@ -616,7 +616,7 @@ namespace GameClient
                 pawn.pather.Notify_Teleported_Int();
                 pawn.Position = updatedPosition;
             }
-            catch { Logs.Warning($"Couldn't give position to {pawn}"); }
+            catch { Log.Warning($"Couldn't give position to {pawn}"); }
         }
 
         public static void ChangeCurrentJobIfNeeded(Pawn pawn, Job newJob)
