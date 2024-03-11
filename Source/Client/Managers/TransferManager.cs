@@ -28,36 +28,36 @@ namespace GameClient
                     break;
 
                 case (int)TransferStepMode.TradeAccept:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
                 case (int)TransferStepMode.TradeReject:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
                 case (int)TransferStepMode.TradeReRequest:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     ReceiveReboundRequest(transferManifestJSON);
                     break;
 
                 case (int)TransferStepMode.TradeReAccept:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     GetTransferedItemsToSettlement(TransferManagerHelper.GetAllTransferedItems(ClientValues.incomingManifest));
                     break;
 
                 case (int)TransferStepMode.TradeReReject:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
                 case (int)TransferStepMode.Recover:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;

@@ -80,7 +80,7 @@ namespace GameClient
 
         private static void OnSpyAccept(SpyDetailsJSON spyDetailsJSON)
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(spyDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
@@ -100,7 +100,7 @@ namespace GameClient
 
         private static void OnSpyDeny()
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
             silverToReturn.stackCount = spyCost;

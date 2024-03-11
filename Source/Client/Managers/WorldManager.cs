@@ -24,7 +24,7 @@ namespace GameClient
 
         public static void OnRequireWorld()
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             ClientValues.ToggleGenerateWorld(true);
 
@@ -40,7 +40,7 @@ namespace GameClient
 
         public static void OnExistingWorld(WorldDetailsJSON worldDetailsJSON)
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             WorldGeneratorManager.SetValuesFromServer(worldDetailsJSON);
 

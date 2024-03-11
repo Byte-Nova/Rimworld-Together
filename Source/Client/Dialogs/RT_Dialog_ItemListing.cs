@@ -128,7 +128,7 @@ namespace GameClient
 
                 else if (transferMode == CommonEnumerators.TransferMode.Trade)
                 {
-                    if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Settlement))
+                    if (RimworldManager.CheckForAnySocialPawn(RimworldManager.SearchLocation.Settlement))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
                     }
@@ -150,7 +150,7 @@ namespace GameClient
                     ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.SendData(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }

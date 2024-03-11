@@ -24,7 +24,7 @@ namespace GameClient
         {
             if (TryConnectToServer())
             {
-                DialogManager.PopDialog();
+                DialogManager.PopWaitDialog();
                 SiteManager.SetSiteDefs();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
@@ -37,7 +37,7 @@ namespace GameClient
 
             else
             {
-                DialogManager.PopDialog();
+                DialogManager.PopWaitDialog();
 
                 RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
                 DialogManager.PushNewDialog(d1);
