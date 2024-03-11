@@ -32,7 +32,7 @@ namespace GameClient
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                Log.Message($"[Rimworld Together] > Connected to server");
+                Logs.Message($"[Rimworld Together] > Connected to server");
             }
 
             else
