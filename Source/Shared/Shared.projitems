@@ -19,7 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)JSON\ChatMessagesJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\CommandDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\FileTransferJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)misc\CommonValues.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="..\Shared\JSON\KeepAliveJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)JSON\MapFileJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
