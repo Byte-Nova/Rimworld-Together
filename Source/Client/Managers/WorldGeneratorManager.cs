@@ -69,7 +69,10 @@ namespace GameClient
                 {
                     PostWorldGeneration();
 
-                    if (!firstGeneration) ClientValues.ToggleRequireSaveManipulation(true);
+                    //FIX ME
+                    //Currently broken, planets that aren't normal 30% covering will suffer from topology desync
+                    //Suspicion that the XML file isn't consistent on how to store/use planet tile data
+                    //if (!firstGeneration) ClientValues.ToggleRequireSaveManipulation(true);
                 });
             }, "GeneratingWorld", doAsynchronously: true, null);
         }

@@ -48,6 +48,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre()
             {
+                if (!Network.isConnectedToServer) return true;
                 if (ServerValues.AllowCustomScenarios) return true;
                 else
                 {
@@ -67,6 +68,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, ref Scenario ___curScen)
             {
+                if (!Network.isConnectedToServer) return true;
                 if (ServerValues.AllowCustomScenarios) return true;
                 else
                 {

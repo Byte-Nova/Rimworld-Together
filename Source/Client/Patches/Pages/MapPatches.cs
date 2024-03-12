@@ -11,7 +11,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (FactionValues.playerFactions.Contains(map.Parent.Faction))
+            if (Network.isConnectedToServer && FactionValues.playerFactions.Contains(map.Parent.Faction))
             {
                 FloodFillerFog.DebugRefogMap(map);
             }
@@ -24,7 +24,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (FactionValues.playerFactions.Contains(map.Parent.Faction))
+            if (Network.isConnectedToServer && FactionValues.playerFactions.Contains(map.Parent.Faction))
             {
                 FloodFillerFog.DebugRefogMap(map);
             }

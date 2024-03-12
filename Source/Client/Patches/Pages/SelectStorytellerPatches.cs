@@ -14,7 +14,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if (DifficultyValues.UseCustomDifficulty)
+            if (Network.isConnectedToServer && DifficultyValues.UseCustomDifficulty)
             {
                 ___difficulty = DifficultyDefOf.Rough;
                 ___difficultyValues = new Difficulty(___difficulty);
@@ -31,7 +31,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (!ClientValues.needsToGenerateWorld)
+            if (Network.isConnectedToServer && !ClientValues.needsToGenerateWorld)
             {
                 Text.Font = GameFont.Small;
                 Vector2 buttonSize = new Vector2(150f, 38f);
@@ -47,7 +47,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect)
         {
-            if (ServerValues.isAdmin && !DifficultyValues.UseCustomDifficulty)
+            if (Network.isConnectedToServer && ServerValues.isAdmin && !DifficultyValues.UseCustomDifficulty)
             {
                 Text.Font = GameFont.Small;
                 Vector2 buttonSize = new Vector2(150f, 38f);
@@ -65,7 +65,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (ServerValues.isAdmin && !DifficultyValues.UseCustomDifficulty)
+            if (Network.isConnectedToServer && ServerValues.isAdmin && !DifficultyValues.UseCustomDifficulty)
             {
                 Text.Font = GameFont.Small;
                 Vector2 buttonSize = new Vector2(150f, 38f);

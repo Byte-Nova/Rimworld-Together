@@ -419,8 +419,6 @@ namespace GameClient
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
 
-
-
                 __result = gizmoList;
                 return;
             }

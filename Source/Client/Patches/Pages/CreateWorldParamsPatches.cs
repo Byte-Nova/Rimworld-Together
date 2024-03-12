@@ -15,7 +15,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, Page_CreateWorldParams __instance, string ___seedString, float ___planetCoverage, OverallRainfall ___rainfall, OverallTemperature ___temperature, OverallPopulation ___population, List<FactionDef> ___factions, float ___pollution)
             {
-                if (!ClientValues.needsToGenerateWorld) return true;
+                if (!Network.isConnectedToServer && ClientValues.needsToGenerateWorld) return true;
                 else
                 {
                     Vector2 buttonSize = new Vector2(150f, 38f);
@@ -37,7 +37,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost(Rect rect)
             {
-                if (!ClientValues.needsToGenerateWorld) return;
+                if (!Network.isConnectedToServer && ClientValues.needsToGenerateWorld) return;
                 else
                 {
                     Text.Font = GameFont.Small;
@@ -54,7 +54,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Page_CreateWorldParams __instance)
             {
-                if (ClientValues.needsToGenerateWorld) return true;
+                if (Network.isConnectedToServer && ClientValues.needsToGenerateWorld) return true;
                 else
                 {
                     __instance.Close();
