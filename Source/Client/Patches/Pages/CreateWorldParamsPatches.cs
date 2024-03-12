@@ -54,7 +54,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Page_CreateWorldParams __instance)
             {
-                if (Network.isConnectedToServer && ClientValues.needsToGenerateWorld) return true;
+                if (!Network.isConnectedToServer || ClientValues.needsToGenerateWorld) return true;
                 else
                 {
                     __instance.Close();
