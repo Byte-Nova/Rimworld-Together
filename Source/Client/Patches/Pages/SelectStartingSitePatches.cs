@@ -62,7 +62,7 @@ namespace GameClient
 
                     float num6 = rect.xMin + 10f;
                     float num7 = rect.yMin + 10f;
-                    if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "Disconnect") || KeyBindingDefOf.Cancel.KeyDownEvent) { }
+                    if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "RimworldTogether.Disconnect".Translate()) || KeyBindingDefOf.Cancel.KeyDownEvent) { }
                 }
             }
         }

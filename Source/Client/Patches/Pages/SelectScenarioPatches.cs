@@ -37,7 +37,7 @@ namespace GameClient
                     Text.Font = GameFont.Small;
                     Vector2 buttonSize = new Vector2(150f, 38f);
                     Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Disconnect")) { }
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RimWorldTogether.Disconnect".Translate())) { }
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace GameClient
                 if (ServerValues.AllowCustomScenarios) return true;
                 else
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("NowAllowCustomScenarios".Translate()));
                     return false;
                 }
             }

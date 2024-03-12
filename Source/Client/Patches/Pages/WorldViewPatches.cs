@@ -79,8 +79,8 @@ namespace GameClient
 
                 Command_Action command_Likelihood = new Command_Action
                 {
-                    defaultLabel = "Change Likelihood",
-                    defaultDesc = "Change the likelihood of this settlement",
+                    defaultLabel = "RimworldTogether.ChangeLikelihood".Translate(),
+                    defaultDesc = "RimworldTogether.ChangeLikelihoodOfThisSettlement".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
                     action = delegate
                     {
@@ -95,8 +95,8 @@ namespace GameClient
                         Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
                             CommonEnumerators.LikelihoodTarget.Settlement); };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("RimworldTogether.ChangeLikelihood".Translate(), "RimworldTogether.SetLikelihood".Translate(),
+                            "RimworldTogether.Enemy".Translate(), "RimworldTogether.Neutral".Translate(), "RimworldTogether.Ally".Translate(), r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -104,8 +104,8 @@ namespace GameClient
 
                 Command_Action command_FactionMenu = new Command_Action
                 {
-                    defaultLabel = "Faction Menu",
-                    defaultDesc = "Access your faction menu",
+                    defaultLabel = "RimworldTogether.FactionMenu".Translate(),
+                    defaultDesc = "AccessYourFactionMenu".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                     action = delegate
                     {
@@ -118,8 +118,8 @@ namespace GameClient
 
                 Command_Action command_Caravan = new Command_Action
                 {
-                    defaultLabel = "Form Caravan",
-                    defaultDesc = "Form a new caravan",
+                    defaultLabel = "RimworldTogether.FormCaravan".Translate(),
+                    defaultDesc = "RimworldTogether.FormANewCaravan".Translate(),
                     icon = ContentFinder<Texture2D>.Get("UI/Commands/FormCaravan"),
                     action = delegate
                     {
@@ -145,8 +145,8 @@ namespace GameClient
 
                 Command_Action command_FactionMenu = new Command_Action
                 {
-                    defaultLabel = "Faction Menu",
-                    defaultDesc = "Access your faction menu",
+                    defaultLabel = "RimworldTogether.FactionMenu".Translate(),
+                    defaultDesc = "RimworldTogether.AccessYourFactionMenu".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                     action = delegate
                     {
@@ -186,8 +186,8 @@ namespace GameClient
 
                 Command_Action command_Spy = new Command_Action
                 {
-                    defaultLabel = "Spy Settlement",
-                    defaultDesc = "Spy this settlement",
+                    defaultLabel = "RimworldTogether.SpySettlement".Translate(),
+                    defaultDesc = "RimworldTogether.SpyThisSettlement".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Spy"),
                     action = delegate
                     {
@@ -200,8 +200,8 @@ namespace GameClient
 
                 Command_Action command_Raid = new Command_Action
                 {
-                    defaultLabel = "Raid Settlement",
-                    defaultDesc = "Raid this settlement",
+                    defaultLabel = "RimworldTogether.RaidSettlement".Translate(),
+                    defaultDesc = "RimworldTogether.RaidThisSettlement".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Raid"),
                     action = delegate
                     {
@@ -214,16 +214,16 @@ namespace GameClient
 
                 Command_Action command_Visit = new Command_Action
                 {
-                    defaultLabel = "Visit Settlement",
-                    defaultDesc = "Visit this settlement",
+                    defaultLabel = "RimworldTogether.VisitSettlement".Translate(),
+                    defaultDesc = "RimworldTogether.VisitThisSettlement".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Visit"),
                     action = delegate
                     {
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
-                            "Online", "Offline",
+                        RT_Dialog_2Button d1 = new RT_Dialog_2Button("RimworldTogether.VisitMode".Translate(), "RimworldTogether.ChooseVisitMode".Translate(),
+                            "RimworldTogether.Online".Translate(), "RimworldTogether.Offline".Translate(),
                             delegate { OnlineVisitManager.RequestVisit(); },
                             delegate { OfflineVisitManager.RequestOfflineVisit(); },
                             null);
@@ -234,8 +234,8 @@ namespace GameClient
 
                 Command_Action command_Transfer = new Command_Action
                 {
-                    defaultLabel = "Transfer Items",
-                    defaultDesc = "Transfer items between settlements",
+                    defaultLabel = "RimworldTogether.TransferItems".Translate(),
+                    defaultDesc = "RimworldTogether.TransferItemsBetweenSettlements".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Transfer"),
                     action = delegate
                     {
@@ -246,21 +246,21 @@ namespace GameClient
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PawnTradeSkillAbsent".Translate()));
                     }
                 };
 
                 Command_Action command_Event = new Command_Action
                 {
-                    defaultLabel = "Send Event",
-                    defaultDesc = "Send an event to this settlement",
+                    defaultLabel = "RimworldTogether.SendEvent".Translate(),
+                    defaultDesc = "RimworldTogether.SendEventToSettlement".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Event"),
                     action = delegate
                     {
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
+                        RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("RimworldTogether.EventSelector".Translate(), "RimworldTogether.ChooseEventToSend".Translate(),
                             EventManager.eventNames, EventManager.ShowSendEventDialog, null);
 
                         DialogManager.PushNewDialog(d1);
@@ -269,8 +269,8 @@ namespace GameClient
 
                 Command_Action command_Likelihood = new Command_Action
                 {
-                    defaultLabel = "Change Likelihood",
-                    defaultDesc = "Change the likelihood of this settlement",
+                    defaultLabel = "RimworldTogether.ChangeLikelihood".Translate(),
+                    defaultDesc = "RimworldTogether.ChangeLikelihoodOfThisSettlement".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
                     action = delegate
                     {
@@ -291,8 +291,8 @@ namespace GameClient
                             CommonEnumerators.LikelihoodTarget.Settlement);
                         };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("RimworldTogether.ChangeLikelihood".Translate(), "RimworldTogether.SetLikelihood".Translate(),
+                            "RimworldTogether.Enemy".Translate(), "RimworldTogether.Neutral".Translate(), "RimworldTogether.Ally".Translate(), r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -300,8 +300,8 @@ namespace GameClient
 
                 Command_Action command_FactionMenu = new Command_Action
                 {
-                    defaultLabel = "Faction Menu",
-                    defaultDesc = "Access your faction menu",
+                    defaultLabel = "RimworldTogether.FactionMenu".Translate(),
+                    defaultDesc = "RimworldTogether.AccessYourFactionMenu".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                     action = delegate
                     {
@@ -370,8 +370,8 @@ namespace GameClient
 
                 Command_Action command_Likelihood = new Command_Action
                 {
-                    defaultLabel = "Change Likelihood",
-                    defaultDesc = "Change the likelihood of this site",
+                    defaultLabel = "RimworldTogether.ChangeLikelihood".Translate(),
+                    defaultDesc = "RimworldTogether.ChangeLikelihoodOfThisSettlement".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
                     action = delegate
                     {
@@ -386,8 +386,8 @@ namespace GameClient
                         Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
                             CommonEnumerators.LikelihoodTarget.Site); };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("RimworldTogether.ChangeLikelihood".Translate(), "RimworldTogether.SetLikelihood".Translate(),
+                            "RimworldTogether.Enemy".Translate(), "RimworldTogether.Neutral".Translate(), "RimworldTogether.Ally".Translate(), r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -441,14 +441,14 @@ namespace GameClient
                 {
                     Command_Action Command_BuildSite = new Command_Action
                     {
-                        defaultLabel = "Build Personal Site",
-                        defaultDesc = "Build an utility site for your convenience",
+                        defaultLabel = "RimworldTogether.BuildPersonalSite".Translate(),
+                        defaultDesc = "RimworldTogether.BuildPersonalSiteDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
                         action = delegate
                         {
                             ClientValues.chosenCaravan = __instance;
 
-                            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Personal Sites", "Available sites to build",
+                            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("RimworldTogether.BuildiablePersonalSites".Translate(), "RimworldTogether.AvailableSitesToBuild".Translate(),
                                 SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, null);
 
                             DialogManager.PushNewDialog(d1);
@@ -457,14 +457,14 @@ namespace GameClient
 
                     Command_Action Command_BuildFactionSite = new Command_Action
                     {
-                        defaultLabel = "Build Faction Site",
-                        defaultDesc = "Build an utility site for your faction",
+                        defaultLabel = "RimworldTogether.BuildFactionSiteLabel".Translate(),
+                        defaultDesc = "RimworldTogether.BuildFactionSiteDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
                         action = delegate
                         {
                             ClientValues.chosenCaravan = __instance;
 
-                            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Faction Sites", "Available sites to build",
+                            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("RimworldTogether.BuildableFactionSites".Translate(), "RimworldTogether.AvailableSitesToBuild".Translate(),
                                 SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, null);
 
                             DialogManager.PushNewDialog(d1);
@@ -479,8 +479,8 @@ namespace GameClient
                 {
                     Command_Action command_Likelihood = new Command_Action
                     {
-                        defaultLabel = "Change Likelihood",
-                        defaultDesc = "Change the likelihood of this site",
+                        defaultLabel = "RimworldTogether.ChangeLikelihood".Translate(),
+						defaultDesc = "RimworldTogether.ChangeLikelihoodOfThisSettlement".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
                         action = delegate
                         {
@@ -501,8 +501,8 @@ namespace GameClient
                                     CommonEnumerators.LikelihoodTarget.Site);
                             };
 
-                            RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
-                                "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                            RT_Dialog_3Button d1 = new RT_Dialog_3Button("RimworldTogether.ChangeLikelihood".Translate(), "RimworldTogether.SetLikelihood".Translate(),
+                            "RimworldTogether.Enemy".Translate(), "RimworldTogether.Neutral".Translate(), "RimworldTogether.Ally".Translate(), r1, r2, r3, null);
 
                             DialogManager.PushNewDialog(d1);
                         }
@@ -510,8 +510,8 @@ namespace GameClient
 
                     Command_Action command_AccessPersonalSite = new Command_Action
                     {
-                        defaultLabel = "Access Personal Site",
-                        defaultDesc = "Access your personal site",
+                        defaultLabel = "RimworldTogether.AccessPersonalSiteLabel".Translate(),
+                        defaultDesc = "RimworldTogether.AccessPersonalSiteDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
                         action = delegate
                         {
@@ -524,8 +524,8 @@ namespace GameClient
 
                     Command_Action command_DestroySite = new Command_Action
                     {
-                        defaultLabel = "Destroy Site",
-                        defaultDesc = "Destroy this site",
+                        defaultLabel = "RimworldTogether.DestroySiteLabel".Translate(),
+                        defaultDesc = "RimworldTogether.DestroySiteDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/DestroySite"),
                         action = delegate
                         {
@@ -571,7 +571,7 @@ namespace GameClient
                     ClientValues.chosenSettlement = settlement;
                     ClientValues.chosendPods = representative;
 
-                    string optionLabel = $"Transfer things to {settlement.Name}";
+                    string optionLabel = "TransferThingsToSettlement".Translate(settlement.Name);
                     Action toDo = delegate
                     {
                         TransferManager.TakeTransferItemsFromPods(ClientValues.chosendPods);

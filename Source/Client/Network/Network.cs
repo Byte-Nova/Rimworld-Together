@@ -38,7 +38,7 @@ namespace GameClient
             {
                 DialogManager.PopWaitDialog();
 
-                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RimworldTogether.ServerTimeOut".Translate());
                 DialogManager.PushNewDialog(d1);
 
                 CleanValues();
@@ -77,7 +77,7 @@ namespace GameClient
             if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
             else
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.ConnectionLost".Translate(),
                     delegate { DisconnectionManager.DisconnectToMenu(); }));
             }
         }

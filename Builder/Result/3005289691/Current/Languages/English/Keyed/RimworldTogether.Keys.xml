@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LanguageData>
+    <!-- Client Code -->
+	<!-- ModStuff.cs -->
+	<RimworldTogether.RunningVersion>Running Version: </RimworldTogether.RunningVersion>
+	<RimworldTogether.MultiplayerParameters>Multiplayer Parameters</RimworldTogether.MultiplayerParameters>
+	<RimworldTogether.WhenPlaying>When Playing</RimworldTogether.WhenPlaying>
+	
+	<RimworldTogether.DenyAllTransfers>Deny all incoming transfers</RimworldTogether.DenyAllTransfers>	
+	<RimworldTogether.TransferAutoDenied>Automatically denies transfers</RimworldTogether.TransferAutoDenied>
+	<RimworldTogether.DenyAllSiteRewards>Deny all incoming site rewards</RimworldTogether.DenyAllSiteRewards>
+	<RimworldTogether.SiteAutoReward>Automatically site rewards</RimworldTogether.SiteAutoReward>
+	<RimworldTogether.ServerSyncInterval>Server sync interval</RimworldTogether.ServerSyncInterval>
+	<RimworldTogether.SyncDays>Day/s</RimworldTogether.SyncDays>
+	
+	<RimworldTogether.Compatibility>Compatibility</RimworldTogether.Compatibility>
+	<RimworldTogether.ConvertSaveForServerUse>Convert save for server use</RimworldTogether.ConvertSaveForServerUse>
+	<RimworldTogether.Convert>Convert</RimworldTogether.Convert>
+	<RimworldTogether.OpenSavesFolder>Open saves folder</RimworldTogether.OpenSavesFolder>
+	<RimworldTogether.GetServerWorldFile>Get server world file</RimworldTogether.GetServerWorldFile>
+	<RimworldTogether.Get>Get</RimworldTogether.Get>
+	<RimworldTogether.OpenServerWorldsFolder>Open server worlds folder</RimworldTogether.OpenServerWorldsFolder>
+	
+	<RimworldTogether.Experimental>Experimental</RimworldTogether.Experimental>
+	<RimworldTogether.UseVerboseLogs>Use verbose logs</RimworldTogether.UseVerboseLogs>
+	<RimworldTogether.AdvancedLogs>Output more advanced info on the logs</RimworldTogether.AdvancedLogs>
+	<RimworldTogether.OpenLogsFolder>Open logs folder</RimworldTogether.OpenLogsFolder>
+	<RimworldTogether.Open>Open</RimworldTogether.Open>
+	
+	<RimworldTogether.ExternalSources>External Sources</RimworldTogether.ExternalSources>
+	<RimworldTogether.CheckWiki>Check the mod's wiki!</RimworldTogether.CheckWiki>
+	<RimworldTogether.JoinDiscord>Join the mod's Discord community!</RimworldTogether.JoinDiscord>
+	<RimworldTogether.CheckGithub>Check out the mod's Github!</RimworldTogether.CheckGithub>
+	
+	<RimworldTogether.SaveConvertedSuccessfully>Save was converted successfully</RimworldTogether.SaveConvertedSuccessfully>
+	
+	<RimworldTogether.WorldFileSavedCorrectly>World file was saved correctly!</RimworldTogether.WorldFileSavedCorrectly>
+	
+	<!-- DialogShurtcuts.cs -->
+	<RimworldTogether.RegistrationSuccess>You have been successfully registered!</RimworldTogether.RegistrationSuccess>
+	<RimworldTogether.AbleLogin>You are now able to login using your new account</RimworldTogether.AbleLogin>
+	
+	<RimworldTogether.NewUser>New User</RimworldTogether.NewUser>
+	<RimworldTogether.Username>Username</RimworldTogether.Username>
+	<RimworldTogether.Password>Password</RimworldTogether.Password>
+	<RimworldTogether.ConfirmPassword>Confirm Password</RimworldTogether.ConfirmPassword>
+	
+	<RimworldTogether.ExistingUser>Existing User</RimworldTogether.ExistingUser>
+	
+	<RimworldTogether.LoginSelect>Login Select</RimworldTogether.LoginSelect>
+	<RimworldTogether.LoginType>Choose your login type</RimworldTogether.LoginType>
+	
+	<RimworldTogether.FeatureUnavailable>This feature is not implemented yet!</RimworldTogether.FeatureUnavailable>
+	
+	<RimworldTogether.GameMode>Game Mode</RimworldTogether.GameMode>
+	<RimworldTogether.ChooseWay>Choose the way you want to play</RimworldTogether.ChooseWay>
+	<RimworldTogether.SeparateColony>Separate colony</RimworldTogether.SeparateColony>
+	<RimworldTogether.Cooperative>Together with other players (TBA)</RimworldTogether.Cooperative>
+	
+	<RimworldTogether.WorldView>Welcome to the world view!</RimworldTogether.WorldView>
+	<RimworldTogether.GameType>Please choose the way you would like to play</RimworldTogether.GameType>
+	<RimworldTogether.GameModeChange>This mode can't be changed upon choosing!</RimworldTogether.GameModeChange>
+	
+	<RimworldTogether.ServerBrowser>Server Browser</RimworldTogether.ServerBrowser>
+	<RimworldTogether.ServersList>List of reachable servers</RimworldTogether.ServersList>
+	
+	<RimworldTogether.ConnectionDetails>Connection Details</RimworldTogether.ConnectionDetails>
+	<RimworldTogether.PlayOnline>Play Online</RimworldTogether.PlayOnline>
+	<RimworldTogether.ConnectionType>Choose the connection type</RimworldTogether.ConnectionType>
+	<RimworldTogether.DirectConnect>Direct Connect</RimworldTogether.DirectConnect>
+	
+	<RimworldTogether.ServerConnect>Trying to connect to server</RimworldTogether.ServerConnect>
+	<RimworldTogether.ServerInvalid>Server details are invalid! Please try again!</RimworldTogether.ServerInvalid>
+	<RimworldTogether.LoginResponse>Waiting for login response</RimworldTogether.LoginResponse>
+	<RimworldTogether.LoginInvalid>Login details are invalid! Please try again!</RimworldTogether.LoginInvalid>
+	<RimworldTogether.RegisterResponse>Waiting for register response</RimworldTogether.RegisterResponse>
+	<RimworldTogether.RegisterInvalid>Register details are invalid! Please try again!</RimworldTogether.RegisterInvalid>
+	
+	<!-- Dialogs.cs -->
+	<RimworldTogether.Confirm>Confirm</RimworldTogether.Confirm>
+	<RimworldTogether.Cancel>Cancel</RimworldTogether.Cancel>
+	<RimworldTogether.OK>OK</RimworldTogether.OK>
+	<RimworldTogether.Accept>Accept</RimworldTogether.Accept>
+	
+	<RimworldTogether.ImpossibleTrade>You do not have any pawn capable of trading!</RimworldTogether.ImpossibleTrade>
+	<RimworldTogether.AcceptConfirmed>Are you sure you want to accept?</RimworldTogether.AcceptConfirmed>
+	<RimworldTogether.AcceptDeclined>Are you sure you want to decline?</RimworldTogether.AcceptDeclined>
+	
+	<RimworldTogether.Close>Close</RimworldTogether.Close>
+	<RimworldTogether.Reset>Reset</RimworldTogether.Reset>
+	<RimworldTogether.WAIT>WAIT</RimworldTogether.WAIT>
+	<RimworldTogether.OPTION>OPTION</RimworldTogether.OPTION>
+	<RimworldTogether.Select>Select</RimworldTogether.Select>
+	<RimworldTogether.TransferType>Transfer Type</RimworldTogether.TransferType>
+	<RimworldTogether.TransferMenu>Transfer Menu</RimworldTogether.TransferMenu>
+	
+	<RimworldTogether.Transfer>Please choose the transfer type to use</RimworldTogether.Transfer>
+	
+	<RimworldTogether.Gift>Gift</RimworldTogether.Gift>
+	<RimworldTogether.Trade>Trade</RimworldTogether.Trade>
+	
+	<RimworldTogether.ContinueTransfer>Are you sure you want to continue with the transfer?</RimworldTogether.ContinueTransfer>
+	<RimworldTogether.AcceptDeclined>Are you sure you want to decline?</RimworldTogether.AcceptDeclined>
+	
+	<!-- Actions Offline-->
+	<RimworldTogether.WaitingMap>Waiting for map</RimworldTogether.WaitingMap>
+	<RimworldTogether.OfflinePlayer>Player must not be connected!</RimworldTogether.OfflinePlayer>
+	<RimworldTogether.DataDifference>Map received but contains unknown mod data, continue?</RimworldTogether.DataDifference>
+	<RimworldTogether.MapReady>Map received, continue?</RimworldTogether.MapReady>
+	<RimworldTogether.MapLoadHang>Game might hang temporarily depending on map complexity</RimworldTogether.MapLoadHang>
+
+	<RimworldTogether.RaidMode>You are now in raid mode!</RimworldTogether.RaidMode>
+	<RimworldTogether.RaidAttack>Raid mode allows you to raid player settlements</RimworldTogether.RaidAttack>
+	<RimworldTogether.RaidTarget>Down all their enemy pawns and get loot for it!</RimworldTogether.RaidTarget>
+	
+	<RimworldTogether.SilverLack>You do not have enough silver!</RimworldTogether.SilverLack>
+	<RimworldTogether.SpyingCostsContinue>Spying a settlement costs {0} silver, continue?</RimworldTogether.SpyingCostsContinue>
+	<RimworldTogether.DataDifference>Map received but contains unknown mod data, continue?</RimworldTogether.DataDifference>
+	<RimworldTogether.MapReady>Map received, continue?</RimworldTogether.MapReady>
+	<RimworldTogether.MapLoadHang>Game might hang temporarily depending on map complexity</RimworldTogether.MapLoadHang>
+	<RimworldTogether.SilverRefund>Spent silver has been recovered</RimworldTogether.SilverRefund>
+	<RimworldTogether.PlayerOffline>Player must not be connected!</RimworldTogether.PlayerOffline>
+	<RimworldTogether.SpyMod>You are now in spy mode!</RimworldTogether.SpyMod>
+	<RimworldTogether.SpyBaseCheck>Spy mode allows you to check out another player's base</RimworldTogether.SpyBaseCheck>
+	<RimworldTogether.SpyCheckEnd>To stop the spy exit the map creating a caravan</RimworldTogether.SpyCheckEnd>
+	
+	<RimworldTogether.OfflineVisitMod>You are now in offline visit mode!</RimworldTogether.OfflineVisitMod>
+	<RimworldTogether.OfflineModNote>This mode allows you to visit an offline player!</RimworldTogether.OfflineModNote>
+	<RimworldTogether.MapLeaveNote>To stop the visit exit the map creating a caravan</RimworldTogether.MapLeaveNote>
+	
+	<!-- Actions Online-->
+	<RimworldTogether.FactionMemberList>Waiting for member list</RimworldTogether.FactionMemberList>
+	<RimworldTogether.FactionDeletion>Waiting for faction deletion</RimworldTogether.FactionDeletion>
+	<RimworldTogether.FactionLeave>Are you sure you want to LEAVE your faction?</RimworldTogether.FactionLeave>
+	<RimworldTogether.FactionDelete>Are you sure you want to DELETE your faction?</RimworldTogether.FactionDelete>
+	<RimworldTogether.FactionManagement>Faction Management</RimworldTogether.FactionManagement>
+	<RimworldTogether.FactionManagmentTab>Manage your faction from here</RimworldTogether.FactionManagmentTab>
+	
+	<RimworldTogether.Members>Members</RimworldTogether.Members>
+	<RimworldTogether.Delete>Delete</RimworldTogether.Delete>
+	<RimworldTogether.Leave>Leave</RimworldTogether.Leave>
+	
+	<RimworldTogether.FactionInvalid>Faction name is invalid! Please try again!</RimworldTogether.FactionInvalid>
+	<RimworldTogether.FactionCreation>Waiting for faction creation</RimworldTogether.FactionCreation>
+	<RimworldTogether.FactionName>New Faction Name</RimworldTogether.FactionName>
+	<RimworldTogether.FactionNaming>Input the name of your new faction</RimworldTogether.FactionNaming>
+	<RimworldTogether.FactionCreate>You are not a member of any faction! Create one?</RimworldTogether.FactionCreate>
+	<RimworldTogether.FactionDemote>Are you sure you want to demote this player?</RimworldTogether.FactionDemote>
+	<RimworldTogether.FactionPromote>Are you sure you want to promote this player?</RimworldTogether.FactionPromote>
+	<RimworldTogether.FactionKick>Are you sure you want to kick this player?</RimworldTogether.FactionKick>
+	
+	<RimworldTogether.PowerManagementMenu>Power Management Menu</RimworldTogether.PowerManagementMenu>
+	<RimworldTogether.ManagementSelection>Choose what you want to manage</RimworldTogether.ManagementSelection>
+	
+	<RimworldTogether.ManagementMenu>Management Menu</RimworldTogether.ManagementMenu>
+	<RimworldTogether.Promote>Promote</RimworldTogether.Promote>
+	<RimworldTogether.Demote>Demote</RimworldTogether.Demote>
+	<RimworldTogether.Powers>Powers</RimworldTogether.Powers>
+	<RimworldTogether.Kick>Kick</RimworldTogether.Kick>
+	
+	<RimworldTogether.FactionInvite>Do you want to invite this player to your faction?</RimworldTogether.FactionInvite>
+	<RimworldTogether.FactionCreated>Your faction has been created!</RimworldTogether.FactionCreated>
+	<RimworldTogether.FactionMenu>You can now access its menu through the same button</RimworldTogether.FactionMenu>
+	<RimworldTogether.FactionDelete>Your faction has been deleted!</RimworldTogether.FactionDelete>
+	<RimworldTogether.FactionOccupied>That faction name is already in use!</RimworldTogether.FactionOccupied>
+	<RimworldTogether.FactionActionBan>You don't have enough power for this action!</RimworldTogether.FactionActionBan>
+	<RimworldTogether.AcceptInvite>Invited to {0}, accept?</RimworldTogether.AcceptInvite>
+	<RimworldTogether.FactionKicked>You have been kicked from your faction!</RimworldTogether.FactionKicked>
+	<RimworldTogether.FactionLeaderActionBan>You can't do this action as a faction admin!</RimworldTogether.FactionLeaderActionBan>
+	
+	<RimworldTogether.FactionMembers>Faction Members</RimworldTogether.FactionMembers>
+	<RimworldTogether.MembersTab>All faction members are depicted here</RimworldTogether.MembersTab>
+	
+	<RimworldTogether.AlreadyVisiting>You are already visiting someone!</RimworldTogether.AlreadyVisiting>
+    <RimworldTogether.VisitResponse>Waiting for visit response</RimworldTogether.VisitResponse>
+    <RimworldTogether.BetaFeatureWarning>This feature is still in beta, continue?</RimworldTogether.BetaFeatureWarning>
+    <RimworldTogether.VisitModeOnlineOn>You are now in online visit mode!</RimworldTogether.VisitModeOnlineOn>
+    <RimworldTogether.VisitModeNote>Visit mode allows you to visit another player's base</RimworldTogether.VisitModeNote>
+    <RimworldTogether.VisitModeStopNote>To stop the visit use /sv in the chat</RimworldTogether.VisitModeStopNote>
+    <RimworldTogether.PlayerVisitRequest>Visited by {0}, accept?</RimworldTogether.PlayerVisitRequest>
+    <RimworldTogether.ModMismatch>Map received but contains unknown mod data</RimworldTogether.ModMismatch>
+    <RimworldTogether.MapReceived>Map received</RimworldTogether.MapReceived>
+    <RimworldTogether.PlayerVisitRefused>Player rejected the visit!</RimworldTogether.PlayerVisitRefused>
+    <RimworldTogether.PlayerRequestOnline>Player must be online!</RimworldTogether.PlayerRequestOnline>
+    <RimworldTogether.VisitEventEnd>Visiting event ended</RimworldTogether.VisitEventEnd>
+	
+	<!-- Command Manager-->
+	<RimworldTogether.PlayerAdmin>You are now an admin!</RimworldTogether.PlayerAdmin>
+	<RimworldTogether.PlayerNoLongerAdmin>You are no longer an admin!</RimworldTogether.PlayerNoLongerAdmin>
+	
+	<!-- Disconnection Manager-->
+	<RimworldTogether.GameWillRestart>The game will restart to prevent save desyncs</RimworldTogether.GameWillRestart>
+	
+	<!-- Event Manager-->
+	<RimworldTogether.EventWillCost>This event will cost you {0} silver, continue?</RimworldTogether.EventWillCost>
+	
+	<!-- Likelihood Manager-->
+	<RimworldTogether.PlayerBan>You have been banned from the server!</RimworldTogether.PlayerBan>
+	<RimworldTogether.WaitingEvent>Waiting for event</RimworldTogether.WaitingEvent>
+	<RimworldTogether.SilverRefund>Spent silver has been recovered</RimworldTogether.SilverRefund>
+	<RimworldTogether.PlayerNotAvailable>Player is not currently available!</RimworldTogether.PlayerNotAvailable>
+	<RimworldTogether.SettlmentEnemy>Chosen settlement is already marked as enemy!</RimworldTogether.SettlmentEnemy>
+	<RimworldTogether.SettlmentNeutral>Chosen settlement is already marked as neutral!</RimworldTogether.SettlmentNeutral>
+	<RimworldTogether.SettlmenAlly>Chosen settlement is already marked as ally!</RimworldTogether.SettlmenAlly>
+	<RimworldTogether.SettlmentLikelihood>Changing settlement likelihood</RimworldTogether.SettlmentLikelihood>
+	
+	<!-- Login Manager-->
+	<RimworldTogether.LoginInvalid>Login details are invalid! Please try again!</RimworldTogether.LoginInvalid>
+	<RimworldTogether.PlayerBaned>You are banned from this server!</RimworldTogether.PlayerBaned>
+	<RimworldTogether.UserNameOccupied>That username is already in use! Please try again!</RimworldTogether.UserNameOccupied>
+	<RimworldTogether.RegError>There was an error registering! Please try again!</RimworldTogether.RegError>
+	<RimworldTogether.DifferentPlaceNotice>You connected from another place!</RimworldTogether.DifferentPlaceNotice>
+	<RimworldTogether.ServerFull>Server is full!</RimworldTogether.ServerFull>
+	<RimworldTogether.ServerWhiteList>Server is whitelisted!</RimworldTogether.ServerWhiteList>
+	<RimworldTogether.ModVersionMismatch>Mod version mismatch! Expected version {0}</RimworldTogether.ModVersionMismatch>
+	
+	<!-- Mod Manager-->
+	<RimworldTogether.ModConflicts>Mod Conflicts</RimworldTogether.ModConflicts>
+	<RimworldTogether.ServerModConflict>The following mods are conflicting with the server</RimworldTogether.ServerModConflict>
+	
+	
+	<!-- Site Manager-->
+	??<RimworldTogether.PlayerTimeOut>Player must not be connected!</RimworldTogether.PlayerTimeOut>
+	
+	<RimworldTogether.SiteBuildSuccess>The desired site has been built!</RimworldTogether.SiteBuildSuccess>
+	<RimworldTogether.SiteInfoWaiting>Waiting for site information</RimworldTogether.SiteInfoWaiting>
+	<RimworldTogether.SiteWorkerSend>There is no current worker on this site, send?</RimworldTogether.SiteWorkerSend>
+	<RimworldTogether.SiteWorkerRetrive>You have a worker on this site, retrieve?</RimworldTogether.SiteWorkerRetrive>
+	<RimworldTogether.SiteWorkerWait>Waiting for site worker</RimworldTogether.SiteWorkerWait>
+	<RimworldTogether.SiteWorkerBack>Worker have been recovered</RimworldTogether.SiteWorkerBack>
+	
+	<RimworldTogether.PawnSelection>Pawn Selection</RimworldTogether.PawnSelection>
+	<RimworldTogether.PawnSelect>Select the pawn you wish to send</RimworldTogether.PawnSelect>
+	<RimworldTogether.SiteRemove>Are you sure you want to destroy this site?</RimworldTogether.SiteRemove>
+	<RimworldTogether.SiteHasWorker>The site has a worker inside!</RimworldTogether.SiteHasWorker>
+	<RimworldTogether.SiteWillCost>This site will cost you {0} silver, continue?</RimworldTogether.SiteWillCost>
+	
+	<RimworldTogether.SiteReward>You have received site rewards!</RimworldTogether.SiteReward>
+	<RimworldTogether.IdleConstruction>Waiting for building</RimworldTogether.IdleConstruction>
+	<RimworldTogether.DataDifference>Map received but contains unknown mod data, continue?</RimworldTogether.DataDifference>
+	<RimworldTogether.MapReady>Map received, continue?</RimworldTogether.MapReady>
+	<RimworldTogether.MapLoadHang>Game might hang temporarily depending on map complexity</RimworldTogether.MapLoadHang>
+	
+	<!-- Transfer Manager-->
+	<RimworldTogether.TradeSuccess>Transfer was a success!</RimworldTogether.TradeSuccess>
+	<RimworldTogether.TradeReject>Player rejected the trade!</RimworldTogether.TradeReject>
+	<RimworldTogether.TradeAwait>Waiting for transfer response</RimworldTogether.TradeAwait>
+	<RimworldTogether.TradeCancel>Transfer was cancelled!</RimworldTogether.TradeCancel>
+	
+	<RimworldTogether.ReciveGiftRequest>You are receiving a gift request</RimworldTogether.ReciveGiftRequest>
+	<RimworldTogether.ReciveTradeRequest>You are receiving a trade request</RimworldTogether.ReciveTradeRequest>
+	<RimworldTogether.TransferSpotUnavailable>You are missing a transfer spot!</RimworldTogether.TransferSpotUnavailable>
+	<RimworldTogether.ItemAppearCenter>Received items will appear in the center of the map</RimworldTogether.ItemAppearCenter>
+	<RimworldTogether.TradeSpotRequest>Build a trading spot to change the drop location!</RimworldTogether.TradeSpotRequest>
+	
+	<!-- World Manager-->
+	<RimworldTogether.FirstConnected>You are the first person joining the server!</RimworldTogether.FirstConnected>
+	<RimworldTogether.WorldKnofiguration>Configure the world that everyone will play on</RimworldTogether.WorldKnofiguration>
+	<RimworldTogether.FirstConnectionNotice>You are joining an existing server for the first time!</RimworldTogether.FirstConnectionNotice>
+	<RimworldTogether.ServerSettingsAdjustment>Some settings might be disabled by the server</RimworldTogether.ServerSettingsAdjustment>
+	<RimworldTogether.PlayStyleSelection>Configure your playstyle to your liking</RimworldTogether.PlayStyleSelection>
+	<RimworldTogether.WorldSave>World file has been saved into the server!</RimworldTogether.WorldSave>
+	<RimworldTogether.UseServerWorld>New connecting users will use this world when joining</RimworldTogether.UseServerWorld>
+	<RimworldTogether.OkToStart>Press OK to start playing!</RimworldTogether.OkToStart>
+	
+	<!-- Network.cs-->
+	<RimworldTogether.ServerTimeOut>The server did not respond in time</RimworldTogether.ServerTimeOut>
+	<RimworldTogether.ConnectionLost>Connection to the server has been lost!</RimworldTogether.ConnectionLost>
+	
+	<!-- PacketHandler.cs-->
+	<RimworldTogether.KickLawless>Kicked for ilegal actions!</RimworldTogether.KickLawless>
+	<RimworldTogether.PlayerNotAvailable>Player is not currently available!</RimworldTogether.PlayerNotAvailable>
+	
+	<!-- Pages-->
+	<RimworldTogether.Disconnect>Disconnect</RimworldTogether.Disconnect>
+	<RimworldTogether.NowAllowCustomScenarios>This server doesn't allow custom scenarios!</RimworldTogether.NowAllowCustomScenarios>
+	<RimworldTogether.Generate>Generate</RimworldTogether.Generate>
+	
+	<RimworldTogether.PlayTogether>Play Together</RimworldTogether.PlayTogether>
+	
+	
+	<RimworldTogether.Join>Join</RimworldTogether.Join>
+	<RimworldTogether.CustomDifficulty>Custom difficulty has been sent!</RimworldTogether.CustomDifficulty>
+	<RimworldTogether.SendDifficulty>Send Difficulty</RimworldTogether.SendDifficulty>
+	
+	<!-- WorldViewPatches.cs-->
+	<RimworldTogether.ChangeLikelihood>Change Likelihood</RimworldTogether.ChangeLikelihood>
+	<RimworldTogether.ChangeLikelihoodOfThisSettlement>Change the likelihood of this settlement</RimworldTogether.ChangeLikelihoodOfThisSettlement>
+	<RimworldTogether.SetLikelihood>Set settlement's likelihood to</RimworldTogether.SetLikelihood>
+	<RimworldTogether.Neutral>Neutral</RimworldTogether.Neutral>
+	<RimworldTogether.Enemy>Enemy</RimworldTogether.Enemy>
+	<RimworldTogether.Ally>Ally</RimworldTogether.Ally>
+	<RimworldTogether.FactionMenu>Faction Menu</RimworldTogether.FactionMenu>
+	<RimworldTogether.AccessYourFactionMenu>Access your faction menu</RimworldTogether.AccessYourFactionMenu>
+	<RimworldTogether.FormCaravan>Form Caravan</RimworldTogether.FormCaravan>
+	<RimworldTogether.FormANewCaravan>Form a new caravan</RimworldTogether.FormANewCaravan>
+	<RimworldTogether.SpySettlement>Spy Settlement</RimworldTogether.SpySettlement>
+	<RimworldTogether.SpyThisSettlement>Spy this settlement</RimworldTogether.SpyThisSettlement>
+	<RimworldTogether.RaidSettlement>Raid Settlement</RimworldTogether.RaidSettlement>
+	<RimworldTogether.RaidThisSettlement>Raid this settlement</RimworldTogether.RaidThisSettlement>
+	<RimworldTogether.VisitSettlement>Visit Settlement</RimworldTogether.VisitSettlement>
+	<RimworldTogether.VisitThisSettlement>Visit this settlement</RimworldTogether.VisitThisSettlement>
+	<RimworldTogether.VisitMode>Visit Mode</RimworldTogether.VisitMode>
+	<RimworldTogether.ChooseVisitMode>Please choose your visit mode</RimworldTogether.ChooseVisitMode>
+	<RimworldTogether.Online>Online</RimworldTogether.Online>
+	<RimworldTogether.Offline>Offline</RimworldTogether.Offline>
+	<RimworldTogether.TransferItems>Transfer Items</RimworldTogether.TransferItems>
+	<RimworldTogether.TransferItemsBetweenSettlements>Transfer items between settlements</RimworldTogether.TransferItemsBetweenSettlements>
+	<RimworldTogether.PawnTradeSkillAbsent>You do not have any pawn capable of trading!</RimworldTogether.PawnTradeSkillAbsent>
+	<RimworldTogether.SendEvent>Send Event</RimworldTogether.SendEvent>
+	<RimworldTogether.SendEventToSettlement>Send an event to this settlement</RimworldTogether.SendEventToSettlement>
+	<RimworldTogether.EventSelector>Event Selector</RimworldTogether.EventSelector>
+	<RimworldTogether.ChooseEventToSend>Choose the event you want to send</RimworldTogether.ChooseEventToSend>
+	<RimworldTogether.BuildPersonalSite>Build Personal Site</RimworldTogether.BuildPersonalSite>
+	<RimworldTogether.BuildPersonalSiteDesc>Build an utility site for your convenience</RimworldTogether.BuildPersonalSiteDesc>
+	<RimworldTogether.BuildiablePersonalSites>Buildable Personal Sites</RimworldTogether.BuildiablePersonalSites>
+	<RimworldTogether.AvailableSitesToBuild>Available sites to build</RimworldTogether.AvailableSitesToBuild>
+	<RimworldTogether.BuildFactionSiteLabel>Build Faction Site</RimworldTogether.BuildFactionSiteLabel>
+	<RimworldTogether.BuildFactionSiteDesc>Build an utility site for your faction</RimworldTogether.BuildFactionSiteDesc>
+	<RimworldTogether.BuildableFactionSites>Buildable Faction Sites</RimworldTogether.BuildableFactionSites>
+	<RimworldTogether.AccessPersonalSiteLabel>Access Personal Site</RimworldTogether.AccessPersonalSiteLabel>
+	<RimworldTogether.AccessPersonalSiteDesc>Access your personal site</RimworldTogether.AccessPersonalSiteDesc>
+	<RimworldTogether.DestroySiteLabel>Destroy Site</RimworldTogether.DestroySiteLabel>
+	<RimworldTogether.DestroySiteDesc>Destroy this site</RimworldTogether.DestroySiteDesc>
+	<RimworldTogether.TransferThingsToSettlement>Transfer things to {settlement.Name}</RimworldTogether.TransferThingsToSettlement>
+	
+	<!-- BaseUI.cs-->
+	<RimworldTogether.PlayersBasesCount>Player Bases [{0}]</RimworldTogether.PlayersBasesCount>
+	<RimworldTogether.Focus>Focus</RimworldTogether.Focus>
+	
+	<!-- ChatTab.cs-->
+	<RimworldTogether.OnlinePlayers>Online Players: [{0}]</RimworldTogether.OnlinePlayers>
+	
+	<!-- PlayersUI.cs-->
+	<RimworldTogether.PlayersOnline>Players Online [{0}]</RimworldTogether.PlayersOnline>
+	
+	<!-- Sites.cs-->
+	<RimworldTogether.PlayerSites>Player Sites [{0}]</RimworldTogether.PlayerSites>
+	
+    <!-- EscMenuPatches.cs-->
+    <RimworldTogether.SyncingSaveWithTheServer>Syncing save with the server</RimworldTogether.SyncingSaveWithTheServer>
+    <RimworldTogether.PlayerServerPresenceRequest>You need to be in a server to use this!</RimworldTogether.PlayerServerPresenceRequest>
+    <RimworldTogether.WaitingRequest>Waiting for request completion</RimworldTogether.WaitingRequest>
+    <RimworldTogether.ResetSaveConfirmation>Are you sure you want to reset your save</RimworldTogether.ResetSaveConfirmation>
+    <RimworldTogether.ResetSave>Reset Save</RimworldTogether.ResetSave>
+    
+    <!-- GameStatusPatcher.cs-->
+    <RimworldTogether.GameSynchronization>Save will reload to ensure synchronization</RimworldTogether.GameSynchronization>
+</LanguageData>

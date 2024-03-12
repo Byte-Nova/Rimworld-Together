@@ -54,14 +54,14 @@ namespace GameClient
             {
                 if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(spyCost))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.SilverLack".Translate()));
                 }
 
                 else
                 {
                     TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost);
 
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.WaitingMap".Translate()));
 
                     SpyDetailsJSON spyDetailsJSON = new SpyDetailsJSON();
                     spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
@@ -72,7 +72,7 @@ namespace GameClient
                 }
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Spying a settlement costs {spyCost} silver, continue?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.SpyingCostsContinue".Translate(spyCost), r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -89,11 +89,11 @@ namespace GameClient
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.DataDifference".Translate(), r1, null));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
+            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.MapReady".Translate(), r1, null));
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.MapLoadHang".Translate()));
         }
 
         //Executes after being denied a spy order
@@ -106,9 +106,9 @@ namespace GameClient
             silverToReturn.stackCount = spyCost;
             TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.SilverRefund".Translate()));
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PlayerOffline".Translate()));
         }
 
         //Prepares a given map for the spy order
@@ -124,9 +124,9 @@ namespace GameClient
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {
-                "You are now in spy mode!",
-                "Spy mode allows you to check out another player's base",
-                "To stop the spy exit the map creating a caravan"
+                "RimworldTogether.SpyMod".Translate(),
+                "RimworldTogether.SpyBaseCheck".Translate(),
+                "RimworldTogether.SpyCheckEnd".Translate()
             });
             DialogManager.PushNewDialog(d1);
 

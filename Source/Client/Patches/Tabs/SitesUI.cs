@@ -25,7 +25,7 @@ namespace GameClient
         {
             if (Network.isConnectedToServer)
             {
-                tabTitle = $"Player Sites [{PlanetManager.playerSites.Count()}]";
+                tabTitle = "RimworldTogether.PlayerSites".Translate(PlanetManager.playerSites.Count());
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -78,7 +78,7 @@ namespace GameClient
             float buttonX = 47f;
             float buttonY = 30f;
             Widgets.Label(fixedRect, $"{playerSite.Label} - {playerSite.Tile}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.y), new Vector2(buttonX, buttonY)), "Focus"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.y), new Vector2(buttonX, buttonY)), "RimworldTogether.Focus".Translate()))
             {
                 foreach (Site site in Find.World.worldObjects.Sites)
                 {

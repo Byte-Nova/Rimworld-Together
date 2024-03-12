@@ -39,7 +39,7 @@ namespace GameClient
         {
             if (desync)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("The game will restart to prevent save desyncs",
+                DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.GameWillRestart".Translate(),
                     delegate { GenCommandLine.Restart(); }));
             }
             else GenCommandLine.Restart();

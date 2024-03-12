@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using Shared;
+using Verse;
 
 namespace GameClient
 {
@@ -31,8 +32,8 @@ namespace GameClient
             toUse.next = new Page_SelectStartingSite();
             DialogManager.PushNewDialog(toUse);
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are the first person joining the server!",
-                "Configure the world that everyone will play on" });
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RimworldTogether.FirstConnected".Translate(),
+                "RimworldTogether.WorldKnofiguration".Translate() });
 
             DialogManager.PushNewDialog(d1);
         }
@@ -45,8 +46,8 @@ namespace GameClient
 
             DialogManager.PushNewDialog(new Page_SelectScenario());
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are joining an existing server for the first time!",
-                "Configure your playstyle to your liking", "Some settings might be disabled by the server" });
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RimworldTogether.FirstConnectionNotice".Translate(),
+                "RimworldTogether.PlayStyleSelection".Translate(), "RimworldTogether.ServerSettingsAdjustment".Translate() });
 
             DialogManager.PushNewDialog(d1);
         }

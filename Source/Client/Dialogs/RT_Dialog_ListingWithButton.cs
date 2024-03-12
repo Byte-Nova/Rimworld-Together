@@ -68,7 +68,7 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Close".Translate()))
             {
                 if (actionCancel != null) actionCancel.Invoke();
                 Close();
@@ -107,7 +107,7 @@ namespace GameClient
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, $"{element}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "RimworldTogether.Select".Translate()))
             {
                 DialogManager.dialogListingWithButtonResult = index;
                 if (actionClick != null) actionClick.Invoke();

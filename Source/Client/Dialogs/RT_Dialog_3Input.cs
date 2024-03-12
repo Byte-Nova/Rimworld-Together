@@ -87,7 +87,7 @@ namespace GameClient
 
             DrawInputThree(centeredX, inputThreeLabelDif, inputThreeDif);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Confirm".Translate()))
             {
                 DialogManager.dialog3ResultOne = inputOneResult;
                 DialogManager.dialog3ResultTwo = inputTwoResult;
@@ -97,7 +97,7 @@ namespace GameClient
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Cancel".Translate()))
             {
                 if (actionCancel != null) actionCancel.Invoke();
                 Close();

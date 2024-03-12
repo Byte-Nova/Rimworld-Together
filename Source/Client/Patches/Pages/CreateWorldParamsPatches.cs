@@ -43,7 +43,7 @@ namespace GameClient
                     Text.Font = GameFont.Small;
                     Vector2 buttonSize = new Vector2(150f, 38f);
                     Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Generate")) { }
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RimworldTogether.Generate".Translate())) { }
                 }
             }
         }

@@ -28,7 +28,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.enemyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as enemy!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RimworldTogether.SettlmentEnemy".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 0);
@@ -38,7 +38,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.neutralPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as neutral!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RimworldTogether.SettlmentNeutral".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 1);
@@ -48,7 +48,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.allyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as ally!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RimworldTogether.SettlmenAlly".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 2);
@@ -66,7 +66,7 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LikelihoodPacket), structureLikelihoodJSON);
             Network.listener.EnqueuePacket(packet);
 
-            RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement likelihood");
+            RT_Dialog_Wait d1 = new RT_Dialog_Wait("RimworldTogether.SettlmentLikelihood".Translate());
             DialogManager.PushNewDialog(d1);
         }
 

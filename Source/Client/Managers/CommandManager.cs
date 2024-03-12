@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using Shared;
+using Verse;
 
 namespace GameClient
 {
@@ -39,14 +40,14 @@ namespace GameClient
         {
             ServerValues.isAdmin = true;
             ClientValues.ManageDevOptions();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("You are now an admin!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.PlayerAdmin".Translate()));
         }
 
         private static void OnDeopCommand()
         {
             ServerValues.isAdmin = false;
             ClientValues.ManageDevOptions();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("You are no longer an admin!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.PlayerNoLongerAdmin".Translate()));
         }
 
         private static void OnBroadcastCommand(CommandDetailsJSON commandDetailsJSON)

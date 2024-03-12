@@ -19,7 +19,7 @@ namespace GameClient
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 2, buttonSize.x, buttonSize.y), ""))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.SyncingSaveWithTheServer".Translate()));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     ClientValues.ToggleDisconnecting(true);
@@ -28,7 +28,7 @@ namespace GameClient
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 3, buttonSize.x, buttonSize.y), ""))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.SyncingSaveWithTheServer".Translate()));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     ClientValues.ToggleQuiting(true);
@@ -52,20 +52,20 @@ namespace GameClient
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), ""))
                 {
-                    if (!Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
+                    if (!Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PlayerServerPresenceRequest".Translate()));
                     else
                     {
                         Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
 
                         Action r1 = delegate
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
+                            DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.WaitingRequest".Translate()));
 
                             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ResetSavePacket));
                             Network.listener.EnqueuePacket(packet);
                         };
 
-                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);
+                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.ResetSaveConfirmation".Translate(), r1, null);
                         DialogManager.PushNewDialog(d1);
                     }
                 }
@@ -81,7 +81,7 @@ namespace GameClient
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
-                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "Reset Save"))
+                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "RimworldTogether.ResetSave".Translate()))
                 {
 
                 }

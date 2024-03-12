@@ -49,7 +49,7 @@ namespace GameClient
 
         private void DrawPlayerCount(Rect rect)
         {
-            string message = $"Online Players: [{ServerValues.currentPlayers}]";
+            string message = "RimworldTogether.OnlinePlayers".Translate(ServerValues.currentPlayers);
 
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(rect.x, rect.y, Text.CalcSize(message).x, Text.CalcSize(message).y), message);

@@ -120,13 +120,13 @@ namespace GameClient
         public static void IllegalActionPacket(Packet packet)
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Kicked for ilegal actions!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.KickLawless".Translate()));
         }
 
         public static void UserUnavailablePacket(Packet packet)
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PlayerNotAvailable".Translate()));
         }
 
         public static void ServerValuesPacket(Packet packet)

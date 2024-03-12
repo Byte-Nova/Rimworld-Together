@@ -34,7 +34,7 @@ namespace GameClient
 
         public static void RequestRaid()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.WaitingMap".Translate()));
 
             RaidDetailsJSON raidDetailsJSON = new RaidDetailsJSON();
             raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
@@ -57,11 +57,11 @@ namespace GameClient
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.DataDifference".Translate(), r1, null));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
+            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.MapReady".Translate(), r1, null));
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.MapLoadHang".Translate()));
         }
 
         //Executes when raid request is denied
@@ -70,7 +70,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.OfflinePlayer".Translate()));
         }
 
         //Prepares a map for the raid order from a request
@@ -87,9 +87,9 @@ namespace GameClient
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {
-                "You are now in raid mode!",
-                "Raid mode allows you to raid player settlements",
-                "Down all their enemy pawns and get loot for it!",
+                "RimworldTogether.RaidMode".Translate(),
+                "RimworldTogether.RaidAttack".Translate(),
+                "RimworldTogether.RaidTarget".Translate(),
             });
             DialogManager.PushNewDialog(d1);
         }

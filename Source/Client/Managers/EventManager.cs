@@ -75,8 +75,7 @@ namespace GameClient
 
         public static void ShowSendEventDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This event will cost you {eventCosts[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", SendEvent, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.EventWillCost".Translate(eventCosts[DialogManager.selectedScrollButton]), SendEvent, null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -87,7 +86,7 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(eventCosts[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.SilverLack".Translate()));
             }
 
             else
@@ -103,7 +102,7 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.WaitingEvent".Translate()));
             }
         }
 
@@ -272,9 +271,9 @@ namespace GameClient
             silverToReturn.stackCount = eventCosts[DialogManager.selectedScrollButton];
             TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.SilverRefund".Translate()));
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PlayerNotAvailable".Translate()));
         }
     }
 }

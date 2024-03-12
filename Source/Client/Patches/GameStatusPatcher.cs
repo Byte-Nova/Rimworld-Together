@@ -30,7 +30,7 @@ namespace GameClient
 
                     if (ClientValues.requireSaveManipulation)
                     {
-                        RT_Dialog_OK d1 = new RT_Dialog_OK("Save will reload to ensure synchronization",
+                        RT_Dialog_OK d1 = new RT_Dialog_OK("RimworldTogether.GameSynchronization".Translate(),
                             delegate { WorldGeneratorManager.GetWorldFromServer(); });
 
                         DialogManager.PushNewDialog(d1);
