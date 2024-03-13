@@ -89,7 +89,9 @@ namespace GameClient
             visitMap = OnlineVisitHelper.GetMapForVisit(FetchMode.Player, mapDetailsJSON);
             factionPawns = OnlineVisitHelper.GetCaravanPawns(FetchMode.Player, null);
             mapThings = OnlineVisitHelper.GetMapThings(visitMap);
+
             Log.Warning(mapThings.Count().ToString());
+
             syncedTime = false;
 
             VisitThingHelper.SpawnPawnsForVisit(FetchMode.Player, visitDetailsJSON);
@@ -124,16 +126,12 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                ClientValues.chosenSettlement = Find.WorldObjects.Settlements.Find(fetch =>
-                    fetch.Tile == int.Parse(visitDetailsJSON.targetTile));
-
-                MapDetailsJSON mapDetailsJSON = MapScribeManager.MapToString(Find.Maps.Find(fetch => 
-                    fetch.Tile == ClientValues.chosenSettlement.Tile), true, false, false);
-
-                visitMap = OnlineVisitHelper.GetMapForVisit(FetchMode.Host, mapDetailsJSON);
+                visitMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == int.Parse(visitDetailsJSON.targetTile)).Map;
                 factionPawns = OnlineVisitHelper.GetMapPawns(FetchMode.Host, null);
                 mapThings = OnlineVisitHelper.GetMapThings(visitMap);
+
                 Log.Warning(mapThings.Count().ToString());
+
                 syncedTime = true;
 
                 SendRequestedMap(visitDetailsJSON);
@@ -451,30 +449,16 @@ namespace GameClient
                 switch (type)
                 {
                     case ActionTargetType.Thing:
-                        //ItemDetailsJSON itemDetailsJSON = Serializer.SerializeFromString<ItemDetailsJSON>(toReadFrom);
-                        //Thing thingToCompare = ThingScribeManager.StringToItem(itemDetailsJSON);
-                        //Thing realThing = OnlineVisitManager.mapThings.First(fetch => fetch.Position == thingToCompare.Position && fetch.def.defName == thingToCompare.def.defName);
-                        //target = new LocalTargetInfo(realThing);
                         Log.Message(index.ToString());
                         target = new LocalTargetInfo(OnlineVisitManager.mapThings[index]);
                         break;
 
                     case ActionTargetType.Human:
-                        //HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(toReadFrom);
-                        //Pawn humanToCompare = HumanScribeManager.StringToHuman(humanDetailsJSON);
-                        //Pawn realHuman = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == humanToCompare.Position);
-                        //if (realHuman != null) target = new LocalTargetInfo(realHuman);
-
                         Log.Message(index.ToString());
                         target = new LocalTargetInfo(OnlineVisitManager.nonFactionPawns[index]);
                         break;
 
                     case ActionTargetType.Animal:
-                        //AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(toReadFrom); ;
-                        //Pawn animalToCompare = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
-                        //Pawn realAnimal = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == animalToCompare.Position);
-                        //if (realAnimal != null) target = new LocalTargetInfo(realAnimal);
-
                         Log.Message(index.ToString());
                         target = new LocalTargetInfo(OnlineVisitManager.nonFactionPawns[index]);
                         break;
@@ -715,19 +699,11 @@ namespace GameClient
         public static Thing[] GetMapThings(Map map)
         {
             List<Thing> thingsInMap = new List<Thing>();
-            for (int z = 0; z < map.Size.z; ++z)
+            foreach (Thing thing in map.listerThings.AllThings)
             {
-                for (int x = 0; x < map.Size.x; ++x)
-                {
-                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
-
-                    foreach (Thing thing in map.thingGrid.ThingsListAt(vectorToCheck).ToList())
-                    {
-                        if (TransferManagerHelper.CheckIfThingIsHuman(thing)) continue;
-                        else if (TransferManagerHelper.CheckIfThingIsAnimal(thing)) continue;
-                        else thingsInMap.Add(thing);
-                    }
-                }
+                if (TransferManagerHelper.CheckIfThingIsHuman(thing)) continue;
+                else if (TransferManagerHelper.CheckIfThingIsAnimal(thing)) continue;
+                else thingsInMap.Add(thing);
             }
 
             return thingsInMap.ToArray();

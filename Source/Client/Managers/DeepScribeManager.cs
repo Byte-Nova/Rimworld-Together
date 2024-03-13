@@ -1155,43 +1155,43 @@ namespace GameClient
 
                     mapDetailsJSON.tileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
 
-                    foreach (Thing thing in map.thingGrid.ThingsListAt(vectorToCheck).ToList())
-                    {
-                        if (TransferManagerHelper.CheckIfThingIsHuman(thing))
-                        {
-                            if (containsHumans)
-                            {
-                                HumanDetailsJSON humanDetailsJSON = HumanScribeManager.HumanToString(thing as Pawn);
-                                if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.factionHumans.Add(humanDetailsJSON);
-                                else mapDetailsJSON.nonFactionHumans.Add(humanDetailsJSON);
-                            }
-                        }
-
-                        else if (TransferManagerHelper.CheckIfThingIsAnimal(thing))
-                        {
-                            if (containsAnimals)
-                            {
-                                AnimalDetailsJSON animalDetailsJSON = AnimalScribeManager.AnimalToString(thing as Pawn);
-                                if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.factionAnimals.Add(animalDetailsJSON);
-                                else mapDetailsJSON.nonFactionAnimals.Add(animalDetailsJSON);
-                            }
-                        }
-
-                        else
-                        {
-                            ItemDetailsJSON itemDetailsJSON = ThingScribeManager.ItemToString(thing, thing.stackCount);
-
-                            if (thing.def.alwaysHaulable)
-                            {
-                                if (containsItems) mapDetailsJSON.factionThings.Add(itemDetailsJSON);
-                                else continue;
-                            }
-                            else mapDetailsJSON.nonFactionThings.Add(itemDetailsJSON);
-                        }
-                    }
-
                     if (map.roofGrid.RoofAt(vectorToCheck) == null) mapDetailsJSON.roofDefNames.Add("null");
                     else mapDetailsJSON.roofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
+                }
+            }
+
+            foreach (Thing thing in map.listerThings.AllThings)
+            {
+                if (TransferManagerHelper.CheckIfThingIsHuman(thing))
+                {
+                    if (containsHumans)
+                    {
+                        HumanDetailsJSON humanDetailsJSON = HumanScribeManager.HumanToString(thing as Pawn);
+                        if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.factionHumans.Add(humanDetailsJSON);
+                        else mapDetailsJSON.nonFactionHumans.Add(humanDetailsJSON);
+                    }
+                }
+
+                else if (TransferManagerHelper.CheckIfThingIsAnimal(thing))
+                {
+                    if (containsAnimals)
+                    {
+                        AnimalDetailsJSON animalDetailsJSON = AnimalScribeManager.AnimalToString(thing as Pawn);
+                        if (thing.Faction == Faction.OfPlayer) mapDetailsJSON.factionAnimals.Add(animalDetailsJSON);
+                        else mapDetailsJSON.nonFactionAnimals.Add(animalDetailsJSON);
+                    }
+                }
+
+                else
+                {
+                    ItemDetailsJSON itemDetailsJSON = ThingScribeManager.ItemToString(thing, thing.stackCount);
+
+                    if (thing.def.alwaysHaulable)
+                    {
+                        if (containsItems) mapDetailsJSON.factionThings.Add(itemDetailsJSON);
+                        else continue;
+                    }
+                    else mapDetailsJSON.nonFactionThings.Add(itemDetailsJSON);
                 }
             }
         }
