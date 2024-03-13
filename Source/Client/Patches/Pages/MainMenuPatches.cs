@@ -17,7 +17,11 @@ namespace GameClient
                 {
                     Vector2 buttonSize = new Vector2(170f, 45f);
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "")) DialogShortcuts.ShowConnectDialogs();
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
+                    {
+                        if (Network.isConnectedToServer || Network.isTryingToConnect) return true;
+                        else DialogShortcuts.ShowConnectDialogs();
+                    }
                 }
 
                 return true;

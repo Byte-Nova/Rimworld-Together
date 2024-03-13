@@ -1,11 +1,6 @@
 ﻿using HarmonyLib;
-using RimWorld;
 using RimWorld.Planet;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace GameClient
@@ -16,10 +11,10 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (FactionValues.playerFactions.Contains(map.Parent.Faction))
-            {
-                FloodFillerFog.DebugRefogMap(map);
-            }
+            if (!Network.isConnectedToServer) return;
+            if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
+
+            FloodFillerFog.DebugRefogMap(map);
         }
     }
 
@@ -29,10 +24,10 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (FactionValues.playerFactions.Contains(map.Parent.Faction))
-            {
-                FloodFillerFog.DebugRefogMap(map);
-            }
+            if (!Network.isConnectedToServer) return;
+            if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
+
+            FloodFillerFog.DebugRefogMap(map);
         }
     }
 }

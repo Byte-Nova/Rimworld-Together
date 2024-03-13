@@ -15,30 +15,27 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, Page_SelectScenario __instance)
             {
-                if (Network.isConnectedToServer)
-                {
-                    Vector2 buttonSize = new Vector2(150f, 38f);
-                    Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
-                    {
-                        __instance.Close();
-                        Network.listener.disconnectFlag = true;
-                    }
-                }
+                if (!Network.isConnectedToServer) return true;
 
+                Vector2 buttonSize = new Vector2(150f, 38f);
+                Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
+                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
+                {
+                    __instance.Close();
+                    Network.listener.disconnectFlag = true;
+                }
                 return true;
             }
 
             [HarmonyPostfix]
             public static void DoPost(Rect rect)
             {
-                if (Network.isConnectedToServer)
-                {
-                    Text.Font = GameFont.Small;
-                    Vector2 buttonSize = new Vector2(150f, 38f);
-                    Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Disconnect")) { }
-                }
+                if (!Network.isConnectedToServer) return;
+
+                Text.Font = GameFont.Small;
+                Vector2 buttonSize = new Vector2(150f, 38f);
+                Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
+                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Disconnect")) { }
             }
         }
 
@@ -48,12 +45,11 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre()
             {
+                if (!Network.isConnectedToServer) return true;
                 if (ServerValues.AllowCustomScenarios) return true;
-                else
-                {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!"));
-                    return false;
-                }
+
+                DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!"));
+                return false;
             }
         }
 
@@ -67,29 +63,27 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, ref Scenario ___curScen)
             {
+                if (!Network.isConnectedToServer) return true;
                 if (ServerValues.AllowCustomScenarios) return true;
-                else
-                {
-                    if (curScen != null) ___curScen = curScen;
 
-                    rect.xMax += 2f;
-                    Rect rect2 = new Rect(0f, 0f, rect.width - 16f - 2f, totalScenarioListHeight + 250f);
-                    Widgets.BeginScrollView(rect, ref scenariosScrollPosition, rect2);
-                    Rect rect3 = rect2.AtZero();
-                    rect3.height = 999999f;
+                if (curScen != null) ___curScen = curScen;
+                rect.xMax += 2f;
+                Rect rect2 = new Rect(0f, 0f, rect.width - 16f - 2f, totalScenarioListHeight + 250f);
+                Widgets.BeginScrollView(rect, ref scenariosScrollPosition, rect2);
+                Rect rect3 = rect2.AtZero();
+                rect3.height = 999999f;
 
-                    Listing_Standard listing_Standard = new Listing_Standard();
-                    listing_Standard.ColumnWidth = rect2.width;
-                    listing_Standard.Begin(rect3);
+                Listing_Standard listing_Standard = new Listing_Standard();
+                listing_Standard.ColumnWidth = rect2.width;
+                listing_Standard.Begin(rect3);
 
-                    Text.Font = GameFont.Small;
-                    ListScenariosOnListing(listing_Standard, ScenarioLister.ScenariosInCategory(ScenarioCategory.FromDef));
+                Text.Font = GameFont.Small;
+                ListScenariosOnListing(listing_Standard, ScenarioLister.ScenariosInCategory(ScenarioCategory.FromDef));
 
-                    listing_Standard.End();
-                    totalScenarioListHeight = listing_Standard.CurHeight;
-                    Widgets.EndScrollView();
-                    return false;
-                }
+                listing_Standard.End();
+                totalScenarioListHeight = listing_Standard.CurHeight;
+                Widgets.EndScrollView();
+                return false;
             }
 
             private static void ListScenariosOnListing(Listing_Standard listing, IEnumerable<Scenario> scenarios)

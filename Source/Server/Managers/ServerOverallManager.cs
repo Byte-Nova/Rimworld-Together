@@ -25,7 +25,7 @@ namespace GameServer
             so = GetActionsCost(client, so);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), so);
-            client.listener.dataQueue.Enqueue(packet);
+            client.listener.EnqueuePacket(packet);
         }
 
         private static ServerOverallJSON GetServerValues(ServerOverallJSON so)

@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
@@ -16,7 +15,6 @@ namespace GameClient
             {
                 if (Network.isConnectedToServer)
                 {
-                    ClientValues.ForcePermadeath();
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
@@ -25,17 +23,9 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
-
-                    if (ClientValues.requireSaveManipulation)
-                    {
-                        RT_Dialog_OK d1 = new RT_Dialog_OK("Save will reload to ensure synchronization",
-                            delegate { WorldGeneratorManager.GetWorldFromServer(); });
-
-                        DialogManager.PushNewDialog(d1);
-                    }
 
                     if (ClientValues.needsToGenerateWorld)
                     {
@@ -54,19 +44,12 @@ namespace GameClient
             {
                 if (Network.isConnectedToServer)
                 {
-                    ClientValues.ForcePermadeath();
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
                     PlanetManager.BuildPlanet();
 
                     ClientValues.ToggleReadyToPlay(true);
-
-                    if (ClientValues.requireSaveManipulation)
-                    {
-                        ClientValues.ToggleRequireSaveManipulation(false);
-                        SaveManager.ForceSave();
-                    }
                 }
             }
         }
@@ -84,7 +67,7 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -104,7 +87,7 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
                 }
@@ -124,7 +107,7 @@ namespace GameClient
                     settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
                 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
@@ -62,17 +60,18 @@ namespace GameClient
             cachedWorldDetails = worldDetailsJSON;
         }
 
-        public static void GeneratePatchedWorld(bool firstGeneration)
+        public static void GeneratePatchedWorld()
         {
             LongEventHandler.QueueLongEvent(delegate
             {
                 Find.GameInitData.ResetWorldRelatedMapInitData();
                 Current.Game.World = GenerateWorld();
-                LongEventHandler.ExecuteWhenFinished(delegate
+                LongEventHandler.ExecuteWhenFinished(delegate 
                 {
+                    Find.World.renderer.RegenerateAllLayersNow();
+                    MemoryUtility.UnloadUnusedUnityAssets();
+                    Current.CreatingWorld = null;
                     PostWorldGeneration();
-
-                    if (!firstGeneration) ClientValues.ToggleRequireSaveManipulation(true);
                 });
             }, "GeneratingWorld", doAsynchronously: true, null);
         }
@@ -96,7 +95,7 @@ namespace GameClient
             {
                 worldGenSteps[i].worldGenStep.GenerateFresh(seedString);
             }
-        
+
             Current.CreatingWorld.grid.StandardizeTileData();
             Current.CreatingWorld.FinalizeInit();
             Find.Scenario.PostWorldGenerate();
@@ -111,10 +110,10 @@ namespace GameClient
             worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
             worldDetailsJSON.seedString = seedString;
-            worldDetailsJSON.persistentRandomValue = Find.World.info.persistentRandomValue;
+            worldDetailsJSON.persistentRandomValue = persistentRandomValue;
             worldDetailsJSON.planetCoverage = planetCoverage.ToString();
             worldDetailsJSON.rainfall = ((int)rainfall).ToString();
-            worldDetailsJSON.temperature = ((int)temperature).ToString(); ;
+            worldDetailsJSON.temperature = ((int)temperature).ToString();
             worldDetailsJSON.population = ((int)population).ToString();
             worldDetailsJSON.pollution = pollution.ToString();
            
@@ -126,13 +125,7 @@ namespace GameClient
             worldDetailsJSON = XmlParser.GetWorldXmlData(worldDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
-            Network.listener.dataQueue.Enqueue(packet);
-        }
-
-        public static void GetWorldFromServer()
-        {
-            XmlParser.ModifyWorldXml(cachedWorldDetails);
-            GameDataSaveLoader.LoadGame(SaveManager.customSaveName);
+            Network.listener.EnqueuePacket(packet);
         }
 
         public static void PostWorldGeneration()

@@ -12,11 +12,6 @@ Welcome to the Github repository for "Rimworld Together"! In here you will find 
 > Incompatibility list: https://docs.google.com/spreadsheets/d/14f4oJIV82SzqNK-Tyewr0OKxVRgge8xFasivACwRlsA/edit#gid=0
 
 ## Server Prequisites
-> [!IMPORTANT]
-> The server runs utilizing the .NET 7.0 libraries, therefore you will need to have those said dependencies installed in your server machine. For quick access, you can download them from here: https://dotnet.microsoft.com/en-us/download/dotnet/7.0
-> 
-> **Either the Runtime version or the SDK will suffice, but any other won't make the server launch.**
-
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
 
 ## Server Installation

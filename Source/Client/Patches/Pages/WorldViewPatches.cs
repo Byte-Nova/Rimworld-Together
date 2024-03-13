@@ -39,28 +39,26 @@ namespace GameClient
         public static bool DoPre(ref int tile, ref List<Pair<Settlement, int>> outOffsets)
         {
             if (!Network.isConnectedToServer) return true;
-            else
-            {
-                int maxDist = SettlementProximityGoodwillUtility.MaxDist;
-                List<Settlement> settlements = Find.WorldObjects.Settlements;
-                for (int i = 0; i < settlements.Count; i++)
-                {
-                    Settlement settlement = settlements[i];
 
-                    if (FactionValues.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
-                    else
+            int maxDist = SettlementProximityGoodwillUtility.MaxDist;
+            List<Settlement> settlements = Find.WorldObjects.Settlements;
+            for (int i = 0; i < settlements.Count; i++)
+            {
+                Settlement settlement = settlements[i];
+
+                if (FactionValues.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
+                else
+                {
+                    int num = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, maxDist);
+                    if (num != int.MaxValue)
                     {
-                        int num = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, maxDist);
-                        if (num != int.MaxValue)
-                        {
-                            int num2 = Mathf.RoundToInt(DiplomacyTuning.Goodwill_PerQuadrumFromSettlementProximity.Evaluate(num));
-                            if (num2 != 0) outOffsets.Add(new Pair<Settlement, int>(settlement, num2));
-                        }
+                        int num2 = Mathf.RoundToInt(DiplomacyTuning.Goodwill_PerQuadrumFromSettlementProximity.Evaluate(num));
+                        if (num2 != 0) outOffsets.Add(new Pair<Settlement, int>(settlement, num2));
                     }
                 }
-
-                return false;
             }
+
+            return false;
         }
     }
 
@@ -418,8 +416,6 @@ namespace GameClient
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
-
-
 
                 __result = gizmoList;
                 return;

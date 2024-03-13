@@ -55,7 +55,7 @@ namespace GameServer
             }
 
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
-            foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.dataQueue.Enqueue(rPacket);
+            foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(rPacket);
 
             Logger.WriteToConsole($"[Chat] > {client.username} > {chatMessagesJSON.messages[0]}");
         }
@@ -72,7 +72,7 @@ namespace GameServer
 
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
-                client.listener.dataQueue.Enqueue(packet);
+                client.listener.EnqueuePacket(packet);
             }
 
             Logger.WriteToConsole($"[Chat] > {"CONSOLE"} > {"127.0.0.1"} > {chatMessagesJSON.messages[0]}");
@@ -90,7 +90,7 @@ namespace GameServer
             }
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
-            client.listener.dataQueue.Enqueue(packet);
+            client.listener.EnqueuePacket(packet);
         }
     }
 
