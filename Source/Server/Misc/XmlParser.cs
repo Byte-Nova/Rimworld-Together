@@ -27,5 +27,35 @@ namespace GameServer
 
             return result.ToArray();
         }
+
+        public static string[] ChildContentFromParent(string xmlPath, string elementName, string parentElement)
+        {
+            List<string> result = new List<string>();
+
+            try
+            {
+                XmlReader reader = XmlReader.Create(xmlPath);
+                while (reader.Read())
+                {
+                    if (reader.Name == parentElement) 
+                    {
+                        reader.ReadSubtree().ReadToDescendant(elementName);
+                        if (reader.NodeType == XmlNodeType.Element && reader.Name == elementName)
+                        {
+                            result.Add(reader.ReadElementContentAsString());
+                        }
+                    }
+                    
+                }
+
+                reader.Close();
+
+                return result.ToArray();
+            }
+            catch (Exception e) { Logger.WriteToConsole($"[Error] > Failed to parse mod at '{xmlPath}'. Exception: {e}", Logger.LogMode.Error); }
+
+            return result.ToArray();
+        }
+
     }
 }
