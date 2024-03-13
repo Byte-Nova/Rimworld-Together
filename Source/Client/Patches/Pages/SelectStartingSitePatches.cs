@@ -2,6 +2,7 @@
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Verse;
 
 namespace GameClient
@@ -35,7 +36,8 @@ namespace GameClient
                     float num7 = rect.yMin + 10f;
                     if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                     {
-                        DisconnectionManager.RestartGame(true);
+                        SceneManager.LoadScene(0);
+                        Network.listener.disconnectFlag = true;
                     }
                 }
 

@@ -27,7 +27,7 @@ namespace GameClient
                         WorldGeneratorManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall,
                             ___temperature, ___population, ___factions, ___pollution);
 
-                        WorldGeneratorManager.GeneratePatchedWorld(true);
+                        WorldGeneratorManager.GeneratePatchedWorld();
                     }
 
                     return true;
@@ -59,7 +59,7 @@ namespace GameClient
                 {
                     __instance.Close();
 
-                    WorldGeneratorManager.GeneratePatchedWorld(false);
+                    WorldGeneratorManager.GeneratePatchedWorld();
 
                     return false;
                 }

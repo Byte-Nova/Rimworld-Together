@@ -4,6 +4,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using Verse.Profile;
 
 namespace GameClient
 {
@@ -59,20 +60,18 @@ namespace GameClient
             cachedWorldDetails = worldDetailsJSON;
         }
 
-        public static void GeneratePatchedWorld(bool firstGeneration)
+        public static void GeneratePatchedWorld()
         {
             LongEventHandler.QueueLongEvent(delegate
             {
                 Find.GameInitData.ResetWorldRelatedMapInitData();
                 Current.Game.World = GenerateWorld();
-                LongEventHandler.ExecuteWhenFinished(delegate
+                LongEventHandler.ExecuteWhenFinished(delegate 
                 {
+                    Find.World.renderer.RegenerateAllLayersNow();
+                    MemoryUtility.UnloadUnusedUnityAssets();
+                    Current.CreatingWorld = null;
                     PostWorldGeneration();
-
-                    //FIX ME
-                    //Currently broken, planets that aren't normal 30% covering will suffer from topology desync
-                    //Suspicion that the XML file isn't consistent on how to store/use planet tile data
-                    //if (!firstGeneration) ClientValues.ToggleRequireSaveManipulation(true);
                 });
             }, "GeneratingWorld", doAsynchronously: true, null);
         }
@@ -96,7 +95,7 @@ namespace GameClient
             {
                 worldGenSteps[i].worldGenStep.GenerateFresh(seedString);
             }
-        
+
             Current.CreatingWorld.grid.StandardizeTileData();
             Current.CreatingWorld.FinalizeInit();
             Find.Scenario.PostWorldGenerate();
@@ -127,12 +126,6 @@ namespace GameClient
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             Network.listener.EnqueuePacket(packet);
-        }
-
-        public static void GetWorldFromServer()
-        {
-            XmlParser.ModifyWorldXml(cachedWorldDetails);
-            GameDataSaveLoader.LoadGame(SaveManager.customSaveName);
         }
 
         public static void PostWorldGeneration()
