@@ -2,7 +2,7 @@
 <Defs>
 	<FactionDef ParentName="FactionBase" Name="RTNeutral">
 		<defName>RTNeutral</defName>
-		<description>An online faction</description>
+		<description>A settlement of a neutral player faction.</description>
 		<basicMemberKind>Colonist</basicMemberKind>
 		<pawnSingular>colonist</pawnSingular>
 		<pawnsPlural>colonists</pawnsPlural>
