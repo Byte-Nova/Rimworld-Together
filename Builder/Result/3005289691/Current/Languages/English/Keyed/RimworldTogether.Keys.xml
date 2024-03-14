@@ -105,8 +105,6 @@
 	<!-- Actions Offline-->
 	<RimworldTogether.WaitingMap>Waiting for map</RimworldTogether.WaitingMap>
 	<RimworldTogether.OfflinePlayer>Player must not be connected!</RimworldTogether.OfflinePlayer>
-	<RimworldTogether.DataDifference>Map received but contains unknown mod data, continue?</RimworldTogether.DataDifference>
-	<RimworldTogether.MapReady>Map received, continue?</RimworldTogether.MapReady>
 	<RimworldTogether.MapLoadHang>Game might hang temporarily depending on map complexity</RimworldTogether.MapLoadHang>
 
 	<RimworldTogether.RaidMode>You are now in raid mode!</RimworldTogether.RaidMode>
@@ -115,8 +113,6 @@
 	
 	<RimworldTogether.SilverLack>You do not have enough silver!</RimworldTogether.SilverLack>
 	<RimworldTogether.SpyingCostsContinue>Spying a settlement costs {0} silver, continue?</RimworldTogether.SpyingCostsContinue>
-	<RimworldTogether.DataDifference>Map received but contains unknown mod data, continue?</RimworldTogether.DataDifference>
-	<RimworldTogether.MapReady>Map received, continue?</RimworldTogether.MapReady>
 	<RimworldTogether.MapLoadHang>Game might hang temporarily depending on map complexity</RimworldTogether.MapLoadHang>
 	<RimworldTogether.SilverRefund>Spent silver has been recovered</RimworldTogether.SilverRefund>
 	<RimworldTogether.PlayerOffline>Player must not be connected!</RimworldTogether.PlayerOffline>
@@ -187,10 +183,7 @@
 	<!-- Command Manager-->
 	<RimworldTogether.PlayerAdmin>You are now an admin!</RimworldTogether.PlayerAdmin>
 	<RimworldTogether.PlayerNoLongerAdmin>You are no longer an admin!</RimworldTogether.PlayerNoLongerAdmin>
-	
-	<!-- Disconnection Manager-->
-	<RimworldTogether.GameWillRestart>The game will restart to prevent save desyncs</RimworldTogether.GameWillRestart>
-	
+
 	<!-- Event Manager-->
 	<RimworldTogether.EventWillCost>This event will cost you {0} silver, continue?</RimworldTogether.EventWillCost>
 	
@@ -217,10 +210,6 @@
 	<!-- Mod Manager-->
 	<RimworldTogether.ModConflicts>Mod Conflicts</RimworldTogether.ModConflicts>
 	<RimworldTogether.ServerModConflict>The following mods are conflicting with the server</RimworldTogether.ServerModConflict>
-	
-	
-	<!-- Site Manager-->
-	??<RimworldTogether.PlayerTimeOut>Player must not be connected!</RimworldTogether.PlayerTimeOut>
 	
 	<RimworldTogether.SiteBuildSuccess>The desired site has been built!</RimworldTogether.SiteBuildSuccess>
 	<RimworldTogether.SiteInfoWaiting>Waiting for site information</RimworldTogether.SiteInfoWaiting>
@@ -274,13 +263,13 @@
 	<!-- Pages-->
 	<RimworldTogether.Disconnect>Disconnect</RimworldTogether.Disconnect>
 	<RimworldTogether.NowAllowCustomScenarios>This server doesn't allow custom scenarios!</RimworldTogether.NowAllowCustomScenarios>
-	<RimworldTogether.Generate>Generate</RimworldTogether.Generate>
 	
 	<RimworldTogether.PlayTogether>Play Together</RimworldTogether.PlayTogether>
 	
 	
 	<RimworldTogether.Join>Join</RimworldTogether.Join>
 	<RimworldTogether.CustomDifficulty>Custom difficulty has been sent!</RimworldTogether.CustomDifficulty>
+	<RimworldTogether.DifficultyCantBeChanged>Difficulty can't be changed in this server!</RimworldTogether.DifficultyCantBeChanged>
 	<RimworldTogether.SendDifficulty>Send Difficulty</RimworldTogether.SendDifficulty>
 	
 	<!-- WorldViewPatches.cs-->
@@ -343,7 +332,4 @@
     <RimworldTogether.WaitingRequest>Waiting for request completion</RimworldTogether.WaitingRequest>
     <RimworldTogether.ResetSaveConfirmation>Are you sure you want to reset your save</RimworldTogether.ResetSaveConfirmation>
     <RimworldTogether.ResetSave>Reset Save</RimworldTogether.ResetSave>
-    
-    <!-- GameStatusPatcher.cs-->
-    <RimworldTogether.GameSynchronization>Save will reload to ensure synchronization</RimworldTogether.GameSynchronization>
 </LanguageData>
