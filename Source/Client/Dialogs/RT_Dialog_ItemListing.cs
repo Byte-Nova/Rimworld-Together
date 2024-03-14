@@ -155,10 +155,6 @@ namespace GameClient
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }
 
-<<<<<<< HEAD
-                Close();
-=======
->>>>>>> ec331b27ec35f907106b744ac4c8be0d17caf27f
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",

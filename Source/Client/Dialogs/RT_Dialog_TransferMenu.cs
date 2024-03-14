@@ -175,11 +175,6 @@ namespace GameClient
             {
                 TransferManager.TakeTransferItems(transferLocation);
                 TransferManager.SendTransferRequestToServer(transferLocation);
-<<<<<<< HEAD
-=======
-                //pop transfer menu and transfer type dialog
-                DialogManager.ClearStack();
->>>>>>> ec331b27ec35f907106b744ac4c8be0d17caf27f
             }
         }
 

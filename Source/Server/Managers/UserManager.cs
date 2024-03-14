@@ -207,6 +207,8 @@ namespace GameServer
 
         public static bool CheckIfUserUpdated(ServerClient client, JoinDetailsJSON loginDetails)
         {
+            Logger.WriteToConsole($"Server is running verion {CommonValues.executableVersion}");
+            Logger.WriteToConsole($"Client is running version {loginDetails.clientVersion}");
             if (loginDetails.clientVersion == CommonValues.executableVersion) return true;
             else
             {
