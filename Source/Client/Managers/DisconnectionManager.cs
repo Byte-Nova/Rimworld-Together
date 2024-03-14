@@ -16,6 +16,8 @@ namespace GameClient
             ServerValues.CleanValues();
             ClientValues.ToggleDisconnecting(false);
 
+            DialogManager.PopWaitDialog();
+
             if (Current.ProgramState != ProgramState.Entry)
             {
                 LongEventHandler.QueueLongEvent(delegate { }, 
