@@ -2,6 +2,7 @@
 using System;
 using Shared;
 using Verse;
+using UnityEngine.SceneManagement;
 
 namespace GameClient
 {
@@ -58,7 +59,11 @@ namespace GameClient
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("RimworldTogether.GameMode".Translate(), "RimworldTogether.ChooseWay".Translate(),
                 "RimworldTogether.SeparateColony".Translate(), "RimworldTogether.Cooperative".Translate(), null, delegate { DialogManager.PushNewDialog(d3); },
-                delegate { DisconnectionManager.RestartGame(true); });
+                delegate
+                {
+                    SceneManager.LoadScene(0);
+                    Network.listener.disconnectFlag = true;
+                });
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RimworldTogether.WorldView".Translate(),
                         "RimworldTogether.GameType".Translate(), "RimworldTogether.GameModeChange".Translate() },

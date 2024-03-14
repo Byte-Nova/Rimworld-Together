@@ -27,22 +27,10 @@ namespace GameClient
 
         //Kicks the client into closing the game
 
-        public static void QuitGame()
-        {
-            ClientValues.ToggleQuiting(false);
-            Root.Shutdown();
-        }
+        public static void QuitGame() { Root.Shutdown(); }
 
         //Kicks the client into restarting the game
 
-        public static void RestartGame(bool desync)
-        {
-            if (desync)
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.GameWillRestart".Translate(),
-                    delegate { GenCommandLine.Restart(); }));
-            }
-            else GenCommandLine.Restart();
-        }
+        public static void RestartGame() { GenCommandLine.Restart(); }
     }
 }

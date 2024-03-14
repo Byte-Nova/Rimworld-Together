@@ -9,18 +9,20 @@ using Verse;
 namespace GameClient
 {
     [HarmonyPatch(typeof(Page_SelectStoryteller), "PreOpen")]
-    public static class PatchDifficultyOverrrive
+    public static class PatchDifficultyOverride
     {
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if (Network.isConnectedToServer && DifficultyValues.UseCustomDifficulty)
+            if (!Network.isConnectedToServer) return true;
+
+            if (DifficultyValues.UseCustomDifficulty)
             {
                 ___difficulty = DifficultyDefOf.Rough;
                 ___difficultyValues = new Difficulty(___difficulty);
-                Find.GameInitData.permadeathChosen = true;
             }
 
+            Find.GameInitData.permadeathChosen = true;
             return true;
         }
     }
@@ -31,13 +33,13 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (Network.isConnectedToServer && !ClientValues.needsToGenerateWorld)
-            {
-                Text.Font = GameFont.Small;
-                Vector2 buttonSize = new Vector2(150f, 38f);
-                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RimworldTogether.Join".Translate())) { }
-            }
+            if (!Network.isConnectedToServer) return;
+            if (ClientValues.needsToGenerateWorld) return;
+
+            Text.Font = GameFont.Small;
+            Vector2 buttonSize = new Vector2(150f, 38f);
+            Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
+            if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RimworldTogether.Join".Translate())) { }
         }
     }
 
@@ -45,32 +47,50 @@ namespace GameClient
     public static class PatchSelectStorytellerInGamePage
     {
         [HarmonyPrefix]
-        public static bool DoPre(Rect rect)
+        public static bool DoPre(Rect rect, Page_SelectStorytellerInGame __instance)
         {
-            if (Network.isConnectedToServer && ServerValues.isAdmin && !DifficultyValues.UseCustomDifficulty)
+            if (!Network.isConnectedToServer) return true;
+
+            if (DifficultyValues.UseCustomDifficulty)
             {
-                Text.Font = GameFont.Small;
-                Vector2 buttonSize = new Vector2(150f, 38f);
-                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RimworldTogether.SendDifficulty".Translate()))
-                {
-                    CustomDifficultyManager.SendCustomDifficulty();
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.CustomDifficulty".Translate()));
-                }
+                __instance.Close();
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.DifficultyCantBeChanged".Translate()));
+                return false;
             }
 
-            return true;
+            else
+            {
+                if (ServerValues.isAdmin)
+                {
+                    Text.Font = GameFont.Small;
+                    Vector2 buttonSize = new Vector2(150f, 38f);
+                    Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RimworldTogether.SendDifficulty".Translate()))
+                    {
+                        CustomDifficultyManager.SendCustomDifficulty();
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.CustomDifficulty".Translate()));
+                    }
+                }
+
+                return true;
+            }
         }
 
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (Network.isConnectedToServer && ServerValues.isAdmin && !DifficultyValues.UseCustomDifficulty)
+            if (!Network.isConnectedToServer) return;
+
+            if (DifficultyValues.UseCustomDifficulty) return;
+            else
             {
-                Text.Font = GameFont.Small;
-                Vector2 buttonSize = new Vector2(150f, 38f);
-                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RimworldTogether.SendDifficulty".Translate())) { }
+                if (ServerValues.isAdmin)
+                {
+                    Text.Font = GameFont.Small;
+                    Vector2 buttonSize = new Vector2(150f, 38f);
+                    Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RimworldTogether.SendDifficulty".Translate())) { }
+                }
             }
         }
     }
