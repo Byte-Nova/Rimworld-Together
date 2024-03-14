@@ -14,7 +14,6 @@ namespace GameClient
 
         public RT_Dialog_Wait(string description)
         {
-            DialogManager.dialogWait = this;
             this.description = description;
 
             forcePause = true;
@@ -29,7 +28,7 @@ namespace GameClient
 
         public override void DoWindowContents(Rect rect)
         {
-            AllowCloseDialog();
+            //AllowCloseDialog();
 
             float centeredX = rect.width / 2;
             float horizontalLineDif = Text.CalcSize(description).y + StandardMargin / 2;

@@ -40,7 +40,7 @@ namespace GameClient
             try { spyCost = int.Parse(serverOverallJSON.SpyCost); }
             catch
             {
-                Log.Warning("Server didn't have spy cost set, defaulting to 0");
+                Logs.Warning("Server didn't have spy cost set, defaulting to 0");
 
                 spyCost = 0;
             }
@@ -80,35 +80,40 @@ namespace GameClient
 
         private static void OnSpyAccept(SpyDetailsJSON spyDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(spyDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate { PrepareMapForSpy(mapDetailsJSON); };
+            Action r1 = delegate {
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...\nThis may take a while"));
+                PrepareMapForSpy(mapDetailsJSON);
+                DialogManager.PushNewDialog(new RT_Dialog_OK("The Map is finished loading", DialogManager.clearStack));
+            };
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
-            {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
-            }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         //Executes after being denied a spy order
 
         private static void OnSpyDeny()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
             silverToReturn.stackCount = spyCost;
             TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
+            
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!",
+                delegate { 
+                DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered",
+                    DialogManager.clearStack)); 
+                }));
         }
 
         //Prepares a given map for the spy order

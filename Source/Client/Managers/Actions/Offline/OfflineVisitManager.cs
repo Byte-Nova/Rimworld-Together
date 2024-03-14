@@ -49,7 +49,7 @@ namespace GameClient
 
         private static void OnOfflineVisitDeny()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.clearStack();
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
         }
@@ -58,7 +58,7 @@ namespace GameClient
 
         private static void OnRequestAccepted(OfflineVisitDetailsJSON offlineVisitDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
@@ -92,7 +92,8 @@ namespace GameClient
                 "You are now in offline visit mode!",
                 "This mode allows you to visit an offline player!",
                 "To stop the visit exit the map creating a caravan"
-            });
+            },
+            DialogManager.clearStack);
             DialogManager.PushNewDialog(d1);
         }
 

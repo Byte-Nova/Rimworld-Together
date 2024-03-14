@@ -11,10 +11,10 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (FactionValues.playerFactions.Contains(map.Parent.Faction))
-            {
-                FloodFillerFog.DebugRefogMap(map);
-            }
+            if (!Network.isConnectedToServer) return;
+            if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
+
+            FloodFillerFog.DebugRefogMap(map);
         }
     }
 
@@ -24,10 +24,10 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (FactionValues.playerFactions.Contains(map.Parent.Faction))
-            {
-                FloodFillerFog.DebugRefogMap(map);
-            }
+            if (!Network.isConnectedToServer) return;
+            if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
+
+            FloodFillerFog.DebugRefogMap(map);
         }
     }
 }

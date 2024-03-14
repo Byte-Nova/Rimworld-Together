@@ -10,6 +10,9 @@ using Verse;
 
 namespace GameClient
 {
+    //
+    //      Add Side Tabs
+    //
     [HarmonyPatch(typeof(WorldInspectPane), "SetInitialSizeAndPosition")]
     public static class AddSideTabs
     {
@@ -32,6 +35,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Preven Goodwill Change Patch
+    //
     [HarmonyPatch(typeof(SettlementProximityGoodwillUtility), "AppendProximityGoodwillOffsets")]
     public static class PrevenGoodwillChangePatch
     {
@@ -39,31 +45,32 @@ namespace GameClient
         public static bool DoPre(ref int tile, ref List<Pair<Settlement, int>> outOffsets)
         {
             if (!Network.isConnectedToServer) return true;
-            else
-            {
-                int maxDist = SettlementProximityGoodwillUtility.MaxDist;
-                List<Settlement> settlements = Find.WorldObjects.Settlements;
-                for (int i = 0; i < settlements.Count; i++)
-                {
-                    Settlement settlement = settlements[i];
 
-                    if (FactionValues.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
-                    else
+            int maxDist = SettlementProximityGoodwillUtility.MaxDist;
+            List<Settlement> settlements = Find.WorldObjects.Settlements;
+            for (int i = 0; i < settlements.Count; i++)
+            {
+                Settlement settlement = settlements[i];
+
+                if (FactionValues.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
+                else
+                {
+                    int num = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, maxDist);
+                    if (num != int.MaxValue)
                     {
-                        int num = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, maxDist);
-                        if (num != int.MaxValue)
-                        {
-                            int num2 = Mathf.RoundToInt(DiplomacyTuning.Goodwill_PerQuadrumFromSettlementProximity.Evaluate(num));
-                            if (num2 != 0) outOffsets.Add(new Pair<Settlement, int>(settlement, num2));
-                        }
+                        int num2 = Mathf.RoundToInt(DiplomacyTuning.Goodwill_PerQuadrumFromSettlementProximity.Evaluate(num));
+                        if (num2 != 0) outOffsets.Add(new Pair<Settlement, int>(settlement, num2));
                     }
                 }
-
-                return false;
             }
+
+            return false;
         }
     }
 
+    //
+    //      Settlement Gizmo Patch
+    //
     [HarmonyPatch(typeof(Settlement), "GetGizmos")]
     public static class SettlementGizmoPatch
     {
@@ -125,7 +132,7 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved:true);
+                        Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, onClosed: DialogManager.PopInternalStack, mapAboutToBeRemoved:true);
                         DialogManager.PushNewDialog(d1);
                     }
                 };
@@ -163,6 +170,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Caravan Settlement Gizmo Patch
+    //
     [HarmonyPatch(typeof(Settlement), "GetCaravanGizmos")]
     public static class CaravanSettlementGizmoPatch
     {
@@ -331,6 +341,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Player Settlements
+    //
     [HarmonyPatch(typeof(Settlement), "GetFloatMenuOptions")]
     public static class PatchPlayerSettlements
     {
@@ -355,6 +368,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Site Gizmo Patch
+    //
     [HarmonyPatch(typeof(Site), "GetGizmos")]
     public static class SiteGizmoPatch
     {
@@ -408,6 +424,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Player Sites
+    //
     [HarmonyPatch(typeof(Site), "GetFloatMenuOptions")]
     public static class PatchPlayerSites
     {
@@ -419,14 +438,15 @@ namespace GameClient
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
 
-
-
                 __result = gizmoList;
                 return;
             }
         }
     }
 
+    //
+    //      Patch Caravan Gizmos
+    //
     [HarmonyPatch(typeof(Caravan), "GetGizmos")]
     public static class PatchCaravanGizmos
     {
@@ -557,6 +577,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Drop Gift
+    //
     [HarmonyPatch(typeof(TransportPodsArrivalAction_GiveGift), "GetFloatMenuOptions")]
     public static class PatchDropGift
     {
@@ -589,6 +612,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Drop Attack
+    //
     [HarmonyPatch(typeof(TransportPodsArrivalAction_AttackSettlement), "GetFloatMenuOptions")]
     public static class PatchDropAttack
     {
@@ -605,6 +631,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Destroy Settlement Patch
+    //
     [HarmonyPatch(typeof(DestroyedSettlement), "GetGizmos")]
     public static class DestroyedSettlementPatch
     {

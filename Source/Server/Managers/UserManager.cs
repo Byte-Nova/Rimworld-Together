@@ -160,14 +160,14 @@ namespace GameServer
 
         public static bool CheckLoginDetails(ServerClient client, JoinDetailsJSON details, LoginMode mode)
         {
-            bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(details.username)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(details.password)) isInvalid = true;
-            if (details.username.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (details.username.Length > 32) isInvalid = true;
-            if (details.password.Length > 64) isInvalid = true;
+            bool isValid = true;
+            if (string.IsNullOrWhiteSpace(details.username)) isValid = false;
+            if (string.IsNullOrWhiteSpace(details.password)) isValid = false;
+            if (details.username.Any(Char.IsWhiteSpace)) isValid = false;
+            if (details.username.Length > 32) isValid = false;
+            if (details.password.Length > 64) isValid = false;
 
-            if (!isInvalid) return true;
+            if (isValid) return true;
             else
             {
                 if (mode == LoginMode.Login) SendLoginResponse(client, LoginResponse.InvalidLogin);
@@ -178,6 +178,7 @@ namespace GameServer
 
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
+            Logger.WriteToConsole("in sending login response");
             JoinDetailsJSON loginDetailsJSON = new JoinDetailsJSON();
             loginDetailsJSON.tryResponse = ((int)response).ToString();
 
@@ -186,7 +187,7 @@ namespace GameServer
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginDetailsJSON);
             client.listener.EnqueuePacket(packet);
-            client.listener.disconnectFlag = true;
+            client.listener.disconnectFlag = false;
         }
 
         public static bool CheckWhitelist(ServerClient client)

@@ -18,30 +18,34 @@ namespace GameClient
 
         public string description = "Select the items you wish to transfer";
 
-        private float buttonX = 100f;
-
-        private float buttonY = 37f;
-
         private int startAcceptingInputAtFrame;
 
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
-        private Vector2 scrollPosition = Vector2.zero;
+        private float buttonX = 100f;
+        private float buttonY = 37f;
 
         private List<Tradeable> cachedTradeables;
 
-        private Pawn playerNegotiator;
+        private Vector2 scrollPosition = Vector2.zero;
+
+        private QuickSearchWidget quickSearchWidget = new QuickSearchWidget();
+
+        private bool allowItems;
+
+        private bool allowAnimals;
+
+        private bool allowHumans;
 
         CommonEnumerators.TransferLocation transferLocation;
 
-        private bool allowItems;
-        private bool allowAnimals;
-        private bool allowHumans;
+        private Pawn playerNegotiator;
+
+        public override QuickSearchWidget CommonSearchWidget => quickSearchWidget;
 
         public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
             bool allowHumans = false)
         {
-            DialogManager.dialogTransferMenu = this;
             this.transferLocation = transferLocation;
             this.allowItems = allowItems;
             this.allowAnimals = allowAnimals;
@@ -146,25 +150,23 @@ namespace GameClient
                 };
 
                 RT_Dialog_2Button d2 = new RT_Dialog_2Button("Transfer Type", "Please choose the transfer type to use",
-                    "Gift", "Trade", r1, r2, null);
+                    "Gift", "Trade", r1, r2, DialogManager.PopDialog);
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    delegate { DialogManager.PushNewDialog(d2); }, null);
+                    delegate { DialogManager.PopDialog();  DialogManager.PushNewDialog(d2); }, DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
 
             else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
-                Action r1 = delegate
-                {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
-                    DialogManager.PopDialog(DialogManager.dialogItemListing);
-                    postChoosing();
-                };
-
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    r1, null);
+                    delegate
+                    {
+                        ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
+                        postChoosing();
+                        DialogManager.clearStack();
+                    }, DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -173,7 +175,11 @@ namespace GameClient
             {
                 TransferManager.TakeTransferItems(transferLocation);
                 TransferManager.SendTransferRequestToServer(transferLocation);
-                Close();
+<<<<<<< HEAD
+=======
+                //pop transfer menu and transfer type dialog
+                DialogManager.ClearStack();
+>>>>>>> ec331b27ec35f907106b744ac4c8be0d17caf27f
             }
         }
 
@@ -188,13 +194,13 @@ namespace GameClient
 
                 TransferManager.FinishTransfer(false);
 
-                Close();
+                DialogManager.clearStack();
             };
 
             if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
-                    r1, null));
+                    r1, DialogManager.PopDialog));
             }
             else r1.Invoke();
         }

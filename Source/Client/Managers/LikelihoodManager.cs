@@ -74,6 +74,7 @@ namespace GameClient
 
         public static void ChangeStructureLikelihood(Packet packet)
         {
+            DialogManager.clearStack();
             StructureLikelihoodJSON structureLikelihoodJSON = (StructureLikelihoodJSON)Serializer.ConvertBytesToObject(packet.contents);
             ChangeSettlementLikelihoods(structureLikelihoodJSON);
             ChangeSiteLikelihoods(structureLikelihoodJSON);

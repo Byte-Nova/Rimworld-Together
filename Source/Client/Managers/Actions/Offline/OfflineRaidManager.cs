@@ -48,7 +48,7 @@ namespace GameClient
 
         private static void OnRaidAccept(RaidDetailsJSON raidDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(raidDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
@@ -68,7 +68,7 @@ namespace GameClient
 
         private static void OnRaidDeny()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
         }
@@ -90,7 +90,8 @@ namespace GameClient
                 "You are now in raid mode!",
                 "Raid mode allows you to raid player settlements",
                 "Down all their enemy pawns and get loot for it!",
-            });
+            },
+            DialogManager.clearStack);
             DialogManager.PushNewDialog(d1);
         }
 

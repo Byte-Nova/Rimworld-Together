@@ -15,36 +15,22 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, Page_CreateWorldParams __instance, string ___seedString, float ___planetCoverage, OverallRainfall ___rainfall, OverallTemperature ___temperature, OverallPopulation ___population, List<FactionDef> ___factions, float ___pollution)
             {
+                if (!Network.isConnectedToServer) return true;
                 if (!ClientValues.needsToGenerateWorld) return true;
-                else
+
+                Vector2 buttonSize = new Vector2(150f, 38f);
+                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
+                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                 {
-                    Vector2 buttonSize = new Vector2(150f, 38f);
-                    Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
-                    {
-                        __instance.Close();
+                    __instance.Close();
 
-                        WorldGeneratorManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall,
-                            ___temperature, ___population, ___factions, ___pollution);
+                    WorldGeneratorManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall,
+                        ___temperature, ___population, ___factions, ___pollution);
 
-                        WorldGeneratorManager.GeneratePatchedWorld(true);
-                    }
-
-                    return true;
+                    WorldGeneratorManager.GeneratePatchedWorld();
                 }
-            }
 
-            [HarmonyPostfix]
-            public static void DoPost(Rect rect)
-            {
-                if (!ClientValues.needsToGenerateWorld) return;
-                else
-                {
-                    Text.Font = GameFont.Small;
-                    Vector2 buttonSize = new Vector2(150f, 38f);
-                    Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Generate")) { }
-                }
+                return true;
             }
         }
 
@@ -54,15 +40,14 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Page_CreateWorldParams __instance)
             {
+                if (!Network.isConnectedToServer) return true;
                 if (ClientValues.needsToGenerateWorld) return true;
-                else
-                {
-                    __instance.Close();
 
-                    WorldGeneratorManager.GeneratePatchedWorld(false);
+                __instance.Close();
 
-                    return false;
-                }
+                WorldGeneratorManager.GeneratePatchedWorld();
+
+                return false;
             }
         }
     }

@@ -4,6 +4,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using Verse.Profile;
 
 namespace GameClient
 {
@@ -59,17 +60,19 @@ namespace GameClient
             cachedWorldDetails = worldDetailsJSON;
         }
 
-        public static void GeneratePatchedWorld(bool firstGeneration)
+        public static void GeneratePatchedWorld()
         {
+            DialogManager.clearStack();
             LongEventHandler.QueueLongEvent(delegate
             {
                 Find.GameInitData.ResetWorldRelatedMapInitData();
                 Current.Game.World = GenerateWorld();
-                LongEventHandler.ExecuteWhenFinished(delegate
+                LongEventHandler.ExecuteWhenFinished(delegate 
                 {
+                    Find.World.renderer.RegenerateAllLayersNow();
+                    MemoryUtility.UnloadUnusedUnityAssets();
+                    Current.CreatingWorld = null;
                     PostWorldGeneration();
-
-                    if (!firstGeneration) ClientValues.ToggleRequireSaveManipulation(true);
                 });
             }, "GeneratingWorld", doAsynchronously: true, null);
         }
@@ -93,7 +96,7 @@ namespace GameClient
             {
                 worldGenSteps[i].worldGenStep.GenerateFresh(seedString);
             }
-        
+
             Current.CreatingWorld.grid.StandardizeTileData();
             Current.CreatingWorld.FinalizeInit();
             Find.Scenario.PostWorldGenerate();
@@ -124,12 +127,6 @@ namespace GameClient
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             Network.listener.EnqueuePacket(packet);
-        }
-
-        public static void GetWorldFromServer()
-        {
-            XmlParser.ModifyWorldXml(cachedWorldDetails);
-            GameDataSaveLoader.LoadGame(SaveManager.customSaveName);
         }
 
         public static void PostWorldGeneration()
