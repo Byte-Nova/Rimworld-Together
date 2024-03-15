@@ -39,11 +39,14 @@ namespace GameServer
                 {
                     if (reader.Name == parentElement) 
                     {
-                        reader.ReadSubtree().ReadToDescendant(elementName);
+
+                        reader.ReadToDescendant(elementName);
                         if (reader.NodeType == XmlNodeType.Element && reader.Name == elementName)
                         {
                             result.Add(reader.ReadElementContentAsString());
                         }
+                        
+
                     }
                     
                 }
