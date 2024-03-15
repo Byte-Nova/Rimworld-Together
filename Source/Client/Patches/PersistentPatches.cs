@@ -10,6 +10,7 @@ namespace GameClient
         public static void DoPost()
         {
             if (Network.isConnectedToServer) ClientValues.ManageDevOptions();
+            else return;
         }
     }
 
@@ -20,6 +21,7 @@ namespace GameClient
         public static void DoPost()
         {
             if (Network.isConnectedToServer) CustomDifficultyManager.EnforceCustomDifficulty();
+            else return;
         }
     }
 }
