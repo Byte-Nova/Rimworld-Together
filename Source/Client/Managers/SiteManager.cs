@@ -370,7 +370,7 @@ namespace GameClient
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteDetailsJSON.type = ((int)DialogManager.inputCache[0]).ToString();
+                siteDetailsJSON.type = ((int)DialogManager.inputReserve[0]).ToString();
                 siteDetailsJSON.isFromFaction = false;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
@@ -418,7 +418,9 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputCache[0]]} " +
+            DialogManager.setInputReserve();
+
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputReserve[0]]} " +
                 $"silver, continue?", RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
@@ -428,14 +430,14 @@ namespace GameClient
         {
             DialogManager.PopDialog();
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputCache[0]]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputReserve[0]]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[(int)DialogManager.inputCache[0]]);
+                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[(int)DialogManager.inputReserve[0]]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
