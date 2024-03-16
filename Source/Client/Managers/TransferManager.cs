@@ -31,7 +31,7 @@ namespace GameClient
                 //Caravan's trade is accepted
                 case (int)TransferStepMode.TradeAccept:
                     DialogManager.PopDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!",DialogManager.clearStack));
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;

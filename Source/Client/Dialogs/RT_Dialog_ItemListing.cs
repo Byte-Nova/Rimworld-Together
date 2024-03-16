@@ -165,9 +165,8 @@ namespace GameClient
         {
             Action r1 = delegate
             {
+                DialogManager.clearStack();
                 TransferManager.RejectRequest(transferMode);
-
-                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
