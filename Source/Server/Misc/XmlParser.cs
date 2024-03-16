@@ -28,7 +28,7 @@ namespace GameServer
             return result.ToArray();
         }
 
-        public static string[] ChildContentFromParent(string xmlPath, string elementName, string parentElement)
+            public static string[] ChildContentFromParent(string xmlPath, string elementName, string parentElement)
         {
             List<string> result = new List<string>();
 
@@ -39,16 +39,13 @@ namespace GameServer
                 {
                     if (reader.Name == parentElement) 
                     {
-
-                        reader.ReadToDescendant(elementName);
+                        reader.Read();
+                        reader.ReadToNextSibling(elementName);
                         if (reader.NodeType == XmlNodeType.Element && reader.Name == elementName)
                         {
                             result.Add(reader.ReadElementContentAsString());
                         }
-                        
-
                     }
-                    
                 }
 
                 reader.Close();
