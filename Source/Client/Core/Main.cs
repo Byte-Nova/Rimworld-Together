@@ -19,6 +19,7 @@ namespace GameClient
                 Master.PrepareCulture();
                 Master.PreparePaths();
                 Master.CreateUnityDispatcher();
+                Threader.GenerateThread(Threader.Mode.LongEvent);
 
                 FactionValues.SetPlayerFactionDefs();
 

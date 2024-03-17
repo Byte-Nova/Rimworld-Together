@@ -28,14 +28,14 @@ namespace GameClient
                     ReceiveTransferRequest(transferManifestJSON);
                     break;
 
-                //Caravan's trade is accepted
+                //Caravan recieves settlement's trade accept
                 case (int)TransferStepMode.TradeAccept:
                     DialogManager.PopDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!",DialogManager.clearStack));
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
-
+                //caravan recieves settlement's trade reject
                 case (int)TransferStepMode.TradeReject:
                     DialogManager.PopDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
@@ -151,6 +151,8 @@ namespace GameClient
         {
             try
             {
+                Logs.Message($"Incoming:\n{ClientValues.incomingManifest.itemDetailsJSONS.Count}");
+                Logs.Message($"Outgoing:\n{ClientValues.outgoingManifest.itemDetailsJSONS.Count}");
                 Thing[] toRecover = TransferManagerHelper.GetAllTransferedItems(ClientValues.outgoingManifest);
 
                 if (transferLocation == TransferLocation.Caravan)
@@ -344,7 +346,10 @@ namespace GameClient
         {
             if (transferMode == TransferMode.Gift)
             {
-                //Nothing should happen here
+                ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReject).ToString();
+
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
+                Network.listener.EnqueuePacket(packet);
             }
 
             else if (transferMode == TransferMode.Trade)

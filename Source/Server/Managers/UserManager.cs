@@ -178,7 +178,7 @@ namespace GameServer
 
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
-            Logger.WriteToConsole("in sending login response");
+            Logger.WriteToConsole($"[Sending login response] > Sending {response.ToString()}");
             JoinDetailsJSON loginDetailsJSON = new JoinDetailsJSON();
             loginDetailsJSON.tryResponse = ((int)response).ToString();
 

@@ -123,6 +123,20 @@ namespace GameClient
                 DialogManager.PopDialog();
                 if (transferMode == CommonEnumerators.TransferMode.Gift)
                 {
+
+                    //set the from and to locations of the outgoing manifest
+                    ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
+                    ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile.ToString();
+                    
+                    //Set the step that the transfer is on
+                    ClientValues.outgoingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeAccept).ToString();
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
+
+                    //send the packet
+                    Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.outgoingManifest);
+                    Network.listener.EnqueuePacket(packet);
+
+                    //Add the gifted items to the settlement stockpiles
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 

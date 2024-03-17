@@ -63,7 +63,10 @@ namespace GameClient
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate { PrepareMapForOfflineVisit(mapDetailsJSON); };
+            Action r1 = delegate {
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...",
+                            delegate { PrepareMapForOfflineVisit(mapDetailsJSON); })); 
+                            };
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
@@ -71,7 +74,6 @@ namespace GameClient
             }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         //Prepares a map for the offline visit feature from a request
@@ -80,12 +82,18 @@ namespace GameClient
         {
             Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, true, true, false);
 
+            //keep track of one pawn in the caravan to jump to later
+            Pawn pawnToFocus = (ClientValues.chosenCaravan.pawns.Count > 0) ? ClientValues.chosenCaravan.pawns[0] : null;
+
             HandleMapFactions(map);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
 
             PrepareMapLord(map);
+
+            //Switch to the Map mode and focus on the caravan
+            CameraJumper.TryJump(pawnToFocus);
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {

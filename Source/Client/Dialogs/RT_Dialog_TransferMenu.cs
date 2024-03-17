@@ -29,8 +29,6 @@ namespace GameClient
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        private QuickSearchWidget quickSearchWidget = new QuickSearchWidget();
-
         private bool allowItems;
 
         private bool allowAnimals;
@@ -41,7 +39,6 @@ namespace GameClient
 
         private Pawn playerNegotiator;
 
-        public override QuickSearchWidget CommonSearchWidget => quickSearchWidget;
 
         public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
             bool allowHumans = false)

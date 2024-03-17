@@ -169,7 +169,7 @@ namespace GameClient
             else
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You have a worker on this site, retrieve?",
-                    delegate { RequestWorkerRetrieval(siteDetailsJSON); }, null);
+                    delegate { DialogManager.clearStack(); RequestWorkerRetrieval(siteDetailsJSON); }, null);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -191,6 +191,7 @@ namespace GameClient
 
             Action r1 = delegate
             {
+                DialogManager.clearStack();
                 Pawn pawnToRetrieve = HumanScribeManager.StringToHuman((HumanDetailsJSON)Serializer.
                     ConvertBytesToObject(siteDetailsJSON.workerData));
 
@@ -212,13 +213,19 @@ namespace GameClient
             }
 
             RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Pawn Selection", "Select the pawn you wish to send", 
-                pawnNames.ToArray(), SendPawnToSite);
+                pawnNames.ToArray(), 
+                delegate { 
+                    DialogManager.setInputReserve(); 
+                    DialogManager.clearStack(); 
+                    SendPawnToSite(); 
+                });
 
             DialogManager.PushNewDialog(d1);
         }
 
         public static void SendPawnToSite()
         {
+            DialogManager.PopDialog();
             List<Pawn> caravanPawns = ClientValues.chosenCaravan.PawnsListForReading;
             List<Pawn> caravanHumans = new List<Pawn>();
             foreach (Pawn pawn in caravanPawns)
@@ -226,7 +233,7 @@ namespace GameClient
                 if (TransferManagerHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
             }
 
-            Pawn pawnToSend = caravanHumans[(int)DialogManager.inputCache[0]];
+            Pawn pawnToSend = caravanHumans[(int)DialogManager.inputReserve[0]];
             ClientValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
