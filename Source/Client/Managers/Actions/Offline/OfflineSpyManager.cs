@@ -1,7 +1,8 @@
-﻿using System;
-using RimWorld;
+﻿using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using System;
+using System.Threading;
 using Verse;
 
 
@@ -40,7 +41,7 @@ namespace GameClient
             try { spyCost = int.Parse(serverOverallJSON.SpyCost); }
             catch
             {
-                Log.Warning("Server didn't have spy cost set, defaulting to 0");
+                Logs.Warning("Server didn't have spy cost set, defaulting to 0");
 
                 spyCost = 0;
             }
@@ -80,35 +81,65 @@ namespace GameClient
 
         private static void OnSpyAccept(SpyDetailsJSON spyDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(spyDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate { PrepareMapForSpy(mapDetailsJSON); };
+            Action r1 = delegate {
 
+                Logs.Message($"Rand stack value: {Rand.Value}");
+
+
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...", delegate { 
+                    PrepareMapForSpy(mapDetailsJSON);
+                    RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
+                    {
+                    "You are now in spy mode!",
+                    "Spy mode allows you to check out another player's base",
+                    "To stop the spy exit the map creating a caravan"
+                    }, DialogManager.clearStack);
+
+                    DialogManager.PushNewDialog(d1);
+                }));
+
+                //Queue Event
+
+               /* LongEventThread.QueueEvent(
+                    
+                    delegate{ 
+                    PrepareMapForSpy(mapDetailsJSON);
+                    
+                });*/
+
+                
+            };
+
+            //TODO -- Allow the code to run in a way that the wait dialog can be pushed after the interactive dialogs
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
-            }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, DialogManager.clearStack));
+            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.clearStack));
+
         }
 
         //Executes after being denied a spy order
 
         private static void OnSpyDeny()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
             silverToReturn.stackCount = spyCost;
             TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
+            
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!",
+                delegate { 
+                DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered",
+                    DialogManager.clearStack)); 
+                }));
         }
 
         //Prepares a given map for the spy order
@@ -117,18 +148,17 @@ namespace GameClient
         {
             Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, false, false, false);
 
+            //keep track of one pawn in the caravan to jump to later
+            Pawn pawnToFocus = (ClientValues.chosenCaravan.pawns.Count > 0) ? ClientValues.chosenCaravan.pawns[0] : null;
+
             HandleMapFactions(map);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
-            {
-                "You are now in spy mode!",
-                "Spy mode allows you to check out another player's base",
-                "To stop the spy exit the map creating a caravan"
-            });
-            DialogManager.PushNewDialog(d1);
+            //Switch to the Map mode and focus on the caravan
+            CameraJumper.TryJump(pawnToFocus);
+
 
             FloodFillerFog.DebugRefogMap(map);
         }

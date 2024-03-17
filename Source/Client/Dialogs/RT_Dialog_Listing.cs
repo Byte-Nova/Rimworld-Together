@@ -26,7 +26,6 @@ namespace GameClient
 
         public RT_Dialog_Listing(string title, string description, string[] elements, Action actionOK = null)
         {
-            DialogManager.dialogListing = this;
             this.title = title;
             this.description = description;
             this.elements = elements;
@@ -66,7 +65,7 @@ namespace GameClient
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
             {
                 if (actionOK != null) actionOK.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
         }
 

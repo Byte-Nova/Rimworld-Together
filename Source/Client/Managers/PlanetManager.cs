@@ -108,7 +108,7 @@ namespace GameClient
 
                 catch (Exception e)
                 {
-                    Log.Error($"Failed to build settlement at {PlanetManagerHelper.tempSettlementTiles[i]}. " +
+                    Logs.Error($"Failed to build settlement at {PlanetManagerHelper.tempSettlementTiles[i]}. " +
                         $"Reason: {e}");
                 }
             }
@@ -177,7 +177,7 @@ namespace GameClient
 
                 catch (Exception e)
                 {
-                    Log.Error($"Failed to spawn site at {PlanetManagerHelper.tempSiteTiles[i]}. Reason: {e}");
+                    Logs.Error($"Failed to spawn site at {PlanetManagerHelper.tempSiteTiles[i]}. Reason: {e}");
                 };
             }
         }
@@ -198,7 +198,7 @@ namespace GameClient
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
-                catch (Exception e) { Log.Error($"Failed to spawn settlement at {newSettlementJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logs.Error($"Failed to spawn settlement at {newSettlementJSON.tile}. Reason: {e}"); }
             }
         }
 
@@ -215,7 +215,7 @@ namespace GameClient
                     playerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Log.Error($"Failed to remove settlement at {newSettlementJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logs.Error($"Failed to remove settlement at {newSettlementJSON.tile}. Reason: {e}"); }
             }
         }
 
@@ -238,7 +238,7 @@ namespace GameClient
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
                 }
-                catch (Exception e) { Log.Error($"Failed to spawn site at {siteDetailsJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logs.Error($"Failed to spawn site at {siteDetailsJSON.tile}. Reason: {e}"); }
             }
         }
 
@@ -255,7 +255,7 @@ namespace GameClient
                     playerSites.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Log.Message($"Failed to remove site at {siteDetailsJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logs.Message($"Failed to remove site at {siteDetailsJSON.tile}. Reason: {e}"); }
             }
         }
     }

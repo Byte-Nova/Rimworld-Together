@@ -10,6 +10,9 @@ using Verse;
 
 namespace GameClient
 {
+    //
+    //      Add Side Tabs
+    //
     [HarmonyPatch(typeof(WorldInspectPane), "SetInitialSizeAndPosition")]
     public static class AddSideTabs
     {
@@ -32,6 +35,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Preven Goodwill Change Patch
+    //
     [HarmonyPatch(typeof(SettlementProximityGoodwillUtility), "AppendProximityGoodwillOffsets")]
     public static class PrevenGoodwillChangePatch
     {
@@ -62,6 +68,10 @@ namespace GameClient
         }
     }
 
+    //
+    //      Settlement Gizmo Patch
+    //
+    //      liklihood, Faction Menu, Form Caravan
     [HarmonyPatch(typeof(Settlement), "GetGizmos")]
     public static class SettlementGizmoPatch
     {
@@ -123,7 +133,7 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved:true);
+                        Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, onClosed: DialogManager.PopInternalStack, mapAboutToBeRemoved:true);
                         DialogManager.PushNewDialog(d1);
                     }
                 };
@@ -161,6 +171,10 @@ namespace GameClient
         }
     }
 
+    //
+    //      Caravan Settlement Gizmo Patch
+    //
+    //      spy settlement, raid settlement, visit settlement, transfer items, send event, change liklihood, Faction menu
     [HarmonyPatch(typeof(Settlement), "GetCaravanGizmos")]
     public static class CaravanSettlementGizmoPatch
     {
@@ -329,6 +343,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Player Settlements
+    //
     [HarmonyPatch(typeof(Settlement), "GetFloatMenuOptions")]
     public static class PatchPlayerSettlements
     {
@@ -353,6 +370,10 @@ namespace GameClient
         }
     }
 
+    //
+    //     Faction Site Gizmo Patch
+    //
+    //      
     [HarmonyPatch(typeof(Site), "GetGizmos")]
     public static class SiteGizmoPatch
     {
@@ -406,6 +427,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Player Sites
+    //
     [HarmonyPatch(typeof(Site), "GetFloatMenuOptions")]
     public static class PatchPlayerSites
     {
@@ -423,6 +447,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Caravan Gizmos
+    //
     [HarmonyPatch(typeof(Caravan), "GetGizmos")]
     public static class PatchCaravanGizmos
     {
@@ -553,6 +580,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Drop Gift
+    //
     [HarmonyPatch(typeof(TransportPodsArrivalAction_GiveGift), "GetFloatMenuOptions")]
     public static class PatchDropGift
     {
@@ -585,6 +615,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Patch Drop Attack
+    //
     [HarmonyPatch(typeof(TransportPodsArrivalAction_AttackSettlement), "GetFloatMenuOptions")]
     public static class PatchDropAttack
     {
@@ -601,6 +634,9 @@ namespace GameClient
         }
     }
 
+    //
+    //      Destroy Settlement Patch
+    //
     [HarmonyPatch(typeof(DestroyedSettlement), "GetGizmos")]
     public static class DestroyedSettlementPatch
     {
