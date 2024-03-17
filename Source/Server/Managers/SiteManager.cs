@@ -119,8 +119,8 @@ namespace GameServer
 
         private static void AddNewSite(ServerClient client, SiteDetailsJSON siteDetailsJSON)
         {
-            if (SettlementManager.CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client);
-            else if (CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client);
+            if (SettlementManager.CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, "A site tried to be added to a tile that has a settlement");
+            else if (CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, "A site tried to be added to a tile that has a site already");
             else
             {
                 SiteFile siteFile = null;
@@ -165,7 +165,7 @@ namespace GameServer
 
             if (siteFile.isFromFaction)
             {
-                if (siteFile.factionName != client.factionName) ResponseShortcutManager.SendIllegalPacket(client);
+                if (siteFile.factionName != client.factionName) ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to destroy a site that their faction does not own");
                 else
                 {
                     FactionFile factionFile = OnlineFactionManager.GetFactionFromClient(client);
@@ -179,8 +179,8 @@ namespace GameServer
 
             else
             {
-                if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client);
-                else if (siteFile.workerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);
+                if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, "player attempted to destroy a site that they do not own");
+                else if (siteFile.workerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);//tell the client there is still a worker in the site
                 else DestroySiteFromFile(siteFile);
             }
         }
@@ -216,12 +216,12 @@ namespace GameServer
 
             if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
-                ResponseShortcutManager.SendIllegalPacket(client);
+                ResponseShortcutManager.SendIllegalPacket(client, "player tried to deposit a worker to a site that they or their faction does not own");
             }
 
             else if (siteFile.workerData != null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client);
+                ResponseShortcutManager.SendIllegalPacket(client, "player attempted to desposit a worker to a site that already has a worker");
             }
 
             else
@@ -237,12 +237,12 @@ namespace GameServer
 
             if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
-                ResponseShortcutManager.SendIllegalPacket(client);
+                ResponseShortcutManager.SendIllegalPacket(client, "player attempted to retrieve a worker from a site that they or their faction does not own");
             }
 
             else if (siteFile.workerData == null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client);
+                ResponseShortcutManager.SendIllegalPacket(client, "player attempted to retrieve a worker from a site that has no workers");
             }
 
             else
