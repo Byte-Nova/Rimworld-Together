@@ -40,6 +40,7 @@ On first launch, the server will generate the "MODS" folder, inside of it will b
 - Required mods will kick the connecting player if its missing them.
 
 To install mods, directly dump the mod folder (The one with the numbers in the title if grabing from Steam) inside whichever folder you choose.
+Furthermore, the files for Harmony, Hugslib and Rimworld Together can be found in the Extras, which can be found in this repository.
 
 > [!TIP]
 > If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Byte-Nova/Library
