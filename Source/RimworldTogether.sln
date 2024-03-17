@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameServer", "Server\GameSe
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{62154254-67B2-45CA-9888-5D96A470D929}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rcon", "Rcon\Rcon.csproj", "{4E80A33C-53AB-4E44-9B7F-224C2B543E0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{30DC9F13-DE2C-4DE7-A38A-C660F9DE24AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30DC9F13-DE2C-4DE7-A38A-C660F9DE24AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30DC9F13-DE2C-4DE7-A38A-C660F9DE24AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E80A33C-53AB-4E44-9B7F-224C2B543E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E80A33C-53AB-4E44-9B7F-224C2B543E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E80A33C-53AB-4E44-9B7F-224C2B543E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E80A33C-53AB-4E44-9B7F-224C2B543E0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
