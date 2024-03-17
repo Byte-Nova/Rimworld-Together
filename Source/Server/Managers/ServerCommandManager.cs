@@ -136,7 +136,7 @@
             "Broadcast a message to all connected players",
             BroadcastCommandAction);
 
-        private static ServerCommand ServerMessageCommand = new ServerCommand("chat", -1,
+        private static ServerCommand serverMessageCommand = new ServerCommand("chat", -1,
             "Send a message in chat from the Server",
             ServerMessageCommandAction);
 
@@ -201,7 +201,7 @@
             eventAllCommand,
             eventListCommand,
             broadcastCommand,
-            ServerMessageCommand,
+            serverMessageCommand,
             whitelistCommand,
             whitelistAddCommand,
             whitelistRemoveCommand,
@@ -542,9 +542,10 @@
             string fullText = "";
             foreach(string str in ServerCommandManager.commandParameters)
             {
-                fullText += $" {str}";
+                fullText += $"{str} ";
             }
-            fullText = fullText.Remove(fullText.Length-1, 1);
+            fullText = fullText.Remove(fullText.Length - 1, 1);
+
             ChatManager.BroadcastServerMessages(fullText);
         }
 
