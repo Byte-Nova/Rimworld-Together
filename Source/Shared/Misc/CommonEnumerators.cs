@@ -98,7 +98,8 @@
             WrongMods, 
             ServerFull,
             Whitelist,
-            WrongVersion
+            WrongVersion,
+            NoWorld
         }
 
         //World generation

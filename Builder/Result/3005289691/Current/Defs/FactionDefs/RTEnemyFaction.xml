@@ -2,7 +2,7 @@
 <Defs>
     	<FactionDef ParentName="FactionBase" Name="RTEnemy">
 		<defName>RTEnemy</defName>
-		<description>A settlement of an enemy player faction.</description>
+		<description>An online faction</description>
 		<basicMemberKind>Colonist</basicMemberKind>
 		<pawnSingular>colonist</pawnSingular>
 		<pawnsPlural>colonists</pawnsPlural>
