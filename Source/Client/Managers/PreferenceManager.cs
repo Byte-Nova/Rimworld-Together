@@ -1,7 +1,6 @@
 using Shared;
 using System.IO;
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace GameClient
 {
@@ -30,13 +29,14 @@ namespace GameClient
             if (File.Exists(Master.connectionDataPath))
             {
                 ConnectionDataFile previousConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
-                DialogManager.currentDialogInputs.SubstituteInputs(new List<object>{ previousConnectionData.ip, previousConnectionData.port });
+                DialogManager.dialog2Input.inputOneResult = previousConnectionData.ip;
+                DialogManager.dialog2Input.inputTwoResult = previousConnectionData.port;
             }
 
             else
             {
-                //default text fields to blank
-                DialogManager.currentDialogInputs.SubstituteInputs(new List<object> { "", "" });
+                DialogManager.dialog2Input.inputOneResult = "";
+                DialogManager.dialog2Input.inputTwoResult = "";
             }
         }
 
@@ -61,12 +61,14 @@ namespace GameClient
             if (File.Exists(Master.loginDataPath))
             {
                 LoginDataFile previousLoginData = Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
-                DialogManager.currentDialogInputs.SubstituteInputs(new List<object> { previousLoginData.username, previousLoginData.password });
+                DialogManager.dialog2Input.inputOneResult = previousLoginData.username;
+                DialogManager.dialog2Input.inputTwoResult = previousLoginData.password;
             }
 
             else
             {
-                DialogManager.currentDialogInputs.SubstituteInputs(new List<object> { "", "" });
+                DialogManager.dialog2Input.inputOneResult = "";
+                DialogManager.dialog2Input.inputTwoResult = "";
             }
         }
 

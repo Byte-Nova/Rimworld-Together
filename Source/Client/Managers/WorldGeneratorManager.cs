@@ -62,7 +62,6 @@ namespace GameClient
 
         public static void GeneratePatchedWorld()
         {
-            DialogManager.clearStack();
             LongEventHandler.QueueLongEvent(delegate
             {
                 Find.GameInitData.ResetWorldRelatedMapInitData();

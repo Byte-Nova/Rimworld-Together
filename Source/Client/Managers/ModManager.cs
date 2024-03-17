@@ -21,11 +21,7 @@ namespace GameClient
             JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
-                loginDetailsJSON.extraDetails.ToArray(), 
-                delegate { 
-                    Network.listener.disconnectFlag = true; 
-                    DialogManager.clearStack(); 
-                    }));
+                loginDetailsJSON.extraDetails.ToArray()));
         }
 
         public static bool CheckIfMapHasConflictingMods(MapDetailsJSON mapDetailsJSON)

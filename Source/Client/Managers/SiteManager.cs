@@ -52,7 +52,7 @@ namespace GameClient
 
             catch 
             {
-                Logs.Warning("Server didn't have site rewards set, defaulting to 0");
+                Log.Warning("Server didn't have site rewards set, defaulting to 0");
 
                 siteRewardCount = new int[9]
                 {
@@ -136,8 +136,8 @@ namespace GameClient
 
         private static void OnSiteAccept()
         {
-            DialogManager.PopDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!", DialogManager.clearStack));
+            DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
 
             SaveManager.ForceSave();
         }
@@ -156,7 +156,7 @@ namespace GameClient
 
         public static void OnSimpleSiteOpen(SiteDetailsJSON siteDetailsJSON)
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             if (siteDetailsJSON.workerData == null)
             {
@@ -169,7 +169,7 @@ namespace GameClient
             else
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You have a worker on this site, retrieve?",
-                    delegate { DialogManager.clearStack(); RequestWorkerRetrieval(siteDetailsJSON); }, null);
+                    delegate { RequestWorkerRetrieval(siteDetailsJSON); }, null);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -187,11 +187,10 @@ namespace GameClient
 
         private static void OnWorkerRetrieval(SiteDetailsJSON siteDetailsJSON)
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             Action r1 = delegate
             {
-                DialogManager.clearStack();
                 Pawn pawnToRetrieve = HumanScribeManager.StringToHuman((HumanDetailsJSON)Serializer.
                     ConvertBytesToObject(siteDetailsJSON.workerData));
 
@@ -213,19 +212,13 @@ namespace GameClient
             }
 
             RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Pawn Selection", "Select the pawn you wish to send", 
-                pawnNames.ToArray(), 
-                delegate { 
-                    DialogManager.setInputReserve(); 
-                    DialogManager.clearStack(); 
-                    SendPawnToSite(); 
-                });
+                pawnNames.ToArray(), SendPawnToSite);
 
             DialogManager.PushNewDialog(d1);
         }
 
         public static void SendPawnToSite()
         {
-            DialogManager.PopDialog();
             List<Pawn> caravanPawns = ClientValues.chosenCaravan.PawnsListForReading;
             List<Pawn> caravanHumans = new List<Pawn>();
             foreach (Pawn pawn in caravanPawns)
@@ -233,7 +226,7 @@ namespace GameClient
                 if (TransferManagerHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
             }
 
-            Pawn pawnToSend = caravanHumans[(int)DialogManager.inputReserve[0]];
+            Pawn pawnToSend = caravanHumans[DialogManager.dialogListingWithButtonResult];
             ClientValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
@@ -259,7 +252,6 @@ namespace GameClient
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
-                DialogManager.clearStack();
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
@@ -343,7 +335,7 @@ namespace GameClient
 
             catch 
             {
-                Logs.Warning("Server didn't have personal site prices set, defaulting to 0");
+                Log.Warning("Server didn't have personal site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {
@@ -354,9 +346,7 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            DialogManager.setInputReserve();
-            
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputReserve[0]]} " +
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
                 $"silver, continue?", RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
@@ -364,20 +354,21 @@ namespace GameClient
 
         public static void RequestSiteBuild()
         {
+            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputReserve[0]]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!", DialogManager.clearStack));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
+
             else
             {
-
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[(int)DialogManager.inputReserve[0]]);
+                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteDetailsJSON.type = ((int)DialogManager.inputReserve[0]).ToString();
+                siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
                 siteDetailsJSON.isFromFaction = false;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
@@ -385,8 +376,6 @@ namespace GameClient
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
             }
-
-            Logs.Message("point 4");
         }
     }
 
@@ -414,7 +403,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Server didn't have faction site prices set, defaulting to 0");
+                Log.Warning("Server didn't have faction site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {
@@ -425,9 +414,7 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            DialogManager.setInputReserve();
-
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputReserve[0]]} " +
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
                 $"silver, continue?", RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
@@ -435,21 +422,21 @@ namespace GameClient
 
         public static void RequestSiteBuild()
         {
-            DialogManager.PopDialog();
+            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputReserve[0]]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[DialogManager.selectedScrollButton]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[(int)DialogManager.inputReserve[0]]);
+                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
                 siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
                 siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteDetailsJSON.type = ((int)DialogManager.inputCache[0]).ToString();
+                siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
                 siteDetailsJSON.isFromFaction = true;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);

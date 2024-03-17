@@ -23,6 +23,7 @@ namespace GameClient
         {
             if (TryConnectToServer())
             {
+                DialogManager.PopWaitDialog();
                 SiteManager.SetSiteDefs();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
@@ -30,12 +31,12 @@ namespace GameClient
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                Logs.Message($"[Rimworld Together] > Connected to server");
+                Log.Message($"[Rimworld Together] > Connected to server");
             }
 
             else
             {
-                DialogManager.PopDialog();
+                DialogManager.PopWaitDialog();
 
                 RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
                 DialogManager.PushNewDialog(d1);
@@ -71,13 +72,13 @@ namespace GameClient
         {
             listener.DestroyConnection();
 
-            Logs.Message($"[Rimworld Together] > Disconnected from server");
+            Log.Message($"[Rimworld Together] > Disconnected from server");
 
             if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
             else
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
-                    delegate { DialogManager.clearStack(); DisconnectionManager.DisconnectToMenu(); }));
+                    delegate { DisconnectionManager.DisconnectToMenu(); }));
             }
         }
 

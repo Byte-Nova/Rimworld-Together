@@ -25,7 +25,6 @@ namespace GameServer
 
         public static void LoginClientPacket(ServerClient client, Packet packet)
         {
-            Logger.WriteToConsole("in Login Client packet");
             UserLogin.TryLoginUser(client, packet);
         }
 

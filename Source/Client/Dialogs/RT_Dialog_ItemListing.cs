@@ -29,6 +29,7 @@ namespace GameClient
 
         public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
         {
+            DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
             this.transferMode = transferMode;
 
@@ -120,23 +121,8 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                DialogManager.PopDialog();
                 if (transferMode == CommonEnumerators.TransferMode.Gift)
                 {
-
-                    //set the from and to locations of the outgoing manifest
-                    ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                    ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile.ToString();
-                    
-                    //Set the step that the transfer is on
-                    ClientValues.outgoingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeAccept).ToString();
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
-
-                    //send the packet
-                    Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.outgoingManifest);
-                    Network.listener.EnqueuePacket(packet);
-
-                    //Add the gifted items to the settlement stockpiles
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
@@ -163,12 +149,13 @@ namespace GameClient
                 {
                     ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }
 
+                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",
@@ -179,8 +166,9 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                DialogManager.clearStack();
                 TransferManager.RejectRequest(transferMode);
+
+                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",

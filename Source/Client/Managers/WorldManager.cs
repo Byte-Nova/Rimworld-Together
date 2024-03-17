@@ -8,8 +8,6 @@ namespace GameClient
     {
         public static void ParseWorldPacket(Packet packet)
         {
-            DialogManager.clearStack();
-
             WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(worldDetailsJSON.worldStepMode))
@@ -26,6 +24,7 @@ namespace GameClient
 
         public static void OnRequireWorld()
         {
+            DialogManager.PopWaitDialog();
 
             ClientValues.ToggleGenerateWorld(true);
 
@@ -41,6 +40,7 @@ namespace GameClient
 
         public static void OnExistingWorld(WorldDetailsJSON worldDetailsJSON)
         {
+            DialogManager.PopWaitDialog();
 
             WorldGeneratorManager.SetValuesFromServer(worldDetailsJSON);
 

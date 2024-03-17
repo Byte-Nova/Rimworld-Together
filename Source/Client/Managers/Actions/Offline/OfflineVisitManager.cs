@@ -49,7 +49,7 @@ namespace GameClient
 
         private static void OnOfflineVisitDeny()
         {
-            DialogManager.clearStack();
+            DialogManager.PopWaitDialog();
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
         }
@@ -58,15 +58,12 @@ namespace GameClient
 
         private static void OnRequestAccepted(OfflineVisitDetailsJSON offlineVisitDetailsJSON)
         {
-            DialogManager.PopDialog();
+            DialogManager.PopWaitDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...",
-                            delegate { PrepareMapForOfflineVisit(mapDetailsJSON); })); 
-                            };
+            Action r1 = delegate { PrepareMapForOfflineVisit(mapDetailsJSON); };
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
@@ -74,6 +71,7 @@ namespace GameClient
             }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
 
+            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         //Prepares a map for the offline visit feature from a request
@@ -82,9 +80,6 @@ namespace GameClient
         {
             Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, true, true, false);
 
-            //keep track of one pawn in the caravan to jump to later
-            Pawn pawnToFocus = (ClientValues.chosenCaravan.pawns.Count > 0) ? ClientValues.chosenCaravan.pawns[0] : null;
-
             HandleMapFactions(map);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
@@ -92,16 +87,12 @@ namespace GameClient
 
             PrepareMapLord(map);
 
-            //Switch to the Map mode and focus on the caravan
-            CameraJumper.TryJump(pawnToFocus);
-
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {
                 "You are now in offline visit mode!",
                 "This mode allows you to visit an offline player!",
                 "To stop the visit exit the map creating a caravan"
-            },
-            DialogManager.clearStack);
+            });
             DialogManager.PushNewDialog(d1);
         }
 

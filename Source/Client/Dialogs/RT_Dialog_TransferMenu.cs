@@ -18,31 +18,30 @@ namespace GameClient
 
         public string description = "Select the items you wish to transfer";
 
+        private float buttonX = 100f;
+
+        private float buttonY = 37f;
+
         private int startAcceptingInputAtFrame;
 
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
-        private float buttonX = 100f;
-        private float buttonY = 37f;
+        private Vector2 scrollPosition = Vector2.zero;
 
         private List<Tradeable> cachedTradeables;
 
-        private Vector2 scrollPosition = Vector2.zero;
-
-        private bool allowItems;
-
-        private bool allowAnimals;
-
-        private bool allowHumans;
+        private Pawn playerNegotiator;
 
         CommonEnumerators.TransferLocation transferLocation;
 
-        private Pawn playerNegotiator;
-
+        private bool allowItems;
+        private bool allowAnimals;
+        private bool allowHumans;
 
         public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
             bool allowHumans = false)
         {
+            DialogManager.dialogTransferMenu = this;
             this.transferLocation = transferLocation;
             this.allowItems = allowItems;
             this.allowAnimals = allowAnimals;
@@ -147,23 +146,25 @@ namespace GameClient
                 };
 
                 RT_Dialog_2Button d2 = new RT_Dialog_2Button("Transfer Type", "Please choose the transfer type to use",
-                    "Gift", "Trade", r1, r2, DialogManager.PopDialog);
+                    "Gift", "Trade", r1, r2, null);
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    delegate { DialogManager.PopDialog();  DialogManager.PushNewDialog(d2); }, DialogManager.PopDialog);
+                    delegate { DialogManager.PushNewDialog(d2); }, null);
 
                 DialogManager.PushNewDialog(d1);
             }
 
             else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
+                Action r1 = delegate
+                {
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
+                    DialogManager.PopDialog(DialogManager.dialogItemListing);
+                    postChoosing();
+                };
+
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    delegate
-                    {
-                        ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
-                        postChoosing();
-                        DialogManager.clearStack();
-                    }, DialogManager.PopDialog);
+                    r1, null);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -172,6 +173,7 @@ namespace GameClient
             {
                 TransferManager.TakeTransferItems(transferLocation);
                 TransferManager.SendTransferRequestToServer(transferLocation);
+                Close();
             }
         }
 
@@ -186,13 +188,13 @@ namespace GameClient
 
                 TransferManager.FinishTransfer(false);
 
-                DialogManager.clearStack();
+                Close();
             };
 
             if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
-                    r1, DialogManager.PopDialog));
+                    r1, null));
             }
             else r1.Invoke();
         }

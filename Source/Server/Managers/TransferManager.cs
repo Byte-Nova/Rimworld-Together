@@ -1,5 +1,4 @@
 ﻿using Shared;
-using System.Net.Sockets;
 
 namespace GameServer
 {
@@ -16,7 +15,7 @@ namespace GameServer
                     break;
 
                 case (int)CommonEnumerators.TransferStepMode.TradeAccept:
-                    AcceptTransfer(client, packet);
+                    //Nothing goes here
                     break;
 
                 case (int)CommonEnumerators.TransferStepMode.TradeReject:
@@ -57,7 +56,14 @@ namespace GameServer
 
                 else
                 {
-                    if (int.Parse(transferManifestJSON.transferMode) == (int)CommonEnumerators.TransferMode.Pod)
+                    if (int.Parse(transferManifestJSON.transferMode) == (int)CommonEnumerators.TransferMode.Gift)
+                    {
+                        transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeAccept).ToString();
+                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
+                        client.listener.EnqueuePacket(rPacket);
+                    }
+
+                    else if (int.Parse(transferManifestJSON.transferMode) == (int)CommonEnumerators.TransferMode.Pod)
                     {
                         transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeAccept).ToString();
                         Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
@@ -69,27 +75,6 @@ namespace GameServer
                     Packet rPacket2 = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                     UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket2);
                 }
-            }
-        }
-
-        public static void AcceptTransfer(ServerClient client, Packet packet)
-        {
-            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
-
-            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.toTile);
-            if (UserManager.CheckIfUserIsConnected(settlement.owner))
-            {
-                //Pass the packet to the Recipient
-                //transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReRequest).ToString();
-                //Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
-                UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(packet);
-            }
-            else
-            {
-                //change the packet to ReReject and pass to the Sender
-                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReReject).ToString();
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
-                client.listener.EnqueuePacket(rPacket);
             }
         }
 
@@ -118,19 +103,18 @@ namespace GameServer
             TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.toTile);
-            if (UserManager.CheckIfUserIsConnected(settlement.owner))
+            if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                //Pass the packet to the Recipient
-                //transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReRequest).ToString();
-                //Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
-                UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(packet);
-            }
-            else
-            {
-                //change the packet to ReReject and pass to the Sender
                 transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReReject).ToString();
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
                 client.listener.EnqueuePacket(rPacket);
+            }
+
+            else
+            {
+                transferManifestJSON.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReRequest).ToString();
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferManifestJSON);
+                UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }
         }
 

@@ -159,7 +159,7 @@ namespace GameClient
         private void StartProcess(string processPath)
         {
             try { System.Diagnostics.Process.Start(processPath); } 
-            catch { Logs.Warning($"Failed to start process {processPath}"); }
+            catch { Log.Warning($"Failed to start process {processPath}"); }
         }
     }
 }

@@ -23,43 +23,41 @@ namespace GameClient
 
             switch (int.Parse(transferManifestJSON.transferStepMode))
             {
-                //settlement recieves request
                 case (int)TransferStepMode.TradeRequest:
                     ReceiveTransferRequest(transferManifestJSON);
                     break;
 
-                //Caravan recieves settlement's trade accept
                 case (int)TransferStepMode.TradeAccept:
-                    DialogManager.PopDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!",DialogManager.clearStack));
+                    DialogManager.PopWaitDialog();
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
-                //caravan recieves settlement's trade reject
+
                 case (int)TransferStepMode.TradeReject:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
                 case (int)TransferStepMode.TradeReRequest:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     ReceiveReboundRequest(transferManifestJSON);
                     break;
 
                 case (int)TransferStepMode.TradeReAccept:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     GetTransferedItemsToSettlement(TransferManagerHelper.GetAllTransferedItems(ClientValues.incomingManifest));
                     break;
 
                 case (int)TransferStepMode.TradeReReject:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
                 case (int)TransferStepMode.Recover:
-                    DialogManager.PopDialog();
+                    DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
@@ -118,8 +116,6 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for transfer response"));
 
-            Logs.Message($"There are {ClientValues.outgoingManifest.itemDetailsJSONS.Count()} items being traded");
-
             if (transferLocation == TransferLocation.Caravan)
             {
                 ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
@@ -151,8 +147,6 @@ namespace GameClient
         {
             try
             {
-                Logs.Message($"Incoming:\n{ClientValues.incomingManifest.itemDetailsJSONS.Count}");
-                Logs.Message($"Outgoing:\n{ClientValues.outgoingManifest.itemDetailsJSONS.Count}");
                 Thing[] toRecover = TransferManagerHelper.GetAllTransferedItems(ClientValues.outgoingManifest);
 
                 if (transferLocation == TransferLocation.Caravan)
@@ -173,7 +167,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -187,7 +181,6 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                DialogManager.clearStack();
                 Map map = null;
                 if (customMap) map = Find.Maps.Find(x => x.Tile == int.Parse(ClientValues.incomingManifest.toTile));
                 else map = Find.AnyPlayerHomeMap;
@@ -217,7 +210,6 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                DialogManager.clearStack();
                 foreach (Thing thing in things)
                 {
                     if (TransferManagerHelper.CheckIfThingIsHuman(thing))
@@ -310,7 +302,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -332,7 +324,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Log.Warning("Rethrowing transfer items, might be Rimworld's fault");
 
                 Thread.Sleep(100);
 
@@ -346,10 +338,7 @@ namespace GameClient
         {
             if (transferMode == TransferMode.Gift)
             {
-                ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReject).ToString();
-
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
-                Network.listener.EnqueuePacket(packet);
+                //Nothing should happen here
             }
 
             else if (transferMode == TransferMode.Trade)
