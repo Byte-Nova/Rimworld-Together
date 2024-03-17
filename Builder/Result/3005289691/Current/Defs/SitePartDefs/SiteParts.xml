@@ -2,7 +2,7 @@
   <SitePartDef>
     <defName>RTFarmland</defName>
     <label>Farmland</label>
-    <description>This site is capable of producing potatoes.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Farmland</expandingIconTexture>
@@ -13,7 +13,7 @@
   <SitePartDef>
     <defName>RTQuarry</defName>
     <label>Quarry</label>
-    <description>This site is capable of producing steel.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Quarry</expandingIconTexture>
@@ -24,7 +24,7 @@
   <SitePartDef>
     <defName>RTSawmill</defName>
     <label>Sawmill</label>
-    <description>This site is capable of producing wood.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Sawmill</expandingIconTexture>
@@ -35,7 +35,7 @@
   <SitePartDef>
     <defName>RTBank</defName>
     <label>Bank</label>
-    <description>This site is capable of producing silver.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Bank</expandingIconTexture>
@@ -46,7 +46,7 @@
 <SitePartDef>
     <defName>RTLaboratory</defName>
     <label>Laboratory</label>
-    <description>This site is capable of producing components.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Laboratory</expandingIconTexture>
@@ -57,7 +57,7 @@
 <SitePartDef>
     <defName>RTRefinery</defName>
     <label>Refinery</label>
-    <description>This site is capable of producing chemfuel.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Refinery</expandingIconTexture>
@@ -68,7 +68,7 @@
 <SitePartDef>
     <defName>RTHerbalWorkshop</defName>
     <label>Herbal workshop</label>
-    <description>This site is capable of producing herbal medicine.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/HerbalWorkshop</expandingIconTexture>
@@ -79,7 +79,7 @@
 <SitePartDef>
     <defName>RTTextileFactory</defName>
     <label>Textile factory</label>
-    <description>This site is capable of producing cloth.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/TextileFactory</expandingIconTexture>
@@ -90,7 +90,7 @@
 <SitePartDef>
     <defName>RTFoodProcessor</defName>
     <label>Food Processor</label>
-    <description>This site is capable of producing simple meals.</description>
+    <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/FoodProcessor</expandingIconTexture>

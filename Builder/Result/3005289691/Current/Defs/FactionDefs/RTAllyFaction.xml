@@ -2,7 +2,7 @@
 <Defs>
     <FactionDef ParentName="FactionBase" Name="RTAlly">
 		<defName>RTAlly</defName>
-		<description>A settlement of an allied player faction.</description>
+		<description>An online faction</description>
 		<basicMemberKind>Colonist</basicMemberKind>
 		<pawnSingular>colonist</pawnSingular>
 		<pawnsPlural>colonists</pawnsPlural>
