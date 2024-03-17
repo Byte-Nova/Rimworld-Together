@@ -11,6 +11,9 @@ Welcome to the Github repository for "Rimworld Together"! In here you will find 
 >
 > Incompatibility list: https://docs.google.com/spreadsheets/d/14f4oJIV82SzqNK-Tyewr0OKxVRgge8xFasivACwRlsA/edit#gid=0
 
+> [!CAUTION]
+> Make sure the client mod is loaded as high as possible to guarantee the mod working properly.
+
 ## Server Prequisites
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
 
