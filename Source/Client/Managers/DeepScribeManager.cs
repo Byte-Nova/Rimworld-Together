@@ -75,6 +75,10 @@ namespace GameClient
 
             Pawn pawn = SetPawn(kind, faction, humanDetailsJSON);
 
+            SetPawnBioDetails(pawn, humanDetailsJSON);
+
+            SetPawnColors(pawn, humanDetailsJSON);
+
             SetPawnHediffs(pawn, humanDetailsJSON);
 
             SetPawnXenotype(pawn, humanDetailsJSON);
@@ -82,8 +86,6 @@ namespace GameClient
             SetPawnXenogenes(pawn, humanDetailsJSON);
 
             SetPawnEndogenes(pawn, humanDetailsJSON);
-
-            SetPawnBioDetails(pawn, humanDetailsJSON);
 
             SetPawnStory(pawn, humanDetailsJSON);
 
@@ -96,8 +98,6 @@ namespace GameClient
             SetPawnEquipment(pawn, humanDetailsJSON);
 
             SetPawnInventory(pawn, humanDetailsJSON);
-
-            SetPawnFavoriteColor(pawn, humanDetailsJSON);
 
             SetPawnPosition(pawn, humanDetailsJSON);
 
@@ -124,10 +124,19 @@ namespace GameClient
                 humanDetailsJSON.skinColor = pawn.story.SkinColor.ToString();
                 humanDetailsJSON.beardDefName = pawn.style.beardDef.defName.ToString();
                 humanDetailsJSON.bodyTypeDefName = pawn.story.bodyType.defName.ToString();
-                humanDetailsJSON.FaceTattooDefName = pawn.style.FaceTattoo.defName.ToString();
-                humanDetailsJSON.BodyTattooDefName = pawn.style.BodyTattoo.defName.ToString();
+                if (ModsConfig.IdeologyActive)
+                {
+                    humanDetailsJSON.FaceTattooDefName = pawn.style.FaceTattoo.defName.ToString();
+                    humanDetailsJSON.BodyTattooDefName = pawn.style.BodyTattoo.defName.ToString();
+                }
             }
             catch { Logs.Warning($"Failed to get biological details from human {pawn.Label}"); }
+        }
+
+        private static void GetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
+        {
+            try { humanDetailsJSON.favoriteColor = pawn.story.favoriteColor.ToString(); }
+            catch { Logs.Warning($"Failed to get favorite color from human {pawn.Label}"); }
         }
 
         private static void GetPawnKind(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -200,12 +209,6 @@ namespace GameClient
                     catch { Logs.Warning($"Failed to get endogene {gene} from human {pawn.Label}"); }
                 }
             }
-        }
-
-        private static void GetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
-        {
-            try { humanDetailsJSON.favoriteColor = pawn.story.favoriteColor.ToString(); }
-            catch { Logs.Warning($"Failed to get favorite color from human {pawn.Label}"); }
         }
 
         private static void GetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -360,30 +363,68 @@ namespace GameClient
                 pawn.story.headType = DefDatabase<HeadTypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.headTypeDefName);
                 pawn.style.beardDef = DefDatabase<BeardDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.beardDefName);
                 pawn.story.bodyType = DefDatabase<BodyTypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.bodyTypeDefName);
-                pawn.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.FaceTattooDefName);
-                pawn.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.BodyTattooDefName);
 
-                string hairColor = humanDetailsJSON.hairColor.Replace("RGBA(", "").Replace(")", "");
-                string[] isolatedHair = hairColor.Split(',');
-                float r = float.Parse(isolatedHair[0]);
-                float g = float.Parse(isolatedHair[1]);
-                float b = float.Parse(isolatedHair[2]);
-                float a = float.Parse(isolatedHair[3]);
-                pawn.story.HairColor = new UnityEngine.Color(r, g, b, a);
+                if (ModLister.IdeologyInstalled){
+                    pawn.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.FaceTattooDefName);
+                    pawn.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.BodyTattooDefName);
+                }
 
-                string skinColor = humanDetailsJSON.skinColor.Replace("RGBA(", "").Replace(")", "");
-                string[] isolatedSkin = skinColor.Split(',');
-                r = float.Parse(isolatedSkin[0]);
-                g = float.Parse(isolatedSkin[1]);
-                b = float.Parse(isolatedSkin[2]);
-                a = float.Parse(isolatedSkin[3]);
-                pawn.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
+            }
+            catch { Logs.Warning($"Failed to set biological details in human {humanDetailsJSON.name}"); }
+        }
+
+        private static void SetPawnColors(Pawn pawn, HumanDetailsJSON humanDetailsJSON) 
+        {
+            try {
+
+
+                float r;
+                float g;
+                float b;
+                float a;
+
+                //Load Pawn's Hair color
+                if (humanDetailsJSON.hairColor != null)
+                {
+                    string hairColor = humanDetailsJSON.hairColor.Replace("RGBA(", "").Replace(")", "");
+                    string[] isolatedHair = hairColor.Split(',');
+                    r = float.Parse(isolatedHair[0]);
+                    g = float.Parse(isolatedHair[1]);
+                    b = float.Parse(isolatedHair[2]);
+                    a = float.Parse(isolatedHair[3]);
+                    pawn.story.HairColor = new UnityEngine.Color(r, g, b, a);
+                }
+
+                //Load Pawn's Skin Color
+                if (humanDetailsJSON.skinColor != null)
+                {
+                    string skinColor = humanDetailsJSON.skinColor.Replace("RGBA(", "").Replace(")", "");
+                    string[] isolatedSkin = skinColor.Split(',');
+                    r = float.Parse(isolatedSkin[0]);
+                    g = float.Parse(isolatedSkin[1]);
+                    b = float.Parse(isolatedSkin[2]);
+                    a = float.Parse(isolatedSkin[3]);
+                    pawn.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
+                }
+                //Load Pawn's favorite color
+                if (humanDetailsJSON.favoriteColor != null)
+                {
+                    string favoriteColor = humanDetailsJSON.favoriteColor.Replace("RGBA(", "").Replace(")", "");
+                    string[] isolatedFavoriteColor = favoriteColor.Split(',');
+                    r = float.Parse(isolatedFavoriteColor[0]);
+                    g = float.Parse(isolatedFavoriteColor[1]);
+                    b = float.Parse(isolatedFavoriteColor[2]);
+                    a = float.Parse(isolatedFavoriteColor[3]);
+                    pawn.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
+                }
             }
             catch { Logs.Warning($"Failed to set biological details in human {humanDetailsJSON.name}"); }
         }
 
         private static void SetPawnHediffs(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
+
+            //remove hediffs
             try
             {
                 pawn.health.RemoveAllHediffs();
@@ -391,6 +432,7 @@ namespace GameClient
             }
             catch { Logs.Warning($"Failed to remove heddifs of human {humanDetailsJSON.name}"); }
 
+            //parse hediffs
             if (humanDetailsJSON.hediffDefNames.Count() > 0)
             {
                 for (int i = 0; i < humanDetailsJSON.hediffDefNames.Count(); i++)
@@ -424,77 +466,66 @@ namespace GameClient
 
         private static void SetPawnXenotype(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
-            try
+            if (ModLister.BiotechInstalled)
             {
-                if (humanDetailsJSON.xenotypeDefName != "null")
+                try
                 {
-                    pawn.genes.SetXenotype(DefDatabase<XenotypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.xenotypeDefName));
-                }
+                    if (humanDetailsJSON.xenotypeDefName != "null")
+                    {
+                        pawn.genes.SetXenotype(DefDatabase<XenotypeDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.xenotypeDefName));
+                    }
 
-                if (humanDetailsJSON.customXenotypeName != "null")
-                {
-                    pawn.genes.xenotypeName = humanDetailsJSON.customXenotypeName;
+                    if (humanDetailsJSON.customXenotypeName != "null")
+                    {
+                        pawn.genes.xenotypeName = humanDetailsJSON.customXenotypeName;
+                    }
                 }
+                catch { Logs.Warning($"Failed to set xenotypes in human {humanDetailsJSON.name}"); }
             }
-            catch { Logs.Warning($"Failed to set xenotypes in human {humanDetailsJSON.name}"); }
         }
 
         private static void SetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
-            try { pawn.genes.Xenogenes.Clear(); }
-            catch { Logs.Warning($"Failed to clear xenogenes for human {humanDetailsJSON.name}"); }
-
-            if (humanDetailsJSON.xenogeneDefNames.Count() > 0)
+            if (ModLister.BiotechInstalled)
             {
-                foreach (string str in humanDetailsJSON.xenogeneDefNames)
+                try { pawn.genes.Xenogenes.Clear(); }
+                catch { Logs.Warning($"Failed to clear xenogenes for human {humanDetailsJSON.name}"); }
+
+                if (humanDetailsJSON.xenogeneDefNames.Count() > 0)
                 {
-                    try
+                    foreach (string str in humanDetailsJSON.xenogeneDefNames)
                     {
-                        GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
-                        pawn.genes.AddGene(def, true);
+                        try
+                        {
+                            GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
+                            pawn.genes.AddGene(def, true);
+                        }
+                        catch { Logs.Warning($"Failed to set xenogenes for human {humanDetailsJSON.name}"); }
                     }
-                    catch { Logs.Warning($"Failed to set xenogenes for human {humanDetailsJSON.name}"); }
                 }
             }
         }
 
         private static void SetPawnEndogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
-            try { pawn.genes.Endogenes.Clear(); }
-            catch { Logs.Warning($"Failed to clear endogenes for human {humanDetailsJSON.name}"); }
-
-            if (humanDetailsJSON.endogeneDefNames.Count() > 0)
+            if (ModLister.BiotechInstalled)
             {
-                foreach (string str in humanDetailsJSON.endogeneDefNames)
+                try { pawn.genes.Endogenes.Clear(); }
+                catch { Logs.Warning($"Failed to clear endogenes for human {humanDetailsJSON.name}"); }
+
+                if (humanDetailsJSON.endogeneDefNames.Count() > 0)
                 {
-                    try
+                    foreach (string str in humanDetailsJSON.endogeneDefNames)
                     {
-                        GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
-                        pawn.genes.AddGene(def, false);
+                        try
+                        {
+                            GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
+                            pawn.genes.AddGene(def, false);
+                        }
+                        catch { Logs.Warning($"Failed to set endogenes for human {humanDetailsJSON.name}"); }
                     }
-                    catch { Logs.Warning($"Failed to set endogenes for human {humanDetailsJSON.name}"); }
                 }
             }
-        }
-
-        private static void SetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
-        {
-            try
-            {
-                float r;
-                float g;
-                float b;
-                float a;
-
-                string favoriteColor = humanDetailsJSON.favoriteColor.Replace("RGBA(", "").Replace(")", "");
-                string[] isolatedFavoriteColor = favoriteColor.Split(',');
-                r = float.Parse(isolatedFavoriteColor[0]);
-                g = float.Parse(isolatedFavoriteColor[1]);
-                b = float.Parse(isolatedFavoriteColor[2]);
-                a = float.Parse(isolatedFavoriteColor[3]);
-                pawn.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
-            }
-            catch { Logs.Warning($"Failed to set colors in human {humanDetailsJSON.name}"); }
         }
 
         private static void SetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
