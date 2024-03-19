@@ -400,5 +400,9 @@ FodyWeavers.xsd
 # Project
 *.idea
 rimworld_dir.txt
+
+# Ignore built dlls
+*.dll
+
 Source/Client/0Harmony.dll
 Source/Client/HugsLib.dll
