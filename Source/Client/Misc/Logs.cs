@@ -15,28 +15,28 @@ namespace GameClient
 
         private static string InstanceListFile;
 
-        public static void Message(string message)
+        public static void Message(string message, bool isVerbose = false)
         {
             //Write message to player.log file
-            Log.Message(message);
+            if (!(!ClientValues.verboseBool && isVerbose)) Log.Message(message);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
             //writeMessage(message);
         }
 
-        public static void Warning(string message)
+        public static void Warning(string message, bool isVerbose = false)
         {
             //Write warning to player.log file
-            Log.Warning(message);
+            if (!(!ClientValues.verboseBool && isVerbose)) Log.Warning(message);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
             //writeMessage(message);
         }
 
-        public static void Error(string message, bool ignoreStopLoggingLimit = true)
+        public static void Error(string message, bool ignoreStopLoggingLimit = true, bool isVerbose = false)
         {
             //Write warning to player.log file
-            Log.Error(message, ignoreStopLoggingLimit);
+            if (!(!ClientValues.verboseBool && isVerbose)) Log.Error(message, ignoreStopLoggingLimit);
 
             //write message to (player name).log file located in RimWorld by Ludeon Studios\Rimworld Together
             //writeMessage(message);

@@ -69,7 +69,6 @@ namespace GameClient
 
         public static void DisconnectFromServer()
         {
-            Logs.Message("[Rimworld Together] > Attempting to destroy connection");
             listener.DestroyConnection();
 
             Logs.Message($"[Rimworld Together] > Disconnected from server");

@@ -10,10 +10,13 @@ namespace GameClient
     {
         public static void ShowRegisteredDialog()
         {
-            DialogManager.PopDialog();
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You have been successfully registered!",
-                "You are now able to login using your new account"});
+                "You are now able to login using your new account"},
+                delegate{
+                    DialogManager.clearStack();
+                    ShowLoginOrRegisterDialogs();
+                });
 
             DialogManager.PushNewDialog(d1);
         }
@@ -162,6 +165,7 @@ namespace GameClient
 
             if (isValid)
             {
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
                 Logs.Message($"Username: {(string)DialogManager.inputCache[0]}");
                 loginDetails.username = (string)DialogManager.inputCache[0];
@@ -178,11 +182,10 @@ namespace GameClient
                 PreferenceManager.SaveLoginDetails(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[1]));
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
-                
 
+                Logs.Message($"[Rimworld Together] > Sending Login Request");
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
             }
 
             else
@@ -214,9 +217,6 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
                 Network.listener.EnqueuePacket(packet);
 
-                Logs.Message("attempting to send parse register data");
-                Network.listener.EnqueuePacket(packet);
-                Logs.Message("sent parse register data");
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
             }
 

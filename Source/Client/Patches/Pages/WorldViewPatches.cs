@@ -71,6 +71,7 @@ namespace GameClient
     //
     //      Settlement Gizmo Patch
     //
+    //      liklihood, Faction Menu, Form Caravan
     [HarmonyPatch(typeof(Settlement), "GetGizmos")]
     public static class SettlementGizmoPatch
     {
@@ -173,6 +174,7 @@ namespace GameClient
     //
     //      Caravan Settlement Gizmo Patch
     //
+    //      spy settlement, raid settlement, visit settlement, transfer items, send event, change liklihood, Faction menu
     [HarmonyPatch(typeof(Settlement), "GetCaravanGizmos")]
     public static class CaravanSettlementGizmoPatch
     {
@@ -369,8 +371,9 @@ namespace GameClient
     }
 
     //
-    //      Site Gizmo Patch
+    //     Faction Site Gizmo Patch
     //
+    //      
     [HarmonyPatch(typeof(Site), "GetGizmos")]
     public static class SiteGizmoPatch
     {

@@ -93,6 +93,9 @@ namespace GameClient
         {
             VisitThingHelper.SetMapForVisit(FetchMode.Player, mapDetailsJSON: mapDetailsJSON);
 
+            //keep track of one pawn in the caravan to jump to later
+            Pawn pawnToFocus = (ClientValues.chosenCaravan.pawns.Count > 0) ? ClientValues.chosenCaravan.pawns[0] : null;
+
             VisitThingHelper.GetCaravanPawns(FetchMode.Player);
 
             VisitThingHelper.SpawnPawnsForVisit(FetchMode.Player, visitDetailsJSON);
@@ -103,6 +106,9 @@ namespace GameClient
             VisitThingHelper.GetMapItems();
 
             ClientValues.ToggleVisit(true);
+
+            //Switch to the Map mode and focus on the caravan
+            CameraJumper.TryJump(pawnToFocus);
 
             Threader.GenerateThread(Threader.Mode.Visit);
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
@@ -163,7 +169,10 @@ namespace GameClient
 
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
-            Action r1 = delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); };
+            Action r1 = delegate {
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...",
+                            delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); })); 
+                        };
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));
@@ -417,7 +426,18 @@ namespace GameClient
 
                 ActionClockTick();
 
+
                 Find.TickManager.slower.SignalForceNormalSpeed();
+
+                if (OnlineVisitManager.visitMap.Parent.Map == null)
+                {
+                    if (ClientValues.isInVisit)
+                    {
+                        ChatManager.SendMessage("/sv");
+                        Logs.Message("[Rimworld Together] > Visit has ended");
+                    }
+                }
+
             }
         }
 

@@ -25,7 +25,6 @@ namespace GameClient
 
         public static void ReceiveSavePartFromServer(Packet packet)
         {
-            DialogManager.clearStack();
             FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             if (Network.listener.downloadManager == null)
@@ -43,6 +42,8 @@ namespace GameClient
 
             if (fileTransferJSON.isLastPart)
             {
+                //remove the waiting for login response dialog
+                DialogManager.clearStack();
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
 
