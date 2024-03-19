@@ -61,6 +61,10 @@ namespace GameClient
                 case (int)CommonEnumerators.LoginResponse.WrongVersion:
                     DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginDetailsJSON.extraDetails[0]}", stopAndClear));
                     break;
+
+                case (int)CommonEnumerators.LoginResponse.NoWorld:
+                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Server is currently being set up! Join again later!"));
+                    break;
             }
         }
     }
