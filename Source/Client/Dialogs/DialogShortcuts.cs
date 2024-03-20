@@ -167,13 +167,11 @@ namespace GameClient
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
-                Logs.Message($"Username: {(string)DialogManager.inputCache[0]}");
                 loginDetails.username = (string)DialogManager.inputCache[0];
 
-                Logs.Message($"password: {(string)DialogManager.inputCache[1]}");
                 loginDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
 
-                Logs.Message($"Version: {CommonValues.executableVersion}");
+                Logs.Message($"[Rimworld Together] > [Version]: {CommonValues.executableVersion}");
                 loginDetails.clientVersion = CommonValues.executableVersion;
 
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();

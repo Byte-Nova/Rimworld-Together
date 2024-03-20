@@ -118,7 +118,7 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for transfer response"));
 
-            Logs.Message($"There are {ClientValues.outgoingManifest.itemDetailsJSONS.Count()} items being traded");
+            Logs.Message($"[Rimworld Together] > {ClientValues.outgoingManifest.itemDetailsJSONS.Count()} Being transfered");
 
             if (transferLocation == TransferLocation.Caravan)
             {

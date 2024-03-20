@@ -308,13 +308,13 @@ namespace GameClient
                 humanDetailsJSON.position = new string[] { pawn.Position.x.ToString(),
                     pawn.Position.y.ToString(), pawn.Position.z.ToString() };
             }
-            catch { Logs.Message("Failed to get human position"); }
+            catch { Logs.Warning("Failed to get human position"); }
         }
 
         private static void GetPawnRotation(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { humanDetailsJSON.rotation = pawn.Rotation.AsInt; }
-            catch { Logs.Message("Failed to get human rotation"); }
+            catch { Logs.Warning("Failed to get human rotation"); }
         }
 
         //Setters
@@ -619,14 +619,14 @@ namespace GameClient
                     pawn.Position = new IntVec3(int.Parse(humanDetailsJSON.position[0]), int.Parse(humanDetailsJSON.position[1]),
                         int.Parse(humanDetailsJSON.position[2]));
                 }
-                catch { Logs.Message($"Failed to set position in human {pawn.Label}"); }
+                catch { Logs.Warning($"Failed to set position in human {pawn.Label}"); }
             }
         }
 
         private static void SetPawnRotation(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { pawn.Rotation = new Rot4(humanDetailsJSON.rotation); }
-            catch { Logs.Message($"Failed to set rotation in human {pawn.Label}"); }
+            catch { Logs.Warning($"Failed to set rotation in human {pawn.Label}"); }
         }
     }
 
@@ -766,13 +766,13 @@ namespace GameClient
                 animalDetailsJSON.position = new string[] { animal.Position.x.ToString(),
                         animal.Position.y.ToString(), animal.Position.z.ToString() };
             }
-            catch { Logs.Message($"Failed to get position of animal {animal.def.defName}"); }
+            catch { Logs.Warning($"Failed to get position of animal {animal.def.defName}"); }
         }
 
         private static void GetAnimalRotation(Pawn animal, AnimalDetailsJSON animalDetailsJSON)
         {
             try { animalDetailsJSON.rotation = animal.Rotation.AsInt; }
-            catch { Logs.Message($"Failed to get rotation of animal {animal.def.defName}"); }
+            catch { Logs.Warning($"Failed to get rotation of animal {animal.def.defName}"); }
         }
 
         //Setters
@@ -889,7 +889,7 @@ namespace GameClient
         private static void SetAnimalRotation(Pawn animal, AnimalDetailsJSON animalDetailsJSON)
         {
             try { animal.Rotation = new Rot4(animalDetailsJSON.rotation); }
-            catch { Logs.Message($"Failed to set rotation of animal {animalDetailsJSON.name}"); }
+            catch { Logs.Warning($"Failed to set rotation of animal {animalDetailsJSON.name}"); }
         }
     }
 

@@ -255,7 +255,7 @@ namespace GameClient
                     playerSites.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Logs.Message($"Failed to remove site at {siteDetailsJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logs.Warning($"Failed to remove site at {siteDetailsJSON.tile}. Reason: {e}"); }
             }
         }
     }

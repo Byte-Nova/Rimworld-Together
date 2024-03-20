@@ -32,7 +32,6 @@ namespace GameClient
             {
                 try
                 {
-                    Logs.Message($"[Rimworld Together] > Pushing {window.ToString()}");
 
                     //Hide the current window
                     if (windowStack.Count > 0 )
@@ -46,11 +45,10 @@ namespace GameClient
 
                     //draw the new window
                     Find.WindowStack.Add(window);
-                    ListWindows();
                 }
                 catch (System.Exception ex)
                 {
-                    Logs.Message(ex.ToString());
+                    Logs.Error(ex.ToString());
                 }
             }
         }
@@ -62,7 +60,6 @@ namespace GameClient
 
         public static void clearInternalStack()
         {
-            Logs.Message("cleared window stack");
             windowStack.Clear();
         }
 
@@ -70,7 +67,6 @@ namespace GameClient
         {
             while (windowStack.Count > 0)
             {
-                Logs.Message($"[Rimworld Together] > popping {windowStack.Peek().ToString()}");
                 Find.WindowStack.TryRemove(windowStack.Pop(), true);
                 if (windowStack.Count > 0)
                     Find.WindowStack.Add(windowStack.Peek());
@@ -81,7 +77,6 @@ namespace GameClient
 
             if (windowStack.Count > 0)
             {
-                Logs.Message($"[Rimworld Together] > popping {windowStack.Peek().ToString()}");
                 Find.WindowStack.TryRemove(windowStack.Pop(), true);
                 if (windowStack.Count > 0) Find.WindowStack.Add(windowStack.Peek());
             }
@@ -92,7 +87,6 @@ namespace GameClient
         {
             if (windowStack.Count > 0)
             {
-                Logs.Message($"[Rimworld Together] > popping {windowStack.Peek().ToString()}");
                 Find.WindowStack.TryRemove(windowStack.Pop(), true);
                 if (windowStack.Count > 0) Find.WindowStack.Add(windowStack.Peek());
             }
@@ -102,16 +96,7 @@ namespace GameClient
         {
             currentDialogInputs.CacheInputs();
             inputReserve = new List<object>(inputCache);
-            Logs.Message($"[Rimworld Together] > Cached inputs for {currentDialogInputs}");
         }
 
-        private static void ListWindows()
-        {
-            Window[] winArray = windowStack.ToArray();
-            for (int i = winArray.Length-1; i >= 0;i--)
-            {
-                Logs.Message($"Window at {i} is {winArray[i]}");
-            }
-        }
     }
 }

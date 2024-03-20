@@ -110,7 +110,6 @@ namespace GameClient
             //draw confirm button
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
             {
-                Logs.Message(inputResultList[0]);
                 CacheInputs();
                 if (actionConfirm != null) actionConfirm.Invoke();
                 else DialogManager.PopDialog();

@@ -95,10 +95,6 @@ namespace GameClient
             //draw confirm button
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
             {
-                if (inputResultList != null)
-                    Logs.Message($"inputs are: {inputResultList[0]} and {inputResultList[1]}");
-                else Logs.Message($"inputResultList is null");
-
                 CacheInputs();
                 if (actionConfirm != null) actionConfirm.Invoke();
                 else DialogManager.PopDialog();
@@ -168,7 +164,6 @@ namespace GameClient
         {
 
             DialogManager.inputCache = inputList;
-            Logs.Message($"inputCache is {DialogManager.inputCache != null}");
 
         }
         public virtual void SubstituteInputs(List<object> newInputs)
@@ -177,16 +172,15 @@ namespace GameClient
             //exception handling
             if (newInputs.Count < 2)
             {
-                Logs.Error("[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs has too few elements; No changes will be made");
+                Logs.Error("[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs has too few elements; No changes will be made",true);
                 return;
             }
             else if (newInputs.Count > 2)
             {
-                Logs.Warning("[RimWorld Together] > WARNING: newInputs in RT_Dialog_2Inputs.SubstituteInputs has more elements than necessary, some elements will not be used ");
+                Logs.Warning("[RimWorld Together] > WARNING: newInputs in RT_Dialog_2Inputs.SubstituteInputs has more elements than necessary, some elements will not be used ",true);
             }
 
             //for each value in inputResultList, set it to the corrosponding value in newInputs
-            Logs.Message($"input result count: {inputResultList.Count}");
             for (int index = 0; index < inputResultList.Count;index++)
             {
                 if (inputResultList[index].GetType() != newInputs[index].GetType())
@@ -196,7 +190,6 @@ namespace GameClient
                 }
                 inputResultList[index] = (string)newInputs[index];
             }
-            Logs.Message($"{inputResultList[0]} : {inputResultList[1]}");
         }
     }
 }

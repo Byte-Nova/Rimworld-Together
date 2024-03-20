@@ -88,9 +88,6 @@ namespace GameClient
 
             Action r1 = delegate {
 
-                Logs.Message($"Rand stack value: {Rand.Value}");
-
-
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...", delegate { 
                     PrepareMapForSpy(mapDetailsJSON);
                     RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]

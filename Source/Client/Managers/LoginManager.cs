@@ -11,7 +11,7 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            Logs.Message("Recieved login Response");
+            Logs.Message("[Rimworld Together] > Recieved login Response");
 
             JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 

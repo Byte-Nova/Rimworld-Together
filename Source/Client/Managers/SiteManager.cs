@@ -386,7 +386,6 @@ namespace GameClient
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
             }
 
-            Logs.Message("point 4");
         }
     }
 

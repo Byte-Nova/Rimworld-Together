@@ -92,8 +92,9 @@ namespace GameClient
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Logs.Warning($"[Rimworld Together] > {e}");
-                Logs.Message("[Rimworld Together] > closing connection due to exception");
+
+                Logs.Message("[Rimworld Together] > closing connection due to exception ",true);
+                Logs.Warning($"[Rimworld Together] > {e}",true);
                 disconnectFlag = true;
             }
         }
@@ -117,14 +118,11 @@ namespace GameClient
             {
                 if (disconnectFlag) Logs.Message("[Rimworld Together] > disconnect flag true, closing connection");
                 Thread.Sleep(1000);
-                Logs.Message("[Rimworld Together] > finished sleep");
-                Master.threadDispatcher.Enqueue(delegate { Logs.Message("before disconnect"); Network.DisconnectFromServer(); Logs.Message("after disconnect"); });
-                Logs.Message("after enqueue");
+                Master.threadDispatcher.Enqueue(Network.DisconnectFromServer);
             }
             catch(Exception e)
             {
-                Logs.Message($"dispatcher exists? {Master.threadDispatcher != null}{Master.threadDispatcher.ToString()}");
-                Logs.Error($"{e}");
+                Logs.Error($"[Rimworld Together] > {e}");
             }
         }
 
