@@ -179,8 +179,8 @@ namespace GameServer
 
             else
             {
-                if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, "player attempted to destroy a site that they do not own");
-                else if (siteFile.workerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);//tell the client there is still a worker in the site
+                if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to destroy a site that they do not own");
+                else if (siteFile.workerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);
                 else DestroySiteFromFile(siteFile);
             }
         }
@@ -216,12 +216,12 @@ namespace GameServer
 
             if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "player tried to deposit a worker to a site that they or their faction does not own");
+                ResponseShortcutManager.SendIllegalPacket(client, "Player tried to deposit a worker to a site that they or their faction does not own");
             }
 
             else if (siteFile.workerData != null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "player attempted to desposit a worker to a site that already has a worker");
+                ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to desposit a worker to a site that already has a worker");
             }
 
             else
@@ -237,12 +237,12 @@ namespace GameServer
 
             if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "player attempted to retrieve a worker from a site that they or their faction does not own");
+                ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to retrieve a worker from a site that they or their faction does not own");
             }
 
             else if (siteFile.workerData == null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "player attempted to retrieve a worker from a site that has no workers");
+                ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to retrieve a worker from a site that has no workers");
             }
 
             else

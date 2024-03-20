@@ -4,15 +4,16 @@ namespace GameServer
 {
     public static class ResponseShortcutManager
     {
-        public static void SendIllegalPacket(ServerClient client, string message, bool broadcast = true)
+        public static void SendIllegalPacket(ServerClient client, string message, bool shouldBroadcast = true)
         {
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.IllegalActionPacket));
             client.listener.EnqueuePacket(packet);
             client.listener.disconnectFlag = true;
 
-            if (broadcast) { 
-                Logger.WriteToConsole($"[Illegal action] > {client.username} > {client.SavedIP}", Logger.LogMode.Error);
-                Logger.WriteToConsole($"[Illegal action] > {message}", Logger.LogMode.Error);
+            if (shouldBroadcast) 
+            { 
+                Logger.WriteToConsole($"[Illegal action] > {client.username} > {client.SavedIP}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Illegal reason] > {message}", Logger.LogMode.Warning);
             }
         }
 

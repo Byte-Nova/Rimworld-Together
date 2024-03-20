@@ -57,7 +57,7 @@ namespace GameServer
 
             if (sendRemoval)
             {
-                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, "settlement was attempted to be removed by a player that does not own the settlement");
+                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, "Settlement was attempted to be removed by a player that does not own the settlement");
                 else
                 {
                     File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
