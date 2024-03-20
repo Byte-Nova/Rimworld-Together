@@ -32,10 +32,10 @@ namespace GameServer
                     string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
                     foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower())){
+                        if (!Master.loadedRequiredMods.Contains(str.ToLower()))
+                        {
                             if (!Master.loadedOptionalMods.Contains(str.ToLower())) Master.loadedOptionalMods.Add(str.ToLower());
                         }
-                        
                     }
                 }
                 catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", Logger.LogMode.Error); }
@@ -52,10 +52,10 @@ namespace GameServer
                     string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
                     foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()) && !Master.loadedOptionalMods.Contains(str.ToLower())){
+                        if (!Master.loadedRequiredMods.Contains(str.ToLower()) && !Master.loadedOptionalMods.Contains(str.ToLower()))
+                        {
                             if (!Master.loadedForbiddenMods.Contains(str.ToLower())) Master.loadedForbiddenMods.Add(str.ToLower());
                         }
-                        
                     }
                 }
                 catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", Logger.LogMode.Error); }
@@ -67,6 +67,7 @@ namespace GameServer
         public static bool CheckIfModConflict(ServerClient client, JoinDetailsJSON loginDetailsJSON)
         {
             List<string> conflictingMods = new List<string>();
+            List<string> conflictingNames = new List<string>();
 
             if (Master.loadedRequiredMods.Count() > 0)
             {
@@ -75,15 +76,18 @@ namespace GameServer
                     if (!loginDetailsJSON.runningMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Required] > {mod}");
+                        conflictingNames.Add(mod);
                         continue;
                     }
                 }
 
                 foreach (string mod in loginDetailsJSON.runningMods)
                 {
+                    if (conflictingNames.Contains(mod)) continue;
                     if (!Master.loadedRequiredMods.Contains(mod) && !Master.loadedOptionalMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Disallowed] > {mod}");
+                        conflictingNames.Add(mod);
                         continue;
                     }
                 }
@@ -93,9 +97,11 @@ namespace GameServer
             {
                 foreach (string mod in Master.loadedForbiddenMods)
                 {
+                    if (conflictingNames.Contains(mod)) continue;
                     if (loginDetailsJSON.runningMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Forbidden] > {mod}");
+                        conflictingNames.Add(mod);
                     }
                 }
             }
