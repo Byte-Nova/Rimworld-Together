@@ -11,6 +11,9 @@ Welcome to the Github repository for "Rimworld Together"! In here you will find 
 >
 > Incompatibility list: https://docs.google.com/spreadsheets/d/14f4oJIV82SzqNK-Tyewr0OKxVRgge8xFasivACwRlsA/edit#gid=0
 
+> [!CAUTION]
+> Make sure the client mod is loaded as high as possible to guarantee the mod working properly.
+
 ## Server Prequisites
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
 
@@ -37,6 +40,7 @@ On first launch, the server will generate the "MODS" folder, inside of it will b
 - Required mods will kick the connecting player if its missing them.
 
 To install mods, directly dump the mod folder (The one with the numbers in the title if grabing from Steam) inside whichever folder you choose.
+Furthermore, the files for Harmony, Hugslib and Rimworld Together can be found in the Extras, which can be found in this repository.
 
 > [!TIP]
 > If you are downloading the mods from Steam, you can use this tool to rename the folders to their actual mod names to make the modlist process easier: https://github.com/Byte-Nova/Library
