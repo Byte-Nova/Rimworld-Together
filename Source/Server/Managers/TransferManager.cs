@@ -38,7 +38,7 @@ namespace GameServer
 
         public static void TransferThings(ServerClient client, TransferManifestJSON transferManifestJSON)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(transferManifestJSON.toTile)) ResponseShortcutManager.SendIllegalPacket(client);
+            if (!SettlementManager.CheckIfTileIsInUse(transferManifestJSON.toTile)) ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to send items to a settlement that could not be found or does not exist");
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferManifestJSON.toTile);
