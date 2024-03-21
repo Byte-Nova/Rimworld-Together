@@ -4,6 +4,7 @@ using Shared;
 using System;
 using System.Threading;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -41,7 +42,7 @@ namespace GameClient
             try { spyCost = int.Parse(serverOverallJSON.SpyCost); }
             catch
             {
-                Logs.Warning("Server didn't have spy cost set, defaulting to 0");
+                Logger.WriteToConsole("Server didn't have spy cost set, defaulting to 0", LogMode.Warning);
 
                 spyCost = 0;
             }

@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -11,7 +12,7 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            Logs.Message("[Rimworld Together] > Recieved login Response");
+            Logger.WriteToConsole("Received login Response", LogMode.Message);
 
             JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 

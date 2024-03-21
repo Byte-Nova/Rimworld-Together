@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -159,7 +160,7 @@ namespace GameClient
         private void StartProcess(string processPath)
         {
             try { System.Diagnostics.Process.Start(processPath); } 
-            catch { Logs.Warning($"[Rimworld Together] > Failed to start process {processPath}"); }
+            catch { Logger.WriteToConsole("Failed to start process {processPath}", LogMode.Warning); }
         }
     }
 }

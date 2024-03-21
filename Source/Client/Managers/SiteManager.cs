@@ -5,6 +5,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -52,7 +53,7 @@ namespace GameClient
 
             catch 
             {
-                Logs.Warning("Server didn't have site rewards set, defaulting to 0");
+                Logger.WriteToConsole("Server didn't have site rewards set, defaulting to 0", LogMode.Warning);
 
                 siteRewardCount = new int[9]
                 {
@@ -343,7 +344,7 @@ namespace GameClient
 
             catch 
             {
-                Logs.Warning("Server didn't have personal site prices set, defaulting to 0");
+                Logger.WriteToConsole("Server didn't have personal site prices set, defaulting to 0", LogMode.Warning);
 
                 sitePrices = new int[9]
                 {
@@ -413,7 +414,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Server didn't have faction site prices set, defaulting to 0");
+                Logger.WriteToConsole("Server didn't have faction site prices set, defaulting to 0", LogMode.Warning);
 
                 sitePrices = new int[9]
                 {

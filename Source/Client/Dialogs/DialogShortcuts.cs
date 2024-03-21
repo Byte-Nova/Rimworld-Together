@@ -165,25 +165,19 @@ namespace GameClient
 
             if (isValid)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
                 loginDetails.username = (string)DialogManager.inputCache[0];
-
                 loginDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
-
-                Logs.Message($"[Rimworld Together] > [Version]: {CommonValues.executableVersion}");
                 loginDetails.clientVersion = CommonValues.executableVersion;
-
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
                 PreferenceManager.SaveLoginDetails(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[1]));
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
-
-                Logs.Message($"[Rimworld Together] > Sending Login Request");
                 Network.listener.EnqueuePacket(packet);
 
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
             }
 
             else
@@ -227,16 +221,18 @@ namespace GameClient
             }
         }
 
-
         //changes in a textField are check based on string length, but if the contents of a text field are replaced,
         //i.e. 1234 -> 1255 where 34 are instantly replace with 55
         //we can't tell anything has changed on length. This function will change the characters that have been repalced
-        public static string replaceNonCensoredSymbols(string recievingString, string giftingString, bool Censored, string censorSymbol)
+
+        public static string ReplaceNonCensoredSymbols(string recievingString, string giftingString, bool isCensored)
         {
             string StringA = recievingString; string currCharA;
             string StringB = giftingString; string currCharB;
+            string censorSymbol = "*";
             string returnString = "";
-            if (Censored)
+
+            if (isCensored)
             {
                 for (int i = 0; i < giftingString.Length; i++)
                 {
@@ -244,12 +240,12 @@ namespace GameClient
                     currCharB = StringB.Substring(0, 1);
                     if (StringA.Length > 0) StringA = StringA.Substring(1, StringA.Length - 1);
                     if (StringB.Length > 0) StringB = StringB.Substring(1, StringB.Length - 1);
-                    if (currCharB.ToString() == censorSymbol)
-                        returnString += currCharA;
-                    else
-                        returnString += currCharB;
+
+                    if (currCharB.ToString() == censorSymbol) returnString += currCharA;
+                    else returnString += currCharB;
                 }
             }
+
             else
             {
                 for (int i = 0; i < giftingString.Length; i++)
@@ -258,12 +254,12 @@ namespace GameClient
                     currCharB = StringB.Substring(0, 1);
                     if (StringA.Length > 0) StringA = StringA.Substring(1, StringA.Length - 1);
                     if (StringB.Length > 0) StringB = StringB.Substring(1, StringB.Length - 1);
-                    if (currCharA == currCharB)
-                        returnString += currCharA;
-                    else
-                        returnString += currCharB;
+
+                    if (currCharA == currCharB) returnString += currCharA;
+                    else returnString += currCharB;
                 }
             }
+
             return returnString;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -67,7 +68,7 @@ namespace GameServer
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
             client.listener.EnqueuePacket(rPacket);
 
-            Logger.WriteToConsole($"[Created site] > {client.username}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Created site] > {client.username}", LogMode.Warning);
         }
 
         public static void SaveSite(SiteFile siteFile)
@@ -195,7 +196,7 @@ namespace GameServer
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + ".json"));
-            Logger.WriteToConsole($"[Destroyed site] > {siteFile.tile}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Destroyed site] > {siteFile.tile}", LogMode.Warning);
         }
 
         private static void GetSiteInfo(ServerClient client, SiteDetailsJSON siteDetailsJSON)

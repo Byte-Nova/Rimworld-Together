@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -13,7 +14,7 @@ namespace GameClient
 
         public static void HandlePacket(Packet packet)
         {
-            Logs.Message($"[Header] > {packet.header}",true);
+            Logger.WriteToConsole($"[Header] > {packet.header}", LogMode.Message);
 
             Action toDo = delegate
             {

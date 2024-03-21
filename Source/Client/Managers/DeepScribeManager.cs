@@ -5,6 +5,7 @@ using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -127,13 +128,13 @@ namespace GameClient
                 humanDetailsJSON.FaceTattooDefName = pawn.style.FaceTattoo.defName.ToString();
                 humanDetailsJSON.BodyTattooDefName = pawn.style.BodyTattoo.defName.ToString();
             }
-            catch { Logs.Warning($"Failed to get biological details from human {pawn.Label}"); }
+            catch { Logger.WriteToConsole($"Failed to get biological details from human {pawn.Label}", LogMode.Warning); }
         }
 
         private static void GetPawnKind(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { humanDetailsJSON.kindDef = pawn.kindDef.defName; }
-            catch { Logs.Warning($"Failed to get kind from human {pawn.Label}"); }
+            catch { Logger.WriteToConsole($"Failed to get kind from human {pawn.Label}", LogMode.Warning); }
         }
 
         private static void GetPawnFaction(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -141,7 +142,7 @@ namespace GameClient
             if (pawn.Faction == null) return;
 
             try { humanDetailsJSON.factionDef = pawn.Faction.def.defName; }
-            catch { Logs.Warning($"Failed to get faction from human {pawn.Label}"); }
+            catch { Logger.WriteToConsole($"Failed to get faction from human {pawn.Label}", LogMode.Warning); }
         }
 
         private static void GetPawnHediffs(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -160,7 +161,7 @@ namespace GameClient
                         humanDetailsJSON.hediffSeverity.Add(hd.Severity.ToString());
                         humanDetailsJSON.heddifPermanent.Add(hd.IsPermanent());
                     }
-                    catch { Logs.Warning($"Failed to get heddif {hd} from human {pawn.Label}"); }
+                    catch { Logger.WriteToConsole($"Failed to get heddif {hd} from human {pawn.Label}", LogMode.Warning); }
                 }
             }
         }
@@ -175,7 +176,7 @@ namespace GameClient
                 if (pawn.genes.CustomXenotype != null) humanDetailsJSON.customXenotypeName = pawn.genes.xenotypeName.ToString();
                 else humanDetailsJSON.customXenotypeName = "null";
             }
-            catch { Logs.Warning($"Failed to get xenotype from human {pawn.Label}"); }
+            catch { Logger.WriteToConsole($"Failed to get xenotype from human {pawn.Label}", LogMode.Warning); }
         }
 
         private static void GetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -185,7 +186,7 @@ namespace GameClient
                 foreach (Gene gene in pawn.genes.Xenogenes)
                 {
                     try { humanDetailsJSON.xenogeneDefNames.Add(gene.def.defName); }
-                    catch { Logs.Warning($"Failed to get gene {gene} from human {pawn.Label}"); }
+                    catch { Logger.WriteToConsole($"Failed to get gene {gene} from human {pawn.Label}", LogMode.Warning); }
                 }
             }
         }
@@ -197,7 +198,7 @@ namespace GameClient
                 foreach (Gene gene in pawn.genes.Endogenes)
                 {
                     try { humanDetailsJSON.endogeneDefNames.Add(gene.def.defName.ToString()); }
-                    catch { Logs.Warning($"Failed to get endogene {gene} from human {pawn.Label}"); }
+                    catch { Logger.WriteToConsole($"Failed to get endogene {gene} from human {pawn.Label}", LogMode.Warning); }
                 }
             }
         }
@@ -205,7 +206,7 @@ namespace GameClient
         private static void GetPawnFavoriteColor(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { humanDetailsJSON.favoriteColor = pawn.story.favoriteColor.ToString(); }
-            catch { Logs.Warning($"Failed to get favorite color from human {pawn.Label}"); }
+            catch { Logger.WriteToConsole($"Failed to get favorite color from human {pawn.Label}", LogMode.Warning); }
         }
 
         private static void GetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -218,7 +219,7 @@ namespace GameClient
                 if (pawn.story.Adulthood != null) humanDetailsJSON.adulthoodStory = pawn.story.Adulthood.defName.ToString();
                 else humanDetailsJSON.adulthoodStory = "null";
             }
-            catch { Logs.Warning($"Failed to get backstories from human {pawn.Label}"); }
+            catch { Logger.WriteToConsole($"Failed to get backstories from human {pawn.Label}", LogMode.Warning); }
         }
 
         private static void GetPawnSkills(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -233,7 +234,7 @@ namespace GameClient
                         humanDetailsJSON.skillLevels.Add(skill.levelInt.ToString());
                         humanDetailsJSON.passions.Add(skill.passion.ToString());
                     }
-                    catch { Logs.Warning($"Failed to get skill {skill} from human {pawn.Label}"); }
+                    catch { Logger.WriteToConsole($"Failed to get skill {skill} from human {pawn.Label}", LogMode.Warning); }
                 }
             }
         }
@@ -249,7 +250,7 @@ namespace GameClient
                         humanDetailsJSON.traitDefNames.Add(trait.def.defName);
                         humanDetailsJSON.traitDegrees.Add(trait.Degree.ToString());
                     }
-                    catch { Logs.Warning($"Failed to get trait {trait} from human {pawn.Label}"); }
+                    catch { Logger.WriteToConsole($"Failed to get trait {trait} from human {pawn.Label}", LogMode.Warning); }
                 }
             }
         }
@@ -266,7 +267,7 @@ namespace GameClient
                         humanDetailsJSON.equippedApparel.Add(itemDetailsJSON);
                         humanDetailsJSON.apparelWornByCorpse.Add(ap.WornByCorpse);
                     }
-                    catch { Logs.Warning($"Failed to get apparel {ap} from human {pawn.Label}"); }
+                    catch { Logger.WriteToConsole($"Failed to get apparel {ap} from human {pawn.Label}", LogMode.Warning); }
                 }
             }
         }
@@ -281,7 +282,7 @@ namespace GameClient
                     ItemDetailsJSON weaponDetails = ThingScribeManager.ItemToString(weapon, weapon.stackCount);
                     humanDetailsJSON.equippedWeapon = weaponDetails;
                 }
-                catch { Logs.Warning($"Failed to get weapon from human {pawn.Label}"); }
+                catch { Logger.WriteToConsole($"Failed to get weapon from human {pawn.Label}", LogMode.Warning); }
             }
         }
 
@@ -296,7 +297,7 @@ namespace GameClient
                         ItemDetailsJSON itemDetailsJSON = ThingScribeManager.ItemToString(thing, thing.stackCount);
                         humanDetailsJSON.inventoryItems.Add(itemDetailsJSON);
                     }
-                    catch { Logs.Warning($"Failed to get item from human {pawn.Label}"); }
+                    catch { Logger.WriteToConsole($"Failed to get item from human {pawn.Label}", LogMode.Warning); }
                 }
             }
         }
@@ -308,13 +309,13 @@ namespace GameClient
                 humanDetailsJSON.position = new string[] { pawn.Position.x.ToString(),
                     pawn.Position.y.ToString(), pawn.Position.z.ToString() };
             }
-            catch { Logs.Warning("Failed to get human position"); }
+            catch { Logger.WriteToConsole("Failed to get human position", LogMode.Warning); }
         }
 
         private static void GetPawnRotation(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { humanDetailsJSON.rotation = pawn.Rotation.AsInt; }
-            catch { Logs.Warning("Failed to get human rotation"); }
+            catch { Logger.WriteToConsole("Failed to get human rotation", LogMode.Warning); }
         }
 
         //Setters
@@ -322,7 +323,7 @@ namespace GameClient
         private static PawnKindDef SetPawnKind(HumanDetailsJSON humanDetailsJSON)
         {
             try { return DefDatabase<PawnKindDef>.AllDefs.First(fetch => fetch.defName == humanDetailsJSON.kindDef); }
-            catch { Logs.Warning($"Failed to set kind in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set kind in human {humanDetailsJSON.name}", LogMode.Warning); }
 
             return null;
         }
@@ -332,7 +333,7 @@ namespace GameClient
             if (humanDetailsJSON.factionDef == null) return null;
 
             try { return Find.FactionManager.AllFactions.First(fetch => fetch.def.defName == humanDetailsJSON.factionDef); }
-            catch { Logs.Warning($"Failed to set faction in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set faction in human {humanDetailsJSON.name}", LogMode.Warning); }
 
             return null;
         }
@@ -340,7 +341,7 @@ namespace GameClient
         private static Pawn SetPawn(PawnKindDef kind, Faction faction, HumanDetailsJSON humanDetailsJSON)
         {
             try { return PawnGenerator.GeneratePawn(kind, faction); }
-            catch { Logs.Warning($"Failed to set biological details in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set biological details in human {humanDetailsJSON.name}", LogMode.Warning); }
 
             return null;
         }
@@ -379,7 +380,7 @@ namespace GameClient
                 a = float.Parse(isolatedSkin[3]);
                 pawn.story.SkinColorBase = new UnityEngine.Color(r, g, b, a);
             }
-            catch { Logs.Warning($"Failed to set biological details in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set biological details in human {humanDetailsJSON.name}", LogMode.Warning); }
         }
 
         private static void SetPawnHediffs(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -389,7 +390,7 @@ namespace GameClient
                 pawn.health.RemoveAllHediffs();
                 pawn.health.Reset();
             }
-            catch { Logs.Warning($"Failed to remove heddifs of human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to remove heddifs of human {humanDetailsJSON.name}", LogMode.Warning); }
 
             if (humanDetailsJSON.hediffDefNames.Count() > 0)
             {
@@ -417,7 +418,7 @@ namespace GameClient
 
                         pawn.health.AddHediff(hediff, bodyPart);
                     }
-                    catch { Logs.Warning($"Failed to set heddif in {humanDetailsJSON.hediffPartDefName[i]} to human {humanDetailsJSON.name}"); }
+                    catch { Logger.WriteToConsole($"Failed to set heddif in {humanDetailsJSON.hediffPartDefName[i]} to human {humanDetailsJSON.name}", LogMode.Warning); }
                 }
             }
         }
@@ -436,13 +437,13 @@ namespace GameClient
                     pawn.genes.xenotypeName = humanDetailsJSON.customXenotypeName;
                 }
             }
-            catch { Logs.Warning($"Failed to set xenotypes in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set xenotypes in human {humanDetailsJSON.name}", LogMode.Warning); }
         }
 
         private static void SetPawnXenogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { pawn.genes.Xenogenes.Clear(); }
-            catch { Logs.Warning($"Failed to clear xenogenes for human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to clear xenogenes for human {humanDetailsJSON.name}", LogMode.Warning); }
 
             if (humanDetailsJSON.xenogeneDefNames.Count() > 0)
             {
@@ -453,7 +454,7 @@ namespace GameClient
                         GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
                         pawn.genes.AddGene(def, true);
                     }
-                    catch { Logs.Warning($"Failed to set xenogenes for human {humanDetailsJSON.name}"); }
+                    catch { Logger.WriteToConsole($"Failed to set xenogenes for human {humanDetailsJSON.name}", LogMode.Warning); }
                 }
             }
         }
@@ -461,7 +462,7 @@ namespace GameClient
         private static void SetPawnEndogenes(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { pawn.genes.Endogenes.Clear(); }
-            catch { Logs.Warning($"Failed to clear endogenes for human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to clear endogenes for human {humanDetailsJSON.name}", LogMode.Warning); }
 
             if (humanDetailsJSON.endogeneDefNames.Count() > 0)
             {
@@ -472,7 +473,7 @@ namespace GameClient
                         GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
                         pawn.genes.AddGene(def, false);
                     }
-                    catch { Logs.Warning($"Failed to set endogenes for human {humanDetailsJSON.name}"); }
+                    catch { Logger.WriteToConsole($"Failed to set endogenes for human {humanDetailsJSON.name}", LogMode.Warning); }
                 }
             }
         }
@@ -494,7 +495,7 @@ namespace GameClient
                 a = float.Parse(isolatedFavoriteColor[3]);
                 pawn.story.favoriteColor = new UnityEngine.Color(r, g, b, a);
             }
-            catch { Logs.Warning($"Failed to set colors in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set colors in human {humanDetailsJSON.name}", LogMode.Warning); }
         }
 
         private static void SetPawnStory(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -511,7 +512,7 @@ namespace GameClient
                     pawn.story.Adulthood = DefDatabase<BackstoryDef>.AllDefs.ToList().Find(x => x.defName == humanDetailsJSON.adulthoodStory);
                 }
             }
-            catch { Logs.Warning($"Failed to set stories in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set stories in human {humanDetailsJSON.name}", LogMode.Warning); }
         }
 
         private static void SetPawnSkills(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
@@ -527,7 +528,7 @@ namespace GameClient
                         Enum.TryParse(humanDetailsJSON.passions[i], true, out Passion passion);
                         pawn.skills.skills[i].passion = passion;
                     }
-                    catch { Logs.Warning($"Failed to set skill {humanDetailsJSON.skillDefNames[i]} to human {humanDetailsJSON.name}"); }
+                    catch { Logger.WriteToConsole($"Failed to set skill {humanDetailsJSON.skillDefNames[i]} to human {humanDetailsJSON.name}", LogMode.Warning); }
                 }
             }
         }
@@ -535,7 +536,7 @@ namespace GameClient
         private static void SetPawnTraits(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { pawn.story.traits.allTraits.Clear(); }
-            catch { Logs.Warning($"Failed to remove traits of human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to remove traits of human {humanDetailsJSON.name}", LogMode.Warning); }
 
             if (humanDetailsJSON.traitDefNames.Count() > 0)
             {
@@ -547,7 +548,7 @@ namespace GameClient
                         Trait trait = new Trait(traitDef, int.Parse(humanDetailsJSON.traitDegrees[i]));
                         pawn.story.traits.GainTrait(trait);
                     }
-                    catch { Logs.Warning($"Failed to set trait {humanDetailsJSON.traitDefNames[i]} to human {humanDetailsJSON.name}"); }
+                    catch { Logger.WriteToConsole($"Failed to set trait {humanDetailsJSON.traitDefNames[i]} to human {humanDetailsJSON.name}", LogMode.Warning); }
                 }
             }
         }
@@ -559,7 +560,7 @@ namespace GameClient
                 pawn.apparel.DestroyAll();
                 pawn.apparel.DropAllOrMoveAllToInventory();
             }
-            catch { Logs.Warning($"Failed to destroy apparel in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to destroy apparel in human {humanDetailsJSON.name}", LogMode.Warning); }
 
             if (humanDetailsJSON.equippedApparel.Count() > 0)
             {
@@ -573,7 +574,7 @@ namespace GameClient
 
                         pawn.apparel.Wear(apparel);
                     }
-                    catch { Logs.Warning($"Failed to set apparel in human {humanDetailsJSON.name}"); }
+                    catch { Logger.WriteToConsole($"Failed to set apparel in human {humanDetailsJSON.name}", LogMode.Warning); }
                 }
             }
         }
@@ -581,7 +582,7 @@ namespace GameClient
         private static void SetPawnEquipment(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { pawn.equipment.DestroyAllEquipment(); }
-            catch { Logs.Warning($"Failed to destroy equipment in human {humanDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to destroy equipment in human {humanDetailsJSON.name}", LogMode.Warning); }
 
             if (humanDetailsJSON.equippedWeapon != null)
             {
@@ -590,7 +591,7 @@ namespace GameClient
                     ThingWithComps thing = (ThingWithComps)ThingScribeManager.StringToItem(humanDetailsJSON.equippedWeapon);
                     pawn.equipment.AddEquipment(thing);
                 }
-                catch { Logs.Warning($"Failed to set weapon in human {humanDetailsJSON.name}"); }
+                catch { Logger.WriteToConsole($"Failed to set weapon in human {humanDetailsJSON.name}", LogMode.Warning); }
             }
         }
 
@@ -605,7 +606,7 @@ namespace GameClient
                         Thing thing = ThingScribeManager.StringToItem(item);
                         pawn.inventory.TryAddAndUnforbid(thing);
                     }
-                    catch { Logs.Warning($"Failed to add thing to pawn {pawn.Label}"); }
+                    catch { Logger.WriteToConsole($"Failed to add thing to pawn {pawn.Label}", LogMode.Warning); }
                 }
             }
         }
@@ -619,14 +620,14 @@ namespace GameClient
                     pawn.Position = new IntVec3(int.Parse(humanDetailsJSON.position[0]), int.Parse(humanDetailsJSON.position[1]),
                         int.Parse(humanDetailsJSON.position[2]));
                 }
-                catch { Logs.Warning($"Failed to set position in human {pawn.Label}"); }
+                catch { Logger.WriteToConsole($"Failed to set position in human {pawn.Label}", LogMode.Warning); }
             }
         }
 
         private static void SetPawnRotation(Pawn pawn, HumanDetailsJSON humanDetailsJSON)
         {
             try { pawn.Rotation = new Rot4(humanDetailsJSON.rotation); }
-            catch { Logs.Warning($"Failed to set rotation in human {pawn.Label}"); }
+            catch { Logger.WriteToConsole($"Failed to set rotation in human {pawn.Label}", LogMode.Warning); }
         }
     }
 
@@ -704,13 +705,13 @@ namespace GameClient
                 animalDetailsJSON.chronologicalAge = animal.ageTracker.AgeChronologicalTicks.ToString();
                 animalDetailsJSON.gender = animal.gender.ToString();
             }
-            catch { Logs.Warning($"Failed to get biodetails of animal {animal.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get biodetails of animal {animal.def.defName}", LogMode.Warning); }
         }
 
         private static void GetAnimalKind(Pawn animal, AnimalDetailsJSON animalDetailsJSON)
         {
             try { animalDetailsJSON.kindDef = animal.kindDef.defName; }
-            catch { Logs.Warning($"Failed to get kind from human {animal.Label}"); }
+            catch { Logger.WriteToConsole($"Failed to get kind from human {animal.Label}", LogMode.Warning); }
         }
 
         private static void GetAnimalFaction(Pawn animal, AnimalDetailsJSON animalDetailsJSON)
@@ -718,7 +719,7 @@ namespace GameClient
             if (animal.Faction == null) return;
 
             try { animalDetailsJSON.factionDef = animal.Faction.def.defName; }
-            catch { Logs.Warning($"Failed to get faction from animal {animal.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get faction from animal {animal.def.defName}", LogMode.Warning); }
         }
 
         private static void GetAnimalHediffs(Pawn animal, AnimalDetailsJSON animalDetailsJSON)
@@ -737,7 +738,7 @@ namespace GameClient
                         animalDetailsJSON.hediffSeverity.Add(hd.Severity.ToString());
                         animalDetailsJSON.heddifPermanent.Add(hd.IsPermanent());
                     }
-                    catch { Logs.Warning($"Failed to get headdifs from animal {animal.def.defName}"); }
+                    catch { Logger.WriteToConsole($"Failed to get headdifs from animal {animal.def.defName}", LogMode.Warning); }
                 }
             }
         }
@@ -755,7 +756,7 @@ namespace GameClient
                     animalDetailsJSON.hasLearned.Add(animal.training.HasLearned(trainable));
                     animalDetailsJSON.isDisabled.Add(animal.training.GetWanted(trainable));
                 }
-                catch { Logs.Warning($"Failed to get skills of animal {animal.def.defName}"); }
+                catch { Logger.WriteToConsole($"Failed to get skills of animal {animal.def.defName}", LogMode.Warning); }
             }
         }
 
@@ -766,13 +767,13 @@ namespace GameClient
                 animalDetailsJSON.position = new string[] { animal.Position.x.ToString(),
                         animal.Position.y.ToString(), animal.Position.z.ToString() };
             }
-            catch { Logs.Warning($"Failed to get position of animal {animal.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get position of animal {animal.def.defName}", LogMode.Warning); }
         }
 
         private static void GetAnimalRotation(Pawn animal, AnimalDetailsJSON animalDetailsJSON)
         {
             try { animalDetailsJSON.rotation = animal.Rotation.AsInt; }
-            catch { Logs.Warning($"Failed to get rotation of animal {animal.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get rotation of animal {animal.def.defName}", LogMode.Warning); }
         }
 
         //Setters
@@ -780,7 +781,7 @@ namespace GameClient
         private static PawnKindDef SetAnimalKind(AnimalDetailsJSON animalDetailsJSON)
         {
             try { return DefDatabase<PawnKindDef>.AllDefs.First(fetch => fetch.defName == animalDetailsJSON.defName); }
-            catch { Logs.Warning($"Failed to set kind in animal {animalDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set kind in animal {animalDetailsJSON.name}", LogMode.Warning); }
 
             return null;
         }
@@ -790,7 +791,7 @@ namespace GameClient
             if (animalDetailsJSON.factionDef == null) return null;
 
             try { return Find.FactionManager.AllFactions.First(fetch => fetch.def.defName == animalDetailsJSON.factionDef); }
-            catch { Logs.Warning($"Failed to set faction in animal {animalDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set faction in animal {animalDetailsJSON.name}", LogMode.Warning); }
 
             return null;
         }
@@ -798,7 +799,7 @@ namespace GameClient
         private static Pawn SetAnimal(PawnKindDef kind, Faction faction, AnimalDetailsJSON animalDetailsJSON)
         {
             try { return PawnGenerator.GeneratePawn(kind, faction); }
-            catch { Logs.Warning($"Failed to set animal {animalDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set animal {animalDetailsJSON.name}", LogMode.Warning); }
 
             return null;
         }
@@ -814,7 +815,7 @@ namespace GameClient
                 Enum.TryParse(animalDetailsJSON.gender, true, out Gender animalGender);
                 animal.gender = animalGender;
             }
-            catch { Logs.Warning($"Failed to set biodetails of animal {animalDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set biodetails of animal {animalDetailsJSON.name}", LogMode.Warning); }
         }
 
         private static void SetAnimalHediffs(Pawn animal, AnimalDetailsJSON animalDetailsJSON)
@@ -824,7 +825,7 @@ namespace GameClient
                 animal.health.RemoveAllHediffs();
                 animal.health.Reset();
             }
-            catch { Logs.Warning($"Failed to remove heddifs of animal {animalDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to remove heddifs of animal {animalDetailsJSON.name}", LogMode.Warning); }
 
             if (animalDetailsJSON.hediffDefNames.Count() > 0)
             {
@@ -852,7 +853,7 @@ namespace GameClient
 
                         animal.health.AddHediff(hediff);
                     }
-                    catch { Logs.Warning($"Failed to set headiffs in animal {animalDetailsJSON.defName}"); }
+                    catch { Logger.WriteToConsole($"Failed to set headiffs in animal {animalDetailsJSON.defName}", LogMode.Warning); }
                 }
             }
         }
@@ -868,7 +869,7 @@ namespace GameClient
                         TrainableDef trainable = DefDatabase<TrainableDef>.AllDefs.ToList().Find(x => x.defName == animalDetailsJSON.trainableDefNames[i]);
                         if (animalDetailsJSON.canTrain[i]) animal.training.Train(trainable, null, complete: animalDetailsJSON.hasLearned[i]);
                     }
-                    catch { Logs.Warning($"Failed to set skills of animal {animalDetailsJSON.name}"); }
+                    catch { Logger.WriteToConsole($"Failed to set skills of animal {animalDetailsJSON.name}", LogMode.Warning); }
                 }
             }
         }
@@ -882,14 +883,14 @@ namespace GameClient
                     animal.Position = new IntVec3(int.Parse(animalDetailsJSON.position[0]), int.Parse(animalDetailsJSON.position[1]),
                         int.Parse(animalDetailsJSON.position[2]));
                 }
-                catch { Logs.Warning($"Failed to set position of animal {animalDetailsJSON.name}"); }
+                catch { Logger.WriteToConsole($"Failed to set position of animal {animalDetailsJSON.name}", LogMode.Warning); }
             }
         }
 
         private static void SetAnimalRotation(Pawn animal, AnimalDetailsJSON animalDetailsJSON)
         {
             try { animal.Rotation = new Rot4(animalDetailsJSON.rotation); }
-            catch { Logs.Warning($"Failed to set rotation of animal {animalDetailsJSON.name}"); }
+            catch { Logger.WriteToConsole($"Failed to set rotation of animal {animalDetailsJSON.name}", LogMode.Warning); }
         }
     }
 
@@ -962,7 +963,7 @@ namespace GameClient
         private static void GetItemName(Thing thing, ItemDetailsJSON itemDetailsJSON)
         {
             try { itemDetailsJSON.defName = thing.def.defName; }
-            catch { Logs.Warning($"Failed to get name of thing {thing.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get name of thing {thing.def.defName}", LogMode.Warning); }
         }
 
         private static void GetItemMaterial(Thing thing, ItemDetailsJSON itemDetailsJSON)
@@ -972,25 +973,25 @@ namespace GameClient
                 if (TransferManagerHelper.CheckIfThingHasMaterial(thing)) itemDetailsJSON.materialDefName = thing.Stuff.defName;
                 else itemDetailsJSON.materialDefName = null;
             }
-            catch { Logs.Warning($"Failed to get material of thing {thing.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get material of thing {thing.def.defName}", LogMode.Warning); }
         }
 
         private static void GetItemQuantity(Thing thing, ItemDetailsJSON itemDetailsJSON, int thingCount)
         {
             try { itemDetailsJSON.quantity = thingCount; }
-            catch { Logs.Warning($"Failed to get quantity of thing {thing.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get quantity of thing {thing.def.defName}", LogMode.Warning); }
         }
 
         private static void GetItemQuality(Thing thing, ItemDetailsJSON itemDetailsJSON)
         {
             try { itemDetailsJSON.quality = TransferManagerHelper.GetThingQuality(thing); }
-            catch { Logs.Warning($"Failed to get quality of thing {thing.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get quality of thing {thing.def.defName}", LogMode.Warning); }
         }
 
         private static void GetItemHitpoints(Thing thing, ItemDetailsJSON itemDetailsJSON)
         {
             try { itemDetailsJSON.hitpoints = thing.HitPoints; }
-            catch { Logs.Warning($"Failed to get hitpoints of thing {thing.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get hitpoints of thing {thing.def.defName}", LogMode.Warning); }
         }
 
         private static void GetItemPosition(Thing thing, ItemDetailsJSON itemDetailsJSON)
@@ -1000,13 +1001,13 @@ namespace GameClient
                 itemDetailsJSON.position = new string[] { thing.Position.x.ToString(),
                     thing.Position.y.ToString(), thing.Position.z.ToString() };
             }
-            catch { Logs.Warning($"Failed to get position of thing {thing.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get position of thing {thing.def.defName}", LogMode.Warning); }
         }
 
         private static void GetItemRotation(Thing thing, ItemDetailsJSON itemDetailsJSON)
         {
             try { itemDetailsJSON.rotation = thing.Rotation.AsInt; }
-            catch { Logs.Warning($"Failed to get rotation of thing {thing.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get rotation of thing {thing.def.defName}", LogMode.Warning); }
         }
 
         private static bool GetItemMinified(Thing thing, ItemDetailsJSON itemDetailsJSON)
@@ -1016,7 +1017,7 @@ namespace GameClient
                 itemDetailsJSON.isMinified = TransferManagerHelper.CheckIfThingIsMinified(thing);
                 return itemDetailsJSON.isMinified;
             }
-            catch { Logs.Warning($"Failed to get minified of thing {thing.def.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to get minified of thing {thing.def.defName}", LogMode.Warning); }
 
             return false;
         }
@@ -1031,7 +1032,7 @@ namespace GameClient
                 ThingDef defMaterial = DefDatabase<ThingDef>.AllDefs.ToList().Find(x => x.defName == itemDetailsJSON.materialDefName);
                 return ThingMaker.MakeThing(thingDef, defMaterial);
             }
-            catch { Logs.Warning($"Failed to set item for {itemDetailsJSON.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to set item for {itemDetailsJSON.defName}", LogMode.Warning); }
 
             return null;
         }
@@ -1039,7 +1040,7 @@ namespace GameClient
         private static void SetItemQuantity(Thing thing, ItemDetailsJSON itemDetailsJSON)
         {
             try { thing.stackCount = itemDetailsJSON.quantity; }
-            catch { Logs.Warning($"Failed to set item quantity for {itemDetailsJSON.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to set item quantity for {itemDetailsJSON.defName}", LogMode.Warning); }
         }
 
         private static void SetItemQuality(Thing thing, ItemDetailsJSON itemDetailsJSON)
@@ -1055,14 +1056,14 @@ namespace GameClient
                         compQuality.SetQuality(iCategory, ArtGenerationContext.Outsider);
                     }
                 }
-                catch { Logs.Warning($"Failed to set item quality for {itemDetailsJSON.defName}"); }
+                catch { Logger.WriteToConsole($"Failed to set item quality for {itemDetailsJSON.defName}", LogMode.Warning); }
             }
         }
 
         private static void SetItemHitpoints(Thing thing, ItemDetailsJSON itemDetailsJSON)
         {
             try { thing.HitPoints = itemDetailsJSON.hitpoints; }
-            catch { Logs.Warning($"Failed to set item hitpoints for {itemDetailsJSON.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to set item hitpoints for {itemDetailsJSON.defName}", LogMode.Warning); }
         }
 
         private static void SetItemPosition(Thing thing, ItemDetailsJSON itemDetailsJSON)
@@ -1074,14 +1075,14 @@ namespace GameClient
                     thing.Position = new IntVec3(int.Parse(itemDetailsJSON.position[0]), int.Parse(itemDetailsJSON.position[1]),
                         int.Parse(itemDetailsJSON.position[2]));
                 }
-                catch { Logs.Warning($"Failed to set position for item {itemDetailsJSON.defName}"); }
+                catch { Logger.WriteToConsole($"Failed to set position for item {itemDetailsJSON.defName}", LogMode.Warning); }
             }
         }
 
         private static void SetItemRotation(Thing thing, ItemDetailsJSON itemDetailsJSON)
         {
             try { thing.Rotation = new Rot4(itemDetailsJSON.rotation); }
-            catch { Logs.Warning($"Failed to set rotation for item {itemDetailsJSON.defName}"); }
+            catch { Logger.WriteToConsole($"Failed to set rotation for item {itemDetailsJSON.defName}", LogMode.Warning); }
         }
 
         private static void SetItemMinified(Thing thing, ItemDetailsJSON itemDetailsJSON)
@@ -1249,7 +1250,7 @@ namespace GameClient
             foreach (Thing thing in thingsToGetInThisTile)
             {
                 try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation); }
-                catch { Logs.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
+                catch { Logger.WriteToConsole($"Failed to place thing {thing.def.defName} at {thing.Position}", LogMode.Warning); }
             }
         }
 
@@ -1262,7 +1263,7 @@ namespace GameClient
                     Pawn human = HumanScribeManager.StringToHuman(pawn);
                     GenSpawn.Spawn(human, human.Position, map, human.Rotation);
                 }
-                catch { Logs.Warning($"Failed to spawn human {pawn.name}"); }
+                catch { Logger.WriteToConsole($"Failed to spawn human {pawn.name}", LogMode.Warning); }
             }
 
             foreach (HumanDetailsJSON pawn in mapDetailsJSON.factionHumans)
@@ -1274,7 +1275,7 @@ namespace GameClient
 
                     GenSpawn.Spawn(human, human.Position, map, human.Rotation);
                 }
-                catch { Logs.Warning($"Failed to spawn human {pawn.name}"); }
+                catch { Logger.WriteToConsole($"Failed to spawn human {pawn.name}", LogMode.Warning); }
             }
         }
 
@@ -1287,7 +1288,7 @@ namespace GameClient
                     Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
                     GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
                 }
-                catch { Logs.Warning($"Failed to spawn animal {pawn.name}"); }
+                catch { Logger.WriteToConsole($"Failed to spawn animal {pawn.name}", LogMode.Warning); }
             }
 
             foreach (AnimalDetailsJSON pawn in mapDetailsJSON.factionAnimals)
@@ -1299,7 +1300,7 @@ namespace GameClient
 
                     GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
                 }
-                catch { Logs.Warning($"Failed to spawn animal {pawn.name}"); }
+                catch { Logger.WriteToConsole($"Failed to spawn animal {pawn.name}", LogMode.Warning); }
             }
         }
 
@@ -1321,7 +1322,7 @@ namespace GameClient
                         map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
 
                     }
-                    catch { Logs.Warning($"Failed to set terrain at {vectorToCheck}"); }
+                    catch { Logger.WriteToConsole($"Failed to set terrain at {vectorToCheck}", LogMode.Warning); }
 
                     try
                     {
@@ -1330,7 +1331,7 @@ namespace GameClient
 
                         map.roofGrid.SetRoof(vectorToCheck, roofToUse);
                     }
-                    catch { Logs.Warning($"Failed to set roof at {vectorToCheck}"); }
+                    catch { Logger.WriteToConsole($"Failed to set roof at {vectorToCheck}", LogMode.Warning); }
 
                     index++;
                 }

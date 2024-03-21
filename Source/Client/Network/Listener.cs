@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -92,9 +93,7 @@ namespace GameClient
 
             catch (Exception e)
             {
-
-                Logs.Message("[Rimworld Together] > closing connection due to exception ",true);
-                Logs.Warning($"[Rimworld Together] > {e}",true);
+                Logger.WriteToConsole($"Closing connection due to exception: {e}", LogMode.Warning);
                 disconnectFlag = true;
             }
         }
@@ -113,17 +112,10 @@ namespace GameClient
                 }
             }
             catch { }
-            //TODO - clean this up an write more informational logs reguarding how the server-client disconnect happened
-            try
-            {
-                if (disconnectFlag) Logs.Message("[Rimworld Together] > disconnect flag true, closing connection");
-                Thread.Sleep(1000);
-                Master.threadDispatcher.Enqueue(Network.DisconnectFromServer);
-            }
-            catch(Exception e)
-            {
-                Logs.Error($"[Rimworld Together] > {e}");
-            }
+
+            Thread.Sleep(1000);
+
+            Master.threadDispatcher.Enqueue(Network.DisconnectFromServer);
         }
 
         //Runs in a separate thread and sends alive pings towards the server
@@ -148,7 +140,6 @@ namespace GameClient
 
         public void DestroyConnection()
         {
-            Logs.Message("[Rimworld Together] > Destroying connection");
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();

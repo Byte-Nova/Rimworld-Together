@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -64,7 +65,7 @@ namespace GameClient
 
             catch 
             { 
-                Logs.Warning("Server didn't have event prices set, defaulting to 0");
+                Logger.WriteToConsole("Server didn't have event prices set, defaulting to 0", LogMode.Warning);
 
                 eventCosts = new int[9]
                 {

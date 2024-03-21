@@ -178,7 +178,6 @@ namespace GameServer
 
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
-            Logger.WriteToConsole("in sending login response");
             JoinDetailsJSON loginDetailsJSON = new JoinDetailsJSON();
             loginDetailsJSON.tryResponse = ((int)response).ToString();
 
@@ -187,7 +186,7 @@ namespace GameServer
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginDetailsJSON);
             client.listener.EnqueuePacket(packet);
-            client.listener.disconnectFlag = false;
+            client.listener.disconnectFlag = true;
         }
 
         public static bool CheckWhitelist(ServerClient client)
@@ -207,12 +206,10 @@ namespace GameServer
 
         public static bool CheckIfUserUpdated(ServerClient client, JoinDetailsJSON loginDetails)
         {
-            Logger.WriteToConsole($"Server is running verion {CommonValues.executableVersion}");
-            Logger.WriteToConsole($"Client is running version {loginDetails.clientVersion}");
             if (loginDetails.clientVersion == CommonValues.executableVersion) return true;
             else
             {
-                Logger.WriteToConsole($"[Version Mismatch] > {client.username}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Version Mismatch] > {client.username}", LogMode.Warning);
                 SendLoginResponse(client, LoginResponse.WrongVersion);
                 return false;
             }

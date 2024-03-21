@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Globalization;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -110,14 +111,14 @@ namespace GameServer
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
 
-            Logger.WriteToConsole($"Loading server culture > [{CultureInfo.CurrentCulture}]", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Loading server culture > [{CultureInfo.CurrentCulture}]", LogMode.Title);
         }
 
         public static void LoadResources()
         {
-            Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", Logger.LogMode.Title);
-            Logger.WriteToConsole($"Loading all necessary resources", Logger.LogMode.Title);
-            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", LogMode.Title);
+            Logger.WriteToConsole($"Loading all necessary resources", LogMode.Title);
+            Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
 
             LoadSiteValues();
             LoadEventValues();
@@ -129,7 +130,7 @@ namespace GameServer
             WhitelistManager.LoadServerWhitelist();
             CustomDifficultyManager.LoadCustomDifficulty();
 
-            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
+            Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
         }
 
         private static void LoadServerConfig()
@@ -143,7 +144,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverConfig);
             }
 
-            Logger.WriteToConsole("Loaded server configs", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded server configs", LogMode.Warning);
         }
 
         private static void LoadServerValues()
@@ -157,7 +158,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverValues);
             }
 
-            Logger.WriteToConsole("Loaded server values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded server values", LogMode.Warning);
         }
 
         private static void LoadEventValues()
@@ -171,7 +172,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, eventValues);
             }
 
-            Logger.WriteToConsole("Loaded event values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded event values", LogMode.Warning);
         }
 
         private static void LoadSiteValues()
@@ -185,7 +186,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, siteValues);
             }
 
-            Logger.WriteToConsole("Loaded site values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded site values", LogMode.Warning);
         }
 
         private static void LoadActionValues()
@@ -199,7 +200,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, actionValues);
             }
 
-            Logger.WriteToConsole("Loaded action values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded action values", LogMode.Warning);
         }
 
         public static void ChangeTitle()

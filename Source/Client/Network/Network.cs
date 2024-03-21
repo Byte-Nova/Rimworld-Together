@@ -1,4 +1,5 @@
 ﻿using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -30,7 +31,7 @@ namespace GameClient
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                Logs.Message($"[Rimworld Together] > Connected to server");
+                Logger.WriteToConsole("Connected to server", LogMode.Message);
             }
 
             else
@@ -71,7 +72,7 @@ namespace GameClient
         {
             listener.DestroyConnection();
 
-            Logs.Message($"[Rimworld Together] > Disconnected from server");
+            Logger.WriteToConsole("Disconnected from server", LogMode.Message);
 
             if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
             else

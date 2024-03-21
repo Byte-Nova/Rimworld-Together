@@ -4,6 +4,7 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -139,26 +140,27 @@ namespace GameClient
 
         public virtual void SubstituteInputs(List<object> newInputs)
         {
-
-            //exception handling
+            //Exception handling
             if (newInputs.Count < 2)
             {
-                Logs.Error("[RimWorld Together] > ERROR: newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made");
+                Logger.WriteToConsole("newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made", LogMode.Error);
                 return;
             }
+
             else if (newInputs.Count > 2)
             {
-                Logs.Warning("[RimWorld Together] > WARNING: newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used ");
+                Logger.WriteToConsole("newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used", LogMode.Warning);
             }
 
-            //for each value in inputResultList, set it to the corrosponding value in newInputs
+            //For each value in inputResultList, set it to the corrosponding value in newInputs
             for (int index = 0; index < inputResultList.Count; index++)
             {
                 if (inputResultList[index].GetType() != newInputs[index].GetType())
                 {
-                    Logs.Error($"[RimWorld Together] > ERROR: newInputs in RT_Dialog_2Inputs.SubstituteInputs contained non-matching types at index {index}, No changes will be made");
+                    Logger.WriteToConsole("newInputs in RT_Dialog_2Inputs.SubstituteInputs contained non-matching types at index {index}, No changes will be made", LogMode.Error);
                     return;
                 }
+
                 inputResultList[index] = (int)newInputs[index];
             }
         }

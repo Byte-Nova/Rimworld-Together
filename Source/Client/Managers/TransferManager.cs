@@ -118,7 +118,7 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for transfer response"));
 
-            Logs.Message($"[Rimworld Together] > {ClientValues.outgoingManifest.itemDetailsJSONS.Count()} Being transfered");
+            Logger.WriteToConsole($"{ClientValues.outgoingManifest.itemDetailsJSONS.Count()} Being transfered", LogMode.Message);
 
             if (transferLocation == TransferLocation.Caravan)
             {
@@ -171,7 +171,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Logger.WriteToConsole("Rethrowing transfer items, might be Rimworld's fault", LogMode.Warning);
 
                 Thread.Sleep(100);
 
@@ -308,7 +308,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Logger.WriteToConsole("Rethrowing transfer items, might be Rimworld's fault", LogMode.Warning);
 
                 Thread.Sleep(100);
 
@@ -330,7 +330,7 @@ namespace GameClient
 
             catch
             {
-                Logs.Warning("Rethrowing transfer items, might be Rimworld's fault");
+                Logger.WriteToConsole("Rethrowing transfer items, might be Rimworld's fault", LogMode.Warning);
 
                 Thread.Sleep(100);
 

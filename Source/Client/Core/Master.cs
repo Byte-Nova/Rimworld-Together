@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using Verse;
 using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -60,7 +61,7 @@ namespace GameClient
                 threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
                 Object.Instantiate(go);
 
-                Logs.Message($"[Rimworld Together] > Created dispatcher for version {CommonValues.executableVersion}");
+                Logger.WriteToConsole($"Created dispatcher for version {CommonValues.executableVersion}", LogMode.Message);
             }
         }
     }
