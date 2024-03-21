@@ -78,7 +78,7 @@ namespace GameClient
             else
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
-                    delegate { DialogManager.clearStack(); DisconnectionManager.DisconnectToMenu(); }));
+                    delegate { DialogManager.PopDialog(); DisconnectionManager.DisconnectToMenu(); }));
             }
         }
 
