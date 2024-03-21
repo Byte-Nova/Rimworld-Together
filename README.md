@@ -6,6 +6,8 @@ Welcome to the Github repository for "Rimworld Together"! In here you will find 
 
 > [!NOTE]
 > Wiki: https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki
+>
+> Trello: https://trello.com/b/Y5J3IeSX/rimworld-together
 > 
 > Discord: https://discord.gg/NCsArSaqBW
 >
