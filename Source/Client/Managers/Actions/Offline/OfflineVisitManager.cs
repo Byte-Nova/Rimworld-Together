@@ -51,7 +51,7 @@ namespace GameClient
         {
             DialogManager.clearStack();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player must not be connected!"));
         }
 
         //Executes when offline visit is accepted
@@ -95,7 +95,7 @@ namespace GameClient
             //Switch to the Map mode and focus on the caravan
             CameraJumper.TryJump(pawnToFocus);
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[]
             {
                 "You are now in offline visit mode!",
                 "This mode allows you to visit an offline player!",

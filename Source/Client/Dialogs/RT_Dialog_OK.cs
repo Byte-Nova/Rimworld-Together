@@ -18,8 +18,9 @@ namespace GameClient
 
         private Action actionOK;
 
-        public RT_Dialog_OK(string description, Action actionOK = null)
+        public RT_Dialog_OK(string title, string description, Action actionOK = null)
         {
+            this.title = title;
             this.description = description;
             this.actionOK = actionOK;
             forcePause = true;

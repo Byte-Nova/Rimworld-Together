@@ -11,7 +11,7 @@ namespace GameClient
         public static void ShowRegisteredDialog()
         {
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You have been successfully registered!",
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE",new string[] { "You have been successfully registered!",
                 "You are now able to login using your new account"},
                 delegate{
                     DialogManager.clearStack();
@@ -60,7 +60,7 @@ namespace GameClient
 
         public static void ShowWorldGenerationDialogs()
         {
-            RT_Dialog_OK d3 = new RT_Dialog_OK("This feature is not implemented yet!",
+            RT_Dialog_OK d3 = new RT_Dialog_OK("MESSAGE", "This feature is not implemented yet!",
                 DialogManager.PopDialog);
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
@@ -71,7 +71,7 @@ namespace GameClient
                     Network.listener.disconnectFlag = true;
                 });
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "Welcome to the world view!",
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[] { "Welcome to the world view!",
                         "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },
                 delegate { DialogManager.PushNewDialog(d2); });
 
@@ -151,7 +151,7 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!");
+                RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Server details are invalid! Please try again!");
                 DialogManager.PushNewDialog(d1);
             }
         }
@@ -182,7 +182,7 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Login details are invalid! Please try again!",
+                RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Login details are invalid! Please try again!",
                     DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
@@ -214,7 +214,7 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Register details are invalid! Please try again!",
+                RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Register details are invalid! Please try again!",
                     DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);

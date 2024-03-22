@@ -38,7 +38,7 @@ namespace GameClient
             {
                 DialogManager.PopDialog();
 
-                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
+                RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "The server did not respond in time");
                 DialogManager.PushNewDialog(d1);
 
                 CleanValues();
@@ -77,7 +77,7 @@ namespace GameClient
             if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
             else
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
+                DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Connection to the server has been lost!",
                     delegate { DialogManager.PopDialog(); DisconnectionManager.DisconnectToMenu(); }));
             }
         }

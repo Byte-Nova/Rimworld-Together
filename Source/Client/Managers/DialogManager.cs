@@ -9,6 +9,7 @@ namespace GameClient
 {
     public static class DialogManager
     {
+        public static float test;
         //      inputCache
         // Any time a dialog that has inputs is left (it is popped from the stack or a new dialog is pushed)
         // ,it will save its own list of inputs to inputCache

@@ -56,7 +56,7 @@ namespace GameClient
 
         public static void RequestVisit()
         {
-            if (ClientValues.isInVisit) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already visiting someone!"));
+            if (ClientValues.isInVisit) DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You are already visiting someone!"));
             else
             {
                 Action r1 = delegate
@@ -111,7 +111,7 @@ namespace GameClient
             CameraJumper.TryJump(pawnToFocus);
 
             Threader.GenerateThread(Threader.Mode.Visit);
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[]
             {
                 "You are now in online visit mode!",
                 "Visit mode allows you to visit another player's base",
@@ -175,21 +175,21 @@ namespace GameClient
                         };
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Map received but contains unknown mod data", r1));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_OK("Map received", r1));
+            else DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Map received", r1));
         }
 
         private static void OnVisitReject()
         {
             DialogManager.clearStack();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player rejected the visit!"));
         }
 
         private static void OnVisitUnavailable()
         {
             DialogManager.clearStack();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player must be online!"));
         }
 
         private static void OnVisitStop()
@@ -197,7 +197,7 @@ namespace GameClient
             if (!ClientValues.isInVisit) return;
             else
             {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Visiting event ended"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Visiting event ended"));
 
                 foreach (Pawn pawn in otherPlayerPawns.ToArray()) pawn.Destroy();
 

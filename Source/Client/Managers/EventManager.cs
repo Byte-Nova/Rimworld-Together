@@ -88,7 +88,7 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(eventCosts[(int)DialogManager.inputCache[0]]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!",DialogManager.clearStack));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You do not have enough silver!",DialogManager.clearStack));
             }
 
             else
@@ -272,9 +272,9 @@ namespace GameClient
             silverToReturn.stackCount = eventCosts[(int)DialogManager.inputCache[0]];
             TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!",
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player is not currently available!",
             delegate { 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered", DialogManager.clearStack)); 
+            DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Spent silver has been recovered", DialogManager.clearStack)); 
             }));
         }
     }
