@@ -4,7 +4,7 @@ namespace GameServer
 {
     public static class XmlParser
     {
-        public static string[] ParseDataFromXML(string xmlPath, string elementName)
+        public static string[] ChildContentFromParent(string xmlPath, string elementName, string parentElement)
         {
             List<string> result = new List<string>();
 
@@ -13,9 +13,14 @@ namespace GameServer
                 XmlReader reader = XmlReader.Create(xmlPath);
                 while (reader.Read())
                 {
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name == elementName)
+                    if (reader.Name == parentElement) 
                     {
-                        result.Add(reader.ReadElementContentAsString());
+                        reader.Read();
+                        reader.ReadToNextSibling(elementName);
+                        if (reader.NodeType == XmlNodeType.Element && reader.Name == elementName)
+                        {
+                            result.Add(reader.ReadElementContentAsString());
+                        }
                     }
                 }
 
@@ -23,7 +28,7 @@ namespace GameServer
 
                 return result.ToArray();
             }
-            catch(Exception e) { Logger.WriteToConsole($"[Error] > Failed to parse mod at '{xmlPath}'. Exception: {e}", Logger.LogMode.Error); }
+            catch (Exception e) { Logger.WriteToConsole($"[Error] > Failed to parse mod at '{xmlPath}'. Exception: {e}", Logger.LogMode.Error); }
 
             return result.ToArray();
         }

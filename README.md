@@ -5,7 +5,11 @@
 Welcome to the Github repository for "Rimworld Together"! In here you will find everything related to the server management part of the mod, great place for the tech savvies!
 
 > [!NOTE]
+> Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=3005289691
+>
 > Wiki: https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki
+>
+> Trello: https://trello.com/b/Y5J3IeSX/rimworld-together
 > 
 > Discord: https://discord.gg/NCsArSaqBW
 >
