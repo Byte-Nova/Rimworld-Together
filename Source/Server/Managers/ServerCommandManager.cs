@@ -471,6 +471,7 @@
 
         private static void DoSiteRewardsCommandAction()
         {
+            Logger.WriteToConsole($"Forced site rewards", Logger.LogMode.Title);
             SiteManager.SiteRewardTick();
         }
 
