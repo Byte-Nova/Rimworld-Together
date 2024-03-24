@@ -266,7 +266,7 @@ namespace GameServer
             }
         }
 
-        private static void SiteRewardTick()
+        public static void SiteRewardTick()
         {
             SiteFile[] sites = GetAllSites();
 
@@ -297,6 +297,7 @@ namespace GameServer
 
                 if (siteDetailsJSON.sitesWithRewards.Count() > 0)
                 {
+                    Logger.WriteToConsole($"[site tick] > Sent rewards to {client.username}");
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
                     client.listener.EnqueuePacket(packet);
                 }
