@@ -103,7 +103,7 @@ namespace GameClient
             {
                 if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0]) || ((string)DialogManager.inputCache[0]).Length > 32)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Faction name is invalid! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Faction name is invalid! Please try again!"));
                 }
 
                 else
@@ -217,7 +217,7 @@ namespace GameClient
             };
 
             DialogManager.clearStack();
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(messages);
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", messages);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -226,19 +226,19 @@ namespace GameClient
             ServerValues.hasFaction = false;
 
             if (!ClientValues.isInTransfer) DialogManager.clearStack();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Your faction has been deleted!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Your faction has been deleted!"));
         }
 
         private static void OnFactionNameInUse()
         {
             DialogManager.clearStack();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("That faction name is already in use!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "That faction name is already in use!"));
         }
 
         private static void OnFactionNoPower()
         {
             DialogManager.clearStack();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("You don't have enough power for this action!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You don't have enough power for this action!"));
         }
 
         private static void OnFactionGetInvited(FactionManifestJSON factionManifest)
@@ -262,12 +262,12 @@ namespace GameClient
         {
             ServerValues.hasFaction = false;
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("You have been kicked from your faction!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "You have been kicked from your faction!"));
         }
 
         private static void OnFactionAdminProtection()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Error("You can't do this action as a faction admin!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You can't do this action as a faction admin!"));
         }
 
         private static void OnFactionMemberList(FactionManifestJSON factionManifest)

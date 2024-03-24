@@ -31,14 +31,14 @@ namespace GameClient
                 //Caravan's trade is accepted
                 case (int)TransferStepMode.TradeAccept:
                     DialogManager.PopDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!",DialogManager.clearStack));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Transfer was a success!",DialogManager.clearStack));
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
                 case (int)TransferStepMode.TradeReject:
                     DialogManager.PopDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
@@ -54,13 +54,13 @@ namespace GameClient
 
                 case (int)TransferStepMode.TradeReReject:
                     DialogManager.PopDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
                 case (int)TransferStepMode.Recover:
                     DialogManager.PopDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player is not currently available!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
             }
@@ -203,8 +203,8 @@ namespace GameClient
 
             if (invokeMessage)
             {
-                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!", r1));
-                else DialogManager.PushNewDialog(new RT_Dialog_Error("Transfer was cancelled!", r1));
+                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Transfer was a success!", r1));
+                else DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Transfer was cancelled!", r1));
             }
             else r1.Invoke();
         }
@@ -236,8 +236,8 @@ namespace GameClient
 
             if (invokeMessage)
             {
-                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!", r1));
-                else DialogManager.PushNewDialog(new RT_Dialog_Error("Transfer was cancelled!", r1));
+                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Transfer was a success!", r1));
+                else DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Transfer was cancelled!", r1));
             }
             else r1.Invoke();
         }
@@ -291,17 +291,17 @@ namespace GameClient
 
                     if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Gift)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "You are receiving a gift request", r1));
                     }
 
                     else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Trade)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a trade request", r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "You are receiving a trade request", r1));
                     }
 
                     else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "You are receiving a gift request", r1));
                     }
                 }
             }
@@ -474,7 +474,7 @@ namespace GameClient
             if (tradingSpot != null) return tradingSpot.Position;
             else
             {
-                RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are missing a transfer spot!",
+                RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[] { "You are missing a transfer spot!",
                     "Received items will appear in the center of the map",
                     "Build a trading spot to change the drop location!"});
 

@@ -54,7 +54,7 @@ namespace GameClient
             if (DifficultyValues.UseCustomDifficulty)
             {
                 __instance.Close();
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Difficulty can't be changed in this server!"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Difficulty can't be changed in this server!"));
                 return false;
             }
 
@@ -68,7 +68,7 @@ namespace GameClient
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty"))
                     {
                         CustomDifficultyManager.SendCustomDifficulty();
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Custom difficulty has been sent!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Custom difficulty has been sent!"));
                     }
                 }
 

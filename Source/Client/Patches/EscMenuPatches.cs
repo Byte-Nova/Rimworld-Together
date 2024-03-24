@@ -52,7 +52,7 @@ namespace GameClient
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), ""))
                 {
-                    if (!Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
+                    if (!Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You need to be in a server to use this!"));
                     else
                     {
                         Find.MainTabsRoot.EscapeCurrentTab(playSound: false);

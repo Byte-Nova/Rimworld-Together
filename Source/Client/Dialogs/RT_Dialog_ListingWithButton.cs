@@ -141,28 +141,12 @@ namespace GameClient
         public virtual void SubstituteInputs(List<object> newInputs)
         {
             //Exception handling
-            if (newInputs.Count < 2)
+            if (newInputs.Count != 1)
             {
-                Logger.WriteToConsole("newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made", LogMode.Error);
+                Logger.WriteToConsole("newInputs in SubstituteInputs at RT_Dialog_1Input has wrong number of elements; No changes will be made", LogMode.Error);
                 return;
             }
-
-            else if (newInputs.Count > 2)
-            {
-                Logger.WriteToConsole("newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used", LogMode.Warning);
-            }
-
-            //For each value in inputResultList, set it to the corrosponding value in newInputs
-            for (int index = 0; index < inputResultList.Count; index++)
-            {
-                if (inputResultList[index].GetType() != newInputs[index].GetType())
-                {
-                    Logger.WriteToConsole("newInputs in RT_Dialog_2Inputs.SubstituteInputs contained non-matching types at index {index}, No changes will be made", LogMode.Error);
-                    return;
-                }
-
-                inputResultList[index] = (int)newInputs[index];
-            }
+            SelectedButton = (int)newInputs[0];
         }
     }
 }

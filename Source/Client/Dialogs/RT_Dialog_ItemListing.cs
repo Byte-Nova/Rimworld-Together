@@ -135,7 +135,7 @@ namespace GameClient
 
                     else
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You do not have any pawn capable of trading!"));
                         TransferManager.RejectRequest(transferMode);
                     }
                 }

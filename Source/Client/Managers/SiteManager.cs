@@ -138,7 +138,7 @@ namespace GameClient
         private static void OnSiteAccept()
         {
             DialogManager.PopDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!", DialogManager.clearStack));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "The desired site has been built!", DialogManager.clearStack));
 
             SaveManager.ForceSave();
         }
@@ -201,7 +201,7 @@ namespace GameClient
                 SaveManager.ForceSave();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Worker have been recovered", r1));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Worker have been recovered", r1));
         }
 
         private static void PrepareSendPawnScreen()
@@ -269,7 +269,7 @@ namespace GameClient
 
         private static void OnWorkerError()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Error("The site has a worker inside!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "The site has a worker inside!"));
         }
 
         private static void ReceiveSitesRewards(SiteDetailsJSON siteDetailsJSON)
@@ -368,7 +368,7 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputReserve[0]]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!", DialogManager.clearStack));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You do not have enough silver!", DialogManager.clearStack));
             }
             else
             {
@@ -439,7 +439,7 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[(int)DialogManager.inputReserve[0]]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You do not have enough silver!"));
             }
 
             else

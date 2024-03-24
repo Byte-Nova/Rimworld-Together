@@ -68,7 +68,7 @@ namespace GameClient
         {
             DialogManager.PopDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player must not be connected!"));
         }
 
         //Prepares a map for the raid order from a request
@@ -89,7 +89,7 @@ namespace GameClient
             //Switch to the Map mode and focus on the caravan
             CameraJumper.TryJump(pawnToFocus);
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[]
             {
                 "You are now in raid mode!",
                 "Raid mode allows you to raid player settlements",

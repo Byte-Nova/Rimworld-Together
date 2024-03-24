@@ -258,7 +258,7 @@ namespace GameClient
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You do not have any pawn capable of trading!"));
                     }
                 };
 

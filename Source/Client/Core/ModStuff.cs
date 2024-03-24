@@ -103,7 +103,7 @@ namespace GameClient
                     byte[] compressedBytes = GZip.Compress(File.ReadAllBytes(toConvertPath));
                     File.WriteAllBytes(conversionPath, compressedBytes);
 
-                    RT_Dialog_OK d2 = new RT_Dialog_OK("Save was converted successfully");
+                    RT_Dialog_OK d2 = new RT_Dialog_OK("MESSAGE", "Save was converted successfully");
                     DialogManager.PushNewDialog(d2);
                 });
 
@@ -153,7 +153,7 @@ namespace GameClient
 
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
 
-                DialogManager.PushNewDialog(new RT_Dialog_OK("World file was saved correctly!"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "World file was saved correctly!"));
             }
         }
 
