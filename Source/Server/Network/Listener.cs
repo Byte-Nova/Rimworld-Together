@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Net.Sockets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -90,7 +91,7 @@ namespace GameServer
 
             catch (Exception e)
             {
-                if (Master.serverConfig.verboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
+                if (Master.serverConfig.verboseLogs) Logger.WriteToConsole(e.ToString(), LogMode.Warning);
 
                 disconnectFlag = true;
             }

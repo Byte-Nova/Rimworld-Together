@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -45,7 +46,7 @@ namespace GameServer
                     }
                 }
 
-                Logger.WriteToConsole($"[Added settlement] > {settlementFile.tile} > {client.username}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Added settlement] > {settlementFile.tile} > {client.username}", LogMode.Warning);
             }
         }
 
@@ -70,7 +71,7 @@ namespace GameServer
                         else cClient.listener.EnqueuePacket(rPacket);
                     }
 
-                    Logger.WriteToConsole($"[Remove settlement] > {settlementDetailsJSON.tile} > {client.username}", Logger.LogMode.Warning);
+                    Logger.WriteToConsole($"[Remove settlement] > {settlementDetailsJSON.tile} > {client.username}", LogMode.Warning);
                 }
             }
 
@@ -78,7 +79,7 @@ namespace GameServer
             {
                 File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
 
-                Logger.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", LogMode.Warning);
             }
         }
 

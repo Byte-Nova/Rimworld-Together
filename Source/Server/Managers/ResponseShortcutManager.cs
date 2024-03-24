@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -12,8 +13,8 @@ namespace GameServer
 
             if (shouldBroadcast) 
             { 
-                Logger.WriteToConsole($"[Illegal action] > {client.username} > {client.SavedIP}", Logger.LogMode.Warning);
-                Logger.WriteToConsole($"[Illegal reason] > {message}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Illegal action] > {client.username} > {client.SavedIP}", LogMode.Warning);
+                Logger.WriteToConsole($"[Illegal reason] > {message}", LogMode.Warning);
             }
         }
 

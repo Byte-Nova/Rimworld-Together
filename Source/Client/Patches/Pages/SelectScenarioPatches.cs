@@ -48,7 +48,7 @@ namespace GameClient
                 if (!Network.isConnectedToServer) return true;
                 if (ServerValues.AllowCustomScenarios) return true;
 
-                DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "This server doesn't allow custom scenarios!"));
                 return false;
             }
         }

@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -18,10 +19,10 @@ namespace GameServer
                         if (!Master.loadedRequiredMods.Contains(str.ToLower())) Master.loadedRequiredMods.Add(str.ToLower());
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", Logger.LogMode.Error); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
-            Logger.WriteToConsole($"Loaded required mods [{Master.loadedRequiredMods.Count()}]", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"Loaded required mods [{Master.loadedRequiredMods.Count()}]", LogMode.Warning);
 
             Master.loadedOptionalMods.Clear();
             string[] optionalModsToLoad = Directory.GetDirectories(Master.optionalModsPath);
@@ -38,10 +39,10 @@ namespace GameServer
                         }
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", Logger.LogMode.Error); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
-            Logger.WriteToConsole($"Loaded optional mods [{Master.loadedOptionalMods.Count()}]", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"Loaded optional mods [{Master.loadedOptionalMods.Count()}]", LogMode.Warning);
 
             Master.loadedForbiddenMods.Clear();
             string[] forbiddenModsToLoad = Directory.GetDirectories(Master.forbiddenModsPath);
@@ -58,10 +59,10 @@ namespace GameServer
                         }
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", Logger.LogMode.Error); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
-            Logger.WriteToConsole($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]", LogMode.Warning);
         }
 
         public static bool CheckIfModConflict(ServerClient client, JoinDetailsJSON loginDetailsJSON)
@@ -116,14 +117,14 @@ namespace GameServer
             {
                 if (client.isAdmin)
                 {
-                    Logger.WriteToConsole($"[Mod bypass] > {client.username}", Logger.LogMode.Warning);
+                    Logger.WriteToConsole($"[Mod bypass] > {client.username}", LogMode.Warning);
                     client.runningMods = loginDetailsJSON.runningMods;
                     return false;
                 }
 
                 else
                 {
-                    Logger.WriteToConsole($"[Mod Mismatch] > {client.username}", Logger.LogMode.Warning);
+                    Logger.WriteToConsole($"[Mod Mismatch] > {client.username}", LogMode.Warning);
                     UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }

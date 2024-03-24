@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -122,7 +123,7 @@ namespace GameServer
                 string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == client.username);
                 if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
-                Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Delete save] > {client.username}", LogMode.Warning);
 
                 MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
                 foreach (MapFileJSON map in userMaps) MapManager.DeleteMap(map);
@@ -167,7 +168,7 @@ namespace GameServer
                 SettlementManager.RemoveSettlement(null, settlementDetailsJSON, false);
             }
 
-            Logger.WriteToConsole($"[Deleted player details] > {username}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Deleted player details] > {username}", LogMode.Warning);
         }
     }
 }

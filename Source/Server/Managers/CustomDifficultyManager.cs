@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -101,7 +102,7 @@ namespace GameServer
 
                 newDifficultyValues.WastepackInfestationChanceFactor = difficultyValuesJSON.WastepackInfestationChanceFactor;
 
-                Logger.WriteToConsole($"[Set difficulty] > {client.username}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Set difficulty] > {client.username}", LogMode.Warning);
 
                 SaveCustomDifficulty(newDifficultyValues);
             }
@@ -127,7 +128,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, Master.difficultyValues);
             }
 
-            Logger.WriteToConsole("Loaded difficulty values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded difficulty values", LogMode.Warning);
         }
     }
 }

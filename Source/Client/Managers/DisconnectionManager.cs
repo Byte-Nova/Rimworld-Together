@@ -16,7 +16,7 @@ namespace GameClient
             ServerValues.CleanValues();
             ClientValues.ToggleDisconnecting(false);
 
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             if (Current.ProgramState != ProgramState.Entry)
             {

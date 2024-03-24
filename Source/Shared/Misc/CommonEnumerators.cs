@@ -2,6 +2,12 @@
 {
     public class CommonEnumerators
     {
+        //Logger
+
+        public enum LogMode { Message, Warning, Error, Title }
+
+        //Searching
+
         public enum FetchMode { Host, Player }
 
         public enum SearchLocation { Caravan, Settlement }
