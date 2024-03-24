@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /App
 
 # Copy everything
-COPY . ./
+COPY Source Source
 
 # Restore as distinct layers
 RUN dotnet build Source/Server/GameServer.csproj --configuration Release
