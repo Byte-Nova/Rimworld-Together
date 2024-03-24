@@ -67,6 +67,7 @@ namespace GameClient
                 "Separate colony", "Together with other players (TBA)", DialogManager.clearStack, delegate { DialogManager.PushNewDialog(d3); },
                 delegate
                 {
+                    DialogManager.clearStack();
                     SceneManager.LoadScene(0);
                     Network.listener.disconnectFlag = true;
                 });
