@@ -266,7 +266,7 @@ namespace GameServer
             }
         }
 
-        private static void SiteRewardTick()
+        public static void SiteRewardTick()
         {
             SiteFile[] sites = GetAllSites();
 
