@@ -29,7 +29,7 @@ Then, just open the executable file for the first time to let it generate the co
 > [!CAUTION]
 > When placing the files of the server somewhere, be specially careful of the location to prevent any system/antivirus interventions. This is extra important in Linux operating systems
 
-### Container-based Deployment
+## Container-based Deployment
 
 We provide helper scripts to build and run the official RimWorld-Together Container with [buildah](https://github.com/containers/buildah) and [podman](https://github.com/containers/podman)
 
