@@ -35,7 +35,7 @@ namespace GameServer
         private static void SendVisitRequest(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitDetailsJSON.targetTile);
-            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, "Player tried to visit a site that could not be found or does not exist");
+            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} tried to visit a settlement at tile {visitDetailsJSON.targetTile}, but no settlement could be found");
             else
             {
                 ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);

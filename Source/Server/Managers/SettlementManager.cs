@@ -22,7 +22,7 @@ namespace GameServer
 
         public static void AddSettlement(ServerClient client, SettlementDetailsJSON settlementDetailsJSON)
         {
-            if (CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, "A settlement was attempted to be added to a tile that already has a settlement");
+            if (CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to add a settlement at tile {settlementDetailsJSON.tile}, but that tile already has a settlement");
             else
             {
                 settlementDetailsJSON.owner = client.username;
@@ -51,13 +51,13 @@ namespace GameServer
 
         public static void RemoveSettlement(ServerClient client, SettlementDetailsJSON settlementDetailsJSON, bool sendRemoval = true)
         {
-            if (!CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, "Settlement was attempted to be removed, but the tile doesn't contain a settlement");
+            if (!CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementDetailsJSON.tile} was attempted to be removed, but the tile doesn't contain a settlement");
 
             SettlementFile settlementFile = GetSettlementFileFromTile(settlementDetailsJSON.tile);
 
             if (sendRemoval)
             {
-                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, "Settlement was attempted to be removed by a player that does not own the settlement");
+                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementDetailsJSON.tile} attempted to be removed by {client.username}, but {settlementFile.owner} owns the settlement");
                 else
                 {
                     File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));

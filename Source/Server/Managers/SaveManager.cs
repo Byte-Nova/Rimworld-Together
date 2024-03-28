@@ -112,7 +112,7 @@ namespace GameServer
 
         public static void ResetClientSave(ServerClient client)
         {
-            if (!CheckIfUserHasSave(client)) ResponseShortcutManager.SendIllegalPacket(client, "Player's save was attempted to be reset while the player doesn't have a save");
+            if (!CheckIfUserHasSave(client)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save");
             else
             {
                 client.listener.disconnectFlag = true;
