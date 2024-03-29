@@ -119,8 +119,8 @@ namespace GameServer
 
         private static void AddNewSite(ServerClient client, SiteDetailsJSON siteDetailsJSON)
         {
-            if (SettlementManager.CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, "A site tried to be added to a tile that has a settlement");
-            else if (CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, "A site tried to be added to a tile that has a site already");
+            if (SettlementManager.CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteDetailsJSON.tile}, but that tile already has a settlement");
+            else if (CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteDetailsJSON.tile}, but that tile already has a site");
             else
             {
                 SiteFile siteFile = null;
@@ -165,7 +165,7 @@ namespace GameServer
 
             if (siteFile.isFromFaction)
             {
-                if (siteFile.factionName != client.factionName) ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to destroy a site that their faction does not own");
+                if (siteFile.factionName != client.factionName) ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteDetailsJSON.tile} was attempted to be destroyed by {client.username}, but player wasn't a part of faction {siteFile.factionName}");
                 else
                 {
                     FactionFile factionFile = OnlineFactionManager.GetFactionFromClient(client);
@@ -179,7 +179,7 @@ namespace GameServer
 
             else
             {
-                if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to destroy a site that they do not own");
+                if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteDetailsJSON.tile} was attempted to be destroyed by {client.username}, but the player {siteFile.owner} owns it");
                 else if (siteFile.workerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);
                 else DestroySiteFromFile(siteFile);
             }
@@ -216,12 +216,12 @@ namespace GameServer
 
             if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Player tried to deposit a worker to a site that they or their faction does not own");
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} tried to deposit a worker in the site at tile {siteDetailsJSON.tile}, but the player {siteFile.owner} owns it");
             }
 
             else if (siteFile.workerData != null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to desposit a worker to a site that already has a worker");
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} tried to deposit a worker in the site at tile {siteDetailsJSON.tile}, but the site already has a worker");
             }
 
             else
@@ -237,12 +237,12 @@ namespace GameServer
 
             if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to retrieve a worker from a site that they or their faction does not own");
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to retrieve a worker from the site at tile {siteDetailsJSON.tile}, but the player {siteFile.owner} of faction {siteFile.factionName} owns it");
             }
 
             else if (siteFile.workerData == null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Player attempted to retrieve a worker from a site that has no workers");
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to retrieve a worker from the site at tile {siteDetailsJSON.tile}, but it has no workers");
             }
 
             else
@@ -266,7 +266,7 @@ namespace GameServer
             }
         }
 
-        private static void SiteRewardTick()
+        public static void SiteRewardTick()
         {
             SiteFile[] sites = GetAllSites();
 

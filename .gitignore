@@ -406,3 +406,6 @@ rimworld_dir.txt
 
 Source/Client/0Harmony.dll
 Source/Client/HugsLib.dll
+
+# Container run volume
+Data

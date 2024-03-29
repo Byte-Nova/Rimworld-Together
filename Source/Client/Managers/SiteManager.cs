@@ -17,21 +17,21 @@ namespace GameClient
 
         public static int[] siteRewardCount;
 
-        public static string[] siteRewardDefNames;
+        public static ThingDef[] siteRewardDefNames;
 
         public static void SetSiteDetails(ServerOverallJSON serverOverallJSON)
         {
-            siteRewardDefNames = new string[]
+            siteRewardDefNames = new ThingDef[]
             {
-                ThingDefOf.RawPotatoes.defName,
-                ThingDefOf.Steel.defName,
-                ThingDefOf.WoodLog.defName,
-                ThingDefOf.Silver.defName,
-                ThingDefOf.ComponentIndustrial.defName,
-                ThingDefOf.Chemfuel.defName,
-                ThingDefOf.MedicineHerbal.defName,
-                ThingDefOf.Cloth.defName,
-                ThingDefOf.MealSimple.defName
+                ThingDefOf.RawPotatoes,
+                ThingDefOf.Steel,
+                ThingDefOf.WoodLog,
+                ThingDefOf.Silver,
+                ThingDefOf.ComponentIndustrial,
+                ThingDefOf.Chemfuel,
+                ThingDefOf.MedicineHerbal,
+                ThingDefOf.Cloth,
+                ThingDefOf.MealSimple
             };
 
             try
@@ -288,6 +288,7 @@ namespace GameClient
 
         private static Thing[] GetSiteRewards(Site[] sites)
         {
+
             List<Thing> thingsToGet = new List<Thing>();
             foreach (Site site in sites)
             {
@@ -296,9 +297,10 @@ namespace GameClient
                     if (site.MainSitePartDef == siteDefs[i])
                     {
                         ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
-                        itemDetailsJSON.defName = siteRewardDefNames[i];
+                        itemDetailsJSON.defName = siteRewardDefNames[i].defName;
                         itemDetailsJSON.quantity = siteRewardCount[i];
                         itemDetailsJSON.quality = "null";
+                        itemDetailsJSON.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
 
                         if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(itemDetailsJSON));
 

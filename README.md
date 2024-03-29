@@ -29,6 +29,23 @@ Then, just open the executable file for the first time to let it generate the co
 > [!CAUTION]
 > When placing the files of the server somewhere, be specially careful of the location to prevent any system/antivirus interventions. This is extra important in Linux operating systems
 
+## Container-based Deployment
+
+We provide helper scripts to build and run the official RimWorld-Together Container with [buildah](https://github.com/containers/buildah) and [podman](https://github.com/containers/podman)
+
+
+**Build:**
+
+```sh
+make build-container
+```
+
+**Run:**
+
+```sh
+make run-container
+```
+
 ## Server Configuration
 The server will generate all the configurable files on first launch and will store them in the "CORE" folder.
 
