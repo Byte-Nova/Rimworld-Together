@@ -12,8 +12,8 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You have been successfully registered!",
-                "You are now able to login using your new account"});
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RimworldTogether.RegistrationSuccess".Translate(),
+                "RimworldTogether.AbleLogin".Translate()});
 
             DialogManager.PushNewDialog(d1);
         }
@@ -21,27 +21,27 @@ namespace GameClient
         public static void ShowLoginOrRegisterDialogs()
         {
             RT_Dialog_3Input a1 = new RT_Dialog_3Input(
-                "New User",
-                "Username",
-                "Password",
-                "Confirm Password",
+                "RimworldTogether.NewUser".Translate(),
+                "RimworldTogether.Username".Translate(),
+                "RimworldTogether.Password".Translate(),
+                "RimworldTogether.ConfirmPassword".Translate(),
                 delegate { ParseRegisterUser(); },
                 delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
                 false, true, true);
 
             RT_Dialog_2Input a2 = new RT_Dialog_2Input(
-                "Existing User",
-                "Username",
-                "Password",
+                "RimworldTogether.ExistingUser".Translate(),
+                "RimworldTogether.Username".Translate(),
+                "RimworldTogether.Password".Translate(),
                 delegate { ParseLoginUser(); },
                 delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
                 false, true);
 
             RT_Dialog_2Button d1 = new RT_Dialog_2Button(
-                "Login Select",
-                "Choose your login type",
-                "New User",
-                "Existing User",
+                "RimworldTogether.LoginSelect".Translate(),
+                "RimworldTogether.LoginType".Translate(),
+                "RimworldTogether.NewUser".Translate(),
+                "RimworldTogether.ExistingUser".Translate(),
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
@@ -54,19 +54,19 @@ namespace GameClient
 
         public static void ShowWorldGenerationDialogs()
         {
-            RT_Dialog_OK d3 = new RT_Dialog_OK("This feature is not implemented yet!",
+            RT_Dialog_OK d3 = new RT_Dialog_OK("RimworldTogether.FeatureUnavailable".Translate(),
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
-            RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
-                "Separate colony", "Together with other players (TBA)", null, delegate { DialogManager.PushNewDialog(d3); },
+            RT_Dialog_2Button d2 = new RT_Dialog_2Button("RimworldTogether.GameMode".Translate(), "RimworldTogether.ChooseWay".Translate(),
+                "RimworldTogether.SeparateColony".Translate(), "RimworldTogether.Cooperative".Translate(), null, delegate { DialogManager.PushNewDialog(d3); },
                 delegate
                 {
                     SceneManager.LoadScene(0);
                     Network.listener.disconnectFlag = true;
                 });
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "Welcome to the world view!",
-                        "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RimworldTogether.WorldView".Translate(),
+                        "RimworldTogether.GameType".Translate(), "RimworldTogether.GameModeChange".Translate() },
                 delegate { DialogManager.PushNewDialog(d2); });
 
             DialogManager.PushNewDialog(d1);
@@ -74,23 +74,23 @@ namespace GameClient
 
         public static void ShowConnectDialogs()
         {
-            RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
+            RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("RimworldTogether.ServerBrowser".Translate(), "RimworldTogether.ServersList".Translate(),
                 ClientValues.serverBrowserContainer,
                 delegate { ParseConnectionDetails(true); },
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
             RT_Dialog_2Input a2 = new RT_Dialog_2Input(
-                "Connection Details",
+                "RimworldTogether.ConnectionDetails".Translate(),
                 "IP",
                 "Port",
                 delegate { ParseConnectionDetails(false); },
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
             RT_Dialog_2Button newDialog = new RT_Dialog_2Button(
-                "Play Online",
-                "Choose the connection type",
-                "Server Browser",
-                "Direct Connect",
+                "RimworldTogether.PlayOnline".Translate(),
+                "RimworldTogether.ConnectionType".Translate(),
+                "RimworldTogether.ServerBrowser".Translate(),
+                "RimworldTogether.DirectConnect".Translate(),
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
@@ -139,13 +139,13 @@ namespace GameClient
                     PreferenceManager.SaveConnectionDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
                 }
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.ServerConnect".Translate()));
                 Network.StartConnection();
             }
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!");
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RimworldTogether.ServerInvalid".Translate());
                 DialogManager.PushNewDialog(d1);
             }
         }
@@ -171,12 +171,12 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.LoginResponse".Translate()));
             }
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Login details are invalid! Please try again!",
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RimworldTogether.LoginInvalid".Translate(),
                     delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
                 DialogManager.PushNewDialog(d1);
@@ -203,12 +203,12 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.RegisterResponse".Translate()));
             }
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Register details are invalid! Please try again!",
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RimworldTogether.RegisterInvalid".Translate(),
                     delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
                 DialogManager.PushNewDialog(d1);

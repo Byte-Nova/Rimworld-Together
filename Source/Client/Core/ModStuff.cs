@@ -25,35 +25,35 @@ namespace GameClient
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
 
-            listingStandard.Label("Running version: " + CommonValues.executableVersion);
+            listingStandard.Label("RimworldTogether.RunningVersion".Translate() + CommonValues.executableVersion);
 
             listingStandard.GapLine();
-            listingStandard.Label("Multiplayer Parameters");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.transferBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.siteRewardsBool, "Automatically site rewards");
-            if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s"))
+            listingStandard.Label("RimworldTogether.MultiplayerParameters".Translate());
+            listingStandard.CheckboxLabeled("[" + "RimworldTogether.WhenPlaying".Translate() + "] " + "RimworldTogether.DenyAllTransfers".Translate(), ref modConfigs.transferBool, "RimworldTogether.TransferAutoDenied".Translate());
+            listingStandard.CheckboxLabeled("[" + "RimworldTogether.WhenPlaying".Translate() + "] " + "RimworldTogether.DenyAllSiteRewards".Translate(), ref modConfigs.siteRewardsBool, "RimworldTogether.SiteAutoReward".Translate());
+            if (listingStandard.ButtonTextLabeled("[" + "RimworldTogether.WhenPlaying".Translate() + "] " + "RimworldTogether.ServerSyncInterval".Translate(), $"[{ClientValues.autosaveDays}] " + "RimworldTogether.SyncDays".Translate()))
             {
                 ShowAutosaveFloatMenu();
             }
 
 
             listingStandard.GapLine();
-            listingStandard.Label("Compatibility");
-            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertMenu(); }
-            if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
-            if (listingStandard.ButtonTextLabeled("[When Playing] Get server world file", "Get")) { GenerateWorldFile(); }
-            if (listingStandard.ButtonTextLabeled("Open server worlds folder", "Open")) StartProcess(Master.worldSavesFolderPath);
+            listingStandard.Label("RimworldTogether.Compatibility".Translate());
+            if (listingStandard.ButtonTextLabeled("RimworldTogether.ConvertSaveForServerUse".Translate(), "RimworldTogether.Convert".Translate())) { ShowConvertMenu(); }
+            if (listingStandard.ButtonTextLabeled("RimworldTogether.OpenSavesFolder".Translate(), "RimworldTogether.Open".Translate())) StartProcess(Master.savesFolderPath);
+            if (listingStandard.ButtonTextLabeled("[" + "RimworldTogether.WhenPlaying".Translate() + "] " + "RimworldTogether.GetServerWorldFile".Translate(), "RimworldTogether.Get".Translate())) { GenerateWorldFile(); }
+            if (listingStandard.ButtonTextLabeled("RimworldTogether.OpenServerWorldsFolder".Translate(), "RimworldTogether.Open".Translate())) StartProcess(Master.worldSavesFolderPath);
 
             listingStandard.GapLine();
-            listingStandard.Label("Experimental");
-            listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info on the logs");
-            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.mainPath);
+            listingStandard.Label("RimworldTogether.Experimental".Translate());
+            listingStandard.CheckboxLabeled("RimworldTogether.UseVerboseLogs".Translate(), ref modConfigs.verboseBool, "RimworldTogether.AdvancedLogs".Translate());
+            if (listingStandard.ButtonTextLabeled("RimworldTogether.OpenLogsFolder".Translate(), "RimworldTogether.Open".Translate())) StartProcess(Master.mainPath);
 
             listingStandard.GapLine();
-            listingStandard.Label("External Sources");
-            if (listingStandard.ButtonTextLabeled("Check the mod's wiki!", "Open")) StartProcess("https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki");
-            if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/NCsArSaqBW");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
+            listingStandard.Label("RimworldTogether.ExternalSources".Translate());
+            if (listingStandard.ButtonTextLabeled("RimworldTogether.CheckWiki".Translate(), "RimworldTogether.Open".Translate())) StartProcess("https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki");
+            if (listingStandard.ButtonTextLabeled("RimworldTogether.JoinDiscord".Translate(), "RimworldTogether.Open".Translate())) StartProcess("https://discord.gg/NCsArSaqBW");
+            if (listingStandard.ButtonTextLabeled("RimworldTogether.CheckGithub".Translate(), "RimworldTogether.Open".Translate())) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
@@ -102,7 +102,7 @@ namespace GameClient
                     byte[] compressedBytes = GZip.Compress(File.ReadAllBytes(toConvertPath));
                     File.WriteAllBytes(conversionPath, compressedBytes);
 
-                    RT_Dialog_OK d2 = new RT_Dialog_OK("Save was converted successfully");
+                    RT_Dialog_OK d2 = new RT_Dialog_OK("RimworldTogether.SaveConvertedSuccessfully".Translate());
                     DialogManager.PushNewDialog(d2);
                 });
 
@@ -152,7 +152,7 @@ namespace GameClient
 
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
 
-                DialogManager.PushNewDialog(new RT_Dialog_OK("World file was saved correctly!"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.WorldFileSavedCorrectly".Translate()));
             }
         }
 

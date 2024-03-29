@@ -26,7 +26,7 @@ namespace GameClient
         {
             if (Network.isConnectedToServer)
             {
-                tabTitle = $"Players Online [{ServerValues.currentPlayers}]";
+                tabTitle = "RimworldTogether.PlayersOnline".Translate(ServerValues.currentPlayers);
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 

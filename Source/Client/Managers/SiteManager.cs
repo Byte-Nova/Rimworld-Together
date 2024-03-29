@@ -137,14 +137,14 @@ namespace GameClient
         private static void OnSiteAccept()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.SiteBuildSuccess".Translate()));
 
             SaveManager.ForceSave();
         }
 
         public static void OnSimpleSiteRequest()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site information"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.SiteInfoWaiting".Translate()));
 
             SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
             siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
@@ -160,7 +160,7 @@ namespace GameClient
 
             if (siteDetailsJSON.workerData == null)
             {
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.SiteWorkerSend".Translate(), 
                     delegate { PrepareSendPawnScreen(); }, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -168,7 +168,7 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You have a worker on this site, retrieve?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.SiteWorkerRetrive".Translate(),
                     delegate { RequestWorkerRetrieval(siteDetailsJSON); }, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -177,7 +177,7 @@ namespace GameClient
 
         private static void RequestWorkerRetrieval(SiteDetailsJSON siteDetailsJSON)
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site worker"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.SiteWorkerWait".Translate()));
 
             siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Retrieve).ToString();
 
@@ -199,7 +199,7 @@ namespace GameClient
                 SaveManager.ForceSave();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Worker have been recovered", r1));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.SiteWorkerBack".Translate(), r1));
         }
 
         private static void PrepareSendPawnScreen()
@@ -211,7 +211,7 @@ namespace GameClient
                 if (TransferManagerHelper.CheckIfThingIsHuman(pawn)) pawnNames.Add(pawn.Label);
             }
 
-            RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Pawn Selection", "Select the pawn you wish to send", 
+            RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("RimworldTogether.PawnSelection".Translate(), "RimworldTogether.PawnSelect".Translate(), 
                 pawnNames.ToArray(), SendPawnToSite);
 
             DialogManager.PushNewDialog(d1);
@@ -254,13 +254,13 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.SiteRemove".Translate(), r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
         private static void OnWorkerError()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Error("The site has a worker inside!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.SiteHasWorker".Translate()));
         }
 
         private static void ReceiveSitesRewards(SiteDetailsJSON siteDetailsJSON)
@@ -346,8 +346,7 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", RequestSiteBuild, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.SiteWillCost".Translate(sitePrices[DialogManager.selectedScrollButton]), RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -358,7 +357,7 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.SilverLack".Translate()));
             }
 
             else
@@ -374,7 +373,7 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.IdleConstruction".Translate()));
             }
         }
     }
@@ -414,8 +413,7 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", RequestSiteBuild, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.SiteWillCost".Translate(sitePrices[DialogManager.selectedScrollButton]), RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -426,7 +424,7 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(sitePrices[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.SilverLack".Translate()));
             }
 
             else
@@ -442,7 +440,7 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.IdleConstruction".Translate()));
             }
         }
     }

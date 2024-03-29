@@ -60,7 +60,7 @@ namespace GameClient
 
             DrawInputOne(centeredX, inputOneLabelDif, inputOneDif);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Confirm".Translate()))
             {
                 DialogManager.dialog1ResultOne = inputOneResult;
 
@@ -68,7 +68,7 @@ namespace GameClient
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Cancel".Translate()))
             {
                 if (actionNo != null) actionNo.Invoke();
                 Close();

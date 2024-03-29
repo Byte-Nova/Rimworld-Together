@@ -85,17 +85,17 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 55f, rect.width, rect.height - buttonY - 65));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Accept".Translate()))
             {
                 OnAccept();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reset"))
+            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Reset".Translate()))
             {
                 OnReset();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Cancel".Translate()))
             {
                 OnCancel();
             }
@@ -145,10 +145,10 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_2Button d2 = new RT_Dialog_2Button("Transfer Type", "Please choose the transfer type to use",
-                    "Gift", "Trade", r1, r2, null);
+                RT_Dialog_2Button d2 = new RT_Dialog_2Button("RimworldTogether.TransferType".Translate(), "RimworldTogether.Transfer".Translate(),
+                    "RimworldTogether.Gift".Translate(), "RimworldTogether.Trade".Translate(), r1, r2, null);
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.ContinueTransfer".Translate(),
                     delegate { DialogManager.PushNewDialog(d2); }, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -163,7 +163,7 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.ContinueTransfer".Translate(),
                     r1, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -193,7 +193,7 @@ namespace GameClient
 
             if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.AcceptDeclined".Translate(),
                     r1, null));
             }
             else r1.Invoke();

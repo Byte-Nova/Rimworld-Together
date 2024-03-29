@@ -52,12 +52,12 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - buttonY - 45));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Accept".Translate()))
             {
                 OnAccept();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.Cancel".Translate()))
             {
                 OnReject();
             }
@@ -135,7 +135,7 @@ namespace GameClient
 
                     else
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.ImpossibleTrade".Translate()));
                         TransferManager.RejectRequest(transferMode);
                     }
                 }
@@ -158,7 +158,7 @@ namespace GameClient
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.AcceptConfirmed".Translate(),
                 r1, null));
         }
 
@@ -171,7 +171,7 @@ namespace GameClient
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.AcceptDeclined".Translate(),
                 r1, null));
         }
     }

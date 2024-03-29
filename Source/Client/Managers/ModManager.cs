@@ -20,7 +20,7 @@ namespace GameClient
         {
             JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
+            DialogManager.PushNewDialog(new RT_Dialog_Listing("RimworldTogether.ModConflicts".Translate(), "RimworldTogether.ServerModConflict".Translate(),
                 loginDetailsJSON.extraDetails.ToArray()));
         }
 

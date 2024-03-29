@@ -56,12 +56,12 @@ namespace GameClient
 
         public static void RequestVisit()
         {
-            if (ClientValues.isInVisit) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already visiting someone!"));
+            if (ClientValues.isInVisit) DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.AlreadyVisiting".Translate()));
             else
             {
                 Action r1 = delegate
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.VisitResponse".Translate()));
 
                     VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
                     visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Request).ToString();
@@ -73,7 +73,7 @@ namespace GameClient
                     Network.listener.EnqueuePacket(packet);
                 };
 
-                var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
+                var d1 = new RT_Dialog_YesNo("RimworldTogether.BetaFeatureWarning".Translate(), r1, null);
                 DialogManager.PushNewDialog(d1);
             }
         }
@@ -106,9 +106,9 @@ namespace GameClient
             Threader.GenerateThread(Threader.Mode.Visit);
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {
-                "You are now in online visit mode!",
-                "Visit mode allows you to visit another player's base",
-                "To stop the visit use /sv in the chat"
+                "RimworldTogether.VisitModeOnlineOn".Translate(),
+                "RimworldTogether.VisitModeNote".Translate(),
+                "RimworldTogether.VisitModeStopNote".Translate()
             });
             DialogManager.PushNewDialog(d1);
         }
@@ -149,7 +149,7 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitDetailsJSON.visitorName}, accept?", r1, r2);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.PlayerVisitRequest".Translate(visitDetailsJSON.visitorName), r1, r2);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -162,21 +162,21 @@ namespace GameClient
             Action r1 = delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); };
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.ModMismatch".Translate(), r1));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_OK("Map received", r1));
+            else DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.MapReceived".Translate(), r1));
         }
 
         private static void OnVisitReject()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PlayerVisitRefused".Translate()));
         }
 
         private static void OnVisitUnavailable()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PlayerRequestOnline".Translate()));
         }
 
         private static void OnVisitStop()
@@ -184,7 +184,7 @@ namespace GameClient
             if (!ClientValues.isInVisit) return;
             else
             {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Visiting event ended"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.VisitEventEnd".Translate()));
 
                 foreach (Pawn pawn in otherPlayerPawns.ToArray()) pawn.Destroy();
 

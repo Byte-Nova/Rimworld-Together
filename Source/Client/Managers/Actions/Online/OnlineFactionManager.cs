@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Verse;
 
 namespace GameClient
 {
@@ -51,7 +52,7 @@ namespace GameClient
         {
             Action r3 = delegate
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for member list"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.FactionMemberList".Translate()));
 
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.MemberList).ToString();
@@ -72,7 +73,7 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for faction deletion"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.FactionDeletion".Translate()));
 
                 FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                 factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Delete).ToString();
@@ -81,12 +82,12 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to LEAVE your faction?", r2, null);
+            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("RimworldTogether.FactionLeave".Translate(), r2, null);
 
-            RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("Are you sure you want to DELETE your faction?", r1, null);
+            RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("RimworldTogether.FactionDelete".Translate(), r1, null);
 
-            RT_Dialog_3Button d1 = new RT_Dialog_3Button("Faction Management", "Manage your faction from here",
-                "Members", "Delete", "Leave",
+            RT_Dialog_3Button d1 = new RT_Dialog_3Button("RimworldTogether.FactionManagement".Translate(), "RimworldTogether.FactionManagmentTab".Translate(),
+                "RimworldTogether.Members".Translate(), "RimworldTogether.Delete".Translate(), "RimworldTogether.Leave".Translate(),
                 delegate { r3(); },
                 delegate { DialogManager.PushNewDialog(d2); },
                 delegate { DialogManager.PushNewDialog(d3); },
@@ -101,12 +102,12 @@ namespace GameClient
             {
                 if (string.IsNullOrWhiteSpace(DialogManager.dialog1ResultOne) || DialogManager.dialog1ResultOne.Length > 32)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Faction name is invalid! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.FactionInvalid".Translate()));
                 }
 
                 else
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for faction creation"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.FactionCreatio".Translate()));
 
                     FactionManifestJSON factionManifestJSON = new FactionManifestJSON();
                     factionManifestJSON.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Create).ToString();
@@ -116,10 +117,10 @@ namespace GameClient
                     Network.listener.EnqueuePacket(packet);
                 }
             };
-            RT_Dialog_1Input d2 = new RT_Dialog_1Input("New Faction Name", "Input the name of your new faction", r2, null);
+            RT_Dialog_1Input d2 = new RT_Dialog_1Input("RimworldTogether.FactionName".Translate(), "RimworldTogether.FactionNaming".Translate(), r2, null);
 
             Action r1 = delegate { DialogManager.PushNewDialog(d2); };
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You are not a member of any faction! Create one?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.FactionCreate".Translate(), r1, null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -156,26 +157,26 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d5 = new RT_Dialog_YesNo("Are you sure you want to demote this player?", 
+            RT_Dialog_YesNo d5 = new RT_Dialog_YesNo("RimworldTogether.FactionDemote".Translate(), 
                 r2,
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
-            RT_Dialog_YesNo d4 = new RT_Dialog_YesNo("Are you sure you want to promote this player?", 
+            RT_Dialog_YesNo d4 = new RT_Dialog_YesNo("RimworldTogether.FactionPromote".Translate(), 
                 r1,
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
-            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to kick this player?", 
+            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("RimworldTogether.FactionKick".Translate(), 
                 r3,
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
-            RT_Dialog_2Button d2 = new RT_Dialog_2Button("Power Management Menu", "Choose what you want to manage",
-                "Promote", "Demote",
+            RT_Dialog_2Button d2 = new RT_Dialog_2Button("RimworldTogether.PowerManagementMenu".Translate(), "RimworldTogether.ManagementSelection".Translate(),
+                "RimworldTogether.Promote".Translate(), "RimworldTogether.Demote".Translate(),
                 delegate { DialogManager.PushNewDialog(d4); },
                 delegate { DialogManager.PushNewDialog(d5); },
                 null);
 
-            RT_Dialog_2Button d1 = new RT_Dialog_2Button("Management Menu", "Choose what you want to manage", 
-                "Powers", "Kick", 
+            RT_Dialog_2Button d1 = new RT_Dialog_2Button("RimworldTogether.ManagementMenu".Translate(), "RimworldTogether.ManagementSelection".Translate(), 
+                "RimworldTogether.Powers".Translate(), "RimworldTogether.Kick".Translate(), 
                 delegate { DialogManager.PushNewDialog(d2); }, 
                 delegate { DialogManager.PushNewDialog(d3); }, 
                 null);
@@ -195,7 +196,7 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to invite this player to your faction?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RimworldTogether.FactionInvite".Translate(), r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -205,8 +206,8 @@ namespace GameClient
 
             string[] messages = new string[]
             {
-                "Your faction has been created!",
-                "You can now access its menu through the same button"
+                "RimworldTogether.FactionCreated".Translate(),
+                "RimworldTogether.FactionMenu".Translate()
             };
 
             DialogManager.PopWaitDialog();
@@ -219,19 +220,19 @@ namespace GameClient
             ServerValues.hasFaction = false;
 
             if (!ClientValues.isInTransfer) DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Your faction has been deleted!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.FactionDelete".Translate()));
         }
 
         private static void OnFactionNameInUse()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("That faction name is already in use!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.FactionOccupied".Translate()));
         }
 
         private static void OnFactionNoPower()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("You don't have enough power for this action!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.FactionActionBan".Translate()));
         }
 
         private static void OnFactionGetInvited(FactionManifestJSON factionManifest)
@@ -246,7 +247,7 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest.manifestDetails}, accept?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"AcceptInvite".Translate(factionManifest.manifestDetails), r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -254,12 +255,12 @@ namespace GameClient
         {
             ServerValues.hasFaction = false;
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("You have been kicked from your faction!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.FactionKicked".Translate()));
         }
 
         private static void OnFactionAdminProtection()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Error("You can't do this action as a faction admin!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.FactionLeaderActionBan".Translate()));
         }
 
         private static void OnFactionMemberList(FactionManifestJSON factionManifest)
@@ -273,8 +274,8 @@ namespace GameClient
                     $"- {(CommonEnumerators.FactionRanks)int.Parse(factionManifest.manifestSecondaryComplexDetails[i])}");
             }
 
-            RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members", 
-                "All faction members are depicted here", unraveledDetails.ToArray());
+            RT_Dialog_Listing d1 = new RT_Dialog_Listing("RimworldTogether.FactionMembers".Translate(), 
+                "RimworldTogether.MembersTab".Translate(), unraveledDetails.ToArray());
 
             DialogManager.PushNewDialog(d1);
         }

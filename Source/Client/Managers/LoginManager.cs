@@ -1,4 +1,5 @@
 ﻿using Shared;
+using Verse;
 
 namespace GameClient
 {
@@ -17,11 +18,11 @@ namespace GameClient
             switch(int.Parse(loginDetailsJSON.tryResponse))
             {
                 case (int)CommonEnumerators.LoginResponse.InvalidLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Login details are invalid! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.LoginInvalid".Translate()));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.BannedLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You are banned from this server!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PlayerBaned".Translate()));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.RegisterSuccess:
@@ -29,15 +30,15 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.RegisterInUse:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("That username is already in use! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.UserNameOccupied".Translate()));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.RegisterError:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("There was an error registering! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.RegError".Translate()));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.ExtraLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You connected from another place!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.DifferentPlaceNotice".Translate()));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.WrongMods:
@@ -45,15 +46,15 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.ServerFull:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Server is full!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.ServerFull".Translate()));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.Whitelist:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Server is whitelisted!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.ServerWhiteList".Translate()));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.WrongVersion:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginDetailsJSON.extraDetails[0]}"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error($"ModVersionMismatch".Translate(loginDetailsJSON.extraDetails[0])));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.NoWorld:

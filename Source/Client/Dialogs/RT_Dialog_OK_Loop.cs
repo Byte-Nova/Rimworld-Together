@@ -52,7 +52,7 @@ namespace GameClient
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(descriptionDummy).x / 2, windowDescriptionDif, Text.CalcSize(descriptionDummy).x, Text.CalcSize(descriptionDummy).y), descriptionDummy);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RimworldTogether.OK".Translate()))
             {
                 if (currentDescriptionIndex < descriptionLoop.Length - 1)
                 {

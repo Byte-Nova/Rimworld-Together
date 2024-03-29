@@ -35,7 +35,7 @@ namespace GameClient
 
         public static void RequestOfflineVisit()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RimworldTogether.WaitingMap".Translate()));
 
             OfflineVisitDetailsJSON offlineVisitDetailsJSON = new OfflineVisitDetailsJSON();
             offlineVisitDetailsJSON.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Request).ToString();
@@ -51,7 +51,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.PlayerOffline".Translate()));
         }
 
         //Executes when offline visit is accepted
@@ -67,11 +67,11 @@ namespace GameClient
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.DataDifference".Translate(), r1, null));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
+            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("RimworldTogether.MapReady".Translate(), r1, null));
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RimworldTogether.MapLoadHang".Translate()));
         }
 
         //Prepares a map for the offline visit feature from a request
@@ -89,9 +89,9 @@ namespace GameClient
 
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
             {
-                "You are now in offline visit mode!",
-                "This mode allows you to visit an offline player!",
-                "To stop the visit exit the map creating a caravan"
+                "RimworldTogether.OfflineVisitMod".Translate(),
+                "RimworldTogether.OfflineModNote".Translate(),
+                "RimworldTogether.MapLeaveNote".Translate()
             });
             DialogManager.PushNewDialog(d1);
         }
