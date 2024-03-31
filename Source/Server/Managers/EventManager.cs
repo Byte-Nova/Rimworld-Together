@@ -26,7 +26,7 @@ namespace GameServer
 
         public static void SendEvent(ServerClient client, EventDetailsJSON eventDetailsJSON)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventDetailsJSON.toTile)) ResponseShortcutManager.SendIllegalPacket(client, "Player attmepted to send an event to a tile that has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventDetailsJSON.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send an event to settlement at tile {eventDetailsJSON.toTile}, but it has no settlement");
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventDetailsJSON.toTile);

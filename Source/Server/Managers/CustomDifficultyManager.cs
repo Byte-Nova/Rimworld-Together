@@ -12,7 +12,7 @@ namespace GameServer
 
         public static void SetCustomDifficulty(ServerClient client, DifficultyValuesJSON difficultyValuesJSON)
         {
-            if (!client.isAdmin) ResponseShortcutManager.SendIllegalPacket(client, "Player attmpeted to set the custom difficulty while not being an admin");
+            if (!client.isAdmin) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to set the custom difficulty while not being an admin");
             else
             {
                 DifficultyValuesFile newDifficultyValues = new DifficultyValuesFile();
