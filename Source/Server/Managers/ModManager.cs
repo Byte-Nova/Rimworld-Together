@@ -19,7 +19,7 @@ namespace GameServer
                         if (!Master.loadedRequiredMods.Contains(str.ToLower())) Master.loadedRequiredMods.Add(str.ToLower());
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
+                catch { Logger.WriteToConsole($"Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
             Logger.WriteToConsole($"Loaded required mods [{Master.loadedRequiredMods.Count()}]", LogMode.Warning);
@@ -39,7 +39,7 @@ namespace GameServer
                         }
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
+                catch { Logger.WriteToConsole($"Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
             Logger.WriteToConsole($"Loaded optional mods [{Master.loadedOptionalMods.Count()}]", LogMode.Warning);
@@ -59,7 +59,7 @@ namespace GameServer
                         }
                     }
                 }
-                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
+                catch { Logger.WriteToConsole($"Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
             Logger.WriteToConsole($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]", LogMode.Warning);

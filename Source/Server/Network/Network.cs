@@ -55,7 +55,7 @@ namespace GameServer
                 if (connectedClients.ToArray().Count() >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
                     UserManager.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
-                    Logger.WriteToConsole($"[Warning] > Server Full", LogMode.Warning);
+                    Logger.WriteToConsole($"Server Full", LogMode.Warning);
                 }
 
                 else
@@ -84,11 +84,7 @@ namespace GameServer
 
                 Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
             }
-
-            catch
-            {
-                Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", LogMode.Warning);
-            }
+            catch { Logger.WriteToConsole($"Error disconnecting user {client.username}, please report this issue", LogMode.Warning); }
         }
     }
 }
