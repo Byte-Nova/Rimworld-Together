@@ -207,7 +207,7 @@ namespace GameClient
             string[] messages = new string[]
             {
                 "RimworldTogether.FactionCreated".Translate(),
-                "RimworldTogether.FactionMenu".Translate()
+                "RimworldTogether.AccessFactionMenu".Translate()
             };
 
             DialogManager.PopWaitDialog();
@@ -220,7 +220,7 @@ namespace GameClient
             ServerValues.hasFaction = false;
 
             if (!ClientValues.isInTransfer) DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.FactionDelete".Translate()));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RimworldTogether.FactionDeleted".Translate()));
         }
 
         private static void OnFactionNameInUse()

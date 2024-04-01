@@ -100,7 +100,6 @@
 	<RimworldTogether.Trade>Trade</RimworldTogether.Trade>
 	
 	<RimworldTogether.ContinueTransfer>Are you sure you want to continue with the transfer?</RimworldTogether.ContinueTransfer>
-	<RimworldTogether.AcceptDeclined>Are you sure you want to decline?</RimworldTogether.AcceptDeclined>
 	
 	<!-- Actions Offline-->
 	<RimworldTogether.WaitingMap>Waiting for map</RimworldTogether.WaitingMap>
@@ -113,8 +112,6 @@
 	
 	<RimworldTogether.SilverLack>You do not have enough silver!</RimworldTogether.SilverLack>
 	<RimworldTogether.SpyingCostsContinue>Spying a settlement costs {0} silver, continue?</RimworldTogether.SpyingCostsContinue>
-	<RimworldTogether.MapLoadHang>Game might hang temporarily depending on map complexity</RimworldTogether.MapLoadHang>
-	<RimworldTogether.SilverRefund>Spent silver has been recovered</RimworldTogether.SilverRefund>
 	<RimworldTogether.PlayerOffline>Player must not be connected!</RimworldTogether.PlayerOffline>
 	<RimworldTogether.SpyMod>You are now in spy mode!</RimworldTogether.SpyMod>
 	<RimworldTogether.SpyBaseCheck>Spy mode allows you to check out another player's base</RimworldTogether.SpyBaseCheck>
@@ -156,8 +153,8 @@
 	
 	<RimworldTogether.FactionInvite>Do you want to invite this player to your faction?</RimworldTogether.FactionInvite>
 	<RimworldTogether.FactionCreated>Your faction has been created!</RimworldTogether.FactionCreated>
-	<RimworldTogether.FactionMenu>You can now access its menu through the same button</RimworldTogether.FactionMenu>
-	<RimworldTogether.FactionDelete>Your faction has been deleted!</RimworldTogether.FactionDelete>
+	<RimworldTogether.AccessFactionMenu>You can now access its menu through the same button</RimworldTogether.AccessFactionMenu>
+	<RimworldTogether.FactionDeleted>Your faction has been deleted!</RimworldTogether.FactionDeleted>
 	<RimworldTogether.FactionOccupied>That faction name is already in use!</RimworldTogether.FactionOccupied>
 	<RimworldTogether.FactionActionBan>You don't have enough power for this action!</RimworldTogether.FactionActionBan>
 	<RimworldTogether.AcceptInvite>Invited to {0}, accept?</RimworldTogether.AcceptInvite>
@@ -198,7 +195,6 @@
 	<RimworldTogether.SettlmentLikelihood>Changing settlement likelihood</RimworldTogether.SettlmentLikelihood>
 	
 	<!-- Login Manager-->
-	<RimworldTogether.LoginInvalid>Login details are invalid! Please try again!</RimworldTogether.LoginInvalid>
 	<RimworldTogether.PlayerBaned>You are banned from this server!</RimworldTogether.PlayerBaned>
 	<RimworldTogether.UserNameOccupied>That username is already in use! Please try again!</RimworldTogether.UserNameOccupied>
 	<RimworldTogether.RegError>There was an error registering! Please try again!</RimworldTogether.RegError>
@@ -228,7 +224,6 @@
 	<RimworldTogether.IdleConstruction>Waiting for building</RimworldTogether.IdleConstruction>
 	<RimworldTogether.DataDifference>Map received but contains unknown mod data, continue?</RimworldTogether.DataDifference>
 	<RimworldTogether.MapReady>Map received, continue?</RimworldTogether.MapReady>
-	<RimworldTogether.MapLoadHang>Game might hang temporarily depending on map complexity</RimworldTogether.MapLoadHang>
 	
 	<!-- Transfer Manager-->
 	<RimworldTogether.TradeSuccess>Transfer was a success!</RimworldTogether.TradeSuccess>
@@ -258,7 +253,6 @@
 	
 	<!-- PacketHandler.cs-->
 	<RimworldTogether.KickLawless>Kicked for ilegal actions!</RimworldTogether.KickLawless>
-	<RimworldTogether.PlayerNotAvailable>Player is not currently available!</RimworldTogether.PlayerNotAvailable>
 	
 	<!-- Pages-->
 	<RimworldTogether.Disconnect>Disconnect</RimworldTogether.Disconnect>
