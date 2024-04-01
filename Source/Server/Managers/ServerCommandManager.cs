@@ -122,6 +122,10 @@ namespace GameServer
             "Shows all currently loaded mods",
             ModListCommandAction);
 
+        private static ServerCommand doSiteRewards = new ServerCommand("dositerewards", 0,
+            "Forces site rewards to run",
+            DoSiteRewardsCommandAction);
+
         private static ServerCommand eventCommand = new ServerCommand("event", 2,
             "Sends a command to the selecter players",
             EventCommandAction);
@@ -202,6 +206,7 @@ namespace GameServer
             eventCommand,
             eventAllCommand,
             eventListCommand,
+            doSiteRewards,
             broadcastCommand,
             serverMessageCommand,
             whitelistCommand,
@@ -464,6 +469,12 @@ namespace GameServer
                 Logger.WriteToConsole($"{str}", LogMode.Warning, writeToLogs: false);
             }
             Logger.WriteToConsole("----------------------------------------", LogMode.Title, false);
+        }
+
+        private static void DoSiteRewardsCommandAction()
+        {
+            Logger.WriteToConsole($"Forced site rewards", Logger.LogMode.Title);
+            SiteManager.SiteRewardTick();
         }
 
         private static void EventCommandAction()
