@@ -112,7 +112,7 @@ namespace GameServer
                 Logger.WriteToConsole("Loaded world values", LogMode.Warning);
             }
 
-            else Logger.WriteToConsole("[Warning] > World is missing. Join server to create it", LogMode.Warning);   
+            else Logger.WriteToConsole("World is missing. Join server to create it", LogMode.Warning);   
         }
     }
 }
