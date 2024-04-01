@@ -473,7 +473,7 @@ namespace GameServer
 
         private static void DoSiteRewardsCommandAction()
         {
-            Logger.WriteToConsole($"Forced site rewards", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Forced site rewards", LogMode.Title);
             SiteManager.SiteRewardTick();
         }
 
