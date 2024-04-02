@@ -169,10 +169,12 @@ namespace GameClient
 
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
-            Action r1 = delegate {
+            Action r1 = delegate 
+            {
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...",
-                            delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); })); 
-                        };
+                    delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); })); 
+            };
+
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Map received but contains unknown mod data", r1));

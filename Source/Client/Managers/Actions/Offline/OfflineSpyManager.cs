@@ -87,38 +87,31 @@ namespace GameClient
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(spyDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate {
+            Action r1 = delegate 
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...", 
+                    delegate 
+                    { 
+                        PrepareMapForSpy(mapDetailsJSON);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...", delegate { 
-                    PrepareMapForSpy(mapDetailsJSON);
-                    RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[]
-                    {
-                    "You are now in spy mode!",
-                    "Spy mode allows you to check out another player's base",
-                    "To stop the spy exit the map creating a caravan"
-                    }, DialogManager.clearStack);
+                        RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", 
+                            new string[]
+                            {
+                                "You are now in spy mode!",
+                                "Spy mode allows you to check out another player's base",
+                                "To stop the spy exit the map creating a caravan"
+                            }, DialogManager.clearStack);
 
-                    DialogManager.PushNewDialog(d1);
-                }));
-
-                //Queue Event
-
-               /* LongEventThread.QueueEvent(
-                    
-                    delegate{ 
-                    PrepareMapForSpy(mapDetailsJSON);
-                    
-                });*/
-
-                
+                        DialogManager.PushNewDialog(d1);
+                    }));
             };
 
             //TODO -- Allow the code to run in a way that the wait dialog can be pushed after the interactive dialogs
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
-
+            {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, DialogManager.clearStack));
+            }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, DialogManager.clearStack));
-
         }
 
         //Executes after being denied a spy order

@@ -216,7 +216,7 @@ namespace GameClient
             RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Pawn Selection", "Select the pawn you wish to send", 
                 pawnNames.ToArray(), 
                 delegate { 
-                    DialogManager.setInputReserve(); 
+                    DialogManager.SetInputReserve(); 
                     DialogManager.clearStack(); 
                     SendPawnToSite(); 
                 });
@@ -357,7 +357,7 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            DialogManager.setInputReserve();
+            DialogManager.SetInputReserve();
             
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputReserve[0]]} " +
                 $"silver, continue?", RequestSiteBuild, null);
@@ -427,7 +427,7 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            DialogManager.setInputReserve();
+            DialogManager.SetInputReserve();
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[(int)DialogManager.inputReserve[0]]} " +
                 $"silver, continue?", RequestSiteBuild, null);

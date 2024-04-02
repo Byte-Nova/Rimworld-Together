@@ -63,10 +63,11 @@ namespace GameClient
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...",
-                            delegate { PrepareMapForOfflineVisit(mapDetailsJSON); })); 
-                            };
+            Action r1 = delegate 
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...", 
+                    delegate { PrepareMapForOfflineVisit(mapDetailsJSON); })); 
+            };
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {

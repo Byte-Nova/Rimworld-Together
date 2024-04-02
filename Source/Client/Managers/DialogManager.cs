@@ -90,7 +90,7 @@ namespace GameClient
             }
         }
 
-        public static void setInputReserve()
+        public static void SetInputReserve()
         {
             currentDialogInputs.CacheInputs();
             inputReserve = new List<object>(inputCache);

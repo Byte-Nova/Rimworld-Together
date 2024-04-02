@@ -53,7 +53,11 @@ namespace GameClient
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(raidDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate { DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...", delegate { PrepareMapForRaid(mapDetailsJSON); })); };
+            Action r1 = delegate 
+            { 
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...", 
+                    delegate { PrepareMapForRaid(mapDetailsJSON); })); 
+            };
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {

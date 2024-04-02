@@ -1,8 +1,8 @@
 ﻿using HugsLib.Utils;
 using RimWorld;
+using System;
 using UnityEngine;
 using Verse;
-using System;
 
 namespace GameClient
 {
@@ -13,29 +13,26 @@ namespace GameClient
         private string title = "WAIT";
         private string description = "";
 
-        int FramesRan = 0;
+        private int framesRan = 0;
 
-        Action ActionToWaitOn;
+        Action actionToWaitOn;
 
-        public RT_Dialog_Wait(string description, Action ActionToWaitOn = null)
+        public RT_Dialog_Wait(string description, Action actionToWaitOn = null)
         {
             this.description = description;
+            this.actionToWaitOn = actionToWaitOn;
 
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
-            this.ActionToWaitOn = ActionToWaitOn;
-            //soundClose = SoundDefOf.CommsWindow_Close;
-            this.
+
             closeOnAccept = false;
             closeOnCancel = false;
-
         }
-
 
         public override void DoWindowContents(Rect rect)
         {
-            //AllowCloseDialog();
+            AllowCloseDialog();
 
             float centeredX = rect.width / 2;
             float horizontalLineDif = Text.CalcSize(description).y + StandardMargin / 2;
@@ -53,20 +50,22 @@ namespace GameClient
             //The wait dialog will close itself and begin running the process
             //The box won't be "undrawn" until after the process finishes
             //magic voodoo witchery
-            if ((ActionToWaitOn != null) && (FramesRan == 5)) {
-                DialogManager.PopDialog();
-            }
-            FramesRan++;
+
+            if ((actionToWaitOn != null) && (framesRan >= 5)) DialogManager.PopDialog();
+            else framesRan++;
         }
 
         public override void PostClose()
         {
             base.PostOpen();
-            if(ActionToWaitOn != null) ActionToWaitOn.Invoke();
+
+            if (actionToWaitOn != null) actionToWaitOn.Invoke();
         }
 
         private void AllowCloseDialog()
         {
+            if (!ServerValues.isAdmin) return;
+
             if (HugsLibUtility.ShiftIsHeld) closeOnCancel = true;
             else closeOnCancel = false;
         }
