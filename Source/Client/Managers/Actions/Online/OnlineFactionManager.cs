@@ -58,7 +58,6 @@ namespace GameClient
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifestJSON);
                 Network.listener.EnqueuePacket(packet);
-                DialogManager.clearStack();
             };
 
             Action r2 = delegate
@@ -243,9 +242,9 @@ namespace GameClient
 
         private static void OnFactionGetInvited(FactionManifestJSON factionManifest)
         {
-            DialogManager.clearStack();
             Action r1 = delegate
             {
+                DialogManager.PopDialog();
                 ServerValues.hasFaction = true;
 
                 factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.AcceptInvite).ToString();
@@ -272,7 +271,7 @@ namespace GameClient
 
         private static void OnFactionMemberList(FactionManifestJSON factionManifest)
         {
-            DialogManager.clearStack();
+            DialogManager.PopDialog(typeof(RT_Dialog_Wait));
 
             List<string> unraveledDetails = new List<string>();
             for (int i = 0; i < factionManifest.manifestComplexDetails.Count(); i++)

@@ -161,8 +161,8 @@ namespace GameClient
                     delegate
                     {
                         ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
-                        postChoosing();
                         DialogManager.clearStack();
+                        postChoosing();
                     }, DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);

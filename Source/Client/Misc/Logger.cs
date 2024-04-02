@@ -9,7 +9,7 @@ namespace GameClient
 {
     public static class Logger
     {
-        public static void WriteToConsole(string message, LogMode mode)
+        public static void WriteToConsole(string message, LogMode mode = LogMode.Message)
         {
             if (!ClientValues.verboseBool) return;
 

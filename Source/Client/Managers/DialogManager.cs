@@ -45,6 +45,7 @@ namespace GameClient
                     //Get an instance of the new window as RT_WindowInputs so input info can be retrieved later
                     if (window is RT_WindowInputs) currentDialogInputs = (RT_WindowInputs)window;
 
+
                     //draw the new window
                     Find.WindowStack.Add(window);
                 }
@@ -81,12 +82,29 @@ namespace GameClient
             }
         }
 
-        public static void PopDialog(Window window)
+        public static void PopDialog(Type type)
         {
-            if (windowStack.Count > 0)
+            Stack<Window> TempStack = new Stack<Window>();
+            //find the window to remove
+            while (windowStack.Count() != 0)
             {
-                Find.WindowStack.TryRemove(windowStack.Pop(), true);
-                if (windowStack.Count > 0) Find.WindowStack.Add(windowStack.Peek());
+                if (windowStack.Peek().GetType() == type)
+                {
+                    bool CurrentlyDrawn = Find.WindowStack.TryRemove(type, true);
+                    windowStack.Pop();
+                    if ((windowStack.Count > 0) && CurrentlyDrawn) Find.WindowStack.Add(windowStack.Peek());
+                    continue;
+                }
+                TempStack.Push(windowStack.Pop());
+            }
+
+            //Make 100% the stack is empty
+            windowStack.Clear();
+
+            //Put the items back into WindowStack
+            while (TempStack.Count() != 0)
+            {
+                windowStack.Push(TempStack.Pop());
             }
         }
 

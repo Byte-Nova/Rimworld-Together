@@ -20,6 +20,7 @@ namespace GameClient
 
             if (Current.ProgramState != ProgramState.Entry)
             {
+                DialogManager.clearStack();
                 LongEventHandler.QueueLongEvent(delegate { }, 
                     "Entry", "", doAsynchronously: false, null);
             }
