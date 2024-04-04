@@ -10,8 +10,6 @@ namespace GameClient
     {
         public static bool needsToGenerateWorld;
 
-        public static bool isSaving;
-
         public static bool isDisconnecting;
 
         public static bool isQuiting;
@@ -56,8 +54,6 @@ namespace GameClient
 
         public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
 
-        public static void ToggleSaving(bool mode) { isSaving = mode; }
-
         public static void ToggleDisconnecting(bool mode) { isDisconnecting = mode; }
 
         public static void ToggleQuiting(bool mode) { isQuiting = mode; }
@@ -73,7 +69,6 @@ namespace GameClient
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
-            ToggleSaving(false);
             ToggleDisconnecting(false);
             ToggleQuiting(false);
             ToggleReadyToPlay(false);
