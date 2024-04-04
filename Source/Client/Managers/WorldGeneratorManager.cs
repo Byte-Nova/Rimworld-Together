@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
@@ -26,8 +27,10 @@ namespace GameClient
 
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
+            Random rnd = new Random();
+
             WorldGeneratorManager.seedString = seedString;
-            WorldGeneratorManager.persistentRandomValue = 0;
+            WorldGeneratorManager.persistentRandomValue = rnd.Next(0, 2000000);
             WorldGeneratorManager.planetCoverage = planetCoverage;
             WorldGeneratorManager.rainfall = rainfall;
             WorldGeneratorManager.temperature = temperature;
@@ -78,7 +81,7 @@ namespace GameClient
 
         private static World GenerateWorld()
         {
-            Rand.PushState(0);
+            Rand.PushState(persistentRandomValue);
             Current.CreatingWorld = new World();
             Current.CreatingWorld.info.seedString = seedString;
             Current.CreatingWorld.info.persistentRandomValue = persistentRandomValue;
@@ -121,8 +124,6 @@ namespace GameClient
             {
                 worldDetailsJSON.factions.Add(faction.defName);
             }
-
-            worldDetailsJSON = XmlParser.GetWorldXmlData(worldDetailsJSON);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             Network.listener.EnqueuePacket(packet);
