@@ -35,7 +35,6 @@ namespace GameClient
 
                 MapManager.SendPlayerMapsToServer();
                 SaveManager.SendSavePartToServer(fileName);
-                ClientValues.ToggleSaving(false);
                 return false;
             }
         }
@@ -54,7 +53,6 @@ namespace GameClient
                 if (ClientValues.autosaveCurrentTicks >= ClientValues.autosaveInternalTicks && !GameDataSaveLoader.SavingIsTemporarilyDisabled)
                 {
                     SaveManager.ForceSave();
-                    ClientValues.autosaveCurrentTicks = 0;
                 }
 
                 return false;

@@ -3,6 +3,7 @@ using RimWorld;
 using Shared;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using Verse;
 
 namespace GameClient
@@ -11,16 +12,20 @@ namespace GameClient
     {
         public static string customSaveName = "ServerSave";
 
+        private static readonly Semaphore semaphore = new Semaphore(1, 1);
+
         public static void ForceSave()
         {
-            if (ClientValues.isSaving) return;
-            else
-            {
-                ClientValues.ToggleSaving(true);
-                FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
-                FticksSinceSave.SetValue(Current.Game.autosaver, 0);
-                Current.Game.autosaver.DoAutosave();
-            }
+            semaphore.WaitOne();
+
+            FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
+            FticksSinceSave.SetValue(Current.Game.autosaver, 0);
+
+            ClientValues.autosaveCurrentTicks = 0;
+
+            Current.Game.autosaver.DoAutosave();
+
+            semaphore.Release();
         }
 
         public static void ReceiveSavePartFromServer(Packet packet)
