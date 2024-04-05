@@ -132,24 +132,6 @@ namespace GameClient
                     else worldValuesFile.factions.Add(faction.def.defName);
                 }
 
-                WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-                XmlParser.GetWorldXmlData(worldDetailsJSON);
-
-                worldValuesFile.tileBiomeDeflate = worldDetailsJSON.tileBiomeDeflate;
-                worldValuesFile.tileElevationDeflate = worldDetailsJSON.tileElevationDeflate;
-                worldValuesFile.tileHillinessDeflate = worldDetailsJSON.tileHillinessDeflate;
-                worldValuesFile.tileTemperatureDeflate = worldDetailsJSON.tileTemperatureDeflate;
-                worldValuesFile.tileRainfallDeflate = worldDetailsJSON.tileRainfallDeflate;
-                worldValuesFile.tileSwampinessDeflate = worldDetailsJSON.tileSwampinessDeflate;
-                worldValuesFile.tileFeatureDeflate = worldDetailsJSON.tileFeatureDeflate;
-                worldValuesFile.tilePollutionDeflate = worldDetailsJSON.tilePollutionDeflate;
-                worldValuesFile.tileRoadOriginsDeflate = worldDetailsJSON.tileRoadOriginsDeflate;
-                worldValuesFile.tileRoadAdjacencyDeflate = worldDetailsJSON.tileRoadAdjacencyDeflate;
-                worldValuesFile.tileRoadDefDeflate = worldDetailsJSON.tileRoadDefDeflate;
-                worldValuesFile.tileRiverOriginsDeflate = worldDetailsJSON.tileRiverOriginsDeflate;
-                worldValuesFile.tileRiverAdjacencyDeflate = worldDetailsJSON.tileRiverAdjacencyDeflate;
-                worldValuesFile.tileRiverDefDeflate = worldDetailsJSON.tileRiverDefDeflate;
-
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
 
                 DialogManager.PushNewDialog(new RT_Dialog_OK("World file was saved correctly!"));
