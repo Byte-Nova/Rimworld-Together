@@ -27,10 +27,8 @@ namespace GameClient
 
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
-            Random rnd = new Random();
-
             WorldGeneratorManager.seedString = seedString;
-            WorldGeneratorManager.persistentRandomValue = rnd.Next(0, 2000000);
+            WorldGeneratorManager.persistentRandomValue = GenText.StableStringHash(seedString);
             WorldGeneratorManager.planetCoverage = planetCoverage;
             WorldGeneratorManager.rainfall = rainfall;
             WorldGeneratorManager.temperature = temperature;
