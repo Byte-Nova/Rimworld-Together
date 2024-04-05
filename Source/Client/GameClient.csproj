@@ -22,15 +22,33 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3901" />
-    <PackageReference Include="Lib.Harmony" Version="2.3.1.1" />
-    <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib" Version="10.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>Assemblies\0Harmony.dll</HintPath>
     </Reference>
+	  
+	  <Reference Include="Assembly-CSharp">
+		<HintPath>Assemblies\Assembly-CSharp.dll</HintPath>
+	  </Reference>
+	  
+	  <Reference Include="UnityEngine">
+		<HintPath>Assemblies\UnityEngine.dll</HintPath>
+	  </Reference>
+	  
+	  <Reference Include="UnityEngine.CoreModule">
+		<HintPath>Assemblies\UnityEngine.CoreModule.dll</HintPath>
+	  </Reference>
+	  
+	  <Reference Include="UnityEngine.IMGUIModule">
+		<HintPath>Assemblies\UnityEngine.IMGUIModule.dll</HintPath>
+	  </Reference>
+	  
+	  <Reference Include="UnityEngine.TextRenderingModule">
+		<HintPath>Assemblies\UnityEngine.TextRenderingModule.dll</HintPath>
+	  </Reference>
+	  
+	  <Reference Include="Newtonsoft.Json">
+		<HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
+	  </Reference>
   </ItemGroup>
 	
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />

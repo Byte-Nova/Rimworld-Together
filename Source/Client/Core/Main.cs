@@ -1,21 +1,22 @@
-﻿using HugsLib;
+﻿using HarmonyLib;
+using System.Reflection;
 using Verse;
 
 namespace GameClient
 {
     //Class that works as an entry point for the mod
 
-    public class Main : ModBase
+    public class Main
     {
-        //Unique mod identifier for RimWorld to use
-
-        public override string ModIdentifier => "RimworldTogether";
+        private static readonly string modID = "Rimworld Together";
 
         [StaticConstructorOnStartup]
         public static class RimworldTogether
         {
             static RimworldTogether() 
             {
+                ApplyHarmonyPathches();
+
                 Master.PrepareCulture();
                 Master.PreparePaths();
                 Master.CreateUnityDispatcher();
@@ -24,6 +25,12 @@ namespace GameClient
 
                 PreferenceManager.LoadClientPreferences();
             }
+        }
+
+        private static void ApplyHarmonyPathches()
+        {
+            Harmony harmony = new Harmony(modID);
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }
 }
