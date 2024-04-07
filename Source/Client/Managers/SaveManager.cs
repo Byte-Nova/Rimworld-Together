@@ -12,20 +12,13 @@ namespace GameClient
     {
         public static string customSaveName = "ServerSave";
 
-        private static readonly Semaphore semaphore = new Semaphore(1, 1);
-
         public static void ForceSave()
         {
-            semaphore.WaitOne();
-
             FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
             FticksSinceSave.SetValue(Current.Game.autosaver, 0);
 
             ClientValues.autosaveCurrentTicks = 0;
-
-            Current.Game.autosaver.DoAutosave();
-
-            semaphore.Release();
+            LongEventHandler.QueueLongEvent(Current.Game.autosaver.DoAutosave, "AutoSaving", doAsynchronously: false, null);
         }
 
         public static void ReceiveSavePartFromServer(Packet packet)
@@ -64,6 +57,7 @@ namespace GameClient
         {
             if (Network.listener.uploadManager == null)
             {
+                ClientValues.currentlySendingSaveToServer = true;
                 Log.Message($"[Rimworld Together] > Sending save to server");
 
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
@@ -84,7 +78,12 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);
             Network.listener.EnqueuePacket(packet);
 
-            if (Network.listener.uploadManager.isLastPart) Network.listener.uploadManager = null;
+            if (Network.listener.uploadManager.isLastPart) 
+            {
+                ClientValues.currentlySendingSaveToServer = false;
+                Network.listener.uploadManager = null; 
+            }
+
         }
     }
 }

@@ -16,6 +16,10 @@ namespace GameClient
 
         public static bool isReadyToPlay;
 
+        public static bool currentlySavingGame;
+
+        public static bool currentlySendingSaveToServer;
+
         //Do not change manually
         public static bool autoDenyTransfers;
 
