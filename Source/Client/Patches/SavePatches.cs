@@ -12,31 +12,35 @@ namespace GameClient
         public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
             if (!Network.isConnectedToServer) return true;
-            else
+            if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return true;
+
+            ClientValues.ToggleSavingGame(true);
+
+            ClientValues.ForcePermadeath();
+            ClientValues.ManageDevOptions();
+            CustomDifficultyManager.EnforceCustomDifficulty();
+
+            SaveManager.customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+            fileName = SaveManager.customSaveName;
+
+            try
             {
-                ClientValues.ForcePermadeath();
-                ClientValues.ManageDevOptions();
-                CustomDifficultyManager.EnforceCustomDifficulty();
-
-                SaveManager.customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
-                fileName = SaveManager.customSaveName;
-
-                try
+                SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
                 {
-                    SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
-                    {
-                        ScribeMetaHeaderUtility.WriteMetaHeader();
-                        Game target = Current.Game;
-                        Scribe_Deep.Look(ref target, "game");
-                    }, Find.GameInfo.permadeathMode);
-                    ___lastSaveTick = Find.TickManager.TicksGame;
-                }
-                catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
-
-                MapManager.SendPlayerMapsToServer();
-                SaveManager.SendSavePartToServer(fileName);
-                return false;
+                    ScribeMetaHeaderUtility.WriteMetaHeader();
+                    Game target = Current.Game;
+                    Scribe_Deep.Look(ref target, "game");
+                }, Find.GameInfo.permadeathMode);
+                ___lastSaveTick = Find.TickManager.TicksGame;
             }
+            catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
+
+            MapManager.SendPlayerMapsToServer();
+            SaveManager.SendSavePartToServer(fileName);
+
+            ClientValues.ToggleSavingGame(false);
+
+            return false;
         }
     }
 
