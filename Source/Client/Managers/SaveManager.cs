@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using Shared;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Verse;
@@ -18,7 +20,9 @@ namespace GameClient
             FticksSinceSave.SetValue(Current.Game.autosaver, 0);
 
             ClientValues.autosaveCurrentTicks = 0;
-            Current.Game.autosaver.DoAutosave();
+
+            customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+            GameDataSaveLoader.SaveGame(customSaveName);
         }
 
         public static void ReceiveSavePartFromServer(Packet packet)
@@ -84,7 +88,6 @@ namespace GameClient
                 ClientValues.ToggleSendingSaveToServer(false);
                 Network.listener.uploadManager = null; 
             }
-
         }
     }
 }
