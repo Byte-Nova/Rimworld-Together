@@ -16,9 +16,9 @@ namespace GameClient
 
         public static bool isReadyToPlay;
 
-        public static bool currentlySavingGame;
+        public static bool isSavingGame;
 
-        public static bool currentlySendingSaveToServer;
+        public static bool isSendingSaveToServer;
 
         //Do not change manually
         public static bool autoDenyTransfers;
@@ -70,6 +70,10 @@ namespace GameClient
 
         public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
 
+        public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
+
+        public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
+
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
@@ -78,6 +82,8 @@ namespace GameClient
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleVisit(false);
+            ToggleSavingGame(false);
+            ToggleSendingSaveToServer(false);
 
             chosenSettlement = null;
             chosenCaravan = null;

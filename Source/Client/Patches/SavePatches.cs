@@ -12,9 +12,9 @@ namespace GameClient
         public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
             if (!Network.isConnectedToServer) return true;
-            if (ClientValues.currentlySavingGame || ClientValues.currentlySendingSaveToServer) return true;
+            if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return true;
 
-            ClientValues.currentlySavingGame = true;
+            ClientValues.ToggleSavingGame(true);
 
             ClientValues.ForcePermadeath();
             ClientValues.ManageDevOptions();
@@ -38,7 +38,7 @@ namespace GameClient
             MapManager.SendPlayerMapsToServer();
             SaveManager.SendSavePartToServer(fileName);
 
-            ClientValues.currentlySavingGame = false;
+            ClientValues.ToggleSavingGame(false);
 
             return false;
         }

@@ -18,7 +18,7 @@ namespace GameClient
             FticksSinceSave.SetValue(Current.Game.autosaver, 0);
 
             ClientValues.autosaveCurrentTicks = 0;
-            LongEventHandler.QueueLongEvent(Current.Game.autosaver.DoAutosave, "AutoSaving", doAsynchronously: false, null);
+            Current.Game.autosaver.DoAutosave();
         }
 
         public static void ReceiveSavePartFromServer(Packet packet)
@@ -57,7 +57,8 @@ namespace GameClient
         {
             if (Network.listener.uploadManager == null)
             {
-                ClientValues.currentlySendingSaveToServer = true;
+                ClientValues.ToggleSendingSaveToServer(true);
+
                 Log.Message($"[Rimworld Together] > Sending save to server");
 
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
@@ -80,7 +81,7 @@ namespace GameClient
 
             if (Network.listener.uploadManager.isLastPart) 
             {
-                ClientValues.currentlySendingSaveToServer = false;
+                ClientValues.ToggleSendingSaveToServer(false);
                 Network.listener.uploadManager = null; 
             }
 
