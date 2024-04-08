@@ -4,11 +4,25 @@ namespace GameServer
 {
     public static class ChatManager
     {
+        private static void WriteToLogs( string user, string message )
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append( $"[{DateTime.Now:HH:mm:ss}] | [" + user + "]: " + message );
+            stringBuilder.Append( Environment.NewLine );
+    
+            DateTime dateTime = DateTime.Now.Date;
+            string nowFileName = ( dateTime.Year + "-" + dateTime.Month + "-" + dateTime.Day ).ToString();
+            string nowFullPath = Master.chatPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+    
+            File.AppendAllText( nowFullPath, stringBuilder.ToString() );
+            stringBuilder.Clear();
+        }
+
         public static string[] defaultJoinMessages = new string[]
         {
             "Welcome to the global chat!", "Please be considerate with others and have fun!", "Use '/help' to check available commands"
         };
-
+    
         public static void ParseClientMessages(ServerClient client, Packet packet)
         {
             ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
@@ -41,6 +55,7 @@ namespace GameServer
             ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
             for(int i = 0; i < chatMessagesJSON.messages.Count(); i++)
             {
+                WriteToLogs( chatMessagesJSON.usernames[i], chatMessagesJSON.messages[i] );
                 if (client.isAdmin)
                 {
                     chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
@@ -75,6 +90,7 @@ namespace GameServer
                 client.listener.EnqueuePacket(packet);
             }
 
+            WriteToLogs( "CONSOLE", messageToSend );
             Logger.WriteToConsole($"[Chat] > {"CONSOLE"} > {"127.0.0.1"} > {chatMessagesJSON.messages[0]}");
         }
 
