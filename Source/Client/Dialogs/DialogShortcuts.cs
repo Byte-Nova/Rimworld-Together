@@ -8,16 +8,6 @@ namespace GameClient
 {
     public static class DialogShortcuts
     {
-        public static void ShowRegisteredDialog()
-        {
-            DialogManager.PopWaitDialog();
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You have been successfully registered!",
-                "You are now able to login using your new account"});
-
-            DialogManager.PushNewDialog(d1);
-        }
-
         public static void ShowLoginOrRegisterDialogs()
         {
             RT_Dialog_3Input a1 = new RT_Dialog_3Input(
@@ -203,6 +193,9 @@ namespace GameClient
                 registerDetails.password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
                 registerDetails.clientVersion = CommonValues.executableVersion;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
+
+                ChatManager.username = registerDetails.username;
+                PreferenceManager.SaveLoginDetails(DialogManager.dialog3ResultOne, DialogManager.dialog3ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
                 Network.listener.EnqueuePacket(packet);
