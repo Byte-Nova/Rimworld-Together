@@ -23,13 +23,14 @@ namespace GameClient
         {
             if (TryConnectToServer())
             {
-                DialogManager.PopWaitDialog();
                 SiteManager.SetSiteDefs();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
                 Threader.GenerateThread(Threader.Mode.Sender);
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
+
+                if (!ClientValues.isQuickConnecting) DialogShortcuts.ShowLoginOrRegisterDialogs();
 
                 Log.Message($"[Rimworld Together] > Connected to server");
             }

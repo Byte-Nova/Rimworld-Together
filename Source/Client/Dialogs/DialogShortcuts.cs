@@ -45,7 +45,9 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    PreferenceManager.LoadLoginDetails();
+                    string[] details = PreferenceManager.LoadLoginDetails();
+                    DialogManager.dialog2Input.inputOneResult = details[0];
+                    DialogManager.dialog2Input.inputTwoResult = details[1];
                 },
                 delegate { Network.listener.disconnectFlag = true; });
 
@@ -94,7 +96,9 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    PreferenceManager.LoadConnectionDetails();
+                    string[] details = PreferenceManager.LoadConnectionDetails();
+                    DialogManager.dialog2Input.inputOneResult = details[0];
+                    DialogManager.dialog2Input.inputTwoResult = details[1];
                 }, null);
 
             DialogManager.PushNewDialog(newDialog);
