@@ -27,6 +27,9 @@ namespace GameClient
         public static bool autoRejectSiteRewards;
 
         //Do not change manually
+        public static bool muteSoundBool;
+
+        //Do not change manually
         public static bool verboseBool;
 
         public static bool isInTransfer;

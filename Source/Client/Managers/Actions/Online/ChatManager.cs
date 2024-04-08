@@ -11,6 +11,9 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    //TODO
+    //Apply different sounds depending on the message type, since right now only "Own" and "System" play
+
     [DefOf]
     public static class SoundDefs
     {
@@ -56,42 +59,41 @@ namespace GameClient
 
         public static void SendMessage( string messageToSend )
         {
-          SoundDefs.OwnChatDing.PlayOneShotOnCamera();
+            SoundDefs.OwnChatDing.PlayOneShotOnCamera();
     
-          ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
-          chatMessagesJSON.usernames.Add( username );
-          chatMessagesJSON.messages.Add( messageToSend );
+            ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
+            chatMessagesJSON.usernames.Add(username);
+            chatMessagesJSON.messages.Add(messageToSend);
     
-          Packet packet = Packet.CreatePacketFromJSON( nameof( PacketHandler.ChatPacket ), chatMessagesJSON );
-          Network.listener.EnqueuePacket( packet );
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
+            Network.listener.EnqueuePacket(packet);
         }
     
-        public static void ReceiveMessages( Packet packet )
+        public static void ReceiveMessages(Packet packet)
         {
-          ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject( packet.contents );
-          bool doSound = false;
-          for ( int i = 0 ; i < chatMessagesJSON.usernames.Count() ; i++ ) {
-            if ( chatMessagesJSON.usernames[i] != username ) doSound = true;        
+            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
+
+            bool doSound = false;
+            for (int i = 0; i < chatMessagesJSON.usernames.Count(); i++) 
+            {
+                if (chatMessagesJSON.usernames[i] != username) doSound = true;        
             
-            AddMessageToChat(
-              chatMessagesJSON.usernames[i],
-              chatMessagesJSON.messages[i],
-              (UserColor)int.Parse( chatMessagesJSON.userColors[i] ),
-              (MessageColor)int.Parse( chatMessagesJSON.messageColors[i] )
-            );
-          }
-          if ( doSound ) {
-            SoundDefs.SystemChatDing.PlayOneShotOnCamera();
-          }
-          ToggleNotificationIcon( true );
+                AddMessageToChat(chatMessagesJSON.usernames[i], chatMessagesJSON.messages[i], 
+                    (UserColor)int.Parse(chatMessagesJSON.userColors[i]), (MessageColor)int.Parse( chatMessagesJSON.messageColors[i] ));
+            }
+
+            if (!ClientValues.isReadyToPlay) return;
+            if (ClientValues.muteSoundBool) return;
+
+            if (doSound) SoundDefs.SystemChatDing.PlayOneShotOnCamera();
+            ToggleNotificationIcon(true);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
         {
             if (chatMessageCache.Count() > 100) chatMessageCache.RemoveAt(0);
 
-            chatMessageCache.Add($"[{DateTime.Now.ToString("hh:mm tt")}] " +
-                $"[{userColorDictionary[userColor]}{username}</color>]: " +
+            chatMessageCache.Add($"[{DateTime.Now.ToString("hh:mm tt")}] " + $"[{userColorDictionary[userColor]}{username}</color>]: " +
                 $"{messageColorDictionary[messageColor]}{message}</color>");
 
             if (chatAutoscroll) ClientValues.ToggleChatScroll(true);
