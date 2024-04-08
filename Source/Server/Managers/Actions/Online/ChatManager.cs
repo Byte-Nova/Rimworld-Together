@@ -1,4 +1,5 @@
 ﻿using Shared;
+using System.Text;
 
 namespace GameServer
 {
@@ -11,7 +12,8 @@ namespace GameServer
             stringBuilder.Append( Environment.NewLine );
     
             DateTime dateTime = DateTime.Now.Date;
-            string nowFileName = ( dateTime.Year + "-" + dateTime.Month + "-" + dateTime.Day ).ToString();
+
+            string nowFileName = ( dateTime.Year + "-" + dateTime.Month.ToString( "D2" ) + "-" + dateTime.Day.ToString( "D2" ) ).ToString();
             string nowFullPath = Master.chatPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
     
             File.AppendAllText( nowFullPath, stringBuilder.ToString() );
