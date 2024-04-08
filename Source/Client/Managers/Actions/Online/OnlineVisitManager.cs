@@ -83,7 +83,7 @@ namespace GameClient
             visitData.visitStepMode = ((int)VisitStepMode.Accept).ToString();
 
             MapData mapData = MapManager.ParseMap(visitMap, true, false, false, true);
-            visitData.mapDetails = Serializer.ConvertObjectToBytes(mapData);
+            visitData.mapData = Serializer.ConvertObjectToBytes(mapData);
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
             Network.listener.EnqueuePacket(packet);
         }
@@ -157,7 +157,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapData mapData = (MapData)Serializer.ConvertBytesToObject(visitData.mapDetails);
+            MapData mapData = (MapData)Serializer.ConvertBytesToObject(visitData.mapData);
 
             Action r1 = delegate { VisitMap(mapData, visitData); };
             if (ModManager.CheckIfMapHasConflictingMods(mapData))

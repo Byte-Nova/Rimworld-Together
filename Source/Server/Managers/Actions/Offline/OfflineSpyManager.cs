@@ -43,7 +43,7 @@ namespace GameServer
                 else
                 {
                     MapFileData mapDetails = MapManager.GetUserMapFromTile(spyData.targetTile);
-                    spyData.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
+                    spyData.mapData = Serializer.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                     client.listener.EnqueuePacket(packet);

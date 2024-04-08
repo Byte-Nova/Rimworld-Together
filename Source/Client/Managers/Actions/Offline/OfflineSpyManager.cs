@@ -82,7 +82,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(spyData.mapDetails);
+            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(spyData.mapData);
             MapData mapData = (MapData)Serializer.ConvertBytesToObject(mapFileData.mapData);
 
             Action r1 = delegate { PrepareMapForSpy(mapData); };

@@ -50,7 +50,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(raidData.mapDetails);
+            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(raidData.mapData);
             MapData mapData = (MapData)Serializer.ConvertBytesToObject(mapFileData.mapData);
 
             Action r1 = delegate { PrepareMapForRaid(mapData); };

@@ -32,7 +32,7 @@ namespace Shared
         public List<HumanData> factionHumans = new List<HumanData>();
         public List<HumanData> nonFactionHumans = new List<HumanData>();
 
-        //Animalss
+        //Animals
 
         public List<AnimalData> factionAnimals = new List<AnimalData>();
         public List<AnimalData> nonFactionAnimals = new List<AnimalData>();

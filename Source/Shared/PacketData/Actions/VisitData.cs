@@ -24,7 +24,7 @@ namespace Shared
         public List<string> actionTargetType = new List<string>();
         public List<string> pawnPositions = new List<string>();
 
-        public byte[] mapDetails;
+        public byte[] mapData;
         public List<string> mapMods = new List<string>();
     }
 }

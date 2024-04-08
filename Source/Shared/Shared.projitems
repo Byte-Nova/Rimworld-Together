@@ -31,9 +31,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\SettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionGoodwillData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\AnimalDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\HumanDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\ItemDetailsJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\AnimalData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\HumanData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\ItemData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\WorldData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />

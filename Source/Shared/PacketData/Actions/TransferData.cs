@@ -14,10 +14,10 @@ namespace Shared
 
         public string toTile;
 
-        public List<byte[]> humanDetailsJSONS = new List<byte[]>();
+        public List<byte[]> humanDatas = new List<byte[]>();
 
-        public List<byte[]> animalData = new List<byte[]>();
+        public List<byte[]> animalDatas = new List<byte[]>();
 
-        public List<byte[]> itemDetailsJSONS = new List<byte[]>();
+        public List<byte[]> itemDatas = new List<byte[]>();
     }
 }

@@ -9,6 +9,6 @@ namespace Shared
 
         public string targetTile;
 
-        public byte[] mapDetails;
+        public byte[] mapData;
     }
 }

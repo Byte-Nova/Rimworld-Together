@@ -43,7 +43,7 @@ namespace GameServer
                 else
                 {
                     MapFileData mapDetails = MapManager.GetUserMapFromTile(raidData.targetTile);
-                    raidData.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
+                    raidData.mapData = Serializer.ConvertObjectToBytes(mapDetails);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
                     client.listener.EnqueuePacket(packet);

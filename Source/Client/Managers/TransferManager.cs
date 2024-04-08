@@ -431,7 +431,7 @@ namespace GameClient
             {
                 Pawn pawn = thing as Pawn;
 
-                ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.ConvertObjectToBytes
+                ClientValues.outgoingManifest.humanDatas.Add(Serializer.ConvertObjectToBytes
                     (HumanScribeManager.HumanToString(pawn, false)));
 
                 if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
@@ -444,7 +444,7 @@ namespace GameClient
             {
                 Pawn pawn = thing as Pawn;
 
-                ClientValues.outgoingManifest.animalData.Add(Serializer.ConvertObjectToBytes
+                ClientValues.outgoingManifest.animalDatas.Add(Serializer.ConvertObjectToBytes
                     (AnimalScribeManager.AnimalToString(pawn)));
 
                 if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
@@ -455,7 +455,7 @@ namespace GameClient
 
             else
             {
-                ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.ConvertObjectToBytes
+                ClientValues.outgoingManifest.itemDatas.Add(Serializer.ConvertObjectToBytes
                     (ThingScribeManager.ItemToString(thing, thingCount)));
             }
         }
