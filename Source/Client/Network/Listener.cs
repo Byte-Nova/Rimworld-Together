@@ -128,8 +128,8 @@ namespace GameClient
                 {
                     Thread.Sleep(1000);
 
-                    KeepAliveJSON keepAliveJSON = new KeepAliveJSON();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.KeepAlivePacket), keepAliveJSON);
+                    KeepAliveData keepAliveData = new KeepAliveData();
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.KeepAlivePacket), keepAliveData);
                     EnqueuePacket(packet);
                 }
             }

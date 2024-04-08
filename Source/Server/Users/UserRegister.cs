@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void TryRegisterUser(ServerClient client, Packet packet)
         {
-            JoinDetailsJSON registerDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            UserData registerDetails = (UserData)Serializer.ConvertBytesToObject(packet.contents);
 
             if (!UserManager.CheckIfUserUpdated(client, registerDetails)) return;
 

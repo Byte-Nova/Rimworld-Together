@@ -3,9 +3,9 @@
 namespace Shared
 {
     [Serializable]
-    public class SpyDetailsJSON
+    public class RaidData
     {
-        public string spyStepMode;
+        public string raidStepMode;
 
         public string targetTile;
 

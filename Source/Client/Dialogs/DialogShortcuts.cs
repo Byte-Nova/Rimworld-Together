@@ -159,7 +159,7 @@ namespace GameClient
 
             if (!isInvalid)
             {
-                JoinDetailsJSON loginDetails = new JoinDetailsJSON();
+                UserData loginDetails = new UserData();
                 loginDetails.username = DialogManager.dialog2ResultOne;
                 loginDetails.password = Hasher.GetHashFromString(DialogManager.dialog2ResultTwo);
                 loginDetails.clientVersion = CommonValues.executableVersion;
@@ -194,7 +194,7 @@ namespace GameClient
 
             if (!isInvalid)
             {
-                JoinDetailsJSON registerDetails = new JoinDetailsJSON();
+                UserData registerDetails = new UserData();
                 registerDetails.username = DialogManager.dialog3ResultOne;
                 registerDetails.password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
                 registerDetails.clientVersion = CommonValues.executableVersion;

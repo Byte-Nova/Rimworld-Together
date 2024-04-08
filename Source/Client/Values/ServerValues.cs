@@ -15,23 +15,23 @@ namespace GameClient
 
         public static List<string> currentPlayerNames = new List<string>();
 
-        public static void SetServerParameters(ServerOverallJSON serverOverallJSON)
+        public static void SetServerParameters(ServerGlobalData serverGlobalData)
         {
-            AllowCustomScenarios = serverOverallJSON.AllowCustomScenarios;
+            AllowCustomScenarios = serverGlobalData.AllowCustomScenarios;
         }
 
-        public static void SetAccountDetails(ServerOverallJSON serverOverallJSON)
+        public static void SetAccountDetails(ServerGlobalData serverGlobalData)
         {
-            isAdmin = serverOverallJSON.isClientAdmin;
+            isAdmin = serverGlobalData.isClientAdmin;
 
-            hasFaction = serverOverallJSON.isClientFactionMember;
+            hasFaction = serverGlobalData.isClientFactionMember;
         }
 
         public static void SetServerPlayers(Packet packet)
         {
-            PlayerRecountJSON playerRecountJSON = (PlayerRecountJSON)Serializer.ConvertBytesToObject(packet.contents);
-            currentPlayers = int.Parse(playerRecountJSON.currentPlayers);
-            currentPlayerNames = playerRecountJSON.currentPlayerNames;
+            PlayerRecountData playerRecountData = (PlayerRecountData)Serializer.ConvertBytesToObject(packet.contents);
+            currentPlayers = int.Parse(playerRecountData.currentPlayers);
+            currentPlayerNames = playerRecountData.currentPlayerNames;
         }
 
         public static void CleanValues()

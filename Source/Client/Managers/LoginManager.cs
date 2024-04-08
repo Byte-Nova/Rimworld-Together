@@ -12,7 +12,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            UserData loginDetailsJSON = (UserData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(loginDetailsJSON.tryResponse))
             {

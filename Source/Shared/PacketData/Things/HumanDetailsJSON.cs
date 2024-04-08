@@ -5,7 +5,7 @@ namespace Shared
 {
     [Serializable]
 
-    public class HumanDetailsJSON
+    public class HumanData
     {
         //Bio
 
@@ -61,13 +61,13 @@ namespace Shared
 
         //Apparel
 
-        public List<ItemDetailsJSON> equippedApparel = new List<ItemDetailsJSON>();
+        public List<ItemData> equippedApparel = new List<ItemData>();
         public List<bool> apparelWornByCorpse = new List<bool>();
 
         //Equipment
 
-        public ItemDetailsJSON equippedWeapon;
-        public List<ItemDetailsJSON> inventoryItems = new List<ItemDetailsJSON>();
+        public ItemData equippedWeapon;
+        public List<ItemData> inventoryItems = new List<ItemData>();
 
         //Misc
 

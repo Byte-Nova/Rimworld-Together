@@ -3,9 +3,9 @@
 namespace Shared
 {
     [Serializable]
-    public class SpyDetailsJSON
+    public class OfflineVisitData
     {
-        public string spyStepMode;
+        public string offlineVisitStepMode;
 
         public string targetTile;
 

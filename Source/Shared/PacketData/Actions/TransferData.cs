@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class TransferManifestJSON
+    public class TransferData
     {
         public string transferStepMode;
 
@@ -16,7 +16,7 @@ namespace Shared
 
         public List<byte[]> humanDetailsJSONS = new List<byte[]>();
 
-        public List<byte[]> animalDetailsJSON = new List<byte[]>();
+        public List<byte[]> animalData = new List<byte[]>();
 
         public List<byte[]> itemDetailsJSONS = new List<byte[]>();
     }

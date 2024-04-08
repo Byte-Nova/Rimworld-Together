@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void SendServerOveralls(ServerClient client)
         {
-            ServerOverallJSON so = new ServerOverallJSON();
+            ServerGlobalData so = new ServerGlobalData();
 
             so = GetServerValues(so);
 
@@ -28,7 +28,7 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
         }
 
-        private static ServerOverallJSON GetServerValues(ServerOverallJSON so)
+        private static ServerGlobalData GetServerValues(ServerGlobalData so)
         {
             ServerValuesFile svf = Master.serverValues;
             so.AllowCustomScenarios = svf.AllowCustomScenarios;
@@ -36,7 +36,7 @@ namespace GameServer
             return so;
         }
 
-        private static ServerOverallJSON GetClientValues(ServerClient client, ServerOverallJSON so)
+        private static ServerGlobalData GetClientValues(ServerClient client, ServerGlobalData so)
         {
             so.isClientAdmin = client.isAdmin;
 
@@ -45,7 +45,7 @@ namespace GameServer
             return so;
         }
 
-        private static ServerOverallJSON GetEventCosts(ServerOverallJSON so)
+        private static ServerGlobalData GetEventCosts(ServerGlobalData so)
         {
             EventValuesFile ev = Master.eventValues;
             so.RaidCost = ev.RaidCost;
@@ -61,7 +61,7 @@ namespace GameServer
             return so;
         }
 
-        private static ServerOverallJSON GetSiteDetails(ServerOverallJSON so)
+        private static ServerGlobalData GetSiteDetails(ServerGlobalData so)
         {
             SiteValuesFile sv = Master.siteValues;
             so.PersonalFarmlandCost = sv.PersonalFarmlandCost;
@@ -103,7 +103,7 @@ namespace GameServer
             return so;
         }
 
-        private static ServerOverallJSON GetServerDifficulty(ServerOverallJSON so)
+        private static ServerGlobalData GetServerDifficulty(ServerGlobalData so)
         {
             DifficultyValuesFile dv = Master.difficultyValues;
             so.UsingCustomDifficulty = dv.UseCustomDifficulty;
@@ -154,7 +154,7 @@ namespace GameServer
             return so;
         }
 
-        private static ServerOverallJSON GetServerSettlements(ServerClient client, ServerOverallJSON so)
+        private static ServerGlobalData GetServerSettlements(ServerClient client, ServerGlobalData so)
         {
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
@@ -164,21 +164,21 @@ namespace GameServer
                 {
                     so.settlementTiles.Add(settlement.tile);
                     so.settlementOwners.Add(settlement.owner);
-                    so.settlementLikelihoods.Add(LikelihoodManager.GetSettlementLikelihood(client, settlement).ToString());
+                    so.settlementGoodwills.Add(GoodwillManager.GetSettlementGoodwill(client, settlement).ToString());
                 }
             }
 
             return so;
         }
 
-        private static ServerOverallJSON GetServerSites(ServerClient client, ServerOverallJSON so)
+        private static ServerGlobalData GetServerSites(ServerClient client, ServerGlobalData so)
         {
             SiteFile[] sites = SiteManager.GetAllSites();
             foreach (SiteFile site in sites)
             {
                 so.siteTiles.Add(site.tile);
                 so.siteOwners.Add(site.owner);
-                so.siteLikelihoods.Add(LikelihoodManager.GetSiteLikelihood(client, site).ToString());
+                so.siteGoodwills.Add(GoodwillManager.GetSiteGoodwill(client, site).ToString());
                 so.siteTypes.Add(site.type);
                 so.isFromFactions.Add(site.isFromFaction);
             }
@@ -186,7 +186,7 @@ namespace GameServer
             return so;
         }
 
-        private static ServerOverallJSON GetActionsCost(ServerClient client, ServerOverallJSON so)
+        private static ServerGlobalData GetActionsCost(ServerClient client, ServerGlobalData so)
         {
             ActionValuesFile av = Master.actionValues;
 

@@ -6,12 +6,12 @@ namespace GameServer
     {
         public static void ParseOfflineVisitPacket(ServerClient client, Packet packet)
         {
-            OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            OfflineVisitData offlineVisitData = (OfflineVisitData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(offlineVisitDetails.offlineVisitStepMode))
+            switch (int.Parse(offlineVisitData.offlineVisitStepMode))
             {
                 case (int)CommonEnumerators.OfflineVisitStepMode.Request:
-                    SendRequestedMap(client, offlineVisitDetails);
+                    SendRequestedMap(client, offlineVisitData);
                     break;
 
                 case (int)CommonEnumerators.OfflineVisitStepMode.Deny:
@@ -20,32 +20,32 @@ namespace GameServer
             }
         }
 
-        private static void SendRequestedMap(ServerClient client, OfflineVisitDetailsJSON offlineVisitDetails)
+        private static void SendRequestedMap(ServerClient client, OfflineVisitData offlineVisitData)
         {
-            if (!MapManager.CheckIfMapExists(offlineVisitDetails.targetTile))
+            if (!MapManager.CheckIfMapExists(offlineVisitData.targetTile))
             {
-                offlineVisitDetails.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
+                offlineVisitData.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
                 client.listener.EnqueuePacket(packet);
             }
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(offlineVisitDetails.targetTile);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(offlineVisitData.targetTile);
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    offlineVisitDetails.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
+                    offlineVisitData.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
                     client.listener.EnqueuePacket(packet);
                 }
 
                 else
                 {
-                    MapFileJSON mapDetails = MapManager.GetUserMapFromTile(offlineVisitDetails.targetTile);
-                    offlineVisitDetails.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
+                    MapFileData mapDetails = MapManager.GetUserMapFromTile(offlineVisitData.targetTile);
+                    offlineVisitData.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetails);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
                     client.listener.EnqueuePacket(packet);
                 }
             }

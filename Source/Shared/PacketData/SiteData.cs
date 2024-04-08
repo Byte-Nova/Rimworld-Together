@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class SiteDetailsJSON
+    public class SiteData
     {
         public string siteStep;
 
@@ -16,7 +16,7 @@ namespace Shared
 
         public byte[] workerData;
 
-        public string likelihood;
+        public string goodwill;
 
         public bool isFromFaction;
 

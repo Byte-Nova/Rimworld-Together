@@ -24,17 +24,17 @@ namespace Shared
 
         //Things
 
-        public List<ItemDetailsJSON> factionThings = new List<ItemDetailsJSON>();
-        public List<ItemDetailsJSON> nonFactionThings = new List<ItemDetailsJSON>();
+        public List<ItemData> factionThings = new List<ItemData>();
+        public List<ItemData> nonFactionThings = new List<ItemData>();
 
         //Humans
 
-        public List<HumanDetailsJSON> factionHumans = new List<HumanDetailsJSON>();
-        public List<HumanDetailsJSON> nonFactionHumans = new List<HumanDetailsJSON>();
+        public List<HumanData> factionHumans = new List<HumanData>();
+        public List<HumanData> nonFactionHumans = new List<HumanData>();
 
         //Animalss
 
-        public List<AnimalDetailsJSON> factionAnimals = new List<AnimalDetailsJSON>();
-        public List<AnimalDetailsJSON> nonFactionAnimals = new List<AnimalDetailsJSON>();
+        public List<AnimalData> factionAnimals = new List<AnimalData>();
+        public List<AnimalData> nonFactionAnimals = new List<AnimalData>();
     }
 }

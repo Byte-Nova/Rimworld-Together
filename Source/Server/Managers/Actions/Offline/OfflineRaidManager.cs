@@ -6,12 +6,12 @@ namespace GameServer
     {
         public static void ParseRaidPacket(ServerClient client, Packet packet)
         {
-            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            RaidData raidData = (RaidData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(raidDetailsJSON.raidStepMode))
+            switch (int.Parse(raidData.raidStepMode))
             {
                 case (int)CommonEnumerators.RaidStepMode.Request:
-                    SendRequestedMap(client, raidDetailsJSON);
+                    SendRequestedMap(client, raidData);
                     break;
 
                 case (int)CommonEnumerators.RaidStepMode.Deny:
@@ -20,32 +20,32 @@ namespace GameServer
             }
         }
 
-        private static void SendRequestedMap(ServerClient client, RaidDetailsJSON raidDetailsJSON)
+        private static void SendRequestedMap(ServerClient client, RaidData raidData)
         {
-            if (!MapManager.CheckIfMapExists(raidDetailsJSON.targetTile))
+            if (!MapManager.CheckIfMapExists(raidData.targetTile))
             {
-                raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
+                raidData.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
                 client.listener.EnqueuePacket(packet);
             }
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(raidDetailsJSON.targetTile);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(raidData.targetTile);
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
+                    raidData.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
                     client.listener.EnqueuePacket(packet);
                 }
 
                 else
                 {
-                    MapFileJSON mapDetails = MapManager.GetUserMapFromTile(raidDetailsJSON.targetTile);
-                    raidDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
+                    MapFileData mapDetails = MapManager.GetUserMapFromTile(raidData.targetTile);
+                    raidData.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
                     client.listener.EnqueuePacket(packet);
                 }
             }

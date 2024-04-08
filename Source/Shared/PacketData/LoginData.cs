@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class LoginData
+    public class UserData
     {
         public string username;
 
