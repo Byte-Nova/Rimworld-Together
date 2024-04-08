@@ -76,6 +76,7 @@ namespace GameClient
             Log.Message($"[Rimworld Together] > Disconnected from server");
 
             if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
+            else if (ClientValues.isDisconnecting) DisconnectionManager.DisconnectToMenu();
             else
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
