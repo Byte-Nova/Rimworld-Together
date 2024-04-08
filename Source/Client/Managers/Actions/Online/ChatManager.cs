@@ -6,6 +6,7 @@ using RimWorld;
 using Shared;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 using static Shared.CommonEnumerators;
 
 namespace GameClient
