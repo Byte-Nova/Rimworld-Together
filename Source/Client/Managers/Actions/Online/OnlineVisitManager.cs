@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using TMPro;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -86,11 +84,11 @@ namespace GameClient
 
         private static void VisitMap(MapDetailsJSON mapDetailsJSON, VisitDetailsJSON visitDetailsJSON)
         {
+            ClientValues.ToggleVisit(true);
+
             visitMap = OnlineVisitHelper.GetMapForVisit(FetchMode.Player, mapDetailsJSON);
             factionPawns = OnlineVisitHelper.GetCaravanPawns(FetchMode.Player, null);
             mapThings = OnlineVisitHelper.GetMapThings(visitMap);
-
-            Log.Warning(mapThings.Count().ToString());
 
             syncedTime = false;
 
@@ -126,11 +124,11 @@ namespace GameClient
         {
             Action r1 = delegate
             {
+                ClientValues.ToggleVisit(true);
+
                 visitMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == int.Parse(visitDetailsJSON.targetTile)).Map;
                 factionPawns = OnlineVisitHelper.GetMapPawns(FetchMode.Host, null);
                 mapThings = OnlineVisitHelper.GetMapThings(visitMap);
-
-                Log.Warning(mapThings.Count().ToString());
 
                 syncedTime = true;
 
@@ -233,8 +231,6 @@ namespace GameClient
     {
         public static void StartActionClock()
         {
-            ClientValues.ToggleVisit(true);
-
             while (ClientValues.isInVisit)
             {
                 Thread.Sleep(1000);
@@ -706,7 +702,16 @@ namespace GameClient
                 else thingsInMap.Add(thing);
             }
 
-            return thingsInMap.ToArray();
+            string toPrint = "";
+            foreach(Thing thing in thingsInMap)
+            {
+                toPrint += $"{thing.def.defName}{Environment.NewLine}";
+            }
+            Log.Warning(toPrint);
+
+            Debug.LogWarning(thingsInMap.Count());
+
+            return thingsInMap.OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToArray();
         }
 
         public static IntVec3 StringToVector3(string data)

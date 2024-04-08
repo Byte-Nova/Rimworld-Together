@@ -20,7 +20,8 @@ namespace Shared
         //Tiles
 
         public List<string> tileDefNames = new List<string>();
-        public List<string> roofDefNames = new List<string>();
+        public List<string> tileRoofDefNames = new List<string>();
+        public List<bool> tilePollutions = new List<bool>();
 
         //Things
 
@@ -32,7 +33,7 @@ namespace Shared
         public List<HumanDetailsJSON> factionHumans = new List<HumanDetailsJSON>();
         public List<HumanDetailsJSON> nonFactionHumans = new List<HumanDetailsJSON>();
 
-        //Animalss
+        //Animals
 
         public List<AnimalDetailsJSON> factionAnimals = new List<AnimalDetailsJSON>();
         public List<AnimalDetailsJSON> nonFactionAnimals = new List<AnimalDetailsJSON>();

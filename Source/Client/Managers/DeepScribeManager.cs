@@ -40,11 +40,14 @@ namespace GameClient
 
             GetPawnHediffs(pawn, humanDetailsJSON);
 
-            GetPawnXenotype(pawn, humanDetailsJSON);
+            if (ModsConfig.BiotechActive)
+            {
+                GetPawnXenotype(pawn, humanDetailsJSON);
 
-            GetPawnXenogenes(pawn, humanDetailsJSON);
+                GetPawnXenogenes(pawn, humanDetailsJSON);
 
-            GetPawnEndogenes(pawn, humanDetailsJSON);
+                GetPawnEndogenes(pawn, humanDetailsJSON);
+            }
 
             GetPawnStory(pawn, humanDetailsJSON);
 
@@ -77,11 +80,14 @@ namespace GameClient
 
             SetPawnHediffs(pawn, humanDetailsJSON);
 
-            SetPawnXenotype(pawn, humanDetailsJSON);
+            if (ModsConfig.BiotechActive)
+            {
+                SetPawnXenotype(pawn, humanDetailsJSON);
 
-            SetPawnXenogenes(pawn, humanDetailsJSON);
+                SetPawnXenogenes(pawn, humanDetailsJSON);
 
-            SetPawnEndogenes(pawn, humanDetailsJSON);
+                SetPawnEndogenes(pawn, humanDetailsJSON);
+            }
 
             SetPawnBioDetails(pawn, humanDetailsJSON);
 
@@ -1101,41 +1107,66 @@ namespace GameClient
     {
         //Functions
 
-        public static MapDetailsJSON MapToString(Map map, bool containsItems, bool containsHumans, bool containsAnimals)
+        public static MapDetailsJSON MapToString(Map map, bool containsThings, bool containsHumans, bool containsAnimals)
         {
             MapDetailsJSON mapDetailsJSON = new MapDetailsJSON();
 
-            GetMapTile(mapDetailsJSON, map);
+            GetMapPlanetTile(mapDetailsJSON, map);
 
             GetMapSize(mapDetailsJSON, map);
 
-            GetMapThings(mapDetailsJSON, map, containsItems, containsHumans, containsAnimals);
+            GetMapThings(mapDetailsJSON, map, containsThings, containsHumans, containsAnimals);
+
+            for (int z = 0; z < map.Size.z; ++z)
+            {
+                for (int x = 0; x < map.Size.x; ++x)
+                {
+                    GetMapTiles(mapDetailsJSON, map, x, z);
+
+                    GetMapCeilings(mapDetailsJSON, map, x, z);
+
+                    if (ModsConfig.BiotechActive) GetMapPollution(mapDetailsJSON, map, x, z);
+                }
+            }
 
             return mapDetailsJSON;
         }
 
-        public static Map StringToMap(MapDetailsJSON mapDetailsJSON, bool doItems, bool doFactionHumans, bool doNonFactionHumans, bool doAnimals, bool doNonFactionAnimals, bool lessLoot)
+        public static Map StringToMap(MapDetailsJSON mapDetailsJSON, bool doFactionThings, bool doFactionHumans, bool doNonFactionHumans, bool doAnimals, bool doNonFactionAnimals, bool lessLoot)
         {
             Map map = SetEmptyMap(mapDetailsJSON);
 
-            SetMapThings(mapDetailsJSON, map, doItems, lessLoot);
+            SetMapThings(mapDetailsJSON, map, doFactionThings, lessLoot);
 
             if (doFactionHumans || doNonFactionHumans) SetMapHumans(mapDetailsJSON, map, doFactionHumans, doNonFactionHumans);
 
             if (doAnimals || doNonFactionAnimals) SetMapAnimals(mapDetailsJSON, map, doAnimals, doNonFactionAnimals);
 
-            SetMapTerrain(mapDetailsJSON, map);
+            int index = 0;
+            for (int z = 0; z < map.Size.z; ++z)
+            {
+                for (int x = 0; x < map.Size.x; ++x)
+                {
+                    SetMapTile(mapDetailsJSON, map, x, z, index);
 
-            SetMapFog(map);
+                    SetMapCeiling(mapDetailsJSON, map, x, z, index);
 
-            SetMapRoof(map);
+                    if (ModsConfig.BiotechActive) SetMapPollution(mapDetailsJSON, map, x, z, index);
+
+                    index++;
+                }
+            }
+
+            ResetMapFog(map);
+
+            ResetMapRoofs(map);
 
             return map;
         }
 
         //Getters
 
-        private static void GetMapTile(MapDetailsJSON mapDetailsJSON, Map map)
+        private static void GetMapPlanetTile(MapDetailsJSON mapDetailsJSON, Map map)
         {
             mapDetailsJSON.mapTile = map.Tile.ToString();
         }
@@ -1145,20 +1176,20 @@ namespace GameClient
             mapDetailsJSON.mapSize = $"{map.Size.x}|{map.Size.y}|{map.Size.z}";
         }
 
-        private static void GetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool containsItems, bool containsHumans, bool containsAnimals)
+        private static void GetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool containsThings, bool containsHumans, bool containsAnimals)
         {
-            for (int z = 0; z < map.Size.z; ++z)
-            {
-                for (int x = 0; x < map.Size.x; ++x)
-                {
-                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+            //for (int z = 0; z < map.Size.z; ++z)
+            //{
+            //    for (int x = 0; x < map.Size.x; ++x)
+            //    {
+            //        IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
-                    mapDetailsJSON.tileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
+            //        mapDetailsJSON.tileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
 
-                    if (map.roofGrid.RoofAt(vectorToCheck) == null) mapDetailsJSON.roofDefNames.Add("null");
-                    else mapDetailsJSON.roofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
-                }
-            }
+            //        if (map.roofGrid.RoofAt(vectorToCheck) == null) mapDetailsJSON.roofDefNames.Add("null");
+            //        else mapDetailsJSON.roofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
+            //    }
+            //}
 
             foreach (Thing thing in map.listerThings.AllThings)
             {
@@ -1188,12 +1219,34 @@ namespace GameClient
 
                     if (thing.def.alwaysHaulable)
                     {
-                        if (containsItems) mapDetailsJSON.factionThings.Add(itemDetailsJSON);
+                        if (containsThings) mapDetailsJSON.factionThings.Add(itemDetailsJSON);
                         else continue;
                     }
                     else mapDetailsJSON.nonFactionThings.Add(itemDetailsJSON);
                 }
             }
+        }
+
+        private static void GetMapTiles(MapDetailsJSON mapDetailsJSON, Map map, int x, int z)
+        {
+            IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+
+            mapDetailsJSON.tileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
+        }
+
+        private static void GetMapPollution(MapDetailsJSON mapDetailsJSON, Map map, int x, int z)
+        {
+            IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+
+            mapDetailsJSON.tilePollutions.Add(map.pollutionGrid.IsPolluted(vectorToCheck));
+        }
+
+        private static void GetMapCeilings(MapDetailsJSON mapDetailsJSON, Map map, int x, int z)
+        {
+            IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+
+            if (map.roofGrid.RoofAt(vectorToCheck) == null) mapDetailsJSON.tileRoofDefNames.Add("null");
+            else mapDetailsJSON.tileRoofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
         }
 
         //Setters
@@ -1211,7 +1264,7 @@ namespace GameClient
             return toReturn;
         }
 
-        private static void SetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool doItems, bool lessLoot)
+        private static void SetMapThings(MapDetailsJSON mapDetailsJSON, Map map, bool doFactionThings, bool lessLoot)
         {
             List<Thing> thingsToGetInThisTile = new List<Thing>();
 
@@ -1225,9 +1278,9 @@ namespace GameClient
                 catch { }
             }
 
-            if (doItems)
+            if (doFactionThings)
             {
-                Random rnd = new Random();
+                System.Random rnd = new System.Random();
 
                 foreach (ItemDetailsJSON item in mapDetailsJSON.factionThings)
                 {
@@ -1251,6 +1304,42 @@ namespace GameClient
                 try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation); }
                 catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
             }
+        }
+
+        private static void SetMapTile(MapDetailsJSON mapDetailsJSON, Map map, int x, int z, int index)
+        {
+            IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+
+            try
+            {
+                TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
+                mapDetailsJSON.tileDefNames[index]);
+
+                map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
+            }
+            catch { Log.Warning($"Failed to set terrain at {vectorToCheck}"); }
+        }
+
+        private static void SetMapCeiling(MapDetailsJSON mapDetailsJSON, Map map, int x, int z, int index)
+        {
+            IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+
+            try
+            {
+                RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
+                            mapDetailsJSON.tileRoofDefNames[index]);
+
+                map.roofGrid.SetRoof(vectorToCheck, roofToUse);
+            }
+            catch { Log.Warning($"Failed to set roof at {vectorToCheck}"); }
+        }
+
+        private static void SetMapPollution(MapDetailsJSON mapDetailsJSON, Map map, int x, int z, int index)
+        {
+            IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+
+            try { map.pollutionGrid.SetPolluted(vectorToCheck, mapDetailsJSON.tilePollutions[index]); }
+            catch { Log.Warning($"Failed to set pollution at {vectorToCheck}"); }
         }
 
         private static void SetMapHumans(MapDetailsJSON mapDetailsJSON, Map map, bool doHumans, bool doNonFactionHumans)
@@ -1315,46 +1404,12 @@ namespace GameClient
             }
         }
 
-        private static void SetMapTerrain(MapDetailsJSON mapDetailsJSON, Map map)
-        {
-            int index = 0;
-
-            for (int z = 0; z < map.Size.z; ++z)
-            {
-                for (int x = 0; x < map.Size.x; ++x)
-                {
-                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
-
-                    try
-                    {
-                        TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
-                            mapDetailsJSON.tileDefNames[index]);
-
-                        map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
-
-                    }
-                    catch { Log.Warning($"Failed to set terrain at {vectorToCheck}"); }
-
-                    try
-                    {
-                        RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
-                                    mapDetailsJSON.roofDefNames[index]);
-
-                        map.roofGrid.SetRoof(vectorToCheck, roofToUse);
-                    }
-                    catch { Log.Warning($"Failed to set roof at {vectorToCheck}"); }
-
-                    index++;
-                }
-            }
-        }
-
-        private static void SetMapFog(Map map)
+        private static void ResetMapFog(Map map)
         {
             FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
         }
 
-        private static void SetMapRoof(Map map)
+        private static void ResetMapRoofs(Map map)
         {
             map.roofCollapseBuffer.Clear();
             map.roofGrid.Drawer.SetDirty();
