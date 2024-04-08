@@ -120,6 +120,10 @@
             "Shows all currently loaded mods",
             ModListCommandAction);
 
+        private static ServerCommand doSiteRewards = new ServerCommand("dositerewards", 0,
+            "Forces site rewards to run",
+            DoSiteRewardsCommandAction);
+
         private static ServerCommand eventCommand = new ServerCommand("event", 2,
             "Sends a command to the selecter players",
             EventCommandAction);
@@ -200,6 +204,7 @@
             eventCommand,
             eventAllCommand,
             eventListCommand,
+            doSiteRewards,
             broadcastCommand,
             serverMessageCommand,
             whitelistCommand,
@@ -462,6 +467,12 @@
                 Logger.WriteToConsole($"{str}", Logger.LogMode.Warning, writeToLogs: false);
             }
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
+        }
+
+        private static void DoSiteRewardsCommandAction()
+        {
+            Logger.WriteToConsole($"Forced site rewards", Logger.LogMode.Title);
+            SiteManager.SiteRewardTick();
         }
 
         private static void EventCommandAction()

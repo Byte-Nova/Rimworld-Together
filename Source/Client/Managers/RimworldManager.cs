@@ -46,7 +46,7 @@ namespace GameClient
             int silverInCaravan = 0;
             foreach (Thing silverStack in caravanSilver) silverInCaravan += silverStack.stackCount;
 
-            if (silverInCaravan > requiredQuantity) return true;
+            if (silverInCaravan >= requiredQuantity) return true;
             else return false;
         }
 

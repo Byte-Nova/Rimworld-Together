@@ -10,19 +10,24 @@ namespace GameClient
     {
         public static bool needsToGenerateWorld;
 
-        public static bool isSaving;
-
         public static bool isDisconnecting;
 
         public static bool isQuiting;
 
         public static bool isReadyToPlay;
 
+        public static bool isSavingGame;
+
+        public static bool isSendingSaveToServer;
+
         //Do not change manually
         public static bool autoDenyTransfers;
 
         //Do not change manually
         public static bool autoRejectSiteRewards;
+
+        //Do not change manually
+        public static bool muteSoundBool;
 
         //Do not change manually
         public static bool verboseBool;
@@ -56,8 +61,6 @@ namespace GameClient
 
         public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
 
-        public static void ToggleSaving(bool mode) { isSaving = mode; }
-
         public static void ToggleDisconnecting(bool mode) { isDisconnecting = mode; }
 
         public static void ToggleQuiting(bool mode) { isQuiting = mode; }
@@ -70,15 +73,20 @@ namespace GameClient
 
         public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
 
+        public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
+
+        public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
+
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
-            ToggleSaving(false);
             ToggleDisconnecting(false);
             ToggleQuiting(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleVisit(false);
+            ToggleSavingGame(false);
+            ToggleSendingSaveToServer(false);
 
             chosenSettlement = null;
             chosenCaravan = null;
