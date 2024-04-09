@@ -33,7 +33,7 @@ namespace GameClient
                     {
                         if (Network.isConnectedToServer || Network.isTryingToConnect) return true;
 
-                        SetupTupleMenu();
+                        SetupQuickConnectVariables();
 
                         bool isInvalid = false;
                         if (string.IsNullOrWhiteSpace(Network.ip)) isInvalid = true;
@@ -69,7 +69,7 @@ namespace GameClient
                 }
             }
 
-            private static void SetupTupleMenu()
+            private static void SetupQuickConnectVariables()
             {
                 string[] details = PreferenceManager.LoadConnectionDetails();
                 Network.ip = details[0];
@@ -82,12 +82,12 @@ namespace GameClient
             private static void ShowQuickConnectFloatMenu()
             {
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
-                List<Tuple<string, int>> qc = new List<Tuple<string, int>>()
+                List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
                 {
                     Tuple.Create($"Join '{Network.ip}:{Network.port}' as '{ChatManager.username}'", 0),
                 };
 
-                foreach (Tuple<string, int> tuple in qc)
+                foreach (Tuple<string, int> tuple in quickConnectTuples)
                 {
                     FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                     {
