@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <MapGeneratorDef ParentName="MapCommonBase">
+	<defName>RT_Player_Settlement</defName>
+    <genSteps Inherit="False">
+      <li>ElevationFertility</li>
+      <li>Caves</li>
+      <li>RT_Terrain</li>
+      <li>CavesTerrain</li>
+      <li>RT_Things</li>
+      <li>RT_Roofs</li>
+      <li>FindPlayerStartSpot</li>
+      <li>RT_Humans</li>
+      <li>RT_Animals</li>
+      <li>Fog</li>
+    </genSteps>
+  </MapGeneratorDef>
+
+  <!-- Generate abstract grids-->
+  <GenStepDef>
+    <defName>ElevationFertility</defName>
+    <order>10</order>
+    <genStep Class="GenStep_ElevationFertility"/>
+  </GenStepDef>
+
+  <GenStepDef>
+    <defName>Caves</defName>
+    <order>11</order>
+    <genStep Class="GenStep_Caves"/>
+  </GenStepDef>
+
+  <!-- Generate All things (structures and items)-->
+  <GenStepDef>
+    <defName>RT_Things</defName>
+    <order>200</order>
+    <genStep Class="GameClient.RT_GenStep_Things"/>
+  </GenStepDef>
+
+  <GenStepDef>
+    <defName>RT_Terrain</defName>
+    <order>210</order>
+    <genStep Class="GameClient.RT_GenStep_Terrain"/>
+  </GenStepDef>
+	
+
+  <GenStepDef>
+    <defName>RT_Roofs</defName>
+    <order>220</order>
+    <genStep Class="GameClient.RT_GenStep_Roofs"/>
+  </GenStepDef>
+
+  <GenStepDef>
+    <defName>FindPlayerStartSpot</defName>
+    <order>600</order>
+    <genStep Class="GenStep_FindPlayerStartSpot"/>
+  </GenStepDef>
+
+  <GenStepDef>
+    <defName>RT_Humans</defName>
+    <order>900</order>
+    <genStep Class="GameClient.RT_GenStep_Humans"/>
+  </GenStepDef>
+
+  <GenStepDef>
+    <defName>RT_Animals</defName>
+    <order>1000</order>
+    <genStep Class="GameClient.RT_GenStep_Animals"/>
+  </GenStepDef>
+
+  <GenStepDef>
+    <defName>Fog</defName>
+    <order>1500</order>
+    <genStep Class="GenStep_Fog"/>
+  </GenStepDef>
+
+</Defs>
