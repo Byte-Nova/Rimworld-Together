@@ -1,6 +1,7 @@
 ﻿using System;
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace GameClient
@@ -19,9 +20,6 @@ namespace GameClient
             ClientValues.ForcePermadeath();
             ClientValues.ManageDevOptions();
             CustomDifficultyManager.EnforceCustomDifficulty();
-
-            SaveManager.customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
-            fileName = SaveManager.customSaveName;
 
             try
             {
@@ -44,8 +42,19 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(Autosaver), "AutosaverTick")]
+    [HarmonyPatch(typeof(Autosaver), "DoAutosave")]
     public static class Autosave
+    {
+        [HarmonyPrefix]
+        public static bool DoPre()
+        {
+            if (!Network.isConnectedToServer) return true;
+            else return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(Autosaver), "AutosaverTick")]
+    public static class AutosaveTick
     {
         [HarmonyPrefix]
         public static bool DoPre()
@@ -54,6 +63,7 @@ namespace GameClient
             else
             {
                 ClientValues.autosaveCurrentTicks++;
+
                 if (ClientValues.autosaveCurrentTicks >= ClientValues.autosaveInternalTicks && !GameDataSaveLoader.SavingIsTemporarilyDisabled)
                 {
                     SaveManager.ForceSave();
