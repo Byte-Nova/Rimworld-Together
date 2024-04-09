@@ -18,6 +18,8 @@ namespace GameClient
 
         public static bool isSavingGame;
 
+        public static bool isQuickConnecting;
+
         public static bool isSendingSaveToServer;
 
         //Do not change manually
@@ -75,6 +77,8 @@ namespace GameClient
 
         public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
 
+        public static void ToggleQuickConnecting(bool mode) { isQuickConnecting = mode; }
+
         public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
 
         public static void CleanValues()
@@ -86,6 +90,7 @@ namespace GameClient
             ToggleTransfer(false);
             ToggleVisit(false);
             ToggleSavingGame(false);
+            ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);
 
             chosenSettlement = null;
