@@ -3,6 +3,7 @@
   <MapGeneratorDef ParentName="MapCommonBase">
     <defName>Empty</defName>
     <genSteps Inherit="False">
+       <li>Terrain</li>
        <li>FindPlayerStartSpot</li>
        <li>Fog</li>
     </genSteps>
