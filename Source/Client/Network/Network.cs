@@ -48,7 +48,7 @@ namespace GameClient
 
         //Tries to connect into the specified server
 
-        private static bool TryConnectToServer()
+        public static bool TryConnectToServer()
         {
             if (isTryingToConnect || isConnectedToServer) return false;
             else
@@ -68,21 +68,22 @@ namespace GameClient
         }
 
         //Disconnects client from the server
-
         public static void DisconnectFromServer()
         {
-            listener.DestroyConnection();
+          listener.DestroyConnection();
 
-            Log.Message($"[Rimworld Together] > Disconnected from server");
-
-            if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
-            else if (ClientValues.isDisconnecting) DisconnectionManager.DisconnectToMenu();
-            else
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
-                    delegate { DisconnectionManager.DisconnectToMenu(); }));
-            }
+          if ( ClientValues.isQuitting ) {
+            Log.Message( $"[Rimworld Together] > Disconnected from server : Quit to OS" );
+            DialogManager.PushNewDialog( new RT_Dialog_OK( "Your game has been saved and synced with the server!", delegate { DisconnectionManager.QuitGame(); } ) );
+          } else if ( ClientValues.isDisconnecting ) {
+            Log.Message( $"[Rimworld Together] > Disconnected from server : Quit to Menu" );
+            DialogManager.PushNewDialog( new RT_Dialog_OK( "Your game has been saved and synced with the server!", delegate { DisconnectionManager.DisconnectToMenu(); } ) );
+          } else {
+            Log.Message( $"[Rimworld Together] > Disconnected from server : Connection Lost" );
+            DialogManager.PushNewDialog( new RT_Dialog_Error( "Your connection to the server has been lost...", delegate { DisconnectionManager.DisconnectToMenu(); } ) );
+          }
         }
+
 
         //Clears all related values
 

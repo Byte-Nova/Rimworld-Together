@@ -31,7 +31,7 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
-                    ClientValues.ToggleQuiting(true);
+                    ClientValues.ToggleQuitting(true);
                     SaveManager.ForceSave();
                 }
             }

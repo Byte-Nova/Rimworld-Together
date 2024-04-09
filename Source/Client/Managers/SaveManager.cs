@@ -77,7 +77,7 @@ namespace GameClient
             fileTransferJSON.fileBytes = Network.listener.uploadManager.ReadFilePart();
             fileTransferJSON.isLastPart = Network.listener.uploadManager.isLastPart;
 
-            if (ClientValues.isDisconnecting || ClientValues.isQuiting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+            if (ClientValues.isDisconnecting || ClientValues.isQuitting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
             else fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);

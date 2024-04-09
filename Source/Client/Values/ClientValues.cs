@@ -12,7 +12,7 @@ namespace GameClient
 
         public static bool isDisconnecting;
 
-        public static bool isQuiting;
+        public static bool isQuitting;
 
         public static bool isReadyToPlay;
 
@@ -65,7 +65,7 @@ namespace GameClient
 
         public static void ToggleDisconnecting(bool mode) { isDisconnecting = mode; }
 
-        public static void ToggleQuiting(bool mode) { isQuiting = mode; }
+        public static void ToggleQuitting(bool mode) { isQuitting = mode; }
 
         public static void ToggleReadyToPlay(bool mode) { isReadyToPlay = mode; }
 
@@ -85,7 +85,7 @@ namespace GameClient
         {
             ToggleGenerateWorld(false);
             ToggleDisconnecting(false);
-            ToggleQuiting(false);
+            ToggleQuitting(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleVisit(false);
