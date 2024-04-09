@@ -39,7 +39,10 @@ namespace GameClient
                     DialogManager.dialog2Input.inputOneResult = details[0];
                     DialogManager.dialog2Input.inputTwoResult = details[1];
                 },
-                delegate { Network.listener.disconnectFlag = true; });
+                delegate { 
+                    ClientValues.SetIntentionalDisconnect( true, ClientValues.DCReason.QuitToMenu ); 
+                    Network.listener.disconnectFlag = true; 
+                });
 
             DialogManager.PushNewDialog(d1);
         }

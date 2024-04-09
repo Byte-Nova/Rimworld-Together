@@ -10,9 +10,19 @@ namespace GameClient
     {
         public static bool needsToGenerateWorld;
 
-        public static bool isDisconnecting;
+        public enum DCReason
+        {
+          None,
+          SaveQuitToMenu,
+          SaveQuitToOS,
+          QuitToMenu,
+          QuitToOS,
+          LoginError,
+          ReturnToMenuSilently
+        }
 
-        public static bool isQuitting;
+        public static bool isIntentionalDisconnect;
+        public static DCReason intentionalDisconnectReason;
 
         public static bool isReadyToPlay;
 
@@ -62,10 +72,11 @@ namespace GameClient
         }
 
         public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
-
-        public static void ToggleDisconnecting(bool mode) { isDisconnecting = mode; }
-
-        public static void ToggleQuitting(bool mode) { isQuitting = mode; }
+    
+        public static void SetIntentionalDisconnect( bool mode, DCReason reason = DCReason.None ) { 
+          isIntentionalDisconnect = mode; 
+          intentionalDisconnectReason = reason; 
+        }
 
         public static void ToggleReadyToPlay(bool mode) { isReadyToPlay = mode; }
 
@@ -84,8 +95,7 @@ namespace GameClient
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
-            ToggleDisconnecting(false);
-            ToggleQuitting(false);
+            SetIntentionalDisconnect(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleVisit(false);
