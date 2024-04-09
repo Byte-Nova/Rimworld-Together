@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using HarmonyLib;
 using RimWorld;
 using Shared;
@@ -41,11 +43,14 @@ namespace GameClient
             { MessageColor.Console, "<color=yellow>" }
         };
 
-        public static int notificationIndex;
+        public static Task ChatThread;
 
-        public static Texture2D iconChatOn;
+        public static MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
 
-        public static Texture2D iconChatOff;
+        public static bool notificationActive;
+
+        public static int chatindex;
+        public static List<Texture2D> chatIcons = new List<Texture2D>();
 
         public static string username;
 
@@ -103,12 +108,31 @@ namespace GameClient
         {
             if (ClientValues.isReadyToPlay)
             {
+                notificationActive = mode;
                 MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
-                if (mode) AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, iconChatOn);
-                else AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, iconChatOff);
+                if (mode)
+                {
+                    //AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, iconChatOn);
+                    ChatThread = Threader.GenerateThread(Threader.Mode.Chat);
+                }
+                else 
+                { 
+                    AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[0]);
+                }
 
-                notificationIndex = mode ? 1 : 0;
             }
+        }
+
+        public static void updateChatNotification()
+        {
+            chatindex++;
+            if(!(chatindex < chatIcons.Count)) chatindex = 0;
+            AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[chatindex]);
+        }
+
+        public static void turnOffChatNotification()
+        {
+            AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[0]);
         }
 
         public static void CleanChat()
@@ -116,15 +140,29 @@ namespace GameClient
             currentChatInput = "";
             chatMessageCache.Clear();
         }
+
+        public static void ChatClock()
+        {
+            while(notificationActive)
+            {
+                Thread.Sleep(250);
+                Master.threadDispatcher.Enqueue(updateChatNotification);
+            }
+            Master.threadDispatcher.Enqueue(turnOffChatNotification);
+        }
+
     }
 
     [StaticConstructorOnStartup]
     static class IconHelper
     {
         static IconHelper()
-        {
-            ChatManager.iconChatOff = ContentFinder<Texture2D>.Get("UI/ChatIconOff");
-            ChatManager.iconChatOn = ContentFinder<Texture2D>.Get("UI/ChatIconOn");
+        {   
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOn"));
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconMid"));
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
+
         }
     }
 }

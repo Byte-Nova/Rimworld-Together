@@ -1,6 +1,8 @@
 ﻿using RimWorld;
 using UnityEngine;
 using Verse;
+using System.Diagnostics;
+using System;
 
 namespace GameClient
 {
@@ -14,12 +16,30 @@ namespace GameClient
             
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
+        private Stopwatch stopwatch = new Stopwatch();
+
         public ChatTab()
         {
+            stopwatch.Start();
             layer = WindowLayer.GameUI;
-
+/*
             forcePause = false;
-            absorbInputAroundWindow = false;
+
+            draggable = true;
+            focusWhenOpened = false;
+            drawShadow = false;
+            preventCameraMotion = false;
+            drawInScreenshotMode = false;
+*/
+            draggable = true;
+            focusWhenOpened = false;
+            drawShadow = false;
+            closeOnAccept = false;
+            closeOnCancel = false;
+            preventCameraMotion = false;
+            drawInScreenshotMode = false;
+            onlyDrawInDevMode = true;
+            doCloseX = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
             //soundClose = SoundDefOf.CommsWindow_Close;
@@ -28,9 +48,18 @@ namespace GameClient
             closeOnCancel = true;
         }
 
+        public override void PreOpen()
+        {
+            base.PreOpen();
+            windowRect.y = (UI.screenHeight - 35) - windowRect.height;
+            windowRect.x = UI.screenWidth - windowRect.width;
+        }
+
         public override void DoWindowContents(Rect rect)
         {
-            if (ChatManager.notificationIndex == 1) ChatManager.ToggleNotificationIcon(false);
+
+            closeOnClickedOutside = false;
+            if (ChatManager.notificationActive) ChatManager.ToggleNotificationIcon(false);
 
             DrawPlayerCount(rect);
 
