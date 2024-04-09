@@ -45,9 +45,9 @@ namespace GameClient
 
         public static Task ChatThread;
 
-        public static MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
+        public static Vector2 chatBoxPos = new Vector2(UI.screenWidth - 350f, UI.screenHeight - 35 - 400f);
 
-        public static bool notificationActive;
+        public static MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
 
         public static int chatindex;
         public static List<Texture2D> chatIcons = new List<Texture2D>();
@@ -59,6 +59,8 @@ namespace GameClient
         public static bool shouldScrollChat;
 
         public static bool chatAutoscroll;
+
+        public static bool notificationActive;
 
         public static List<string> chatMessageCache = new List<string>();
 
@@ -88,10 +90,9 @@ namespace GameClient
             }
 
             if (!ClientValues.isReadyToPlay) return;
-            if (ClientValues.muteSoundBool) return;
-
-            if (doSound) SoundDefs.SystemChatDing.PlayOneShotOnCamera();
             ToggleNotificationIcon(true);
+            if (ClientValues.muteSoundBool) return;
+            if (doSound) SoundDefs.SystemChatDing.PlayOneShotOnCamera();
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
@@ -157,10 +158,10 @@ namespace GameClient
     static class IconHelper
     {
         static IconHelper()
-        {   
+        {
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
             ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOn"));
             ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconMid"));
-            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
             ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
 
         }

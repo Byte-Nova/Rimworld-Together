@@ -22,15 +22,8 @@ namespace GameClient
         {
             stopwatch.Start();
             layer = WindowLayer.GameUI;
-/*
-            forcePause = false;
 
-            draggable = true;
-            focusWhenOpened = false;
-            drawShadow = false;
-            preventCameraMotion = false;
-            drawInScreenshotMode = false;
-*/
+            forcePause = false;
             draggable = true;
             focusWhenOpened = false;
             drawShadow = false;
@@ -38,8 +31,6 @@ namespace GameClient
             closeOnCancel = false;
             preventCameraMotion = false;
             drawInScreenshotMode = false;
-            onlyDrawInDevMode = true;
-            doCloseX = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
             //soundClose = SoundDefOf.CommsWindow_Close;
@@ -51,14 +42,16 @@ namespace GameClient
         public override void PreOpen()
         {
             base.PreOpen();
-            windowRect.y = (UI.screenHeight - 35) - windowRect.height;
-            windowRect.x = UI.screenWidth - windowRect.width;
+
+            windowRect.y = ChatManager.chatBoxPos.y;
+            windowRect.x = ChatManager.chatBoxPos.x;
         }
 
         public override void DoWindowContents(Rect rect)
         {
+            ChatManager.chatBoxPos.x = windowRect.x;
+            ChatManager.chatBoxPos.y = windowRect.y;
 
-            closeOnClickedOutside = false;
             if (ChatManager.notificationActive) ChatManager.ToggleNotificationIcon(false);
 
             DrawPlayerCount(rect);
