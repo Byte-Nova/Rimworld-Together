@@ -14,7 +14,6 @@ namespace GameClient
             ChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
-            ClientValues.ToggleDisconnecting(false);
 
             DialogManager.PopWaitDialog();
 
