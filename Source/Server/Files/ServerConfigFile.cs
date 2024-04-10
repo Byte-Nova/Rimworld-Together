@@ -9,6 +9,8 @@
 
         public string MaxPlayers = "100";
 
+        public string MaxTimeoutInMS = "5000";
+
         public bool verboseLogs = false;
     }
 }

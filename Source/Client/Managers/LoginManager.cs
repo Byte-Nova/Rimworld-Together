@@ -10,8 +10,6 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            DialogManager.PopWaitDialog();
-
             JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(loginDetailsJSON.tryResponse))
@@ -22,10 +20,6 @@ namespace GameClient
 
                 case (int)CommonEnumerators.LoginResponse.BannedLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("You are banned from this server!"));
-                    break;
-
-                case (int)CommonEnumerators.LoginResponse.RegisterSuccess:
-                    DialogShortcuts.ShowRegisteredDialog();
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.RegisterInUse:
@@ -45,7 +39,6 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.ServerFull:
-                    DialogManager.PopDialog(DialogManager.dialog2Button);
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Server is full!"));
                     break;
 
@@ -55,6 +48,10 @@ namespace GameClient
 
                 case (int)CommonEnumerators.LoginResponse.WrongVersion:
                     DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginDetailsJSON.extraDetails[0]}"));
+                    break;
+
+                case (int)CommonEnumerators.LoginResponse.NoWorld:
+                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Server is currently being set up! Join again later!"));
                     break;
             }
         }

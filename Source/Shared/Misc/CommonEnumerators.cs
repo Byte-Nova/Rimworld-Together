@@ -90,15 +90,15 @@
         public enum LoginResponse 
         { 
             InvalidLogin, 
-            BannedLogin, 
-            RegisterSuccess, 
+            BannedLogin,
             RegisterInUse, 
             RegisterError, 
             ExtraLogin, 
             WrongMods, 
             ServerFull,
             Whitelist,
-            WrongVersion
+            WrongVersion,
+            NoWorld
         }
 
         //World generation

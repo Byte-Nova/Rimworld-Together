@@ -120,6 +120,10 @@
             "Shows all currently loaded mods",
             ModListCommandAction);
 
+        private static ServerCommand doSiteRewards = new ServerCommand("dositerewards", 0,
+            "Forces site rewards to run",
+            DoSiteRewardsCommandAction);
+
         private static ServerCommand eventCommand = new ServerCommand("event", 2,
             "Sends a command to the selecter players",
             EventCommandAction);
@@ -135,6 +139,10 @@
         private static ServerCommand broadcastCommand = new ServerCommand("broadcast", -1,
             "Broadcast a message to all connected players",
             BroadcastCommandAction);
+
+        private static ServerCommand serverMessageCommand = new ServerCommand("chat", -1,
+            "Send a message in chat from the Server",
+            ServerMessageCommandAction);
 
         private static ServerCommand clearCommand = new ServerCommand("clear", 0,
             "Clears the console output",
@@ -196,7 +204,9 @@
             eventCommand,
             eventAllCommand,
             eventListCommand,
+            doSiteRewards,
             broadcastCommand,
+            serverMessageCommand,
             whitelistCommand,
             whitelistAddCommand,
             whitelistRemoveCommand,
@@ -459,6 +469,12 @@
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
         }
 
+        private static void DoSiteRewardsCommandAction()
+        {
+            Logger.WriteToConsole($"Forced site rewards", Logger.LogMode.Title);
+            SiteManager.SiteRewardTick();
+        }
+
         private static void EventCommandAction()
         {
             ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
@@ -530,6 +546,18 @@
             CommandManager.SendBroadcastCommand(fullText);
 
             Logger.WriteToConsole($"Sent broadcast '{fullText}'", Logger.LogMode.Title);
+        }
+
+        private static void ServerMessageCommandAction()
+        {
+            string fullText = "";
+            foreach(string str in ServerCommandManager.commandParameters)
+            {
+                fullText += $"{str} ";
+            }
+            fullText = fullText.Remove(fullText.Length - 1, 1);
+
+            ChatManager.BroadcastServerMessage(fullText);
         }
 
         private static void WhitelistCommandAction()

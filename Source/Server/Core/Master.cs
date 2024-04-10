@@ -13,6 +13,8 @@ namespace GameServer
         public static string corePath;
         public static string mapsPath;
         public static string logsPath;
+        public static string systemLogsPath;
+        public static string chatLogsPath;
         public static string usersPath;
         public static string savesPath;
         public static string sitesPath;
@@ -77,6 +79,8 @@ namespace GameServer
             corePath = Path.Combine(mainPath, "Core");
             mapsPath = Path.Combine(mainPath, "Maps");
             logsPath = Path.Combine(mainPath, "Logs");
+            systemLogsPath = Path.Combine(logsPath, "System");
+            chatLogsPath = Path.Combine(logsPath, "Chat");
             usersPath = Path.Combine(mainPath, "Users");
             savesPath = Path.Combine(mainPath, "Saves");
             sitesPath = Path.Combine(mainPath, "Sites");
@@ -93,6 +97,8 @@ namespace GameServer
             if (!Directory.Exists(savesPath)) Directory.CreateDirectory(savesPath);
             if (!Directory.Exists(mapsPath)) Directory.CreateDirectory(mapsPath);
             if (!Directory.Exists(logsPath)) Directory.CreateDirectory(logsPath);
+            if (!Directory.Exists(systemLogsPath)) Directory.CreateDirectory(systemLogsPath);
+            if (!Directory.Exists(chatLogsPath)) Directory.CreateDirectory(chatLogsPath);
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
