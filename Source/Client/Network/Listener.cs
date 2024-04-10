@@ -33,8 +33,6 @@ namespace GameClient
 
         public Listener(TcpClient connection)
         {
-            DialogShortcuts.ShowLoginOrRegisterDialogs();
-
             this.connection = connection;
             networkStream = connection.GetStream();
             streamWriter = new StreamWriter(networkStream);

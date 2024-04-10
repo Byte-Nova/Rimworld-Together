@@ -83,10 +83,12 @@ namespace GameClient
             }
 
             if (!ClientValues.isReadyToPlay) return;
+
+            ToggleNotificationIcon(true);
+
             if (ClientValues.muteSoundBool) return;
 
             if (doSound) SoundDefs.SystemChatDing.PlayOneShotOnCamera();
-            ToggleNotificationIcon(true);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)

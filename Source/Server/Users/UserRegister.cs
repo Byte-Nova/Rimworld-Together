@@ -17,24 +17,20 @@ namespace GameServer
             client.username = registerDetails.username;
             client.password = registerDetails.password;
 
-            UserFile userFile = new UserFile();
-            userFile.uid = GetNewUIDForUser(client);
-            userFile.username = client.username;
-            userFile.password = client.password;
-
             try
             {
+                UserFile userFile = new UserFile();
+                userFile.uid = GetNewUIDForUser(client);
+                userFile.username = client.username;
+                userFile.password = client.password;
+
                 UserManager.SaveUserFile(client, userFile);
-                UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterSuccess);
+
+                UserLogin.TryLoginUser(client, packet);
 
                 Logger.WriteToConsole($"[Registered] > {client.username}");
             }
-
-            catch
-            {
-                UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError);
-                return;
-            }
+            catch { UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError); }
         }
 
         private static string GetNewUIDForUser(ServerClient client)

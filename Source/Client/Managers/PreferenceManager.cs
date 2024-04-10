@@ -24,20 +24,14 @@ namespace GameClient
 
         //Loads the connection details
 
-        public static void LoadConnectionDetails()
+        public static string[] LoadConnectionDetails()
         {
             if (File.Exists(Master.connectionDataPath))
             {
                 ConnectionDataFile previousConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
-                DialogManager.dialog2Input.inputOneResult = previousConnectionData.ip;
-                DialogManager.dialog2Input.inputTwoResult = previousConnectionData.port;
+                return new string[] { previousConnectionData.ip, previousConnectionData.port };
             }
-
-            else
-            {
-                DialogManager.dialog2Input.inputOneResult = "";
-                DialogManager.dialog2Input.inputTwoResult = "";
-            }
+            else return new string[] { "", "" };
         }
 
         //Saves the login details
@@ -56,20 +50,14 @@ namespace GameClient
 
         //Loads the login details
 
-        public static void LoadLoginDetails()
+        public static string[] LoadLoginDetails()
         {
             if (File.Exists(Master.loginDataPath))
             {
                 LoginDataFile previousLoginData = Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
-                DialogManager.dialog2Input.inputOneResult = previousLoginData.username;
-                DialogManager.dialog2Input.inputTwoResult = previousLoginData.password;
+                return new string[] { previousLoginData.username, previousLoginData.password };
             }
-
-            else
-            {
-                DialogManager.dialog2Input.inputOneResult = "";
-                DialogManager.dialog2Input.inputTwoResult = "";
-            }
+            else return new string[] { "", "" };
         }
 
         //Saves the client preferences
