@@ -35,6 +35,8 @@ namespace GameClient
         public static TransferManifestJSON incomingManifest = new TransferManifestJSON();
         public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();
 
+        public static string username;
+
         public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
 
         //ModStuff values go below. Do not change manually
@@ -47,10 +49,6 @@ namespace GameClient
         public static int autosaveDays = 1;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = autosaveDays * 60000f;
-
-        public static string username;
-
-        public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
 
         public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }
 
