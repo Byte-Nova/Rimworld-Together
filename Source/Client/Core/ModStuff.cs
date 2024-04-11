@@ -32,6 +32,7 @@ namespace GameClient
             listingStandard.Label("Multiplayer Parameters");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.transferBool, "Automatically denies transfers");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.siteRewardsBool, "Automatically site rewards");
+            listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref modConfigs.muteChatSoundBool, "Mute chat messages");
             if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s"))
             {
                 ShowAutosaveFloatMenu();
@@ -132,24 +133,6 @@ namespace GameClient
                     if (faction.def == Faction.OfPlayer.def) continue;
                     else worldValuesFile.factions.Add(faction.def.defName);
                 }
-
-                WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-                XmlParser.GetWorldXmlData(worldDetailsJSON);
-
-                worldValuesFile.tileBiomeDeflate = worldDetailsJSON.tileBiomeDeflate;
-                worldValuesFile.tileElevationDeflate = worldDetailsJSON.tileElevationDeflate;
-                worldValuesFile.tileHillinessDeflate = worldDetailsJSON.tileHillinessDeflate;
-                worldValuesFile.tileTemperatureDeflate = worldDetailsJSON.tileTemperatureDeflate;
-                worldValuesFile.tileRainfallDeflate = worldDetailsJSON.tileRainfallDeflate;
-                worldValuesFile.tileSwampinessDeflate = worldDetailsJSON.tileSwampinessDeflate;
-                worldValuesFile.tileFeatureDeflate = worldDetailsJSON.tileFeatureDeflate;
-                worldValuesFile.tilePollutionDeflate = worldDetailsJSON.tilePollutionDeflate;
-                worldValuesFile.tileRoadOriginsDeflate = worldDetailsJSON.tileRoadOriginsDeflate;
-                worldValuesFile.tileRoadAdjacencyDeflate = worldDetailsJSON.tileRoadAdjacencyDeflate;
-                worldValuesFile.tileRoadDefDeflate = worldDetailsJSON.tileRoadDefDeflate;
-                worldValuesFile.tileRiverOriginsDeflate = worldDetailsJSON.tileRiverOriginsDeflate;
-                worldValuesFile.tileRiverAdjacencyDeflate = worldDetailsJSON.tileRiverAdjacencyDeflate;
-                worldValuesFile.tileRiverDefDeflate = worldDetailsJSON.tileRiverDefDeflate;
 
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
 

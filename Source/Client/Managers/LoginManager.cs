@@ -12,8 +12,6 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            Logger.WriteToConsole("Received login Response", LogMode.Message);
-
             JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             Action stopAndClear = delegate{
@@ -28,10 +26,6 @@ namespace GameClient
 
                 case (int)CommonEnumerators.LoginResponse.BannedLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You are banned from this server!", stopAndClear));
-                    break;
-
-                case (int)CommonEnumerators.LoginResponse.RegisterSuccess:
-                    DialogShortcuts.ShowRegisteredDialog();
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.RegisterInUse:

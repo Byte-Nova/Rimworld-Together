@@ -1,8 +1,11 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using Shared;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -14,14 +17,13 @@ namespace GameClient
 
         public static void ForceSave()
         {
-            if (ClientValues.isSaving) return;
-            else
-            {
-                ClientValues.ToggleSaving(true);
-                FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
-                FticksSinceSave.SetValue(Current.Game.autosaver, 0);
-                Current.Game.autosaver.DoAutosave();
-            }
+            FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
+            FticksSinceSave.SetValue(Current.Game.autosaver, 0);
+
+            ClientValues.autosaveCurrentTicks = 0;
+
+            customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+            GameDataSaveLoader.SaveGame(customSaveName);
         }
 
         public static void ReceiveSavePartFromServer(Packet packet)
@@ -62,6 +64,7 @@ namespace GameClient
         {
             if (Network.listener.uploadManager == null)
             {
+                ClientValues.ToggleSendingSaveToServer(true);
                 Logger.WriteToConsole("Sending save to server", LogMode.Message);
 
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
@@ -82,7 +85,11 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);
             Network.listener.EnqueuePacket(packet);
 
-            if (Network.listener.uploadManager.isLastPart) Network.listener.uploadManager = null;
+            if (Network.listener.uploadManager.isLastPart) 
+            {
+                ClientValues.ToggleSendingSaveToServer(false);
+                Network.listener.uploadManager = null; 
+            }
         }
     }
 }
