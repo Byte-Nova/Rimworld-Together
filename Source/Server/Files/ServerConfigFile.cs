@@ -11,6 +11,8 @@
 
         public string MaxTimeoutInMS = "5000";
 
-        public bool verboseLogs = false;
+        public bool VerboseLogs = false;
+
+        public bool DisplayChatInConsole = false;
     }
 }
