@@ -1,6 +1,8 @@
 ﻿using RimWorld;
 using UnityEngine;
 using Verse;
+using System.Diagnostics;
+using System;
 
 namespace GameClient
 {
@@ -19,7 +21,13 @@ namespace GameClient
             layer = WindowLayer.GameUI;
 
             forcePause = false;
-            absorbInputAroundWindow = false;
+            draggable = true;
+            focusWhenOpened = false;
+            drawShadow = false;
+            closeOnAccept = false;
+            closeOnCancel = false;
+            preventCameraMotion = false;
+            drawInScreenshotMode = false;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
             //soundClose = SoundDefOf.CommsWindow_Close;
@@ -28,9 +36,33 @@ namespace GameClient
             closeOnCancel = true;
         }
 
+        public override void PreOpen()
+        {
+            base.PreOpen();
+
+            windowRect.y = ChatManager.chatBoxPosition.y;
+            windowRect.x = ChatManager.chatBoxPosition.x;
+        }
+
+        public override void PostOpen()
+        {
+            base.PostOpen();
+
+            ChatManager.isChatTabOpen = true;
+            ChatManager.ToggleChatIcon(false);
+        }
+
+        public override void PostClose()
+        {
+            base.PostClose();
+
+            ChatManager.isChatTabOpen = false;
+        }
+
         public override void DoWindowContents(Rect rect)
         {
-            if (ChatManager.notificationIndex == 1) ChatManager.ToggleNotificationIcon(false);
+            ChatManager.chatBoxPosition.x = windowRect.x;
+            ChatManager.chatBoxPosition.y = windowRect.y;
 
             DrawPlayerCount(rect);
 
@@ -76,13 +108,14 @@ namespace GameClient
                 if (num > num2 && num < num3)
                 {
                     Rect rect2 = new Rect(0f, rect.y + num, viewRect.width, Text.CalcHeight(str, rect.width));
-                    DrawCustomRow(rect2, str, index);
+                    DrawCustomRow(rect2, str);
                 }
 
                 num += Text.CalcHeight(str, rect.width) + 0f;
                 num4++;
                 index++;
             }
+
             Widgets.EndScrollView();
         }
 
@@ -120,11 +153,10 @@ namespace GameClient
             ClientValues.ToggleChatScroll(false);
         }
 
-        private void DrawCustomRow(Rect rect, string message, int index)
+        private void DrawCustomRow(Rect rect, string message)
         {
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x + 10f, rect.y + 5f), new Vector2(rect.width - 36f, rect.height));
-            //if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
             Widgets.Label(fixedRect, message);
         }
     }

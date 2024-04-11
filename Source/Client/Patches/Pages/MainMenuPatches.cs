@@ -20,7 +20,7 @@ namespace GameClient
                 if (Current.ProgramState == ProgramState.Entry)
                 {
                     Vector2 buttonSize = new Vector2(170f, 45f);
-                    Vector2 buttonLocation = new Vector2(rect.x, rect.y);
+                    Vector2 buttonLocation = new Vector2(rect.x, rect.y + 0.5f);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
                         if (Network.isConnectedToServer || Network.isTryingToConnect) return true;
@@ -38,7 +38,7 @@ namespace GameClient
                         bool isInvalid = false;
                         if (string.IsNullOrWhiteSpace(Network.ip)) isInvalid = true;
                         if (string.IsNullOrWhiteSpace(Network.port)) isInvalid = true;
-                        if (string.IsNullOrWhiteSpace(ChatManager.username)) isInvalid = true;
+                        if (string.IsNullOrWhiteSpace(ClientValues.username)) isInvalid = true;
 
                         if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
                         else ShowQuickConnectFloatMenu();
@@ -54,7 +54,7 @@ namespace GameClient
                 if (Current.ProgramState == ProgramState.Entry)
                 {
                     Vector2 buttonSize = new Vector2(170f, 45f);
-                    Vector2 buttonLocation = new Vector2(rect.x, rect.y);
+                    Vector2 buttonLocation = new Vector2(rect.x, rect.y + 0.5f);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Play Together"))
                     {
 
@@ -76,7 +76,7 @@ namespace GameClient
                 Network.port = details[1];
 
                 details = PreferenceManager.LoadLoginDetails();
-                ChatManager.username = details[0];
+                ClientValues.username = details[0];
             }
 
             private static void ShowQuickConnectFloatMenu()
@@ -84,7 +84,7 @@ namespace GameClient
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
                 List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
                 {
-                    Tuple.Create($"Join '{Network.ip}:{Network.port}' as '{ChatManager.username}'", 0),
+                    Tuple.Create($"Join '{Network.ip}:{Network.port}' as '{ClientValues.username}'", 0),
                 };
 
                 foreach (Tuple<string, int> tuple in quickConnectTuples)
@@ -96,15 +96,18 @@ namespace GameClient
                         DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                         Network.StartConnection();
 
-                        string[] details = PreferenceManager.LoadLoginDetails();
-                        JoinDetailsJSON loginDetails = new JoinDetailsJSON();
-                        loginDetails.username = details[0];
-                        loginDetails.password = Hasher.GetHashFromString(details[1]);
-                        loginDetails.clientVersion = CommonValues.executableVersion;
-                        loginDetails.runningMods = ModManager.GetRunningModList().ToList();
+                        if (Network.isConnectedToServer)
+                        {
+                            string[] details = PreferenceManager.LoadLoginDetails();
+                            JoinDetailsJSON loginDetails = new JoinDetailsJSON();
+                            loginDetails.username = details[0];
+                            loginDetails.password = Hasher.GetHashFromString(details[1]);
+                            loginDetails.clientVersion = CommonValues.executableVersion;
+                            loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
-                        Network.listener.EnqueuePacket(packet);
+                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
+                            Network.listener.EnqueuePacket(packet);
+                        }
                     });
 
                     list.Add(item);

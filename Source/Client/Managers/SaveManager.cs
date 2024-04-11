@@ -18,7 +18,7 @@ namespace GameClient
 
             ClientValues.autosaveCurrentTicks = 0;
 
-            customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+            customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
             GameDataSaveLoader.SaveGame(customSaveName);
         }
 
@@ -30,7 +30,7 @@ namespace GameClient
             {
                 Log.Message($"[Rimworld Together] > Receiving save from server");
 
-                customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+                customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
 
                 Network.listener.downloadManager = new DownloadManager();

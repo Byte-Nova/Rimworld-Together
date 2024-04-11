@@ -159,7 +159,7 @@ namespace GameClient
                 loginDetails.clientVersion = CommonValues.executableVersion;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
-                ChatManager.username = loginDetails.username;
+                ClientValues.username = loginDetails.username;
                 PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
@@ -194,7 +194,7 @@ namespace GameClient
                 registerDetails.clientVersion = CommonValues.executableVersion;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
-                ChatManager.username = registerDetails.username;
+                ClientValues.username = registerDetails.username;
                 PreferenceManager.SaveLoginDetails(DialogManager.dialog3ResultOne, DialogManager.dialog3ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
