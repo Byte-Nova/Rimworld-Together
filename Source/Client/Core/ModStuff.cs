@@ -54,7 +54,7 @@ namespace GameClient
             listingStandard.Label("External Sources");
             if (listingStandard.ButtonTextLabeled("Check the mod's wiki!", "Open")) StartProcess("https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki");
             if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/NCsArSaqBW");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
+            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/RimworldTogether/Rimworld-Together");
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);

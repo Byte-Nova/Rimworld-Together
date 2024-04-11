@@ -127,7 +127,7 @@ namespace GameServer
             {
                 while (true)
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(int.Parse(Master.serverConfig.MaxTimeoutInMS));
 
                     if (KAFlag) KAFlag = false;
                     else break;
