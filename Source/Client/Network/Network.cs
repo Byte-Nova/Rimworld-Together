@@ -31,6 +31,8 @@ namespace GameClient
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
+                if (!ClientValues.isQuickConnecting) DialogShortcuts.ShowLoginOrRegisterDialogs()
+
                 Logger.WriteToConsole("Connected to server", LogMode.Message);
             }
 
@@ -75,6 +77,7 @@ namespace GameClient
             Logger.WriteToConsole("Disconnected from server", LogMode.Message);
 
             if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
+            else if (ClientValues.isDisconnecting) DisconnectionManager.DisconnectToMenu();
             else
             {
                 DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Connection to the server has been lost!",

@@ -559,7 +559,7 @@ namespace GameServer
             }
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
-            ChatManager.BroadcastServerMessages(fullText);
+            ChatManager.BroadcastServerMessage(fullText);
         }
 
         private static void WhitelistCommandAction()

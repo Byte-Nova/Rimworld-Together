@@ -96,8 +96,7 @@
         public enum LoginResponse 
         { 
             InvalidLogin, 
-            BannedLogin, 
-            RegisterSuccess, 
+            BannedLogin,
             RegisterInUse, 
             RegisterError, 
             ExtraLogin, 
