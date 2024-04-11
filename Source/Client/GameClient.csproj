@@ -22,30 +22,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>Assemblies\0Harmony.dll</HintPath>
-    </Reference>
-	  
-	  <Reference Include="Assembly-CSharp">
-		<HintPath>Assemblies\Assembly-CSharp.dll</HintPath>
-	  </Reference>
-	  
-	  <Reference Include="UnityEngine">
-		<HintPath>Assemblies\UnityEngine.dll</HintPath>
-	  </Reference>
-	  
-	  <Reference Include="UnityEngine.CoreModule">
-		<HintPath>Assemblies\UnityEngine.CoreModule.dll</HintPath>
-	  </Reference>
-	  
-	  <Reference Include="UnityEngine.IMGUIModule">
-		<HintPath>Assemblies\UnityEngine.IMGUIModule.dll</HintPath>
-	  </Reference>
-	  
-	  <Reference Include="UnityEngine.TextRenderingModule">
-		<HintPath>Assemblies\UnityEngine.TextRenderingModule.dll</HintPath>
-	  </Reference>
-	  
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.4061-beta" />
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
 	  <Reference Include="Newtonsoft.Json">
 		<HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
 	  </Reference>
