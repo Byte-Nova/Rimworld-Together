@@ -90,7 +90,7 @@ namespace GameServer
 
             catch (Exception e)
             {
-                if (Master.serverConfig.verboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
+                if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
 
                 disconnectFlag = true;
             }

@@ -1,4 +1,5 @@
 ﻿using Shared;
+using System;
 using System.Text;
 using System.Threading;
 
@@ -84,6 +85,7 @@ namespace GameServer
             foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
 
             WriteToLogs(client.username, message);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > {client.username} > {message}", Logger.LogMode.Normal, false);
         }
 
         public static void BroadcastServerMessage(string messageToSend)
@@ -98,6 +100,7 @@ namespace GameServer
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             WriteToLogs("CONSOLE", messageToSend);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > CONSOLE > {messageToSend}", Logger.LogMode.Normal, false);
         }
 
         public static void BroadcastSystemMessage(ServerClient client, string[] messagesToSend)

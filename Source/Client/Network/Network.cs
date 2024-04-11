@@ -29,7 +29,6 @@ namespace GameClient
                 Threader.GenerateThread(Threader.Mode.Sender);
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
-                Threader.GenerateThread(Threader.Mode.Chat);
 
                 if (!ClientValues.isQuickConnecting) DialogShortcuts.ShowLoginOrRegisterDialogs();
 

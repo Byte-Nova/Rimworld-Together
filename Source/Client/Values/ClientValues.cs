@@ -51,6 +51,8 @@ namespace GameClient
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = autosaveDays * 60000f;
 
+        public static string username;
+
         public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
 
         public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }
