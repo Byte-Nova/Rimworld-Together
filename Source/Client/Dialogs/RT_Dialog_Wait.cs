@@ -1,5 +1,4 @@
-﻿using HugsLib.Utils;
-using RimWorld;
+﻿using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -29,8 +28,6 @@ namespace GameClient
 
         public override void DoWindowContents(Rect rect)
         {
-            AllowCloseDialog();
-
             float centeredX = rect.width / 2;
             float horizontalLineDif = Text.CalcSize(description).y + StandardMargin / 2;
             float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;
@@ -42,12 +39,6 @@ namespace GameClient
 
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
-        }
-
-        private void AllowCloseDialog()
-        {
-            if (HugsLibUtility.ShiftIsHeld) closeOnCancel = true;
-            else closeOnCancel = false;
         }
     }
 }

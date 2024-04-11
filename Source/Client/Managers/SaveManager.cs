@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using Shared;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Verse;
@@ -12,20 +14,15 @@ namespace GameClient
     {
         public static string customSaveName = "ServerSave";
 
-        private static readonly Semaphore semaphore = new Semaphore(1, 1);
-
         public static void ForceSave()
         {
-            semaphore.WaitOne();
-
             FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
             FticksSinceSave.SetValue(Current.Game.autosaver, 0);
 
             ClientValues.autosaveCurrentTicks = 0;
 
-            Current.Game.autosaver.DoAutosave();
-
-            semaphore.Release();
+            customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
+            GameDataSaveLoader.SaveGame(customSaveName);
         }
 
         public static void ReceiveSavePartFromServer(Packet packet)
@@ -36,7 +33,7 @@ namespace GameClient
             {
                 Log.Message($"[Rimworld Together] > Receiving save from server");
 
-                customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+                customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
 
                 Network.listener.downloadManager = new DownloadManager();
@@ -64,6 +61,8 @@ namespace GameClient
         {
             if (Network.listener.uploadManager == null)
             {
+                ClientValues.ToggleSendingSaveToServer(true);
+
                 Log.Message($"[Rimworld Together] > Sending save to server");
 
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
@@ -84,7 +83,11 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             Network.listener.EnqueuePacket(packet);
 
-            if (Network.listener.uploadManager.isLastPart) Network.listener.uploadManager = null;
+            if (Network.listener.uploadManager.isLastPart) 
+            {
+                ClientValues.ToggleSendingSaveToServer(false);
+                Network.listener.uploadManager = null; 
+            }
         }
     }
 }

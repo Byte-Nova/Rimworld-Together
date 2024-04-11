@@ -40,11 +40,14 @@ namespace GameClient
 
             GetPawnHediffs(pawn, humanData);
 
-            GetPawnXenotype(pawn, humanData);
+            if (ModsConfig.BiotechActive)
+            {
+                GetPawnXenotype(pawn, humanDetailsJSON);
 
-            GetPawnXenogenes(pawn, humanData);
+                GetPawnXenogenes(pawn, humanDetailsJSON);
 
-            GetPawnEndogenes(pawn, humanData);
+                GetPawnEndogenes(pawn, humanDetailsJSON);
+            }
 
             GetPawnStory(pawn, humanData);
 
@@ -77,11 +80,14 @@ namespace GameClient
 
             SetPawnHediffs(pawn, humanData);
 
-            SetPawnXenotype(pawn, humanData);
+            if (ModsConfig.BiotechActive)
+            {
+                SetPawnXenotype(pawn, humanDetailsJSON);
 
-            SetPawnXenogenes(pawn, humanData);
+                SetPawnXenogenes(pawn, humanDetailsJSON);
 
-            SetPawnEndogenes(pawn, humanData);
+                SetPawnEndogenes(pawn, humanDetailsJSON);
+            }
 
             SetPawnBioDetails(pawn, humanData);
 

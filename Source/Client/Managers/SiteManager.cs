@@ -265,7 +265,7 @@ namespace GameClient
 
         private static void ReceiveSitesRewards(SiteData siteData)
         {
-            if (ClientValues.isReadyToPlay && !ClientValues.autoRejectSiteRewards && RimworldManager.CheckIfPlayerHasMap())
+            if (ClientValues.isReadyToPlay && !ClientValues.rejectSiteRewardsBool && RimworldManager.CheckIfPlayerHasMap())
             {
                 Site[] sites = Find.WorldObjects.Sites.ToArray();
                 List<Site> rewardedSites = new List<Site>();

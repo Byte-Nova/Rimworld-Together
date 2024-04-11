@@ -8,16 +8,6 @@ namespace GameClient
 {
     public static class DialogShortcuts
     {
-        public static void ShowRegisteredDialog()
-        {
-            DialogManager.PopWaitDialog();
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You have been successfully registered!",
-                "You are now able to login using your new account"});
-
-            DialogManager.PushNewDialog(d1);
-        }
-
         public static void ShowLoginOrRegisterDialogs()
         {
             RT_Dialog_3Input a1 = new RT_Dialog_3Input(
@@ -45,7 +35,9 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    PreferenceManager.LoadLoginDetails();
+                    string[] details = PreferenceManager.LoadLoginDetails();
+                    DialogManager.dialog2Input.inputOneResult = details[0];
+                    DialogManager.dialog2Input.inputTwoResult = details[1];
                 },
                 delegate { Network.listener.disconnectFlag = true; });
 
@@ -94,7 +86,9 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    PreferenceManager.LoadConnectionDetails();
+                    string[] details = PreferenceManager.LoadConnectionDetails();
+                    DialogManager.dialog2Input.inputOneResult = details[0];
+                    DialogManager.dialog2Input.inputTwoResult = details[1];
                 }, null);
 
             DialogManager.PushNewDialog(newDialog);
@@ -165,7 +159,7 @@ namespace GameClient
                 loginDetails.clientVersion = CommonValues.executableVersion;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
-                ChatManager.username = loginDetails.username;
+                ClientValues.username = loginDetails.username;
                 PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
@@ -199,6 +193,9 @@ namespace GameClient
                 registerDetails.password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
                 registerDetails.clientVersion = CommonValues.executableVersion;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
+
+                ClientValues.username = registerDetails.username;
+                PreferenceManager.SaveLoginDetails(DialogManager.dialog3ResultOne, DialogManager.dialog3ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
                 Network.listener.EnqueuePacket(packet);

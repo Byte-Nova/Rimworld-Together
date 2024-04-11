@@ -22,15 +22,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3901" />
-    <PackageReference Include="Lib.Harmony" Version="2.3.1.1" />
-    <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib" Version="10.0.1" />
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.4061-beta" />
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+	  <Reference Include="Newtonsoft.Json">
+		<HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
+	  </Reference>
   </ItemGroup>
 	
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
