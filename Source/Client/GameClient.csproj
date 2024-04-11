@@ -28,9 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>D:\SteamLibrary\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
     </Reference>

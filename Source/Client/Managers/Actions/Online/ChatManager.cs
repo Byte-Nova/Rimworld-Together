@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -13,19 +14,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    //TODO
-    //Apply different sounds depending on the message type, since right now only "Own" and "System" play
-
-    [DefOf]
-    public static class SoundDefs
-    {
-        public static SoundDef OwnChatDing;
-        public static SoundDef AllyChatDing;
-        public static SoundDef NeutralChatDing;
-        public static SoundDef HostileChatDing;
-        public static SoundDef SystemChatDing;
-    }
-
     [StaticConstructorOnStartup]
     public static class ChatManager
     {
@@ -43,35 +31,37 @@ namespace GameClient
             { MessageColor.Console, "<color=yellow>" }
         };
 
-        public static Task ChatThread;
+        public static Vector2 chatBoxPosition = new Vector2(UI.screenWidth - 350f, UI.screenHeight - 35 - 400f);
 
-        public static Vector2 chatBoxPos = new Vector2(UI.screenWidth - 350f, UI.screenHeight - 35 - 400f);
+        private static MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
 
-        public static MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
-
-        public static int chatindex;
-        public static List<Texture2D> chatIcons = new List<Texture2D>();
-
-        public static string username;
-
+        //Data
         public static string currentChatInput;
+        public static List<string> chatMessageCache = new List<string>();
 
-        public static bool shouldScrollChat;
-
+        //Booleans
+        public static bool isChatTabOpen;
         public static bool chatAutoscroll;
+        public static bool shouldScrollChat;
+        public static bool isChatIconActive;
+
+        //Chat clock
+        private static Task chatClockTask;
+        private static readonly Semaphore semaphore = new Semaphore(1, 1);
 
         public static bool chatBoxIsOpen;
 
         public static bool notificationActive;
+        //Icons
+        public static int chatIconIndex;
+        public static List<Texture2D> chatIcons = new List<Texture2D>();
 
-        public static List<string> chatMessageCache = new List<string>();
-
-        public static void SendMessage( string messageToSend )
+        public static void SendMessage(string messageToSend)
         {
-            SoundDefs.OwnChatDing.PlayOneShotOnCamera();
+            ChatSounds.OwnChatDing.PlayOneShotOnCamera();
     
             ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
-            chatMessagesJSON.usernames.Add(username);
+            chatMessagesJSON.usernames.Add(ClientValues.username);
             chatMessagesJSON.messages.Add(messageToSend);
     
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
@@ -82,19 +72,20 @@ namespace GameClient
         {
             ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            bool doSound = false;
             for (int i = 0; i < chatMessagesJSON.usernames.Count(); i++) 
             {
-                if (chatMessagesJSON.usernames[i] != username) doSound = true;        
-            
                 AddMessageToChat(chatMessagesJSON.usernames[i], chatMessagesJSON.messages[i], 
-                    (UserColor)int.Parse(chatMessagesJSON.userColors[i]), (MessageColor)int.Parse( chatMessagesJSON.messageColors[i] ));
+                    (UserColor)int.Parse(chatMessagesJSON.userColors[i]), 
+                    (MessageColor)int.Parse(chatMessagesJSON.messageColors[i]));
             }
 
             if (!ClientValues.isReadyToPlay) return;
+
             if (!chatBoxIsOpen) ToggleNotificationIcon(true);
+
             if (ClientValues.muteSoundBool) return;
-            if (doSound) SoundDefs.SystemChatDing.PlayOneShotOnCamera();
+
+            if (!isChatTabOpen) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
@@ -107,7 +98,7 @@ namespace GameClient
             if (chatAutoscroll) ClientValues.ToggleChatScroll(true);
         }
 
-        public static void ToggleNotificationIcon(bool mode)
+        public static void CleanChat()
         {
             if (ClientValues.isReadyToPlay) notificationActive = mode;
             if (!mode)
@@ -116,29 +107,37 @@ namespace GameClient
                 chatindex = 0;
             }
         }
-        
-        public static void updateChatNotification()
+
+        public static void ToggleChatIcon(bool mode)
         {
-            chatindex++;
-            if(!(chatindex < chatIcons.Count)) chatindex = 0;
-            AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[chatindex]);
+            if (!ClientValues.isReadyToPlay) return;
+
+            isChatIconActive = mode;
+
+            if (mode)
+            {
+                semaphore.WaitOne();
+
+                if (chatClockTask == null) chatClockTask = Threader.GenerateThread(Threader.Mode.Chat);
+
+                semaphore.Release();
+            }
         }
 
-        public static void turnOffChatNotification()
+        public static void UpdateChatIcon()
         {
-            AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[0]);
+            chatIconIndex++;
+            if(chatIconIndex > chatIcons.Count) chatIconIndex = 0;
+            AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[chatIconIndex]);
         }
 
-        public static void CleanChat()
-        {
-            currentChatInput = "";
-            chatMessageCache.Clear();
-        }
+        private static void TurnOffChatIcon() { AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[0]); }
 
         public static void ChatClock()
         {
-            while(true)
+            while(isChatIconActive)
             {
+
                 Thread.Sleep(250);
                 if (Network.listener.disconnectFlag) break;
                 else if (notificationActive) Master.threadDispatcher.Enqueue(updateChatNotification);
@@ -149,18 +148,36 @@ namespace GameClient
             }
         }
 
+            chatIconIndex = 0;
+
+            Master.threadDispatcher.Enqueue(TurnOffChatIcon);
+
+            chatClockTask = null;
+        }
     }
 
     [StaticConstructorOnStartup]
-    static class IconHelper
+    public static class ChatIcons
     {
-        static IconHelper()
+        static ChatIcons()
         {
             ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
             ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOn"));
             ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconMid"));
             ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
-
         }
+    }
+
+    //TODO
+    //Apply different sounds depending on the message type, since right now only "Own" and "System" play
+
+    [DefOf]
+    public static class ChatSounds
+    {
+        public static SoundDef OwnChatDing;
+        public static SoundDef AllyChatDing;
+        public static SoundDef NeutralChatDing;
+        public static SoundDef HostileChatDing;
+        public static SoundDef SystemChatDing;
     }
 }
