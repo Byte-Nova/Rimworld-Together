@@ -228,7 +228,9 @@ namespace GameClient
 
         public static string ReplaceNonCensoredSymbols(string recievingString, string giftingString, bool isCensored)
         {
+            //The string coming out of the text field widget
             string StringA = recievingString; string currCharA;
+            //The string given to the test field widget (display)
             string StringB = giftingString; string currCharB;
             string censorSymbol = "*";
             string returnString = "";

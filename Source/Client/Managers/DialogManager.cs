@@ -9,7 +9,6 @@ namespace GameClient
 {
     public static class DialogManager
     {
-        public static float test;
         //      inputCache
         // Any time a dialog that has inputs is left (it is popped from the stack or a new dialog is pushed)
         // ,it will save its own list of inputs to inputCache
@@ -20,12 +19,10 @@ namespace GameClient
         //  Unlike inputCache, inputReserve never automatically gets updated, and must be set using
         //  the
         public static List<object> inputReserve;
+
         //an internal stack to keep track of windows
         //(this makes it easier and more accurate to find the last window pushed)
         private static Stack<Window> windowStack = new Stack<Window>();
-
-        public static Window currentDialog;
-        public static Window previousDialog;
 
         public static RT_WindowInputs currentDialogInputs;
 
@@ -114,36 +111,5 @@ namespace GameClient
             inputReserve = new List<object>(inputCache);
         }
 
-        public static string[] SubstituteInputs(List<object> newInputs)
-        {
-            string[] inputResults = new string[] { };
-
-            //Exception handling
-            if (newInputs.Count < 2)
-            {
-                Logger.WriteToConsole("newInputs in SubstituteInputs at RT_Dialog_1Input has too few elements; No changes will be made", LogMode.Error);
-                return null;
-            }
-
-            else if (newInputs.Count > 2)
-            {
-                Logger.WriteToConsole("newInputs in SubstituteInputs at RT_Dialog_1Input has more elements than necessary, some elements will not be used", LogMode.Warning);
-                return null;
-            }
-
-            //For each value in inputResultList, set it to the corrosponding value in newInputs
-            for (int index = 0; index < inputResults.Count(); index++)
-            {
-                if (inputResults[index].GetType() != newInputs[index].GetType())
-                {
-                    Logger.WriteToConsole("newInputs in RT_Dialog_2Inputs.SubstituteInputs contained non-matching types at index {index}, No changes will be made", LogMode.Error);
-                    return null;
-                }
-
-                inputResults[index] = (string)newInputs[index];
-            }
-
-            return inputResults;
-        }
     }
 }
