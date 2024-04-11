@@ -545,7 +545,7 @@
 
             CommandManager.SendBroadcastCommand(fullText);
 
-            Logger.WriteToConsole($"Sent broadcast '{fullText}'", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Sent broadcast: '{fullText}'", Logger.LogMode.Title);
         }
 
         private static void ServerMessageCommandAction()
@@ -558,6 +558,8 @@
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
             ChatManager.BroadcastServerMessage(fullText);
+
+            Logger.WriteToConsole($"Sent chat: '{fullText}'", Logger.LogMode.Title);
         }
 
         private static void WhitelistCommandAction()
