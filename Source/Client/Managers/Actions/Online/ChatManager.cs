@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GameClient;
 using HarmonyLib;
 using RimWorld;
 using Shared;
@@ -81,7 +82,7 @@ namespace GameClient
 
             if (!ClientValues.isReadyToPlay) return;
 
-            if (!chatBoxIsOpen) ToggleNotificationIcon(true);
+            if (!chatBoxIsOpen) ToggleChatIcon(true);
 
             if (ClientValues.muteSoundBool) return;
 
@@ -100,12 +101,10 @@ namespace GameClient
 
         public static void CleanChat()
         {
-            if (ClientValues.isReadyToPlay) notificationActive = mode;
-            if (!mode)
-            {
-                Master.threadDispatcher.Enqueue(turnOffChatNotification);
-                chatindex = 0;
-            }
+            currentChatInput = "";
+            chatMessageCache.Clear();
+            TurnOffChatIcon();
+            chatIconIndex = 0;
         }
 
         public static void ToggleChatIcon(bool mode)
@@ -116,18 +115,15 @@ namespace GameClient
 
             if (mode)
             {
-                semaphore.WaitOne();
-
                 if (chatClockTask == null) chatClockTask = Threader.GenerateThread(Threader.Mode.Chat);
-
-                semaphore.Release();
             }
         }
 
         public static void UpdateChatIcon()
         {
             chatIconIndex++;
-            if(chatIconIndex > chatIcons.Count) chatIconIndex = 0;
+            //Reset the index if it reaches the end of the animation
+            if(!(chatIconIndex < chatIcons.Count)) chatIconIndex = 0;
             AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[chatIconIndex]);
         }
 
@@ -140,7 +136,7 @@ namespace GameClient
 
                 Thread.Sleep(250);
                 if (Network.listener.disconnectFlag) break;
-                else if (notificationActive) Master.threadDispatcher.Enqueue(updateChatNotification);
+                else if (notificationActive) Master.threadDispatcher.Enqueue(UpdateChatIcon);
                 else
                 {
                     Thread.Yield();
@@ -148,12 +144,7 @@ namespace GameClient
             }
         }
 
-            chatIconIndex = 0;
-
-            Master.threadDispatcher.Enqueue(TurnOffChatIcon);
-
-            chatClockTask = null;
-        }
+            
     }
 
     [StaticConstructorOnStartup]

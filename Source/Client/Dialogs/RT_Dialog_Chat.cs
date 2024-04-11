@@ -43,24 +43,21 @@ namespace GameClient
         public override void PreOpen()
         {
             base.PreOpen();
-
-            windowRect.y = ChatManager.chatBoxPos.y;
-            windowRect.x = ChatManager.chatBoxPos.x;
+            windowRect.y = ChatManager.chatBoxPosition.y;
+            windowRect.x = ChatManager.chatBoxPosition.x;
         }
 
         public override void PostClose()
         {
             base.PostClose();
-            System.Diagnostics.StackTrace st = new();
-            Log.Message(st.ToString());
         }
 
         public override void DoWindowContents(Rect rect)
         {
-            ChatManager.chatBoxPos.x = windowRect.x;
-            ChatManager.chatBoxPos.y = windowRect.y;
+            ChatManager.chatBoxPosition.x = windowRect.x;
+            ChatManager.chatBoxPosition.y = windowRect.y;
 
-            if (ChatManager.notificationActive) ChatManager.ToggleNotificationIcon(false);
+            if (ChatManager.notificationActive) ChatManager.ToggleChatIcon(false);
 
             DrawPlayerCount(rect);
 

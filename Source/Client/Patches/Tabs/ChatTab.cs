@@ -18,6 +18,9 @@ namespace GameClient
             
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
+        //MainTabWindows will close if you click outside their box.
+        //This is ingrained into their type
+        //To side step this, we are using the tab window to call another window to open
         public ChatTab()
         {
         }
