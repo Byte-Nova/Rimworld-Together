@@ -34,6 +34,8 @@ namespace GameClient
         public static RT_Dialog_ItemListing dialogItemListing;
         public static RT_Dialog_Listing dialogListing;
 
+        public static RT_Dialog_Chat chatDialog = new RT_Dialog_Chat();
+
         public static RT_Dialog_ListingWithButton dialogButtonListing;
         public static int dialogListingWithButtonResult;
 
