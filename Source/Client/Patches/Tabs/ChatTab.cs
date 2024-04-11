@@ -14,8 +14,6 @@ namespace GameClient
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        bool chatIsOpen;
-
         private int startAcceptingInputAtFrame;
             
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
@@ -28,10 +26,10 @@ namespace GameClient
         {
             base.PreOpen();
 
-            if (chatIsOpen) DialogManager.PopDialog(DialogManager.chatDialog);
+            if (ChatManager.chatBoxIsOpen) DialogManager.PopDialog(DialogManager.chatDialog);
             else            DialogManager.PushNewDialog(DialogManager.chatDialog);
 
-            chatIsOpen = !chatIsOpen;
+            ChatManager.chatBoxIsOpen = !ChatManager.chatBoxIsOpen;
         }
 
 

@@ -37,8 +37,4 @@
   </ItemGroup>
 	
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
-	
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /y &quot;C:\Users\anaun\source\repos\Old NagaDev Copy\Byte-Nova-Rimworld-Together\Source\Client\bin\Debug\net472\GameClient.dll&quot; &quot;D:\SteamLibrary\steamapps\workshop\content\294100\3005289691\Current\Assemblies\GameClient.dll&quot;&#xD;&#xA;&quot;D:\SteamLibrary\steamapps\common\RimWorld\RimWorldWin64.exe&quot;" />
-  </Target>
 </Project>

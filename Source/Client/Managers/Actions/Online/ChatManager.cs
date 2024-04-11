@@ -60,6 +60,8 @@ namespace GameClient
 
         public static bool chatAutoscroll;
 
+        public static bool chatBoxIsOpen;
+
         public static bool notificationActive;
 
         public static List<string> chatMessageCache = new List<string>();
@@ -90,7 +92,7 @@ namespace GameClient
             }
 
             if (!ClientValues.isReadyToPlay) return;
-            ToggleNotificationIcon(true);
+            if (!chatBoxIsOpen) ToggleNotificationIcon(true);
             if (ClientValues.muteSoundBool) return;
             if (doSound) SoundDefs.SystemChatDing.PlayOneShotOnCamera();
         }
@@ -108,6 +110,11 @@ namespace GameClient
         public static void ToggleNotificationIcon(bool mode)
         {
             if (ClientValues.isReadyToPlay) notificationActive = mode;
+            if (!mode)
+            {
+                Master.threadDispatcher.Enqueue(turnOffChatNotification);
+                chatindex = 0;
+            }
         }
         
         public static void updateChatNotification()
@@ -137,7 +144,6 @@ namespace GameClient
                 else if (notificationActive) Master.threadDispatcher.Enqueue(updateChatNotification);
                 else
                 {
-                    Master.threadDispatcher.Enqueue(turnOffChatNotification);
                     Thread.Yield();
                 }
             }
