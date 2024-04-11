@@ -107,23 +107,9 @@ namespace GameClient
 
         public static void ToggleNotificationIcon(bool mode)
         {
-            if (ClientValues.isReadyToPlay)
-            {
-                notificationActive = mode;
-                MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
-                if (mode)
-                {
-                    //AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, iconChatOn);
-                    ChatThread = Threader.GenerateThread(Threader.Mode.Chat);
-                }
-                else 
-                { 
-                    AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[0]);
-                }
-
-            }
+            if (ClientValues.isReadyToPlay) notificationActive = mode;
         }
-
+        
         public static void updateChatNotification()
         {
             chatindex++;
@@ -144,12 +130,17 @@ namespace GameClient
 
         public static void ChatClock()
         {
-            while(notificationActive)
+            while(true)
             {
                 Thread.Sleep(250);
-                Master.threadDispatcher.Enqueue(updateChatNotification);
+                if (Network.listener.disconnectFlag) break;
+                else if (notificationActive) Master.threadDispatcher.Enqueue(updateChatNotification);
+                else
+                {
+                    Master.threadDispatcher.Enqueue(turnOffChatNotification);
+                    Thread.Yield();
+                }
             }
-            Master.threadDispatcher.Enqueue(turnOffChatNotification);
         }
 
     }
