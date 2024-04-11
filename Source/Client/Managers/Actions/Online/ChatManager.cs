@@ -57,7 +57,7 @@ namespace GameClient
         {
             ChatSounds.OwnChatDing.PlayOneShotOnCamera();
     
-            ChatMessagesJSON chatData = new ChatMessagesJSON();
+            ChatData chatData = new ChatData();
             chatData.usernames.Add(ClientValues.username);
             chatData.messages.Add(messageToSend);
     
@@ -71,7 +71,7 @@ namespace GameClient
 
             for (int i = 0; i < chatData.usernames.Count(); i++) 
             {
-                AddMessageToChat(chatMessagesJSON.usernames[i], chatMessagesJSON.messages[i], 
+                AddMessageToChat(chatData.usernames[i], chatData.messages[i], 
                     (UserColor)int.Parse(chatData.userColors[i]), 
                     (MessageColor)int.Parse(chatData.messageColors[i]));
             }

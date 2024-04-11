@@ -42,11 +42,11 @@ namespace GameClient
 
             if (ModsConfig.BiotechActive)
             {
-                GetPawnXenotype(pawn, humanDetailsJSON);
+                GetPawnXenotype(pawn, humanData);
 
-                GetPawnXenogenes(pawn, humanDetailsJSON);
+                GetPawnXenogenes(pawn, humanData);
 
-                GetPawnEndogenes(pawn, humanDetailsJSON);
+                GetPawnEndogenes(pawn, humanData);
             }
 
             GetPawnStory(pawn, humanData);
@@ -82,11 +82,11 @@ namespace GameClient
 
             if (ModsConfig.BiotechActive)
             {
-                SetPawnXenotype(pawn, humanDetailsJSON);
+                SetPawnXenotype(pawn, humanData);
 
-                SetPawnXenogenes(pawn, humanDetailsJSON);
+                SetPawnXenogenes(pawn, humanData);
 
-                SetPawnEndogenes(pawn, humanDetailsJSON);
+                SetPawnEndogenes(pawn, humanData);
             }
 
             SetPawnBioDetails(pawn, humanData);
