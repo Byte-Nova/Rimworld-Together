@@ -57,7 +57,7 @@ namespace GameClient
             ChatManager.chatBoxPosition.x = windowRect.x;
             ChatManager.chatBoxPosition.y = windowRect.y;
 
-            if (ChatManager.notificationActive) ChatManager.ToggleChatIcon(false);
+            if (ChatManager.isChatIconActive) ChatManager.ToggleChatIcon(false);
 
             DrawPlayerCount(rect);
 

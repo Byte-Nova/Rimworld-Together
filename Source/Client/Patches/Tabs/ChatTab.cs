@@ -29,10 +29,10 @@ namespace GameClient
         {
             base.PreOpen();
 
-            if (ChatManager.chatBoxIsOpen) DialogManager.PopDialog(DialogManager.chatDialog);
-            else            DialogManager.PushNewDialog(DialogManager.chatDialog);
+            if (ChatManager.isChatTabOpen) DialogManager.PopDialog(DialogManager.chatDialog);
+            else                           DialogManager.PushNewDialog(DialogManager.chatDialog);
 
-            ChatManager.chatBoxIsOpen = !ChatManager.chatBoxIsOpen;
+            ChatManager.isChatTabOpen = !ChatManager.isChatTabOpen;
         }
 
 

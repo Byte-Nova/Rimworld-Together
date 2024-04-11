@@ -50,11 +50,8 @@ namespace GameClient
         private static Task chatClockTask;
         private static readonly Semaphore semaphore = new Semaphore(1, 1);
 
-        public static bool chatBoxIsOpen;
-
-        public static bool notificationActive;
         //Icons
-        public static int chatIconIndex;
+        public static int chatIconIndex = 0;
         public static List<Texture2D> chatIcons = new List<Texture2D>();
 
         public static void SendMessage(string messageToSend)
@@ -82,7 +79,7 @@ namespace GameClient
 
             if (!ClientValues.isReadyToPlay) return;
 
-            if (!chatBoxIsOpen) ToggleChatIcon(true);
+            if (!isChatTabOpen) ToggleChatIcon(true);
 
             if (ClientValues.muteSoundBool) return;
 
@@ -103,6 +100,8 @@ namespace GameClient
         {
             currentChatInput = "";
             chatMessageCache.Clear();
+            if(isChatTabOpen) DialogManager.PopDialog(DialogManager.chatDialog);
+            isChatTabOpen = false;
             TurnOffChatIcon();
             chatIconIndex = 0;
         }
@@ -113,9 +112,10 @@ namespace GameClient
 
             isChatIconActive = mode;
 
-            if (mode)
+            if (!mode)
             {
-                if (chatClockTask == null) chatClockTask = Threader.GenerateThread(Threader.Mode.Chat);
+                Master.threadDispatcher.Enqueue(TurnOffChatIcon);
+                chatIconIndex = 0;
             }
         }
 
@@ -123,7 +123,7 @@ namespace GameClient
         {
             chatIconIndex++;
             //Reset the index if it reaches the end of the animation
-            if(!(chatIconIndex < chatIcons.Count)) chatIconIndex = 0;
+            if(chatIconIndex >= chatIcons.Count) chatIconIndex = 0;
             AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[chatIconIndex]);
         }
 
@@ -131,12 +131,12 @@ namespace GameClient
 
         public static void ChatClock()
         {
-            while(isChatIconActive)
+            while(true)
             {
 
                 Thread.Sleep(250);
                 if (Network.listener.disconnectFlag) break;
-                else if (notificationActive) Master.threadDispatcher.Enqueue(UpdateChatIcon);
+                else if (isChatIconActive) Master.threadDispatcher.Enqueue(UpdateChatIcon);
                 else
                 {
                     Thread.Yield();
