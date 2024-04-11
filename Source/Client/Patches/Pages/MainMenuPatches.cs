@@ -96,15 +96,18 @@ namespace GameClient
                         DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                         Network.StartConnection();
 
-                        string[] details = PreferenceManager.LoadLoginDetails();
-                        JoinDetailsJSON loginDetails = new JoinDetailsJSON();
-                        loginDetails.username = details[0];
-                        loginDetails.password = Hasher.GetHashFromString(details[1]);
-                        loginDetails.clientVersion = CommonValues.executableVersion;
-                        loginDetails.runningMods = ModManager.GetRunningModList().ToList();
+                        if (Network.isConnectedToServer)
+                        {
+                            string[] details = PreferenceManager.LoadLoginDetails();
+                            JoinDetailsJSON loginDetails = new JoinDetailsJSON();
+                            loginDetails.username = details[0];
+                            loginDetails.password = Hasher.GetHashFromString(details[1]);
+                            loginDetails.clientVersion = CommonValues.executableVersion;
+                            loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
-                        Network.listener.EnqueuePacket(packet);
+                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
+                            Network.listener.EnqueuePacket(packet);
+                        }
                     });
 
                     list.Add(item);
