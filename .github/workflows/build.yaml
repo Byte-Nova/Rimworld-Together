@@ -20,6 +20,6 @@ jobs:
         with:
           dotnet-version: ${{ matrix.version}}
       - name: Build Game Server
-        run: dotnet build Source/Server/GameServer.csproj
+        run: make build-server
       - name: Build Game Client
-        run: dotnet build Source/Client/GameClient.csproj
+        run: make build-client
