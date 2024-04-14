@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         version:
-          - 8
+          #- 8
           - 7.0.x
         os: 
           - ubuntu-latest
@@ -23,3 +23,4 @@ jobs:
         run: make build-server
       - name: Build Game Client
         run: make build-client
+
