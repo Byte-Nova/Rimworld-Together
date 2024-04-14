@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Setup dotnet $DOTNET_VERSION
+      - name: Setup dotnet ${{ matrix.version }}
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.version}}
