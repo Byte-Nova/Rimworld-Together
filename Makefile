@@ -11,4 +11,4 @@ build-container:
 
 run-container:
 	mkdir -p Data
-	podman run -it --rm -v $(pwd)/Data:/Data:Z -p 25555:25555 rwt:latest
+	podman run -it --rm -v $$(pwd)/Data:/Data:Z -p 25555:25555 rwt:latest
