@@ -114,8 +114,17 @@ namespace GameClient
             }
         }
 
-        //Removes old player sites
 
+        public static List<Faction> factionList = new()
+        {
+            FactionValues.enemyPlayer,
+            FactionValues.neutralPlayer,
+            FactionValues.allyPlayer,
+            FactionValues.yourOnlineFaction,
+            Faction.OfPlayer
+        };
+
+        //Removes old player sites
         private static void RemoveOldSites()
         {
             playerSites.Clear();
@@ -123,31 +132,8 @@ namespace GameClient
             Site[] sites = Find.WorldObjects.Sites.ToArray();
             foreach (Site site in sites)
             {
-                if (site.Faction == FactionValues.enemyPlayer)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
 
-                if (site.Faction == FactionValues.neutralPlayer)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
-
-                if (site.Faction == FactionValues.allyPlayer)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
-
-                if (site.Faction == FactionValues.yourOnlineFaction)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
-
-                if (site.Faction == Faction.OfPlayer)
+                if (factionList.Contains(site.Faction))
                 {
                     Find.WorldObjects.Remove(site);
                     continue;

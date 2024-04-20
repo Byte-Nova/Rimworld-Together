@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -31,7 +32,7 @@ namespace GameServer
 
         public static void SendNoPowerPacket(ServerClient client, FactionManifestJSON factionManifest)
         {
-            factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NoPower).ToString();
+            factionManifest.manifestMode = FactionManifestMode.NoPower;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
             client.listener.EnqueuePacket(packet);
@@ -40,7 +41,7 @@ namespace GameServer
         public static void SendWorkerInsidePacket(ServerClient client)
         {
             SiteDetailsJSON siteDetails = new SiteDetailsJSON();
-            siteDetails.siteStep = ((int)CommonEnumerators.SiteStepMode.WorkerError).ToString();
+            siteDetails.siteStep = ((int)SiteStepMode.WorkerError).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetails);
             client.listener.EnqueuePacket(packet);

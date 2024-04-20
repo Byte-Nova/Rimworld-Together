@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class FactionManifestJSON
     {
-        public string manifestMode;
+        public FactionManifestMode manifestMode;
 
         public string manifestDetails;
 

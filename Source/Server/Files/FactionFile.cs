@@ -1,4 +1,6 @@
-﻿namespace GameServer
+﻿using static Shared.CommonEnumerators;
+
+namespace GameServer
 {
     [Serializable]
     public class FactionFile

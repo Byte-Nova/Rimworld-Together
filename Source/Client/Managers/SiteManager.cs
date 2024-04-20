@@ -69,15 +69,15 @@ namespace GameClient
             List<SitePartDef> defs = new List<SitePartDef>();
             foreach (SitePartDef def in DefDatabase<SitePartDef>.AllDefs)
             {
-                if (def.defName == "RTFarmland") defs.Add(def);
-                else if (def.defName == "RTQuarry") defs.Add(def);
-                else if (def.defName == "RTSawmill") defs.Add(def);
-                else if (def.defName == "RTBank") defs.Add(def);
-                else if (def.defName == "RTLaboratory") defs.Add(def);
-                else if (def.defName == "RTRefinery") defs.Add(def);
+                if (def.defName == "RTFarmland")            defs.Add(def);
+                else if (def.defName == "RTQuarry")         defs.Add(def);
+                else if (def.defName == "RTSawmill")        defs.Add(def);
+                else if (def.defName == "RTBank")           defs.Add(def);
+                else if (def.defName == "RTLaboratory")     defs.Add(def);
+                else if (def.defName == "RTRefinery")       defs.Add(def);
                 else if (def.defName == "RTHerbalWorkshop") defs.Add(def);
                 else if (def.defName == "RTTextileFactory") defs.Add(def);
-                else if (def.defName == "RTFoodProcessor") defs.Add(def);
+                else if (def.defName == "RTFoodProcessor")  defs.Add(def);
             }
             siteDefs = defs.ToArray();
 
