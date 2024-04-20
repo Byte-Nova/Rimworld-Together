@@ -1,6 +1,7 @@
 ﻿using Shared;
 using System.Net;
 using System.Net.Sockets;
+using Mono.Nat;
 
 namespace GameServer
 {
@@ -8,6 +9,9 @@ namespace GameServer
 
     public static class Network
     {
+        //AutoPortForwardBool
+        public static bool autoPortForwardSuccessful;
+
         //IP and Port that the connection will be bound to
         private static IPAddress localAddress = IPAddress.Parse(Master.serverConfig.IP);
         private static int port = int.Parse(Master.serverConfig.Port);
@@ -16,8 +20,9 @@ namespace GameServer
         private static TcpListener connection;
         public static List<ServerClient> connectedClients = new List<ServerClient>();
 
-        //Entry point function of the network class
+        private static Punchthrough punchthrough;
 
+        //Entry point function of the network class
         public static void ReadyServer()
         {
             connection = new TcpListener(localAddress, port);
@@ -34,7 +39,6 @@ namespace GameServer
         }
 
         //Listens for any user that might connect and executes all required tasks  with it
-
         private static void ListenForIncomingUsers()
         {
             TcpClient newTCP = connection.AcceptTcpClient();
@@ -89,5 +93,57 @@ namespace GameServer
                 Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", Logger.LogMode.Warning);
             }
         }
+
+        public static void TryToForwardPort()
+        {
+            autoPortForwardSuccessful = false;
+            Logger.WriteToConsole($"Attempting to forward port {port}");
+            Task.Run(delegate { punchthrough = new Punchthrough(); });
+
+            //Wait for the server to try to portforward for 5 seconds or until it is successful
+            Thread.Sleep(5000);
+            if (!autoPortForwardSuccessful)
+            {
+                Logger.WriteToConsole("Could not Auto PortForward - \n " +
+                    "              Possible causes:\n" +
+                    "              - the port is being used\n" +
+                    "              - the router has uPnP disabled\n" +
+                    "              - or the router/modem does not have ports", Logger.LogMode.Warning);
+                NatUtility.StopDiscovery();
+            }
+        }
+
+        //class for auto portforwarding with UPnP
+        public class Punchthrough
+        {
+
+            public Punchthrough()
+            {
+                Logger.WriteToConsole("Attempting to auto portforward");
+                NatUtility.DeviceFound += DeviceFound;
+                NatUtility.DeviceLost += DeviceLost;
+                NatUtility.StartDiscovery();
+            }
+
+            private void DeviceFound(object sender, DeviceEventArgs args)
+            {
+                Logger.WriteToConsole("Device found");
+                autoPortForwardSuccessful = true;
+                INatDevice device = args.Device;
+                device.CreatePortMap(new Mapping(Protocol.Tcp, port, port));
+                Logger.WriteToConsole("portforward successful");
+                // on device found code
+            }
+
+            private void DeviceLost(object sender, DeviceEventArgs args)
+            {
+                Logger.WriteToConsole("Device Lost");
+                INatDevice device = args.Device;
+                device.DeletePortMap(new Mapping(Protocol.Tcp, port, port));
+                // on device disconnect code
+            }
+        }
     }
+
+    
 }

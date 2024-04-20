@@ -21,6 +21,9 @@
     </ItemGroup>
 
     <ItemGroup>
+	    <Reference Include="Mono.Nat">
+	      <HintPath>..\Shared\Assemblies\Mono.Nat.dll</HintPath>
+	    </Reference>
 	    <Reference Include="Newtonsoft.Json">
 			<HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
 		</Reference>
