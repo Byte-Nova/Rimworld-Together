@@ -209,7 +209,7 @@ namespace GameServer
             if (loginDetails.clientVersion == CommonValues.executableVersion) return true;
             else
             {
-                Logger.WriteToConsole($"[Version Mismatch] > {client.username}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Version Mismatch] > {client.username}", LogMode.Warning);
                 SendLoginResponse(client, LoginResponse.WrongVersion);
                 return false;
             }
