@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTDefenseSpot.label>防御点</RTDefenseSpot.label>
+    <RTDefenseSpot.description>指定一个防御点供棋子在离线时防守。仅适用于玩家突袭！</RTDefenseSpot.description>
+</LanguageData>

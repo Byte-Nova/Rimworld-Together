@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTNeutral.label>中立玩家定居點</RTNeutral.label>
+    <RTNeutral.description>一個線上派系</RTNeutral.description>
+    <RTNeutral.fixedName>中立玩家定居點</RTNeutral.fixedName>
+    <RTNeutral.leaderTitle>領袖</RTNeutral.leaderTitle>
+    <RTNeutral.pawnSingular>殖民者</RTNeutral.pawnSingular>
+    <RTNeutral.pawnsPlural>殖民者們</RTNeutral.pawnsPlural>
+</LanguageData>
