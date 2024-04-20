@@ -55,7 +55,8 @@ namespace GameClient
             factions = new List<FactionDef>();
             foreach(string str in worldDetailsJSON.factions)
             {
-                factions.Add(DefDatabase<FactionDef>.AllDefs.First(fetch => fetch.defName == str));
+                FactionDef faction = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                if(faction != null) factions.Add(faction);
             }
 
             cachedWorldDetails = worldDetailsJSON;
