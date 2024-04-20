@@ -35,7 +35,7 @@ namespace GameClient
             else if (target == LikelihoodTarget.Site) factionToUse = ClientValues.chosenSite.Faction;
 
             if(factionToUse == likelihoodToFaction[likelihood])
-             DialogManager.PushNewDialog(new RT_Dialog_Error("Chosen settlement is already marked as enemy!"));
+             DialogManager.PushNewDialog(new RT_Dialog_Error($"Chosen settlement is already marked as {likelihood}!"));
             else
               RequestChangeStructureLikelihood(tileToUse, (int)likelihood);
 
