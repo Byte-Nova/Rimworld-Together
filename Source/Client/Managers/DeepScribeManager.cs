@@ -1354,4 +1354,53 @@ namespace GameClient
             map.roofGrid.Drawer.SetDirty();
         }
     }
+
+
+    //class that handles transformation of factions
+    public static class FactionScribeManager
+    {
+        public static FactionData factionToFactionDetails(FactionDef faction)
+        {
+            FactionData factionData = new FactionData();
+            factionData.defName = faction.defName;
+            factionData.fixedName = faction.fixedName;
+            factionData.autoFlee = faction.autoFlee;
+            factionData.canSiege = faction.canSiege;
+            factionData.canStageAttacks = faction.canStageAttacks;
+            factionData.canUseAvoidGrid = faction.canUseAvoidGrid;
+            factionData.earliestRaidDays = faction.earliestRaidDays;
+            factionData.rescueesCanJoin = faction.rescueesCanJoin;
+            factionData.naturalEnemy = faction.naturalEnemy;
+            factionData.permanentEnemy = faction.permanentEnemy;
+            factionData.permanentEnemyToEveryoneExceptPlayer = faction.permanentEnemyToEveryoneExceptPlayer;
+            factionData.techLevel = (byte)faction.techLevel;
+            factionData.factionIconPath = faction.factionIconPath;
+            factionData.settlementTexturePath = faction.settlementTexturePath;
+            factionData.hidden = faction.hidden;
+
+            return factionData;
+        }
+
+        public static FactionDef factionDetailsToFaction(FactionData factionData)
+        {
+            FactionDef factionDef = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(
+                fetch => (fetch.permanentEnemy == factionData.permanentEnemy) &&
+                         (fetch.naturalEnemy == factionData.naturalEnemy));
+            factionDef.defName = factionData.defName;
+            factionDef.fixedName = factionData.fixedName;
+            factionDef.autoFlee = factionData.autoFlee;
+            factionDef.canSiege = factionData.canSiege;
+            factionDef.canStageAttacks = factionData.canStageAttacks;
+            factionDef.canUseAvoidGrid = factionData.canUseAvoidGrid;
+            factionDef.earliestRaidDays = factionData.earliestRaidDays;
+            factionDef.rescueesCanJoin = factionData.rescueesCanJoin;
+            factionDef.permanentEnemy = factionData.permanentEnemy;
+            factionDef.permanentEnemyToEveryoneExceptPlayer = factionData.permanentEnemyToEveryoneExceptPlayer;
+            factionDef.techLevel = (TechLevel)factionData.techLevel;
+            factionDef.factionIconPath = factionData.factionIconPath;
+            factionDef.hidden = factionData.hidden;
+
+            return factionDef;
+        }
+    }
 }

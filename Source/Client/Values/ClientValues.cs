@@ -26,6 +26,8 @@ namespace GameClient
 
         public static bool isInVisit;
 
+        public static bool requiresSaveManipulation;
+
         public static Settlement chosenSettlement;
         public static Caravan chosenCaravan;
         public static Site chosenSite;
