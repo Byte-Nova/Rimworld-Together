@@ -168,6 +168,10 @@
             "Forces a player to sync their save",
             ForceSaveCommandAction);
 
+        private static ServerCommand forceSaveAllCommand = new ServerCommand("forcesaveall", 0,
+            "Forces all players to sync their save",
+            ForceSaveAllCommandAction);
+
         private static ServerCommand deletePlayerCommand = new ServerCommand("deleteplayer", 1,
             "Deletes all data of a player",
             DeletePlayerCommandAction);
@@ -213,6 +217,7 @@
             whitelistToggleCommand,
             clearCommand,
             forceSaveCommand,
+            forceSaveAllCommand,
             deletePlayerCommand,
             enableDifficultyCommand,
             disableDifficultyCommand,
@@ -642,6 +647,24 @@
 
                 Logger.WriteToConsole($"User '{ServerCommandManager.commandParameters[0]}' has been forced to save",
                     Logger.LogMode.Warning);
+            }
+        }
+
+        private static void ForceSaveAllCommandAction()
+        {
+            Logger.WriteToConsole($"Saving the game of [{Network.connectedClients.Count()}] players");
+            foreach (ServerClient player in Network.connectedClients)
+            {
+                try
+                {
+                    CommandManager.SendForceSaveCommand(player);
+                }
+                catch
+                {
+                    Logger.WriteToConsole($"Error occured while attempting to save {player.username}'s save from the ForceSaveAll command"
+                                            ,Logger.LogMode.Warning) ;
+                }
+
             }
         }
 

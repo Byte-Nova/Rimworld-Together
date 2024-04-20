@@ -70,6 +70,7 @@ namespace GameServer
         {
             CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
             commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
+            commandDetailsJSON.disconnectPlayer = false;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
             client.listener.EnqueuePacket(packet);

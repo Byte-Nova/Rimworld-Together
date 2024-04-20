@@ -28,7 +28,7 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.CommandType.ForceSave:
-                    OnForceSaveCommand();
+                    OnForceSaveCommand(commandDetailsJSON.disconnectPlayer);
                     break;
             }
         }
@@ -54,14 +54,11 @@ namespace GameClient
             RimworldManager.GenerateLetter("Server Broadcast", commandDetailsJSON.commandDetails, LetterDefOf.PositiveEvent);
         }
 
-        private static void OnForceSaveCommand()
+        private static void OnForceSaveCommand(bool disconnectUser)
         {
-            if (!ClientValues.isReadyToPlay) DisconnectionManager.DisconnectToMenu();
-            else
-            {
-                ClientValues.isDisconnecting = true;
-                SaveManager.ForceSave();
-            }
+            if (!ClientValues.isReadyToPlay) { DisconnectionManager.DisconnectToMenu(); return; }
+            ClientValues.isDisconnecting = disconnectUser;
+            SaveManager.ForceSave();
         }
     }
 }
