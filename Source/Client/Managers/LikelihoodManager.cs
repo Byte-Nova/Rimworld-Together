@@ -4,7 +4,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
-
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -12,47 +12,33 @@ namespace GameClient
 
     public static class LikelihoodManager
     {
-        //Tries to request a likelihood change depending on the values given
 
-        public static void TryRequestLikelihood(CommonEnumerators.Likelihoods type, CommonEnumerators.LikelihoodTarget target)
+    public static Dictionary<Likelihoods, Faction> likelihoodToFaction = new()
         {
+          {Likelihoods.Enemy, FactionValues.enemyPlayer },
+          {Likelihoods.Neutral, FactionValues.neutralPlayer },
+          {Likelihoods.Ally, FactionValues.allyPlayer }
+        };
+
+
+
+        //Tries to request a likelihood change depending on the values given
+        public static void TryRequestLikelihood(Likelihoods likelihood, LikelihoodTarget target)
+        {
+
             int tileToUse = 0;
-            if (target == CommonEnumerators.LikelihoodTarget.Settlement) tileToUse = ClientValues.chosenSettlement.Tile;
-            else if (target == CommonEnumerators.LikelihoodTarget.Site) tileToUse = ClientValues.chosenSite.Tile;
+            if (target == LikelihoodTarget.Settlement) tileToUse = ClientValues.chosenSettlement.Tile;
+            else if (target == LikelihoodTarget.Site) tileToUse = ClientValues.chosenSite.Tile;
 
             Faction factionToUse = null;
-            if (target == CommonEnumerators.LikelihoodTarget.Settlement) factionToUse = ClientValues.chosenSettlement.Faction;
-            else if (target == CommonEnumerators.LikelihoodTarget.Site) factionToUse = ClientValues.chosenSite.Faction;
+            if (target == LikelihoodTarget.Settlement) factionToUse = ClientValues.chosenSettlement.Faction;
+            else if (target == LikelihoodTarget.Site) factionToUse = ClientValues.chosenSite.Faction;
 
-            if (type == CommonEnumerators.Likelihoods.Enemy)
-            {
-                if (factionToUse == FactionValues.enemyPlayer)
-                {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as enemy!");
-                    DialogManager.PushNewDialog(d1);
-                }
-                else RequestChangeStructureLikelihood(tileToUse, 0);
-            }
+            if(factionToUse == likelihoodToFaction[likelihood])
+             DialogManager.PushNewDialog(new RT_Dialog_Error("Chosen settlement is already marked as enemy!"));
+            else
+              RequestChangeStructureLikelihood(tileToUse, (int)likelihood);
 
-            else if (type == CommonEnumerators.Likelihoods.Neutral)
-            {
-                if (factionToUse == FactionValues.neutralPlayer)
-                {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as neutral!");
-                    DialogManager.PushNewDialog(d1);
-                }
-                else RequestChangeStructureLikelihood(tileToUse, 1);
-            }
-
-            else if (type == CommonEnumerators.Likelihoods.Ally)
-            {
-                if (factionToUse == FactionValues.allyPlayer)
-                {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as ally!");
-                    DialogManager.PushNewDialog(d1);
-                }
-                else RequestChangeStructureLikelihood(tileToUse, 2);
-            }
         }
 
         //Requests a structure likelihood change to the server
