@@ -5,7 +5,7 @@ WORKDIR /App
 COPY Source Source
 
 # Restore as distinct layers
-RUN dotnet build Source/Server/GameServer.csproj --configuration Release
+RUN dotnet build Source/Server/GameServer.csproj --configuration Release /property:WarningLevel=0
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
