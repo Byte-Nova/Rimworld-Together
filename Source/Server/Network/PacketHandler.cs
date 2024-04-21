@@ -11,7 +11,7 @@ namespace GameServer
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}");
+            if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}",allowLogMultiplier:true);
 
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);

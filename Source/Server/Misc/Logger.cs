@@ -35,23 +35,26 @@ namespace GameServer
         private static string previousText = string.Empty;
 
 
-        public static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true)
+        public static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true, bool allowLogMultiplier = false)
         {
             semaphore.WaitOne();
 
             Console.CursorVisible = false;
             if (writeToLogs) WriteToLogs(text);
 
+            var cursorPos = Console.GetCursorPosition();
+
             Console.ForegroundColor = colorDictionary[mode];
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
 
             //check if the last log is the same as this log, if so then put a multiplier on the log
-            if (text == previousText)
+            if ((text == previousText) && allowLogMultiplier)
             {
                 repetitionCounter++;
 
                 Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
                 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text} x {repetitionCounter}");
+                Console.SetCursorPosition(cursorPos.Left, cursorPos.Top);
             }
             else
             {
