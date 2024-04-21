@@ -120,6 +120,10 @@
             "Shows all currently loaded mods",
             ModListCommandAction);
 
+        private static ServerCommand doSiteRewards = new ServerCommand("dositerewards", 0,
+            "Forces site rewards to run",
+            DoSiteRewardsCommandAction);
+
         private static ServerCommand eventCommand = new ServerCommand("event", 2,
             "Sends a command to the selecter players",
             EventCommandAction);
@@ -200,6 +204,7 @@
             eventCommand,
             eventAllCommand,
             eventListCommand,
+            doSiteRewards,
             broadcastCommand,
             serverMessageCommand,
             whitelistCommand,
@@ -464,6 +469,12 @@
             Logger.WriteToConsole("----------------------------------------", Logger.LogMode.Title, false);
         }
 
+        private static void DoSiteRewardsCommandAction()
+        {
+            Logger.WriteToConsole($"Forced site rewards", Logger.LogMode.Title);
+            SiteManager.SiteRewardTick();
+        }
+
         private static void EventCommandAction()
         {
             ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
@@ -534,7 +545,7 @@
 
             CommandManager.SendBroadcastCommand(fullText);
 
-            Logger.WriteToConsole($"Sent broadcast '{fullText}'", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Sent broadcast: '{fullText}'", Logger.LogMode.Title);
         }
 
         private static void ServerMessageCommandAction()
@@ -546,7 +557,9 @@
             }
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
-            ChatManager.BroadcastServerMessages(fullText);
+            ChatManager.BroadcastServerMessage(fullText);
+
+            Logger.WriteToConsole($"Sent chat: '{fullText}'", Logger.LogMode.Title);
         }
 
         private static void WhitelistCommandAction()

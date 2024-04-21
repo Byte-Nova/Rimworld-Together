@@ -9,6 +9,10 @@
 
         public string MaxPlayers = "100";
 
-        public bool verboseLogs = false;
+        public string MaxTimeoutInMS = "5000";
+
+        public bool VerboseLogs = false;
+
+        public bool DisplayChatInConsole = false;
     }
 }

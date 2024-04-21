@@ -10,8 +10,6 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            DialogManager.PopWaitDialog();
-
             JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(loginDetailsJSON.tryResponse))
@@ -22,10 +20,6 @@ namespace GameClient
 
                 case (int)CommonEnumerators.LoginResponse.BannedLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("You are banned from this server!"));
-                    break;
-
-                case (int)CommonEnumerators.LoginResponse.RegisterSuccess:
-                    DialogShortcuts.ShowRegisteredDialog();
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.RegisterInUse:

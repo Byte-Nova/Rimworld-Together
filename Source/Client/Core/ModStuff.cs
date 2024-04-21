@@ -11,7 +11,7 @@ namespace GameClient
 {
     public class ModStuff : Mod
     {
-        ModConfigs modConfigs;
+        private readonly ModConfigs modConfigs;
 
         public ModStuff(ModContentPack content) : base(content)
         {
@@ -29,8 +29,9 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.transferBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.siteRewardsBool, "Automatically site rewards");
+            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
+            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.rejectSiteRewardsBool, "Automatically site rewards");
+            listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref modConfigs.muteChatSoundBool, "Mute chat messages");
             if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s"))
             {
                 ShowAutosaveFloatMenu();
@@ -39,7 +40,7 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("Compatibility");
-            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertMenu(); }
+            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertFloatMenu(); }
             if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
             if (listingStandard.ButtonTextLabeled("[When Playing] Get server world file", "Get")) { GenerateWorldFile(); }
             if (listingStandard.ButtonTextLabeled("Open server worlds folder", "Open")) StartProcess(Master.worldSavesFolderPath);
@@ -53,7 +54,7 @@ namespace GameClient
             listingStandard.Label("External Sources");
             if (listingStandard.ButtonTextLabeled("Check the mod's wiki!", "Open")) StartProcess("https://rimworld-together.fandom.com/wiki/Rimworld_Together_Wiki");
             if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/NCsArSaqBW");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
+            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/RimworldTogether/Rimworld-Together");
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
@@ -88,7 +89,7 @@ namespace GameClient
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private void ShowConvertMenu()
+        private void ShowConvertFloatMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
@@ -131,24 +132,6 @@ namespace GameClient
                     if (faction.def == Faction.OfPlayer.def) continue;
                     else worldValuesFile.factions.Add(faction.def.defName);
                 }
-
-                WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-                XmlParser.GetWorldXmlData(worldDetailsJSON);
-
-                worldValuesFile.tileBiomeDeflate = worldDetailsJSON.tileBiomeDeflate;
-                worldValuesFile.tileElevationDeflate = worldDetailsJSON.tileElevationDeflate;
-                worldValuesFile.tileHillinessDeflate = worldDetailsJSON.tileHillinessDeflate;
-                worldValuesFile.tileTemperatureDeflate = worldDetailsJSON.tileTemperatureDeflate;
-                worldValuesFile.tileRainfallDeflate = worldDetailsJSON.tileRainfallDeflate;
-                worldValuesFile.tileSwampinessDeflate = worldDetailsJSON.tileSwampinessDeflate;
-                worldValuesFile.tileFeatureDeflate = worldDetailsJSON.tileFeatureDeflate;
-                worldValuesFile.tilePollutionDeflate = worldDetailsJSON.tilePollutionDeflate;
-                worldValuesFile.tileRoadOriginsDeflate = worldDetailsJSON.tileRoadOriginsDeflate;
-                worldValuesFile.tileRoadAdjacencyDeflate = worldDetailsJSON.tileRoadAdjacencyDeflate;
-                worldValuesFile.tileRoadDefDeflate = worldDetailsJSON.tileRoadDefDeflate;
-                worldValuesFile.tileRiverOriginsDeflate = worldDetailsJSON.tileRiverOriginsDeflate;
-                worldValuesFile.tileRiverAdjacencyDeflate = worldDetailsJSON.tileRiverAdjacencyDeflate;
-                worldValuesFile.tileRiverDefDeflate = worldDetailsJSON.tileRiverDefDeflate;
 
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
 

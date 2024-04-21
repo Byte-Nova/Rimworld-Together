@@ -255,7 +255,7 @@ namespace GameClient
             {
                 ClientValues.incomingManifest = transferManifestJSON;
 
-                if (!ClientValues.isReadyToPlay || ClientValues.isInTransfer || ClientValues.autoDenyTransfers)
+                if (!ClientValues.isReadyToPlay || ClientValues.isInTransfer || ClientValues.rejectTransferBool)
                 {
                     RejectRequest((TransferMode)int.Parse(transferManifestJSON.transferMode));
                 }

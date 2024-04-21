@@ -90,7 +90,7 @@ namespace GameServer
 
             catch (Exception e)
             {
-                if (Master.serverConfig.verboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
+                if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
 
                 disconnectFlag = true;
             }
@@ -126,7 +126,7 @@ namespace GameServer
             {
                 while (true)
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(int.Parse(Master.serverConfig.MaxTimeoutInMS));
 
                     if (KAFlag) KAFlag = false;
                     else break;

@@ -119,8 +119,8 @@ namespace GameServer
 
         private static void AddNewSite(ServerClient client, SiteDetailsJSON siteDetailsJSON)
         {
-            if (SettlementManager.CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client);
-            else if (CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client);
+            if (SettlementManager.CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteDetailsJSON.tile}, but that tile already has a settlement");
+            else if (CheckIfTileIsInUse(siteDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteDetailsJSON.tile}, but that tile already has a site");
             else
             {
                 SiteFile siteFile = null;
@@ -165,7 +165,7 @@ namespace GameServer
 
             if (siteFile.isFromFaction)
             {
-                if (siteFile.factionName != client.factionName) ResponseShortcutManager.SendIllegalPacket(client);
+                if (siteFile.factionName != client.factionName) ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteDetailsJSON.tile} was attempted to be destroyed by {client.username}, but player wasn't a part of faction {siteFile.factionName}");
                 else
                 {
                     FactionFile factionFile = OnlineFactionManager.GetFactionFromClient(client);
@@ -179,7 +179,7 @@ namespace GameServer
 
             else
             {
-                if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client);
+                if (siteFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteDetailsJSON.tile} was attempted to be destroyed by {client.username}, but the player {siteFile.owner} owns it");
                 else if (siteFile.workerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);
                 else DestroySiteFromFile(siteFile);
             }
@@ -216,12 +216,12 @@ namespace GameServer
 
             if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
-                ResponseShortcutManager.SendIllegalPacket(client);
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} tried to deposit a worker in the site at tile {siteDetailsJSON.tile}, but the player {siteFile.owner} owns it");
             }
 
             else if (siteFile.workerData != null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client);
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} tried to deposit a worker in the site at tile {siteDetailsJSON.tile}, but the site already has a worker");
             }
 
             else
@@ -237,12 +237,12 @@ namespace GameServer
 
             if (siteFile.owner != client.username && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(siteFile.owner))
             {
-                ResponseShortcutManager.SendIllegalPacket(client);
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to retrieve a worker from the site at tile {siteDetailsJSON.tile}, but the player {siteFile.owner} of faction {siteFile.factionName} owns it");
             }
 
             else if (siteFile.workerData == null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client);
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to retrieve a worker from the site at tile {siteDetailsJSON.tile}, but it has no workers");
             }
 
             else
@@ -266,7 +266,7 @@ namespace GameServer
             }
         }
 
-        private static void SiteRewardTick()
+        public static void SiteRewardTick()
         {
             SiteFile[] sites = GetAllSites();
 

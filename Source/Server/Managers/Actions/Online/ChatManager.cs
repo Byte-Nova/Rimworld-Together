@@ -1,66 +1,94 @@
 ﻿using Shared;
+using System;
+using System.Text;
+using System.Threading;
 
 namespace GameServer
 {
     public static class ChatManager
     {
-        public static string[] defaultJoinMessages = new string[]
+        private static readonly Semaphore logSemaphore = new Semaphore(1, 1);
+        private static readonly Semaphore commandSemaphore = new Semaphore(1, 1);
+
+        public static readonly string[] defaultJoinMessages = new string[]
         {
-            "Welcome to the global chat!", "Please be considerate with others and have fun!", "Use '/help' to check available commands"
+            "Welcome to the global chat!",
+            "Please be considerate with others and have fun!",
+            "Use '/help' to check available commands"
         };
 
+        private static void WriteToLogs(string username, string message)
+        {
+            logSemaphore.WaitOne();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | [" + username + "]: " + message);
+            stringBuilder.Append(Environment.NewLine);
+    
+            DateTime dateTime = DateTime.Now.Date;
+            string nowFileName = (dateTime.Year + "-" + dateTime.Month.ToString("D2") + "-" + dateTime.Day.ToString("D2")).ToString();
+            string nowFullPath = Master.chatLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+    
+            File.AppendAllText(nowFullPath, stringBuilder.ToString());
+            stringBuilder.Clear();
+
+            logSemaphore.Release();
+        }
+    
         public static void ParseClientMessages(ServerClient client, Packet packet)
         {
             ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
             
             for(int i = 0; i < chatMessagesJSON.messages.Count(); i++)
             {
-                if (chatMessagesJSON.messages[i].StartsWith("/")) ExecuteCommand(client, packet);
-                else BroadcastClientMessages(client, packet);
+                if (chatMessagesJSON.messages[i].StartsWith("/")) ExecuteChatCommand(client, chatMessagesJSON.messages[i]);
+                else BroadcastChatMessage(client, chatMessagesJSON.messages[i]);
             }
         }
 
-        public static void ExecuteCommand(ServerClient client, Packet packet)
+        private static void ExecuteChatCommand(ServerClient client, string command)
         {
-            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
+            commandSemaphore.WaitOne();
 
-            ChatCommand toFind = ChatCommandManager.chatCommands.ToList().Find(x => x.prefix == chatMessagesJSON.messages[0]);
-            if (toFind == null) SendMessagesToClient(client, new string[] { "Command was not found" });
+            ChatCommand toFind = ChatCommandManager.chatCommands.ToList().Find(x => x.prefix == command);
+            if (toFind == null) BroadcastSystemMessage(client, new string[] { "Command was not found" });
             else
             {
-                ChatCommandManager.invoker = client;
-
+                ChatCommandManager.targetClient = client;
                 toFind.commandAction.Invoke();
             }
 
-            Logger.WriteToConsole($"[Chat command] > {client.username} > {chatMessagesJSON.messages[0]}");
+            Logger.WriteToConsole($"[Chat command] > {client.username} > {command}");
+
+            commandSemaphore.Release();
         }
 
-        public static void BroadcastClientMessages(ServerClient client, Packet packet)
+        private static void BroadcastChatMessage(ServerClient client, string message)
         {
-            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
-            for(int i = 0; i < chatMessagesJSON.messages.Count(); i++)
-            {
-                if (client.isAdmin)
-                {
-                    chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
-                    chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
-                }
+            ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
+            chatMessagesJSON.usernames.Add(client.username);
+            chatMessagesJSON.messages.Add(message);
 
-                else
-                {
-                    chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
-                    chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
-                }
+            if (client.isAdmin)
+            {
+                chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
+                chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
             }
 
-            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
-            foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(rPacket);
+            else
+            {
+                chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
+                chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
+            }
 
-            Logger.WriteToConsole($"[Chat] > {client.username} > {chatMessagesJSON.messages[0]}");
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
+            foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
+
+            WriteToLogs(client.username, message);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > {client.username} > {message}", Logger.LogMode.Normal, false);
         }
 
-        public static void BroadcastServerMessages(string messageToSend)
+        public static void BroadcastServerMessage(string messageToSend)
         {
             ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
             chatMessagesJSON.usernames.Add("CONSOLE");
@@ -69,16 +97,13 @@ namespace GameServer
             chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
+            foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
-            foreach (ServerClient client in Network.connectedClients.ToArray())
-            {
-                client.listener.EnqueuePacket(packet);
-            }
-
-            Logger.WriteToConsole($"[Chat] > {"CONSOLE"} > {"127.0.0.1"} > {chatMessagesJSON.messages[0]}");
+            WriteToLogs("CONSOLE", messageToSend);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > CONSOLE > {messageToSend}", Logger.LogMode.Normal, false);
         }
 
-        public static void SendMessagesToClient(ServerClient client, string[] messagesToSend)
+        public static void BroadcastSystemMessage(ServerClient client, string[] messagesToSend)
         {
             ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
             for(int i = 0; i < messagesToSend.Count(); i++)
@@ -96,7 +121,7 @@ namespace GameServer
 
     public static class ChatCommandManager
     {
-        public static ServerClient invoker;
+        public static ServerClient targetClient;
 
         private static ChatCommand helpCommand = new ChatCommand("/help", 0,
             "Shows a list of all available commands",
@@ -124,22 +149,20 @@ namespace GameServer
 
         private static void ChatHelpCommandAction()
         {
-            List<string> messagesToSend = new List<string>();
-            messagesToSend.Add("List of available commands: ");
+            List<string> messagesToSend = new List<string> { "List of available commands:" };
             foreach (ChatCommand command in chatCommands) messagesToSend.Add($"{command.prefix} - {command.description}");
-            ChatManager.SendMessagesToClient(invoker, messagesToSend.ToArray());
+            ChatManager.BroadcastSystemMessage(targetClient, messagesToSend.ToArray());
         }
 
         private static void ChatPingCommandAction()
         {
-            List<string> messagesToSend = new List<string>();
-            messagesToSend.Add("Pong!");
-            ChatManager.SendMessagesToClient(invoker, messagesToSend.ToArray());
+            List<string> messagesToSend = new List<string> { "Pong!" };
+            ChatManager.BroadcastSystemMessage(targetClient, messagesToSend.ToArray());
         }
 
         private static void ChatDisconnectCommandAction()
         {
-            invoker.listener.disconnectFlag = true;
+            targetClient.listener.disconnectFlag = true;
         }
 
         private static void ChatStopVisitCommandAction()
@@ -147,7 +170,7 @@ namespace GameServer
             VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
             visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
 
-            OnlineVisitManager.SendVisitStop(invoker, visitDetailsJSON);
+            OnlineVisitManager.SendVisitStop(targetClient, visitDetailsJSON);
         }
     }
 }
