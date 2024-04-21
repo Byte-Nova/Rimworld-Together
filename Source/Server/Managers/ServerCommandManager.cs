@@ -188,6 +188,12 @@
             "Closes the server without saving player details",
             ForceQuitCommandAction);
 
+        private static ServerCommand resetWorldCommand = new ServerCommand("resetworld", 0,
+            "Resets the world, settlements, maps, and sites.\n" +
+            "player logins, mods, and server config settings are not affected.\n" +
+            "The server data will not be deleted, but will be moved to a world archive folder instead.",
+            ResetWorldCommandAction);
+
         public static ServerCommand[] serverCommands = new ServerCommand[]
         {
             helpCommand,
@@ -217,7 +223,8 @@
             enableDifficultyCommand,
             disableDifficultyCommand,
             quitCommand,
-            forceQuitCommand
+            forceQuitCommand,
+            resetWorldCommand
         };
 
         private static void HelpCommandAction()
@@ -712,6 +719,97 @@
             Console.Clear();
 
             Logger.WriteToConsole("[Cleared console]", Logger.LogMode.Title);
+        }
+
+        private static void ResetWorldCommandAction()
+        {
+            //May be a bit messy, but it's trying its best (;_;) 
+
+            //Make sure the user wants to reset the world
+            Logger.WriteToConsole("Are you sure you want to reset the world?", Logger.LogMode.Warning);
+
+            deleteWorldQuestion:
+            Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
+
+            string response = Console.ReadLine();
+
+            if (response == "NO") return;
+            else if (response != "YES") {
+                Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", Logger.LogMode.Error);
+                goto deleteWorldQuestion;
+            }
+
+
+            //Get the name of the new folder for the world
+            nameWorldQuestion:
+            Logger.WriteToConsole("The current world will be saved in the ArchivedWorlds folder.\n" +
+                                  "Would you like to name the world before it is moved?\n " +
+                                  "if no, the world will be named with the current date", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
+
+            response = Console.ReadLine();
+            string newWorldFolderPath;
+            string newWorldFolderName;
+            if (response == "YES")
+            {
+                customName:
+                Console.WriteLine("Please enter the name you would like to use:", Logger.LogMode.Warning);
+                newWorldFolderName = Console.ReadLine();
+                newWorldFolderPath = $"{Master.archivedWorldPath}\\{newWorldFolderName}";
+                try
+                {
+                    if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}");
+                }
+                catch (Exception e)
+                {
+                    Logger.WriteToConsole("The name you entered is invalid.\n" +
+                        " Please make sure your name does not contain any of these sybols:\n" +
+                        "\\/*:<>?\"|", Logger.LogMode.Error);
+                    goto customName;
+                }
+            }
+            else if (response == "NO")
+            {
+                newWorldFolderName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}";
+                newWorldFolderPath = $"{Master.archivedWorldPath}\\{newWorldFolderName}";
+                if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}");
+            }
+            else
+            {
+                Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", Logger.LogMode.Error);
+                goto nameWorldQuestion;
+            }
+
+
+            //Make the new folder and move all the current world folders to it
+            Logger.WriteToConsole($"The archived world will be saved as:\n{newWorldFolderPath}", Logger.LogMode.Warning);
+            Directory.CreateDirectory($"{newWorldFolderPath}\\Core");
+
+            //The core directory is special because we want to copy the files, not just move them.
+            foreach (string file in Directory.GetFiles(Master.corePath))
+            {
+                if (File.Exists(file))
+                    File.Copy(file, $"{newWorldFolderPath}\\Core\\{Path.GetFileName(file)}");
+            }
+            //remove the old world file
+            File.Delete($"{Master.corePath}\\WorldValues.json");
+            //Move the rest of the directories
+            if (Directory.Exists(Master.factionsPath))
+                Directory.Move(Master.factionsPath, $"{newWorldFolderPath}\\Factions");
+            if (Directory.Exists(Master.logsPath))
+                Directory.Move(Master.logsPath, $"{newWorldFolderPath}\\Logs");
+            if (Directory.Exists(Master.mapsPath))
+                Directory.Move(Master.mapsPath, $"{newWorldFolderPath}\\Maps");
+            if (Directory.Exists(Master.savesPath))
+                Directory.Move(Master.savesPath, $"{newWorldFolderPath}\\Saves");
+            if (Directory.Exists(Master.settlementsPath))
+                Directory.Move(Master.settlementsPath, $"{newWorldFolderPath}\\Settlements");
+            if (Directory.Exists(Master.sitesPath))
+                Directory.Move(Master.sitesPath, $"{newWorldFolderPath}\\Sites");
+
+            Master.SetPaths();
+
+            Logger.WriteToConsole("World has been successfully reset and archived",Logger.LogMode.Warning);
         }
     }
 }
