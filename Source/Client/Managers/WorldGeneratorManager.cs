@@ -52,10 +52,16 @@ namespace GameClient
             population = (OverallPopulation)int.Parse(worldDetailsJSON.population);
             pollution = float.Parse(worldDetailsJSON.pollution);
 
+            //TODO
+            //We might want to add a message for the players to let them know factions are missing
+            //For now, we output into the console for debugging purposes
+
             factions = new List<FactionDef>();
             foreach(string str in worldDetailsJSON.factions)
             {
-                factions.Add(DefDatabase<FactionDef>.AllDefs.First(fetch => fetch.defName == str));
+                FactionDef faction = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                if (faction != null) factions.Add(faction);
+                else Log.Warning($"[Rimworld Together] > Faction '{str}' wasn't found in the client's game, ignoring");
             }
 
             cachedWorldDetails = worldDetailsJSON;
