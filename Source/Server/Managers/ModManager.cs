@@ -64,7 +64,7 @@ namespace GameServer
             Logger.WriteToConsole($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]", Logger.LogMode.Warning);
         }
 
-        public static bool CheckIfModConflict(ServerClient client, UserData loginDetailsJSON)
+        public static bool CheckIfModConflict(ServerClient client, LoginData loginDetailsJSON)
         {
             List<string> conflictingMods = new List<string>();
             List<string> conflictingNames = new List<string>();

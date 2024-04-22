@@ -99,13 +99,13 @@ namespace GameClient
                         if (Network.isConnectedToServer)
                         {
                             string[] details = PreferenceManager.LoadLoginDetails();
-                            UserData userData = new UserData();
-                            userData.username = details[0];
-                            userData.password = Hasher.GetHashFromString(details[1]);
-                            userData.clientVersion = CommonValues.executableVersion;
-                            userData.runningMods = ModManager.GetRunningModList().ToList();
+                            LoginData loginData = new LoginData();
+                            loginData.username = details[0];
+                            loginData.password = Hasher.GetHashFromString(details[1]);
+                            loginData.clientVersion = CommonValues.executableVersion;
+                            loginData.runningMods = ModManager.GetRunningModList().ToList();
 
-                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), userData);
+                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginData);
                             Network.listener.EnqueuePacket(packet);
                         }
                     });

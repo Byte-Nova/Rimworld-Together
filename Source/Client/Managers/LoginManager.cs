@@ -10,7 +10,7 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            UserData loginDetailsJSON = (UserData)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginDetailsJSON = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(loginDetailsJSON.tryResponse))
             {

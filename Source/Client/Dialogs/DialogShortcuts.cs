@@ -153,7 +153,7 @@ namespace GameClient
 
             if (!isInvalid)
             {
-                UserData loginDetails = new UserData();
+                LoginData loginDetails = new LoginData();
                 loginDetails.username = DialogManager.dialog2ResultOne;
                 loginDetails.password = Hasher.GetHashFromString(DialogManager.dialog2ResultTwo);
                 loginDetails.clientVersion = CommonValues.executableVersion;
@@ -188,7 +188,7 @@ namespace GameClient
 
             if (!isInvalid)
             {
-                UserData registerDetails = new UserData();
+                LoginData registerDetails = new LoginData();
                 registerDetails.username = DialogManager.dialog3ResultOne;
                 registerDetails.password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
                 registerDetails.clientVersion = CommonValues.executableVersion;

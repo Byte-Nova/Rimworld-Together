@@ -18,7 +18,7 @@ namespace GameClient
 
         public static void GetConflictingMods(Packet packet)
         {
-            UserData loginDetailsJSON = (UserData)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginDetailsJSON = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
                 loginDetailsJSON.extraDetails.ToArray()));

@@ -93,7 +93,7 @@ namespace GameServer
             return connectedClients.Find(x => x.username == username);
         }
 
-        public static bool CheckIfUserExists(ServerClient client, UserData details, LoginMode mode)
+        public static bool CheckIfUserExists(ServerClient client, LoginData details, LoginMode mode)
         {
             string[] existingUsers = Directory.GetFiles(Master.usersPath);
 
@@ -111,7 +111,7 @@ namespace GameServer
             return false;
         }
 
-        public static bool CheckIfUserAuthCorrect(ServerClient client, UserData details)
+        public static bool CheckIfUserAuthCorrect(ServerClient client, LoginData details)
         {
             string[] existingUsers = Directory.GetFiles(Master.usersPath);
 
@@ -158,7 +158,7 @@ namespace GameServer
             return tilesToExclude.ToArray();
         }
 
-        public static bool CheckLoginDetails(ServerClient client, UserData details, LoginMode mode)
+        public static bool CheckLoginDetails(ServerClient client, LoginData details, LoginMode mode)
         {
             bool isInvalid = false;
             if (string.IsNullOrWhiteSpace(details.username)) isInvalid = true;
@@ -178,7 +178,7 @@ namespace GameServer
 
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
-            UserData loginDetailsJSON = new UserData();
+            LoginData loginDetailsJSON = new LoginData();
             loginDetailsJSON.tryResponse = ((int)response).ToString();
 
             if (response == LoginResponse.WrongMods) loginDetailsJSON.extraDetails = (List<string>)extraDetails;
@@ -204,7 +204,7 @@ namespace GameServer
             return false;
         }
 
-        public static bool CheckIfUserUpdated(ServerClient client, UserData loginDetails)
+        public static bool CheckIfUserUpdated(ServerClient client, LoginData loginDetails)
         {
             if (loginDetails.clientVersion == CommonValues.executableVersion) return true;
             else

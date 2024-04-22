@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void TryRegisterUser(ServerClient client, Packet packet)
         {
-            UserData registerDetails = (UserData)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData registerDetails = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
 
             if (!UserManager.CheckIfUserUpdated(client, registerDetails)) return;
 
