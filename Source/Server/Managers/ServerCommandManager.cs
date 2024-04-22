@@ -180,6 +180,10 @@
             "Disables custom difficulty in the server",
             DisableDifficultyCommandAction);
 
+        private static ServerCommand toggleCustomScenariosCommand = new ServerCommand("togglecustomscenarios", 0,
+            "enables/disables custom scenarios on the server",
+            ToggleCustomScenariosCommandAction);
+
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
             "Saves all player data and then closes the server",
             QuitCommandAction);
@@ -222,6 +226,7 @@
             deletePlayerCommand,
             enableDifficultyCommand,
             disableDifficultyCommand,
+            toggleCustomScenariosCommand,
             quitCommand,
             forceQuitCommand,
             resetWorldCommand
@@ -693,6 +698,12 @@
             }
         }
 
+        private static void ToggleCustomScenariosCommandAction()
+        {
+            Master.serverValues.AllowCustomScenarios = !Master.serverValues.AllowCustomScenarios;
+            Logger.WriteToConsole($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
+            Master.SaveServerValues(Master.serverValues);
+        }
         private static void QuitCommandAction()
         {
             Master.isClosing = true;
