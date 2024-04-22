@@ -59,13 +59,14 @@ namespace GameClient
 
                         Action r1 = delegate
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
+                            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion."));
 
                             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ResetSavePacket));
                             Network.listener.EnqueuePacket(packet);
                         };
 
-                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);
+                        Action d2 = delegate { DialogManager.PushNewDialog(new RT_Dialog_OK("A backup will be made of your save", r1)); };
+                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to delete your save?", d2, null);
                         DialogManager.PushNewDialog(d1);
                     }
                 }
@@ -81,10 +82,12 @@ namespace GameClient
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
-                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "Reset Save"))
+                GUI.color = new Color(1f, 0.3f, 0.35f);
+                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "Delete Save"))
                 {
 
                 }
+                GUI.color = Color.white;
             }
 
             return;

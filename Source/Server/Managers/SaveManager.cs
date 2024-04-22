@@ -1,4 +1,5 @@
 ﻿using Shared;
+using System.Linq.Expressions;
 
 namespace GameServer
 {
@@ -112,34 +113,49 @@ namespace GameServer
 
         public static void ResetClientSave(ServerClient client)
         {
-            if (!CheckIfUserHasSave(client)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save");
-            else
+            if (!CheckIfUserHasSave(client))
             {
-                client.listener.disconnectFlag = true;
-
-                string[] saves = Directory.GetFiles(Master.savesPath);
-
-                string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == client.username);
-                if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
-
-                Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
-
-                MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
-                foreach (MapFileJSON map in userMaps) MapManager.DeleteMap(map);
-
-                SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
-                foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
-
-                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
-                foreach (SettlementFile settlementFile in playerSettlements)
-                {
-                    SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
-                    settlementDetailsJSON.tile = settlementFile.tile;
-                    settlementDetailsJSON.owner = settlementFile.owner;
-
-                    SettlementManager.RemoveSettlement(client, settlementDetailsJSON);
-                }
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save");
+                return;
             }
+
+            string playerArchivedSavePath = Path.Combine(Master.archivedSavesPath, client.username);
+
+            if (Directory.Exists(playerArchivedSavePath)) Directory.Delete(playerArchivedSavePath,true);
+            Directory.CreateDirectory(playerArchivedSavePath);
+
+            string mapsArchivePath = Path.Combine(playerArchivedSavePath, "Maps");
+            string savesArchivePath = Path.Combine(playerArchivedSavePath, "Saves");
+            string settlementsArchivePath = Path.Combine(playerArchivedSavePath, "Settlements");
+            string SitesArchivePath = Path.Combine(playerArchivedSavePath, "Sites");
+
+            Directory.CreateDirectory(mapsArchivePath);
+            Directory.CreateDirectory(savesArchivePath);
+            Directory.CreateDirectory(settlementsArchivePath);
+            Directory.CreateDirectory(SitesArchivePath);
+
+            client.listener.disconnectFlag = true;
+
+            string[] saves = Directory.GetFiles(Master.savesPath);
+
+            try{ File.Move(Path.Combine(Master.savesPath, client.username + ".mpsave"), Path.Combine(savesArchivePath , client.username + ".mpsave")); }
+            catch { Logger.WriteToConsole($"Failed to find {client.username}'s save", Logger.LogMode.Warning); }
+            Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
+
+            //move Map files to archive
+            MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
+            foreach (MapFileJSON map in userMaps)
+                File.Move(Path.Combine(Master.mapsPath, map.mapTile + ".mpmap"), Path.Combine(mapsArchivePath, map.mapTile + ".mpmap"));
+
+            //Move site files to archive
+            SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
+            foreach (SiteFile site in playerSites)
+                File.Move(Path.Combine(Master.sitesPath, site.tile + ".json"), Path.Combine(mapsArchivePath, site.tile + ".json"));
+
+            //Move SettlementFile to archive
+            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
+            foreach (SettlementFile settlementFile in playerSettlements)
+                File.Move(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"), Path.Combine(settlementsArchivePath, settlementFile.tile + ".json"));
         }
 
         public static void DeletePlayerDetails(string username)
