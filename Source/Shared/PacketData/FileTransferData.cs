@@ -3,7 +3,7 @@
 namespace Shared
 {
     [Serializable]
-    public class FileTransferJSON
+    public class FileTransferData
     {
         public double fileSize;
         public double fileParts;

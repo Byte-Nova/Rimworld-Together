@@ -64,7 +64,7 @@ namespace GameServer
             Logger.WriteToConsole($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]", Logger.LogMode.Warning);
         }
 
-        public static bool CheckIfModConflict(ServerClient client, JoinDetailsJSON loginDetailsJSON)
+        public static bool CheckIfModConflict(ServerClient client, LoginData loginData)
         {
             List<string> conflictingMods = new List<string>();
             List<string> conflictingNames = new List<string>();
@@ -73,7 +73,7 @@ namespace GameServer
             {
                 foreach (string mod in Master.loadedRequiredMods)
                 {
-                    if (!loginDetailsJSON.runningMods.Contains(mod))
+                    if (!loginData.runningMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Required] > {mod}");
                         conflictingNames.Add(mod);
@@ -81,7 +81,7 @@ namespace GameServer
                     }
                 }
 
-                foreach (string mod in loginDetailsJSON.runningMods)
+                foreach (string mod in loginData.runningMods)
                 {
                     if (conflictingNames.Contains(mod)) continue;
                     if (!Master.loadedRequiredMods.Contains(mod) && !Master.loadedOptionalMods.Contains(mod))
@@ -98,7 +98,7 @@ namespace GameServer
                 foreach (string mod in Master.loadedForbiddenMods)
                 {
                     if (conflictingNames.Contains(mod)) continue;
-                    if (loginDetailsJSON.runningMods.Contains(mod))
+                    if (loginData.runningMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Forbidden] > {mod}");
                         conflictingNames.Add(mod);
@@ -108,7 +108,7 @@ namespace GameServer
 
             if (conflictingMods.Count == 0)
             {
-                client.runningMods = loginDetailsJSON.runningMods;
+                client.runningMods = loginData.runningMods;
                 return false;
             }
 
@@ -117,7 +117,7 @@ namespace GameServer
                 if (client.isAdmin)
                 {
                     Logger.WriteToConsole($"[Mod bypass] > {client.username}", Logger.LogMode.Warning);
-                    client.runningMods = loginDetailsJSON.runningMods;
+                    client.runningMods = loginData.runningMods;
                     return false;
                 }
 
