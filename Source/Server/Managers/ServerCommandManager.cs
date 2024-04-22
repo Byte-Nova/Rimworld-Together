@@ -180,10 +180,6 @@
             "Disables custom difficulty in the server",
             DisableDifficultyCommandAction);
 
-        private static ServerCommand forwardport = new ServerCommand("forwardport", 0,
-            "attempts to forward a given port if it is able to",
-            ForwardPortCommandAction);
-
         private static ServerCommand toggleCustomScenariosCommand = new ServerCommand("togglecustomscenarios", 0,
             "enables/disables custom scenarios on the server",
             ToggleCustomScenariosCommandAction);
@@ -224,7 +220,6 @@
             deletePlayerCommand,
             enableDifficultyCommand,
             disableDifficultyCommand,
-            forwardport,
             toggleCustomScenariosCommand,
             quitCommand,
             forceQuitCommand
@@ -694,11 +689,6 @@
 
                 Logger.WriteToConsole($"Custom difficulty is now disabled", Logger.LogMode.Warning);
             }
-        }
-
-        private static void ForwardPortCommandAction()
-        {
-            Network.TryToForwardPort();
         }
 
         private static void ToggleCustomScenariosCommandAction()

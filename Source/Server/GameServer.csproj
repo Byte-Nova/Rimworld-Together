@@ -17,13 +17,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Mono.Nat" Version="3.0.4" />
       <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-	    <Reference Include="Mono.Nat">
-	      <HintPath>..\Shared\Assemblies\Mono.Nat.dll</HintPath>
-	    </Reference>
 	    <Reference Include="Newtonsoft.Json">
 			<HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
 		</Reference>
