@@ -375,7 +375,7 @@ namespace GameClient
 
         public static void ChangeCurrentJobIfNeeded(Pawn pawn, Job newJob, IntVec3 positionSync, Rot4 rotationSync)
         {
-            if (pawn.jobs.curJob == null) pawn.jobs.StartJob(newJob);
+            if (pawn.jobs.curJob == null) pawn.jobs.TryTakeOrderedJob(newJob);
             else
             {
                 if (pawn.jobs.curJob.def == newJob.def)
@@ -385,7 +385,7 @@ namespace GameClient
                     {
                         TryChangePawnPosition(pawn, positionSync, rotationSync);
                         pawn.jobs.EndCurrentOrQueuedJob(pawn.jobs.curJob, JobCondition.InterruptForced);
-                        pawn.jobs.StartJob(newJob, JobCondition.InterruptForced);
+                        pawn.jobs.TryTakeOrderedJob(newJob);
                     }
                 }
 
@@ -393,7 +393,7 @@ namespace GameClient
                 {
                     TryChangePawnPosition(pawn, positionSync, rotationSync);
                     pawn.jobs.EndCurrentOrQueuedJob(pawn.jobs.curJob, JobCondition.InterruptForced);
-                    pawn.jobs.StartJob(newJob, JobCondition.InterruptForced);
+                    pawn.jobs.TryTakeOrderedJob(newJob);
                 }
             }
         }
@@ -707,6 +707,7 @@ namespace GameClient
             {
                 toPrint += $"{thing.def.defName}{Environment.NewLine}";
             }
+            Log.Warning(toPrint.Count().ToString());
             Log.Warning(toPrint);
 
             Debug.LogWarning(thingsInMap.Count());
