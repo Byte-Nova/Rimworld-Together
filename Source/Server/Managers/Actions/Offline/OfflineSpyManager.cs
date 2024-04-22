@@ -6,12 +6,12 @@ namespace GameServer
     {
         public static void ParseSpyPacket(ServerClient client, Packet packet)
         {
-            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            SpyData spyData = (SpyData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(spyDetailsJSON.spyStepMode))
+            switch (int.Parse(spyData.spyStepMode))
             {
                 case (int)CommonEnumerators.SpyStepMode.Request:
-                    SendRequestedMap(client, spyDetailsJSON);
+                    SendRequestedMap(client, spyData);
                     break;
 
                 case (int)CommonEnumerators.SpyStepMode.Deny:
@@ -20,32 +20,32 @@ namespace GameServer
             }
         }
 
-        private static void SendRequestedMap(ServerClient client, SpyDetailsJSON spyDetailsJSON)
+        private static void SendRequestedMap(ServerClient client, SpyData spyData)
         {
-            if (!MapManager.CheckIfMapExists(spyDetailsJSON.targetTile))
+            if (!MapManager.CheckIfMapExists(spyData.targetTile))
             {
-                spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
+                spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                 client.listener.EnqueuePacket(packet);
             }
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(spyDetailsJSON.targetTile);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(spyData.targetTile);
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
+                    spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                     client.listener.EnqueuePacket(packet);
                 }
 
                 else
                 {
-                    MapFileJSON mapDetails = MapManager.GetUserMapFromTile(spyDetailsJSON.targetTile);
-                    spyDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetails);
+                    MapFileData mapData = MapManager.GetUserMapFromTile(spyData.targetTile);
+                    spyData.mapData = Serializer.ConvertObjectToBytes(mapData);
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                     client.listener.EnqueuePacket(packet);
                 }
             }

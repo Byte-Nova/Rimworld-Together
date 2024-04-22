@@ -3,7 +3,7 @@
 namespace Shared
 {
     [Serializable]
-    public class MapFileJSON
+    public class MapFileData
     {
         public string mapOwner;
 

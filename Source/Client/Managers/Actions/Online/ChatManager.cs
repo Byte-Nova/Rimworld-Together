@@ -57,23 +57,23 @@ namespace GameClient
         {
             ChatSounds.OwnChatDing.PlayOneShotOnCamera();
     
-            ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
-            chatMessagesJSON.usernames.Add(ClientValues.username);
-            chatMessagesJSON.messages.Add(messageToSend);
+            ChatData chatData = new ChatData();
+            chatData.usernames.Add(ClientValues.username);
+            chatData.messages.Add(messageToSend);
     
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
             Network.listener.EnqueuePacket(packet);
         }
     
         public static void ReceiveMessages(Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
+            ChatData chatData = (ChatData)Serializer.ConvertBytesToObject(packet.contents);
 
-            for (int i = 0; i < chatMessagesJSON.usernames.Count(); i++) 
+            for (int i = 0; i < chatData.usernames.Count(); i++) 
             {
-                AddMessageToChat(chatMessagesJSON.usernames[i], chatMessagesJSON.messages[i], 
-                    (UserColor)int.Parse(chatMessagesJSON.userColors[i]), 
-                    (MessageColor)int.Parse(chatMessagesJSON.messageColors[i]));
+                AddMessageToChat(chatData.usernames[i], chatData.messages[i], 
+                    (UserColor)int.Parse(chatData.userColors[i]), 
+                    (MessageColor)int.Parse(chatData.messageColors[i]));
             }
 
             if (!ClientValues.isReadyToPlay) return;
