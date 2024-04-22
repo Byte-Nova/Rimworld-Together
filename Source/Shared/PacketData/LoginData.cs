@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class JoinDetailsJSON
+    public class LoginData
     {
         public string username;
 

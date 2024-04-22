@@ -3,7 +3,7 @@ using System;
 namespace Shared
 {
     [Serializable]
-    public class DifficultyValuesJSON
+    public class DifficultyData
     {
         public float ThreatScale;
 
