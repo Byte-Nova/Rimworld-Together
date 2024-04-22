@@ -11,7 +11,7 @@ namespace GameClient
         public static void DisconnectToMenu()
         {
             Network.CleanValues();
-            ChatManager.CleanChat();
+            OnlineChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
 

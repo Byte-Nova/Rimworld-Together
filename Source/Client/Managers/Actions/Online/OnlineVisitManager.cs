@@ -98,14 +98,6 @@ namespace GameClient
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
 
             Threader.GenerateThread(Threader.Mode.Visit);
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
-            {
-                "You are now in online visit mode!",
-                "Visit mode allows you to visit another player's base",
-                "To stop the visit use /sv in the chat"
-            });
-            DialogManager.PushNewDialog(d1);
         }
 
         public static void StopVisit()
@@ -326,13 +318,13 @@ namespace GameClient
 
                 else
                 {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Thing))
+                    if (DeepScribeHelper.CheckIfThingIsHuman(targetInfo.Thing))
                     {
                         visitData.actionTargetType.Add((int)ActionTargetType.Human);
                         return Serializer.SerializeToString(HumanScribeManager.HumanToString(targetInfo.Pawn));
                     }
 
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(targetInfo.Thing))
+                    else if (DeepScribeHelper.CheckIfThingIsAnimal(targetInfo.Thing))
                     {
                         visitData.actionTargetType.Add((int)ActionTargetType.Animal);
                         return Serializer.SerializeToString(AnimalScribeManager.AnimalToString(targetInfo.Pawn));
@@ -489,12 +481,12 @@ namespace GameClient
 
                 else
                 {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Thing))
+                    if (DeepScribeHelper.CheckIfThingIsHuman(targetInfo.Thing))
                     {
                         toReturn = OnlineVisitManager.factionPawns.FirstIndexOf(fetch => fetch == targetInfo.Thing);
                     }
 
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(targetInfo.Thing))
+                    else if (DeepScribeHelper.CheckIfThingIsAnimal(targetInfo.Thing))
                     {
                         toReturn = OnlineVisitManager.factionPawns.FirstIndexOf(fetch => fetch == targetInfo.Thing);
                     }
@@ -512,7 +504,7 @@ namespace GameClient
 
         public static Map GetMapForVisit(MapData mapData)
         {
-            return MapScribeManager.StringToMap(mapData, true, true, true, false);
+            return MapScribeManager.StringToMap(mapData, true, true, true, true, true, true);
         }
 
         public static List<byte[]> GetHumansForVisit(FetchMode mode)
@@ -520,7 +512,7 @@ namespace GameClient
             if (mode == FetchMode.Host)
             {
                 List<Pawn> mapHumans = OnlineVisitManager.visitMap.mapPawns.AllPawns
-                    .FindAll(fetch => TransferManagerHelper.CheckIfThingIsHuman(fetch) && fetch.Faction == Faction.OfPlayer)
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
@@ -537,7 +529,7 @@ namespace GameClient
             else
             {
                 List<Pawn> caravanHumans = ClientValues.chosenCaravan.PawnsListForReading
-                    .FindAll(fetch => TransferManagerHelper.CheckIfThingIsHuman(fetch))
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
@@ -557,7 +549,7 @@ namespace GameClient
             if (mode == FetchMode.Host)
             {
                 List<Pawn> mapAnimals = OnlineVisitManager.visitMap.mapPawns.AllPawns
-                    .FindAll(fetch => TransferManagerHelper.CheckIfThingIsAnimal(fetch) && fetch.Faction == Faction.OfPlayer)
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
@@ -574,7 +566,7 @@ namespace GameClient
             else
             {
                 List<Pawn> caravanAnimals = ClientValues.chosenCaravan.PawnsListForReading
-                    .FindAll(fetch => TransferManagerHelper.CheckIfThingIsAnimal(fetch))
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
@@ -610,12 +602,12 @@ namespace GameClient
             if (mode == FetchMode.Host)
             {
                 List<Pawn> mapHumans = OnlineVisitManager.visitMap.mapPawns.AllPawns
-                    .FindAll(fetch => TransferManagerHelper.CheckIfThingIsHuman(fetch) && fetch.Faction == Faction.OfPlayer)
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
                 List<Pawn> mapAnimals = OnlineVisitManager.visitMap.mapPawns.AllPawns
-                    .FindAll(fetch => TransferManagerHelper.CheckIfThingIsAnimal(fetch) && fetch.Faction == Faction.OfPlayer)
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch) && fetch.Faction == Faction.OfPlayer)
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
@@ -639,8 +631,8 @@ namespace GameClient
 
                 foreach (byte[] compressedAnimal in visitData.mapAnimals)
                 {
-                    AnimalData animalDetailsJSON = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
-                    Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
+                    AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
+                    Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
                     pawnList.Add(animal);
                 }
 
@@ -674,12 +666,12 @@ namespace GameClient
             else
             {
                 List<Pawn> caravanHumans = ClientValues.chosenCaravan.PawnsListForReading
-                    .FindAll(fetch => TransferManagerHelper.CheckIfThingIsHuman(fetch))
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
                 List<Pawn> caravanAnimals = ClientValues.chosenCaravan.PawnsListForReading
-                    .FindAll(fetch => TransferManagerHelper.CheckIfThingIsAnimal(fetch))
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
@@ -696,8 +688,8 @@ namespace GameClient
             List<Thing> thingsInMap = new List<Thing>();
             foreach (Thing thing in map.listerThings.AllThings)
             {
-                if (TransferManagerHelper.CheckIfThingIsHuman(thing)) continue;
-                else if (TransferManagerHelper.CheckIfThingIsAnimal(thing)) continue;
+                if (DeepScribeHelper.CheckIfThingIsHuman(thing)) continue;
+                else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) continue;
                 else thingsInMap.Add(thing);
             }
 
