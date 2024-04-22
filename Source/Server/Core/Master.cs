@@ -168,10 +168,11 @@ namespace GameServer
 
         public static void SaveServerValues(ServerValuesFile serverValues)
         {
-            string path = Path.Combine(Master.corePath, "ServerValues.json");
+            string path = Path.Combine(corePath, "ServerValues.json");
 
             Serializer.SerializeToFile(path, serverValues);
 
+            Logger.WriteToConsole("Saved server values", Logger.LogMode.Warning);
         }
 
         private static void LoadEventValues()
