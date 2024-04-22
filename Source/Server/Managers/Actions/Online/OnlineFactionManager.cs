@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void ParseFactionPacket(ServerClient client, Packet packet)
         {
-            FactionManifestJSON factionManifest = (FactionManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
+            PlayerFactionData factionManifest = (PlayerFactionData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(int.Parse(factionManifest.manifestMode))
             {
@@ -121,9 +121,9 @@ namespace GameServer
             return false;
         }
 
-        private static void CreateFaction(ServerClient client, FactionManifestJSON factionManifest)
+        private static void CreateFaction(ServerClient client, PlayerFactionData factionManifest)
         {
-            if (CheckIfFactionExistsByName(factionManifest.manifestDetails))
+            if (CheckIfFactionExistsByName(factionManifest.manifestData))
             {
                 factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NameInUse).ToString();
 
@@ -136,7 +136,7 @@ namespace GameServer
                 factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.Create).ToString();
 
                 FactionFile factionFile = new FactionFile();
-                factionFile.factionName = factionManifest.manifestDetails;
+                factionFile.factionName = factionManifest.manifestData;
                 factionFile.factionMembers.Add(client.username);
                 factionFile.factionMemberRanks.Add(((int)CommonEnumerators.FactionRanks.Admin).ToString());
                 SaveFactionFile(factionFile);
@@ -156,7 +156,7 @@ namespace GameServer
             }
         }
 
-        private static void DeleteFaction(ServerClient client, FactionManifestJSON factionManifest)
+        private static void DeleteFaction(ServerClient client, PlayerFactionData factionManifest)
         {
             if (!CheckIfFactionExistsByName(client.factionName)) return;
             else
@@ -194,7 +194,7 @@ namespace GameServer
                             cClient.factionName = "";
                             cClient.listener.EnqueuePacket(packet);
 
-                            LikelihoodManager.UpdateClientLikelihoods(cClient);
+                            GoodwillManager.UpdateClientGoodwills(cClient);
                         }
                     }
 
@@ -207,10 +207,10 @@ namespace GameServer
             }
         }
 
-        private static void AddMemberToFaction(ServerClient client, FactionManifestJSON factionManifest)
+        private static void AddMemberToFaction(ServerClient client, PlayerFactionData factionManifest)
         {
             FactionFile factionFile = GetFactionFromClient(client);
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDetails);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestData);
             ServerClient toAdd = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
             if (factionFile == null) return;
@@ -232,7 +232,7 @@ namespace GameServer
                             if (factionFile.factionMembers.Contains(toAdd.username)) return;
                             else
                             {
-                                factionManifest.manifestDetails = factionFile.factionName;
+                                factionManifest.manifestData = factionFile.factionName;
                                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                                 toAdd.listener.EnqueuePacket(packet);
                             }
@@ -242,9 +242,9 @@ namespace GameServer
             }
         }
 
-        private static void ConfirmAddMemberToFaction(ServerClient client, FactionManifestJSON factionManifest)
+        private static void ConfirmAddMemberToFaction(ServerClient client, PlayerFactionData factionManifest)
         {
-            FactionFile factionFile = GetFactionFromFactionName(factionManifest.manifestDetails);
+            FactionFile factionFile = GetFactionFromFactionName(factionManifest.manifestData);
 
             if (factionFile == null) return;
             else
@@ -263,18 +263,18 @@ namespace GameServer
                     userFile.factionName = factionFile.factionName;
                     UserManager.SaveUserFile(client, userFile);
 
-                    LikelihoodManager.ClearAllFactionMemberLikelihoods(factionFile);
+                    GoodwillManager.ClearAllFactionMemberGoodwills(factionFile);
 
                     ServerClient[] members = GetAllConnectedFactionMembers(factionFile);
-                    foreach (ServerClient member in members) LikelihoodManager.UpdateClientLikelihoods(member);
+                    foreach (ServerClient member in members) GoodwillManager.UpdateClientGoodwills(member);
                 }
             }
         }
 
-        private static void RemoveMemberFromFaction(ServerClient client, FactionManifestJSON factionManifest)
+        private static void RemoveMemberFromFaction(ServerClient client, PlayerFactionData factionManifest)
         {
             FactionFile factionFile = GetFactionFromClient(client);
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDetails);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestData);
             UserFile toRemoveLocal = UserManager.GetUserFileFromName(settlementFile.owner);
             ServerClient toRemove = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
@@ -320,7 +320,7 @@ namespace GameServer
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                         toRemove.listener.EnqueuePacket(packet);
 
-                        LikelihoodManager.UpdateClientLikelihoods(toRemove);
+                        GoodwillManager.UpdateClientGoodwills(toRemove);
                     }
 
                     if (toRemoveLocal == null) return;
@@ -343,14 +343,14 @@ namespace GameServer
                     }
 
                     ServerClient[] members = GetAllConnectedFactionMembers(factionFile);
-                    foreach (ServerClient member in members) LikelihoodManager.UpdateClientLikelihoods(member);
+                    foreach (ServerClient member in members) GoodwillManager.UpdateClientGoodwills(member);
                 }
             }
         }
 
-        private static void PromoteMember(ServerClient client, FactionManifestJSON factionManifest)
+        private static void PromoteMember(ServerClient client, PlayerFactionData factionManifest)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDetails);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestData);
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
@@ -385,9 +385,9 @@ namespace GameServer
             }
         }
 
-        private static void DemoteMember(ServerClient client, FactionManifestJSON factionManifest)
+        private static void DemoteMember(ServerClient client, PlayerFactionData factionManifest)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDetails);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestData);
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
@@ -443,14 +443,14 @@ namespace GameServer
             return connectedFactionMembers.ToArray();
         }
 
-        private static void SendFactionMemberList(ServerClient client, FactionManifestJSON factionManifest)
+        private static void SendFactionMemberList(ServerClient client, PlayerFactionData factionManifest)
         {
             FactionFile factionFile = GetFactionFromClient(client);
 
             foreach(string str in factionFile.factionMembers)
             {
-                factionManifest.manifestComplexDetails.Add(str);
-                factionManifest.manifestSecondaryComplexDetails.Add(((int)GetMemberRank(factionFile, str)).ToString());
+                factionManifest.manifestComplexData.Add(str);
+                factionManifest.manifestSecondaryComplexData.Add(((int)GetMemberRank(factionFile, str)).ToString());
             }
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);

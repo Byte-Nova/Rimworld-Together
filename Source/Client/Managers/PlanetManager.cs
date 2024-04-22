@@ -20,16 +20,16 @@ namespace GameClient
 
         public static void ParseSettlementPacket(Packet packet)
         {
-            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            SettlementData settlementData = (SettlementData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(settlementDetailsJSON.settlementStepMode))
+            switch (int.Parse(settlementData.settlementStepMode))
             {
                 case (int)CommonEnumerators.SettlementStepMode.Add:
-                    SpawnSingleSettlement(settlementDetailsJSON);
+                    SpawnSingleSettlement(settlementData);
                     break;
 
                 case (int)CommonEnumerators.SettlementStepMode.Remove:
-                    RemoveSingleSettlement(settlementDetailsJSON);
+                    RemoveSingleSettlement(settlementData);
                     break;
             }
         }
@@ -100,7 +100,7 @@ namespace GameClient
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                     settlement.Tile = int.Parse(PlanetManagerHelper.tempSettlementTiles[i]);
                     settlement.Name = $"{PlanetManagerHelper.tempSettlementOwners[i]}'s settlement";
-                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSettlementLikelihoods[i])));
+                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSettlementGoodwills[i])));
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
@@ -169,7 +169,7 @@ namespace GameClient
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
                         tile: int.Parse(PlanetManagerHelper.tempSiteTiles[i]),
                         threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSiteLikelihoods[i])));
+                        faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSiteGoodwills[i])));
 
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
@@ -184,7 +184,7 @@ namespace GameClient
 
         //Spawns a player settlement from a request
 
-        public static void SpawnSingleSettlement(SettlementDetailsJSON newSettlementJSON)
+        public static void SpawnSingleSettlement(SettlementData newSettlementJSON)
         {
             if (ClientValues.isReadyToPlay)
             {
@@ -204,7 +204,7 @@ namespace GameClient
 
         //Removes a player settlement from a request
 
-        public static void RemoveSingleSettlement(SettlementDetailsJSON newSettlementJSON)
+        public static void RemoveSingleSettlement(SettlementData newSettlementJSON)
         {
             if (ClientValues.isReadyToPlay)
             {
@@ -221,41 +221,41 @@ namespace GameClient
 
         //Spawns a player site from a request
 
-        public static void SpawnSingleSite(SiteDetailsJSON siteDetailsJSON)
+        public static void SpawnSingleSite(SiteData siteData)
         {
             if (ClientValues.isReadyToPlay)
             {
                 try
                 {
-                    SitePartDef siteDef = SiteManager.GetDefForNewSite(int.Parse(siteDetailsJSON.type),
-                        siteDetailsJSON.isFromFaction);
+                    SitePartDef siteDef = SiteManager.GetDefForNewSite(int.Parse(siteData.type),
+                        siteData.isFromFaction);
 
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: int.Parse(siteDetailsJSON.tile),
+                        tile: int.Parse(siteData.tile),
                         threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(siteDetailsJSON.likelihood)));
+                        faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(siteData.goodwill)));
 
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
                 }
-                catch (Exception e) { Log.Error($"Failed to spawn site at {siteDetailsJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Log.Error($"Failed to spawn site at {siteData.tile}. Reason: {e}"); }
             }
         }
 
         //Removes a player site from a request
 
-        public static void RemoveSingleSite(SiteDetailsJSON siteDetailsJSON)
+        public static void RemoveSingleSite(SiteData siteData)
         {
             if (ClientValues.isReadyToPlay)
             {
                 try
                 {
-                    Site toGet = playerSites.Find(x => x.Tile.ToString() == siteDetailsJSON.tile);
+                    Site toGet = playerSites.Find(x => x.Tile.ToString() == siteData.tile);
 
                     playerSites.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Log.Message($"Failed to remove site at {siteDetailsJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Log.Message($"Failed to remove site at {siteData.tile}. Reason: {e}"); }
             }
         }
     }
@@ -268,13 +268,13 @@ namespace GameClient
 
         public static string[] tempSettlementOwners;
 
-        public static string[] tempSettlementLikelihoods;
+        public static string[] tempSettlementGoodwills;
 
         public static string[] tempSiteTiles;
 
         public static string[] tempSiteOwners;
 
-        public static string[] tempSiteLikelihoods;
+        public static string[] tempSiteGoodwills;
 
         public static string[] tempSiteTypes;
 
@@ -284,17 +284,17 @@ namespace GameClient
         public static MapGeneratorDef defaultSettlementGenerator;
         public static MapGeneratorDef defaultSiteGenerator;
 
-        public static void SetWorldFeatures(ServerOverallJSON serverOverallJSON)
+        public static void SetWorldFeatures(ServerGlobalData serverGlobalData)
         {
-            tempSettlementTiles = serverOverallJSON.settlementTiles.ToArray();
-            tempSettlementOwners = serverOverallJSON.settlementOwners.ToArray();
-            tempSettlementLikelihoods = serverOverallJSON.settlementLikelihoods.ToArray();
+            tempSettlementTiles = serverGlobalData.settlementTiles.ToArray();
+            tempSettlementOwners = serverGlobalData.settlementOwners.ToArray();
+            tempSettlementGoodwills = serverGlobalData.settlementGoodwills.ToArray();
 
-            tempSiteTiles = serverOverallJSON.siteTiles.ToArray();
-            tempSiteOwners = serverOverallJSON.siteOwners.ToArray();
-            tempSiteLikelihoods = serverOverallJSON.siteLikelihoods.ToArray();
-            tempSiteTypes = serverOverallJSON.siteTypes.ToArray();
-            tempSiteIsFromFactions = serverOverallJSON.isFromFactions.ToArray();
+            tempSiteTiles = serverGlobalData.siteTiles.ToArray();
+            tempSiteOwners = serverGlobalData.siteOwners.ToArray();
+            tempSiteGoodwills = serverGlobalData.siteGoodwills.ToArray();
+            tempSiteTypes = serverGlobalData.siteTypes.ToArray();
+            tempSiteIsFromFactions = serverGlobalData.isFromFactions.ToArray();
         }
 
         //Returns an online faction depending on the value
@@ -305,23 +305,23 @@ namespace GameClient
 
             switch (value)
             {
-                case (int)CommonEnumerators.Likelihoods.Enemy:
+                case (int)CommonEnumerators.Goodwills.Enemy:
                     factionToUse = FactionValues.enemyPlayer;
                     break;
 
-                case (int)CommonEnumerators.Likelihoods.Neutral:
+                case (int)CommonEnumerators.Goodwills.Neutral:
                     factionToUse = FactionValues.neutralPlayer;
                     break;
 
-                case (int)CommonEnumerators.Likelihoods.Ally:
+                case (int)CommonEnumerators.Goodwills.Ally:
                     factionToUse = FactionValues.allyPlayer;
                     break;
 
-                case (int)CommonEnumerators.Likelihoods.Faction:
+                case (int)CommonEnumerators.Goodwills.Faction:
                     factionToUse = FactionValues.yourOnlineFaction;
                     break;
 
-                case (int)CommonEnumerators.Likelihoods.Personal:
+                case (int)CommonEnumerators.Goodwills.Personal:
                     factionToUse = Faction.OfPlayer;
                     break;
             }
