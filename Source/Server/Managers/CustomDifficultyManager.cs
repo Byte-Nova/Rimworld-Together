@@ -17,6 +17,8 @@ namespace GameServer
             {
                 DifficultyValuesFile newDifficultyValues = new DifficultyValuesFile();
 
+                newDifficultyValues.UseCustomDifficulty = Master.difficultyValues.UseCustomDifficulty;
+
                 newDifficultyValues.ThreatScale = difficultyValuesJSON.ThreatScale;
 
                 newDifficultyValues.AllowBigThreats = difficultyValuesJSON.AllowBigThreats;
