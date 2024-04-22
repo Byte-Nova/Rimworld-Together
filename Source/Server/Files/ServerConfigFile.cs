@@ -14,5 +14,7 @@
         public bool VerboseLogs = false;
 
         public bool DisplayChatInConsole = false;
+
+        public bool UseUPnP = false;
     }
 }
