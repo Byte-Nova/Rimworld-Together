@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class VisitDetailsJSON
+    public class VisitData
     {
         public int visitStepMode;
 

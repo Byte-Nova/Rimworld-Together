@@ -9,17 +9,17 @@ namespace GameServer
             string baseClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsavetemp");
 
-            FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
+            FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
 
             if (client.listener.downloadManager == null)
             {
                 client.listener.downloadManager = new DownloadManager();
-                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferJSON.fileParts);
+                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferData.fileParts);
             }
 
-            client.listener.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
+            client.listener.downloadManager.WriteFilePart(fileTransferData.fileBytes);
 
-            if (fileTransferJSON.isLastPart)
+            if (fileTransferData.isLastPart)
             {
                 client.listener.downloadManager.FinishFileWrite();
                 client.listener.downloadManager = null;
@@ -30,7 +30,7 @@ namespace GameServer
                 File.WriteAllBytes(baseClientSavePath, compressedSave);
                 File.Delete(tempClientSavePath);
 
-                OnUserSave(client, fileTransferJSON);
+                OnUserSave(client, fileTransferData);
             }
 
             else
@@ -56,13 +56,13 @@ namespace GameServer
                 client.listener.uploadManager.PrepareUpload(tempClientSavePath);
             }
 
-            FileTransferJSON fileTransferJSON = new FileTransferJSON();
-            fileTransferJSON.fileSize = client.listener.uploadManager.fileSize;
-            fileTransferJSON.fileParts = client.listener.uploadManager.fileParts;
-            fileTransferJSON.fileBytes = client.listener.uploadManager.ReadFilePart();
-            fileTransferJSON.isLastPart = client.listener.uploadManager.isLastPart;
+            FileTransferData fileTransferData = new FileTransferData();
+            fileTransferData.fileSize = client.listener.uploadManager.fileSize;
+            fileTransferData.fileParts = client.listener.uploadManager.fileParts;
+            fileTransferData.fileBytes = client.listener.uploadManager.ReadFilePart();
+            fileTransferData.isLastPart = client.listener.uploadManager.isLastPart;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             client.listener.EnqueuePacket(packet);
 
             if (client.listener.uploadManager.isLastPart)
@@ -72,9 +72,9 @@ namespace GameServer
             }
         }
 
-        private static void OnUserSave(ServerClient client, FileTransferJSON fileTransferJSON)
+        private static void OnUserSave(ServerClient client, FileTransferData fileTransferData)
         {
-            if (fileTransferJSON.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
+            if (fileTransferData.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
             {
                 client.listener.disconnectFlag = true;
                 Logger.WriteToConsole($"[Save game] > {client.username} > Disconnect");
@@ -124,8 +124,8 @@ namespace GameServer
 
                 Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
 
-                MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
-                foreach (MapFileJSON map in userMaps) MapManager.DeleteMap(map);
+                MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
+                foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
 
                 SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
                 foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
@@ -133,16 +133,16 @@ namespace GameServer
                 SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
                 foreach (SettlementFile settlementFile in playerSettlements)
                 {
-                    SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
-                    settlementDetailsJSON.tile = settlementFile.tile;
-                    settlementDetailsJSON.owner = settlementFile.owner;
+                    SettlementData settlementData = new SettlementData();
+                    settlementData.tile = settlementFile.tile;
+                    settlementData.owner = settlementFile.owner;
 
-                    SettlementManager.RemoveSettlement(client, settlementDetailsJSON);
+                    SettlementManager.RemoveSettlement(client, settlementData);
                 }
             }
         }
 
-        public static void DeletePlayerDetails(string username)
+        public static void DeletePlayerData(string username)
         {
             ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
             if (connectedUser != null) connectedUser.listener.disconnectFlag = true;
@@ -151,8 +151,8 @@ namespace GameServer
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);
             if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
-            MapFileJSON[] userMaps = MapManager.GetAllMapsFromUsername(username);
-            foreach (MapFileJSON map in userMaps) MapManager.DeleteMap(map);
+            MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(username);
+            foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
 
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(username);
             foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
@@ -160,14 +160,14 @@ namespace GameServer
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
-                SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
-                settlementDetailsJSON.tile = settlementFile.tile;
-                settlementDetailsJSON.owner = settlementFile.owner;
+                SettlementData settlementData = new SettlementData();
+                settlementData.tile = settlementFile.tile;
+                settlementData.owner = settlementFile.owner;
 
-                SettlementManager.RemoveSettlement(null, settlementDetailsJSON, false);
+                SettlementManager.RemoveSettlement(null, settlementData, false);
             }
 
-            Logger.WriteToConsole($"[Deleted player details] > {username}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Deleted player data] > {username}", Logger.LogMode.Warning);
         }
     }
 }

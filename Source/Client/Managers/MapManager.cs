@@ -25,13 +25,13 @@ namespace GameClient
 
         private static void SendMapToServerSingle(Map map)
         {
-            MapDetailsJSON mapDetailsJSON = ParseMap(map, true, true, true, true);
+            MapData mapData = ParseMap(map, true, true, true, true);
 
-            MapFileJSON mapFileJSON = new MapFileJSON();
-            mapFileJSON.mapTile = mapDetailsJSON.mapTile;
-            mapFileJSON.mapData = Serializer.ConvertObjectToBytes(mapDetailsJSON);
+            MapFileData mapFileData = new MapFileData();
+            mapFileData.mapTile = mapData.mapTile;
+            mapFileData.mapData = Serializer.ConvertObjectToBytes(mapData);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -41,9 +41,9 @@ namespace GameClient
         {
             MapDetailsJSON mapDetailsJSON = MapScribeManager.MapToString(map, includeThings, includeHumans, includeAnimals);
 
-            if (includeMods) mapDetailsJSON.mapMods = ModManager.GetRunningModList().ToList();
+            if (includeMods) mapData.mapMods = ModManager.GetRunningModList().ToList();
 
-            return mapDetailsJSON;
+            return mapData;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace GameClient
         public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
             if (!Network.isConnectedToServer) return true;
-            if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return true;
+            if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
 
             ClientValues.ToggleSavingGame(true);
 

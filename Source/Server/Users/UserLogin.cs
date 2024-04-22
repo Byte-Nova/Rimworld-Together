@@ -6,18 +6,18 @@ namespace GameServer
     {
         public static void TryLoginUser(ServerClient client, Packet packet)
         {
-            JoinDetailsJSON loginDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginData = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
 
-            if (!UserManager.CheckIfUserUpdated(client, loginDetails)) return;
+            if (!UserManager.CheckIfUserUpdated(client, loginData)) return;
 
-            if (!UserManager.CheckLoginDetails(client, loginDetails, CommonEnumerators.LoginMode.Login)) return;
+            if (!UserManager.CheckLoginData(client, loginData, CommonEnumerators.LoginMode.Login)) return;
 
-            if (!UserManager.CheckIfUserExists(client, loginDetails, CommonEnumerators.LoginMode.Login)) return;
+            if (!UserManager.CheckIfUserExists(client, loginData, CommonEnumerators.LoginMode.Login)) return;
 
-            if (!UserManager.CheckIfUserAuthCorrect(client, loginDetails)) return;
+            if (!UserManager.CheckIfUserAuthCorrect(client, loginData)) return;
 
-            client.username = loginDetails.username;
-            client.password = loginDetails.password;
+            client.username = loginData.username;
+            client.password = loginData.password;
 
             UserManager.LoadDataFromFile(client);
 
@@ -25,7 +25,7 @@ namespace GameServer
 
             if (!UserManager.CheckWhitelist(client)) return;
 
-            if (ModManager.CheckIfModConflict(client, loginDetails)) return;
+            if (ModManager.CheckIfModConflict(client, loginData)) return;
 
             RemoveOldClientIfAny(client);
 
