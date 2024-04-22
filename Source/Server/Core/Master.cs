@@ -166,6 +166,14 @@ namespace GameServer
             Logger.WriteToConsole("Loaded server values", Logger.LogMode.Warning);
         }
 
+        public static void SaveServerValues(ServerValuesFile serverValues)
+        {
+            string path = Path.Combine(Master.corePath, "ServerValues.json");
+
+            Serializer.SerializeToFile(path, serverValues);
+
+        }
+
         private static void LoadEventValues()
         {
             string path = Path.Combine(corePath, "EventValues.json");
