@@ -71,11 +71,11 @@ namespace GameClient
 
             private static void SetupQuickConnectVariables()
             {
-                string[] details = PreferenceManager.LoadConnectionDetails();
+                string[] details = PreferenceManager.LoadConnectionData();
                 Network.ip = details[0];
                 Network.port = details[1];
 
-                details = PreferenceManager.LoadLoginDetails();
+                details = PreferenceManager.LoadLoginData();
                 ClientValues.username = details[0];
             }
 
@@ -98,14 +98,14 @@ namespace GameClient
 
                         if (Network.isConnectedToServer)
                         {
-                            string[] details = PreferenceManager.LoadLoginDetails();
-                            JoinDetailsJSON loginDetails = new JoinDetailsJSON();
-                            loginDetails.username = details[0];
-                            loginDetails.password = Hasher.GetHashFromString(details[1]);
-                            loginDetails.clientVersion = CommonValues.executableVersion;
-                            loginDetails.runningMods = ModManager.GetRunningModList().ToList();
+                            string[] details = PreferenceManager.LoadLoginData();
+                            LoginData loginData = new LoginData();
+                            loginData.username = details[0];
+                            loginData.password = Hasher.GetHashFromString(details[1]);
+                            loginData.clientVersion = CommonValues.executableVersion;
+                            loginData.runningMods = ModManager.GetRunningModList().ToList();
 
-                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
+                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginData);
                             Network.listener.EnqueuePacket(packet);
                         }
                     });

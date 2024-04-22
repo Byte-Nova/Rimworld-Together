@@ -6,16 +6,16 @@ namespace GameServer
     {
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
-            MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(packet.contents);
-            mapFileJSON.mapOwner = client.username;
+            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(packet.contents);
+            mapFileData.mapOwner = client.username;
 
-            byte[] compressedMapBytes = GZip.Compress(Serializer.ConvertObjectToBytes(mapFileJSON));
-            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileJSON.mapTile + ".mpmap"), compressedMapBytes);
+            byte[] compressedMapBytes = GZip.Compress(Serializer.ConvertObjectToBytes(mapFileData));
+            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + ".mpmap"), compressedMapBytes);
 
-            Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileJSON.mapTile}");
+            Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileData.mapTile}");
         }
 
-        public static void DeleteMap(MapFileJSON mapFile)
+        public static void DeleteMap(MapFileData mapFile)
         {
             if (mapFile == null) return;
 
@@ -24,26 +24,26 @@ namespace GameServer
             Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", Logger.LogMode.Warning);
         }
 
-        public static MapFileJSON[] GetAllMapFiles()
+        public static MapFileData[] GetAllMapFiles()
         {
-            List<MapFileJSON> mapDetails = new List<MapFileJSON>();
+            List<MapFileData> mapDatas = new List<MapFileData>();
 
             string[] maps = Directory.GetFiles(Master.mapsPath);
             foreach (string str in maps)
             {
                 byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(str));
 
-                MapFileJSON newMap = (MapFileJSON)Serializer.ConvertBytesToObject(decompressedBytes);
-                mapDetails.Add(newMap);
+                MapFileData newMap = (MapFileData)Serializer.ConvertBytesToObject(decompressedBytes);
+                mapDatas.Add(newMap);
             }
 
-            return mapDetails.ToArray();
+            return mapDatas.ToArray();
         }
 
         public static bool CheckIfMapExists(string mapTileToCheck)
         {
-            MapFileJSON[] maps = GetAllMapFiles();
-            foreach (MapFileJSON map in maps)
+            MapFileData[] maps = GetAllMapFiles();
+            foreach (MapFileData map in maps)
             {
                 if (map.mapTile == mapTileToCheck)
                 {
@@ -54,25 +54,25 @@ namespace GameServer
             return false;
         }
 
-        public static MapFileJSON[] GetAllMapsFromUsername(string username)
+        public static MapFileData[] GetAllMapsFromUsername(string username)
         {
-            List<MapFileJSON> userMaps = new List<MapFileJSON>();
+            List<MapFileData> userMaps = new List<MapFileData>();
 
             SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in userSettlements)
             {
-                MapFileJSON mapFile = GetUserMapFromTile(settlementFile.tile);
+                MapFileData mapFile = GetUserMapFromTile(settlementFile.tile);
                 userMaps.Add(mapFile);
             }
 
             return userMaps.ToArray();
         }
 
-        public static MapFileJSON GetUserMapFromTile(string mapTileToGet)
+        public static MapFileData GetUserMapFromTile(string mapTileToGet)
         {
-            MapFileJSON[] mapFiles = GetAllMapFiles();
+            MapFileData[] mapFiles = GetAllMapFiles();
 
-            foreach (MapFileJSON mapFile in mapFiles)
+            foreach (MapFileData mapFile in mapFiles)
             {
                 if (mapFile.mapTile == mapTileToGet) return mapFile;
             }
