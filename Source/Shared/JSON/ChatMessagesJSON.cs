@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class ChatData
+    public class ChatMessagesJSON
     {
         public List<string> userColors = new List<string>();
 

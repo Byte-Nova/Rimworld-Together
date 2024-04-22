@@ -5,184 +5,184 @@ namespace GameClient
 {
     public static class CustomDifficultyManager
     {
-        public static void SetCustomDifficulty(ServerGlobalData serverGlobalData)
+        public static void SetCustomDifficulty(ServerOverallJSON serverOverallJSON)
         {
-            DifficultyValues.UseCustomDifficulty = serverGlobalData.UsingCustomDifficulty;
+            DifficultyValues.UseCustomDifficulty = serverOverallJSON.UsingCustomDifficulty;
 
-            DifficultyValues.ThreatScale = serverGlobalData.ThreatScale;
+            DifficultyValues.ThreatScale = serverOverallJSON.ThreatScale;
 
-            DifficultyValues.AllowBigThreats = serverGlobalData.AllowBigThreats;
+            DifficultyValues.AllowBigThreats = serverOverallJSON.AllowBigThreats;
 
-            DifficultyValues.AllowViolentQuests = serverGlobalData.AllowViolentQuests;
+            DifficultyValues.AllowViolentQuests = serverOverallJSON.AllowViolentQuests;
 
-            DifficultyValues.AllowIntroThreats = serverGlobalData.AllowIntroThreats;
+            DifficultyValues.AllowIntroThreats = serverOverallJSON.AllowIntroThreats;
 
-            DifficultyValues.PredatorsHuntHumanlikes = serverGlobalData.PredatorsHuntHumanlikes;
+            DifficultyValues.PredatorsHuntHumanlikes = serverOverallJSON.PredatorsHuntHumanlikes;
 
-            DifficultyValues.AllowExtremeWeatherIncidents = serverGlobalData.AllowExtremeWeatherIncidents;
+            DifficultyValues.AllowExtremeWeatherIncidents = serverOverallJSON.AllowExtremeWeatherIncidents;
 
-            DifficultyValues.CropYieldFactor = serverGlobalData.CropYieldFactor;
+            DifficultyValues.CropYieldFactor = serverOverallJSON.CropYieldFactor;
 
-            DifficultyValues.MineYieldFactor = serverGlobalData.MineYieldFactor;
+            DifficultyValues.MineYieldFactor = serverOverallJSON.MineYieldFactor;
 
-            DifficultyValues.ButcherYieldFactor = serverGlobalData.ButcherYieldFactor;
+            DifficultyValues.ButcherYieldFactor = serverOverallJSON.ButcherYieldFactor;
 
-            DifficultyValues.ResearchSpeedFactor = serverGlobalData.ResearchSpeedFactor;
+            DifficultyValues.ResearchSpeedFactor = serverOverallJSON.ResearchSpeedFactor;
 
-            DifficultyValues.QuestRewardValueFactor = serverGlobalData.QuestRewardValueFactor;
+            DifficultyValues.QuestRewardValueFactor = serverOverallJSON.QuestRewardValueFactor;
 
-            DifficultyValues.RaidLootPointsFactor = serverGlobalData.RaidLootPointsFactor;
+            DifficultyValues.RaidLootPointsFactor = serverOverallJSON.RaidLootPointsFactor;
 
-            DifficultyValues.TradePriceFactorLoss = serverGlobalData.TradePriceFactorLoss;
+            DifficultyValues.TradePriceFactorLoss = serverOverallJSON.TradePriceFactorLoss;
 
-            DifficultyValues.MaintenanceCostFactor = serverGlobalData.MaintenanceCostFactor;
+            DifficultyValues.MaintenanceCostFactor = serverOverallJSON.MaintenanceCostFactor;
 
-            DifficultyValues.ScariaRotChance = serverGlobalData.ScariaRotChance;
+            DifficultyValues.ScariaRotChance = serverOverallJSON.ScariaRotChance;
 
-            DifficultyValues.EnemyDeathOnDownedChanceFactor = serverGlobalData.EnemyDeathOnDownedChanceFactor;
+            DifficultyValues.EnemyDeathOnDownedChanceFactor = serverOverallJSON.EnemyDeathOnDownedChanceFactor;
 
-            DifficultyValues.ColonistMoodOffset = serverGlobalData.ColonistMoodOffset;
+            DifficultyValues.ColonistMoodOffset = serverOverallJSON.ColonistMoodOffset;
 
-            DifficultyValues.FoodPoisonChanceFactor = serverGlobalData.FoodPoisonChanceFactor;
+            DifficultyValues.FoodPoisonChanceFactor = serverOverallJSON.FoodPoisonChanceFactor;
 
-            DifficultyValues.ManhunterChanceOnDamageFactor = serverGlobalData.ManhunterChanceOnDamageFactor;
+            DifficultyValues.ManhunterChanceOnDamageFactor = serverOverallJSON.ManhunterChanceOnDamageFactor;
 
-            DifficultyValues.PlayerPawnInfectionChanceFactor = serverGlobalData.PlayerPawnInfectionChanceFactor;
+            DifficultyValues.PlayerPawnInfectionChanceFactor = serverOverallJSON.PlayerPawnInfectionChanceFactor;
 
-            DifficultyValues.DiseaseIntervalFactor = serverGlobalData.DiseaseIntervalFactor;
+            DifficultyValues.DiseaseIntervalFactor = serverOverallJSON.DiseaseIntervalFactor;
 
-            DifficultyValues.EnemyReproductionRateFactor = serverGlobalData.EnemyReproductionRateFactor;
+            DifficultyValues.EnemyReproductionRateFactor = serverOverallJSON.EnemyReproductionRateFactor;
 
-            DifficultyValues.DeepDrillInfestationChanceFactor = serverGlobalData.DeepDrillInfestationChanceFactor;
+            DifficultyValues.DeepDrillInfestationChanceFactor = serverOverallJSON.DeepDrillInfestationChanceFactor;
 
-            DifficultyValues.FriendlyFireChanceFactor = serverGlobalData.FriendlyFireChanceFactor;
+            DifficultyValues.FriendlyFireChanceFactor = serverOverallJSON.FriendlyFireChanceFactor;
 
-            DifficultyValues.AllowInstantKillChance = serverGlobalData.AllowInstantKillChance;
+            DifficultyValues.AllowInstantKillChance = serverOverallJSON.AllowInstantKillChance;
 
-            DifficultyValues.PeacefulTemples = serverGlobalData.PeacefulTemples;
+            DifficultyValues.PeacefulTemples = serverOverallJSON.PeacefulTemples;
 
-            DifficultyValues.AllowCaveHives = serverGlobalData.AllowCaveHives;
+            DifficultyValues.AllowCaveHives = serverOverallJSON.AllowCaveHives;
 
-            DifficultyValues.UnwaveringPrisoners = serverGlobalData.UnwaveringPrisoners;
+            DifficultyValues.UnwaveringPrisoners = serverOverallJSON.UnwaveringPrisoners;
 
-            DifficultyValues.AllowTraps = serverGlobalData.AllowTraps;
+            DifficultyValues.AllowTraps = serverOverallJSON.AllowTraps;
 
-            DifficultyValues.AllowTurrets = serverGlobalData.AllowTurrets;
+            DifficultyValues.AllowTurrets = serverOverallJSON.AllowTurrets;
 
-            DifficultyValues.AllowMortars = serverGlobalData.AllowMortars;
+            DifficultyValues.AllowMortars = serverOverallJSON.AllowMortars;
 
-            DifficultyValues.ClassicMortars = serverGlobalData.ClassicMortars;
+            DifficultyValues.ClassicMortars = serverOverallJSON.ClassicMortars;
 
-            DifficultyValues.AdaptationEffectFactor = serverGlobalData.AdaptationEffectFactor;
+            DifficultyValues.AdaptationEffectFactor = serverOverallJSON.AdaptationEffectFactor;
 
-            DifficultyValues.AdaptationGrowthRateFactorOverZero = serverGlobalData.AdaptationGrowthRateFactorOverZero;
+            DifficultyValues.AdaptationGrowthRateFactorOverZero = serverOverallJSON.AdaptationGrowthRateFactorOverZero;
 
-            DifficultyValues.FixedWealthMode = serverGlobalData.FixedWealthMode;
+            DifficultyValues.FixedWealthMode = serverOverallJSON.FixedWealthMode;
 
-            DifficultyValues.LowPopConversionBoost = serverGlobalData.LowPopConversionBoost;
+            DifficultyValues.LowPopConversionBoost = serverOverallJSON.LowPopConversionBoost;
 
-            DifficultyValues.NoBabiesOrChildren = serverGlobalData.NoBabiesOrChildren;
+            DifficultyValues.NoBabiesOrChildren = serverOverallJSON.NoBabiesOrChildren;
 
-            DifficultyValues.BabiesAreHealthy = serverGlobalData.BabiesAreHealthy;
+            DifficultyValues.BabiesAreHealthy = serverOverallJSON.BabiesAreHealthy;
 
-            DifficultyValues.ChildRaidersAllowed = serverGlobalData.ChildRaidersAllowed;
+            DifficultyValues.ChildRaidersAllowed = serverOverallJSON.ChildRaidersAllowed;
 
-            DifficultyValues.ChildAgingRate = serverGlobalData.ChildAgingRate;
+            DifficultyValues.ChildAgingRate = serverOverallJSON.ChildAgingRate;
 
-            DifficultyValues.AdultAgingRate = serverGlobalData.AdultAgingRate;
+            DifficultyValues.AdultAgingRate = serverOverallJSON.AdultAgingRate;
 
-            DifficultyValues.WastepackInfestationChanceFactor = serverGlobalData.WastepackInfestationChanceFactor;
+            DifficultyValues.WastepackInfestationChanceFactor = serverOverallJSON.WastepackInfestationChanceFactor;
         }
 
         public static void SendCustomDifficulty()
         {
-            DifficultyData difficultyData = new DifficultyData();
+            DifficultyValuesJSON difficultyValuesJSON = new DifficultyValuesJSON();
 
-            difficultyData.ThreatScale = Current.Game.storyteller.difficulty.threatScale;
+            difficultyValuesJSON.ThreatScale = Current.Game.storyteller.difficulty.threatScale;
 
-            difficultyData.AllowBigThreats = Current.Game.storyteller.difficulty.allowBigThreats;
+            difficultyValuesJSON.AllowBigThreats = Current.Game.storyteller.difficulty.allowBigThreats;
 
-            difficultyData.AllowViolentQuests = Current.Game.storyteller.difficulty.allowViolentQuests;
+            difficultyValuesJSON.AllowViolentQuests = Current.Game.storyteller.difficulty.allowViolentQuests;
 
-            difficultyData.AllowIntroThreats = Current.Game.storyteller.difficulty.allowIntroThreats;
+            difficultyValuesJSON.AllowIntroThreats = Current.Game.storyteller.difficulty.allowIntroThreats;
 
-            difficultyData.PredatorsHuntHumanlikes = Current.Game.storyteller.difficulty.predatorsHuntHumanlikes;
+            difficultyValuesJSON.PredatorsHuntHumanlikes = Current.Game.storyteller.difficulty.predatorsHuntHumanlikes;
 
-            difficultyData.AllowExtremeWeatherIncidents = Current.Game.storyteller.difficulty.allowExtremeWeatherIncidents;
+            difficultyValuesJSON.AllowExtremeWeatherIncidents = Current.Game.storyteller.difficulty.allowExtremeWeatherIncidents;
 
-            difficultyData.CropYieldFactor = Current.Game.storyteller.difficulty.cropYieldFactor;
+            difficultyValuesJSON.CropYieldFactor = Current.Game.storyteller.difficulty.cropYieldFactor;
 
-            difficultyData.MineYieldFactor = Current.Game.storyteller.difficulty.mineYieldFactor;
+            difficultyValuesJSON.MineYieldFactor = Current.Game.storyteller.difficulty.mineYieldFactor;
 
-            difficultyData.ButcherYieldFactor = Current.Game.storyteller.difficulty.butcherYieldFactor;
+            difficultyValuesJSON.ButcherYieldFactor = Current.Game.storyteller.difficulty.butcherYieldFactor;
 
-            difficultyData.ResearchSpeedFactor = Current.Game.storyteller.difficulty.researchSpeedFactor;
+            difficultyValuesJSON.ResearchSpeedFactor = Current.Game.storyteller.difficulty.researchSpeedFactor;
 
-            difficultyData.QuestRewardValueFactor = Current.Game.storyteller.difficulty.questRewardValueFactor;
+            difficultyValuesJSON.QuestRewardValueFactor = Current.Game.storyteller.difficulty.questRewardValueFactor;
 
-            difficultyData.RaidLootPointsFactor = Current.Game.storyteller.difficulty.raidLootPointsFactor;
+            difficultyValuesJSON.RaidLootPointsFactor = Current.Game.storyteller.difficulty.raidLootPointsFactor;
 
-            difficultyData.TradePriceFactorLoss = Current.Game.storyteller.difficulty.tradePriceFactorLoss;
+            difficultyValuesJSON.TradePriceFactorLoss = Current.Game.storyteller.difficulty.tradePriceFactorLoss;
 
-            difficultyData.MaintenanceCostFactor = Current.Game.storyteller.difficulty.maintenanceCostFactor;
+            difficultyValuesJSON.MaintenanceCostFactor = Current.Game.storyteller.difficulty.maintenanceCostFactor;
 
-            difficultyData.ScariaRotChance = Current.Game.storyteller.difficulty.scariaRotChance;
+            difficultyValuesJSON.ScariaRotChance = Current.Game.storyteller.difficulty.scariaRotChance;
 
-            difficultyData.EnemyDeathOnDownedChanceFactor = Current.Game.storyteller.difficulty.enemyDeathOnDownedChanceFactor;
+            difficultyValuesJSON.EnemyDeathOnDownedChanceFactor = Current.Game.storyteller.difficulty.enemyDeathOnDownedChanceFactor;
 
-            difficultyData.ColonistMoodOffset = Current.Game.storyteller.difficulty.colonistMoodOffset;
+            difficultyValuesJSON.ColonistMoodOffset = Current.Game.storyteller.difficulty.colonistMoodOffset;
 
-            difficultyData.FoodPoisonChanceFactor = Current.Game.storyteller.difficulty.foodPoisonChanceFactor;
+            difficultyValuesJSON.FoodPoisonChanceFactor = Current.Game.storyteller.difficulty.foodPoisonChanceFactor;
 
-            difficultyData.ManhunterChanceOnDamageFactor = Current.Game.storyteller.difficulty.manhunterChanceOnDamageFactor;
+            difficultyValuesJSON.ManhunterChanceOnDamageFactor = Current.Game.storyteller.difficulty.manhunterChanceOnDamageFactor;
 
-            difficultyData.PlayerPawnInfectionChanceFactor = Current.Game.storyteller.difficulty.playerPawnInfectionChanceFactor;
+            difficultyValuesJSON.PlayerPawnInfectionChanceFactor = Current.Game.storyteller.difficulty.playerPawnInfectionChanceFactor;
 
-            difficultyData.DiseaseIntervalFactor = Current.Game.storyteller.difficulty.diseaseIntervalFactor;
+            difficultyValuesJSON.DiseaseIntervalFactor = Current.Game.storyteller.difficulty.diseaseIntervalFactor;
 
-            difficultyData.EnemyReproductionRateFactor = Current.Game.storyteller.difficulty.enemyReproductionRateFactor;
+            difficultyValuesJSON.EnemyReproductionRateFactor = Current.Game.storyteller.difficulty.enemyReproductionRateFactor;
 
-            difficultyData.DeepDrillInfestationChanceFactor = Current.Game.storyteller.difficulty.deepDrillInfestationChanceFactor;
+            difficultyValuesJSON.DeepDrillInfestationChanceFactor = Current.Game.storyteller.difficulty.deepDrillInfestationChanceFactor;
 
-            difficultyData.FriendlyFireChanceFactor = Current.Game.storyteller.difficulty.friendlyFireChanceFactor;
+            difficultyValuesJSON.FriendlyFireChanceFactor = Current.Game.storyteller.difficulty.friendlyFireChanceFactor;
 
-            difficultyData.AllowInstantKillChance = Current.Game.storyteller.difficulty.allowInstantKillChance;
+            difficultyValuesJSON.AllowInstantKillChance = Current.Game.storyteller.difficulty.allowInstantKillChance;
 
-            difficultyData.PeacefulTemples = Current.Game.storyteller.difficulty.peacefulTemples;
+            difficultyValuesJSON.PeacefulTemples = Current.Game.storyteller.difficulty.peacefulTemples;
 
-            difficultyData.AllowCaveHives = Current.Game.storyteller.difficulty.allowCaveHives;
+            difficultyValuesJSON.AllowCaveHives = Current.Game.storyteller.difficulty.allowCaveHives;
 
-            difficultyData.UnwaveringPrisoners = Current.Game.storyteller.difficulty.unwaveringPrisoners;
+            difficultyValuesJSON.UnwaveringPrisoners = Current.Game.storyteller.difficulty.unwaveringPrisoners;
 
-            difficultyData.AllowTraps = Current.Game.storyteller.difficulty.allowTraps;
+            difficultyValuesJSON.AllowTraps = Current.Game.storyteller.difficulty.allowTraps;
 
-            difficultyData.AllowTurrets = Current.Game.storyteller.difficulty.allowTurrets;
+            difficultyValuesJSON.AllowTurrets = Current.Game.storyteller.difficulty.allowTurrets;
 
-            difficultyData.AllowMortars = Current.Game.storyteller.difficulty.allowMortars;
+            difficultyValuesJSON.AllowMortars = Current.Game.storyteller.difficulty.allowMortars;
 
-            difficultyData.ClassicMortars = Current.Game.storyteller.difficulty.classicMortars;
+            difficultyValuesJSON.ClassicMortars = Current.Game.storyteller.difficulty.classicMortars;
 
-            difficultyData.AdaptationEffectFactor = Current.Game.storyteller.difficulty.adaptationEffectFactor;
+            difficultyValuesJSON.AdaptationEffectFactor = Current.Game.storyteller.difficulty.adaptationEffectFactor;
 
-            difficultyData.AdaptationGrowthRateFactorOverZero = Current.Game.storyteller.difficulty.adaptationGrowthRateFactorOverZero;
+            difficultyValuesJSON.AdaptationGrowthRateFactorOverZero = Current.Game.storyteller.difficulty.adaptationGrowthRateFactorOverZero;
 
-            difficultyData.FixedWealthMode = Current.Game.storyteller.difficulty.fixedWealthMode;
+            difficultyValuesJSON.FixedWealthMode = Current.Game.storyteller.difficulty.fixedWealthMode;
 
-            difficultyData.LowPopConversionBoost = Current.Game.storyteller.difficulty.lowPopConversionBoost;
+            difficultyValuesJSON.LowPopConversionBoost = Current.Game.storyteller.difficulty.lowPopConversionBoost;
 
-            difficultyData.NoBabiesOrChildren = Current.Game.storyteller.difficulty.noBabiesOrChildren;
+            difficultyValuesJSON.NoBabiesOrChildren = Current.Game.storyteller.difficulty.noBabiesOrChildren;
 
-            difficultyData.BabiesAreHealthy = Current.Game.storyteller.difficulty.babiesAreHealthy;
+            difficultyValuesJSON.BabiesAreHealthy = Current.Game.storyteller.difficulty.babiesAreHealthy;
 
-            difficultyData.ChildRaidersAllowed = Current.Game.storyteller.difficulty.childRaidersAllowed;
+            difficultyValuesJSON.ChildRaidersAllowed = Current.Game.storyteller.difficulty.childRaidersAllowed;
 
-            difficultyData.ChildAgingRate = Current.Game.storyteller.difficulty.childAgingRate;
+            difficultyValuesJSON.ChildAgingRate = Current.Game.storyteller.difficulty.childAgingRate;
 
-            difficultyData.AdultAgingRate = Current.Game.storyteller.difficulty.adultAgingRate;
+            difficultyValuesJSON.AdultAgingRate = Current.Game.storyteller.difficulty.adultAgingRate;
 
-            difficultyData.WastepackInfestationChanceFactor = Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor;
+            difficultyValuesJSON.WastepackInfestationChanceFactor = Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CustomDifficultyPacket), difficultyData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CustomDifficultyPacket), difficultyValuesJSON);
             Network.listener.EnqueuePacket(packet);
         }
 

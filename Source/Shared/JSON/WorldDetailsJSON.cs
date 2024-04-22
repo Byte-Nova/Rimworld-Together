@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class WorldData
+    public class WorldDetailsJSON
     {
         public string worldStepMode;
 

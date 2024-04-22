@@ -19,7 +19,7 @@ namespace GameClient
 
         public static ThingDef[] siteRewardDefNames;
 
-        public static void SetSiteData(ServerGlobalData serverGlobalData)
+        public static void SetSiteDetails(ServerOverallJSON serverOverallJSON)
         {
             siteRewardDefNames = new ThingDef[]
             {
@@ -38,15 +38,15 @@ namespace GameClient
             {
                 siteRewardCount = new int[9]
                 {
-                    int.Parse(serverGlobalData.FarmlandRewardCount),
-                    int.Parse(serverGlobalData.QuarryRewardCount),
-                    int.Parse(serverGlobalData.SawmillRewardCount),
-                    int.Parse(serverGlobalData.BankRewardCount),
-                    int.Parse(serverGlobalData.LaboratoryRewardCount),
-                    int.Parse(serverGlobalData.RefineryRewardCount),
-                    int.Parse(serverGlobalData.HerbalWorkshopRewardCount),
-                    int.Parse(serverGlobalData.TextileFactoryRewardCount),
-                    int.Parse(serverGlobalData.FoodProcessorRewardCount)
+                    int.Parse(serverOverallJSON.FarmlandRewardCount),
+                    int.Parse(serverOverallJSON.QuarryRewardCount),
+                    int.Parse(serverOverallJSON.SawmillRewardCount),
+                    int.Parse(serverOverallJSON.BankRewardCount),
+                    int.Parse(serverOverallJSON.LaboratoryRewardCount),
+                    int.Parse(serverOverallJSON.RefineryRewardCount),
+                    int.Parse(serverOverallJSON.HerbalWorkshopRewardCount),
+                    int.Parse(serverOverallJSON.TextileFactoryRewardCount),
+                    int.Parse(serverOverallJSON.FoodProcessorRewardCount)
                 };
             }
 
@@ -60,8 +60,8 @@ namespace GameClient
                 };
             }
 
-            PersonalSiteManager.SetSiteData(serverGlobalData);
-            FactionSiteManager.SetSiteData(serverGlobalData);
+            PersonalSiteManager.SetSiteDetails(serverOverallJSON);
+            FactionSiteManager.SetSiteDetails(serverOverallJSON);
         }
 
         public static void SetSiteDefs()
@@ -96,24 +96,24 @@ namespace GameClient
 
         public static void ParseSitePacket(Packet packet)
         {
-            SiteData siteData = (SiteData)Serializer.ConvertBytesToObject(packet.contents);
+            SiteDetailsJSON siteDetailsJSON = (SiteDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(siteData.siteStep))
+            switch(int.Parse(siteDetailsJSON.siteStep))
             {
                 case (int)CommonEnumerators.SiteStepMode.Accept:
                     OnSiteAccept();
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Build:
-                    PlanetManager.SpawnSingleSite(siteData);
+                    PlanetManager.SpawnSingleSite(siteDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Destroy:
-                    PlanetManager.RemoveSingleSite(siteData);
+                    PlanetManager.RemoveSingleSite(siteDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Info:
-                    OnSimpleSiteOpen(siteData);
+                    OnSimpleSiteOpen(siteDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Deposit:
@@ -121,11 +121,11 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Retrieve:
-                    OnWorkerRetrieval(siteData);
+                    OnWorkerRetrieval(siteDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.Reward:
-                    ReceiveSitesRewards(siteData);
+                    ReceiveSitesRewards(siteDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.SiteStepMode.WorkerError:
@@ -146,19 +146,19 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site information"));
 
-            SiteData siteData = new SiteData();
-            siteData.tile = ClientValues.chosenSite.Tile.ToString();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Info).ToString();
+            SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
+            siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
+            siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Info).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
             Network.listener.EnqueuePacket(packet);
         }
 
-        public static void OnSimpleSiteOpen(SiteData siteData)
+        public static void OnSimpleSiteOpen(SiteDetailsJSON siteDetailsJSON)
         {
             DialogManager.PopWaitDialog();
 
-            if (siteData.workerData == null)
+            if (siteDetailsJSON.workerData == null)
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
                     delegate { PrepareSendPawnScreen(); }, null);
@@ -169,30 +169,30 @@ namespace GameClient
             else
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You have a worker on this site, retrieve?",
-                    delegate { RequestWorkerRetrieval(siteData); }, null);
+                    delegate { RequestWorkerRetrieval(siteDetailsJSON); }, null);
 
                 DialogManager.PushNewDialog(d1);
             }
         }
 
-        private static void RequestWorkerRetrieval(SiteData siteData)
+        private static void RequestWorkerRetrieval(SiteDetailsJSON siteDetailsJSON)
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site worker"));
 
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Retrieve).ToString();
+            siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Retrieve).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
             Network.listener.EnqueuePacket(packet);
         }
 
-        private static void OnWorkerRetrieval(SiteData siteData)
+        private static void OnWorkerRetrieval(SiteDetailsJSON siteDetailsJSON)
         {
             DialogManager.PopWaitDialog();
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman((HumanData)Serializer.
-                    ConvertBytesToObject(siteData.workerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman((HumanDetailsJSON)Serializer.
+                    ConvertBytesToObject(siteDetailsJSON.workerData));
 
                 TransferManagerHelper.TransferPawnIntoCaravan(pawnToRetrieve);
 
@@ -229,12 +229,12 @@ namespace GameClient
             Pawn pawnToSend = caravanHumans[DialogManager.dialogListingWithButtonResult];
             ClientValues.chosenCaravan.RemovePawn(pawnToSend);
 
-            SiteData siteData = new SiteData();
-            siteData.tile = ClientValues.chosenSite.Tile.ToString();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Deposit).ToString();
-            siteData.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
+            SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
+            siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
+            siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Deposit).ToString();
+            siteDetailsJSON.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
             Network.listener.EnqueuePacket(packet);
 
             if (caravanHumans.Count == 1) ClientValues.chosenCaravan.Destroy();
@@ -246,11 +246,11 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                SiteData siteData = new SiteData();
-                siteData.tile = ClientValues.chosenSite.Tile.ToString();
-                siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Destroy).ToString();
+                SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
+                siteDetailsJSON.tile = ClientValues.chosenSite.Tile.ToString();
+                siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Destroy).ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -263,7 +263,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Error("The site has a worker inside!"));
         }
 
-        private static void ReceiveSitesRewards(SiteData siteData)
+        private static void ReceiveSitesRewards(SiteDetailsJSON siteDetailsJSON)
         {
             if (ClientValues.isReadyToPlay && !ClientValues.rejectSiteRewardsBool && RimworldManager.CheckIfPlayerHasMap())
             {
@@ -272,7 +272,7 @@ namespace GameClient
 
                 foreach (Site site in sites)
                 {
-                    if (siteData.sitesWithRewards.Contains(site.Tile.ToString())) rewardedSites.Add(site);
+                    if (siteDetailsJSON.sitesWithRewards.Contains(site.Tile.ToString())) rewardedSites.Add(site);
                 }
 
                 Thing[] rewards = GetSiteRewards(rewardedSites.ToArray());
@@ -296,13 +296,13 @@ namespace GameClient
                 {
                     if (site.MainSitePartDef == siteDefs[i])
                     {
-                        ItemData itemData = new ItemData();
-                        itemData.defName = siteRewardDefNames[i].defName;
-                        itemData.quantity = siteRewardCount[i];
-                        itemData.quality = "null";
-                        itemData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
+                        ItemDetailsJSON itemDetailsJSON = new ItemDetailsJSON();
+                        itemDetailsJSON.defName = siteRewardDefNames[i].defName;
+                        itemDetailsJSON.quantity = siteRewardCount[i];
+                        itemDetailsJSON.quality = "null";
+                        itemDetailsJSON.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
 
-                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(itemData));
+                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(itemDetailsJSON));
 
                         break;
                     }
@@ -317,21 +317,21 @@ namespace GameClient
     {
         public static int[] sitePrices;
 
-        public static void SetSiteData(ServerGlobalData serverGlobalData)
+        public static void SetSiteDetails(ServerOverallJSON serverOverallJSON)
         {
             try
             {
                 sitePrices = new int[9]
                 {
-                    int.Parse(serverGlobalData.PersonalFarmlandCost),
-                    int.Parse(serverGlobalData.PersonalQuarryCost),
-                    int.Parse(serverGlobalData.PersonalSawmillCost),
-                    int.Parse(serverGlobalData.PersonalBankCost),
-                    int.Parse(serverGlobalData.PersonalLaboratoryCost),
-                    int.Parse(serverGlobalData.PersonalRefineryCost),
-                    int.Parse(serverGlobalData.PersonalHerbalWorkshopCost),
-                    int.Parse(serverGlobalData.PersonalTextileFactoryCost),
-                    int.Parse(serverGlobalData.PersonalFoodProcessorCost)
+                    int.Parse(serverOverallJSON.PersonalFarmlandCost),
+                    int.Parse(serverOverallJSON.PersonalQuarryCost),
+                    int.Parse(serverOverallJSON.PersonalSawmillCost),
+                    int.Parse(serverOverallJSON.PersonalBankCost),
+                    int.Parse(serverOverallJSON.PersonalLaboratoryCost),
+                    int.Parse(serverOverallJSON.PersonalRefineryCost),
+                    int.Parse(serverOverallJSON.PersonalHerbalWorkshopCost),
+                    int.Parse(serverOverallJSON.PersonalTextileFactoryCost),
+                    int.Parse(serverOverallJSON.PersonalFoodProcessorCost)
                 };
             }
 
@@ -367,13 +367,13 @@ namespace GameClient
             {
                 TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
-                SiteData siteData = new SiteData();
-                siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
-                siteData.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteData.type = DialogManager.selectedScrollButton.ToString();
-                siteData.isFromFaction = false;
+                SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
+                siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
+                siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
+                siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
+                siteDetailsJSON.isFromFaction = false;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
@@ -385,21 +385,21 @@ namespace GameClient
     {
         public static int[] sitePrices;
 
-        public static void SetSiteData(ServerGlobalData serverGlobalData)
+        public static void SetSiteDetails(ServerOverallJSON serverOverallJSON)
         {
             try
             {
                 sitePrices = new int[9]
                 {
-                    int.Parse(serverGlobalData.FactionFarmlandCost),
-                    int.Parse(serverGlobalData.FactionQuarryCost),
-                    int.Parse(serverGlobalData.FactionSawmillCost),
-                    int.Parse(serverGlobalData.FactionBankCost),
-                    int.Parse(serverGlobalData.FactionLaboratoryCost),
-                    int.Parse(serverGlobalData.FactionRefineryCost),
-                    int.Parse(serverGlobalData.FactionHerbalWorkshopCost),
-                    int.Parse(serverGlobalData.FactionTextileFactoryCost),
-                    int.Parse(serverGlobalData.FactionFoodProcessorCost)
+                    int.Parse(serverOverallJSON.FactionFarmlandCost),
+                    int.Parse(serverOverallJSON.FactionQuarryCost),
+                    int.Parse(serverOverallJSON.FactionSawmillCost),
+                    int.Parse(serverOverallJSON.FactionBankCost),
+                    int.Parse(serverOverallJSON.FactionLaboratoryCost),
+                    int.Parse(serverOverallJSON.FactionRefineryCost),
+                    int.Parse(serverOverallJSON.FactionHerbalWorkshopCost),
+                    int.Parse(serverOverallJSON.FactionTextileFactoryCost),
+                    int.Parse(serverOverallJSON.FactionFoodProcessorCost)
                 };
             }
 
@@ -435,13 +435,13 @@ namespace GameClient
             {
                 TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
-                SiteData siteData = new SiteData();
-                siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
-                siteData.tile = ClientValues.chosenCaravan.Tile.ToString();
-                siteData.type = DialogManager.selectedScrollButton.ToString();
-                siteData.isFromFaction = true;
+                SiteDetailsJSON siteDetailsJSON = new SiteDetailsJSON();
+                siteDetailsJSON.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
+                siteDetailsJSON.tile = ClientValues.chosenCaravan.Tile.ToString();
+                siteDetailsJSON.type = DialogManager.selectedScrollButton.ToString();
+                siteDetailsJSON.isFromFaction = true;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));

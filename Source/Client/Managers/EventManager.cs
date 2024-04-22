@@ -26,16 +26,16 @@ namespace GameClient
 
         public static void ParseEventPacket(Packet packet)
         {
-            EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
+            EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(eventData.eventStepMode))
+            switch (int.Parse(eventDetailsJSON.eventStepMode))
             {
                 case (int)CommonEnumerators.EventStepMode.Send:
                     OnEventSent();
                     break;
 
                 case (int)CommonEnumerators.EventStepMode.Receive:
-                    OnEventReceived(eventData);
+                    OnEventReceived(eventDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.EventStepMode.Recover:
@@ -44,21 +44,21 @@ namespace GameClient
             }
         }
 
-        public static void SetEventPrices(ServerGlobalData serverGlobalData)
+        public static void SetEventPrices(ServerOverallJSON serverOverallJSON)
         {
             try
             {
                 eventCosts = new int[9]
                 {
-                    int.Parse(serverGlobalData.RaidCost),
-                    int.Parse(serverGlobalData.InfestationCost),
-                    int.Parse(serverGlobalData.MechClusterCost),
-                    int.Parse(serverGlobalData.ToxicFalloutCost),
-                    int.Parse(serverGlobalData.ManhunterCost),
-                    int.Parse(serverGlobalData.WandererCost),
-                    int.Parse(serverGlobalData.FarmAnimalsCost),
-                    int.Parse(serverGlobalData.ShipChunkCost),
-                    int.Parse(serverGlobalData.TraderCaravanCost)
+                    int.Parse(serverOverallJSON.RaidCost),
+                    int.Parse(serverOverallJSON.InfestationCost),
+                    int.Parse(serverOverallJSON.MechClusterCost),
+                    int.Parse(serverOverallJSON.ToxicFalloutCost),
+                    int.Parse(serverOverallJSON.ManhunterCost),
+                    int.Parse(serverOverallJSON.WandererCost),
+                    int.Parse(serverOverallJSON.FarmAnimalsCost),
+                    int.Parse(serverOverallJSON.ShipChunkCost),
+                    int.Parse(serverOverallJSON.TraderCaravanCost)
                 };
             }
 
@@ -94,22 +94,22 @@ namespace GameClient
             {
                 TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
-                EventData eventData = new EventData();
-                eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
-                eventData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                eventData.toTile = ClientValues.chosenSettlement.Tile.ToString();
-                eventData.eventID = DialogManager.selectedScrollButton.ToString();
+                EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
+                eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
+                eventDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
+                eventDetailsJSON.toTile = ClientValues.chosenSettlement.Tile.ToString();
+                eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }
         }
 
-        public static void OnEventReceived(EventData eventData)
+        public static void OnEventReceived(EventDetailsJSON eventDetailsJSON)
         {
-            if (ClientValues.isReadyToPlay) LoadEvent(int.Parse(eventData.eventID));
+            if (ClientValues.isReadyToPlay) LoadEvent(int.Parse(eventDetailsJSON.eventID));
         }
 
         public static void LoadEvent(int eventID)

@@ -24,16 +24,16 @@ namespace GameClient
 
         public static void ParseVisitPacket(Packet packet)
         {
-            VisitData visitData = (VisitData)Serializer.ConvertBytesToObject(packet.contents);
+            VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(visitData.visitStepMode))
+            switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
                 case (int)VisitStepMode.Request:
-                    OnVisitRequest(visitData);
+                    OnVisitRequest(visitDetailsJSON);
                     break;
 
                 case (int)VisitStepMode.Accept:
-                    OnVisitAccept(visitData);
+                    OnVisitAccept(visitDetailsJSON);
                     break;
 
                 case (int)VisitStepMode.Reject:
@@ -45,7 +45,7 @@ namespace GameClient
                     break;
 
                 case (int)VisitStepMode.Action:
-                    VisitActionGetter.ReceiveActions(visitData);
+                    VisitActionGetter.ReceiveActions(visitDetailsJSON);
                     break;
 
                 case (int)VisitStepMode.Stop:
@@ -63,13 +63,13 @@ namespace GameClient
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
 
-                    VisitData visitData = new VisitData();
-                    visitData.visitStepMode = ((int)VisitStepMode.Request).ToString();
-                    visitData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                    visitData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
-                    visitData = VisitThingHelper.GetPawnsForVisit(FetchMode.Player, visitData);
+                    VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
+                    visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Request).ToString();
+                    visitDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
+                    visitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+                    visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(FetchMode.Player, visitDetailsJSON);
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     Network.listener.EnqueuePacket(packet);
                 };
 
@@ -78,23 +78,23 @@ namespace GameClient
             }
         }
 
-        private static void SendRequestedMap(VisitData visitData)
+        private static void SendRequestedMap(VisitDetailsJSON visitDetailsJSON)
         {
-            visitData.visitStepMode = ((int)VisitStepMode.Accept).ToString();
+            visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Accept).ToString();
 
-            MapData mapData = MapManager.ParseMap(visitMap, true, false, false, true);
-            visitData.mapData = Serializer.ConvertObjectToBytes(mapData);
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+            MapDetailsJSON mapDetailsJSON = MapManager.ParseMap(visitMap, true, false, false, true);
+            visitDetailsJSON.mapDetails = Serializer.ConvertObjectToBytes(mapDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
             Network.listener.EnqueuePacket(packet);
         }
 
-        private static void VisitMap(MapData mapData, VisitData visitData)
+        private static void VisitMap(MapDetailsJSON mapDetailsJSON, VisitDetailsJSON visitDetailsJSON)
         {
-            VisitThingHelper.SetMapForVisit(FetchMode.Player, mapData: mapData);
+            VisitThingHelper.SetMapForVisit(FetchMode.Player, mapDetailsJSON: mapDetailsJSON);
 
             VisitThingHelper.GetCaravanPawns(FetchMode.Player);
 
-            VisitThingHelper.SpawnPawnsForVisit(FetchMode.Player, visitData);
+            VisitThingHelper.SpawnPawnsForVisit(FetchMode.Player, visitDetailsJSON);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, visitMap, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
@@ -118,22 +118,22 @@ namespace GameClient
             //TODO
             //Implement this
 
-            VisitData visitData = new VisitData();
-            visitData.visitStepMode = ((int)VisitStepMode.Stop).ToString();
+            VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
+            visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Stop).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
             Network.listener.EnqueuePacket(packet);
         }
 
-        private static void OnVisitRequest(VisitData visitData)
+        private static void OnVisitRequest(VisitDetailsJSON visitDetailsJSON)
         {
             Action r1 = delegate
             {
-                VisitThingHelper.SetMapForVisit(FetchMode.Host, visitData: visitData);
-                VisitThingHelper.GetMapPawns(FetchMode.Host, visitData);
-                visitData = VisitThingHelper.GetPawnsForVisit(FetchMode.Host, visitData);
-                VisitThingHelper.SpawnPawnsForVisit(FetchMode.Host, visitData);
-                SendRequestedMap(visitData);
+                VisitThingHelper.SetMapForVisit(FetchMode.Host, visitDetailsJSON: visitDetailsJSON);
+                VisitThingHelper.GetMapPawns(FetchMode.Host, visitDetailsJSON);
+                visitDetailsJSON = VisitThingHelper.GetPawnsForVisit(FetchMode.Host, visitDetailsJSON);
+                VisitThingHelper.SpawnPawnsForVisit(FetchMode.Host, visitDetailsJSON);
+                SendRequestedMap(visitDetailsJSON);
 
                 VisitThingHelper.GetMapItems();
 
@@ -144,23 +144,23 @@ namespace GameClient
 
             Action r2 = delegate
             {
-                visitData.visitStepMode = ((int)VisitStepMode.Reject).ToString();
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Reject).ToString();
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitData.visitorName}, accept?", r1, r2);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Visited by {visitDetailsJSON.visitorName}, accept?", r1, r2);
             DialogManager.PushNewDialog(d1);
         }
 
-        private static void OnVisitAccept(VisitData visitData)
+        private static void OnVisitAccept(VisitDetailsJSON visitDetailsJSON)
         {
             DialogManager.PopWaitDialog();
 
-            MapData mapData = (MapData)Serializer.ConvertBytesToObject(visitData.mapData);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(visitDetailsJSON.mapDetails);
 
-            Action r1 = delegate { VisitMap(mapData, visitData); };
-            if (ModManager.CheckIfMapHasConflictingMods(mapData))
+            Action r1 = delegate { VisitMap(mapDetailsJSON, visitDetailsJSON); };
+            if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Map received but contains unknown mod data", r1));
             }
@@ -195,7 +195,7 @@ namespace GameClient
 
     public static class VisitThingHelper
     {
-        public static void GetMapPawns(FetchMode mode, VisitData visitData)
+        public static void GetMapPawns(FetchMode mode, VisitDetailsJSON visitDetailsJSON)
         {
             if (mode == FetchMode.Host)
             {
@@ -220,18 +220,18 @@ namespace GameClient
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
-                foreach (string str in visitData.mapHumans)
+                foreach (string str in visitDetailsJSON.mapHumans)
                 {
-                    HumanData humanData = Serializer.SerializeFromString<HumanData>(str);
-                    Pawn human = HumanScribeManager.StringToHuman(humanData);
+                    HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
+                    Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
 
                     pawnList.Add(human);
                 }
 
-                foreach (string str in visitData.mapAnimals)
+                foreach (string str in visitDetailsJSON.mapAnimals)
                 {
-                    AnimalData animalData = Serializer.SerializeFromString<AnimalData>(str);
-                    Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
+                    AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
+                    Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
 
                     pawnList.Add(animal);
                 }
@@ -240,23 +240,23 @@ namespace GameClient
             }
         }
 
-        public static void GetCaravanPawns(FetchMode mode, VisitData visitData = null)
+        public static void GetCaravanPawns(FetchMode mode, VisitDetailsJSON visitDetailsJSON = null)
         {
             if (mode == FetchMode.Host)
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
-                foreach (string str in visitData.caravanHumans)
+                foreach (string str in visitDetailsJSON.caravanHumans)
                 {
-                    HumanData humanData = Serializer.SerializeFromString<HumanData>(str);
-                    Pawn human = HumanScribeManager.StringToHuman(humanData);
+                    HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(str);
+                    Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
                     pawnList.Add(human);
                 }
 
-                foreach (string str in visitData.caravanAnimals)
+                foreach (string str in visitDetailsJSON.caravanAnimals)
                 {
-                    AnimalData animalData = Serializer.SerializeFromString<AnimalData>(str);
-                    Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
+                    AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(str);
+                    Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
                     pawnList.Add(animal);
                 }
 
@@ -303,20 +303,20 @@ namespace GameClient
             }
         }
 
-        public static void SetMapForVisit(FetchMode mode, VisitData visitData = null, MapData mapData = null)
+        public static void SetMapForVisit(FetchMode mode, VisitDetailsJSON visitDetailsJSON = null, MapDetailsJSON mapDetailsJSON = null)
         {
             if (mode == FetchMode.Host)
             {
-                OnlineVisitManager.visitMap = Find.Maps.Find(fetch => fetch.Tile == int.Parse(visitData.targetTile));
+                OnlineVisitManager.visitMap = Find.Maps.Find(fetch => fetch.Tile == int.Parse(visitDetailsJSON.targetTile));
             }
 
             else if (mode == FetchMode.Player)
             {
-                OnlineVisitManager.visitMap = MapScribeManager.StringToMap(mapData, true, false, false, false);
+                OnlineVisitManager.visitMap = MapScribeManager.StringToMap(mapDetailsJSON, true, false, false, false);
             }
         }
 
-        public static VisitData GetPawnsForVisit(FetchMode mode, VisitData visitData)
+        public static VisitDetailsJSON GetPawnsForVisit(FetchMode mode, VisitDetailsJSON visitDetailsJSON)
         {
             if (mode == FetchMode.Host)
             {
@@ -331,7 +331,7 @@ namespace GameClient
                     string humanString = Serializer.SerializeToString(HumanScribeManager.HumanToString(human));
                     humanStringList.Add(humanString);
                 }
-                visitData.mapHumans = humanStringList;
+                visitDetailsJSON.mapHumans = humanStringList;
 
                 List<Pawn> mapAnimals = OnlineVisitManager.visitMap.mapPawns.AllPawns
                     .FindAll(fetch => TransferManagerHelper.CheckIfThingIsAnimal(fetch) && fetch.Faction == Faction.OfPlayer)
@@ -344,7 +344,7 @@ namespace GameClient
                     string animalString = Serializer.SerializeToString(AnimalScribeManager.AnimalToString(animal));
                     animalStringList.Add(animalString);
                 }
-                visitData.mapAnimals = animalStringList;
+                visitDetailsJSON.mapAnimals = animalStringList;
             }
 
             else if (mode == FetchMode.Player)
@@ -360,7 +360,7 @@ namespace GameClient
                     string humanString = Serializer.SerializeToString(HumanScribeManager.HumanToString(human));
                     humanStringList.Add(humanString);
                 }
-                visitData.caravanHumans = humanStringList;
+                visitDetailsJSON.caravanHumans = humanStringList;
 
                 List<Pawn> caravanAnimals = ClientValues.chosenCaravan.PawnsListForReading
                     .FindAll(fetch => TransferManagerHelper.CheckIfThingIsAnimal(fetch))
@@ -373,17 +373,17 @@ namespace GameClient
                     string animalString = Serializer.SerializeToString(AnimalScribeManager.AnimalToString(animal));
                     animalStringList.Add(animalString);
                 }
-                visitData.caravanAnimals = animalStringList;
+                visitDetailsJSON.caravanAnimals = animalStringList;
             }
 
-            return visitData;
+            return visitDetailsJSON;
         }
 
-        public static void SpawnPawnsForVisit(FetchMode mode, VisitData visitData)
+        public static void SpawnPawnsForVisit(FetchMode mode, VisitDetailsJSON visitDetailsJSON)
         {
             if (mode == FetchMode.Host)
             {
-                GetCaravanPawns(FetchMode.Host, visitData);
+                GetCaravanPawns(FetchMode.Host, visitDetailsJSON);
                 foreach (Pawn pawn in OnlineVisitManager.otherPlayerPawns)
                 {
                     pawn.SetFaction(FactionValues.allyPlayer);
@@ -393,7 +393,7 @@ namespace GameClient
 
             else if (mode == FetchMode.Player)
             {
-                GetMapPawns(FetchMode.Player, visitData);
+                GetMapPawns(FetchMode.Player, visitDetailsJSON);
                 foreach (Pawn pawn in OnlineVisitManager.otherPlayerPawns)
                 {
                     pawn.SetFaction(FactionValues.allyPlayer);
@@ -419,7 +419,7 @@ namespace GameClient
 
         private static void ActionClockTick()
         {
-            VisitData visitData = new VisitData();
+            VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
 
             foreach (Pawn pawn in OnlineVisitManager.playerPawns.ToArray())
             {
@@ -427,29 +427,29 @@ namespace GameClient
                 {
                     if (pawn.jobs.curJob != null)
                     {
-                        visitData.pawnActionDefNames.Add(pawn.jobs.curJob.def.defName);
-                        visitData.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(pawn.jobs.curJob.targetA, visitData));
+                        visitDetailsJSON.pawnActionDefNames.Add(pawn.jobs.curJob.def.defName);
+                        visitDetailsJSON.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(pawn.jobs.curJob.targetA, visitDetailsJSON));
                     }
 
                     else
                     {
-                        visitData.pawnActionDefNames.Add(JobDefOf.Goto.defName);
+                        visitDetailsJSON.pawnActionDefNames.Add(JobDefOf.Goto.defName);
 
-                        visitData.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(new LocalTargetInfo(pawn.Position),
-                            visitData));
+                        visitDetailsJSON.actionTargetA.Add(VisitActionHelper.TransformActionTargetToString(new LocalTargetInfo(pawn.Position),
+                            visitDetailsJSON));
                     }
 
-                    visitData.pawnPositions.Add($"{pawn.Position.x}|{pawn.Position.y}|{pawn.Position.z}");
+                    visitDetailsJSON.pawnPositions.Add($"{pawn.Position.x}|{pawn.Position.y}|{pawn.Position.z}");
                 }
                 catch { Log.Warning($"Couldn't get job for {pawn}"); }
             }
 
-            visitData.visitStepMode = ((int)VisitStepMode.Action).ToString();
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+            visitDetailsJSON.visitStepMode = ((int)VisitStepMode.Action).ToString();
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
             Network.listener.EnqueuePacket(packet);
         }
 
-        public static void ReceiveActions(VisitData visitData)
+        public static void ReceiveActions(VisitDetailsJSON visitDetailsJSON)
         {
             Pawn[] otherPawns = OnlineVisitManager.otherPlayerPawns.ToArray();
 
@@ -457,12 +457,12 @@ namespace GameClient
             {
                 try
                 {
-                    JobDef jobDef = VisitActionHelper.TryGetJobDefForJob(otherPawns[i], visitData.pawnActionDefNames[i]);
+                    JobDef jobDef = VisitActionHelper.TryGetJobDefForJob(otherPawns[i], visitDetailsJSON.pawnActionDefNames[i]);
 
-                    VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitData, i);
+                    VisitActionHelper.TryChangePawnPosition(otherPawns[i], visitDetailsJSON, i);
 
                     LocalTargetInfo localTargetInfoA = VisitActionHelper.TryGetLocalTargetInfo(otherPawns[i],
-                        visitData.actionTargetA[i], visitData.actionTargetType[i]);
+                        visitDetailsJSON.actionTargetA[i], visitDetailsJSON.actionTargetType[i]);
 
                     Job newJob = VisitActionHelper.TryCreateNewJob(otherPawns[i], jobDef, localTargetInfoA);
 
@@ -478,7 +478,7 @@ namespace GameClient
 
     public static class VisitActionHelper
     {
-        public static string TransformActionTargetToString(LocalTargetInfo targetInfo, VisitData visitData)
+        public static string TransformActionTargetToString(LocalTargetInfo targetInfo, VisitDetailsJSON visitDetailsJSON)
         {
             string toReturn = "";
 
@@ -488,19 +488,19 @@ namespace GameClient
                 {
                     if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Thing))
                     {
-                        visitData.actionTargetType.Add(((int)ActionTargetType.Human).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Human).ToString());
                         toReturn = Serializer.SerializeToString(HumanScribeManager.HumanToString(targetInfo.Pawn));
                     }
 
                     else if (TransferManagerHelper.CheckIfThingIsAnimal(targetInfo.Thing))
                     {
-                        visitData.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
                         toReturn = Serializer.SerializeToString(AnimalScribeManager.AnimalToString(targetInfo.Pawn));
                     }
 
                     else
                     {
-                        visitData.actionTargetType.Add(((int)ActionTargetType.Thing).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Thing).ToString());
                         toReturn = Serializer.SerializeToString(ThingScribeManager.ItemToString(targetInfo.Thing, 1));
                     }
                 }
@@ -509,20 +509,20 @@ namespace GameClient
                 {
                     if (TransferManagerHelper.CheckIfThingIsHuman(targetInfo.Pawn))
                     {
-                        visitData.actionTargetType.Add(((int)ActionTargetType.Human).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Human).ToString());
                         toReturn = Serializer.SerializeToString(HumanScribeManager.HumanToString(targetInfo.Pawn));
                     }
 
                     else
                     {
-                        visitData.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
+                        visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Animal).ToString());
                         toReturn = Serializer.SerializeToString(AnimalScribeManager.AnimalToString(targetInfo.Pawn));
                     }
                 }
 
                 else if (targetInfo.Cell != null)
                 {
-                    visitData.actionTargetType.Add(((int)ActionTargetType.Cell).ToString());
+                    visitDetailsJSON.actionTargetType.Add(((int)ActionTargetType.Cell).ToString());
                     toReturn = $"{targetInfo.Cell.x}|{targetInfo.Cell.y}|{targetInfo.Cell.z}";
                 }
             }
@@ -540,22 +540,22 @@ namespace GameClient
                 switch (int.Parse(actionTargetType))
                 {
                     case (int)ActionTargetType.Thing:
-                        ItemData itemData = Serializer.SerializeFromString<ItemData>(toReadFrom);
-                        Thing thingToCompare = ThingScribeManager.StringToItem(itemData);
+                        ItemDetailsJSON itemDetailsJSON = Serializer.SerializeFromString<ItemDetailsJSON>(toReadFrom);
+                        Thing thingToCompare = ThingScribeManager.StringToItem(itemDetailsJSON);
                         Thing realThing = OnlineVisitManager.mapThings.Find(fetch => fetch.Position == thingToCompare.Position && fetch.def.defName == thingToCompare.def.defName);
                         if (realThing != null) target = new LocalTargetInfo(realThing);
                         break;
 
                     case (int)ActionTargetType.Human:
-                        HumanData humanData = Serializer.SerializeFromString<HumanData>(toReadFrom);
-                        Pawn humanToCompare = HumanScribeManager.StringToHuman(humanData);
+                        HumanDetailsJSON humanDetailsJSON = Serializer.SerializeFromString<HumanDetailsJSON>(toReadFrom);
+                        Pawn humanToCompare = HumanScribeManager.StringToHuman(humanDetailsJSON);
                         Pawn realHuman = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == humanToCompare.Position);
                         if (realHuman != null) target = new LocalTargetInfo(realHuman);
                         break;
 
                     case (int)ActionTargetType.Animal:
-                        AnimalData animalData = Serializer.SerializeFromString<AnimalData>(toReadFrom); ;
-                        Pawn animalToCompare = AnimalScribeManager.StringToAnimal(animalData);
+                        AnimalDetailsJSON animalDetailsJSON = Serializer.SerializeFromString<AnimalDetailsJSON>(toReadFrom); ;
+                        Pawn animalToCompare = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
                         Pawn realAnimal = OnlineVisitManager.visitMap.mapPawns.AllPawns.Find(fetch => fetch.Position == animalToCompare.Position);
                         if (realAnimal != null) target = new LocalTargetInfo(realAnimal);
                         break;
@@ -607,11 +607,11 @@ namespace GameClient
             catch { Log.Warning($"Couldn't draft {pawn}"); }
         }
 
-        public static void TryChangePawnPosition(Pawn pawn, VisitData visitData, int index)
+        public static void TryChangePawnPosition(Pawn pawn, VisitDetailsJSON visitDetailsJSON, int index)
         {
             try
             {
-                string[] positionSplit = visitData.pawnPositions[index].Split('|');
+                string[] positionSplit = visitDetailsJSON.pawnPositions[index].Split('|');
                 IntVec3 updatedPosition = new IntVec3(int.Parse(positionSplit[0]), int.Parse(positionSplit[1]), int.Parse(positionSplit[2]));
                 pawn.pather.Notify_Teleported_Int();
                 pawn.Position = updatedPosition;

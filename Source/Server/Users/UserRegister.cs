@@ -6,16 +6,16 @@ namespace GameServer
     {
         public static void TryRegisterUser(ServerClient client, Packet packet)
         {
-            LoginData loginData = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
+            JoinDetailsJSON registerDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            if (!UserManager.CheckIfUserUpdated(client, loginData)) return;
+            if (!UserManager.CheckIfUserUpdated(client, registerDetails)) return;
 
-            if (!UserManager.CheckLoginData(client, loginData, CommonEnumerators.LoginMode.Register)) return;
+            if (!UserManager.CheckLoginDetails(client, registerDetails, CommonEnumerators.LoginMode.Register)) return;
 
-            if (UserManager.CheckIfUserExists(client, loginData, CommonEnumerators.LoginMode.Register)) return;
+            if (UserManager.CheckIfUserExists(client, registerDetails, CommonEnumerators.LoginMode.Register)) return;
 
-            client.username = loginData.username;
-            client.password = loginData.password;
+            client.username = registerDetails.username;
+            client.password = registerDetails.password;
 
             try
             {

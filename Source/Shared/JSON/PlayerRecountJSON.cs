@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class PlayerRecountData
+    public class PlayerRecountJSON
     {
         public string currentPlayers;
 

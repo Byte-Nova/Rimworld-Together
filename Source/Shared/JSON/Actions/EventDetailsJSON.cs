@@ -3,7 +3,7 @@
 namespace Shared
 {
     [Serializable]
-    public class EventData
+    public class EventDetailsJSON
     {
         public string eventStepMode;
 

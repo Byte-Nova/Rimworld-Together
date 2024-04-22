@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class VisitData
+    public class VisitDetailsJSON
     {
         public string visitStepMode;
 
@@ -24,7 +24,7 @@ namespace Shared
         public List<string> actionTargetType = new List<string>();
         public List<string> pawnPositions = new List<string>();
 
-        public byte[] mapData;
+        public byte[] mapDetails;
         public List<string> mapMods = new List<string>();
     }
 }

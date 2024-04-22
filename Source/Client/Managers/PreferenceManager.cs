@@ -8,9 +8,9 @@ namespace GameClient
 
     public static class PreferenceManager
     {
-        //Saves the connection data
+        //Saves the connection details
 
-        public static void SaveConnectionData(string ip, string port)
+        public static void SaveConnectionDetails(string ip, string port)
         {
             ConnectionDataFile newConnectionData;
             if (File.Exists(Master.connectionDataPath)) newConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
@@ -22,9 +22,9 @@ namespace GameClient
             Serializer.SerializeToFile(Master.connectionDataPath, newConnectionData);
         }
 
-        //Loads the connection data
+        //Loads the connection details
 
-        public static string[] LoadConnectionData()
+        public static string[] LoadConnectionDetails()
         {
             if (File.Exists(Master.connectionDataPath))
             {
@@ -34,9 +34,9 @@ namespace GameClient
             else return new string[] { "", "" };
         }
 
-        //Saves the login data
+        //Saves the login details
 
-        public static void SaveLoginData(string username, string password)
+        public static void SaveLoginDetails(string username, string password)
         {
             LoginDataFile newLoginData;
             if (File.Exists(Master.loginDataPath)) newLoginData = Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
@@ -48,9 +48,9 @@ namespace GameClient
             Serializer.SerializeToFile(Master.loginDataPath, newLoginData);
         }
 
-        //Loads the login data
+        //Loads the login details
 
-        public static string[] LoadLoginData()
+        public static string[] LoadLoginDetails()
         {
             if (File.Exists(Master.loginDataPath))
             {

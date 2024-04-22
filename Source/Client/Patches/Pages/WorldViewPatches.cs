@@ -75,25 +75,25 @@ namespace GameClient
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
 
-                Command_Action command_Goodwill = new Command_Action
+                Command_Action command_Likelihood = new Command_Action
                 {
-                    defaultLabel = "Change Goodwill",
-                    defaultDesc = "Change the goodwill of this settlement",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
+                    defaultLabel = "Change Likelihood",
+                    defaultDesc = "Change the likelihood of this settlement",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
                     action = delegate
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy, 
-                            CommonEnumerators.GoodwillTarget.Settlement); };
+                        Action r1 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy, 
+                            CommonEnumerators.LikelihoodTarget.Settlement); };
 
-                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                            CommonEnumerators.GoodwillTarget.Settlement); };
+                        Action r2 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                            CommonEnumerators.LikelihoodTarget.Settlement); };
 
-                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                            CommonEnumerators.GoodwillTarget.Settlement); };
+                        Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                            CommonEnumerators.LikelihoodTarget.Settlement); };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
@@ -129,7 +129,7 @@ namespace GameClient
                 };
 
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
+                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Likelihood);
                 if (__instance.Map != null && __instance.Map.mapPawns.AllPawns.ToList().Find(fetch => fetch.Faction == Faction.OfPlayer) != null)
                 {
                     gizmoList.Add(command_Caravan);
@@ -265,31 +265,31 @@ namespace GameClient
                     }
                 };
 
-                Command_Action command_Goodwill = new Command_Action
+                Command_Action command_Likelihood = new Command_Action
                 {
-                    defaultLabel = "Change Goodwill",
-                    defaultDesc = "Change the goodwill of this settlement",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
+                    defaultLabel = "Change Likelihood",
+                    defaultDesc = "Change the likelihood of this settlement",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
                     action = delegate
                     {
                         ClientValues.chosenSettlement = __instance;
 
                         Action r1 = delegate {
-                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
                         };
 
                         Action r2 = delegate {
-                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
                         };
 
                         Action r3 = delegate {
-                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
                         };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
@@ -319,7 +319,7 @@ namespace GameClient
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
                 if (__instance.Faction != FactionValues.yourOnlineFaction)
                 {
-                    gizmoList.Add(command_Goodwill);
+                    gizmoList.Add(command_Likelihood);
                     gizmoList.Add(command_Spy);
                     gizmoList.Add(command_Raid);
                 }
@@ -366,32 +366,32 @@ namespace GameClient
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
 
-                Command_Action command_Goodwill = new Command_Action
+                Command_Action command_Likelihood = new Command_Action
                 {
-                    defaultLabel = "Change Goodwill",
-                    defaultDesc = "Change the goodwill of this site",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
+                    defaultLabel = "Change Likelihood",
+                    defaultDesc = "Change the likelihood of this site",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
                     action = delegate
                     {
                         ClientValues.chosenSite = __instance;
 
-                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
-                            CommonEnumerators.GoodwillTarget.Site); };
+                        Action r1 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
+                            CommonEnumerators.LikelihoodTarget.Site); };
 
-                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                            CommonEnumerators.GoodwillTarget.Site); };
+                        Action r2 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                            CommonEnumerators.LikelihoodTarget.Site); };
 
-                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                            CommonEnumerators.GoodwillTarget.Site); };
+                        Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                            CommonEnumerators.LikelihoodTarget.Site); };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
                     }
                 };
 
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
+                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Likelihood);
 
                 __result = gizmoList;
             }
@@ -475,31 +475,31 @@ namespace GameClient
 
                 else if (presentSite != null)
                 {
-                    Command_Action command_Goodwill = new Command_Action
+                    Command_Action command_Likelihood = new Command_Action
                     {
-                        defaultLabel = "Change Goodwill",
-                        defaultDesc = "Change the goodwill of this site",
-                        icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
+                        defaultLabel = "Change Likelihood",
+                        defaultDesc = "Change the likelihood of this site",
+                        icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
                         action = delegate
                         {
                             ClientValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                             Action r1 = delegate {
-                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
-                                    CommonEnumerators.GoodwillTarget.Site);
+                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
+                                    CommonEnumerators.LikelihoodTarget.Site);
                             };
 
                             Action r2 = delegate {
-                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                                    CommonEnumerators.GoodwillTarget.Site);
+                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                                    CommonEnumerators.LikelihoodTarget.Site);
                             };
 
                             Action r3 = delegate {
-                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                                    CommonEnumerators.GoodwillTarget.Site);
+                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                                    CommonEnumerators.LikelihoodTarget.Site);
                             };
 
-                            RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
+                            RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
                                 "Enemy", "Neutral", "Ally", r1, r2, r3, null);
 
                             DialogManager.PushNewDialog(d1);
@@ -545,7 +545,7 @@ namespace GameClient
                         gizmoList.Add(command_DestroySite);
                     }
 
-                    else gizmoList.Add(command_Goodwill);
+                    else gizmoList.Add(command_Likelihood);
                 }
 
                 __result = gizmoList;

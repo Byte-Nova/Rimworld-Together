@@ -3,12 +3,12 @@
 namespace Shared
 {
     [Serializable]
-    public class OfflineVisitData
+    public class OfflineVisitDetailsJSON
     {
         public string offlineVisitStepMode;
 
         public string targetTile;
 
-        public byte[] mapData;
+        public byte[] mapDetails;
     }
 }

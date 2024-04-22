@@ -29,7 +29,7 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
         }
 
-        public static void SendNoPowerPacket(ServerClient client, PlayerFactionData factionManifest)
+        public static void SendNoPowerPacket(ServerClient client, FactionManifestJSON factionManifest)
         {
             factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NoPower).ToString();
 
@@ -39,10 +39,10 @@ namespace GameServer
 
         public static void SendWorkerInsidePacket(ServerClient client)
         {
-            SiteData siteData = new SiteData();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.WorkerError).ToString();
+            SiteDetailsJSON siteDetails = new SiteDetailsJSON();
+            siteDetails.siteStep = ((int)CommonEnumerators.SiteStepMode.WorkerError).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetails);
             client.listener.EnqueuePacket(packet);
         }
     }

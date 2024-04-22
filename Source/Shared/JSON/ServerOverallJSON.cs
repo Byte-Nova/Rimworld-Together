@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class ServerGlobalData
+    public class ServerOverallJSON
     {
         public bool AllowCustomScenarios;
 
@@ -68,11 +68,11 @@ namespace Shared
 
         public List<string> settlementTiles = new List<string>();
         public List<string> settlementOwners = new List<string>();
-        public List<string> settlementGoodwills = new List<string>();
+        public List<string> settlementLikelihoods = new List<string>();
 
         public List<string> siteTiles = new List<string>();
         public List<string> siteOwners = new List<string>();
-        public List<string> siteGoodwills = new List<string>();
+        public List<string> siteLikelihoods = new List<string>();
         public List<string> siteTypes = new List<string>();
         public List<bool> isFromFactions = new List<bool>();
 

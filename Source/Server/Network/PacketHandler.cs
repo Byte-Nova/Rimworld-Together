@@ -43,9 +43,9 @@ namespace GameServer
             SaveManager.ReceiveSavePartFromClient(client, packet);
         }
 
-        public static void GoodwillPacket(ServerClient client, Packet packet)
+        public static void LikelihoodPacket(ServerClient client, Packet packet)
         {
-            GoodwillManager.ChangeUserGoodwills(client, packet);
+            LikelihoodManager.ChangeUserLikelihoods(client, packet);
         }
 
         public static void TransferPacket(ServerClient client, Packet packet)

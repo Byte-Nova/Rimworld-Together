@@ -3,7 +3,7 @@ using System;
 namespace Shared
 {
     [Serializable]
-    public class KeepAliveData
+    public class KeepAliveJSON
     {
 
     }

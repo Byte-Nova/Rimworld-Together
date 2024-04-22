@@ -4,18 +4,18 @@ using System.Collections.Generic;
 namespace Shared
 {
     [Serializable]
-    public class FactionGoodwillData
+    public class StructureLikelihoodJSON
     {
         public string tile;
 
         public string owner;
 
-        public string goodwill;
+        public string likelihood;
 
         public List<string> settlementTiles = new List<string>();
-        public List<string> settlementGoodwills = new List<string>();
+        public List<string> settlementLikelihoods = new List<string>();
 
         public List<string> siteTiles = new List<string>();
-        public List<string> siteGoodwills = new List<string>();
+        public List<string> siteLikelihoods = new List<string>();
     }
 }

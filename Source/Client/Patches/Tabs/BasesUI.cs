@@ -100,8 +100,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(Shared.CommonEnumerators.Goodwills.Enemy,
-                            Shared.CommonEnumerators.GoodwillTarget.Settlement);
+                        LikelihoodManager.TryRequestLikelihood(Shared.CommonEnumerators.Likelihoods.Enemy,
+                            Shared.CommonEnumerators.LikelihoodTarget.Settlement);
 
                         break;
                     }
@@ -116,8 +116,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
 
                         break;
                     }
@@ -132,8 +132,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
+                            CommonEnumerators.LikelihoodTarget.Settlement);
 
                         break;
                     }

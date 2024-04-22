@@ -3,7 +3,7 @@
 namespace Shared
 {
     [Serializable]
-    public class CommandData
+    public class CommandDetailsJSON
     {
         public string commandType;
 

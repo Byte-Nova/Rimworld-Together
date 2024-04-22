@@ -25,25 +25,25 @@ namespace GameClient
 
         private static void SendMapToServerSingle(Map map)
         {
-            MapData mapData = ParseMap(map, true, true, true, true);
+            MapDetailsJSON mapDetailsJSON = ParseMap(map, true, true, true, true);
 
-            MapFileData mapFileData = new MapFileData();
-            mapFileData.mapTile = mapData.mapTile;
-            mapFileData.mapData = Serializer.ConvertObjectToBytes(mapData);
+            MapFileJSON mapFileJSON = new MapFileJSON();
+            mapFileJSON.mapTile = mapDetailsJSON.mapTile;
+            mapFileJSON.mapData = Serializer.ConvertObjectToBytes(mapDetailsJSON);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileJSON);
             Network.listener.EnqueuePacket(packet);
         }
 
         //Parses a desired map into an usable mod class
 
-        public static MapData ParseMap(Map map, bool includeItems, bool includeHumans, bool includeAnimals, bool includeMods)
+        public static MapDetailsJSON ParseMap(Map map, bool includeItems, bool includeHumans, bool includeAnimals, bool includeMods)
         {
-            MapData mapData = MapScribeManager.MapToString(map, includeItems, includeHumans, includeAnimals);
+            MapDetailsJSON mapDetailsJSON = MapScribeManager.MapToString(map, includeItems, includeHumans, includeAnimals);
 
-            if (includeMods) mapData.mapMods = ModManager.GetRunningModList().ToList();
+            if (includeMods) mapDetailsJSON.mapMods = ModManager.GetRunningModList().ToList();
 
-            return mapData;
+            return mapDetailsJSON;
         }
     }
 }

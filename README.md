@@ -46,20 +46,6 @@ make build-container
 make run-container
 ```
 
-## Guide and Deployments
-
-To access our documentation and deployment examples, please run the following command:
-
-```sh
-git submodules init
-```
-
-This will clone our Guide and Deployments project. To pull the latest, please use:
-
-```sh
-git submodules update
-```
-
 ## Server Configuration
 The server will generate all the configurable files on first launch and will store them in the "CORE" folder.
 

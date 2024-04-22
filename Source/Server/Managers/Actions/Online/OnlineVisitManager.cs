@@ -6,43 +6,43 @@ namespace GameServer
     {
         public static void ParseVisitPacket(ServerClient client, Packet packet)
         {
-            VisitData visitData = (VisitData)Serializer.ConvertBytesToObject(packet.contents);
+            VisitDetailsJSON visitDetailsJSON = (VisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(visitData.visitStepMode))
+            switch (int.Parse(visitDetailsJSON.visitStepMode))
             {
                 case (int)CommonEnumerators.VisitStepMode.Request:
-                    SendVisitRequest(client, visitData);
+                    SendVisitRequest(client, visitDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.VisitStepMode.Accept:
-                    AcceptVisitRequest(client, visitData);
+                    AcceptVisitRequest(client, visitDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.VisitStepMode.Reject:
-                    RejectVisitRequest(client, visitData);
+                    RejectVisitRequest(client, visitDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.VisitStepMode.Action:
-                    SendVisitActions(client, visitData);
+                    SendVisitActions(client, visitDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.VisitStepMode.Stop:
-                    SendVisitStop(client, visitData);
+                    SendVisitStop(client, visitDetailsJSON);
                     break;
             }
         }
 
-        private static void SendVisitRequest(ServerClient client, VisitData visitData)
+        private static void SendVisitRequest(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitData.targetTile);
-            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} tried to visit a settlement at tile {visitData.targetTile}, but no settlement could be found");
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitDetailsJSON.targetTile);
+            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} tried to visit a settlement at tile {visitDetailsJSON.targetTile}, but no settlement could be found");
             else
             {
                 ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
-                    visitData.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                    visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -50,24 +50,24 @@ namespace GameServer
                 {
                     if (toGet.inVisitWith != null)
                     {
-                        visitData.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                        visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Unavailable).ToString();
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                         client.listener.EnqueuePacket(packet);
                     }
 
                     else
                     {
-                        visitData.visitorName = client.username;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                        visitDetailsJSON.visitorName = client.username;
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                         toGet.listener.EnqueuePacket(packet);
                     }
                 }
             }
         }
 
-        private static void AcceptVisitRequest(ServerClient client, VisitData visitData)
+        private static void AcceptVisitRequest(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitData.fromTile);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitDetailsJSON.fromTile);
             if (settlementFile == null) return;
             else
             {
@@ -78,15 +78,15 @@ namespace GameServer
                     client.inVisitWith = toGet;
                     toGet.inVisitWith = client;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
         }
 
-        private static void RejectVisitRequest(ServerClient client, VisitData visitData)
+        private static void RejectVisitRequest(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitData.fromTile);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitDetailsJSON.fromTile);
             if (settlementFile == null) return;
             else
             {
@@ -94,31 +94,31 @@ namespace GameServer
                 if (toGet == null) return;
                 else
                 {
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
         }
 
-        private static void SendVisitActions(ServerClient client, VisitData visitData)
+        private static void SendVisitActions(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
             if (client.inVisitWith == null)
             {
-                visitData.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                 client.listener.EnqueuePacket(packet);
             }
 
             else
             {
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
                 client.inVisitWith.listener.EnqueuePacket(packet);
             }
         }
 
-        public static void SendVisitStop(ServerClient client, VisitData visitData)
+        public static void SendVisitStop(ServerClient client, VisitDetailsJSON visitDetailsJSON)
         {
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
 
             if (client.inVisitWith == null) client.listener.EnqueuePacket(packet);
             else

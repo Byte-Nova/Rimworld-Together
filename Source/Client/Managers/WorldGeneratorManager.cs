@@ -19,7 +19,7 @@ namespace GameClient
         public static OverallPopulation population;
         public static float pollution;
         public static List<FactionDef> factions = new List<FactionDef>();
-        public static WorldData cachedWorldData;
+        public static WorldDetailsJSON cachedWorldDetails;
 
         public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
                                                                       orderby x.order, x.index
@@ -42,29 +42,23 @@ namespace GameClient
             WorldGeneratorManager.factions.Add(FactionValues.yourOnlineFactionDef);
         }
 
-        public static void SetValuesFromServer(WorldData worldData)
+        public static void SetValuesFromServer(WorldDetailsJSON worldDetailsJSON)
         {
-            seedString = worldData.seedString;
-            persistentRandomValue = worldData.persistentRandomValue;
-            planetCoverage = float.Parse(worldData.planetCoverage);
-            rainfall = (OverallRainfall)int.Parse(worldData.rainfall);
-            temperature = (OverallTemperature)int.Parse(worldData.temperature);
-            population = (OverallPopulation)int.Parse(worldData.population);
-            pollution = float.Parse(worldData.pollution);
-
-            //TODO
-            //We might want to add a message for the players to let them know factions are missing
-            //For now, we output into the console for debugging purposes
+            seedString = worldDetailsJSON.seedString;
+            persistentRandomValue = worldDetailsJSON.persistentRandomValue;
+            planetCoverage = float.Parse(worldDetailsJSON.planetCoverage);
+            rainfall = (OverallRainfall)int.Parse(worldDetailsJSON.rainfall);
+            temperature = (OverallTemperature)int.Parse(worldDetailsJSON.temperature);
+            population = (OverallPopulation)int.Parse(worldDetailsJSON.population);
+            pollution = float.Parse(worldDetailsJSON.pollution);
 
             factions = new List<FactionDef>();
-            foreach(string str in worldData.factions)
+            foreach(string str in worldDetailsJSON.factions)
             {
-                FactionDef faction = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
-                if (faction != null) factions.Add(faction);
-                else Log.Warning($"[Rimworld Together] > Faction '{str}' wasn't found in the client's game, ignoring");
+                factions.Add(DefDatabase<FactionDef>.AllDefs.First(fetch => fetch.defName == str));
             }
 
-            cachedWorldData = worldData;
+            cachedWorldDetails = worldDetailsJSON;
         }
 
         public static void GeneratePatchedWorld()
@@ -113,23 +107,23 @@ namespace GameClient
 
         public static void SendWorldToServer()
         {
-            WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
+            WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
+            worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
-            worldData.seedString = seedString;
-            worldData.persistentRandomValue = persistentRandomValue;
-            worldData.planetCoverage = planetCoverage.ToString();
-            worldData.rainfall = ((int)rainfall).ToString();
-            worldData.temperature = ((int)temperature).ToString();
-            worldData.population = ((int)population).ToString();
-            worldData.pollution = pollution.ToString();
+            worldDetailsJSON.seedString = seedString;
+            worldDetailsJSON.persistentRandomValue = persistentRandomValue;
+            worldDetailsJSON.planetCoverage = planetCoverage.ToString();
+            worldDetailsJSON.rainfall = ((int)rainfall).ToString();
+            worldDetailsJSON.temperature = ((int)temperature).ToString();
+            worldDetailsJSON.population = ((int)population).ToString();
+            worldDetailsJSON.pollution = pollution.ToString();
            
             foreach(FactionDef faction in factions)
             {
-                worldData.factions.Add(faction.defName);
+                worldDetailsJSON.factions.Add(faction.defName);
             }
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
             Network.listener.EnqueuePacket(packet);
         }
 

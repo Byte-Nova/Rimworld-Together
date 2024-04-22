@@ -19,18 +19,18 @@ namespace GameClient
 
         public static void ParseTransferPacket(Packet packet)
         {
-            TransferData transferData = (TransferData)Serializer.ConvertBytesToObject(packet.contents);
+            TransferManifestJSON transferManifestJSON = (TransferManifestJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(transferData.transferStepMode))
+            switch (int.Parse(transferManifestJSON.transferStepMode))
             {
                 case (int)TransferStepMode.TradeRequest:
-                    ReceiveTransferRequest(transferData);
+                    ReceiveTransferRequest(transferManifestJSON);
                     break;
 
                 case (int)TransferStepMode.TradeAccept:
                     DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
-                    if (int.Parse(transferData.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
+                    if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
@@ -42,7 +42,7 @@ namespace GameClient
 
                 case (int)TransferStepMode.TradeReRequest:
                     DialogManager.PopWaitDialog();
-                    ReceiveReboundRequest(transferData);
+                    ReceiveReboundRequest(transferManifestJSON);
                     break;
 
                 case (int)TransferStepMode.TradeReAccept:
@@ -242,58 +242,58 @@ namespace GameClient
         {
             if (success) SaveManager.ForceSave();
 
-            ClientValues.incomingManifest = new TransferData();
-            ClientValues.outgoingManifest = new TransferData();
+            ClientValues.incomingManifest = new TransferManifestJSON();
+            ClientValues.outgoingManifest = new TransferManifestJSON();
             ClientValues.ToggleTransfer(false);
         }
 
         //Executes when receiving a transfer request
 
-        public static void ReceiveTransferRequest(TransferData transferData)
+        public static void ReceiveTransferRequest(TransferManifestJSON transferManifestJSON)
         {
             try
             {
-                ClientValues.incomingManifest = transferData;
+                ClientValues.incomingManifest = transferManifestJSON;
 
                 if (!ClientValues.isReadyToPlay || ClientValues.isInTransfer || ClientValues.rejectTransferBool)
                 {
-                    RejectRequest((TransferMode)int.Parse(transferData.transferMode));
+                    RejectRequest((TransferMode)int.Parse(transferManifestJSON.transferMode));
                 }
 
                 else
                 {
                     Action r1 = delegate
                     {
-                        if (int.Parse(transferData.transferMode) == (int)TransferMode.Gift)
+                        if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Gift)
                         {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Gift);
+                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferManifestJSON), TransferMode.Gift);
                             DialogManager.PushNewDialog(d1);
                         }
 
-                        else if (int.Parse(transferData.transferMode) == (int)TransferMode.Trade)
+                        else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Trade)
                         {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Trade);
+                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferManifestJSON), TransferMode.Trade);
                             DialogManager.PushNewDialog(d1);
                         }
 
-                        else if (int.Parse(transferData.transferMode) == (int)TransferMode.Pod)
+                        else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
                         {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Pod);
+                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferManifestJSON), TransferMode.Pod);
                             DialogManager.PushNewDialog(d1);
                         }
                     };
 
-                    if (int.Parse(transferData.transferMode) == (int)TransferMode.Gift)
+                    if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Gift)
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
                     }
 
-                    else if (int.Parse(transferData.transferMode) == (int)TransferMode.Trade)
+                    else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Trade)
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a trade request", r1));
                     }
 
-                    else if (int.Parse(transferData.transferMode) == (int)TransferMode.Pod)
+                    else if (int.Parse(transferManifestJSON.transferMode) == (int)TransferMode.Pod)
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
                     }
@@ -306,19 +306,19 @@ namespace GameClient
 
                 Thread.Sleep(100);
 
-                ReceiveTransferRequest(transferData);
+                ReceiveTransferRequest(transferManifestJSON);
             }        
         }
 
         //Executes after receiving a rebound transfer request
 
-        public static void ReceiveReboundRequest(TransferData transferData)
+        public static void ReceiveReboundRequest(TransferManifestJSON transferManifestJSON)
         {
             try
             {
-                ClientValues.incomingManifest = transferData;
+                ClientValues.incomingManifest = transferManifestJSON;
 
-                RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Rebound);
+                RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferManifestJSON), TransferMode.Rebound);
                 DialogManager.PushNewDialog(d1);
             }
 
@@ -328,7 +328,7 @@ namespace GameClient
 
                 Thread.Sleep(100);
 
-                ReceiveReboundRequest(transferData);
+                ReceiveReboundRequest(transferManifestJSON);
             }
         }
 
@@ -431,7 +431,7 @@ namespace GameClient
             {
                 Pawn pawn = thing as Pawn;
 
-                ClientValues.outgoingManifest.humanDatas.Add(Serializer.ConvertObjectToBytes
+                ClientValues.outgoingManifest.humanDetailsJSONS.Add(Serializer.ConvertObjectToBytes
                     (HumanScribeManager.HumanToString(pawn, false)));
 
                 if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
@@ -444,7 +444,7 @@ namespace GameClient
             {
                 Pawn pawn = thing as Pawn;
 
-                ClientValues.outgoingManifest.animalDatas.Add(Serializer.ConvertObjectToBytes
+                ClientValues.outgoingManifest.animalDetailsJSON.Add(Serializer.ConvertObjectToBytes
                     (AnimalScribeManager.AnimalToString(pawn)));
 
                 if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
@@ -455,7 +455,7 @@ namespace GameClient
 
             else
             {
-                ClientValues.outgoingManifest.itemDatas.Add(Serializer.ConvertObjectToBytes
+                ClientValues.outgoingManifest.itemDetailsJSONS.Add(Serializer.ConvertObjectToBytes
                     (ThingScribeManager.ItemToString(thing, thingCount)));
             }
         }
@@ -480,15 +480,15 @@ namespace GameClient
 
         //Gets all the transfered items from the transfer into usable objects
 
-        public static Thing[] GetAllTransferedItems(TransferData transferData)
+        public static Thing[] GetAllTransferedItems(TransferManifestJSON transferManifestJSON)
         {
             List<Thing> allTransferedItems = new List<Thing>();
 
-            foreach (Pawn pawn in HumanScribeManager.GetHumansFromString(transferData)) allTransferedItems.Add(pawn);
+            foreach (Pawn pawn in HumanScribeManager.GetHumansFromString(transferManifestJSON)) allTransferedItems.Add(pawn);
 
-            foreach (Pawn animal in AnimalScribeManager.GetAnimalsFromString(transferData)) allTransferedItems.Add(animal);
+            foreach (Pawn animal in AnimalScribeManager.GetAnimalsFromString(transferManifestJSON)) allTransferedItems.Add(animal);
 
-            foreach (Thing thing in ThingScribeManager.GetItemsFromString(transferData)) allTransferedItems.Add(thing);
+            foreach (Thing thing in ThingScribeManager.GetItemsFromString(transferManifestJSON)) allTransferedItems.Add(thing);
 
             return allTransferedItems.ToArray();
         }

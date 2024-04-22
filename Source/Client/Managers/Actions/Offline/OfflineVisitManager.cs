@@ -17,12 +17,12 @@ namespace GameClient
 
         public static void ParseOfflineVisitPacket(Packet packet)
         {
-            OfflineVisitData offlineVisitData = (OfflineVisitData)Serializer.ConvertBytesToObject(packet.contents);
+            OfflineVisitDetailsJSON offlineVisitDetails = (OfflineVisitDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(offlineVisitData.offlineVisitStepMode))
+            switch (int.Parse(offlineVisitDetails.offlineVisitStepMode))
             {
                 case (int)CommonEnumerators.OfflineVisitStepMode.Request:
-                    OnRequestAccepted(offlineVisitData);
+                    OnRequestAccepted(offlineVisitDetails);
                     break;
 
                 case (int)CommonEnumerators.OfflineVisitStepMode.Deny:
@@ -37,11 +37,11 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
-            OfflineVisitData offlineVisitData = new OfflineVisitData();
-            offlineVisitData.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Request).ToString();
-            offlineVisitData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+            OfflineVisitDetailsJSON offlineVisitDetailsJSON = new OfflineVisitDetailsJSON();
+            offlineVisitDetailsJSON.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Request).ToString();
+            offlineVisitDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitDetailsJSON);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -56,16 +56,16 @@ namespace GameClient
 
         //Executes when offline visit is accepted
 
-        private static void OnRequestAccepted(OfflineVisitData offlineVisitData)
+        private static void OnRequestAccepted(OfflineVisitDetailsJSON offlineVisitDetailsJSON)
         {
             DialogManager.PopWaitDialog();
 
-            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(offlineVisitData.mapData);
-            MapData mapData = (MapData)Serializer.ConvertBytesToObject(mapFileData.mapData);
+            MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(offlineVisitDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate { PrepareMapForOfflineVisit(mapData); };
+            Action r1 = delegate { PrepareMapForOfflineVisit(mapDetailsJSON); };
 
-            if (ModManager.CheckIfMapHasConflictingMods(mapData))
+            if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
@@ -76,9 +76,9 @@ namespace GameClient
 
         //Prepares a map for the offline visit feature from a request
 
-        private static void PrepareMapForOfflineVisit(MapData mapData)
+        private static void PrepareMapForOfflineVisit(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = MapScribeManager.StringToMap(mapData, false, true, true, false);
+            Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, true, true, false);
 
             HandleMapFactions(map);
 

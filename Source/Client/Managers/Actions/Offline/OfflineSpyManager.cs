@@ -19,12 +19,12 @@ namespace GameClient
 
         public static void ParseSpyPacket(Packet packet)
         {
-            SpyData spyData = (SpyData)Serializer.ConvertBytesToObject(packet.contents);
+            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(spyData.spyStepMode))
+            switch(int.Parse(spyDetailsJSON.spyStepMode))
             {
                 case (int)CommonEnumerators.SpyStepMode.Request:
-                    OnSpyAccept(spyData);
+                    OnSpyAccept(spyDetailsJSON);
                     break;
 
                 case (int)CommonEnumerators.SpyStepMode.Deny:
@@ -35,9 +35,9 @@ namespace GameClient
 
         //Sets the cost of the spying function from the server
 
-        public static void SetSpyCost(ServerGlobalData serverGlobalData)
+        public static void SetSpyCost(ServerOverallJSON serverOverallJSON)
         {
-            try { spyCost = int.Parse(serverGlobalData.SpyCost); }
+            try { spyCost = int.Parse(serverOverallJSON.SpyCost); }
             catch
             {
                 Log.Warning("Server didn't have spy cost set, defaulting to 0");
@@ -63,11 +63,11 @@ namespace GameClient
 
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
-                    SpyData spyData = new SpyData();
-                    spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
-                    spyData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+                    SpyDetailsJSON spyDetailsJSON = new SpyDetailsJSON();
+                    spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
+                    spyDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
                     Network.listener.EnqueuePacket(packet);
                 }
             };
@@ -78,16 +78,16 @@ namespace GameClient
 
         //Executes after being confirmed a spy order
 
-        private static void OnSpyAccept(SpyData spyData)
+        private static void OnSpyAccept(SpyDetailsJSON spyDetailsJSON)
         {
             DialogManager.PopWaitDialog();
 
-            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(spyData.mapData);
-            MapData mapData = (MapData)Serializer.ConvertBytesToObject(mapFileData.mapData);
+            MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(spyDetailsJSON.mapDetails);
+            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate { PrepareMapForSpy(mapData); };
+            Action r1 = delegate { PrepareMapForSpy(mapDetailsJSON); };
 
-            if (ModManager.CheckIfMapHasConflictingMods(mapData))
+            if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
@@ -113,9 +113,9 @@ namespace GameClient
 
         //Prepares a given map for the spy order
 
-        private static void PrepareMapForSpy(MapData mapData)
+        private static void PrepareMapForSpy(MapDetailsJSON mapDetailsJSON)
         {
-            Map map = MapScribeManager.StringToMap(mapData, false, false, false, false);
+            Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, false, false, false);
 
             HandleMapFactions(map);
 

@@ -4,7 +4,7 @@ namespace Shared
 {
     [Serializable]
 
-    public class ItemData
+    public class ItemDetailsJSON
     {
         public string defName;
         public string materialDefName;

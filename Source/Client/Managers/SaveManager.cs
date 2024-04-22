@@ -27,7 +27,7 @@ namespace GameClient
 
         public static void ReceiveSavePartFromServer(Packet packet)
         {
-            FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
+            FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             if (Network.listener.downloadManager == null)
             {
@@ -37,12 +37,12 @@ namespace GameClient
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
 
                 Network.listener.downloadManager = new DownloadManager();
-                Network.listener.downloadManager.PrepareDownload(filePath, fileTransferData.fileParts);
+                Network.listener.downloadManager.PrepareDownload(filePath, fileTransferJSON.fileParts);
             }
 
-            Network.listener.downloadManager.WriteFilePart(fileTransferData.fileBytes);
+            Network.listener.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
 
-            if (fileTransferData.isLastPart)
+            if (fileTransferJSON.isLastPart)
             {
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
@@ -71,16 +71,16 @@ namespace GameClient
                 Network.listener.uploadManager.PrepareUpload(filePath);
             }
 
-            FileTransferData fileTransferData = new FileTransferData();
-            fileTransferData.fileSize = Network.listener.uploadManager.fileSize;
-            fileTransferData.fileParts = Network.listener.uploadManager.fileParts;
-            fileTransferData.fileBytes = Network.listener.uploadManager.ReadFilePart();
-            fileTransferData.isLastPart = Network.listener.uploadManager.isLastPart;
+            FileTransferJSON fileTransferJSON = new FileTransferJSON();
+            fileTransferJSON.fileSize = Network.listener.uploadManager.fileSize;
+            fileTransferJSON.fileParts = Network.listener.uploadManager.fileParts;
+            fileTransferJSON.fileBytes = Network.listener.uploadManager.ReadFilePart();
+            fileTransferJSON.isLastPart = Network.listener.uploadManager.isLastPart;
 
-            if (ClientValues.isDisconnecting || ClientValues.isQuiting) fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
-            else fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
+            if (ClientValues.isDisconnecting || ClientValues.isQuiting) fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+            else fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);
             Network.listener.EnqueuePacket(packet);
 
             if (Network.listener.uploadManager.isLastPart) 

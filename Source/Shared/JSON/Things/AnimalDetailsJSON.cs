@@ -5,7 +5,7 @@ namespace Shared
 {
     [Serializable]
 
-    public class AnimalData
+    public class AnimalDetailsJSON
     {
         //Bio
 

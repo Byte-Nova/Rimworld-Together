@@ -8,16 +8,16 @@ namespace GameClient
     {
         public static void ParseWorldPacket(Packet packet)
         {
-            WorldData worldData = (WorldData)Serializer.ConvertBytesToObject(packet.contents);
+            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(worldData.worldStepMode))
+            switch (int.Parse(worldDetailsJSON.worldStepMode))
             {
                 case (int)CommonEnumerators.WorldStepMode.Required:
                     OnRequireWorld();
                     break;
 
                 case (int)CommonEnumerators.WorldStepMode.Existing:
-                    OnExistingWorld(worldData);
+                    OnExistingWorld(worldDetailsJSON);
                     break;
             }
         }
@@ -38,11 +38,11 @@ namespace GameClient
             DialogManager.PushNewDialog(d1);
         }
 
-        public static void OnExistingWorld(WorldData worldData)
+        public static void OnExistingWorld(WorldDetailsJSON worldDetailsJSON)
         {
             DialogManager.PopWaitDialog();
 
-            WorldGeneratorManager.SetValuesFromServer(worldData);
+            WorldGeneratorManager.SetValuesFromServer(worldDetailsJSON);
 
             DialogManager.PushNewDialog(new Page_SelectScenario());
 

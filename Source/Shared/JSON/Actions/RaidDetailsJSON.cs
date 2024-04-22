@@ -3,12 +3,12 @@
 namespace Shared
 {
     [Serializable]
-    public class RaidData
+    public class RaidDetailsJSON
     {
         public string raidStepMode;
 
         public string targetTile;
 
-        public byte[] mapData;
+        public byte[] mapDetails;
     }
 }

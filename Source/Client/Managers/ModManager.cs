@@ -18,24 +18,24 @@ namespace GameClient
 
         public static void GetConflictingMods(Packet packet)
         {
-            LoginData loginData = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
+            JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
-                loginData.extraDetails.ToArray()));
+                loginDetailsJSON.extraDetails.ToArray()));
         }
 
-        public static bool CheckIfMapHasConflictingMods(MapData mapData)
+        public static bool CheckIfMapHasConflictingMods(MapDetailsJSON mapDetailsJSON)
         {
             string[] currentMods = GetRunningModList();
 
-            foreach (string mod in mapData.mapMods)
+            foreach (string mod in mapDetailsJSON.mapMods)
             {
                 if (!currentMods.Contains(mod)) return true;
             }
 
             foreach (string mod in currentMods)
             {
-                if (!mapData.mapMods.Contains(mod)) return true;
+                if (!mapDetailsJSON.mapMods.Contains(mod)) return true;
             }
 
             return false;
