@@ -19,7 +19,7 @@ namespace GameClient
         public static OverallPopulation population;
         public static float pollution;
         public static List<FactionDef> factions = new List<FactionDef>();
-        public static WorldData cachedWorldDetails;
+        public static WorldData cachedWorldData;
 
         public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
                                                                       orderby x.order, x.index
@@ -58,7 +58,7 @@ namespace GameClient
                 factions.Add(DefDatabase<FactionDef>.AllDefs.First(fetch => fetch.defName == str));
             }
 
-            cachedWorldDetails = worldData;
+            cachedWorldData = worldData;
         }
 
         public static void GeneratePatchedWorld()

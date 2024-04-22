@@ -133,10 +133,10 @@ namespace GameClient
         {
             ServerGlobalData serverGlobalData = (ServerGlobalData)Serializer.ConvertBytesToObject(packet.contents);
             ServerValues.SetServerParameters(serverGlobalData);
-            ServerValues.SetAccountDetails(serverGlobalData);
+            ServerValues.SetAccountData(serverGlobalData);
             PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
             EventManager.SetEventPrices(serverGlobalData);
-            SiteManager.SetSiteDetails(serverGlobalData);
+            SiteManager.SetSiteData(serverGlobalData);
             OfflineSpyManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
         }

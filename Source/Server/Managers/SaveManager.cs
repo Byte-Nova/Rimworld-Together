@@ -142,7 +142,7 @@ namespace GameServer
             }
         }
 
-        public static void DeletePlayerDetails(string username)
+        public static void DeletePlayerData(string username)
         {
             ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
             if (connectedUser != null) connectedUser.listener.disconnectFlag = true;
@@ -167,7 +167,7 @@ namespace GameServer
                 SettlementManager.RemoveSettlement(null, settlementData, false);
             }
 
-            Logger.WriteToConsole($"[Deleted player details] > {username}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Deleted player data] > {username}", Logger.LogMode.Warning);
         }
     }
 }

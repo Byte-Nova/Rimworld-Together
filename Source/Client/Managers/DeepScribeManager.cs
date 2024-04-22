@@ -20,9 +20,9 @@ namespace GameClient
 
             for (int i = 0; i < transferData.humanDatas.Count(); i++)
             {
-                HumanData humanDetails = (HumanData)Serializer.ConvertBytesToObject(transferData.humanDatas[i]);
+                HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(transferData.humanDatas[i]);
 
-                humans.Add(StringToHuman(humanDetails));
+                humans.Add(StringToHuman(humanData));
             }
 
             return humans.ToArray();
@@ -284,8 +284,8 @@ namespace GameClient
                 try
                 {
                     ThingWithComps weapon = pawn.equipment.Primary;
-                    ItemData weaponDetails = ThingScribeManager.ItemToString(weapon, weapon.stackCount);
-                    humanData.equippedWeapon = weaponDetails;
+                    ItemData itemData = ThingScribeManager.ItemToString(weapon, weapon.stackCount);
+                    humanData.equippedWeapon = itemData;
                 }
                 catch { Log.Warning($"Failed to get weapon from human {pawn.Label}"); }
             }
@@ -648,9 +648,9 @@ namespace GameClient
 
             for (int i = 0; i < transferData.animalDatas.Count(); i++)
             {
-                AnimalData animalDetails = (AnimalData)Serializer.ConvertBytesToObject(transferData.animalDatas[i]);
+                AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(transferData.animalDatas[i]);
 
-                animals.Add(StringToAnimal(animalDetails));
+                animals.Add(StringToAnimal(animalData));
             }
 
             return animals.ToArray();

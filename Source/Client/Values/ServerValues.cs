@@ -20,7 +20,7 @@ namespace GameClient
             AllowCustomScenarios = serverGlobalData.AllowCustomScenarios;
         }
 
-        public static void SetAccountDetails(ServerGlobalData serverGlobalData)
+        public static void SetAccountData(ServerGlobalData serverGlobalData)
         {
             isAdmin = serverGlobalData.isClientAdmin;
 

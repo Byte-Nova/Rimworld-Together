@@ -71,11 +71,11 @@ namespace GameClient
 
             private static void SetupQuickConnectVariables()
             {
-                string[] details = PreferenceManager.LoadConnectionDetails();
+                string[] details = PreferenceManager.LoadConnectionData();
                 Network.ip = details[0];
                 Network.port = details[1];
 
-                details = PreferenceManager.LoadLoginDetails();
+                details = PreferenceManager.LoadLoginData();
                 ClientValues.username = details[0];
             }
 
@@ -98,7 +98,7 @@ namespace GameClient
 
                         if (Network.isConnectedToServer)
                         {
-                            string[] details = PreferenceManager.LoadLoginDetails();
+                            string[] details = PreferenceManager.LoadLoginData();
                             LoginData loginData = new LoginData();
                             loginData.username = details[0];
                             loginData.password = Hasher.GetHashFromString(details[1]);

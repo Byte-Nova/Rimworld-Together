@@ -42,8 +42,8 @@ namespace GameServer
 
                 else
                 {
-                    MapFileData mapDetails = MapManager.GetUserMapFromTile(offlineVisitData.targetTile);
-                    offlineVisitData.mapData = Serializer.ConvertObjectToBytes(mapDetails);
+                    MapFileData mapData = MapManager.GetUserMapFromTile(offlineVisitData.targetTile);
+                    offlineVisitData.mapData = Serializer.ConvertObjectToBytes(mapData);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
                     client.listener.EnqueuePacket(packet);

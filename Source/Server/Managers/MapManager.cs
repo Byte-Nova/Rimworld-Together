@@ -26,7 +26,7 @@ namespace GameServer
 
         public static MapFileData[] GetAllMapFiles()
         {
-            List<MapFileData> mapDetails = new List<MapFileData>();
+            List<MapFileData> mapDatas = new List<MapFileData>();
 
             string[] maps = Directory.GetFiles(Master.mapsPath);
             foreach (string str in maps)
@@ -34,10 +34,10 @@ namespace GameServer
                 byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(str));
 
                 MapFileData newMap = (MapFileData)Serializer.ConvertBytesToObject(decompressedBytes);
-                mapDetails.Add(newMap);
+                mapDatas.Add(newMap);
             }
 
-            return mapDetails.ToArray();
+            return mapDatas.ToArray();
         }
 
         public static bool CheckIfMapExists(string mapTileToCheck)

@@ -39,10 +39,10 @@ namespace GameServer
 
         public static void SendWorkerInsidePacket(ServerClient client)
         {
-            SiteData siteDetails = new SiteData();
-            siteDetails.siteStep = ((int)CommonEnumerators.SiteStepMode.WorkerError).ToString();
+            SiteData siteData = new SiteData();
+            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.WorkerError).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetails);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(packet);
         }
     }

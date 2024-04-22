@@ -19,7 +19,7 @@ namespace GameClient
 
         public static ThingDef[] siteRewardDefNames;
 
-        public static void SetSiteDetails(ServerGlobalData serverGlobalData)
+        public static void SetSiteData(ServerGlobalData serverGlobalData)
         {
             siteRewardDefNames = new ThingDef[]
             {
@@ -60,8 +60,8 @@ namespace GameClient
                 };
             }
 
-            PersonalSiteManager.SetSiteDetails(serverGlobalData);
-            FactionSiteManager.SetSiteDetails(serverGlobalData);
+            PersonalSiteManager.SetSiteData(serverGlobalData);
+            FactionSiteManager.SetSiteData(serverGlobalData);
         }
 
         public static void SetSiteDefs()
@@ -317,7 +317,7 @@ namespace GameClient
     {
         public static int[] sitePrices;
 
-        public static void SetSiteDetails(ServerGlobalData serverGlobalData)
+        public static void SetSiteData(ServerGlobalData serverGlobalData)
         {
             try
             {
@@ -385,7 +385,7 @@ namespace GameClient
     {
         public static int[] sitePrices;
 
-        public static void SetSiteDetails(ServerGlobalData serverGlobalData)
+        public static void SetSiteData(ServerGlobalData serverGlobalData)
         {
             try
             {

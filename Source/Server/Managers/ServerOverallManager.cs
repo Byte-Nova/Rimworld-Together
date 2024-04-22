@@ -14,7 +14,7 @@ namespace GameServer
 
             globalData = GetEventCosts(globalData);
 
-            globalData = GetSiteDetails(globalData);
+            globalData = GetSiteData(globalData);
 
             globalData = GetServerDifficulty(globalData);
 
@@ -61,7 +61,7 @@ namespace GameServer
             return globalData;
         }
 
-        private static ServerGlobalData GetSiteDetails(ServerGlobalData globalData)
+        private static ServerGlobalData GetSiteData(ServerGlobalData globalData)
         {
             SiteValuesFile siteValues = Master.siteValues;
             globalData.PersonalFarmlandCost = siteValues.PersonalFarmlandCost;

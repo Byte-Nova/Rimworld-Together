@@ -10,9 +10,9 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            LoginData loginDetailsJSON = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginData = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(loginDetailsJSON.tryResponse))
+            switch(int.Parse(loginData.tryResponse))
             {
                 case (int)CommonEnumerators.LoginResponse.InvalidLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Login details are invalid! Please try again!"));
@@ -47,7 +47,7 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.WrongVersion:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginDetailsJSON.extraDetails[0]}"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginData.extraDetails[0]}"));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.NoWorld:

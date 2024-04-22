@@ -8,10 +8,10 @@ namespace Shared
     {
         public string manifestMode;
 
-        public string manifestDetails;
+        public string manifestData;
 
-        public List<string> manifestComplexDetails = new List<string>();
+        public List<string> manifestComplexData = new List<string>();
 
-        public List<string> manifestSecondaryComplexDetails = new List<string>();
+        public List<string> manifestSecondaryComplexData = new List<string>();
     }
 }
