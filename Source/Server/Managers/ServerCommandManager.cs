@@ -184,6 +184,10 @@
             "attempts to forward a given port if it is able to",
             ForwardPortCommandAction);
 
+        private static ServerCommand toggleCustomScenariosCommand = new ServerCommand("togglecustomscenarios", 0,
+            "enables/disables custom scenarios on the server",
+            ToggleCustomScenariosCommandAction);
+
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
             "Saves all player data and then closes the server",
             QuitCommandAction);
@@ -221,6 +225,7 @@
             enableDifficultyCommand,
             disableDifficultyCommand,
             forwardport,
+            toggleCustomScenariosCommand,
             quitCommand,
             forceQuitCommand
         };
@@ -696,6 +701,12 @@
             Network.TryToForwardPort();
         }
 
+        private static void ToggleCustomScenariosCommandAction()
+        {
+            Master.serverValues.AllowCustomScenarios = !Master.serverValues.AllowCustomScenarios;
+            Logger.WriteToConsole($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
+            Master.SaveServerValues(Master.serverValues);
+        }
         private static void QuitCommandAction()
         {
             Master.isClosing = true;
