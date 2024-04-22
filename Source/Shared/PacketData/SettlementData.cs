@@ -3,7 +3,7 @@
 namespace Shared
 {
     [Serializable]
-    public class SettlementDetailsJSON
+    public class SettlementData
     {
         public string settlementStepMode;
 
