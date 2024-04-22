@@ -168,7 +168,7 @@ namespace GameServer
         private static void ChatStopVisitCommandAction()
         {
             VisitData visitData = new VisitData();
-            visitData.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
+            visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Stop;
 
             OnlineVisitManager.SendVisitStop(targetClient, visitData);
         }

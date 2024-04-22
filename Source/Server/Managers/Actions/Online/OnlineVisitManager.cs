@@ -8,7 +8,7 @@ namespace GameServer
         {
             VisitData visitData = (VisitData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (visitDetailsJSON.visitStepMode)
+            switch (visitData.visitStepMode)
             {
                 case (int)CommonEnumerators.VisitStepMode.Request:
                     SendVisitRequest(client, visitData);
@@ -41,8 +41,8 @@ namespace GameServer
                 ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
-                    visitDetailsJSON.visitStepMode = (int)CommonEnumerators.VisitStepMode.Unavailable;
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
+                    visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Unavailable;
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -50,8 +50,8 @@ namespace GameServer
                 {
                     if (toGet.inVisitWith != null)
                     {
-                        visitDetailsJSON.visitStepMode = (int)CommonEnumerators.VisitStepMode.Unavailable;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
+                        visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Unavailable;
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                         client.listener.EnqueuePacket(packet);
                     }
 
@@ -104,8 +104,8 @@ namespace GameServer
         {
             if (client.inVisitWith == null)
             {
-                visitDetailsJSON.visitStepMode = (int)CommonEnumerators.VisitStepMode.Stop;
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitDetailsJSON);
+                visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Stop;
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                 client.listener.EnqueuePacket(packet);
             }
 

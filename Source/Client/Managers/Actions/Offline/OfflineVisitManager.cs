@@ -78,7 +78,7 @@ namespace GameClient
 
         private static void PrepareMapForOfflineVisit(MapData mapData)
         {
-            Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, true, true, true, true, false);
+            Map map = MapScribeManager.StringToMap(mapData, false, true, true, false);
 
             HandleMapFactions(map);
 
