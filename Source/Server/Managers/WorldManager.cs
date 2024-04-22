@@ -11,12 +11,12 @@ namespace GameServer
 
         public static void ParseWorldPacket(ServerClient client, Packet packet)
         {
-            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            WorldData worldData = (WorldData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(worldDetailsJSON.worldStepMode))
+            switch (int.Parse(worldData.worldStepMode))
             {
                 case (int)CommonEnumerators.WorldStepMode.Required:
-                    SaveWorldPrefab(client, worldDetailsJSON);
+                    SaveWorldPrefab(client, worldData);
                     break;
 
                 case (int)CommonEnumerators.WorldStepMode.Existing:
@@ -27,17 +27,17 @@ namespace GameServer
 
         public static bool CheckIfWorldExists() { return File.Exists(worldFilePath); }
 
-        public static void SaveWorldPrefab(ServerClient client, WorldDetailsJSON worldDetailsJSON)
+        public static void SaveWorldPrefab(ServerClient client, WorldData worldData)
         {
             WorldValuesFile worldValues = new WorldValuesFile();
-            worldValues.seedString = worldDetailsJSON.seedString;
-            worldValues.persistentRandomValue = worldDetailsJSON.persistentRandomValue;
-            worldValues.planetCoverage = worldDetailsJSON.planetCoverage;
-            worldValues.rainfall = worldDetailsJSON.rainfall;
-            worldValues.temperature = worldDetailsJSON.temperature;
-            worldValues.population = worldDetailsJSON.population;
-            worldValues.pollution = worldDetailsJSON.pollution;
-            worldValues.factions = worldDetailsJSON.factions;
+            worldValues.seedString = worldData.seedString;
+            worldValues.persistentRandomValue = worldData.persistentRandomValue;
+            worldValues.planetCoverage = worldData.planetCoverage;
+            worldValues.rainfall = worldData.rainfall;
+            worldValues.temperature = worldData.temperature;
+            worldValues.population = worldData.population;
+            worldValues.pollution = worldData.pollution;
+            worldValues.factions = worldData.factions;
 
             Master.worldValues = worldValues;
             Serializer.SerializeToFile(worldFilePath, worldValues);
@@ -46,10 +46,10 @@ namespace GameServer
 
         public static void RequireWorldFile(ServerClient client)
         {
-            WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-            worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
+            WorldData worldData = new WorldData();
+            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -57,19 +57,19 @@ namespace GameServer
         {
             WorldValuesFile worldValues = Master.worldValues;
 
-            WorldDetailsJSON worldDetailsJSON = new WorldDetailsJSON();
-            worldDetailsJSON.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
+            WorldData worldData = new WorldData();
+            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
 
-            worldDetailsJSON.seedString = worldValues.seedString;
-            worldDetailsJSON.persistentRandomValue = worldValues.persistentRandomValue;
-            worldDetailsJSON.planetCoverage = worldValues.planetCoverage;
-            worldDetailsJSON.rainfall = worldValues.rainfall;
-            worldDetailsJSON.temperature = worldValues.temperature;
-            worldDetailsJSON.population = worldValues.population;
-            worldDetailsJSON.pollution = worldValues.pollution;
-            worldDetailsJSON.factions = worldValues.factions;
+            worldData.seedString = worldValues.seedString;
+            worldData.persistentRandomValue = worldValues.persistentRandomValue;
+            worldData.planetCoverage = worldValues.planetCoverage;
+            worldData.rainfall = worldValues.rainfall;
+            worldData.temperature = worldValues.temperature;
+            worldData.population = worldValues.population;
+            worldData.pollution = worldValues.pollution;
+            worldData.factions = worldValues.factions;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
         }
 

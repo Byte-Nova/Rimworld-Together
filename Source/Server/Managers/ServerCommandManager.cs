@@ -231,7 +231,9 @@ namespace GameServer
             {"disabledifficulty", new Command("disabledifficulty", 0,
                 "Disables custom difficulty in the server",
                 DisableDifficultyCommandAction)},
-
+            {"togglecustomscenarios", new Command("togglecustomscenarios", 0
+                "enables/disables custom scenarios on the server",
+                ToggleCustomScenariosCommandAction) },
             {"quit", new Command("quit", 0,
                 "Saves all player details and then closes the server",
                 QuitCommandAction)},
@@ -677,7 +679,7 @@ namespace GameServer
             if (userFile == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.parsedParameters[0]}' was not found",
                 LogMode.Warning);
 
-            else SaveManager.DeletePlayerDetails(userFile.username);
+            else SaveManager.DeletePlayerData(userFile.username);
         }
 
         private static void EnableDifficultyCommandAction()
@@ -712,6 +714,12 @@ namespace GameServer
             }
         }
 
+        private static void ToggleCustomScenariosCommandAction()
+        {
+            Master.serverValues.AllowCustomScenarios = !Master.serverValues.AllowCustomScenarios;
+            Logger.WriteToConsole($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
+            Master.SaveServerValues(Master.serverValues);
+        }
         private static void QuitCommandAction()
         {
             Master.isClosing = true;
