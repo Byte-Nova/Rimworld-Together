@@ -6,12 +6,12 @@ namespace GameServer
     {
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
-            EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(eventDetailsJSON.eventStepMode))
+            switch (int.Parse(eventData.eventStepMode))
             {
                 case (int)CommonEnumerators.EventStepMode.Send:
-                    SendEvent(client, eventDetailsJSON);
+                    SendEvent(client, eventData);
                     break;
 
                 case (int)CommonEnumerators.EventStepMode.Receive:
@@ -24,16 +24,16 @@ namespace GameServer
             }
         }
 
-        public static void SendEvent(ServerClient client, EventDetailsJSON eventDetailsJSON)
+        public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventDetailsJSON.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send an event to settlement at tile {eventDetailsJSON.toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send an event to settlement at tile {eventData.toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventDetailsJSON.toTile);
+                SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
-                    eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
+                    eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -42,8 +42,8 @@ namespace GameServer
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
                     if (target.inSafeZone)
                     {
-                        eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
+                        eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
 
@@ -51,11 +51,11 @@ namespace GameServer
                     {
                         target.inSafeZone = true;
 
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
 
-                        eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
+                        eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
+                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         target.listener.EnqueuePacket(rPacket);
                     }
                 }
