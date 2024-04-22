@@ -48,6 +48,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Assemblies\Mono.Nat.dll" />
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
   </ItemGroup>
 </Project>
