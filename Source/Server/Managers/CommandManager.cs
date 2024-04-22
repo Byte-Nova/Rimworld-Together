@@ -6,9 +6,9 @@ namespace GameServer
     {
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            CommandData commandData = (CommandData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(commandDetailsJSON.commandType))
+            switch (int.Parse(commandData.commandType))
             {
                 case (int)CommonEnumerators.CommandType.Op:
                     //Do nothing
@@ -26,40 +26,40 @@ namespace GameServer
 
         public static void SendOpCommand(ServerClient client)
         {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Op).ToString();
+            CommandData commandData = new CommandData();
+            commandData.commandType = ((int)CommonEnumerators.CommandType.Op).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendDeOpCommand(ServerClient client)
         {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Deop).ToString();
+            CommandData commandData = new CommandData();
+            commandData.commandType = ((int)CommonEnumerators.CommandType.Deop).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
 
         }
 
         public static void SendEventCommand(ServerClient client, int eventID)
         {
-            EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
-            eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
-            eventDetailsJSON.eventID = eventID.ToString();
+            EventData eventData = new EventData();
+            eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
+            eventData.eventID = eventID.ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendBroadcastCommand(string str)
         {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Broadcast).ToString();
-            commandDetailsJSON.commandDetails = str;
+            CommandData commandData = new CommandData();
+            commandData.commandType = ((int)CommonEnumerators.CommandType.Broadcast).ToString();
+            commandData.commandDetails = str;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
                 client.listener.EnqueuePacket(packet);
@@ -68,11 +68,11 @@ namespace GameServer
 
         public static void SendForceSaveCommand(ServerClient client)
         {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
-            commandDetailsJSON.disconnectPlayer = false;
+            CommandData commandData = new CommandData();
+            commandData.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
+            commandData.disconnectPlayer = false;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
         }
     }

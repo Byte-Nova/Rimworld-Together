@@ -16,12 +16,12 @@ namespace GameClient
 
         public static void ParseRaidPacket(Packet packet)
         {
-            RaidDetailsJSON raidDetailsJSON = (RaidDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            RaidData raidData = (RaidData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(raidDetailsJSON.raidStepMode))
+            switch (int.Parse(raidData.raidStepMode))
             {
                 case (int)CommonEnumerators.RaidStepMode.Request:
-                    OnRaidAccept(raidDetailsJSON);
+                    OnRaidAccept(raidData);
                     break;
 
                 case (int)CommonEnumerators.RaidStepMode.Deny:
@@ -36,26 +36,26 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
-            RaidDetailsJSON raidDetailsJSON = new RaidDetailsJSON();
-            raidDetailsJSON.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
-            raidDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+            RaidData raidData = new RaidData();
+            raidData.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
+            raidData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
             Network.listener.EnqueuePacket(packet);
         }
 
         //Executes when raid request is accepted
 
-        private static void OnRaidAccept(RaidDetailsJSON raidDetailsJSON)
+        private static void OnRaidAccept(RaidData raidData)
         {
             DialogManager.PopWaitDialog();
 
-            MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(raidDetailsJSON.mapDetails);
-            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
+            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(raidData.mapData);
+            MapData mapData = (MapData)Serializer.ConvertBytesToObject(mapFileData.mapData);
 
-            Action r1 = delegate { PrepareMapForRaid(mapDetailsJSON); };
+            Action r1 = delegate { PrepareMapForRaid(mapData); };
 
-            if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
+            if (ModManager.CheckIfMapHasConflictingMods(mapData))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
@@ -75,9 +75,9 @@ namespace GameClient
 
         //Prepares a map for the raid order from a request
 
-        private static void PrepareMapForRaid(MapDetailsJSON mapDetailsJSON)
+        private static void PrepareMapForRaid(MapData mapData)
         {
-            Map map = MapScribeManager.StringToMap(mapDetailsJSON, true, true, true, true);
+            Map map = MapScribeManager.StringToMap(mapData, true, true, true, true);
 
             HandleMapFactions(map);
 

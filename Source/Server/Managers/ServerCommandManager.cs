@@ -185,11 +185,11 @@
             DisableDifficultyCommandAction);
 
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
-            "Saves all player details and then closes the server",
+            "Saves all player data and then closes the server",
             QuitCommandAction);
 
         private static ServerCommand forceQuitCommand = new ServerCommand("forcequit", 0,
-            "Closes the server without saving player details",
+            "Closes the server without saving player data",
             ForceQuitCommandAction);
 
         public static ServerCommand[] serverCommands = new ServerCommand[]
@@ -674,7 +674,7 @@
             if (userFile == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
-            else SaveManager.DeletePlayerDetails(userFile.username);
+            else SaveManager.DeletePlayerData(userFile.username);
         }
 
         private static void EnableDifficultyCommandAction()
