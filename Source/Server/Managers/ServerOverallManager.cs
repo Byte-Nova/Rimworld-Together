@@ -6,155 +6,155 @@ namespace GameServer
     {
         public static void SendServerOveralls(ServerClient client)
         {
-            ServerGlobalData so = new ServerGlobalData();
+            ServerGlobalData globalData = new ServerGlobalData();
 
-            so = GetServerValues(so);
+            globalData = GetServerValues(globalData);
 
-            so = GetClientValues(client, so);
+            globalData = GetClientValues(client, globalData);
 
-            so = GetEventCosts(so);
+            globalData = GetEventCosts(globalData);
 
-            so = GetSiteDetails(so);
+            globalData = GetSiteDetails(globalData);
 
-            so = GetServerDifficulty(so);
+            globalData = GetServerDifficulty(globalData);
 
-            so = GetServerSettlements(client, so);
+            globalData = GetServerSettlements(client, globalData);
 
-            so = GetServerSites(client, so);
+            globalData = GetServerSites(client, globalData);
 
-            so = GetActionsCost(client, so);
+            globalData = GetActionsCost(client, globalData);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), so);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), globalData);
             client.listener.EnqueuePacket(packet);
         }
 
-        private static ServerGlobalData GetServerValues(ServerGlobalData so)
+        private static ServerGlobalData GetServerValues(ServerGlobalData globalData)
         {
             ServerValuesFile svf = Master.serverValues;
-            so.AllowCustomScenarios = svf.AllowCustomScenarios;
+            globalData.AllowCustomScenarios = svf.AllowCustomScenarios;
 
-            return so;
+            return globalData;
         }
 
-        private static ServerGlobalData GetClientValues(ServerClient client, ServerGlobalData so)
+        private static ServerGlobalData GetClientValues(ServerClient client, ServerGlobalData globalData)
         {
-            so.isClientAdmin = client.isAdmin;
+            globalData.isClientAdmin = client.isAdmin;
 
-            so.isClientFactionMember = client.hasFaction;
+            globalData.isClientFactionMember = client.hasFaction;
 
-            return so;
+            return globalData;
         }
 
-        private static ServerGlobalData GetEventCosts(ServerGlobalData so)
+        private static ServerGlobalData GetEventCosts(ServerGlobalData globalData)
         {
-            EventValuesFile ev = Master.eventValues;
-            so.RaidCost = ev.RaidCost;
-            so.InfestationCost = ev.InfestationCost;
-            so.MechClusterCost = ev.MechClusterCost;
-            so.ToxicFalloutCost = ev.ToxicFalloutCost;
-            so.ManhunterCost = ev.ManhunterCost;
-            so.WandererCost = ev.WandererCost;
-            so.FarmAnimalsCost = ev.FarmAnimalsCost;
-            so.ShipChunkCost = ev.ShipChunkCost;
-            so.TraderCaravanCost = ev.TraderCaravanCost;
+            EventValuesFile eventValues = Master.eventValues;
+            globalData.RaidCost = eventValues.RaidCost;
+            globalData.InfestationCost = eventValues.InfestationCost;
+            globalData.MechClusterCost = eventValues.MechClusterCost;
+            globalData.ToxicFalloutCost = eventValues.ToxicFalloutCost;
+            globalData.ManhunterCost = eventValues.ManhunterCost;
+            globalData.WandererCost = eventValues.WandererCost;
+            globalData.FarmAnimalsCost = eventValues.FarmAnimalsCost;
+            globalData.ShipChunkCost = eventValues.ShipChunkCost;
+            globalData.TraderCaravanCost = eventValues.TraderCaravanCost;
 
-            return so;
+            return globalData;
         }
 
-        private static ServerGlobalData GetSiteDetails(ServerGlobalData so)
+        private static ServerGlobalData GetSiteDetails(ServerGlobalData globalData)
         {
-            SiteValuesFile sv = Master.siteValues;
-            so.PersonalFarmlandCost = sv.PersonalFarmlandCost;
-            so.FactionFarmlandCost = sv.FactionFarmlandCost;
-            so.FarmlandRewardCount = sv.FarmlandRewardCount;
+            SiteValuesFile siteValues = Master.siteValues;
+            globalData.PersonalFarmlandCost = siteValues.PersonalFarmlandCost;
+            globalData.FactionFarmlandCost = siteValues.FactionFarmlandCost;
+            globalData.FarmlandRewardCount = siteValues.FarmlandRewardCount;
 
-            so.PersonalQuarryCost = sv.PersonalQuarryCost;
-            so.FactionQuarryCost = sv.FactionQuarryCost;
-            so.QuarryRewardCount = sv.QuarryRewardCount;
+            globalData.PersonalQuarryCost = siteValues.PersonalQuarryCost;
+            globalData.FactionQuarryCost = siteValues.FactionQuarryCost;
+            globalData.QuarryRewardCount = siteValues.QuarryRewardCount;
 
-            so.PersonalSawmillCost = sv.PersonalSawmillCost;
-            so.FactionSawmillCost = sv.FactionSawmillCost;
-            so.SawmillRewardCount = sv.SawmillRewardCount;
+            globalData.PersonalSawmillCost = siteValues.PersonalSawmillCost;
+            globalData.FactionSawmillCost = siteValues.FactionSawmillCost;
+            globalData.SawmillRewardCount = siteValues.SawmillRewardCount;
 
-            so.PersonalBankCost = sv.PersonalBankCost;
-            so.FactionBankCost = sv.FactionBankCost;
-            so.BankRewardCount = sv.BankRewardCount;
+            globalData.PersonalBankCost = siteValues.PersonalBankCost;
+            globalData.FactionBankCost = siteValues.FactionBankCost;
+            globalData.BankRewardCount = siteValues.BankRewardCount;
 
-            so.PersonalLaboratoryCost = sv.PersonalLaboratoryCost;
-            so.FactionLaboratoryCost = sv.FactionLaboratoryCost;
-            so.LaboratoryRewardCount = sv.LaboratoryRewardCount;
+            globalData.PersonalLaboratoryCost = siteValues.PersonalLaboratoryCost;
+            globalData.FactionLaboratoryCost = siteValues.FactionLaboratoryCost;
+            globalData.LaboratoryRewardCount = siteValues.LaboratoryRewardCount;
 
-            so.PersonalRefineryCost = sv.PersonalRefineryCost;
-            so.FactionRefineryCost = sv.FactionRefineryCost;
-            so.RefineryRewardCount = sv.RefineryRewardCount;
+            globalData.PersonalRefineryCost = siteValues.PersonalRefineryCost;
+            globalData.FactionRefineryCost = siteValues.FactionRefineryCost;
+            globalData.RefineryRewardCount = siteValues.RefineryRewardCount;
 
-            so.PersonalHerbalWorkshopCost = sv.PersonalHerbalWorkshopCost;
-            so.FactionHerbalWorkshopCost = sv.FactionHerbalWorkshopCost;
-            so.HerbalWorkshopRewardCount = sv.HerbalWorkshopRewardCount;
+            globalData.PersonalHerbalWorkshopCost = siteValues.PersonalHerbalWorkshopCost;
+            globalData.FactionHerbalWorkshopCost = siteValues.FactionHerbalWorkshopCost;
+            globalData.HerbalWorkshopRewardCount = siteValues.HerbalWorkshopRewardCount;
 
-            so.PersonalTextileFactoryCost = sv.PersonalTextileFactoryCost;
-            so.FactionTextileFactoryCost = sv.FactionTextileFactoryCost;
-            so.TextileFactoryRewardCount = sv.TextileFactoryRewardCount;
+            globalData.PersonalTextileFactoryCost = siteValues.PersonalTextileFactoryCost;
+            globalData.FactionTextileFactoryCost = siteValues.FactionTextileFactoryCost;
+            globalData.TextileFactoryRewardCount = siteValues.TextileFactoryRewardCount;
 
-            so.PersonalFoodProcessorCost = sv.PersonalFoodProcessorCost;
-            so.FactionFoodProcessorCost = sv.FactionFoodProcessorCost;
-            so.FoodProcessorRewardCount = sv.FoodProcessorRewardCount;
+            globalData.PersonalFoodProcessorCost = siteValues.PersonalFoodProcessorCost;
+            globalData.FactionFoodProcessorCost = siteValues.FactionFoodProcessorCost;
+            globalData.FoodProcessorRewardCount = siteValues.FoodProcessorRewardCount;
 
-            return so;
+            return globalData;
         }
 
-        private static ServerGlobalData GetServerDifficulty(ServerGlobalData so)
+        private static ServerGlobalData GetServerDifficulty(ServerGlobalData globalData)
         {
-            DifficultyValuesFile dv = Master.difficultyValues;
-            so.UsingCustomDifficulty = dv.UseCustomDifficulty;
-            so.ThreatScale = dv.ThreatScale;
-            so.ThreatScale = dv.ThreatScale;
-            so.AllowBigThreats = dv.AllowBigThreats;
-            so.AllowViolentQuests = dv.AllowViolentQuests;
-            so.AllowIntroThreats = dv.AllowIntroThreats;
-            so.PredatorsHuntHumanlikes = dv.PredatorsHuntHumanlikes;
-            so.AllowExtremeWeatherIncidents = dv.AllowExtremeWeatherIncidents;
-            so.CropYieldFactor = dv.CropYieldFactor;
-            so.MineYieldFactor = dv.MineYieldFactor;
-            so.ButcherYieldFactor = dv.ButcherYieldFactor;
-            so.ResearchSpeedFactor = dv.ResearchSpeedFactor;
-            so.QuestRewardValueFactor = dv.QuestRewardValueFactor;
-            so.RaidLootPointsFactor = dv.RaidLootPointsFactor;
-            so.TradePriceFactorLoss = dv.TradePriceFactorLoss;
-            so.MaintenanceCostFactor = dv.MaintenanceCostFactor;
-            so.ScariaRotChance = dv.ScariaRotChance;
-            so.EnemyDeathOnDownedChanceFactor = dv.EnemyDeathOnDownedChanceFactor;
-            so.ColonistMoodOffset = dv.ColonistMoodOffset;
-            so.FoodPoisonChanceFactor = dv.FoodPoisonChanceFactor;
-            so.ManhunterChanceOnDamageFactor = dv.ManhunterChanceOnDamageFactor;
-            so.PlayerPawnInfectionChanceFactor = dv.PlayerPawnInfectionChanceFactor;
-            so.DiseaseIntervalFactor = dv.DiseaseIntervalFactor;
-            so.EnemyReproductionRateFactor = dv.EnemyReproductionRateFactor;
-            so.DeepDrillInfestationChanceFactor = dv.DeepDrillInfestationChanceFactor;
-            so.FriendlyFireChanceFactor = dv.FriendlyFireChanceFactor;
-            so.AllowInstantKillChance = dv.AllowInstantKillChance;
-            so.PeacefulTemples = dv.PeacefulTemples;
-            so.AllowCaveHives = dv.AllowCaveHives;
-            so.UnwaveringPrisoners = dv.UnwaveringPrisoners;
-            so.AllowTraps = dv.AllowTraps;
-            so.AllowTurrets = dv.AllowTurrets;
-            so.AllowMortars = dv.AllowMortars;
-            so.ClassicMortars = dv.ClassicMortars;
-            so.AdaptationEffectFactor = dv.AdaptationEffectFactor;
-            so.AdaptationGrowthRateFactorOverZero = dv.AdaptationGrowthRateFactorOverZero;
-            so.FixedWealthMode = dv.FixedWealthMode;
-            so.LowPopConversionBoost = dv.LowPopConversionBoost;
-            so.NoBabiesOrChildren = dv.NoBabiesOrChildren;
-            so.BabiesAreHealthy = dv.BabiesAreHealthy;
-            so.ChildRaidersAllowed = dv.ChildRaidersAllowed;
-            so.ChildAgingRate = dv.ChildAgingRate;
-            so.AdultAgingRate = dv.AdultAgingRate;
-            so.WastepackInfestationChanceFactor = dv.WastepackInfestationChanceFactor;
+            DifficultyValuesFile difficultyValues = Master.difficultyValues;
+            globalData.UsingCustomDifficulty = difficultyValues.UseCustomDifficulty;
+            globalData.ThreatScale = difficultyValues.ThreatScale;
+            globalData.ThreatScale = difficultyValues.ThreatScale;
+            globalData.AllowBigThreats = difficultyValues.AllowBigThreats;
+            globalData.AllowViolentQuests = difficultyValues.AllowViolentQuests;
+            globalData.AllowIntroThreats = difficultyValues.AllowIntroThreats;
+            globalData.PredatorsHuntHumanlikes = difficultyValues.PredatorsHuntHumanlikes;
+            globalData.AllowExtremeWeatherIncidents = difficultyValues.AllowExtremeWeatherIncidents;
+            globalData.CropYieldFactor = difficultyValues.CropYieldFactor;
+            globalData.MineYieldFactor = difficultyValues.MineYieldFactor;
+            globalData.ButcherYieldFactor = difficultyValues.ButcherYieldFactor;
+            globalData.ResearchSpeedFactor = difficultyValues.ResearchSpeedFactor;
+            globalData.QuestRewardValueFactor = difficultyValues.QuestRewardValueFactor;
+            globalData.RaidLootPointsFactor = difficultyValues.RaidLootPointsFactor;
+            globalData.TradePriceFactorLoss = difficultyValues.TradePriceFactorLoss;
+            globalData.MaintenanceCostFactor = difficultyValues.MaintenanceCostFactor;
+            globalData.ScariaRotChance = difficultyValues.ScariaRotChance;
+            globalData.EnemyDeathOnDownedChanceFactor = difficultyValues.EnemyDeathOnDownedChanceFactor;
+            globalData.ColonistMoodOffset = difficultyValues.ColonistMoodOffset;
+            globalData.FoodPoisonChanceFactor = difficultyValues.FoodPoisonChanceFactor;
+            globalData.ManhunterChanceOnDamageFactor = difficultyValues.ManhunterChanceOnDamageFactor;
+            globalData.PlayerPawnInfectionChanceFactor = difficultyValues.PlayerPawnInfectionChanceFactor;
+            globalData.DiseaseIntervalFactor = difficultyValues.DiseaseIntervalFactor;
+            globalData.EnemyReproductionRateFactor = difficultyValues.EnemyReproductionRateFactor;
+            globalData.DeepDrillInfestationChanceFactor = difficultyValues.DeepDrillInfestationChanceFactor;
+            globalData.FriendlyFireChanceFactor = difficultyValues.FriendlyFireChanceFactor;
+            globalData.AllowInstantKillChance = difficultyValues.AllowInstantKillChance;
+            globalData.PeacefulTemples = difficultyValues.PeacefulTemples;
+            globalData.AllowCaveHives = difficultyValues.AllowCaveHives;
+            globalData.UnwaveringPrisoners = difficultyValues.UnwaveringPrisoners;
+            globalData.AllowTraps = difficultyValues.AllowTraps;
+            globalData.AllowTurrets = difficultyValues.AllowTurrets;
+            globalData.AllowMortars = difficultyValues.AllowMortars;
+            globalData.ClassicMortars = difficultyValues.ClassicMortars;
+            globalData.AdaptationEffectFactor = difficultyValues.AdaptationEffectFactor;
+            globalData.AdaptationGrowthRateFactorOverZero = difficultyValues.AdaptationGrowthRateFactorOverZero;
+            globalData.FixedWealthMode = difficultyValues.FixedWealthMode;
+            globalData.LowPopConversionBoost = difficultyValues.LowPopConversionBoost;
+            globalData.NoBabiesOrChildren = difficultyValues.NoBabiesOrChildren;
+            globalData.BabiesAreHealthy = difficultyValues.BabiesAreHealthy;
+            globalData.ChildRaidersAllowed = difficultyValues.ChildRaidersAllowed;
+            globalData.ChildAgingRate = difficultyValues.ChildAgingRate;
+            globalData.AdultAgingRate = difficultyValues.AdultAgingRate;
+            globalData.WastepackInfestationChanceFactor = difficultyValues.WastepackInfestationChanceFactor;
 
-            return so;
+            return globalData;
         }
 
-        private static ServerGlobalData GetServerSettlements(ServerClient client, ServerGlobalData so)
+        private static ServerGlobalData GetServerSettlements(ServerClient client, ServerGlobalData globalData)
         {
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
@@ -162,37 +162,37 @@ namespace GameServer
                 if (settlement.owner == client.username) continue;
                 else
                 {
-                    so.settlementTiles.Add(settlement.tile);
-                    so.settlementOwners.Add(settlement.owner);
-                    so.settlementGoodwills.Add(GoodwillManager.GetSettlementGoodwill(client, settlement).ToString());
+                    globalData.settlementTiles.Add(settlement.tile);
+                    globalData.settlementOwners.Add(settlement.owner);
+                    globalData.settlementGoodwills.Add(GoodwillManager.GetSettlementGoodwill(client, settlement).ToString());
                 }
             }
 
-            return so;
+            return globalData;
         }
 
-        private static ServerGlobalData GetServerSites(ServerClient client, ServerGlobalData so)
+        private static ServerGlobalData GetServerSites(ServerClient client, ServerGlobalData globalData)
         {
             SiteFile[] sites = SiteManager.GetAllSites();
             foreach (SiteFile site in sites)
             {
-                so.siteTiles.Add(site.tile);
-                so.siteOwners.Add(site.owner);
-                so.siteGoodwills.Add(GoodwillManager.GetSiteGoodwill(client, site).ToString());
-                so.siteTypes.Add(site.type);
-                so.isFromFactions.Add(site.isFromFaction);
+                globalData.siteTiles.Add(site.tile);
+                globalData.siteOwners.Add(site.owner);
+                globalData.siteGoodwills.Add(GoodwillManager.GetSiteGoodwill(client, site).ToString());
+                globalData.siteTypes.Add(site.type);
+                globalData.isFromFactions.Add(site.isFromFaction);
             }
 
-            return so;
+            return globalData;
         }
 
-        private static ServerGlobalData GetActionsCost(ServerClient client, ServerGlobalData so)
+        private static ServerGlobalData GetActionsCost(ServerClient client, ServerGlobalData globalData)
         {
-            ActionValuesFile av = Master.actionValues;
+            ActionValuesFile actionValues = Master.actionValues;
 
-            so.SpyCost = av.SpyCost;
+            globalData.SpyCost = actionValues.SpyCost;
 
-            return so;
+            return globalData;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace GameServer
             
             for(int i = 0; i < chatData.messages.Count(); i++)
             {
-                if (chatData.messages[i].StartsWith("/")) ExecuteChatCommand(client, chatMessagesJSON.messages[i]);
+                if (chatData.messages[i].StartsWith("/")) ExecuteChatCommand(client, chatData.messages[i]);
                 else BroadcastChatMessage(client, chatData.messages[i]);
             }
         }
