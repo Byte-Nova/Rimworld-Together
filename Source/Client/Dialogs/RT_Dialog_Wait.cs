@@ -59,12 +59,5 @@ namespace GameClient
             if (actionToWaitOn != null) actionToWaitOn.Invoke();
         }
 
-        private void AllowCloseDialog()
-        {
-            if (!ServerValues.isAdmin) return;
-
-            if (HugsLibUtility.ShiftIsHeld) closeOnCancel = true;
-            else closeOnCancel = false;
-        }
     }
 }

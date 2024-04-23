@@ -118,7 +118,7 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for transfer response"));
 
-            Logger.WriteToConsole($"{ClientValues.outgoingManifest.itemDetailsJSONS.Count()} Being transfered", LogMode.Message);
+            Logger.WriteToConsole($"{ClientValues.outgoingManifest.itemDatas.Count()} Being transfered", LogMode.Message);
 
             if (transferLocation == TransferLocation.Caravan)
             {

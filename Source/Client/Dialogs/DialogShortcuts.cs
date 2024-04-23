@@ -90,7 +90,7 @@ namespace GameClient
                 delegate {
                     DialogManager.PushNewDialog(a2);
                     string[] loginData = PreferenceManager.LoadConnectionData();
-                    DialogManager.currentDialogInputs.SubstituteInputs(new() { loginDetails[0], loginDetails[1] });
+                    DialogManager.currentDialogInputs.SubstituteInputs(new() { loginData[0], loginData[1] });
                 }, null);
 
             DialogManager.PushNewDialog(newDialog);
@@ -196,7 +196,7 @@ namespace GameClient
                 loginData.clientVersion = CommonValues.executableVersion;
                 loginData.runningMods = ModManager.GetRunningModList().ToList();
 
-                ChatManager.username = loginData.username;
+                ClientValues.username = loginData.username;
                 PreferenceManager.SaveLoginData((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), loginData);
