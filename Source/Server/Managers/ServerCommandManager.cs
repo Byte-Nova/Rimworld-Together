@@ -726,7 +726,7 @@
                 if (response == "NO") { Logger.WriteToConsole("you can use the command 'portforward' in the future to portforward the server", Logger.LogMode.Warning); return; }
                 if (response != "YES")
                 {
-                    Logger.WriteToConsole("The response you have entered is not a valid option. please make sure your response it capitalized",Logger.LogMode.Error);
+                    Logger.WriteToConsole("The response you have entered is not a valid option. please make sure your response is capitalized",Logger.LogMode.Error);
                     goto portforwardQuestion;
                 }
 
