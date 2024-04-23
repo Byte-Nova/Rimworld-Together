@@ -11,9 +11,9 @@ namespace GameClient
 
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            CommandData commandData = (CommandData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(commandDetailsJSON.commandType))
+            switch(int.Parse(commandData.commandType))
             {
                 case (int)CommonEnumerators.CommandType.Op:
                     OnOpCommand();
@@ -24,7 +24,7 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.CommandType.Broadcast:
-                    OnBroadcastCommand(commandDetailsJSON);
+                    OnBroadcastCommand(commandData);
                     break;
 
                 case (int)CommonEnumerators.CommandType.ForceSave:
@@ -49,9 +49,9 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "You are no longer an admin!"));
         }
 
-        private static void OnBroadcastCommand(CommandDetailsJSON commandDetailsJSON)
+        private static void OnBroadcastCommand(CommandData commandData)
         {
-            RimworldManager.GenerateLetter("Server Broadcast", commandDetailsJSON.commandDetails, LetterDefOf.PositiveEvent);
+            RimworldManager.GenerateLetter("Server Broadcast", commandData.commandDetails, LetterDefOf.PositiveEvent);
         }
 
         private static void OnForceSaveCommand()

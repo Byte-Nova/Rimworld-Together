@@ -107,9 +107,10 @@ namespace GameClient
             ServerValues.SetServerPlayers(packet);
         }
 
-        public static void LikelihoodPacket(Packet packet)
+        public static void GoodwillPacket(Packet packet)
         {
-            LikelihoodManager.ChangeStructureLikelihood(packet);
+            DialogManager.PopDialog();
+            GoodwillManager.ChangeStructureGoodwill(packet);
         }
 
         public static void EventPacket(Packet packet)
@@ -131,14 +132,14 @@ namespace GameClient
 
         public static void ServerValuesPacket(Packet packet)
         {
-            ServerOverallJSON serverOverallJSON = (ServerOverallJSON)Serializer.ConvertBytesToObject(packet.contents);
-            ServerValues.SetServerParameters(serverOverallJSON);
-            ServerValues.SetAccountDetails(serverOverallJSON);
-            PlanetManagerHelper.SetWorldFeatures(serverOverallJSON);
-            EventManager.SetEventPrices(serverOverallJSON);
-            SiteManager.SetSiteDetails(serverOverallJSON);
-            OfflineSpyManager.SetSpyCost(serverOverallJSON);
-            CustomDifficultyManager.SetCustomDifficulty(serverOverallJSON);
+            ServerGlobalData serverGlobalData = (ServerGlobalData)Serializer.ConvertBytesToObject(packet.contents);
+            ServerValues.SetServerParameters(serverGlobalData);
+            ServerValues.SetAccountData(serverGlobalData);
+            PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
+            EventManager.SetEventPrices(serverGlobalData);
+            SiteManager.SetSiteData(serverGlobalData);
+            OfflineSpyManager.SetSpyCost(serverGlobalData);
+            CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
         }
 
         //Empty functions

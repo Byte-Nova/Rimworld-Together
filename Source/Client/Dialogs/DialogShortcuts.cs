@@ -38,7 +38,7 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    string[] loginDetails = PreferenceManager.LoadLoginDetails();
+                    string[] loginDetails = PreferenceManager.LoadLoginData();
                     DialogManager.currentDialogInputs.SubstituteInputs(new(){ loginDetails[0], loginDetails[1] });
                 },
                 delegate { DialogManager.clearStack(); Network.listener.disconnectFlag = true; });
@@ -89,7 +89,7 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    string[] loginDetails = PreferenceManager.LoadConnectionDetails();
+                    string[] loginData = PreferenceManager.LoadConnectionData();
                     DialogManager.currentDialogInputs.SubstituteInputs(new() { loginDetails[0], loginDetails[1] });
                 }, null);
 
@@ -125,14 +125,14 @@ namespace GameClient
                 {
                     Network.ip = answerSplit[0];
                     Network.port = answerSplit[1];
-                    PreferenceManager.SaveConnectionDetails(answerSplit[0], answerSplit[1]);
+                    PreferenceManager.SaveConnectionData(answerSplit[0], answerSplit[1]);
                 }
 
                 else
                 {
                     Network.ip = ((string)DialogManager.inputCache[0]);
                     Network.port = ((string)DialogManager.inputCache[1]);
-                    PreferenceManager.SaveConnectionDetails(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[1]));
+                    PreferenceManager.SaveConnectionData(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[1]));
                 }
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
@@ -155,16 +155,16 @@ namespace GameClient
 
             if (isValid)
             {
-                JoinDetailsJSON loginDetails = new JoinDetailsJSON();
-                loginDetails.username = (string)DialogManager.inputCache[0];
-                loginDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
-                loginDetails.clientVersion = CommonValues.executableVersion;
-                loginDetails.runningMods = ModManager.GetRunningModList().ToList();
+                LoginData loginData = new LoginData();
+                loginData.username = (string)DialogManager.inputCache[0];
+                loginData.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
+                loginData.clientVersion = CommonValues.executableVersion;
+                loginData.runningMods = ModManager.GetRunningModList().ToList();
 
-                ChatManager.username = loginDetails.username;
-                PreferenceManager.SaveLoginDetails(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[1]));
+                ClientValues.username = loginData.username;
+                PreferenceManager.SaveLoginData(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[1]));
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
@@ -190,16 +190,16 @@ namespace GameClient
 
             if (isValid)
             {
-                JoinDetailsJSON registerDetails = new JoinDetailsJSON();
-                registerDetails.username = (string)DialogManager.inputCache[0];
-                registerDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
-                registerDetails.clientVersion = CommonValues.executableVersion;
-                registerDetails.runningMods = ModManager.GetRunningModList().ToList();
+                LoginData loginData = new LoginData();
+                loginData.username = (string)DialogManager.inputCache[0];
+                loginData.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
+                loginData.clientVersion = CommonValues.executableVersion;
+                loginData.runningMods = ModManager.GetRunningModList().ToList();
 
-                ChatManager.username = registerDetails.username;
-                PreferenceManager.SaveLoginDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
+                ChatManager.username = loginData.username;
+                PreferenceManager.SaveLoginData((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), loginData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));

@@ -12,7 +12,7 @@ namespace GameClient
 {
     public class ModStuff : Mod
     {
-        ModConfigs modConfigs;
+        private readonly ModConfigs modConfigs;
 
         public ModStuff(ModContentPack content) : base(content)
         {
@@ -30,8 +30,8 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.transferBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.siteRewardsBool, "Automatically site rewards");
+            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
+            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.rejectSiteRewardsBool, "Automatically site rewards");
             listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref modConfigs.muteChatSoundBool, "Mute chat messages");
             if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s"))
             {
@@ -41,7 +41,7 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("Compatibility");
-            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertMenu(); }
+            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertFloatMenu(); }
             if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
             if (listingStandard.ButtonTextLabeled("[When Playing] Get server world file", "Get")) { GenerateWorldFile(); }
             if (listingStandard.ButtonTextLabeled("Open server worlds folder", "Open")) StartProcess(Master.worldSavesFolderPath);
@@ -90,7 +90,7 @@ namespace GameClient
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private void ShowConvertMenu()
+        private void ShowConvertFloatMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 

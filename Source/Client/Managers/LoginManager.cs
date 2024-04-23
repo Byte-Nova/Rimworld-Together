@@ -12,13 +12,13 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            JoinDetailsJSON loginDetailsJSON = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginData = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
 
             Action stopAndClear = delegate{
                 Network.listener.disconnectFlag = true;
                 DialogManager.clearStack();};
 
-            switch(int.Parse(loginDetailsJSON.tryResponse))
+            switch(int.Parse(loginData.tryResponse))
             {
                 case (int)CommonEnumerators.LoginResponse.InvalidLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Login details are invalid! Please try again!", stopAndClear));
@@ -54,7 +54,7 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.WrongVersion:
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", $"Mod version mismatch! Expected version {loginDetailsJSON.extraDetails[0]}", stopAndClear));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", $"Mod version mismatch! Expected version {loginData.extraDetails[0]}", stopAndClear));
                     break;
 
                 case (int)CommonEnumerators.LoginResponse.NoWorld:
