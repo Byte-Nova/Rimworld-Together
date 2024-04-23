@@ -28,8 +28,12 @@ namespace GameServer
         {
 
             NatUtility.StartDiscovery();
-            Thread.Sleep(5000);
-            NatUtility.StopDiscovery();
+
+            for(int i = 0; i < 20; i++)
+            {
+                Thread.Sleep(250);
+                if (autoPortForwardSuccessful) break;
+            }
 
             if (!autoPortForwardSuccessful)
             {
