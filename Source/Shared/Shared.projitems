@@ -10,36 +10,36 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\EventDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\OfflineVisitDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\RaidDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\SpyDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\TransferManifestJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Actions\VisitDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\ChatMessagesJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\CommandDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\FileTransferJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
-    <Compile Include="..\Shared\JSON\KeepAliveJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\MapFileJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineVisitData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RaidData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\SpyData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\VisitData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\DifficultyData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\FileTransferData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\KeepAliveData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\LoginData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapFileData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerRecountData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\ServerGlobalData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\SettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionGoodwillData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\AnimalData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\HumanData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\ItemData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\WorldData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Overrides\BindOverrider.cs" />
-    <Compile Include="..\Shared\JSON\CustomDifficultyValues.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\FactionManifestJSON.cs" />
-    <Compile Include="..\Shared\JSON\JoinDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\MapDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\PlayerRecountJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\ServerOverallJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\SettlementDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\SiteDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\StructureLikelihoodJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\AnimalDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\HumanDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\Things\ItemDetailsJSON.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)JSON\WorldDetailsJSON.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
@@ -48,6 +48,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Assemblies\Mono.Nat.dll" />
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
   </ItemGroup>
 </Project>

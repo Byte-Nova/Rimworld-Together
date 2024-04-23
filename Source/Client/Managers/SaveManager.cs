@@ -21,28 +21,28 @@ namespace GameClient
 
             ClientValues.autosaveCurrentTicks = 0;
 
-            customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+            customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
             GameDataSaveLoader.SaveGame(customSaveName);
         }
 
         public static void ReceiveSavePartFromServer(Packet packet)
         {
-            FileTransferJSON fileTransferJSON = (FileTransferJSON)Serializer.ConvertBytesToObject(packet.contents);
+            FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
 
             if (Network.listener.downloadManager == null)
             {
                 Log.Message($"[Rimworld Together] > Receiving save from server");
 
-                customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
+                customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
 
                 Network.listener.downloadManager = new DownloadManager();
-                Network.listener.downloadManager.PrepareDownload(filePath, fileTransferJSON.fileParts);
+                Network.listener.downloadManager.PrepareDownload(filePath, fileTransferData.fileParts);
             }
 
-            Network.listener.downloadManager.WriteFilePart(fileTransferJSON.fileBytes);
+            Network.listener.downloadManager.WriteFilePart(fileTransferData.fileBytes);
 
-            if (fileTransferJSON.isLastPart)
+            if (fileTransferData.isLastPart)
             {
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
@@ -71,21 +71,21 @@ namespace GameClient
                 Network.listener.uploadManager.PrepareUpload(filePath);
             }
 
-            FileTransferJSON fileTransferJSON = new FileTransferJSON();
-            fileTransferJSON.fileSize = Network.listener.uploadManager.fileSize;
-            fileTransferJSON.fileParts = Network.listener.uploadManager.fileParts;
-            fileTransferJSON.fileBytes = Network.listener.uploadManager.ReadFilePart();
-            fileTransferJSON.isLastPart = Network.listener.uploadManager.isLastPart;
+            FileTransferData fileTransferData = new FileTransferData();
+            fileTransferData.fileSize = Network.listener.uploadManager.fileSize;
+            fileTransferData.fileParts = Network.listener.uploadManager.fileParts;
+            fileTransferData.fileBytes = Network.listener.uploadManager.ReadFilePart();
+            fileTransferData.isLastPart = Network.listener.uploadManager.isLastPart;
 
             if (ClientValues.isIntentionalDisconnect && ( 
                   ClientValues.intentionalDisconnectReason == ClientValues.DCReason.SaveQuitToMenu 
                || ClientValues.intentionalDisconnectReason == ClientValues.DCReason.SaveQuitToOS
             ))
-                fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+                fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
             else 
-                fileTransferJSON.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
+                fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             Network.listener.EnqueuePacket(packet);
 
             if (Network.listener.uploadManager.isLastPart) 

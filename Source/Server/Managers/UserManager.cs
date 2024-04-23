@@ -70,11 +70,11 @@ namespace GameServer
 
         public static void SendPlayerRecount()
         {
-            PlayerRecountJSON playerRecountJSON = new PlayerRecountJSON();
-            playerRecountJSON.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
-            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountJSON.currentPlayerNames.Add(client.username);
+            PlayerRecountData playerRecountData = new PlayerRecountData();
+            playerRecountData.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
+            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountData.currentPlayerNames.Add(client.username);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.PlayerRecountPacket), playerRecountJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
         }
 
@@ -93,14 +93,14 @@ namespace GameServer
             return connectedClients.Find(x => x.username == username);
         }
 
-        public static bool CheckIfUserExists(ServerClient client, JoinDetailsJSON details, LoginMode mode)
+        public static bool CheckIfUserExists(ServerClient client, LoginData data, LoginMode mode)
         {
             string[] existingUsers = Directory.GetFiles(Master.usersPath);
 
             foreach (string user in existingUsers)
             {
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.username.ToLower() == details.username.ToLower())
+                if (existingUser.username.ToLower() == data.username.ToLower())
                 {
                     if (mode == LoginMode.Register) SendLoginResponse(client, LoginResponse.RegisterInUse);
                     return true;
@@ -111,16 +111,16 @@ namespace GameServer
             return false;
         }
 
-        public static bool CheckIfUserAuthCorrect(ServerClient client, JoinDetailsJSON details)
+        public static bool CheckIfUserAuthCorrect(ServerClient client, LoginData data)
         {
             string[] existingUsers = Directory.GetFiles(Master.usersPath);
 
             foreach (string user in existingUsers)
             {
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.username == details.username)
+                if (existingUser.username == data.username)
                 {
-                    if (existingUser.password == details.password) return true;
+                    if (existingUser.password == data.password) return true;
                     else break;
                 }
             }
@@ -158,14 +158,14 @@ namespace GameServer
             return tilesToExclude.ToArray();
         }
 
-        public static bool CheckLoginDetails(ServerClient client, JoinDetailsJSON details, LoginMode mode)
+        public static bool CheckLoginData(ServerClient client, LoginData data, LoginMode mode)
         {
             bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(details.username)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(details.password)) isInvalid = true;
-            if (details.username.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (details.username.Length > 32) isInvalid = true;
-            if (details.password.Length > 64) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(data.username)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(data.password)) isInvalid = true;
+            if (data.username.Any(Char.IsWhiteSpace)) isInvalid = true;
+            if (data.username.Length > 32) isInvalid = true;
+            if (data.password.Length > 64) isInvalid = true;
 
             if (!isInvalid) return true;
             else
@@ -178,13 +178,13 @@ namespace GameServer
 
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
-            JoinDetailsJSON loginDetailsJSON = new JoinDetailsJSON();
-            loginDetailsJSON.tryResponse = ((int)response).ToString();
+            LoginData loginData = new LoginData();
+            loginData.tryResponse = ((int)response).ToString();
 
-            if (response == LoginResponse.WrongMods) loginDetailsJSON.extraDetails = (List<string>)extraDetails;
-            else if (response == LoginResponse.WrongVersion) loginDetailsJSON.extraDetails = new List<string>() { CommonValues.executableVersion };
+            if (response == LoginResponse.WrongMods) loginData.extraDetails = (List<string>)extraDetails;
+            else if (response == LoginResponse.WrongVersion) loginData.extraDetails = new List<string>() { CommonValues.executableVersion };
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginDetailsJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginData);
             client.listener.EnqueuePacket(packet);
             client.listener.disconnectFlag = true;
         }
@@ -204,9 +204,9 @@ namespace GameServer
             return false;
         }
 
-        public static bool CheckIfUserUpdated(ServerClient client, JoinDetailsJSON loginDetails)
+        public static bool CheckIfUserUpdated(ServerClient client, LoginData loginData)
         {
-            if (loginDetails.clientVersion == CommonValues.executableVersion) return true;
+            if (loginData.clientVersion == CommonValues.executableVersion) return true;
             else
             {
                 Logger.WriteToConsole($"[Version Mismatch] > {client.username}", Logger.LogMode.Warning);

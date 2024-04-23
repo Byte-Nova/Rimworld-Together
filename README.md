@@ -16,7 +16,7 @@ Welcome to the Github repository for "Rimworld Together"! In here you will find 
 > Incompatibility list: https://docs.google.com/spreadsheets/d/14f4oJIV82SzqNK-Tyewr0OKxVRgge8xFasivACwRlsA/edit#gid=0
 
 > [!CAUTION]
-> Make sure the client mod is loaded as high as possible to guarantee the mod working properly.
+> To minimize the risk of mod incompatibility issues, please give Rimworld Together as high of a priority as you can in your mod list priority list!
 
 ## Server Prequisites
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
@@ -44,6 +44,20 @@ make build-container
 
 ```sh
 make run-container
+```
+
+## Guide and Deployments
+
+To access our documentation and deployment examples, please run the following command:
+
+```sh
+git submodules init
+```
+
+This will clone our Guide and Deployments project. To pull the latest, please use:
+
+```sh
+git submodules update
 ```
 
 ## Server Configuration

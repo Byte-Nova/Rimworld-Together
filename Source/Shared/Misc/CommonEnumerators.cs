@@ -33,11 +33,11 @@
 
         public enum FactionRanks { Member, Moderator, Admin }
 
-        //Likelihoods
+        //Goodwills
 
-        public enum Likelihoods { Enemy, Neutral, Ally, Faction, Personal }
+        public enum Goodwills { Enemy, Neutral, Ally, Faction, Personal }
 
-        public enum LikelihoodTarget { Settlement, Site }
+        public enum GoodwillTarget { Settlement, Site }
 
         //Transfers
 

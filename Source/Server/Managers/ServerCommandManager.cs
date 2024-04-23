@@ -180,12 +180,16 @@
             "Disables custom difficulty in the server",
             DisableDifficultyCommandAction);
 
+        private static ServerCommand toggleCustomScenariosCommand = new ServerCommand("togglecustomscenarios", 0,
+            "enables/disables custom scenarios on the server",
+            ToggleCustomScenariosCommandAction);
+
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
-            "Saves all player details and then closes the server",
+            "Saves all player data and then closes the server",
             QuitCommandAction);
 
         private static ServerCommand forceQuitCommand = new ServerCommand("forcequit", 0,
-            "Closes the server without saving player details",
+            "Closes the server without saving player data",
             ForceQuitCommandAction);
 
         public static ServerCommand[] serverCommands = new ServerCommand[]
@@ -216,6 +220,7 @@
             deletePlayerCommand,
             enableDifficultyCommand,
             disableDifficultyCommand,
+            toggleCustomScenariosCommand,
             quitCommand,
             forceQuitCommand
         };
@@ -545,7 +550,7 @@
 
             CommandManager.SendBroadcastCommand(fullText);
 
-            Logger.WriteToConsole($"Sent broadcast '{fullText}'", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Sent broadcast: '{fullText}'", Logger.LogMode.Title);
         }
 
         private static void ServerMessageCommandAction()
@@ -558,6 +563,8 @@
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
             ChatManager.BroadcastServerMessage(fullText);
+
+            Logger.WriteToConsole($"Sent chat: '{fullText}'", Logger.LogMode.Title);
         }
 
         private static void WhitelistCommandAction()
@@ -649,7 +656,7 @@
             if (userFile == null) Logger.WriteToConsole($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found",
                 Logger.LogMode.Warning);
 
-            else SaveManager.DeletePlayerDetails(userFile.username);
+            else SaveManager.DeletePlayerData(userFile.username);
         }
 
         private static void EnableDifficultyCommandAction()
@@ -684,6 +691,12 @@
             }
         }
 
+        private static void ToggleCustomScenariosCommandAction()
+        {
+            Master.serverValues.AllowCustomScenarios = !Master.serverValues.AllowCustomScenarios;
+            Logger.WriteToConsole($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
+            Master.SaveServerValues(Master.serverValues);
+        }
         private static void QuitCommandAction()
         {
             Master.isClosing = true;

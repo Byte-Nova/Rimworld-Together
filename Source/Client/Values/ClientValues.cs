@@ -32,18 +32,6 @@ namespace GameClient
 
         public static bool isSendingSaveToServer;
 
-        //Do not change manually
-        public static bool autoDenyTransfers;
-
-        //Do not change manually
-        public static bool autoRejectSiteRewards;
-
-        //Do not change manually
-        public static bool muteSoundBool;
-
-        //Do not change manually
-        public static bool verboseBool;
-
         public static bool isInTransfer;
 
         public static bool isInVisit;
@@ -53,15 +41,24 @@ namespace GameClient
         public static Site chosenSite;
         public static CompLaunchable chosendPods;
 
-        public static TransferManifestJSON outgoingManifest = new TransferManifestJSON();
-        public static TransferManifestJSON incomingManifest = new TransferManifestJSON();
+        public static TransferData outgoingManifest = new TransferData();
+        public static TransferData incomingManifest = new TransferData();
         public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();
+
+        public static string username;
+
+        public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
+
+        //ModStuff values go below. Do not change manually
+
+        public static bool verboseBool;
+        public static bool muteSoundBool;
+        public static bool rejectTransferBool;
+        public static bool rejectSiteRewardsBool;
 
         public static int autosaveDays = 1;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = autosaveDays * 60000f;
-
-        public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
 
         public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }
 
@@ -107,8 +104,8 @@ namespace GameClient
             chosenCaravan = null;
             chosenSite = null;
 
-            outgoingManifest = new TransferManifestJSON();
-            incomingManifest = new TransferManifestJSON();
+            outgoingManifest = new TransferData();
+            incomingManifest = new TransferData();
             listToShowInTradesMenu = new List<Tradeable>();
         }
     }
