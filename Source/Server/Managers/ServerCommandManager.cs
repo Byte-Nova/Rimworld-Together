@@ -566,7 +566,7 @@ namespace GameServer
 
             ChatManager.BroadcastServerMessage(fullText);
 
-            Logger.WriteToConsole($"Sent chat: '{fullText}'", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Sent chat: '{fullText}'", LogMode.Title);
         }
 
         private static void WhitelistCommandAction()
@@ -696,7 +696,7 @@ namespace GameServer
         private static void ToggleCustomScenariosCommandAction()
         {
             Master.serverValues.AllowCustomScenarios = !Master.serverValues.AllowCustomScenarios;
-            Logger.WriteToConsole($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}", LogMode.Warning);
             Master.SaveServerValues(Master.serverValues);
         }
         private static void QuitCommandAction()
