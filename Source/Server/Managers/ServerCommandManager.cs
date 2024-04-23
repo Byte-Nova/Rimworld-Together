@@ -184,6 +184,14 @@
             "enables/disables custom scenarios on the server",
             ToggleCustomScenariosCommandAction);
 
+        private static ServerCommand toggleUPnPCommand = new ServerCommand("toggleupnp", 0,
+            "enables/disables UPnP port mapping (auto-portforwarding)",
+            ToggleUPnPCommandAction);
+
+        private static ServerCommand portforwardCommand = new ServerCommand("portforward", 0,
+            "will use UPnP to portforward the server",
+            PortForwardCommandAction);
+
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
             "Saves all player data and then closes the server",
             QuitCommandAction);
@@ -221,6 +229,8 @@
             enableDifficultyCommand,
             disableDifficultyCommand,
             toggleCustomScenariosCommand,
+            toggleUPnPCommand,
+            portforwardCommand,
             quitCommand,
             forceQuitCommand
         };
@@ -697,6 +707,54 @@
             Logger.WriteToConsole($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
             Master.SaveServerValues(Master.serverValues);
         }
+
+        private static void ToggleUPnPCommandAction()
+        {
+            Master.serverConfig.UseUPnP = !Master.serverConfig.UseUPnP;
+            Logger.WriteToConsole($"UPnP port mapping is now {(Master.serverConfig.UseUPnP ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
+
+            Master.SaveServerConfig(Master.serverConfig);
+
+            if (Master.serverConfig.UseUPnP)
+            {
+                portforwardQuestion:
+                Logger.WriteToConsole("You have enabled UPnP on the server. Would you like to portforward?",Logger.LogMode.Warning);
+                Logger.WriteToConsole("Please type 'YES' or 'NO'",Logger.LogMode.Warning);
+
+                string response = Console.ReadLine();
+
+                if (response == "NO") { Logger.WriteToConsole("you can use the command 'portforward' in the future to portforward the server", Logger.LogMode.Warning); return; }
+                if (response != "YES")
+                {
+                    Logger.WriteToConsole("The response you have entered is not a valid option. please make sure your response it capitalized",Logger.LogMode.Error);
+                    goto portforwardQuestion;
+                }
+
+                _ = new UPnP();
+
+
+            }
+            else
+            {
+                Logger.WriteToConsole("If a port has already been forwarded using UPnP,\n " +
+                                      "it will continute to be active until the server is restarted", Logger.LogMode.Warning);
+            }
+
+        }
+
+        private static void PortForwardCommandAction()
+        {
+            if (!Master.serverConfig.UseUPnP)
+            {
+                Logger.WriteToConsole("Cannot portforward because UPnP is disabled on the server.\n" +
+                                      " you can use the command 'toggleupnp' to enabled it.", Logger.LogMode.Error);
+                return;
+            }
+
+            _ = new UPnP();
+
+        }
+
         private static void QuitCommandAction()
         {
             Master.isClosing = true;

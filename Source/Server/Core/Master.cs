@@ -34,14 +34,14 @@ namespace GameServer
 
         //References
 
-        public static WhitelistFile whitelist;
-        public static SiteValuesFile siteValues;
-        public static WorldValuesFile worldValues;
-        public static EventValuesFile eventValues;
-        public static ServerConfigFile serverConfig;
-        public static ServerValuesFile serverValues;
-        public static ActionValuesFile actionValues;
-        public static DifficultyValuesFile difficultyValues;
+        public static WhitelistFile         whitelist;
+        public static SiteValuesFile        siteValues;
+        public static WorldValuesFile       worldValues;
+        public static EventValuesFile       eventValues;
+        public static ServerConfigFile      serverConfig;
+        public static ServerValuesFile      serverValues;
+        public static ActionValuesFile      actionValues;
+        public static DifficultyValuesFile  difficultyValues;
 
         //Booleans
 
@@ -150,6 +150,16 @@ namespace GameServer
             }
 
             Logger.WriteToConsole("Loaded server configs", Logger.LogMode.Warning);
+        }
+
+        public static void SaveServerConfig(ServerConfigFile serverConfig)
+        {
+            string path = Path.Combine(corePath, "ServerConfig.json");
+
+            Serializer.SerializeToFile(path, serverConfig);
+
+            Logger.WriteToConsole("Saved server Config", Logger.LogMode.Warning);
+
         }
 
         private static void LoadServerValues()
