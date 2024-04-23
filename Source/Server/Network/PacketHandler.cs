@@ -19,10 +19,6 @@ namespace GameServer
             methodInfo.Invoke(packet.header, new object[] { client, packet });
         }
 
-        public static void KeepAlivePacket(ServerClient client, Packet packet)
-        {
-        }
-
         public static void LoginClientPacket(ServerClient client, Packet packet)
         {
             UserLogin.TryLoginUser(client, packet);
@@ -119,6 +115,11 @@ namespace GameServer
         }
 
         //Empty functions
+
+        public static void KeepAlivePacket(ServerClient client, Packet packet)
+        {
+            //Empty
+        }
 
         public static void UserUnavailablePacket()
         {
