@@ -48,29 +48,31 @@ namespace GameClient
 
         private static void OnRaidAccept(RaidDetailsJSON raidDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(raidDetailsJSON.mapDetails);
             MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
 
-            Action r1 = delegate { PrepareMapForRaid(mapDetailsJSON); };
+            Action r1 = delegate 
+            { 
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Loading Map...", 
+                    delegate { PrepareMapForRaid(mapDetailsJSON); })); 
+            };
 
             if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         //Executes when raid request is denied
 
         private static void OnRaidDeny()
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player must not be connected!"));
         }
 
         //Prepares a map for the raid order from a request
@@ -79,18 +81,25 @@ namespace GameClient
         {
             Map map = MapScribeManager.StringToMap(mapDetailsJSON, true, true, true, true);
 
+            //keep track of one pawn in the caravan to jump to later
+            Pawn pawnToFocus = (ClientValues.chosenCaravan.pawns.Count > 0) ? ClientValues.chosenCaravan.pawns[0] : null;
+
             HandleMapFactions(map);
 
             SettlementUtility.Attack(ClientValues.chosenCaravan, ClientValues.chosenSettlement);
 
             PrepareMapLord(map);
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
+            //Switch to the Map mode and focus on the caravan
+            CameraJumper.TryJump(pawnToFocus);
+
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[]
             {
                 "You are now in raid mode!",
                 "Raid mode allows you to raid player settlements",
                 "Down all their enemy pawns and get loot for it!",
-            });
+            },
+            DialogManager.clearStack);
             DialogManager.PushNewDialog(d1);
         }
 

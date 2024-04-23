@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -31,7 +32,7 @@ namespace GameClient
 
             if (Network.listener.downloadManager == null)
             {
-                Log.Message($"[Rimworld Together] > Receiving save from server");
+                Logger.WriteToConsole("Receiving save from server", LogMode.Message);
 
                 customSaveName = $"Server - {Network.ip} - {ChatManager.username}";
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
@@ -44,6 +45,8 @@ namespace GameClient
 
             if (fileTransferJSON.isLastPart)
             {
+                //remove the waiting for login response dialog
+                DialogManager.clearStack();
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
 
@@ -62,8 +65,7 @@ namespace GameClient
             if (Network.listener.uploadManager == null)
             {
                 ClientValues.ToggleSendingSaveToServer(true);
-
-                Log.Message($"[Rimworld Together] > Sending save to server");
+                Logger.WriteToConsole("Sending save to server", LogMode.Message);
 
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
 

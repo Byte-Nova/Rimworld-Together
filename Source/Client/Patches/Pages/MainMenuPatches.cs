@@ -40,12 +40,24 @@ namespace GameClient
                         if (string.IsNullOrWhiteSpace(Network.port)) isInvalid = true;
                         if (string.IsNullOrWhiteSpace(ChatManager.username)) isInvalid = true;
 
-                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
+                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE","You must join a server first to use this feature!"));
                         else ShowQuickConnectFloatMenu();
                     }
                 }
 
                 return true;
+                /*if (Current.ProgramState == ProgramState.Entry)
+                {
+                    Vector2 buttonSize = new Vector2(170f, 45f);
+                    Vector2 buttonLocation = new Vector2(rect.x, rect.y);
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
+                    {
+                        if (Network.isConnectedToServer || Network.isTryingToConnect) return true;
+                        else DialogShortcuts.ShowConnectDialogs();
+                    }
+                }
+
+                return true;*/
             }
 
             [HarmonyPostfix]

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -103,7 +104,7 @@ namespace GameClient
                     byte[] compressedBytes = GZip.Compress(File.ReadAllBytes(toConvertPath));
                     File.WriteAllBytes(conversionPath, compressedBytes);
 
-                    RT_Dialog_OK d2 = new RT_Dialog_OK("Save was converted successfully");
+                    RT_Dialog_OK d2 = new RT_Dialog_OK("MESSAGE", "Save was converted successfully");
                     DialogManager.PushNewDialog(d2);
                 });
 
@@ -135,14 +136,14 @@ namespace GameClient
 
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
 
-                DialogManager.PushNewDialog(new RT_Dialog_OK("World file was saved correctly!"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "World file was saved correctly!"));
             }
         }
 
         private void StartProcess(string processPath)
         {
             try { System.Diagnostics.Process.Start(processPath); } 
-            catch { Log.Warning($"Failed to start process {processPath}"); }
+            catch { Logger.WriteToConsole("Failed to start process {processPath}", LogMode.Warning); }
         }
     }
 }

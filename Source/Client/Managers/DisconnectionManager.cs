@@ -15,10 +15,11 @@ namespace GameClient
             ClientValues.CleanValues();
             ServerValues.CleanValues();
 
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
 
             if (Current.ProgramState != ProgramState.Entry)
             {
+                DialogManager.clearStack();
                 LongEventHandler.QueueLongEvent(delegate { }, 
                     "Entry", "", doAsynchronously: false, null);
             }

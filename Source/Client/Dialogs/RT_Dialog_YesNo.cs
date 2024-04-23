@@ -20,7 +20,6 @@ namespace GameClient
 
         public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo)
         {
-            DialogManager.dialogYesNo = this;
             this.description = description;
             this.actionYes = actionYes;
             this.actionNo = actionNo;
@@ -52,13 +51,13 @@ namespace GameClient
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
             {
                 if (actionYes != null) actionYes.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
             {
                 if (actionNo != null) actionNo.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
         }
     }

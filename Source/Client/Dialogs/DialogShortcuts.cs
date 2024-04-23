@@ -10,21 +10,24 @@ namespace GameClient
     {
         public static void ShowLoginOrRegisterDialogs()
         {
+            //Remove all server connection windows
+            DialogManager.clearStack();
+
             RT_Dialog_3Input a1 = new RT_Dialog_3Input(
                 "New User",
                 "Username",
                 "Password",
                 "Confirm Password",
-                delegate { ParseRegisterUser(); },
-                delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
+                ParseRegisterUser,
+                DialogManager.PopDialog ,
                 false, true, true);
 
             RT_Dialog_2Input a2 = new RT_Dialog_2Input(
                 "Existing User",
                 "Username",
                 "Password",
-                delegate { ParseLoginUser(); },
-                delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
+                ParseLoginUser,
+                DialogManager.PopDialog,
                 false, true);
 
             RT_Dialog_2Button d1 = new RT_Dialog_2Button(
@@ -35,29 +38,29 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    string[] details = PreferenceManager.LoadLoginDetails();
-                    DialogManager.dialog2Input.inputOneResult = details[0];
-                    DialogManager.dialog2Input.inputTwoResult = details[1];
+                    string[] loginDetails = PreferenceManager.LoadLoginDetails();
+                    DialogManager.currentDialogInputs.SubstituteInputs(new(){ loginDetails[0], loginDetails[1] });
                 },
-                delegate { Network.listener.disconnectFlag = true; });
+                delegate { DialogManager.clearStack(); Network.listener.disconnectFlag = true; });
 
             DialogManager.PushNewDialog(d1);
         }
 
         public static void ShowWorldGenerationDialogs()
         {
-            RT_Dialog_OK d3 = new RT_Dialog_OK("This feature is not implemented yet!",
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+            RT_Dialog_OK d3 = new RT_Dialog_OK("MESSAGE", "This feature is not implemented yet!",
+                DialogManager.PopDialog);
 
             RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
-                "Separate colony", "Together with other players (TBA)", null, delegate { DialogManager.PushNewDialog(d3); },
+                "Separate colony", "Together with other players (TBA)", DialogManager.clearStack, delegate { DialogManager.PushNewDialog(d3); },
                 delegate
                 {
+                    DialogManager.clearStack();
                     SceneManager.LoadScene(0);
                     Network.listener.disconnectFlag = true;
                 });
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "Welcome to the world view!",
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[] { "Welcome to the world view!",
                         "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },
                 delegate { DialogManager.PushNewDialog(d2); });
 
@@ -69,14 +72,14 @@ namespace GameClient
             RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
                 ClientValues.serverBrowserContainer,
                 delegate { ParseConnectionDetails(true); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                DialogManager.PopDialog);
 
             RT_Dialog_2Input a2 = new RT_Dialog_2Input(
                 "Connection Details",
                 "IP",
                 "Port",
                 delegate { ParseConnectionDetails(false); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                DialogManager.PopDialog);
 
             RT_Dialog_2Button newDialog = new RT_Dialog_2Button(
                 "Play Online",
@@ -86,9 +89,8 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate {
                     DialogManager.PushNewDialog(a2);
-                    string[] details = PreferenceManager.LoadConnectionDetails();
-                    DialogManager.dialog2Input.inputOneResult = details[0];
-                    DialogManager.dialog2Input.inputTwoResult = details[1];
+                    string[] loginDetails = PreferenceManager.LoadConnectionDetails();
+                    DialogManager.currentDialogInputs.SubstituteInputs(new() { loginDetails[0], loginDetails[1] });
                 }, null);
 
             DialogManager.PushNewDialog(newDialog);
@@ -96,28 +98,28 @@ namespace GameClient
 
         public static void ParseConnectionDetails(bool throughBrowser)
         {
-            bool isInvalid = false;
+            bool isValid = true;
 
             string[] answerSplit = null;
             if (throughBrowser)
             {
-                answerSplit = ClientValues.serverBrowserContainer[DialogManager.dialogListingWithButtonResult].Split('|');
+                answerSplit = ClientValues.serverBrowserContainer[(int)DialogManager.inputCache[0]].Split('|');
 
-                if (string.IsNullOrWhiteSpace(answerSplit[0])) isInvalid = true;
-                if (string.IsNullOrWhiteSpace(answerSplit[1])) isInvalid = true;
-                if (answerSplit[1].Count() > 5) isInvalid = true;
-                if (!answerSplit[1].All(Char.IsDigit)) isInvalid = true;
+                if (string.IsNullOrWhiteSpace(answerSplit[0])) isValid = false;
+                if (string.IsNullOrWhiteSpace(answerSplit[1])) isValid = false;
+                if (answerSplit[1].Count() > 5) isValid = false;
+                if (!answerSplit[1].All(Char.IsDigit)) isValid = false;
             }
 
             else
             {
-                if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultOne)) isInvalid = true;
-                if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultTwo)) isInvalid = true;
-                if (DialogManager.dialog2ResultTwo.Count() > 5) isInvalid = true;
-                if (!DialogManager.dialog2ResultTwo.All(Char.IsDigit)) isInvalid = true;
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[0])) isValid = false;
+                if (string.IsNullOrWhiteSpace((string)DialogManager.inputCache[1])) isValid = false;
+                if (((string)DialogManager.inputCache[1]).Count() > 5) isValid = false;
+                if (!((string)DialogManager.inputCache[1]).All(Char.IsDigit)) isValid = false;
             }
 
-            if (!isInvalid)
+            if (isValid)
             {
                 if (throughBrowser)
                 {
@@ -128,9 +130,9 @@ namespace GameClient
 
                 else
                 {
-                    Network.ip = DialogManager.dialog2ResultOne;
-                    Network.port = DialogManager.dialog2ResultTwo;
-                    PreferenceManager.SaveConnectionDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                    Network.ip = ((string)DialogManager.inputCache[0]);
+                    Network.port = ((string)DialogManager.inputCache[1]);
+                    PreferenceManager.SaveConnectionDetails(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[1]));
                 }
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
@@ -139,28 +141,28 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!");
+                RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Server details are invalid! Please try again!");
                 DialogManager.PushNewDialog(d1);
             }
         }
 
         public static void ParseLoginUser()
         {
-            bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultOne)) isInvalid = true;
-            if (DialogManager.dialog2ResultOne.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultTwo)) isInvalid = true;
+            bool isValid = true;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[0]))) isValid = false;
+            if (((string)DialogManager.inputCache[0]).Any(Char.IsWhiteSpace)) isValid = false;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[1]))) isValid = false;
 
-            if (!isInvalid)
+            if (isValid)
             {
                 JoinDetailsJSON loginDetails = new JoinDetailsJSON();
-                loginDetails.username = DialogManager.dialog2ResultOne;
-                loginDetails.password = Hasher.GetHashFromString(DialogManager.dialog2ResultTwo);
+                loginDetails.username = (string)DialogManager.inputCache[0];
+                loginDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
                 loginDetails.clientVersion = CommonValues.executableVersion;
                 loginDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = loginDetails.username;
-                PreferenceManager.SaveLoginDetails(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                PreferenceManager.SaveLoginDetails(((string)DialogManager.inputCache[0]), ((string)DialogManager.inputCache[1]));
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
                 Network.listener.EnqueuePacket(packet);
@@ -170,8 +172,8 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Login details are invalid! Please try again!",
-                    delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Login details are invalid! Please try again!",
+                    DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -179,23 +181,23 @@ namespace GameClient
 
         public static void ParseRegisterUser()
         {
-            bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultOne)) isInvalid = true;
-            if (DialogManager.dialog3ResultOne.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultTwo)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog3ResultThree)) isInvalid = true;
-            if (DialogManager.dialog3ResultTwo != DialogManager.dialog3ResultThree) isInvalid = true;
+            bool isValid = true;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[0]))) isValid = false;
+            if (((string)DialogManager.inputCache[0]).Any(Char.IsWhiteSpace)) isValid = false;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[1]))) isValid = false;
+            if (string.IsNullOrWhiteSpace(((string)DialogManager.inputCache[2]))) isValid = false;
+            if (((string)DialogManager.inputCache[1]) != ((string)DialogManager.inputCache[2])) isValid = false;
 
-            if (!isInvalid)
+            if (isValid)
             {
                 JoinDetailsJSON registerDetails = new JoinDetailsJSON();
-                registerDetails.username = DialogManager.dialog3ResultOne;
-                registerDetails.password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
+                registerDetails.username = (string)DialogManager.inputCache[0];
+                registerDetails.password = Hasher.GetHashFromString((string)DialogManager.inputCache[1]);
                 registerDetails.clientVersion = CommonValues.executableVersion;
                 registerDetails.runningMods = ModManager.GetRunningModList().ToList();
 
                 ChatManager.username = registerDetails.username;
-                PreferenceManager.SaveLoginDetails(DialogManager.dialog3ResultOne, DialogManager.dialog3ResultTwo);
+                PreferenceManager.SaveLoginDetails((string)DialogManager.inputCache[0], (string)DialogManager.inputCache[1]);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), registerDetails);
                 Network.listener.EnqueuePacket(packet);
@@ -205,11 +207,53 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Register details are invalid! Please try again!",
-                    delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Register details are invalid! Please try again!",
+                    DialogManager.PopDialog);
 
                 DialogManager.PushNewDialog(d1);
             }
+        }
+
+        //changes in a textField are check based on string length, but if the contents of a text field are replaced,
+        //i.e. 1234 -> 1255 where 34 are instantly replace with 55
+        //we can't tell anything has changed on length. This function will change the characters that have been repalced
+
+        public static string ReplaceNonCensoredSymbols(string recievingString, string giftingString, bool isCensored)
+        {
+            string StringA = recievingString; string currCharA;
+            string StringB = giftingString; string currCharB;
+            string censorSymbol = "*";
+            string returnString = "";
+
+            if (isCensored)
+            {
+                for (int i = 0; i < giftingString.Length; i++)
+                {
+                    currCharA = StringA.Substring(0, 1);
+                    currCharB = StringB.Substring(0, 1);
+                    if (StringA.Length > 0) StringA = StringA.Substring(1, StringA.Length - 1);
+                    if (StringB.Length > 0) StringB = StringB.Substring(1, StringB.Length - 1);
+
+                    if (currCharB.ToString() == censorSymbol) returnString += currCharA;
+                    else returnString += currCharB;
+                }
+            }
+
+            else
+            {
+                for (int i = 0; i < giftingString.Length; i++)
+                {
+                    currCharA = StringA.Substring(0, 1);
+                    currCharB = StringB.Substring(0, 1);
+                    if (StringA.Length > 0) StringA = StringA.Substring(1, StringA.Length - 1);
+                    if (StringB.Length > 0) StringB = StringB.Substring(1, StringB.Length - 1);
+
+                    if (currCharA == currCharB) returnString += currCharA;
+                    else returnString += currCharB;
+                }
+            }
+
+            return returnString;
         }
     }
 }

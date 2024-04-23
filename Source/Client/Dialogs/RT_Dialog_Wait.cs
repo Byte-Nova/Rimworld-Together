@@ -1,5 +1,6 @@
 ﻿using HugsLib.Utils;
 using RimWorld;
+using System;
 using UnityEngine;
 using Verse;
 
@@ -12,20 +13,22 @@ namespace GameClient
         private string title = "WAIT";
         private string description = "";
 
-        public RT_Dialog_Wait(string description)
+        private int framesRan = 0;
+
+        Action actionToWaitOn;
+
+        public RT_Dialog_Wait(string description, Action actionToWaitOn = null)
         {
-            DialogManager.dialogWait = this;
             this.description = description;
+            this.actionToWaitOn = actionToWaitOn;
 
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
-            //soundClose = SoundDefOf.CommsWindow_Close;
 
             closeOnAccept = false;
             closeOnCancel = false;
         }
-
 
         public override void DoWindowContents(Rect rect)
         {
@@ -42,10 +45,27 @@ namespace GameClient
 
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
+
+            //If a wait dialog is waiting for a process to finish,
+            //The wait dialog will close itself and begin running the process
+            //The box won't be "undrawn" until after the process finishes
+            //magic voodoo witchery
+
+            if ((actionToWaitOn != null) && (framesRan >= 5)) DialogManager.PopDialog();
+            else framesRan++;
+        }
+
+        public override void PostClose()
+        {
+            base.PostOpen();
+
+            if (actionToWaitOn != null) actionToWaitOn.Invoke();
         }
 
         private void AllowCloseDialog()
         {
+            if (!ServerValues.isAdmin) return;
+
             if (HugsLibUtility.ShiftIsHeld) closeOnCancel = true;
             else closeOnCancel = false;
         }

@@ -20,9 +20,9 @@ namespace GameClient
 
         private Action actionOK;
 
-        public RT_Dialog_OK_Loop(string[] descriptionLoop, Action actionOK = null)
+        public RT_Dialog_OK_Loop(string title, string[] descriptionLoop, Action actionOK = null)
         {
-            DialogManager.dialogOKLoop = this;
+            this.title = title;
             this.descriptionLoop = descriptionLoop;
             this.actionOK = actionOK;
 
@@ -63,7 +63,7 @@ namespace GameClient
                 else
                 {
                     if (actionOK != null) actionOK.Invoke();
-                    Close();
+                    else DialogManager.PopDialog();
                 }
             }
         }

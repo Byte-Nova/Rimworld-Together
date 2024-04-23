@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -21,7 +22,7 @@ namespace GameServer
 
             File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + ".json"));
 
-            Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", LogMode.Warning);
         }
 
         public static MapFileJSON[] GetAllMapFiles()

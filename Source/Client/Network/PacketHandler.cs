@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -13,7 +14,7 @@ namespace GameClient
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");
+            Logger.WriteToConsole($"[Header] > {packet.header}", LogMode.Message);
 
             Action toDo = delegate
             {
@@ -88,7 +89,7 @@ namespace GameClient
 
         public static void BreakPacket(Packet packet)
         {
-            DialogManager.PopWaitDialog();
+            DialogManager.PopDialog();
         }
 
         public static void RequestSavePartPacket(Packet packet)
@@ -108,7 +109,6 @@ namespace GameClient
 
         public static void LikelihoodPacket(Packet packet)
         {
-            DialogManager.PopWaitDialog();
             LikelihoodManager.ChangeStructureLikelihood(packet);
         }
 
@@ -119,14 +119,14 @@ namespace GameClient
 
         public static void IllegalActionPacket(Packet packet)
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Kicked for ilegal actions!"));
+            DialogManager.PopDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Kicked for ilegal actions!"));
         }
 
         public static void UserUnavailablePacket(Packet packet)
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+            DialogManager.PopDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Player is not currently available!"));
         }
 
         public static void ServerValuesPacket(Packet packet)

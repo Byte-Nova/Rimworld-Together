@@ -28,7 +28,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.enemyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as enemy!");
+                    RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Chosen settlement is already marked as enemy!");
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 0);
@@ -38,7 +38,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.neutralPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as neutral!");
+                    RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Chosen settlement is already marked as neutral!");
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 1);
@@ -48,7 +48,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.allyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as ally!");
+                    RT_Dialog_OK d1 = new RT_Dialog_OK("ERROR", "Chosen settlement is already marked as ally!");
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureLikelihood(tileToUse, 2);
@@ -74,6 +74,7 @@ namespace GameClient
 
         public static void ChangeStructureLikelihood(Packet packet)
         {
+            DialogManager.PopDialog(typeof(RT_Dialog_Wait));
             StructureLikelihoodJSON structureLikelihoodJSON = (StructureLikelihoodJSON)Serializer.ConvertBytesToObject(packet.contents);
             ChangeSettlementLikelihoods(structureLikelihoodJSON);
             ChangeSiteLikelihoods(structureLikelihoodJSON);

@@ -8,6 +8,8 @@ namespace GameClient
     {
         public static void ParseWorldPacket(Packet packet)
         {
+            DialogManager.clearStack();
+
             WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (int.Parse(worldDetailsJSON.worldStepMode))
@@ -24,7 +26,6 @@ namespace GameClient
 
         public static void OnRequireWorld()
         {
-            DialogManager.PopWaitDialog();
 
             ClientValues.ToggleGenerateWorld(true);
 
@@ -32,7 +33,7 @@ namespace GameClient
             toUse.next = new Page_SelectStartingSite();
             DialogManager.PushNewDialog(toUse);
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are the first person joining the server!",
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[] { "You are the first person joining the server!",
                 "Configure the world that everyone will play on" });
 
             DialogManager.PushNewDialog(d1);
@@ -40,13 +41,12 @@ namespace GameClient
 
         public static void OnExistingWorld(WorldDetailsJSON worldDetailsJSON)
         {
-            DialogManager.PopWaitDialog();
 
             WorldGeneratorManager.SetValuesFromServer(worldDetailsJSON);
 
             DialogManager.PushNewDialog(new Page_SelectScenario());
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are joining an existing server for the first time!",
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[] { "You are joining an existing server for the first time!",
                 "Configure your playstyle to your liking", "Some settings might be disabled by the server" });
 
             DialogManager.PushNewDialog(d1);

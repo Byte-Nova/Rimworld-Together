@@ -29,7 +29,6 @@ namespace GameClient
 
         public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
         {
-            DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
             this.transferMode = transferMode;
 
@@ -121,6 +120,7 @@ namespace GameClient
         {
             Action r1 = delegate
             {
+                DialogManager.PopDialog();
                 if (transferMode == CommonEnumerators.TransferMode.Gift)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
@@ -135,7 +135,7 @@ namespace GameClient
 
                     else
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "You do not have any pawn capable of trading!"));
                         TransferManager.RejectRequest(transferMode);
                     }
                 }
@@ -149,13 +149,12 @@ namespace GameClient
                 {
                     ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
+                    Packet packet = Packet.CreatePacketFromJSON("TransferPacket", ClientValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
                 }
 
-                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",
@@ -166,9 +165,8 @@ namespace GameClient
         {
             Action r1 = delegate
             {
+                DialogManager.clearStack();
                 TransferManager.RejectRequest(transferMode);
-
-                Close();
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",

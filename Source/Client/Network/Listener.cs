@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -90,8 +91,7 @@ namespace GameClient
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Log.Warning($"[Rimworld Together] > {e}");
-
+                Logger.WriteToConsole($"Closing connection due to exception: {e}", LogMode.Warning);
                 disconnectFlag = true;
             }
         }
@@ -113,7 +113,7 @@ namespace GameClient
 
             Thread.Sleep(1000);
 
-            Master.threadDispatcher.Enqueue(delegate { Network.DisconnectFromServer(); });
+            Master.threadDispatcher.Enqueue(Network.DisconnectFromServer);
         }
 
         //Runs in a separate thread and sends alive pings towards the server

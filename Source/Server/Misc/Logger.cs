@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -6,17 +7,15 @@ namespace GameServer
     {
         public static Semaphore semaphore = new Semaphore(1, 1);
 
-        public enum LogMode { Normal, Warning, Error, Title }
-
         public static Dictionary<LogMode, ConsoleColor> colorDictionary = new Dictionary<LogMode, ConsoleColor>
         {
-            { LogMode.Normal, ConsoleColor.White },
+            { LogMode.Message, ConsoleColor.White },
             { LogMode.Warning, ConsoleColor.Yellow },
             { LogMode.Error, ConsoleColor.Red },
             { LogMode.Title, ConsoleColor.Green }
         };
 
-        public static void WriteToConsole(string text, LogMode mode = LogMode.Normal, bool writeToLogs = true)
+        public static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true)
         {
             semaphore.WaitOne();
 

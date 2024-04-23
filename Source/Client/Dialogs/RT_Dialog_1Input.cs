@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    public class RT_Dialog_1Input : Window
+    public class RT_Dialog_1Input : Window, RT_WindowInputs
     {
         public override Vector2 InitialSize => new Vector2(400f, 200f);
 
@@ -22,19 +25,29 @@ namespace GameClient
         private Action actionNo;
 
         private string inputOneLabel;
-        public string inputOneResult;
 
         private bool inputOneCensored;
-        private string inputOneCensoredResult;
+        private string inputOneDisplay;
+
+        public List<string> inputResultList;
+
+        public virtual List<object> InputList
+        { 
+            get {
+                List<object> returnList = new List<object>();
+                returnList.Add(inputResultList[0]);
+                return returnList;
+            } 
+        }
 
         public RT_Dialog_1Input(string title, string inputOneLabel, Action actionYes, Action actionNo, bool inputOneCensored = false)
         {
-            DialogManager.dialog1Input = this;
             this.title = title;
             this.actionYes = actionYes;
             this.actionNo = actionNo;
             this.inputOneLabel = inputOneLabel;
             this.inputOneCensored = inputOneCensored;
+            this.inputResultList = new List<string>() {""};
 
             forcePause = true;
             absorbInputAroundWindow = true;
@@ -48,52 +61,73 @@ namespace GameClient
 
         public override void DoWindowContents(Rect rect)
         {
+            //initialize window size values
             float centeredX = rect.width / 2;
             float horizontalLineDif = Text.CalcSize(title).y + StandardMargin / 2;
 
             float inputOneLabelDif = Text.CalcSize(inputOneLabel).y + StandardMargin;
             float inputOneDif = inputOneLabelDif + 30f;
 
+            //draw Title and seperator line
             Text.Font = GameFont.Medium;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
             Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
 
             DrawInputOne(centeredX, inputOneLabelDif, inputOneDif);
 
+            //draw confirm button
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
             {
-                DialogManager.dialog1ResultOne = inputOneResult;
-
+                CacheInputs();
                 if (actionYes != null) actionYes.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
 
+            //draw cancel button
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
             {
+                CacheInputs();
                 if (actionNo != null) actionNo.Invoke();
-                Close();
+                else DialogManager.PopDialog();
             }
         }
 
         private void DrawInputOne(float centeredX, float labelDif, float normalDif)
         {
+            //Draw TextField label
             Text.Font = GameFont.Medium;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputOneLabel).x / 2, labelDif, Text.CalcSize(inputOneLabel).x, Text.CalcSize(inputOneLabel).y), inputOneLabel);
 
-            Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif + 10f, 200f, 30f), inputOneResult);
-            if (AcceptsInput && inputOne.Length <= 32) inputOneResult = inputOne;
+            //Handle nullrefrences
+            if (inputResultList[0] == null) inputResultList[0] = "";
+            if (inputOneDisplay == null) inputOneDisplay = "";
 
-            if (inputOneCensored)
+            //if censorship is on, set the Input display to censorship symbol
+            //else set it to the input string
+            if (inputOneCensored) inputOneDisplay = new string('*', inputResultList[0].Length);
+            else inputOneDisplay = inputResultList[0];
+
+            //Draw the textField using input display string
+            Text.Font = GameFont.Small;
+            string inputDisplayBefore = inputOneDisplay;
+            inputOneDisplay = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputDisplayBefore);
+
+            //if new input is detected, add it to the final input string
+            if ((inputOneDisplay.Length > inputResultList[0].Length) && (inputOneDisplay.Length <= 32)) inputResultList[0] += inputOneDisplay.Substring(inputResultList[0].Length);
+            else if (inputDisplayBefore != inputOneDisplay) inputResultList[0] = DialogShortcuts.ReplaceNonCensoredSymbols(inputResultList[0], inputOneDisplay, inputOneCensored);
+        }
+
+        public virtual void CacheInputs() { DialogManager.inputCache = InputList; }
+
+        public virtual void SubstituteInputs(List<object> newInputs)
+        {
+            //Exception handling
+            if (newInputs.Count != 1)
             {
-                string censorOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputOneCensoredResult);
-                if (AcceptsInput && censorOne.Length <= 32)
-                {
-                    Text.Font = GameFont.Medium;
-                    inputOneCensoredResult = new string('█', inputOne.Length);
-                    Text.Font = GameFont.Small;
-                }
+                Logger.WriteToConsole("newInputs in SubstituteInputs at RT_Dialog_1Input has wrong number of elements; No changes will be made", LogMode.Error);
+                return;
             }
+            inputResultList[0] = (string)newInputs[0];
         }
     }
 }
