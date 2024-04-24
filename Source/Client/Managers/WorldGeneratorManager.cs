@@ -78,7 +78,7 @@ namespace GameClient
             {
                 FactionDef faction = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
                 if (faction != null) factions.Add(faction);
-                else Log.Warning($"[Rimworld Together] > Faction '{str}' wasn't found in the client's game, ignoring");
+                else Log.Warning($"[Rimworld Together] > Faction '{factionName}' wasn't found in the client's game, ignoring");
             }
 
             cachedWorldDetails = worldDetailsJSON;
