@@ -27,7 +27,7 @@ namespace GameServer
                     break;
 
                 case (int)CommonEnumerators.VisitStepMode.Stop:
-                    SendVisitStop(client, visitData);
+                    SendVisitStop(client);
                     break;
             }
         }
@@ -116,8 +116,10 @@ namespace GameServer
             }
         }
 
-        public static void SendVisitStop(ServerClient client, VisitData visitData)
+        public static void SendVisitStop(ServerClient client)
         {
+            VisitData visitData = new VisitData();
+            visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Stop;
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
 
             if (client.inVisitWith == null) client.listener.EnqueuePacket(packet);

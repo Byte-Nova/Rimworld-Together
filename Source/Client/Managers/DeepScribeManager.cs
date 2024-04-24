@@ -1154,7 +1154,7 @@ namespace GameClient
 
         private static void GetMapSize(MapData mapData, Map map)
         {
-            mapData.mapSize = $"{map.Size.x}|{map.Size.y}|{map.Size.z}";
+            mapData.mapSize = ValueParser.Vector3ToString(map.Size);
         }
 
         private static void GetMapTerrain(MapData mapData, Map map)
@@ -1215,7 +1215,7 @@ namespace GameClient
         {
             foreach (Thing thing in map.listerThings.AllThings)
             {
-                if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+                if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
                 {
                     AnimalData animalData = AnimalScribeManager.AnimalToString(thing as Pawn);
 
@@ -1229,14 +1229,12 @@ namespace GameClient
 
         private static Map SetEmptyMap(MapData mapData)
         {
-            string[] splitSize = mapData.mapSize.Split('|');
-
-            IntVec3 mapSize = new IntVec3(int.Parse(splitSize[0]), int.Parse(splitSize[1]),
-                int.Parse(splitSize[2]));
+            IntVec3 mapSize = ValueParser.StringToVector3(mapData.mapSize);
 
             PlanetManagerHelper.SetOverrideGenerators();
             Map toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null);
             PlanetManagerHelper.SetDefaultGenerators();
+
             return toReturn;
         }
 

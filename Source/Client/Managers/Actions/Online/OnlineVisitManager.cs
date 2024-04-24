@@ -102,9 +102,6 @@ namespace GameClient
 
         public static void StopVisit()
         {
-            //TODO
-            //Implement this
-
             VisitData visitData = new VisitData();
             visitData.visitStepMode = (int)VisitStepMode.Stop;
 
@@ -228,9 +225,6 @@ namespace GameClient
                 Thread.Sleep(1000);
 
                 ActionClockTick();
-
-                Find.TickManager.CurTimeSpeed = TimeSpeed.Normal;
-                Find.TickManager.slower.SignalForceNormalSpeed();
             }
         }
 
@@ -259,8 +253,8 @@ namespace GameClient
                     }
 
                     visitData.isDrafted.Add(OnlineVisitHelper.GetPawnDraftState(pawn));
-                    visitData.positionSync.Add(OnlineVisitHelper.Vector3ToString(pawn.Position));
-                    visitData.rotationSync.Add(OnlineVisitHelper.Rot4ToInt(pawn.Rotation));
+                    visitData.positionSync.Add(ValueParser.Vector3ToString(pawn.Position));
+                    visitData.rotationSync.Add(ValueParser.Rot4ToInt(pawn.Rotation));
                 }
                 catch { Log.Warning($"Couldn't get job for human {pawn.Name}"); }
             }
@@ -292,8 +286,8 @@ namespace GameClient
 
                     if (newJob == null) return;
 
-                    IntVec3 jobPositionStart = OnlineVisitHelper.StringToVector3(visitData.positionSync[i]);
-                    Rot4 jobRotationStart = OnlineVisitHelper.StringToRot4(visitData.rotationSync[i]);
+                    IntVec3 jobPositionStart = ValueParser.StringToVector3(visitData.positionSync[i]);
+                    Rot4 jobRotationStart = ValueParser.StringToRot4(visitData.rotationSync[i]);
 
                     VisitActionHelper.ChangeCurrentJobSpeedIfNeeded(newJob);
                     VisitActionHelper.HandlePawnDrafting(otherPawns[i], visitData.isDrafted[i]);
@@ -313,7 +307,7 @@ namespace GameClient
                 if (targetInfo.Thing == null)
                 {
                     visitData.actionTargetType.Add(((int)ActionTargetType.Cell));
-                    return OnlineVisitHelper.Vector3ToString(targetInfo.Cell);
+                    return ValueParser.Vector3ToString(targetInfo.Cell);
                 }
 
                 else
@@ -367,7 +361,7 @@ namespace GameClient
 
         public static void ChangeCurrentJobIfNeeded(Pawn pawn, Job newJob, IntVec3 positionSync, Rot4 rotationSync)
         {
-            if (pawn.jobs.curJob == null) pawn.jobs.TryTakeOrderedJob(newJob);
+            if (pawn.jobs.curJob == null) pawn.jobs.StartJob(newJob);
             else
             {
                 if (pawn.jobs.curJob.def == newJob.def)
@@ -377,7 +371,7 @@ namespace GameClient
                     {
                         TryChangePawnPosition(pawn, positionSync, rotationSync);
                         pawn.jobs.EndCurrentOrQueuedJob(pawn.jobs.curJob, JobCondition.InterruptForced);
-                        pawn.jobs.TryTakeOrderedJob(newJob);
+                        pawn.jobs.StartJob(newJob);
                     }
                 }
 
@@ -385,7 +379,7 @@ namespace GameClient
                 {
                     TryChangePawnPosition(pawn, positionSync, rotationSync);
                     pawn.jobs.EndCurrentOrQueuedJob(pawn.jobs.curJob, JobCondition.InterruptForced);
-                    pawn.jobs.TryTakeOrderedJob(newJob);
+                    pawn.jobs.StartJob(newJob);
                 }
             }
         }
@@ -437,23 +431,19 @@ namespace GameClient
                 switch (type)
                 {
                     case ActionTargetType.Thing:
-                        Log.Message(index.ToString());
                         target = new LocalTargetInfo(OnlineVisitManager.mapThings[index]);
                         break;
 
                     case ActionTargetType.Human:
-                        Log.Message(index.ToString());
                         target = new LocalTargetInfo(OnlineVisitManager.nonFactionPawns[index]);
                         break;
 
                     case ActionTargetType.Animal:
-                        Log.Message(index.ToString());
                         target = new LocalTargetInfo(OnlineVisitManager.nonFactionPawns[index]);
                         break;
 
                     case ActionTargetType.Cell:
-                        string[] cellCoords = toReadFrom.Split('|');
-                        IntVec3 cell = new IntVec3(int.Parse(cellCoords[0]), int.Parse(cellCoords[1]), int.Parse(cellCoords[2]));
+                        IntVec3 cell = ValueParser.StringToVector3(toReadFrom);
                         if (cell != null) target = new LocalTargetInfo(cell);
                         break;
                 }
@@ -693,38 +683,7 @@ namespace GameClient
                 else thingsInMap.Add(thing);
             }
 
-            string toPrint = "";
-            foreach(Thing thing in thingsInMap)
-            {
-                toPrint += $"{thing.def.defName}{Environment.NewLine}";
-            }
-            Log.Warning(toPrint.Count().ToString());
-            Log.Warning(toPrint);
-
-            Debug.LogWarning(thingsInMap.Count());
-
             return thingsInMap.OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToArray();
-        }
-
-        public static IntVec3 StringToVector3(string data)
-        {
-            string[] dataSplit = data.Split('|');
-            return new IntVec3(int.Parse(dataSplit[0]), int.Parse(dataSplit[1]), int.Parse(dataSplit[2]));
-        }
-
-        public static string Vector3ToString(IntVec3 data)
-        {
-            return $"{data.x}|{data.y}|{data.z}";
-        }
-
-        public static Rot4 StringToRot4(int data)
-        {
-            return new Rot4(data);
-        }
-
-        public static int Rot4ToInt(Rot4 data)
-        {
-            return data.AsInt;
         }
     }
 }
