@@ -33,8 +33,8 @@ namespace GameClient
         public static Site chosenSite;
         public static CompLaunchable chosendPods;
 
-        public static TransferManifestJSON outgoingManifest = new TransferManifestJSON();
-        public static TransferManifestJSON incomingManifest = new TransferManifestJSON();
+        public static TransferData outgoingManifest = new TransferData();
+        public static TransferData incomingManifest = new TransferData();
         public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();
 
         public static string username;
@@ -96,8 +96,8 @@ namespace GameClient
             chosenCaravan = null;
             chosenSite = null;
 
-            outgoingManifest = new TransferManifestJSON();
-            incomingManifest = new TransferManifestJSON();
+            outgoingManifest = new TransferData();
+            incomingManifest = new TransferData();
             listToShowInTradesMenu = new List<Tradeable>();
         }
     }

@@ -3,12 +3,12 @@
 namespace Shared
 {
     [Serializable]
-    public class SpyDetailsJSON
+    public class SpyData
     {
         public string spyStepMode;
 
         public string targetTile;
 
-        public byte[] mapDetails;
+        public byte[] mapData;
     }
 }
