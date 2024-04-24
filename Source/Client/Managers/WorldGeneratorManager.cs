@@ -61,6 +61,7 @@ namespace GameClient
 
         public static void SetValuesFromServer(WorldData worldData)
         {
+            
             seedString = worldData.seedString;
             persistentRandomValue = worldData.persistentRandomValue;
             planetCoverage = float.Parse(worldData.planetCoverage);
@@ -69,19 +70,77 @@ namespace GameClient
             population = (OverallPopulation)int.Parse(worldData.population);
             pollution = float.Parse(worldData.pollution);
 
+
+
+            factions = new List<FactionDef>();
+            FactionDef factionToAdd;
+            Dictionary<string, FactionData> factionDictionary = new Dictionary<string, FactionData>();
+            Dictionary<string, byte[]> cacheDetailsFactionDict = new Dictionary<string, byte[]>();
+
+            //Convert the string-byte[] dictionary into a string-FactionData dictionary
+            foreach (string str in worldData.factions.Keys)
+            {
+                factionDictionary[str] = (FactionData)Serializer.ConvertBytesToObject(worldData.factions[str]);
+            }
+
             //TODO
             //We might want to add a message for the players to let them know factions are missing
             //For now, we output into the console for debugging purposes
 
-            factions = new List<FactionDef>();
-            foreach(string factionName in worldData.factions.Keys)
+            //for each faction in worldDetails, try to add it to the client's world
+            FactionData factionData = new FactionData();
+            foreach (string factionName in factionDictionary.Keys)
             {
-                FactionDef faction = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
-                if (faction != null) factions.Add(faction);
-                else Log.Warning($"[Rimworld Together] > Faction '{factionName}' wasn't found in the client's game, ignoring");
+                factionToAdd = DefDatabase<FactionDef>.AllDefs.FirstOrCreate(factionDictionary[factionName] ,fetch => fetch.defName == factionName);
+
+                factionToAdd.fixedName = factionDictionary[factionName].fixedName;
+                factions.Add(factionToAdd);
+                factionData = FactionScribeManager.factionToFactionDetails(factionToAdd);
+                cacheDetailsFactionDict[factionName] = Serializer.ConvertObjectToBytes(factionData);
             }
 
+            worldData.factions = cacheDetailsFactionDict;
             cachedWorldData = worldData;
+        }
+
+        public static FactionDef FirstOrCreate(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate)
+        {
+            //Try to find the exact faction saved on the server
+            FactionDef factionToReturn = factionDefs.FirstOrDefault(predicate);
+
+
+            if (factionToReturn == null)
+            {
+                //try to find a similar faction that is currently in the world
+                Faction factionFound = Current.Game.World.factionManager.AllFactions.FirstOrDefault(
+                                fetch => (fetch.def.permanentEnemy == currentFaction.permanentEnemy) &&
+                                (fetch.def.naturalEnemy == currentFaction.naturalEnemy) &&
+                                ((byte)fetch.def.techLevel == currentFaction.techLevel) &&
+                                (fetch.def.hidden == currentFaction.hidden));
+
+                if (factionFound != null)
+                    factionToReturn = factionFound.def;
+
+                //if try to find a similar faction in all factionDefs
+                if (factionToReturn == null)
+                {
+                    factionToReturn = factionDefs.FirstOrDefault(
+                        fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
+                                (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
+                                ((byte)fetch.techLevel == currentFaction.techLevel) &&
+                                (fetch.hidden == currentFaction.hidden));
+
+                    //if a faction cannot be found with similar details, then make a new faction using the sent faction's details
+                    if (factionToReturn == null)
+                    {
+                        factionToReturn = FactionScribeManager.factionDetailsToFaction(currentFaction);
+                    }
+
+
+                }
+            }
+
+            return factionToReturn;
         }
 
         public static void GeneratePatchedWorld(bool firstGeneration)
@@ -117,7 +176,9 @@ namespace GameClient
             Current.CreatingWorld.info.factions = factions;
             Current.CreatingWorld.info.pollution = pollution;
 
-            List<WorldGenStepDef> worldGenSteps = GenStepsInOrder.ToList();
+            WorldGenerationData.initializeGenerationDefs();
+            List<WorldGenStepDef> worldGenSteps = WorldGenerationData.RT_WorldGenSteps.ToList();
+
             for (int i = 0; i < worldGenSteps.Count(); i++)
             {
                 Rand.Seed = Gen.HashCombineInt(seed, GetSeedPart(worldGenSteps, i));
@@ -126,7 +187,7 @@ namespace GameClient
 
             if (!ClientValues.needsToGenerateWorld)
             {
-                XmlParser.parseGrid(cachedWorldDetails, tileData);
+                XmlParser.parseGrid(cachedWorldData, tileData);
 
                 RawDataToTiles(Current.CreatingWorld.grid, tileData);
             }
@@ -274,12 +335,15 @@ namespace GameClient
             worldData.temperature = ((int)temperature).ToString();
             worldData.population = ((int)population).ToString();
             worldData.pollution = pollution.ToString();
-           
-            foreach(FactionDef faction in factions)
+
+            foreach (FactionDef factionDef in factions)
             {
-                worldData.factions.Add(faction.defName);
+                FactionData factionData = FactionScribeManager.factionToFactionDetails(factionDef);
+                worldData.factions[factionDef.defName] = Serializer.ConvertObjectToBytes(factionData);
             }
 
+            worldData = XmlParser.GetWorldXmlData(worldData);
+            Log.Message(worldData.deflateDictionary[worldData.deflateDictionary.Keys.Last()]);
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);
         }

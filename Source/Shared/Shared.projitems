@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\DifficultyData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\FileTransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\KeepAliveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\LoginData.cs" />

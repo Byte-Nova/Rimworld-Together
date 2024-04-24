@@ -11,44 +11,41 @@ namespace GameClient
 {
     public static class WorldGenerationData
     {
-        public static WorldGenStepDef[] WorldSyncSteps;
+        public static List<WorldGenStepDef> RT_WorldGenSteps;
 
+        public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
+                                                                      orderby x.order, x.index
+                                                                      select x;
+
+        //A dictionary of the custom classes of world gen steps
+        public static Dictionary<string, WorldGenStep> worldGenStepDict = new()
+        {
+            { "Terrain" ,       new WorldGenStep_Terrain()},
+            { "Components",     new WorldGenStep_Components()},
+            { "Lakes",          new WorldGenStep_Lakes()},
+            { "Rivers",         new WorldGenStep_Rivers()},
+            { "AncientSites",   new WorldGenStep_AncientSites()},
+            { "AncientRoads",   new WorldGenStep_AncientRoads()},
+            { "Pollution",      new WorldGenStep_Pollution()},
+            { "Factions",       new WorldGenStep_Factions()},
+            { "Roads",          new WorldGenStep_Roads()},
+            { "Features",       new WorldGenStep_Features() }
+
+        };
+
+
+        //For each loaded worldGenStepDef, if Rimworld Together has a custom class for that step,
+        //replace the current step with the custom step.
         public static void initializeGenerationDefs()
         {
-            List<WorldGenStepDef> WorldSyncStepsList = new List<WorldGenStepDef>();
+            RT_WorldGenSteps = GenStepsInOrder.ToList();
 
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count - 1].worldGenStep = new WorldGenStep_Terrain();
-
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count-1].worldGenStep = new WorldGenStep_Components();
-
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count - 1].worldGenStep = new WorldGenStep_Lakes();
-
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count - 1].worldGenStep = new WorldGenStep_Rivers();
-
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count - 1].worldGenStep = new WorldGenStep_AncientSites();
-
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count - 1].worldGenStep = new WorldGenStep_AncientRoads();
-
-
-            if (ModLister.BiotechInstalled)
+            foreach (WorldGenStepDef step in RT_WorldGenSteps)
             {
-                WorldSyncStepsList.Add(new WorldGenStepDef());
-                WorldSyncStepsList[WorldSyncStepsList.Count-1].worldGenStep = new WorldGenStep_Pollution();
+                if (worldGenStepDict.ContainsKey(step.defName))
+                    step.worldGenStep = worldGenStepDict[step.defName];
             }
 
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count-1].worldGenStep = new WorldGenStep_Factions();
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count-1].worldGenStep = new WorldGenStep_Roads();
-            WorldSyncStepsList.Add(new WorldGenStepDef());
-            WorldSyncStepsList[WorldSyncStepsList.Count-1].worldGenStep = new WorldGenStep_Features();
-            WorldSyncSteps = WorldSyncStepsList.ToArray();
         }
     }
 }
