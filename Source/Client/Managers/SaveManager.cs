@@ -74,7 +74,12 @@ namespace GameClient
             fileTransferData.fileBytes = Network.listener.uploadManager.ReadFilePart();
             fileTransferData.isLastPart = Network.listener.uploadManager.isLastPart;
 
-            if (ClientValues.isDisconnecting || ClientValues.isQuiting) fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+            if (DisconnectionManager.isIntentionalDisconnect 
+                && (DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToMenu 
+                || DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToOS))
+            {
+                fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+            }
             else fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);

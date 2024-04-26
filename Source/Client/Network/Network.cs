@@ -48,7 +48,7 @@ namespace GameClient
 
         //Tries to connect into the specified server
 
-        private static bool TryConnectToServer()
+        public static bool TryConnectToServer()
         {
             if (isTryingToConnect || isConnectedToServer) return false;
             else
@@ -68,21 +68,13 @@ namespace GameClient
         }
 
         //Disconnects client from the server
-
         public static void DisconnectFromServer()
         {
             listener.DestroyConnection();
 
-            Log.Message($"[Rimworld Together] > Disconnected from server");
-
-            if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
-            else if (ClientValues.isDisconnecting) DisconnectionManager.DisconnectToMenu();
-            else
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Connection to the server has been lost!",
-                    delegate { DisconnectionManager.DisconnectToMenu(); }));
-            }
+            DisconnectionManager.HandleDisconnect();
         }
+
 
         //Clears all related values
 

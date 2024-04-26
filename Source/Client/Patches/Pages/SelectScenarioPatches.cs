@@ -22,6 +22,7 @@ namespace GameClient
                 if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                 {
                     __instance.Close();
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
                     Network.listener.disconnectFlag = true;
                 }
                 return true;

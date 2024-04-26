@@ -22,7 +22,7 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
-                    ClientValues.ToggleDisconnecting(true);
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
                     SaveManager.ForceSave();
                 }
 
@@ -31,7 +31,7 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
-                    ClientValues.ToggleQuiting(true);
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToOS);
                     SaveManager.ForceSave();
                 }
             }

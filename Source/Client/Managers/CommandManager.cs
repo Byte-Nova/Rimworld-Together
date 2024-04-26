@@ -59,7 +59,7 @@ namespace GameClient
             if (!ClientValues.isReadyToPlay) DisconnectionManager.DisconnectToMenu();
             else
             {
-                ClientValues.isDisconnecting = true;
+                ClientValues.SetIntentionalDisconnect( true, DisconnectionManager.DCReason.SaveQuitToMenu );
                 SaveManager.ForceSave();
             }
         }
