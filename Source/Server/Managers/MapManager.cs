@@ -32,7 +32,7 @@ namespace GameServer
             foreach (string map in maps)
             {
                 if (!map.EndsWith(".mpmap")) continue;
-                byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(str));
+                byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(map));
 
                 MapFileData newMap = (MapFileData)Serializer.ConvertBytesToObject(decompressedBytes);
                 mapDatas.Add(newMap);
