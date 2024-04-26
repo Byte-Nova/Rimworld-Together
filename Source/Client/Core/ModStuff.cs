@@ -63,7 +63,7 @@ namespace GameClient
         private void ShowAutosaveFloatMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            List<Tuple<string, float>> savedServers = new List<Tuple<string, float>>()
+            List<Tuple<string, float>> autosaveDays = new List<Tuple<string, float>>()
             {
                 Tuple.Create("0.125 Days", 0.125f),
                 Tuple.Create("0.25 Days", 0.25f),
@@ -76,7 +76,7 @@ namespace GameClient
                 Tuple.Create("14 Days", 14.0f)
             };
 
-            foreach (Tuple<string, float> tuple in savedServers)
+            foreach (Tuple<string, float> tuple in autosaveDays)
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
