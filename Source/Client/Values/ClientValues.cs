@@ -10,20 +10,6 @@ namespace GameClient
     {
         public static bool needsToGenerateWorld;
 
-        public enum DCReason
-        {
-          None,
-          SaveQuitToMenu,
-          SaveQuitToOS,
-          QuitToMenu,
-          QuitToOS,
-          LoginError,
-          ReturnToMenuSilently
-        }
-
-        public static bool isIntentionalDisconnect;
-        public static DCReason intentionalDisconnectReason;
-
         public static bool isReadyToPlay;
 
         public static bool isSavingGame;
@@ -70,9 +56,10 @@ namespace GameClient
 
         public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
     
-        public static void SetIntentionalDisconnect( bool mode, DCReason reason = DCReason.None ) { 
-          isIntentionalDisconnect = mode; 
-          intentionalDisconnectReason = reason; 
+        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None) 
+        { 
+            DisconnectionManager.isIntentionalDisconnect = mode;
+            DisconnectionManager.intentionalDisconnectReason = reason; 
         }
 
         public static void ToggleReadyToPlay(bool mode) { isReadyToPlay = mode; }

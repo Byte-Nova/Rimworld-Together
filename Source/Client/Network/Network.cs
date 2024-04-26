@@ -67,56 +67,16 @@ namespace GameClient
             }
         }
 
-    //Disconnects client from the server
-    public static void DisconnectFromServer()
-    {
-      listener.DestroyConnection();
+        //Disconnects client from the server
+        public static void DisconnectFromServer()
+        {
+            listener.DestroyConnection();
 
-      if ( ClientValues.isIntentionalDisconnect ) {
-        string reason = "ERROR";
-        switch ( ClientValues.intentionalDisconnectReason ) {
-        case ClientValues.DCReason.None:
-          reason = "No reason given.";
-          DisconnectionManager.DisconnectToMenu();
-          break;
-        case ClientValues.DCReason.QuitToMenu:
-          reason = "Quit to menu.";
-          DialogManager.PushNewDialog( new RT_Dialog_OK( "Returning to main menu.", delegate { DisconnectionManager.DisconnectToMenu(); }));
-          break;
-        case ClientValues.DCReason.QuitToOS:
-          reason = "Quit to OS.";
-          DialogManager.PushNewDialog( new RT_Dialog_OK( "Quitting game.", delegate { DisconnectionManager.QuitGame(); }));
-          break;
-        case ClientValues.DCReason.SaveQuitToMenu:
-          reason = "Save and Quit to Menu.";
-          DialogManager.PushNewDialog( new RT_Dialog_OK( "Your progress has been saved!", delegate { DisconnectionManager.DisconnectToMenu(); }));
-          break;
-        case ClientValues.DCReason.SaveQuitToOS:
-          reason = "Save and Quit to OS.";
-          DialogManager.PushNewDialog( new RT_Dialog_OK( "Your progress has been saved!", delegate { DisconnectionManager.QuitGame(); }));
-          break;
-        case ClientValues.DCReason.LoginError:
-          reason = "Login Error.";
-          DisconnectionManager.DisconnectToMenu();
-          break;
-        case ClientValues.DCReason.ReturnToMenuSilently:
-          reason = "Silent Return to Menu.";
-          DisconnectionManager.DisconnectToMenu();
-          break;
-        default:
-          reason = $"{ClientValues.intentionalDisconnectReason}";
-          DisconnectionManager.DisconnectToMenu();
-          break;
+            DisconnectionManager.HandleDisconnect();
         }
-        Log.Message( $"[Rimworld Together] > Disconnected from server : {reason}" );
-      } else {
-        Log.Message( $"[Rimworld Together] > Disconnected from server : Connection Lost" );
-        DialogManager.PushNewDialog( new RT_Dialog_Error( "Your connection to the server has been lost...", delegate { DisconnectionManager.DisconnectToMenu(); }));
-      }
-    }
 
 
-       //Clears all related values
+        //Clears all related values
 
         public static void CleanValues()
         {
