@@ -77,10 +77,8 @@ namespace GameServer
                 connectedClients.Remove(client);
                 client.listener.DestroyConnection();
 
-                UserManager.SendPlayerRecount();
-
                 Master.ChangeTitle();
-
+                UserManager.SendPlayerRecount();
                 Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
             }
 

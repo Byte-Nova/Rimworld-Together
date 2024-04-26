@@ -16,7 +16,7 @@ namespace GameClient
                 Mode.Health => Task.Run(Network.listener.CheckConnectionHealth),
                 Mode.KASender => Task.Run(Network.listener.SendKAFlag),
                 Mode.Visit => Task.Run(VisitActionGetter.StartActionClock),
-                Mode.Chat => Task.Run(ChatManager.ChatClock),
+                Mode.Chat => Task.Run(OnlineChatManager.ChatClock),
                 _ => throw new NotImplementedException()
             };
         }

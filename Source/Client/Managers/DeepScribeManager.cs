@@ -59,7 +59,7 @@ namespace GameClient
 
             GetPawnEquipment(pawn, humanData);
 
-            GetPawnInventory(pawn, humanData, passInventory);
+            if (passInventory) GetPawnInventory(pawn, humanData);
 
             GetPawnFavoriteColor(pawn, humanData);
 
@@ -291,9 +291,9 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnInventory(Pawn pawn, HumanData humanData, bool passInventory)
+        private static void GetPawnInventory(Pawn pawn, HumanData humanData)
         {
-            if (pawn.inventory.innerContainer.Count() != 0 && passInventory)
+            if (pawn.inventory.innerContainer.Count() != 0)
             {
                 foreach (Thing thing in pawn.inventory.innerContainer)
                 {
@@ -975,7 +975,7 @@ namespace GameClient
         {
             try 
             {
-                if (TransferManagerHelper.CheckIfThingHasMaterial(thing)) itemData.materialDefName = thing.Stuff.defName;
+                if (DeepScribeHelper.CheckIfThingHasMaterial(thing)) itemData.materialDefName = thing.Stuff.defName;
                 else itemData.materialDefName = null;
             }
             catch { Log.Warning($"Failed to get material of thing {thing.def.defName}"); }
@@ -989,7 +989,7 @@ namespace GameClient
 
         private static void GetItemQuality(Thing thing, ItemData itemData)
         {
-            try { itemData.quality = TransferManagerHelper.GetThingQuality(thing); }
+            try { itemData.quality = DeepScribeHelper.GetThingQuality(thing); }
             catch { Log.Warning($"Failed to get quality of thing {thing.def.defName}"); }
         }
 
@@ -1019,7 +1019,7 @@ namespace GameClient
         {
             try 
             {
-                itemData.isMinified = TransferManagerHelper.CheckIfThingIsMinified(thing);
+                itemData.isMinified = DeepScribeHelper.CheckIfThingIsMinified(thing);
                 return itemData.isMinified;
             }
             catch { Log.Warning($"Failed to get minified of thing {thing.def.defName}"); }
@@ -1107,7 +1107,7 @@ namespace GameClient
     {
         //Functions
 
-        public static MapData MapToString(Map map, bool containsItems, bool containsHumans, bool containsAnimals)
+        public static MapData MapToString(Map map, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, bool factionAnimals, bool nonFactionAnimals)
         {
             MapData mapData = new MapData();
 
@@ -1115,26 +1115,32 @@ namespace GameClient
 
             GetMapSize(mapData, map);
 
-            GetMapThings(mapData, map, containsItems, containsHumans, containsAnimals);
+            GetMapTerrain(mapData, map);
+
+            GetMapThings(mapData, map, factionThings, nonFactionThings);
+
+            GetMapHumans(mapData, map, factionHumans, nonFactionHumans);
+
+            GetMapAnimals(mapData, map, factionAnimals, nonFactionAnimals);
 
             return mapData;
         }
 
-        public static Map StringToMap(MapData mapData, bool containsItems, bool containsHumans, bool containsAnimals, bool lessLoot)
+        public static Map StringToMap(MapData mapData, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false)
         {
             Map map = SetEmptyMap(mapData);
 
-            SetMapThings(mapData, map, containsItems, lessLoot);
-
-            if (containsHumans) SetMapHumans(mapData, map);
-
-            if (containsAnimals) SetMapAnimals(mapData, map);
-
             SetMapTerrain(mapData, map);
 
-            SetMapFog(map);
+            if (factionThings || nonFactionThings) SetMapThings(mapData, map, factionThings, nonFactionThings, lessLoot);
 
-            SetMapRoof(map);
+            if (factionHumans || nonFactionHumans) SetMapHumans(mapData, map, factionHumans, nonFactionHumans);
+
+            if (factionAnimals || nonFactionAnimals) SetMapAnimals(mapData, map, factionAnimals, nonFactionAnimals);
+
+            UnfogMap(map);
+
+            ResetMapRoofs(map);
 
             return map;
         }
@@ -1148,10 +1154,10 @@ namespace GameClient
 
         private static void GetMapSize(MapData mapData, Map map)
         {
-            mapData.mapSize = $"{map.Size.x}|{map.Size.y}|{map.Size.z}";
+            mapData.mapSize = ValueParser.Vector3ToString(map.Size);
         }
 
-        private static void GetMapThings(MapData mapData, Map map, bool containsItems, bool containsHumans, bool containsAnimals)
+        private static void GetMapTerrain(MapData mapData, Map map)
         {
             for (int z = 0; z < map.Size.z; ++z)
             {
@@ -1165,39 +1171,56 @@ namespace GameClient
                     else mapData.roofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
                 }
             }
+        }
 
+        private static void GetMapThings(MapData mapData, Map map, bool factionThings, bool nonFactionThings)
+        {
             foreach (Thing thing in map.listerThings.AllThings)
             {
-                if (TransferManagerHelper.CheckIfThingIsHuman(thing))
-                {
-                    if (containsHumans)
-                    {
-                        HumanData humanData = HumanScribeManager.HumanToString(thing as Pawn);
-                        if (thing.Faction == Faction.OfPlayer) mapData.factionHumans.Add(humanData);
-                        else mapData.nonFactionHumans.Add(humanData);
-                    }
-                }
-
-                else if (TransferManagerHelper.CheckIfThingIsAnimal(thing))
-                {
-                    if (containsAnimals)
-                    {
-                        AnimalData animalData = AnimalScribeManager.AnimalToString(thing as Pawn);
-                        if (thing.Faction == Faction.OfPlayer) mapData.factionAnimals.Add(animalData);
-                        else mapData.nonFactionAnimals.Add(animalData);
-                    }
-                }
-
-                else
+                if (!DeepScribeHelper.CheckIfThingIsHuman(thing) && !DeepScribeHelper.CheckIfThingIsAnimal(thing))
                 {
                     ItemData itemData = ThingScribeManager.ItemToString(thing, thing.stackCount);
 
-                    if (thing.def.alwaysHaulable)
+                    if (thing.def.alwaysHaulable && factionThings) mapData.factionThings.Add(itemData);
+                    else if (!thing.def.alwaysHaulable && nonFactionThings) mapData.nonFactionThings.Add(itemData);
+
+                    if (DeepScribeHelper.CheckIfThingCanGrow(thing))
                     {
-                        if (containsItems) mapData.factionThings.Add(itemData);
-                        else continue;
+                        try
+                        {
+                            Plant plant = thing as Plant;
+                            itemData.growthTicks = plant.Growth; 
+                        }
+                        catch { Log.Warning($"Failed to parse plant {thing.def.defName}"); }
                     }
-                    else mapData.nonFactionThings.Add(itemData);
+                }
+            }
+        }
+
+        private static void GetMapHumans(MapData mapData, Map map, bool factionHumans, bool nonFactionHumans)
+        {
+            foreach (Thing thing in map.listerThings.AllThings)
+            {
+                if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+                {
+                    HumanData humanData = HumanScribeManager.HumanToString(thing as Pawn);
+
+                    if (thing.Faction == Faction.OfPlayer && factionHumans) mapData.factionHumans.Add(humanData);
+                    else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) mapData.nonFactionHumans.Add(humanData);
+                }
+            }
+        }
+
+        private static void GetMapAnimals(MapData mapData, Map map, bool factionAnimals, bool nonFactionAnimals)
+        {
+            foreach (Thing thing in map.listerThings.AllThings)
+            {
+                if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
+                {
+                    AnimalData animalData = AnimalScribeManager.AnimalToString(thing as Pawn);
+
+                    if (thing.Faction == Faction.OfPlayer && factionAnimals) mapData.factionAnimals.Add(animalData);
+                    else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) mapData.nonFactionAnimals.Add(animalData);
                 }
             }
         }
@@ -1206,107 +1229,13 @@ namespace GameClient
 
         private static Map SetEmptyMap(MapData mapData)
         {
-            string[] splitSize = mapData.mapSize.Split('|');
-
-            IntVec3 mapSize = new IntVec3(int.Parse(splitSize[0]), int.Parse(splitSize[1]),
-                int.Parse(splitSize[2]));
+            IntVec3 mapSize = ValueParser.StringToVector3(mapData.mapSize);
 
             PlanetManagerHelper.SetOverrideGenerators();
             Map toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null);
             PlanetManagerHelper.SetDefaultGenerators();
+
             return toReturn;
-        }
-
-        private static void SetMapThings(MapData mapData, Map map, bool containsItems, bool lessLoot)
-        {
-            List<Thing> thingsToGetInThisTile = new List<Thing>();
-
-            foreach (ItemData item in mapData.nonFactionThings)
-            {
-                try
-                {
-                    Thing toGet = ThingScribeManager.StringToItem(item);
-                    thingsToGetInThisTile.Add(toGet);
-                }
-                catch { }
-            }
-
-            if (containsItems)
-            {
-                Random rnd = new Random();
-
-                foreach (ItemData item in mapData.factionThings)
-                {
-                    try
-                    {
-                        Thing toGet = ThingScribeManager.StringToItem(item);
-
-                        if (lessLoot)
-                        {
-                            if (rnd.Next(1, 100) > 70) thingsToGetInThisTile.Add(toGet);
-                            else continue;
-                        }
-                        else thingsToGetInThisTile.Add(toGet);
-                    }
-                    catch { }
-                }
-            }
-
-            foreach (Thing thing in thingsToGetInThisTile)
-            {
-                try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation); }
-                catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
-            }
-        }
-
-        private static void SetMapHumans(MapData mapData, Map map)
-        {
-            foreach (HumanData pawn in mapData.nonFactionHumans)
-            {
-                try
-                {
-                    Pawn human = HumanScribeManager.StringToHuman(pawn);
-                    GenSpawn.Spawn(human, human.Position, map, human.Rotation);
-                }
-                catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
-            }
-
-            foreach (HumanData pawn in mapData.factionHumans)
-            {
-                try
-                {
-                    Pawn human = HumanScribeManager.StringToHuman(pawn);
-                    human.SetFaction(FactionValues.neutralPlayer);
-
-                    GenSpawn.Spawn(human, human.Position, map, human.Rotation);
-                }
-                catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
-            }
-        }
-
-        private static void SetMapAnimals(MapData mapData, Map map)
-        {
-            foreach (AnimalData pawn in mapData.nonFactionAnimals)
-            {
-                try
-                {
-                    Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
-                    GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
-                }
-                catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
-            }
-
-            foreach (AnimalData pawn in mapData.factionAnimals)
-            {
-                try
-                {
-                    Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
-                    animal.SetFaction(FactionValues.neutralPlayer);
-
-                    GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
-                }
-                catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
-            }
         }
 
         private static void SetMapTerrain(MapData mapData, Map map)
@@ -1343,15 +1272,197 @@ namespace GameClient
             }
         }
 
-        private static void SetMapFog(Map map)
+        private static void SetMapThings(MapData mapData, Map map, bool factionThings, bool nonFactionThings, bool lessLoot)
+        {
+            List<Thing> thingsToGetInThisTile = new List<Thing>();
+
+            if (factionThings)
+            {
+                Random rnd = new Random();
+
+                foreach (ItemData item in mapData.factionThings)
+                {
+                    try
+                    {
+                        Thing toGet = ThingScribeManager.StringToItem(item);
+
+                        if (lessLoot)
+                        {
+                            if (rnd.Next(1, 100) > 70) thingsToGetInThisTile.Add(toGet);
+                            else continue;
+                        }
+                        else thingsToGetInThisTile.Add(toGet);
+
+                        if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
+                        {
+                            Plant plant = toGet as Plant;
+                            plant.Growth = item.growthTicks;
+                        }
+                    }
+                    catch { Log.Warning($"Failed to parse thing {item.defName}"); }
+                }
+            }
+
+            if (nonFactionThings)
+            {
+                foreach (ItemData item in mapData.nonFactionThings)
+                {
+                    try
+                    {
+                        Thing toGet = ThingScribeManager.StringToItem(item);
+                        thingsToGetInThisTile.Add(toGet);
+
+                        if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
+                        {
+                            Plant plant = toGet as Plant;
+                            plant.Growth = item.growthTicks;
+                        }
+                    }
+                    catch { Log.Warning($"Failed to parse thing {item.defName}"); }
+                }
+            }
+
+            foreach (Thing thing in thingsToGetInThisTile)
+            {
+                try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation); }
+                catch { Log.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
+            }
+        }
+
+        private static void SetMapHumans(MapData mapData, Map map, bool factionHumans, bool nonFactionHumans)
+        {
+            if (factionHumans)
+            {
+                foreach (HumanData pawn in mapData.factionHumans)
+                {
+                    try
+                    {
+                        Pawn human = HumanScribeManager.StringToHuman(pawn);
+                        human.SetFaction(FactionValues.neutralPlayer);
+
+                        GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                    }
+                    catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
+                }
+            }
+
+            if (nonFactionHumans)
+            {
+                foreach (HumanData pawn in mapData.nonFactionHumans)
+                {
+                    try
+                    {
+                        Pawn human = HumanScribeManager.StringToHuman(pawn);
+                        GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                    }
+                    catch { Log.Warning($"Failed to spawn human {pawn.name}"); }
+                }
+            }
+        }
+
+        private static void SetMapAnimals(MapData mapData, Map map, bool factionAnimals, bool nonFactionAnimals)
+        {
+            if (factionAnimals)
+            {
+                foreach (AnimalData pawn in mapData.factionAnimals)
+                {
+                    try
+                    {
+                        Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
+                        animal.SetFaction(FactionValues.neutralPlayer);
+
+                        GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                    }
+                    catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
+                }
+            }
+
+            if (nonFactionAnimals)
+            {
+                foreach (AnimalData pawn in mapData.nonFactionAnimals)
+                {
+                    try
+                    {
+                        Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
+                        GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                    }
+                    catch { Log.Warning($"Failed to spawn animal {pawn.name}"); }
+                }
+            }
+        }
+
+        //Misc
+
+        private static void UnfogMap(Map map)
         {
             FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
         }
 
-        private static void SetMapRoof(Map map)
+        private static void ResetMapRoofs(Map map)
         {
             map.roofCollapseBuffer.Clear();
             map.roofGrid.Drawer.SetDirty();
+        }
+    }
+
+    //Class that contains helping functions for the deep scriber
+
+    public static class DeepScribeHelper
+    {
+        //Checks if transferable thing is a human
+
+        public static bool CheckIfThingIsHuman(Thing thing)
+        {
+            if (thing.def.defName == "Human") return true;
+            else return false;
+        }
+
+        //Checks if transferable thing is an animal
+
+        public static bool CheckIfThingIsAnimal(Thing thing)
+        {
+            PawnKindDef animal = DefDatabase<PawnKindDef>.AllDefs.ToList().Find(fetch => fetch.defName == thing.def.defName);
+            if (animal != null) return true;
+            else return false;
+        }
+
+        //Checks if transferable thing is an item that can have a growth state
+
+        public static bool CheckIfThingCanGrow(Thing thing)
+        {
+            try
+            {
+                Plant plant = thing as Plant;
+                _ = plant.Growth;
+                return true;
+            }
+            catch { return false; }
+        }
+
+        //Checks if transferable thing has a material
+
+        public static bool CheckIfThingHasMaterial(Thing thing)
+        {
+            if (thing.Stuff != null) return true;
+            else return false;
+        }
+
+        //Gets the quality of a transferable thing
+
+        public static string GetThingQuality(Thing thing)
+        {
+            QualityCategory qc = QualityCategory.Normal;
+            thing.TryGetQuality(out qc);
+
+            return ((int)qc).ToString();
+        }
+
+        //Checks if transferable thing is minified
+
+        public static bool CheckIfThingIsMinified(Thing thing)
+        {
+            if (thing.def == ThingDefOf.MinifiedThing || thing.def == ThingDefOf.MinifiedTree) return true;
+            else return false;
         }
     }
 }
