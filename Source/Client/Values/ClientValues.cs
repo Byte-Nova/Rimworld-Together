@@ -56,7 +56,7 @@ namespace GameClient
         public static bool rejectTransferBool;
         public static bool rejectSiteRewardsBool;
 
-        public static int autosaveDays = 1;
+        public static float autosaveDays = 1.0f;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = autosaveDays * 60000f;
 
