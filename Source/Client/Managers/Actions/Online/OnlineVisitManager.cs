@@ -494,7 +494,7 @@ namespace GameClient
 
         public static Map GetMapForVisit(MapData mapData)
         {
-            return MapScribeManager.StringToMap(mapData, true, true, true, true, true, true);
+            return MapScribeManager.StringToMap(mapData, true, true, false, true, false, true);
         }
 
         public static List<byte[]> GetHumansForVisit(FetchMode mode)
