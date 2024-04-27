@@ -18,5 +18,10 @@ namespace Shared
         public int rotation;
 
         public float growthTicks;
+
+        public bool isArt;
+        public string artTitle;
+        public string artDesc;
+        public string artAuthor;
     }
 }

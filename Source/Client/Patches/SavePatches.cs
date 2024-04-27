@@ -71,5 +71,28 @@ namespace GameClient
                 return false;
             }
         }
+
+        [HarmonyPatch(typeof(TaleReference), "GenerateText")]
+        class TaleReference_GenerateText_Patch
+        {
+            static bool Prefix(TaleReference __instance, ref TaggedString __result)
+            {
+                if (!(__instance is EditedTaleReference reference)) return true;
+                __result = new TaggedString(reference.editedTale);
+                return false;
+            }
+        }
+
+        [HarmonyPatch(typeof(TaleReference), "ExposeData")]
+        class TaleReference_ExposeData_Patch
+        {
+            static void Postfix(TaleReference __instance)
+            {
+                if (__instance is EditedTaleReference reference)
+                {
+                    Scribe_Values.Look(ref reference.editedTale, "editedTale", "Default Tale", false);
+                }
+            }
+        }
     }
 }
