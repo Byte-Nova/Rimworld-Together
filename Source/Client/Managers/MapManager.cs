@@ -37,9 +37,9 @@ namespace GameClient
 
         //Parses a desired map into an usable mod class
 
-        public static MapData ParseMap(Map map, bool includeItems, bool includeHumans, bool includeAnimals, bool includeMods)
+        public static MapData ParseMap(Map map, bool includeThings, bool includeHumans, bool includeAnimals, bool includeMods)
         {
-            MapData mapData = MapScribeManager.MapToString(map, includeItems, includeHumans, includeAnimals);
+            MapData mapData = MapScribeManager.MapToString(map, includeThings, includeThings, includeHumans, includeHumans, includeAnimals, includeAnimals);
 
             if (includeMods) mapData.mapMods = ModManager.GetRunningModList().ToList();
 

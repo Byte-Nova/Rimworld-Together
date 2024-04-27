@@ -53,6 +53,7 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach(string faction in factions)
             {
+                if (!faction.EndsWith(".json")) continue;
                 factionFiles.Add(Serializer.SerializeFromFile<FactionFile>(faction));
             }
 
@@ -64,6 +65,7 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach (string faction in factions)
             {
+                if (!faction.EndsWith(".json")) continue;
                 FactionFile factionFile = Serializer.SerializeFromFile<FactionFile>(faction);
                 if (factionFile.factionName == client.factionName) return factionFile;
             }
@@ -76,8 +78,10 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach (string faction in factions)
             {
+                if (!faction.EndsWith(".json")) continue;
                 FactionFile factionFile = Serializer.SerializeFromFile<FactionFile>(faction);
                 if (factionFile.factionName == factionName) return factionFile;
+                
             }
 
             return null;
