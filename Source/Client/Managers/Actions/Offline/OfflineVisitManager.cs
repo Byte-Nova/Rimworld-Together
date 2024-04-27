@@ -81,29 +81,14 @@ namespace GameClient
 
         private static void PrepareMapForOfflineVisit(MapData mapData)
         {
-            Map map = MapScribeManager.StringToMap(mapData, false, true, true, false);
+            Map map = MapScribeManager.StringToMap(mapData, false, true, true, true, true, true);
 
             //keep track of one pawn in the caravan to jump to later
             Pawn pawnToFocus = (ClientValues.chosenCaravan.pawns.Count > 0) ? ClientValues.chosenCaravan.pawns[0] : null;
 
             HandleMapFactions(map);
 
-            CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
-                CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
-
-            PrepareMapLord(map);
-
-            //Switch to the Map mode and focus on the caravan
-            CameraJumper.TryJump(pawnToFocus);
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop("MESSAGE", new string[]
-            {
-                "You are now in offline visit mode!",
-                "This mode allows you to visit an offline player!",
-                "To stop the visit exit the map creating a caravan"
-            },
-            DialogManager.clearStack);
-            DialogManager.PushNewDialog(d1);
+            
         }
 
         //Handles the factions of a desired map for the offline visit

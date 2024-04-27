@@ -13,14 +13,10 @@ namespace GameServer
         {
             if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}");
 
+            client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);
             methodInfo.Invoke(packet.header, new object[] { client, packet });
-        }
-
-        public static void KeepAlivePacket(ServerClient client, Packet packet)
-        {
-            client.listener.KAFlag = true;
         }
 
         public static void LoginClientPacket(ServerClient client, Packet packet)
@@ -119,6 +115,11 @@ namespace GameServer
         }
 
         //Empty functions
+
+        public static void KeepAlivePacket(ServerClient client, Packet packet)
+        {
+            //Empty
+        }
 
         public static void UserUnavailablePacket()
         {

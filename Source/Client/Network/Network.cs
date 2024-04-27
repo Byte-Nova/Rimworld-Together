@@ -49,7 +49,7 @@ namespace GameClient
 
         //Tries to connect into the specified server
 
-        private static bool TryConnectToServer()
+        public static bool TryConnectToServer()
         {
             if (isTryingToConnect || isConnectedToServer) return false;
             else
@@ -69,21 +69,13 @@ namespace GameClient
         }
 
         //Disconnects client from the server
-
         public static void DisconnectFromServer()
         {
             listener.DestroyConnection();
 
-            Logger.WriteToConsole("Disconnected from server", LogMode.Message);
-
-            if (ClientValues.isQuiting) DisconnectionManager.QuitGame();
-            else if (ClientValues.isDisconnecting) DisconnectionManager.DisconnectToMenu();
-            else
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Connection to the server has been lost!",
-                    DisconnectionManager.DisconnectToMenu));
-            }
+            DisconnectionManager.HandleDisconnect();
         }
+
 
         //Clears all related values
 

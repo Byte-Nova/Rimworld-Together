@@ -80,10 +80,8 @@ namespace GameServer
                 connectedClients.Remove(client);
                 client.listener.DestroyConnection();
 
-                UserManager.SendPlayerRecount();
-
                 Master.ChangeTitle();
-
+                UserManager.SendPlayerRecount();
                 Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
             }
             catch { Logger.WriteToConsole($"Error disconnecting user {client.username}, please report this issue", LogMode.Warning); }

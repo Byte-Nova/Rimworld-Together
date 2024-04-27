@@ -1,4 +1,5 @@
 ﻿using Shared;
+using System.Security.Policy;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -27,6 +28,7 @@ namespace GameServer
 
             foreach(string userFile in userFiles)
             {
+                if (!userFile.EndsWith(".json")) continue;
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
                 if (file.username == client.username) return file;
             }
@@ -40,6 +42,7 @@ namespace GameServer
 
             foreach (string userFile in userFiles)
             {
+                if (!userFile.EndsWith(".json")) continue;
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
                 if (file.username == username) return file;
             }
@@ -51,8 +54,12 @@ namespace GameServer
         {
             List<UserFile> userFiles = new List<UserFile>();
 
-            string[] paths = Directory.GetFiles(Master.usersPath);
-            foreach (string path in paths) userFiles.Add(Serializer.SerializeFromFile<UserFile>(path));
+            string[] existingUsers = Directory.GetFiles(Master.usersPath);
+            foreach (string user in existingUsers) 
+            {
+                if (!user.EndsWith(".json")) continue;
+                userFiles.Add(Serializer.SerializeFromFile<UserFile>(user)); 
+            }
             return userFiles.ToArray();
         }
 
@@ -99,6 +106,7 @@ namespace GameServer
 
             foreach (string user in existingUsers)
             {
+                if (!user.EndsWith(".json")) continue;
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
                 if (existingUser.username.ToLower() == data.username.ToLower())
                 {
@@ -117,6 +125,7 @@ namespace GameServer
 
             foreach (string user in existingUsers)
             {
+                if (!user.EndsWith(".json")) continue;
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
                 if (existingUser.username == data.username)
                 {

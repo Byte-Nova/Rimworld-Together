@@ -137,7 +137,7 @@ namespace GameClient
 
         private static void PrepareMapForSpy(MapData mapData)
         {
-            Map map = MapScribeManager.StringToMap(mapData, false, false, false, false);
+            Map map = MapScribeManager.StringToMap(mapData, false, true, false, true, false, true);
 
             //keep track of one pawn in the caravan to jump to later
             Pawn pawnToFocus = (ClientValues.chosenCaravan.pawns.Count > 0) ? ClientValues.chosenCaravan.pawns[0] : null;

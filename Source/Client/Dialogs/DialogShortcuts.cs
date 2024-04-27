@@ -36,12 +36,18 @@ namespace GameClient
                 "New User",
                 "Existing User",
                 delegate { DialogManager.PushNewDialog(a1); },
-                delegate {
+                delegate 
+                {
                     DialogManager.PushNewDialog(a2);
                     string[] loginDetails = PreferenceManager.LoadLoginData();
                     DialogManager.currentDialogInputs.SubstituteInputs(new(){ loginDetails[0], loginDetails[1] });
                 },
-                delegate { DialogManager.clearStack(); Network.listener.disconnectFlag = true; });
+                delegate 
+                {
+                    DialogManager.clearStack();
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu ); 
+                    Network.listener.disconnectFlag = true; 
+                });
 
             DialogManager.PushNewDialog(d1);
         }

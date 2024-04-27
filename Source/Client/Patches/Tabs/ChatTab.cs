@@ -40,29 +40,29 @@ namespace GameClient
         {
             base.PreOpen();
 
-            windowRect.y = ChatManager.chatBoxPosition.y;
-            windowRect.x = ChatManager.chatBoxPosition.x;
+            windowRect.y = OnlineChatManager.chatBoxPosition.y;
+            windowRect.x = OnlineChatManager.chatBoxPosition.x;
         }
 
         public override void PostOpen()
         {
             base.PostOpen();
 
-            ChatManager.isChatTabOpen = true;
-            ChatManager.ToggleChatIcon(false);
+            OnlineChatManager.isChatTabOpen = true;
+            OnlineChatManager.ToggleChatIcon(false);
         }
 
         public override void PostClose()
         {
             base.PostClose();
 
-            ChatManager.isChatTabOpen = false;
+            OnlineChatManager.isChatTabOpen = false;
         }
 
         public override void DoWindowContents(Rect rect)
         {
-            ChatManager.chatBoxPosition.x = windowRect.x;
-            ChatManager.chatBoxPosition.y = windowRect.y;
+            OnlineChatManager.chatBoxPosition.x = windowRect.x;
+            OnlineChatManager.chatBoxPosition.y = windowRect.y;
 
             DrawPlayerCount(rect);
 
@@ -76,7 +76,7 @@ namespace GameClient
 
             CheckForEnterKey();
 
-            if (ChatManager.shouldScrollChat) ScrollToLastMessage();
+            if (OnlineChatManager.shouldScrollChat) ScrollToLastMessage();
         }
 
         private void DrawPlayerCount(Rect rect)
@@ -91,7 +91,7 @@ namespace GameClient
         {
             float height = 6f;
 
-            foreach (string str in ChatManager.chatMessageCache.ToArray()) height += Text.CalcHeight(str, rect.width);
+            foreach (string str in OnlineChatManager.chatMessageCache.ToArray()) height += Text.CalcHeight(str, rect.width);
 
             Rect viewRect = new Rect(rect.x, rect.y, rect.width - 16f, height);
 
@@ -103,7 +103,7 @@ namespace GameClient
             int num4 = 0;
 
             int index = 0;
-            foreach (string str in ChatManager.chatMessageCache.ToArray())
+            foreach (string str in OnlineChatManager.chatMessageCache.ToArray())
             {
                 if (num > num2 && num < num3)
                 {
@@ -122,8 +122,8 @@ namespace GameClient
         private void DrawInput(Rect rect)
         {
             Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new Rect(rect.xMin, rect.yMax - 25f, rect.width, 25f), ChatManager.currentChatInput);
-            if (AcceptsInput && inputOne.Length <= 512) ChatManager.currentChatInput = inputOne;
+            string inputOne = Widgets.TextField(new Rect(rect.xMin, rect.yMax - 25f, rect.width, 25f), OnlineChatManager.currentChatInput);
+            if (AcceptsInput && inputOne.Length <= 512) OnlineChatManager.currentChatInput = inputOne;
         }
 
         private void DrawPinCheckbox(Rect rect)
@@ -132,18 +132,18 @@ namespace GameClient
 
             Text.Font = GameFont.Small;
             Widgets.CheckboxLabeled(new Rect(rect.xMax - Text.CalcSize(message).x * 1.5f, rect.y, Text.CalcSize(message).x * 2, 
-                Text.CalcSize(message).y), message, ref ChatManager.chatAutoscroll, placeCheckboxNearText:true);
+                Text.CalcSize(message).y), message, ref OnlineChatManager.chatAutoscroll, placeCheckboxNearText:true);
         }
 
         private void CheckForEnterKey()
         {
-            bool keyPressed = !string.IsNullOrWhiteSpace(ChatManager.currentChatInput) && (Event.current.keyCode == KeyCode.Return || 
+            bool keyPressed = !string.IsNullOrWhiteSpace(OnlineChatManager.currentChatInput) && (Event.current.keyCode == KeyCode.Return || 
                 Event.current.keyCode == KeyCode.KeypadEnter);
 
             if (keyPressed)
             {
-                ChatManager.SendMessage(ChatManager.currentChatInput);
-                ChatManager.currentChatInput = "";
+                OnlineChatManager.SendMessage(OnlineChatManager.currentChatInput);
+                OnlineChatManager.currentChatInput = "";
             }
         }
 

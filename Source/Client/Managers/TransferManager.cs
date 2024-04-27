@@ -218,12 +218,12 @@ namespace GameClient
                 DialogManager.clearStack();
                 foreach (Thing thing in things)
                 {
-                    if (TransferManagerHelper.CheckIfThingIsHuman(thing))
+                    if (DeepScribeHelper.CheckIfThingIsHuman(thing))
                     {
                         TransferManagerHelper.TransferPawnIntoCaravan(thing as Pawn);
                     }
 
-                    else if (TransferManagerHelper.CheckIfThingIsAnimal(thing))
+                    else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
                     {
                         TransferManagerHelper.TransferPawnIntoCaravan(thing as Pawn);
                     }
@@ -386,54 +386,11 @@ namespace GameClient
 
     public static class TransferManagerHelper
     {
-        //Checks if transferable thing is a human
-
-        public static bool CheckIfThingIsHuman(Thing thing)
-        {
-            if (thing.def.defName == "Human") return true;
-            else return false;
-        }
-
-        //Checks if transferable thing is an animal
-
-        public static bool CheckIfThingIsAnimal(Thing thing)
-        {
-            PawnKindDef animal = DefDatabase<PawnKindDef>.AllDefs.ToList().Find(fetch => fetch.defName == thing.def.defName);
-            if (animal != null) return true;
-            else return false;
-        }
-
-        //Checks if transferable thing has a material
-
-        public static bool CheckIfThingHasMaterial(Thing thing)
-        {
-            if (thing.Stuff != null) return true;
-            else return false;
-        }
-
-        //Gets the quality of a transferable thing
-
-        public static string GetThingQuality(Thing thing)
-        {
-            QualityCategory qc = QualityCategory.Normal;
-            thing.TryGetQuality(out qc);
-
-            return ((int)qc).ToString();
-        }
-
-        //Checks if transferable thing is minified
-
-        public static bool CheckIfThingIsMinified(Thing thing)
-        {
-            if (thing.def == ThingDefOf.MinifiedThing || thing.def == ThingDefOf.MinifiedTree) return true;
-            else return false;
-        }
-
         //Adds desired thing into transfer manifest
 
         public static void AddThingToTransferManifest(Thing thing, int thingCount)
         {
-            if (CheckIfThingIsHuman(thing))
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
             {
                 Pawn pawn = thing as Pawn;
 
@@ -446,7 +403,7 @@ namespace GameClient
                 }
             }
 
-            else if (CheckIfThingIsAnimal(thing))
+            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
             {
                 Pawn pawn = thing as Pawn;
 

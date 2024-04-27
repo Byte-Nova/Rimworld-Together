@@ -38,6 +38,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.tile == tileToCheck) return true;
             }
@@ -83,6 +84,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
+                if (!site.EndsWith(".json")) continue;
                 sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
             }
 
@@ -96,6 +98,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (!siteFile.isFromFaction && siteFile.owner == username)
                 {
@@ -111,6 +114,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.tile == tileToGet) return siteFile;
             }
