@@ -88,6 +88,7 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach(string settlement in settlements)
             {
+                if (!settlement.EndsWith(".json")) continue;
                 SettlementFile settlementJSON = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementJSON.tile == tileToCheck) return true;
             }
@@ -100,6 +101,7 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
+                if (!settlement.EndsWith(".json")) continue;
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.tile == tileToGet) return settlementFile;
             }
@@ -112,6 +114,7 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
+                if (!settlement.EndsWith(".json")) continue;
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.owner == usernameToGet) return settlementFile;
             }
@@ -126,6 +129,7 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
+                if (!settlement.EndsWith(".json")) continue;
                 settlementList.Add(Serializer.SerializeFromFile<SettlementFile>(settlement));
             }
 
@@ -139,6 +143,7 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
+                if (!settlement.EndsWith(".json")) continue;
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.owner == usernameToCheck) settlementList.Add(settlementFile);
             }

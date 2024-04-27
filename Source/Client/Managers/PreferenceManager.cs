@@ -82,7 +82,7 @@ namespace GameClient
             if (File.Exists(Master.clientPreferencesPath))
             {
                 newPreferences = Serializer.SerializeFromFile<ClientPreferencesFile>(Master.clientPreferencesPath);
-                ClientValues.autosaveDays = int.Parse(newPreferences.AutosaveInterval);
+                ClientValues.autosaveDays = float.Parse(newPreferences.AutosaveInterval);
                 ClientValues.autosaveInternalTicks = Mathf.RoundToInt(ClientValues.autosaveDays * 60000f);
             }
 

@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
+using Mono.Nat;
 
 namespace GameServer
 {
@@ -11,16 +12,18 @@ namespace GameServer
     {
         //IP and Port that the connection will be bound to
         private static IPAddress localAddress = IPAddress.Parse(Master.serverConfig.IP);
-        private static int port = int.Parse(Master.serverConfig.Port);
+        public static int port = int.Parse(Master.serverConfig.Port);
 
         //TCP listener that will handle the connection with the clients, and list of currently connected clients
         private static TcpListener connection;
         public static List<ServerClient> connectedClients = new List<ServerClient>();
 
         //Entry point function of the network class
-
         public static void ReadyServer()
         {
+            if (Master.serverConfig.UseUPnP) { _ = new UPnP(); }
+
+            Threader.GenerateServerThread(Threader.ServerMode.Sites);
             connection = new TcpListener(localAddress, port);
             connection.Start();
 
@@ -35,7 +38,6 @@ namespace GameServer
         }
 
         //Listens for any user that might connect and executes all required tasks  with it
-
         private static void ListenForIncomingUsers()
         {
             TcpClient newTCP = connection.AcceptTcpClient();
@@ -78,10 +80,8 @@ namespace GameServer
                 connectedClients.Remove(client);
                 client.listener.DestroyConnection();
 
-                UserManager.SendPlayerRecount();
-
                 Master.ChangeTitle();
-
+                UserManager.SendPlayerRecount();
                 Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
             }
 

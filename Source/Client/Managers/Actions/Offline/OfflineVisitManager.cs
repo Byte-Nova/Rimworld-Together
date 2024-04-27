@@ -70,15 +70,13 @@ namespace GameClient
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         //Prepares a map for the offline visit feature from a request
 
         private static void PrepareMapForOfflineVisit(MapData mapData)
         {
-            Map map = MapScribeManager.StringToMap(mapData, false, true, true, false);
+            Map map = MapScribeManager.StringToMap(mapData, false, true, true, true, true, true);
 
             HandleMapFactions(map);
 
@@ -86,14 +84,6 @@ namespace GameClient
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
 
             PrepareMapLord(map);
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
-            {
-                "You are now in offline visit mode!",
-                "This mode allows you to visit an offline player!",
-                "To stop the visit exit the map creating a caravan"
-            });
-            DialogManager.PushNewDialog(d1);
         }
 
         //Handles the factions of a desired map for the offline visit

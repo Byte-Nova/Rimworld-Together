@@ -88,6 +88,7 @@ namespace GameServer
             string[] saves = Directory.GetFiles(Master.savesPath);
             foreach(string save in saves)
             {
+                if (!save.EndsWith(".mpsave")) continue;
                 if (Path.GetFileNameWithoutExtension(save) == client.username)
                 {
                     return true;
@@ -102,6 +103,7 @@ namespace GameServer
             string[] saves = Directory.GetFiles(Master.savesPath);
             foreach (string save in saves)
             {
+                if (!save.EndsWith(".mpsave")) continue;
                 if (Path.GetFileNameWithoutExtension(save) == username)
                 {
                     return File.ReadAllBytes(save);
@@ -113,33 +115,35 @@ namespace GameServer
 
         public static void ResetClientSave(ServerClient client)
         {
-            if (!CheckIfUserHasSave(client)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save");
-            else
-            {
-                client.listener.disconnectFlag = true;
+            if (!CheckIfUserHasSave(client)) 
+            { 
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save"); 
+                return;
+            }
+            
+            client.listener.disconnectFlag = true;
 
-                string[] saves = Directory.GetFiles(Master.savesPath);
+            string[] saves = Directory.GetFiles(Master.savesPath);
 
-                string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == client.username);
-                if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
+            string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == client.username);
+            if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
                 Logger.WriteToConsole($"[Delete save] > {client.username}", LogMode.Warning);
 
-                MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
-                foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
+            MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
+            foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
 
-                SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
-                foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
+            SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
+            foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
 
-                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
-                foreach (SettlementFile settlementFile in playerSettlements)
-                {
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = settlementFile.tile;
-                    settlementData.owner = settlementFile.owner;
+            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
+            foreach (SettlementFile settlementFile in playerSettlements)
+            {
+                SettlementData settlementData = new SettlementData();
+                settlementData.tile = settlementFile.tile;
+                settlementData.owner = settlementFile.owner;
 
-                    SettlementManager.RemoveSettlement(client, settlementData);
-                }
+                SettlementManager.RemoveSettlement(client, settlementData);
             }
         }
 
