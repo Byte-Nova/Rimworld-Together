@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
+using System.Linq;
 using Verse;
 using Verse.AI;
 
@@ -29,7 +30,7 @@ namespace GameClient
             {
                 if (ClientValues.isInVisit)
                 {
-                    if (OnlineVisitManager.otherPlayerPawns.Contains(___pawn))
+                    if (OnlineVisitManager.nonFactionPawns.Contains(___pawn))
                     {
                         if (newJob.exitMapOnArrival) return false;
                     }

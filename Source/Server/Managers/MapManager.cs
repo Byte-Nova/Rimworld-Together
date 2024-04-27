@@ -29,9 +29,10 @@ namespace GameServer
             List<MapFileData> mapDatas = new List<MapFileData>();
 
             string[] maps = Directory.GetFiles(Master.mapsPath);
-            foreach (string str in maps)
+            foreach (string map in maps)
             {
-                byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(str));
+                if (!map.EndsWith(".mpmap")) continue;
+                byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(map));
 
                 MapFileData newMap = (MapFileData)Serializer.ConvertBytesToObject(decompressedBytes);
                 mapDatas.Add(newMap);
