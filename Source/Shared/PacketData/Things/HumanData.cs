@@ -74,5 +74,8 @@ namespace Shared
         public string favoriteColor;
         public string[] position;
         public int rotation;
+
+        // Child state
+        public float growthPoints;
     }
 }

@@ -42,6 +42,8 @@ namespace GameClient
 
             if (ModsConfig.BiotechActive)
             {
+                GetPawnChildState(pawn, humanData);
+
                 GetPawnXenotype(pawn, humanData);
 
                 GetPawnXenogenes(pawn, humanData);
@@ -82,6 +84,8 @@ namespace GameClient
 
             if (ModsConfig.BiotechActive)
             {
+                SetPawnChildState(pawn, humanData);
+
                 SetPawnXenotype(pawn, humanData);
 
                 SetPawnXenogenes(pawn, humanData);
@@ -169,6 +173,15 @@ namespace GameClient
                     catch { Log.Warning($"Failed to get heddif {hd} from human {pawn.Label}"); }
                 }
             }
+        }
+
+        private static void GetPawnChildState(Pawn pawn, HumanData humanData)
+        {
+            try
+            {
+                humanData.growthPoints = pawn.ageTracker.growthPoints;
+            }
+            catch { Log.Warning($"Failed to get child state from human {pawn.Label}"); }
         }
 
         private static void GetPawnXenotype(Pawn pawn, HumanData humanData)
@@ -426,6 +439,15 @@ namespace GameClient
                     catch { Log.Warning($"Failed to set heddif in {humanData.hediffPartDefName[i]} to human {humanData.name}"); }
                 }
             }
+        }
+
+        private static void SetPawnChildState(Pawn pawn, HumanData humanData)
+        {
+            try
+            {
+                pawn.ageTracker.growthPoints = humanData.growthPoints;
+            }
+            catch { Log.Warning($"Failed to set child state in human {pawn.Label}"); }
         }
 
         private static void SetPawnXenotype(Pawn pawn, HumanData humanData)
