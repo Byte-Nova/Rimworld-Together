@@ -144,6 +144,7 @@ namespace GameServer
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
+            if (targetClient.inVisitWith != null) OnlineVisitManager.SendVisitStop(targetClient);
         }
     }
 }
