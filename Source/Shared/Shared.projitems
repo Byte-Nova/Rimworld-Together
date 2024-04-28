@@ -12,7 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)packetdata\Actions\MarketData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\MarketData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineVisitData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RaidData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\SpyData.cs" />
