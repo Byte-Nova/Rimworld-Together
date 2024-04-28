@@ -90,7 +90,7 @@ namespace GameClient
             {
                 if (__instance is EditedTaleReference reference)
                 {
-                    Scribe_Values.Look(ref reference.editedTale, "editedTale", "Default Tale", false);
+                    Scribe_Values.Look(ref reference.editedTale, "editedTale", new TaggedString("Corrupted"), false);
                 }
             }
         }

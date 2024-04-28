@@ -20,10 +20,5 @@ namespace GameClient
         {
             editedTale = taleDescription;
         }
-
-        public new void ExposeData()
-        {
-            Scribe_Values.Look(ref editedTale, "editedTale", new TaggedString("Corrupted"), false);
-        }
     }
 }
