@@ -92,7 +92,7 @@ namespace GameServer
             settlementsPath = Path.Combine(mainPath, "Settlements");
 
             marketsPath = Path.Combine(mainPath, "Markets");
-            globalMarketsPath = Path.Combine(marketsPath, "Global Markets");
+            globalMarketsPath = Path.Combine(marketsPath, "Global Market");
             factionMarketsPath = Path.Combine(marketsPath, "Faction Markets");
 
             modsPath = Path.Combine(mainPath, "Mods");
