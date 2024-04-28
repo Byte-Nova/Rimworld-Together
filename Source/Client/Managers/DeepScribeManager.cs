@@ -1030,9 +1030,7 @@ namespace GameClient
                 itemData.isArt = true;
                 itemData.artTitle = TaleData_Thing.GenerateFrom(thing).title;
                 itemData.artDesc = art.TaleRef.GenerateText(TextGenerationPurpose.ArtDescription, RulePackDefOf.ArtDescription_Sculpture);
-                FieldInfo authorProp = art.GetType().GetField("authorNameInt", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                itemData.artAuthor = ((TaggedString)authorProp.GetValue(art)).ToString();
-                Log.Message($"Author is {itemData.artAuthor}");
+                itemData.artAuthor = art.AuthorName;
             }
             catch { Log.Warning($"Failed to get Art of thing {thing.def.defName}"); }
         }
