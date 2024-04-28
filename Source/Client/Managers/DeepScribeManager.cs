@@ -177,10 +177,7 @@ namespace GameClient
 
         private static void GetPawnChildState(Pawn pawn, HumanData humanData)
         {
-            try
-            {
-                humanData.growthPoints = pawn.ageTracker.growthPoints;
-            }
+            try { humanData.growthPoints = pawn.ageTracker.growthPoints; }
             catch { Log.Warning($"Failed to get child state from human {pawn.Label}"); }
         }
 
@@ -443,10 +440,7 @@ namespace GameClient
 
         private static void SetPawnChildState(Pawn pawn, HumanData humanData)
         {
-            try
-            {
-                pawn.ageTracker.growthPoints = humanData.growthPoints;
-            }
+            try { pawn.ageTracker.growthPoints = humanData.growthPoints; }
             catch { Log.Warning($"Failed to set child state in human {pawn.Label}"); }
         }
 

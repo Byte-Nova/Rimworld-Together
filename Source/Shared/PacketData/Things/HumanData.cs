@@ -69,13 +69,14 @@ namespace Shared
         public ItemData equippedWeapon;
         public List<ItemData> inventoryItems = new List<ItemData>();
 
-        //Misc
+        //Transform
 
-        public string favoriteColor;
         public string[] position;
         public int rotation;
 
-        // Child state
+        //Misc
+
+        public string favoriteColor;
         public float growthPoints;
     }
 }
