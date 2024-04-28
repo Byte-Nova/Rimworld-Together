@@ -73,7 +73,7 @@ namespace GameClient
         }
 
         [HarmonyPatch(typeof(TaleReference), "GenerateText")]
-        class TaleReference_GenerateText_Patch
+        class TaleReferenceGenerateText
         {
             static bool Prefix(TaleReference __instance, ref TaggedString __result)
             {
@@ -84,7 +84,7 @@ namespace GameClient
         }
 
         [HarmonyPatch(typeof(TaleReference), "ExposeData")]
-        class TaleReference_ExposeData_Patch
+        class TaleReferenceExposeData
         {
             static void Postfix(TaleReference __instance)
             {
