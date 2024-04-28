@@ -90,7 +90,7 @@ namespace GameClient
             //keep track of one pawn in the caravan to jump to later
             Pawn pawnToFocus = (ClientValues.chosenCaravan.pawns.Count > 0) ? ClientValues.chosenCaravan.pawns[0] : null;
 
-            VisitThingHelper.GetCaravanPawns(FetchMode.Player);
+            OnlineVisitHelper.GetCaravanPawns(FetchMode.Player,visitData);
 
             syncedTime = false;
 
@@ -99,7 +99,6 @@ namespace GameClient
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, visitMap, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
 
-            VisitThingHelper.GetMapItems();
 
             ClientValues.ToggleVisit(true);
 
@@ -123,11 +122,7 @@ namespace GameClient
             Action r1 = delegate
             {
                 DialogManager.clearStack();
-                VisitThingHelper.SetMapForVisit(FetchMode.Host, visitData: visitData);
-                VisitThingHelper.GetMapPawns(FetchMode.Host, visitData);
-                visitData = VisitThingHelper.GetPawnsForVisit(FetchMode.Host, visitData);
-                VisitThingHelper.SpawnPawnsForVisit(FetchMode.Host, visitData);
-                SendRequestedMap(visitData);
+                ClientValues.ToggleVisit(true);
 
                 visitMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == int.Parse(visitData.targetTile)).Map;
                 factionPawns = OnlineVisitHelper.GetMapPawns(FetchMode.Host, null);

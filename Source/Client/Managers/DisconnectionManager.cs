@@ -36,17 +36,17 @@ namespace GameClient
 
                     case DCReason.QuitToMenu:
                         reason = "Quit to menu.";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Returning to main menu.", delegate { DisconnectToMenu(); }));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE","Returning to main menu.", delegate { DisconnectToMenu(); }));
                         break;
 
                     case DCReason.SaveQuitToMenu:
                         reason = "Save and Quit to Menu.";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { DisconnectToMenu(); }));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Your progress has been saved!", delegate { DisconnectToMenu(); }));
                         break;
 
                     case DCReason.SaveQuitToOS:
                         reason = "Save and Quit to OS.";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { QuitGame(); }));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("MESSAGE", "Your progress has been saved!", delegate { QuitGame(); }));
                         break;
 
                     default:
@@ -61,7 +61,7 @@ namespace GameClient
             else
             {
                 Log.Message($"[Rimworld Together] > Disconnected from server: Connection Lost");
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Your connection to the server has been lost...", delegate { DisconnectToMenu(); }));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("ERROR", "Your connection to the server has been lost...", delegate { DisconnectToMenu(); }));
             }
         }
 
