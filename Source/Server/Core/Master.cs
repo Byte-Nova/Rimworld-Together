@@ -21,6 +21,10 @@ namespace GameServer
         public static string factionsPath;
         public static string settlementsPath;
 
+        public static string marketsPath;
+        public static string globalMarketsPath;
+        public static string factionMarketsPath;
+
         public static string modsPath;
         public static string requiredModsPath;
         public static string optionalModsPath;
@@ -87,6 +91,10 @@ namespace GameServer
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
 
+            marketsPath = Path.Combine(mainPath, "Markets");
+            globalMarketsPath = Path.Combine(marketsPath, "Global Markets");
+            factionMarketsPath = Path.Combine(marketsPath, "Faction Markets");
+
             modsPath = Path.Combine(mainPath, "Mods");
             requiredModsPath = Path.Combine(modsPath, "Required");
             optionalModsPath = Path.Combine(modsPath, "Optional");
@@ -102,6 +110,10 @@ namespace GameServer
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
+
+            if (!Directory.Exists(marketsPath)) Directory.CreateDirectory(marketsPath);
+            if (!Directory.Exists(globalMarketsPath)) Directory.CreateDirectory(globalMarketsPath);
+            if (!Directory.Exists(factionMarketsPath)) Directory.CreateDirectory(factionMarketsPath);
 
             if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);

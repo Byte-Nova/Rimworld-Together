@@ -155,7 +155,25 @@ namespace GameClient
                     }
                 };
 
+                Command_Action command_GlobalMarketMenu = new Command_Action
+                {
+                    defaultLabel = "Global Market Menu",
+                    defaultDesc = "Access the global market",
+                    icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
+                    action = delegate { OnlineMarketManager.OnGlobalMarketOpen(); }
+                };
+
+                Command_Action command_FactionMarketMenu = new Command_Action
+                {
+                    defaultLabel = "Faction Market Menu",
+                    defaultDesc = "Access your faction market menu",
+                    icon = ContentFinder<Texture2D>.Get("Commands/FactionMarket"),
+                    action = delegate { OnlineMarketManager.OnFactionMarketOpen(); }
+                };
+
                 gizmoList.Add(command_FactionMenu);
+                gizmoList.Add(command_GlobalMarketMenu);
+                if (ServerValues.hasFaction) gizmoList.Add(command_FactionMarketMenu);
                 __result = gizmoList;
             }
         }

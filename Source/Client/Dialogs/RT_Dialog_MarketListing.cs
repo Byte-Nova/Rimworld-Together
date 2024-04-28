@@ -6,7 +6,7 @@ using Verse;
 
 namespace GameClient
 {
-    public class RT_Dialog_ListingWithButton : Window
+    public class RT_Dialog_MarketListing : Window
     {
         public override Vector2 InitialSize => new Vector2(400f, 400f);
 
@@ -22,15 +22,15 @@ namespace GameClient
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        private float buttonX = 150f;
+        private float buttonX = 100f;
         private float buttonY = 38f;
 
         private float selectButtonX = 47f;
         private float selectButtonY = 25f;
 
-        public RT_Dialog_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
+        public RT_Dialog_MarketListing(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
         {
-            DialogManager.dialogButtonListing = this;
+            DialogManager.dialogMarketListing = this;
             this.title = title;
             this.description = description;
             this.elements = elements;
@@ -68,9 +68,18 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New"))
             {
-                if (actionCancel != null) actionCancel.Invoke();
+                Close();
+            }
+
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload"))
+            {
+                Close();
+            }
+
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            {
                 Close();
             }
         }
