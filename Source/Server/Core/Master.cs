@@ -173,7 +173,7 @@ namespace GameServer
 
             Serializer.SerializeToFile(path, serverValues);
 
-            Logger.WriteToConsole("Saved server values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Saved server values", LogMode.Warning);
         }
 
         private static void LoadEventValues()
