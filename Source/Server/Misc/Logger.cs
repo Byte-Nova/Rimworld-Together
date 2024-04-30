@@ -47,11 +47,11 @@ namespace GameServer
                 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text} x {repetitionCounter}");
                 Console.SetCursorPosition(Left, Top);
             }
-
             else
             {
                 repetitionCounter = 1;
                 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text}");
+                ServerCommandManager.WriteCurrentCommand();
             }
 
             Console.ForegroundColor = ConsoleColor.White;

@@ -7,6 +7,7 @@ namespace GameServer
     {
 
         //history of commands and the current one being written
+        //Index 0 is the current command being written
         public static List<string> commandHistory = new() { "" };
         public static int commandHistoryPosition = 0;
 
@@ -76,6 +77,10 @@ namespace GameServer
 
         public static void ListenForServerCommands()
         {
+
+            List<string> tabbedCommands = new List<string>();
+            int tabbedCommandsIndex = 0;
+
             while (true)
             {
                 ConsoleKeyInfo cki = Console.ReadKey(true);
@@ -84,35 +89,58 @@ namespace GameServer
                 {
                     case ConsoleKey.Enter:
 
-                        if (commandHistoryPosition != 0) commandHistory[0] = commandHistory[commandHistoryPosition];
+                        if (commandHistoryPosition != 0)  commandHistory[0] = commandHistory[commandHistoryPosition];
                         if (commandHistory.Count() >= 20) commandHistory.RemoveAt(commandHistory.Count() - 1);
 
                         Logger.ClearCurrentLine();
                         Logger.Message(commandHistory[0]);
 
-                        ParseServerCommands(commandHistory[0]);
-
                         commandHistory.Insert(0, "");
                         commandHistoryPosition = 0;
+
+                        ParseServerCommands(commandHistory[1]);
                         continue;
 
                     case ConsoleKey.Backspace:
-                        if (commandHistory[0].Count() > 0) commandHistory[0] = commandHistory[0].Substring(0, commandHistory[0].Count() - 1);
+                        if (commandHistory[0].Count() > 0) 
+                            commandHistory[0] = commandHistory[0].Substring(0, commandHistory[0].Count() - 1);
                         break;
 
                     case ConsoleKey.UpArrow:
-                        if (commandHistoryPosition != commandHistory.Count() - 1) commandHistoryPosition++;
+                        if (commandHistoryPosition != commandHistory.Count() - 1) 
+                            commandHistoryPosition++;
                         break;
 
                     case ConsoleKey.DownArrow:
-                        if (commandHistoryPosition != 0) commandHistoryPosition--;
+                        if (commandHistoryPosition != 0) 
+                            commandHistoryPosition--;
                         break;
 
+                    case ConsoleKey.Tab:
+                        if (tabbedCommands.Count() > 0)
+                        {
+                            tabbedCommandsIndex++;
+                            if(tabbedCommandsIndex >= tabbedCommands.Count())
+                                tabbedCommandsIndex = 0;
+                            commandHistory[0] = tabbedCommands[tabbedCommandsIndex];
+                        }
+                        else
+                        {
+                            tabbedCommands = commandDictionary.Keys.ToList().FindAll(x => x.StartsWith(commandHistory[0], StringComparison.OrdinalIgnoreCase)).ToList();
+                            if (tabbedCommands.Count() > 0)
+                                commandHistory[0] = tabbedCommands[0];
+                        }
+                        break;
                     default:
                         commandHistory[0] += cki.KeyChar;
                         break;
                 }
 
+                if (cki.Key != ConsoleKey.Tab)
+                {
+                    tabbedCommands.Clear();
+                    tabbedCommandsIndex = -1;
+                }
 
                 Console.CursorVisible = false;
 
@@ -121,6 +149,14 @@ namespace GameServer
 
                 Console.CursorVisible = true;
             }
+        }
+
+        public static void WriteCurrentCommand()
+        {
+            ConsoleColor currentColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write(commandHistory[0]);
+            Console.ForegroundColor = currentColor;
         }
 
         public static Dictionary<string, Command> commandDictionary = new()
