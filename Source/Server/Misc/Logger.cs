@@ -15,52 +15,45 @@ namespace GameServer
             { LogMode.Title, ConsoleColor.Green }
         };
 
-        public static void Message(string message)
-        {
-            WriteToConsole(message, LogMode.Message);
-        }
-
-        public static void Warning(string message)
-        {
-            WriteToConsole(message, LogMode.Warning);
-        }
-
-        public static void Error(string message)
-        {
-            WriteToConsole(message, LogMode.Error);
-        }
-
         //Variables to help with condensing similar logs to a single log with a multiplier
-        public static int repetitionCounter = 1;
+        private static int repetitionCounter = 1;
         private static string previousText = string.Empty;
 
+        public static void Message(string message) { WriteToConsole(message, LogMode.Message); }
+
+        public static void Warning(string message) { WriteToConsole(message, LogMode.Warning); }
+
+        public static void Error(string message) { WriteToConsole(message, LogMode.Error); }
 
         public static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true, bool allowLogMultiplier = false)
         {
             semaphore.WaitOne();
 
             Console.CursorVisible = false;
+
             if (writeToLogs) WriteToLogs(text);
 
-            var cursorPos = Console.GetCursorPosition();
+            var (Left, Top) = Console.GetCursorPosition();
 
             Console.ForegroundColor = colorDictionary[mode];
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
 
-            //check if the last log is the same as this log, if so then put a multiplier on the log
-            if ((text == previousText) && allowLogMultiplier)
+            //Check if the last log is the same as this log, if so then put a multiplier on the log
+            if (text == previousText && allowLogMultiplier)
             {
                 repetitionCounter++;
 
                 Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
                 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text} x {repetitionCounter}");
-                Console.SetCursorPosition(cursorPos.Left, cursorPos.Top);
+                Console.SetCursorPosition(Left, Top);
             }
+
             else
             {
                 repetitionCounter = 1;
                 Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text}");
             }
+
             Console.ForegroundColor = ConsoleColor.White;
             previousText = text;
 
@@ -92,7 +85,5 @@ namespace GameServer
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
         }
-
-
     }
 }

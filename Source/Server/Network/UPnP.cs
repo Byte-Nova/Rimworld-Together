@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -16,7 +17,7 @@ namespace GameServer
 
         public UPnP()
         {
-            Logger.WriteToConsole($"Attempting to forward UPnP on port '{Network.port}'", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"Attempting to forward UPnP on port '{Network.port}'", LogMode.Warning);
 
             NatUtility.DeviceFound += DeviceFound;
             NatUtility.StartDiscovery();
@@ -38,7 +39,7 @@ namespace GameServer
                     "- the port is being used\n" +
                     "- the router has uPnP disabled\n" +
                     "- the router/modem does not have ports available",
-                    Logger.LogMode.Error);
+                    LogMode.Error);
             }
         }
 
@@ -52,9 +53,9 @@ namespace GameServer
                 device.CreatePortMap(new Mapping(Protocol.Tcp, Network.port, Network.port));
                 autoPortForwardSuccessful = true;
 
-                Logger.WriteToConsole("UPnP forward successful", Logger.LogMode.Warning);
+                Logger.WriteToConsole("UPnP forward successful", LogMode.Warning);
             }
-            catch (Exception e) { Logger.WriteToConsole(e.ToString(), Logger.LogMode.Error); }
+            catch (Exception e) { Logger.WriteToConsole(e.ToString(), LogMode.Error); }
         }
     }
 }
