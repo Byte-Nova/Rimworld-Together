@@ -231,9 +231,12 @@ namespace GameServer
             {"disabledifficulty", new Command("disabledifficulty", 0,
                 "Disables custom difficulty in the server",
                 DisableDifficultyCommandAction)},
-            {"togglecustomscenarios", new Command("togglecustomscenarios", 0
+
+            {"togglecustomscenarios", new Command("togglecustomscenarios", 0,
+
                 "enables/disables custom scenarios on the server",
                 ToggleCustomScenariosCommandAction) },
+
             {"quit", new Command("quit", 0,
                 "Saves all player details and then closes the server",
                 QuitCommandAction)},
