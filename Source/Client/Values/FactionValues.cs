@@ -40,6 +40,7 @@ namespace GameClient
             playerFactions.Add(allyPlayer);
             playerFactions.Add(enemyPlayer);
             playerFactions.Add(yourOnlineFaction);
+            playerFactions.Add(Faction.OfPlayer);
         }
     }
 }
