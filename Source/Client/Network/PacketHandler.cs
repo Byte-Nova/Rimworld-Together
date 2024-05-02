@@ -13,7 +13,7 @@ namespace GameClient
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");
+            if (ClientValues.verboseBool) Logger.Message($"[Header] > {packet.header}");
 
             Action toDo = delegate
             {

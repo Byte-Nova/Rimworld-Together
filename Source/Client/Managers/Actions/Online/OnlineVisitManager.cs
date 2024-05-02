@@ -256,7 +256,7 @@ namespace GameClient
                     visitData.positionSync.Add(ValueParser.Vector3ToString(pawn.Position));
                     visitData.rotationSync.Add(ValueParser.Rot4ToInt(pawn.Rotation));
                 }
-                catch { Log.Warning($"Couldn't get job for human {pawn.Name}"); }
+                catch { Logger.Warning($"Couldn't get job for human {pawn.Name}"); }
             }
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
@@ -293,7 +293,7 @@ namespace GameClient
                     VisitActionHelper.HandlePawnDrafting(otherPawns[i], visitData.isDrafted[i]);
                     VisitActionHelper.ChangeCurrentJobIfNeeded(otherPawns[i], newJob, jobPositionStart, jobRotationStart);
                 }
-                catch { Log.Warning($"Couldn't set job for human {otherPawns[i].Name}"); }
+                catch { Logger.Warning($"Couldn't set job for human {otherPawns[i].Name}"); }
             }
         }
     }
@@ -331,7 +331,7 @@ namespace GameClient
                     }
                 }
             }
-            catch { Log.Error($"failed to parse {targetInfo}"); }
+            catch { Logger.Error($"failed to parse {targetInfo}"); }
 
             return null;
         }
@@ -345,7 +345,7 @@ namespace GameClient
                 if (shouldBeDrafted) pawn.drafter.Drafted = true;
                 else { pawn.drafter.Drafted = false; }
             }
-            catch(Exception e) { Log.Warning(e.ToString()); }
+            catch(Exception e) { Logger.Warning(e.ToString()); }
         }
 
         public static void TryChangePawnPosition(Pawn pawn, IntVec3 pawnPosition, Rot4 pawnRotation)
@@ -356,7 +356,7 @@ namespace GameClient
                 pawn.Rotation = pawnRotation;
                 pawn.pather.Notify_Teleported_Int();
             }
-            catch { Log.Warning($"Couldn't set position of {pawn.Name}"); }
+            catch { Logger.Warning($"Couldn't set position of {pawn.Name}"); }
         }
 
         public static void ChangeCurrentJobIfNeeded(Pawn pawn, Job newJob, IntVec3 positionSync, Rot4 rotationSync)
@@ -409,7 +409,7 @@ namespace GameClient
         public static JobDef TryGetJobDefForJob(Pawn pawnForJob, string jobDefName)
         {
             try { return DefDatabase<JobDef>.AllDefs.ToArray().First(fetch => fetch.defName == jobDefName); }
-            catch { Log.Warning($"Couldn't get job def of human {pawnForJob.Name}"); }
+            catch { Logger.Warning($"Couldn't get job def of human {pawnForJob.Name}"); }
 
             return null;
         }
@@ -417,7 +417,7 @@ namespace GameClient
         public static Job TryCreateNewJob(Pawn pawnForJob, JobDef jobDef, LocalTargetInfo localTargetA)
         {
             try { return JobMaker.MakeJob(jobDef, localTargetA); }
-            catch { Log.Warning($"Couldn't create job for human {pawnForJob.Name}"); }
+            catch { Logger.Warning($"Couldn't create job for human {pawnForJob.Name}"); }
 
             return null;
         }
@@ -448,7 +448,7 @@ namespace GameClient
                         break;
                 }
             }
-            catch { Log.Error($"Failed to get target from {toReadFrom}"); }
+            catch { Logger.Error($"Failed to get target from {toReadFrom}"); }
 
             return target;
         }
@@ -456,7 +456,7 @@ namespace GameClient
         public static LocalTargetInfo TryGetLocalTargetInfo(Pawn pawnForJob, string actionTarget, ActionTargetType type, int index)
         {
             try { return TryGetActionTargetFromString(actionTarget, type, index); }
-            catch { Log.Warning($"Couldn't get job target for {pawnForJob.Label}"); }
+            catch { Logger.Warning($"Couldn't get job target for {pawnForJob.Label}"); }
 
             return null;
         }
@@ -487,7 +487,7 @@ namespace GameClient
                     }
                 }
             }
-            catch { Log.Error($"failed to parse {targetInfo}"); }
+            catch { Logger.Error($"failed to parse {targetInfo}"); }
 
             return toReturn;
         }

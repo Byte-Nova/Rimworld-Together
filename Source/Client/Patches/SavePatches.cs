@@ -30,7 +30,7 @@ namespace GameClient
                 }, Find.GameInfo.permadeathMode);
                 ___lastSaveTick = Find.TickManager.TicksGame;
             }
-            catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
+            catch (Exception ex) { Logger.Error("Exception while saving game: " + ex); }
 
             MapManager.SendPlayerMapsToServer();
             SaveManager.SendSavePartToServer(fileName);

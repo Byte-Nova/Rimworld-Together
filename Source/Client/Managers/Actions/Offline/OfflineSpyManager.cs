@@ -40,7 +40,7 @@ namespace GameClient
             try { spyCost = int.Parse(serverGlobalData.SpyCost); }
             catch
             {
-                Log.Warning("Server didn't have spy cost set, defaulting to 0");
+                Logger.Warning("Server didn't have spy cost set, defaulting to 0");
 
                 spyCost = 0;
             }
