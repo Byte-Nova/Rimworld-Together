@@ -929,7 +929,8 @@ namespace GameClient
             {
                 ItemData itemData = (ItemData)Serializer.ConvertBytesToObject(transferData.itemDatas[i]);
 
-                things.Add(StringToItem(itemData));
+                Thing thingToAdd = StringToItem(itemData);
+                if (thingToAdd != null) things.Add(thingToAdd);
             }
 
             return things.ToArray();
