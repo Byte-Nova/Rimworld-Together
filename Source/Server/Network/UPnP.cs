@@ -17,7 +17,7 @@ namespace GameServer
 
         public UPnP()
         {
-            Logger.WriteToConsole($"[UPnP] > Attempting to forward port '{Network.port}'", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[UPnP] > Attempting to forward port '{Network.port}'", LogMode.Warning);
 
             NatUtility.DeviceFound += DeviceFound;
 
@@ -56,7 +56,7 @@ namespace GameServer
                 device.CreatePortMap(new Mapping(Protocol.Tcp, Network.port, Network.port));
 
                 //This line can run multiple times if you are connected to multiple devices (Theres no reason for that, so only print it once)
-                if (!autoPortForwardSuccessful) Logger.WriteToConsole("successfully portforwarded the server", Logger.LogMode.Warning);
+                if (!autoPortForwardSuccessful) Logger.WriteToConsole("successfully portforwarded the server", LogMode.Warning);
                 autoPortForwardSuccessful = true;
 
                 Logger.WriteToConsole("UPnP forward successful", LogMode.Warning);

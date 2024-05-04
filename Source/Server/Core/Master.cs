@@ -162,7 +162,7 @@ namespace GameServer
 
             Serializer.SerializeToFile(path, serverConfig);
 
-            Logger.WriteToConsole("Saved server Config", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Saved server Config", LogMode.Warning);
 
         }
 

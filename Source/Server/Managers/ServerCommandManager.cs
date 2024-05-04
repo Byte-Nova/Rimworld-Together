@@ -326,14 +326,14 @@ namespace GameServer
             {
                 "toggleupnp", new Command("toggleupnp", 0,
                 "enables/disables UPnP port mapping (auto-portforwarding)",
-                ToggleUPnPCommandAction);
+                ToggleUPnPCommandAction)
             },
 
             {
-                "portforward", new ServerCommand("portforward", 0,
+                "portforward", new Command("portforward", 0,
                 "will use UPnP to portforward the server",
-                PortForwardCommandAction);
-            }
+                PortForwardCommandAction)
+            },
 
             {
                 "quit", new Command("quit", 0,
@@ -820,15 +820,15 @@ namespace GameServer
         private static void ToggleUPnPCommandAction()
         {
             Master.serverConfig.UseUPnP = !Master.serverConfig.UseUPnP;
-            Logger.WriteToConsole($"UPnP port mapping is now {(Master.serverConfig.UseUPnP ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"UPnP port mapping is now {(Master.serverConfig.UseUPnP ? ("Enabled") : ("Disabled"))}", LogMode.Warning);
 
             Master.SaveServerConfig(Master.serverConfig);
 
             if (Master.serverConfig.UseUPnP)
             {
                 portforwardQuestion:
-                Logger.WriteToConsole("You have enabled UPnP on the server. Would you like to portforward?", Logger.LogMode.Warning);
-                Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
+                Logger.WriteToConsole("You have enabled UPnP on the server. Would you like to portforward?", LogMode.Warning);
+                Logger.WriteToConsole("Please type 'YES' or 'NO'", LogMode.Warning);
 
                 string response = Console.ReadLine();
 
@@ -837,12 +837,12 @@ namespace GameServer
                 else if (response == "NO")
                 {
                     Logger.WriteToConsole("You can use the command 'portforward' in the future to portforward the server", 
-                        Logger.LogMode.Warning);
+                        LogMode.Warning);
                 }
 
                 else
                 {
-                    Logger.WriteToConsole("The response you have entered is not a valid option. Please make sure your response is capitalized", Logger.LogMode.Error);
+                    Logger.WriteToConsole("The response you have entered is not a valid option. Please make sure your response is capitalized", LogMode.Error);
                     goto portforwardQuestion;
                 }
             }
@@ -850,7 +850,7 @@ namespace GameServer
             else
             {
                 Logger.WriteToConsole("If a port has already been forwarded using UPnP, it will continute to be active until the server is restarted", 
-                    Logger.LogMode.Warning);
+                    LogMode.Warning);
             }
         }
 
@@ -859,7 +859,7 @@ namespace GameServer
             if (!Master.serverConfig.UseUPnP)
             {
                 Logger.WriteToConsole("Cannot portforward because UPnP is disabled on the server. You can use the command 'toggleupnp' to enable it.", 
-                    Logger.LogMode.Error);
+                    LogMode.Error);
             }
             else _ = new UPnP();
         }
@@ -903,8 +903,8 @@ namespace GameServer
         private static void ResetWorldCommandAction()
         {
             //Make sure the user wants to reset the world
-            Logger.WriteToConsole("Are you sure you want to reset the world?", Logger.LogMode.Warning);
-            Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Are you sure you want to reset the world?", LogMode.Warning);
+            Logger.WriteToConsole("Please type 'YES' or 'NO'", LogMode.Warning);
             deleteWorldQuestion:
 
             string response = Console.ReadLine();
@@ -912,15 +912,15 @@ namespace GameServer
             if (response == "NO") return;
             else if (response != "YES") 
             {
-                Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", Logger.LogMode.Error);
+                Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", LogMode.Error);
                 goto deleteWorldQuestion;
             }
 
             //Get the name of the new folder for the world
             Logger.WriteToConsole("The current world will be saved in the 'ArchivedWorlds' folder.\n" +
                                   "Would you like to name the world before it is moved?\n" +
-                                  "If not, the world will be named with the current date", Logger.LogMode.Warning);
-            Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
+                                  "If not, the world will be named with the current date", LogMode.Warning);
+            Logger.WriteToConsole("Please type 'YES' or 'NO'", LogMode.Warning);
             nameWorldQuestion:
 
             response = Console.ReadLine();
@@ -930,7 +930,7 @@ namespace GameServer
             if (response == "YES")
             {
                 customName:
-                Console.WriteLine("Please enter the name you would like to use:", Logger.LogMode.Warning);
+                Console.WriteLine("Please enter the name you would like to use:", LogMode.Warning);
                 newWorldFolderName = Console.ReadLine();
                 newWorldFolderPath = $"{Master.archivedWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
 
@@ -939,7 +939,7 @@ namespace GameServer
                 {
                     Logger.WriteToConsole("The name you entered is invalid.\n" +
                         " Please make sure your name does not contain any of these sybols:\n" +
-                        "\\/*:<>?\"|", Logger.LogMode.Error);
+                        "\\/*:<>?\"|", LogMode.Error);
 
                     goto customName;
                 }
@@ -954,12 +954,12 @@ namespace GameServer
 
             else
             {
-                Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", Logger.LogMode.Error);
+                Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", LogMode.Error);
                 goto nameWorldQuestion;
             }
 
             //Make the new folder and move all the current world folders to it
-            Logger.WriteToConsole($"The archived world will be saved as:\n{newWorldFolderPath}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"The archived world will be saved as:\n{newWorldFolderPath}", LogMode.Warning);
             Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Core");
 
             //The core directory is special because we want to copy the files, not just move them.
@@ -981,7 +981,7 @@ namespace GameServer
 
             Master.SetPaths();
 
-            Logger.WriteToConsole("World has been successfully reset and archived", Logger.LogMode.Warning);
+            Logger.WriteToConsole("World has been successfully reset and archived", LogMode.Warning);
         }
     }
 }
