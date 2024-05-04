@@ -70,7 +70,27 @@ namespace GameClient
         {
             if (!Network.isConnectedToServer) return;
 
-            if (FactionValues.playerFactions.Contains(__instance.Faction))
+            if (__instance.Faction == Find.FactionManager.OfPlayer)
+            {
+                var gizmoList = __result.ToList();
+
+                Command_Action command_FactionMenu = new Command_Action
+                {
+                    defaultLabel = "Faction Menu",
+                    defaultDesc = "Access your faction menu",
+                    icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
+                    action = delegate
+                    {
+                        ClientValues.chosenSettlement = __instance;
+
+                        if (ServerValues.hasFaction) OnlineFactionManager.OnFactionOpen();
+                        else OnlineFactionManager.OnNoFactionOpen();
+                    }
+                };
+
+                gizmoList.Add(command_FactionMenu);
+                __result = gizmoList;
+            }else if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -134,28 +154,6 @@ namespace GameClient
                 {
                     gizmoList.Add(command_Caravan);
                 }
-                __result = gizmoList;
-            }
-
-            else if (__instance.Faction == Find.FactionManager.OfPlayer)
-            {
-                var gizmoList = __result.ToList();
-
-                Command_Action command_FactionMenu = new Command_Action
-                {
-                    defaultLabel = "Faction Menu",
-                    defaultDesc = "Access your faction menu",
-                    icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
-                    action = delegate
-                    {
-                        ClientValues.chosenSettlement = __instance;
-
-                        if (ServerValues.hasFaction) OnlineFactionManager.OnFactionOpen();
-                        else OnlineFactionManager.OnNoFactionOpen();
-                    }
-                };
-
-                gizmoList.Add(command_FactionMenu);
                 __result = gizmoList;
             }
         }

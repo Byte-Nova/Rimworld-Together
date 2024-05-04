@@ -97,13 +97,13 @@ namespace GameServer
             return false;
         }
 
-        public static   FactionRanks GetMemberRank(FactionFile factionFile, string usernameToCheck)
+        public static FactionRanks GetMemberRank(FactionFile factionFile, string usernameToCheck)
         {
             for(int i = 0; i < factionFile.factionMembers.Count(); i++)
             {
                 if (factionFile.factionMembers[i] == usernameToCheck)
                 {
-                    return (    FactionRanks)int.Parse(factionFile.factionMemberRanks[i]);
+                    return factionFile.factionMemberRanks[i];
                 }
             }
 
@@ -144,7 +144,7 @@ namespace GameServer
                 FactionFile factionFile = new FactionFile();
                 factionFile.factionName = factionManifest.manifestData;
                 factionFile.factionMembers.Add(client.username);
-                factionFile.factionMemberRanks.Add((FactionRanks.Admin).ToString());
+                factionFile.factionMemberRanks = factionFile.factionMemberRanks.Add(FactionRanks.Admin);
                 SaveFactionFile(factionFile);
 
                 client.hasFaction = true;
@@ -238,7 +238,7 @@ namespace GameServer
             if (factionFile.factionMembers.Contains(client.username)) return;
 
             factionFile.factionMembers.Add(client.username);
-            factionFile.factionMemberRanks.Add(((int)FactionRanks.Member).ToString());
+            factionFile.factionMemberRanks = factionFile.factionMemberRanks.Add(FactionRanks.Member);
             SaveFactionFile(factionFile);
 
             client.hasFaction = true;
@@ -305,7 +305,7 @@ namespace GameServer
                     if (factionFile.factionMembers[i] == toRemoveLocal.username)
                     {
                         factionFile.factionMembers.RemoveAt(i);
-                        factionFile.factionMemberRanks.RemoveAt(i);
+                        factionFile.factionMemberRanks = factionFile.factionMemberRanks.RemoveAt(i);
                         SaveFactionFile(factionFile);
                         break;
                     }
@@ -339,7 +339,7 @@ namespace GameServer
             {
                 if (factionFile.factionMembers[c] == userFile.username)
                 {
-                    factionFile.factionMemberRanks[c] = 1.ToString();
+                    factionFile.factionMemberRanks[c] += 1;
                     SaveFactionFile(factionFile);
                     break;
                 }
@@ -363,7 +363,7 @@ namespace GameServer
             {
                 if (factionFile.factionMembers[i] == userFile.username)
                 {
-                    factionFile.factionMemberRanks[i] = 0.ToString();
+                    factionFile.factionMemberRanks[i] -= 1;
                     SaveFactionFile(factionFile);
                     break;
                 }
