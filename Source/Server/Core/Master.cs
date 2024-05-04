@@ -20,6 +20,7 @@ namespace GameServer
         public static string sitesPath;
         public static string factionsPath;
         public static string settlementsPath;
+        public static string archivedWorldPath;
 
         public static string marketsPath;
         public static string globalMarketsPath;
@@ -77,7 +78,7 @@ namespace GameServer
             catch { };
         }
 
-        private static void SetPaths()
+        public static void SetPaths()
         {
             mainPath = Directory.GetCurrentDirectory();
             corePath = Path.Combine(mainPath, "Core");
@@ -90,6 +91,7 @@ namespace GameServer
             sitesPath = Path.Combine(mainPath, "Sites");
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
+            archivedWorldPath = Path.Combine(mainPath, "ArchivedWorlds");
 
             marketsPath = Path.Combine(mainPath, "Markets");
             globalMarketsPath = Path.Combine(marketsPath, "Global Market");
@@ -110,6 +112,7 @@ namespace GameServer
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
+            if (!Directory.Exists(archivedWorldPath)) Directory.CreateDirectory(archivedWorldPath);
 
             if (!Directory.Exists(marketsPath)) Directory.CreateDirectory(marketsPath);
             if (!Directory.Exists(globalMarketsPath)) Directory.CreateDirectory(globalMarketsPath);
