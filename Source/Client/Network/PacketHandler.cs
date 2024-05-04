@@ -46,6 +46,11 @@ namespace GameClient
             TransferManager.ParseTransferPacket(packet);
         }
 
+        public static void MarketPacket(Packet packet)
+        {
+            OnlineMarketManager.ParseMarketPacket(packet);
+        }
+
         public static void FactionPacket(Packet packet)
         {
             OnlineFactionManager.ParseFactionPacket(packet);

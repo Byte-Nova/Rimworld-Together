@@ -139,6 +139,14 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
+
+            else if (transferLocation == TransferLocation.World)
+            {
+                ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.Market).ToString();
+
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
+                Network.listener.EnqueuePacket(packet);
+            }
         }
 
         //Recovers transfered items when trade fails

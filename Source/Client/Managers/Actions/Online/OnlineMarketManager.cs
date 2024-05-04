@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -15,23 +16,43 @@ namespace GameClient
 
             switch (marketData.marketStepMode)
             {
-                default:
+                case (int)MarketStepMode.Reload:
+                    ReloadMarketStock(marketData);
                     break;
             }
         }
 
-        public static void OnGlobalMarketOpen()
+        public static void RequestMarketStock(MarketType marketType)
         {
-            string[] elements = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
-            RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing("Global Market", "Trade with the rest of the world remotely", elements, null, null);
-            DialogManager.PushNewDialog(dialog);
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
+
+            MarketData marketData = new MarketData();
+            marketData.marketStepMode = (int)MarketStepMode.Reload;
+            marketData.marketType = (int)marketType;
+
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            Network.listener.EnqueuePacket(packet);
         }
 
-        public static void OnFactionMarketOpen()
+        private static void ReloadMarketStock(MarketData marketData)
         {
-            string[] elements = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
-            RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing("Faction Market", "Trade with your faction members remotely", elements, null, null);
-            DialogManager.PushNewDialog(dialog);
+            DialogManager.PopWaitDialog();
+
+            if (marketData.marketType == (int)MarketType.Global)
+            {
+                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(MarketType.Global, 
+                    marketData.currentStock, null, null);
+
+                DialogManager.PushNewDialog(dialog);
+            }
+
+            else
+            {
+                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(MarketType.Faction, 
+                    marketData.currentStock, null, null);
+
+                DialogManager.PushNewDialog(dialog);
+            }
         }
     }
 }

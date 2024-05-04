@@ -49,6 +49,11 @@ namespace GameServer
             TransferManager.ParseTransferPacket(client, packet);
         }
 
+        public static void MarketPacket(ServerClient client, Packet packet)
+        {
+            OnlineMarketManager.ParseMarketPacket(client, packet);
+        }
+
         public static void SitePacket(ServerClient client, Packet packet)
         {
             SiteManager.ParseSitePacket(client, packet);

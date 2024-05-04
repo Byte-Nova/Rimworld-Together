@@ -12,34 +12,32 @@ namespace GameClient
 {
     public class RT_Dialog_TransferMenu : Window
     {
+        //UI
+
         public override Vector2 InitialSize => new Vector2(600f, 512f);
+        private Vector2 scrollPosition = Vector2.zero;
 
-        public string title = "Transfer Menu";
+        public readonly string title = "Transfer Menu";
+        public readonly string description = "Select the items you wish to transfer";
 
-        public string description = "Select the items you wish to transfer";
+        private readonly float buttonX = 100f;
+        private readonly float buttonY = 37f;
 
-        private float buttonX = 100f;
-
-        private float buttonY = 37f;
-
-        private int startAcceptingInputAtFrame;
+        private readonly int startAcceptingInputAtFrame;
 
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
-        private Vector2 scrollPosition = Vector2.zero;
+        //Variables
 
+        private readonly CommonEnumerators.TransferLocation transferLocation;
         private List<Tradeable> cachedTradeables;
-
         private Pawn playerNegotiator;
 
-        CommonEnumerators.TransferLocation transferLocation;
+        private readonly bool allowItems;
+        private readonly bool allowAnimals;
+        private readonly bool allowHumans;
 
-        private bool allowItems;
-        private bool allowAnimals;
-        private bool allowHumans;
-
-        public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
-            bool allowHumans = false)
+        public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false)
         {
             DialogManager.dialogTransferMenu = this;
             this.transferLocation = transferLocation;
@@ -51,10 +49,8 @@ namespace GameClient
 
             forcePause = true;
             absorbInputAroundWindow = true;
-
             soundAppear = SoundDefOf.CommsWindow_Open;
             //soundClose = SoundDefOf.CommsWindow_Close;
-
             closeOnAccept = false;
             closeOnCancel = false;
 
@@ -169,6 +165,21 @@ namespace GameClient
                 DialogManager.PushNewDialog(d1);
             }
 
+            else if (transferLocation == CommonEnumerators.TransferLocation.World)
+            {
+                Action r1 = delegate
+                {
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Market).ToString();
+                    DialogManager.PopDialog(DialogManager.dialogItemListing);
+                    postChoosing();
+                };
+
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                    r1, null);
+
+                DialogManager.PushNewDialog(d1);
+            }
+
             void postChoosing()
             {
                 TransferManager.TakeTransferItems(transferLocation);
@@ -216,7 +227,12 @@ namespace GameClient
 
             else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
-                playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+                playerNegotiator = ClientValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+            }
+
+            else if (transferLocation == CommonEnumerators.TransferLocation.World)
+            {
+                playerNegotiator = ClientValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
         }
 
@@ -231,6 +247,11 @@ namespace GameClient
             {
                 TradeSession.SetupWith(Find.WorldObjects.SettlementAt(int.Parse(ClientValues.incomingManifest.fromTile)), 
                     playerNegotiator, true);
+            }
+
+            else if (transferLocation == CommonEnumerators.TransferLocation.World)
+            {
+                TradeSession.SetupWith(ClientValues.chosenSettlement, playerNegotiator, true);
             }
         }
 
@@ -344,6 +365,66 @@ namespace GameClient
                 if (allowItems)
                 {
                     foreach(Thing thing in thingsInMap)
+                    {
+                        Tradeable tradeable = new Tradeable();
+                        tradeable.AddThing(thing, Transactor.Colony);
+                        ClientValues.listToShowInTradesMenu.Add(tradeable);
+                    }
+                }
+
+                if (allowHumans || allowAnimals)
+                {
+                    foreach (Pawn pawn in pawnsInMap)
+                    {
+                        if (DeepScribeHelper.CheckIfThingIsAnimal(pawn))
+                        {
+                            if (allowAnimals)
+                            {
+                                Tradeable tradeable = new Tradeable();
+                                tradeable.AddThing(pawn, Transactor.Colony);
+                                ClientValues.listToShowInTradesMenu.Add(tradeable);
+                            }
+                        }
+
+                        else
+                        {
+                            if (allowHumans)
+                            {
+                                if (pawn == playerNegotiator) continue;
+                                else
+                                {
+                                    Tradeable tradeable = new Tradeable();
+                                    tradeable.AddThing(pawn, Transactor.Colony);
+                                    ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            else if (transferLocation == CommonEnumerators.TransferLocation.World)
+            {
+                Map map = ClientValues.chosenSettlement.Map;
+
+                List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
+                pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
+
+                List<Thing> thingsInMap = new List<Thing>();
+                foreach (Zone zone in map.zoneManager.AllZones)
+                {
+                    foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                    {
+                        if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
+                        {
+                            thingsInMap.Add(thing);
+                        }
+                    }
+                }
+
+                if (allowItems)
+                {
+                    foreach (Thing thing in thingsInMap)
                     {
                         Tradeable tradeable = new Tradeable();
                         tradeable.AddThing(thing, Transactor.Colony);

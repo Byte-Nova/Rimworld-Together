@@ -6,5 +6,9 @@ namespace Shared
     public class MarketData
     {
         public int marketStepMode;
+        public int marketType;
+
+        public ItemData[] currentStock;
+        public ItemData stockToManage;
     }
 }
