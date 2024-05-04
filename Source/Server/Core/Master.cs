@@ -34,14 +34,14 @@ namespace GameServer
 
         //References
 
-        public static WhitelistFile         whitelist;
-        public static SiteValuesFile        siteValues;
-        public static WorldValuesFile       worldValues;
-        public static EventValuesFile       eventValues;
-        public static ServerConfigFile      serverConfig;
-        public static ServerValuesFile      serverValues;
-        public static ActionValuesFile      actionValues;
-        public static DifficultyValuesFile  difficultyValues;
+        public static WhitelistFile whitelist;
+        public static SiteValuesFile siteValues;
+        public static WorldValuesFile worldValues;
+        public static EventValuesFile eventValues;
+        public static ServerConfigFile serverConfig;
+        public static ServerValuesFile serverValues;
+        public static ActionValuesFile actionValues;
+        public static DifficultyValuesFile difficultyValues;
 
         //Booleans
 

@@ -718,41 +718,41 @@
             if (Master.serverConfig.UseUPnP)
             {
                 portforwardQuestion:
-                Logger.WriteToConsole("You have enabled UPnP on the server. Would you like to portforward?",Logger.LogMode.Warning);
-                Logger.WriteToConsole("Please type 'YES' or 'NO'",Logger.LogMode.Warning);
+                Logger.WriteToConsole("You have enabled UPnP on the server. Would you like to portforward?", Logger.LogMode.Warning);
+                Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
 
                 string response = Console.ReadLine();
 
-                if (response == "NO") { Logger.WriteToConsole("you can use the command 'portforward' in the future to portforward the server", Logger.LogMode.Warning); return; }
-                if (response != "YES")
+                if (response == "YES") _ = new UPnP();
+
+                else if (response == "NO")
                 {
-                    Logger.WriteToConsole("The response you have entered is not a valid option. please make sure your response is capitalized",Logger.LogMode.Error);
-                    goto portforwardQuestion;
+                    Logger.WriteToConsole("You can use the command 'portforward' in the future to portforward the server", 
+                        Logger.LogMode.Warning);
                 }
 
-                _ = new UPnP();
-
-
+                else
+                {
+                    Logger.WriteToConsole("The response you have entered is not a valid option. Please make sure your response is capitalized", Logger.LogMode.Error);
+                    goto portforwardQuestion;
+                }
             }
+
             else
             {
-                Logger.WriteToConsole("If a port has already been forwarded using UPnP,\n " +
-                                      "it will continute to be active until the server is restarted", Logger.LogMode.Warning);
+                Logger.WriteToConsole("If a port has already been forwarded using UPnP, it will continute to be active until the server is restarted", 
+                    Logger.LogMode.Warning);
             }
-
         }
 
         private static void PortForwardCommandAction()
         {
             if (!Master.serverConfig.UseUPnP)
             {
-                Logger.WriteToConsole("Cannot portforward because UPnP is disabled on the server.\n" +
-                                      " you can use the command 'toggleupnp' to enabled it.", Logger.LogMode.Error);
-                return;
+                Logger.WriteToConsole("Cannot portforward because UPnP is disabled on the server. You can use the command 'toggleupnp' to enable it.", 
+                    Logger.LogMode.Error);
             }
-
-            _ = new UPnP();
-
+            else _ = new UPnP();
         }
 
         private static void QuitCommandAction()
