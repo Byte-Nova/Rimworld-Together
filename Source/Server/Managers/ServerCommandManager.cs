@@ -184,6 +184,14 @@
             "enables/disables custom scenarios on the server",
             ToggleCustomScenariosCommandAction);
 
+        private static ServerCommand toggleUPnPCommand = new ServerCommand("toggleupnp", 0,
+            "enables/disables UPnP port mapping (auto-portforwarding)",
+            ToggleUPnPCommandAction);
+
+        private static ServerCommand portforwardCommand = new ServerCommand("portforward", 0,
+            "will use UPnP to portforward the server",
+            PortForwardCommandAction);
+
         private static ServerCommand quitCommand = new ServerCommand("quit", 0,
             "Saves all player data and then closes the server",
             QuitCommandAction);
@@ -191,6 +199,12 @@
         private static ServerCommand forceQuitCommand = new ServerCommand("forcequit", 0,
             "Closes the server without saving player data",
             ForceQuitCommandAction);
+
+        private static ServerCommand resetWorldCommand = new ServerCommand("resetworld", 0,
+            "Resets the world, settlements, maps, and sites.\n" +
+            "player logins, mods, and server config settings are not affected.\n" +
+            "The server data will not be deleted, but will be moved to a world archive folder instead.",
+            ResetWorldCommandAction);
 
         public static ServerCommand[] serverCommands = new ServerCommand[]
         {
@@ -221,8 +235,11 @@
             enableDifficultyCommand,
             disableDifficultyCommand,
             toggleCustomScenariosCommand,
+            toggleUPnPCommand,
+            portforwardCommand,
             quitCommand,
-            forceQuitCommand
+            forceQuitCommand,
+            resetWorldCommand
         };
 
         private static void HelpCommandAction()
@@ -697,6 +714,54 @@
             Logger.WriteToConsole($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
             Master.SaveServerValues(Master.serverValues);
         }
+
+        private static void ToggleUPnPCommandAction()
+        {
+            Master.serverConfig.UseUPnP = !Master.serverConfig.UseUPnP;
+            Logger.WriteToConsole($"UPnP port mapping is now {(Master.serverConfig.UseUPnP ? ("Enabled") : ("Disabled"))}", Logger.LogMode.Warning);
+
+            Master.SaveServerConfig(Master.serverConfig);
+
+            if (Master.serverConfig.UseUPnP)
+            {
+                portforwardQuestion:
+                Logger.WriteToConsole("You have enabled UPnP on the server. Would you like to portforward?", Logger.LogMode.Warning);
+                Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
+
+                string response = Console.ReadLine();
+
+                if (response == "YES") _ = new UPnP();
+
+                else if (response == "NO")
+                {
+                    Logger.WriteToConsole("You can use the command 'portforward' in the future to portforward the server", 
+                        Logger.LogMode.Warning);
+                }
+
+                else
+                {
+                    Logger.WriteToConsole("The response you have entered is not a valid option. Please make sure your response is capitalized", Logger.LogMode.Error);
+                    goto portforwardQuestion;
+                }
+            }
+
+            else
+            {
+                Logger.WriteToConsole("If a port has already been forwarded using UPnP, it will continute to be active until the server is restarted", 
+                    Logger.LogMode.Warning);
+            }
+        }
+
+        private static void PortForwardCommandAction()
+        {
+            if (!Master.serverConfig.UseUPnP)
+            {
+                Logger.WriteToConsole("Cannot portforward because UPnP is disabled on the server. You can use the command 'toggleupnp' to enable it.", 
+                    Logger.LogMode.Error);
+            }
+            else _ = new UPnP();
+        }
+
         private static void QuitCommandAction()
         {
             Master.isClosing = true;
@@ -723,6 +788,91 @@
             Console.Clear();
 
             Logger.WriteToConsole("[Cleared console]", Logger.LogMode.Title);
+        }
+
+        //May be a bit messy, but it's trying its best (;_;) 
+        private static void ResetWorldCommandAction()
+        {
+            //Make sure the user wants to reset the world
+            Logger.WriteToConsole("Are you sure you want to reset the world?", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
+            deleteWorldQuestion:
+
+            string response = Console.ReadLine();
+
+            if (response == "NO") return;
+            else if (response != "YES") 
+            {
+                Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", Logger.LogMode.Error);
+                goto deleteWorldQuestion;
+            }
+
+            //Get the name of the new folder for the world
+            Logger.WriteToConsole("The current world will be saved in the 'ArchivedWorlds' folder.\n" +
+                                  "Would you like to name the world before it is moved?\n" +
+                                  "If not, the world will be named with the current date", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Please type 'YES' or 'NO'", Logger.LogMode.Warning);
+            nameWorldQuestion:
+
+            response = Console.ReadLine();
+            string newWorldFolderPath;
+            string newWorldFolderName;
+
+            if (response == "YES")
+            {
+                customName:
+                Console.WriteLine("Please enter the name you would like to use:", Logger.LogMode.Warning);
+                newWorldFolderName = Console.ReadLine();
+                newWorldFolderPath = $"{Master.archivedWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
+
+                try { if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}"); }
+                catch
+                {
+                    Logger.WriteToConsole("The name you entered is invalid.\n" +
+                        " Please make sure your name does not contain any of these sybols:\n" +
+                        "\\/*:<>?\"|", Logger.LogMode.Error);
+
+                    goto customName;
+                }
+            }
+
+            else if (response == "NO")
+            {
+                newWorldFolderName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}";
+                newWorldFolderPath = $"{Master.archivedWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
+                if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}");
+            }
+
+            else
+            {
+                Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", Logger.LogMode.Error);
+                goto nameWorldQuestion;
+            }
+
+            //Make the new folder and move all the current world folders to it
+            Logger.WriteToConsole($"The archived world will be saved as:\n{newWorldFolderPath}", Logger.LogMode.Warning);
+            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Core");
+
+            //The core directory is special because we want to copy the files, not just move them.
+            foreach (string file in Directory.GetFiles(Master.corePath))
+            {
+                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Core{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
+            }
+
+            //Remove the old world file
+            File.Delete($"{Master.corePath + Path.DirectorySeparatorChar}WorldValues.json");
+
+            //Move the rest of the directories
+            if (Directory.Exists(Master.factionsPath)) Directory.Move(Master.factionsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Factions");
+            if (Directory.Exists(Master.logsPath)) Directory.Move(Master.logsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Logs");
+            if (Directory.Exists(Master.mapsPath)) Directory.Move(Master.mapsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Maps");
+            if (Directory.Exists(Master.savesPath)) Directory.Move(Master.savesPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Saves");
+            if (Directory.Exists(Master.settlementsPath)) Directory.Move(Master.settlementsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Settlements");
+            if (Directory.Exists(Master.sitesPath)) Directory.Move(Master.sitesPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Sites");
+
+            Master.SetPaths();
+
+            Logger.WriteToConsole("World has been successfully reset and archived", Logger.LogMode.Warning);
         }
     }
 }

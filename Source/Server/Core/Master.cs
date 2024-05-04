@@ -20,6 +20,7 @@ namespace GameServer
         public static string sitesPath;
         public static string factionsPath;
         public static string settlementsPath;
+        public static string archivedWorldPath;
 
         public static string modsPath;
         public static string requiredModsPath;
@@ -73,7 +74,7 @@ namespace GameServer
             catch { };
         }
 
-        private static void SetPaths()
+        public static void SetPaths()
         {
             mainPath = Directory.GetCurrentDirectory();
             corePath = Path.Combine(mainPath, "Core");
@@ -86,6 +87,7 @@ namespace GameServer
             sitesPath = Path.Combine(mainPath, "Sites");
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
+            archivedWorldPath = Path.Combine(mainPath, "ArchivedWorlds");
 
             modsPath = Path.Combine(mainPath, "Mods");
             requiredModsPath = Path.Combine(modsPath, "Required");
@@ -102,6 +104,7 @@ namespace GameServer
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
+            if (!Directory.Exists(archivedWorldPath)) Directory.CreateDirectory(archivedWorldPath);
 
             if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
@@ -150,6 +153,16 @@ namespace GameServer
             }
 
             Logger.WriteToConsole("Loaded server configs", Logger.LogMode.Warning);
+        }
+
+        public static void SaveServerConfig(ServerConfigFile serverConfig)
+        {
+            string path = Path.Combine(corePath, "ServerConfig.json");
+
+            Serializer.SerializeToFile(path, serverConfig);
+
+            Logger.WriteToConsole("Saved server Config", Logger.LogMode.Warning);
+
         }
 
         private static void LoadServerValues()

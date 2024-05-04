@@ -1,0 +1,100 @@
+<Defs>
+  <SitePartDef>
+    <defName>RTFarmland</defName>
+    <label>Farmland</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/Farmland</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+  <SitePartDef>
+    <defName>RTQuarry</defName>
+    <label>Quarry</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/Quarry</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+  <SitePartDef>
+    <defName>RTSawmill</defName>
+    <label>Sawmill</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/Sawmill</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+  <SitePartDef>
+    <defName>RTBank</defName>
+    <label>Bank</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/Bank</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+<SitePartDef>
+    <defName>RTLaboratory</defName>
+    <label>Laboratory</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/Laboratory</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+<SitePartDef>
+    <defName>RTRefinery</defName>
+    <label>Refinery</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/Refinery</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+<SitePartDef>
+    <defName>RTHerbalWorkshop</defName>
+    <label>Herbal workshop</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/HerbalWorkshop</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+<SitePartDef>
+    <defName>RTTextileFactory</defName>
+    <label>Textile factory</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/TextileFactory</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+<SitePartDef>
+    <defName>RTFoodProcessor</defName>
+    <label>Food Processor</label>
+    <description>Online Site</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/FoodProcessor</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+</Defs>
