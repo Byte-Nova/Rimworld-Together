@@ -155,6 +155,16 @@ namespace GameServer
             Logger.WriteToConsole("Loaded server configs", Logger.LogMode.Warning);
         }
 
+        public static void SaveServerConfig(ServerConfigFile serverConfig)
+        {
+            string path = Path.Combine(corePath, "ServerConfig.json");
+
+            Serializer.SerializeToFile(path, serverConfig);
+
+            Logger.WriteToConsole("Saved server Config", Logger.LogMode.Warning);
+
+        }
+
         private static void LoadServerValues()
         {
             string path = Path.Combine(corePath, "ServerValues.json");
