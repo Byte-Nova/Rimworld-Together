@@ -12,6 +12,8 @@ namespace GameClient
 
         public static bool isReadyToPlay;
 
+        public static bool isDisconnecting;
+
         public static bool isSavingGame;
 
         public static bool isQuickConnecting;

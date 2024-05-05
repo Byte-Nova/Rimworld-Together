@@ -28,7 +28,7 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.CommandType.ForceSave:
-                    OnForceSaveCommand(commandDetailsJSON.disconnectPlayer);
+                    OnForceSaveCommand(commandData.disconnectPlayer);
                     break;
             }
         }
@@ -56,12 +56,12 @@ namespace GameClient
 
         private static void OnForceSaveCommand(bool shouldDisconnectUser)
         {
+
             if (!ClientValues.isReadyToPlay) 
                 DisconnectionManager.DisconnectToMenu();
             else
             {
-                ClientValues.isDisconnecting = shouldDisconnectUser;
-                ClientValues.SetIntentionalDisconnect( true, DisconnectionManager.DCReason.SaveQuitToMenu );
+                ClientValues.SetIntentionalDisconnect(shouldDisconnectUser, DisconnectionManager.DCReason.SaveQuitToMenu );
                 SaveManager.ForceSave();
             }
         }

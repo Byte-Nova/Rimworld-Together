@@ -4,6 +4,7 @@ using Shared;
 using System.IO;
 using System.Reflection;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -78,9 +79,9 @@ namespace GameClient
                 && (DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToMenu 
                 || DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToOS))
             {
-                fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+                fileTransferData.additionalInstructions =SaveMode.Disconnect;
             }
-            else fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
+            else fileTransferData.additionalInstructions = SaveMode.Autosave;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             Network.listener.EnqueuePacket(packet);

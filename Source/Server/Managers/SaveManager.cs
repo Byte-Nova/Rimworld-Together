@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -74,7 +75,7 @@ namespace GameServer
 
         private static void OnUserSave(ServerClient client, FileTransferData fileTransferData)
         {
-            if (fileTransferData.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
+            if (fileTransferData.additionalInstructions == SaveMode.Disconnect)
             {
                 client.listener.disconnectFlag = true;
                 Logger.WriteToConsole($"[Save game] > {client.username} > Disconnect");
