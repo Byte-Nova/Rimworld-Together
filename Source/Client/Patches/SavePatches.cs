@@ -17,12 +17,14 @@ namespace GameClient
                 if (!Network.isConnectedToServer) return true;
                 if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
 
+                Log.Message("[Rimworld Together] > Setting Save state values");
                 ClientValues.ToggleSavingGame(true);
 
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
                 CustomDifficultyManager.EnforceCustomDifficulty();
 
+                Log.Message("[Rimworld Together] > Creating local save");
                 try
                 {
                     SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
@@ -35,7 +37,9 @@ namespace GameClient
                 }
                 catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
 
+                Log.Message("[Rimworld Together] > Sending maps to server");
                 MapManager.SendPlayerMapsToServer();
+                Log.Message("[Rimworld Together] > sending first save chunk to server");
                 SaveManager.SendSavePartToServer(fileName);
 
             }catch(Exception e)
