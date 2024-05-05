@@ -1,6 +1,7 @@
 ﻿using System;
 using HarmonyLib;
 using RimWorld;
+using UnityEngine;
 using Verse;
 
 namespace GameClient
@@ -11,32 +12,39 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
-            if (!Network.isConnectedToServer) return true;
-            if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
-
-            ClientValues.ToggleSavingGame(true);
-
-            ClientValues.ForcePermadeath();
-            ClientValues.ManageDevOptions();
-            CustomDifficultyManager.EnforceCustomDifficulty();
-
             try
             {
-                SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
+                if (!Network.isConnectedToServer) return true;
+                if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
+
+                ClientValues.ToggleSavingGame(true);
+
+                ClientValues.ForcePermadeath();
+                ClientValues.ManageDevOptions();
+                CustomDifficultyManager.EnforceCustomDifficulty();
+
+                try
                 {
-                    ScribeMetaHeaderUtility.WriteMetaHeader();
-                    Game target = Current.Game;
-                    Scribe_Deep.Look(ref target, "game");
-                }, Find.GameInfo.permadeathMode);
-                ___lastSaveTick = Find.TickManager.TicksGame;
+                    SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
+                    {
+                        ScribeMetaHeaderUtility.WriteMetaHeader();
+                        Game target = Current.Game;
+                        Scribe_Deep.Look(ref target, "game");
+                    }, Find.GameInfo.permadeathMode);
+                    ___lastSaveTick = Find.TickManager.TicksGame;
+                }
+                catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
+
+                MapManager.SendPlayerMapsToServer();
+                SaveManager.SendSavePartToServer(fileName);
+
+            }catch(Exception e)
+            {
+                Log.Error($"[Rimworld Together] > Game To save or send save to server > {e}");
+            }finally
+            {
+                ClientValues.ToggleSavingGame(false);
             }
-            catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
-
-            MapManager.SendPlayerMapsToServer();
-            SaveManager.SendSavePartToServer(fileName);
-
-            ClientValues.ToggleSavingGame(false);
-
             return false;
         }
     }
