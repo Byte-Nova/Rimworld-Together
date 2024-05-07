@@ -77,7 +77,6 @@ namespace GameServer
 
         public static void ListenForServerCommands()
         {
-
             List<string> tabbedCommands = new List<string>();
             int tabbedCommandsIndex = 0;
 
@@ -102,18 +101,15 @@ namespace GameServer
                         continue;
 
                     case ConsoleKey.Backspace:
-                        if (commandHistory[0].Count() > 0)
-                            commandHistory[0] = commandHistory[0].Substring(0, commandHistory[0].Count() - 1);
+                        if (commandHistory[0].Count() > 0) commandHistory[0] = commandHistory[0].Substring(0, commandHistory[0].Count() - 1);
                         break;
 
                     case ConsoleKey.UpArrow:
-                        if (commandHistoryPosition != commandHistory.Count() - 1)
-                            commandHistoryPosition++;
+                        if (commandHistoryPosition != commandHistory.Count() - 1) commandHistoryPosition++;
                         break;
 
                     case ConsoleKey.DownArrow:
-                        if (commandHistoryPosition != 0)
-                            commandHistoryPosition--;
+                        if (commandHistoryPosition != 0) commandHistoryPosition--;
                         break;
 
                     case ConsoleKey.Tab:
@@ -121,16 +117,19 @@ namespace GameServer
                         {
                             tabbedCommandsIndex++;
                             if (tabbedCommandsIndex >= tabbedCommands.Count())
+                            {
                                 tabbedCommandsIndex = 0;
-                            commandHistory[0] = tabbedCommands[tabbedCommandsIndex];
+                                commandHistory[0] = tabbedCommands[tabbedCommandsIndex];
+                            }
                         }
+
                         else
                         {
                             tabbedCommands = commandDictionary.Keys.ToList().FindAll(x => x.StartsWith(commandHistory[0], StringComparison.OrdinalIgnoreCase)).ToList();
-                            if (tabbedCommands.Count() > 0)
-                                commandHistory[0] = tabbedCommands[0];
+                            if (tabbedCommands.Count() > 0) commandHistory[0] = tabbedCommands[0];
                         }
                         break;
+
                     default:
                         commandHistory[0] += cki.KeyChar;
                         break;
