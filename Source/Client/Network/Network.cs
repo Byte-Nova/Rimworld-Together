@@ -32,7 +32,7 @@ namespace GameClient
 
                 if (!ClientValues.isQuickConnecting) DialogShortcuts.ShowLoginOrRegisterDialogs();
 
-                Log.Message($"[Rimworld Together] > Connected to server");
+                Logger.Message($"Connected to server");
             }
 
             else
