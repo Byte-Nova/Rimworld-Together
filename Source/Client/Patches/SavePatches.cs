@@ -17,14 +17,12 @@ namespace GameClient
                 if (!Network.isConnectedToServer) return true;
                 if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
 
-                Log.Message("[Rimworld Together] > Setting Save state values");
                 ClientValues.ToggleSavingGame(true);
-
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
                 CustomDifficultyManager.EnforceCustomDifficulty();
 
-                Log.Message("[Rimworld Together] > Creating local save");
+                Log.Message("Creating local save");
                 try
                 {
                     SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
@@ -35,20 +33,18 @@ namespace GameClient
                     }, Find.GameInfo.permadeathMode);
                     ___lastSaveTick = Find.TickManager.TicksGame;
                 }
-                catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
+                catch (Exception e) { Log.Error("Exception while saving game: " + e); }
 
-                Log.Message("[Rimworld Together] > Sending maps to server");
+                Log.Message("Sending maps to server");
                 MapManager.SendPlayerMapsToServer();
-                Log.Message("[Rimworld Together] > sending first save chunk to server");
-                SaveManager.SendSavePartToServer(fileName);
 
-            }catch(Exception e)
-            {
-                Log.Error($"[Rimworld Together] > Game To save or send save to server > {e}");
-            }finally
-            {
-                ClientValues.ToggleSavingGame(false);
+                Log.Message("Sending first save chunk to server");
+                SaveManager.SendSavePartToServer(fileName);
             }
+            catch (Exception e) { Log.Error($"{e}"); }
+
+            ClientValues.ToggleSavingGame(false);
+
             return false;
         }
     }
