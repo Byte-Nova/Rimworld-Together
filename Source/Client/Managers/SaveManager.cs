@@ -60,8 +60,6 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(true);
 
-                Logger.Message($"Sending save to server");
-
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
 
                 Network.listener.uploadManager = new UploadManager();
