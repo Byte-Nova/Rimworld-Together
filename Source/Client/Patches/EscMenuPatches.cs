@@ -13,7 +13,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.isConnectedToServer && Current.ProgramState == ProgramState.Playing)
+            if ( Network.state == NetworkState.Connected && Current.ProgramState == ProgramState.Playing )
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -46,13 +46,16 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.isConnectedToServer && Current.ProgramState == ProgramState.Playing)
+            if ( Network.state == NetworkState.Connected && Current.ProgramState == ProgramState.Playing )
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), ""))
                 {
-                    if (!Network.isConnectedToServer) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
+                    if ( Network.state == NetworkState.Disconnected )
+                    { 
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
+                    }
                     else
                     {
                         Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
@@ -77,7 +80,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.isConnectedToServer && Current.ProgramState == ProgramState.Playing)
+            if ( Network.state == NetworkState.Connected && Current.ProgramState == ProgramState.Playing )
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 

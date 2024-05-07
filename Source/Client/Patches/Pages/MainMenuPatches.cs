@@ -23,15 +23,17 @@ namespace GameClient
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y + 0.5f);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
-                        if (Network.isConnectedToServer || Network.isTryingToConnect) return true;
-                        else DialogShortcuts.ShowConnectDialogs();
+                        if ( Network.state != NetworkState.Disconnected ) 
+                            return true;
+                        DialogShortcuts.ShowConnectDialogs();
                     }
 
                     buttonSize = new Vector2(45f, 45f);
                     buttonLocation = new Vector2(rect.x - 50f, rect.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
-                        if (Network.isConnectedToServer || Network.isTryingToConnect) return true;
+                        if ( Network.state != NetworkState.Disconnected ) 
+                            return true;
 
                         SetupQuickConnectVariables();
 
@@ -40,8 +42,10 @@ namespace GameClient
                         if (string.IsNullOrWhiteSpace(Network.port)) isInvalid = true;
                         if (string.IsNullOrWhiteSpace(ClientValues.username)) isInvalid = true;
 
-                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
-                        else ShowQuickConnectFloatMenu();
+                        if (isInvalid) 
+                            DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
+                        else 
+                            ShowQuickConnectFloatMenu();
                     }
                 }
 
@@ -96,7 +100,7 @@ namespace GameClient
                         DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                         Network.StartConnection();
 
-                        if (Network.isConnectedToServer)
+                        if ( Network.state == NetworkState.Connected )
                         {
                             string[] details = PreferenceManager.LoadLoginData();
                             LoginData loginData = new LoginData();
