@@ -90,7 +90,7 @@ namespace GameClient
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Log.Warning($"[Rimworld Together] > {e}");
+                if (ClientValues.verboseBool)  Logger.Warning($"{e}");
 
                 disconnectFlag = true;
             }

@@ -64,7 +64,7 @@ namespace GameClient
 
             catch 
             { 
-                Log.Warning("Server didn't have event prices set, defaulting to 0");
+                Logger.Warning("Server didn't have event prices set, defaulting to 0");
 
                 eventCosts = new int[9]
                 {

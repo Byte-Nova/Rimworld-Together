@@ -28,7 +28,7 @@ namespace GameClient
 
             if (Network.listener.downloadManager == null)
             {
-                Log.Message($"[Rimworld Together] > Receiving save from server");
+                Logger.Message($"Receiving save from server");
 
                 customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
@@ -59,8 +59,6 @@ namespace GameClient
             if (Network.listener.uploadManager == null)
             {
                 ClientValues.ToggleSendingSaveToServer(true);
-
-                Log.Message($"[Rimworld Together] > Sending save to server");
 
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
 

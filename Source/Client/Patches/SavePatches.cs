@@ -22,7 +22,7 @@ namespace GameClient
                 ClientValues.ManageDevOptions();
                 CustomDifficultyManager.EnforceCustomDifficulty();
 
-                Log.Message("Creating local save");
+                Logger.Message("Creating local save");
                 try
                 {
                     SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
@@ -33,15 +33,15 @@ namespace GameClient
                     }, Find.GameInfo.permadeathMode);
                     ___lastSaveTick = Find.TickManager.TicksGame;
                 }
-                catch (Exception e) { Log.Error("Exception while saving game: " + e); }
+                catch (Exception e) { Logger.Error("Exception while saving game: " + e); }
 
-                Log.Message("Sending maps to server");
+                Logger.Message("Sending maps to server");
                 MapManager.SendPlayerMapsToServer();
 
-                Log.Message("Sending first save chunk to server");
+                Logger.Message("Sending save to server");
                 SaveManager.SendSavePartToServer(fileName);
             }
-            catch (Exception e) { Log.Error($"{e}"); }
+            catch (Exception e) { Logger.Error($"{e}"); }
 
             ClientValues.ToggleSavingGame(false);
 
