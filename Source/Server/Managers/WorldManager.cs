@@ -30,14 +30,15 @@ namespace GameServer
         public static void SaveWorldPrefab(ServerClient client, WorldData worldData)
         {
             WorldValuesFile worldValues = new WorldValuesFile();
-            worldValues.seedString = worldData.seedString;
-            worldValues.persistentRandomValue = worldData.persistentRandomValue;
-            worldValues.planetCoverage = worldData.planetCoverage;
-            worldValues.rainfall = worldData.rainfall;
-            worldValues.temperature = worldData.temperature;
-            worldValues.population = worldData.population;
-            worldValues.pollution = worldData.pollution;
-            worldValues.factions = worldData.factions;
+            worldValues.seedString              = worldData.seedString;
+            worldValues.persistentRandomValue   = worldData.persistentRandomValue;
+            worldValues.planetCoverage          = worldData.planetCoverage;
+            worldValues.rainfall                = worldData.rainfall;
+            worldValues.temperature             = worldData.temperature;
+            worldValues.population              = worldData.population;
+            worldValues.pollution               = worldData.pollution;
+            worldValues.factions                = worldData.factions;
+            worldValues.deflateDictionary       = worldData.deflateDictionary;
 
             Master.worldValues = worldValues;
             Serializer.SerializeToFile(worldFilePath, worldValues);

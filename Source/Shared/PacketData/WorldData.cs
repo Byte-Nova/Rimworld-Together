@@ -20,8 +20,6 @@ namespace Shared
         // value - Faction Details
         public Dictionary<string, byte[]> factions = new Dictionary<string, byte[]>();
 
-        //public List<FactionData> factions;
-
         // key - Deflate Label
         // value - World Deflate
         public Dictionary<string, string> deflateDictionary = new Dictionary<string, string>();

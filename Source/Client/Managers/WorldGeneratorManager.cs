@@ -5,6 +5,7 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using Verse.Profile;
+using System;
 
 namespace GameClient
 {
@@ -18,6 +19,7 @@ namespace GameClient
         public static OverallPopulation population;
         public static float pollution;
         public static List<FactionDef> factions = new List<FactionDef>();
+        public static List<FactionDef> initialFactions = new List<FactionDef>();
         public static WorldData cachedWorldData;
 
         public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
@@ -70,21 +72,23 @@ namespace GameClient
             pollution = float.Parse(worldData.pollution);
 
 
+            //TODO
+            //We might want to add a message for the players to let them know factions are missing
+            //For now, we output into the console for debugging purposes
 
             factions = new List<FactionDef>();
             FactionDef factionToAdd;
             Dictionary<string, FactionData> factionDictionary = new Dictionary<string, FactionData>();
             Dictionary<string, byte[]> cacheDetailsFactionDict = new Dictionary<string, byte[]>();
 
+            //Create the default faction list
+            ResetFactionCounts();
+
             //Convert the string-byte[] dictionary into a string-FactionData dictionary
             foreach (string str in worldData.factions.Keys)
             {
                 factionDictionary[str] = (FactionData)Serializer.ConvertBytesToObject(worldData.factions[str]);
             }
-
-            //TODO
-            //We might want to add a message for the players to let them know factions are missing
-            //For now, we output into the console for debugging purposes
 
             //for each faction in worldDetails, try to add it to the client's world
             FactionData factionData = new FactionData();
@@ -95,43 +99,75 @@ namespace GameClient
                 factionToAdd.fixedName = factionDictionary[factionName].fixedName;
                 factions.Add(factionToAdd);
                 factionData = FactionScribeManager.factionToFactionDetails(factionToAdd);
-                cacheDetailsFactionDict[factionName] = Serializer.ConvertObjectToBytes(factionData);
+                cacheDetailsFactionDict.TryAdd(factionName,Serializer.ConvertObjectToBytes(factionData));
             }
 
             worldData.factions = cacheDetailsFactionDict;
             cachedWorldData = worldData;
         }
 
+
+        private static void ResetFactionCounts()
+        {
+            factions = new List<FactionDef>();
+            foreach (FactionDef configurableFaction in FactionGenerator.ConfigurableFactions)
+            {
+                if (configurableFaction.startingCountAtWorldCreation > 0)
+                {
+                    for (int i = 0; i < configurableFaction.startingCountAtWorldCreation; i++)
+                    {
+                        factions.Add(configurableFaction);
+                    }
+                }
+            }
+            foreach (FactionDef faction in FactionGenerator.ConfigurableFactions)
+            {
+                if (faction.replacesFaction != null)
+                {
+                    factions.RemoveAll((FactionDef x) => x == faction.replacesFaction);
+                }
+            }
+            initialFactions = new List<FactionDef>();
+            initialFactions.AddRange(factions);
+        }
+
         public static FactionDef FirstOrCreate(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate)
         {
+            Log.Message("1");
+            Log.Message($"currentFaction is {(currentFaction == null ? ("null") : ("not null"))}");
             //Try to find the exact faction saved on the server
             FactionDef factionToReturn = factionDefs.FirstOrDefault(predicate);
 
 
             if (factionToReturn == null)
             {
+                Log.Message("2");
                 //try to find a similar faction that is currently in the world
-                Faction factionFound = Current.Game.World.factionManager.AllFactions.FirstOrDefault(
-                                fetch => (fetch.def.permanentEnemy == currentFaction.permanentEnemy) &&
-                                (fetch.def.naturalEnemy == currentFaction.naturalEnemy) &&
-                                ((byte)fetch.def.techLevel == currentFaction.techLevel) &&
-                                (fetch.def.hidden == currentFaction.hidden));
 
-                if (factionFound != null)
-                    factionToReturn = factionFound.def;
+                Log.Message($"game is {(Current.Game == null ? ("null") : ("not null"))}");
+                factionToReturn = initialFactions.FirstOrDefault(
+                                fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
+                                (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
+                                ((byte)fetch.techLevel == currentFaction.techLevel) &&
+                                (fetch.hidden == currentFaction.hidden));
+                Log.Message("3");
 
+                Log.Message("4");
                 //if try to find a similar faction in all factionDefs
                 if (factionToReturn == null)
                 {
+                    Log.Message("5");
                     factionToReturn = factionDefs.FirstOrDefault(
                         fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
                                 (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
                                 ((byte)fetch.techLevel == currentFaction.techLevel) &&
                                 (fetch.hidden == currentFaction.hidden));
 
+                    Log.Message("6");
                     //if a faction cannot be found with similar details, then make a new faction using the sent faction's details
                     if (factionToReturn == null)
                     {
+                        Log.Message("");
                         factionToReturn = FactionScribeManager.factionDetailsToFaction(currentFaction);
                     }
 
@@ -342,7 +378,6 @@ namespace GameClient
             }
 
             worldData = XmlParser.GetWorldXmlData(worldData);
-            Log.Message(worldData.deflateDictionary[worldData.deflateDictionary.Keys.Last()]);
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);
         }

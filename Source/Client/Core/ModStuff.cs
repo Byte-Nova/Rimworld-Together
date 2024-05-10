@@ -132,8 +132,9 @@ namespace GameClient
 
                 foreach (Faction faction in Find.World.factionManager.AllFactions)
                 {
+                    
                     if (faction.def == Faction.OfPlayer.def) continue;
-                    else worldValuesFile.factions.Add(faction.def.defName);
+                    else worldValuesFile.factions.Add(faction.def.defName, Serializer.ConvertObjectToBytes(FactionScribeManager.factionToFactionDetails(faction.def)));
                 }
 
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);

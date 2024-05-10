@@ -48,13 +48,13 @@ namespace GameClient
             //convert the world deflates into byte arrays
 
 
-            foreach (var k in tileData.Keys.ToList())
+            foreach (string k in tileData.Keys.ToList())
             {
                 if (worldData.deflateDictionary.ContainsKey(k))
                 {
                     tileData[k] = CompressUtility.Decompress(Convert.FromBase64String(DataExposeUtility.RemoveLineBreaks(worldData.deflateDictionary[k])));
                 }
-                else
+                else if (worldData.deflateDictionary.ContainsKey(k + "Deflate"))
                 {
                     tileData[k] = CompressUtility.Decompress(Convert.FromBase64String(DataExposeUtility.RemoveLineBreaks(worldData.deflateDictionary[k + "Deflate"])));
                 }
