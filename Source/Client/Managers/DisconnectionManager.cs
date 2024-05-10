@@ -6,12 +6,71 @@ namespace GameClient
 
     public static class DisconnectionManager
     {
+        //Useful disconnection variables
+
+        public enum DCReason
+        {
+            None,
+            SaveQuitToMenu,
+            SaveQuitToOS,
+            QuitToMenu
+        }
+
+        public static bool isIntentionalDisconnect;
+        public static DCReason intentionalDisconnectReason;
+
+        //Executes different actions depending on the disconnection mode
+
+        public static void HandleDisconnect()
+        {
+            if (isIntentionalDisconnect)
+            {
+                string reason = "ERROR";
+
+                switch (intentionalDisconnectReason)
+                {
+                    case DCReason.None:
+                        reason = "No reason given.";
+                        DisconnectToMenu();
+                        break;
+
+                    case DCReason.QuitToMenu:
+                        reason = "Quit to menu.";
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Returning to main menu.", delegate { DisconnectToMenu(); }));
+                        break;
+
+                    case DCReason.SaveQuitToMenu:
+                        reason = "Save and Quit to Menu.";
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { DisconnectToMenu(); }));
+                        break;
+
+                    case DCReason.SaveQuitToOS:
+                        reason = "Save and Quit to OS.";
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { QuitGame(); }));
+                        break;
+
+                    default:
+                        reason = $"{intentionalDisconnectReason}";
+                        DisconnectToMenu();
+                        break;
+                }
+
+                Logger.Message($"Disconnected from server: {reason}");
+            }
+
+            else
+            {
+                Logger.Message($"Disconnected from server: Connection Lost");
+                DialogManager.PushNewDialog(new RT_Dialog_Error("Your connection to the server has been lost...", delegate { DisconnectToMenu(); }));
+            }
+        }
+
         //Kicks the client into the main menu
 
         public static void DisconnectToMenu()
         {
             Network.CleanValues();
-            ChatManager.CleanChat();
+            OnlineChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
 

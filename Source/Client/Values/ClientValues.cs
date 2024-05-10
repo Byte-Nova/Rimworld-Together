@@ -10,10 +10,6 @@ namespace GameClient
     {
         public static bool needsToGenerateWorld;
 
-        public static bool isDisconnecting;
-
-        public static bool isQuiting;
-
         public static bool isReadyToPlay;
 
         public static bool isSavingGame;
@@ -48,7 +44,7 @@ namespace GameClient
         public static bool rejectTransferBool;
         public static bool rejectSiteRewardsBool;
 
-        public static int autosaveDays = 1;
+        public static float autosaveDays = 1.0f;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = autosaveDays * 60000f;
 
@@ -61,10 +57,12 @@ namespace GameClient
         }
 
         public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
-
-        public static void ToggleDisconnecting(bool mode) { isDisconnecting = mode; }
-
-        public static void ToggleQuiting(bool mode) { isQuiting = mode; }
+    
+        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None) 
+        { 
+            DisconnectionManager.isIntentionalDisconnect = mode;
+            DisconnectionManager.intentionalDisconnectReason = reason; 
+        }
 
         public static void ToggleReadyToPlay(bool mode) { isReadyToPlay = mode; }
 
@@ -72,7 +70,7 @@ namespace GameClient
 
         public static void ToggleVisit(bool mode) { isInVisit = mode; }
 
-        public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
+        public static void ToggleChatScroll(bool mode) { OnlineChatManager.shouldScrollChat = mode; }
 
         public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
 
@@ -83,8 +81,7 @@ namespace GameClient
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
-            ToggleDisconnecting(false);
-            ToggleQuiting(false);
+            SetIntentionalDisconnect(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleVisit(false);

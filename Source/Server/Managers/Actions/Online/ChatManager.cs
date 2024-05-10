@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Threading;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -85,7 +86,7 @@ namespace GameServer
             foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
 
             WriteToLogs(client.username, message);
-            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > {client.username} > {message}", Logger.LogMode.Normal, false);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > {client.username} > {message}", LogMode.Message, false);
         }
 
         public static void BroadcastServerMessage(string messageToSend)
@@ -100,7 +101,7 @@ namespace GameServer
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             WriteToLogs("CONSOLE", messageToSend);
-            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > CONSOLE > {messageToSend}", Logger.LogMode.Normal, false);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > CONSOLE > {messageToSend}", LogMode.Message, false);
         }
 
         public static void BroadcastSystemMessage(ServerClient client, string[] messagesToSend)
@@ -167,10 +168,7 @@ namespace GameServer
 
         private static void ChatStopVisitCommandAction()
         {
-            VisitData visitData = new VisitData();
-            visitData.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
-
-            OnlineVisitManager.SendVisitStop(targetClient, visitData);
+            OnlineVisitManager.SendVisitStop(targetClient);
         }
     }
 }

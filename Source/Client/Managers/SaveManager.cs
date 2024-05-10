@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using Shared;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Verse;
 
 namespace GameClient
@@ -31,7 +28,7 @@ namespace GameClient
 
             if (Network.listener.downloadManager == null)
             {
-                Log.Message($"[Rimworld Together] > Receiving save from server");
+                Logger.Message($"Receiving save from server");
 
                 customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
@@ -63,8 +60,6 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(true);
 
-                Log.Message($"[Rimworld Together] > Sending save to server");
-
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
 
                 Network.listener.uploadManager = new UploadManager();
@@ -77,7 +72,12 @@ namespace GameClient
             fileTransferData.fileBytes = Network.listener.uploadManager.ReadFilePart();
             fileTransferData.isLastPart = Network.listener.uploadManager.isLastPart;
 
-            if (ClientValues.isDisconnecting || ClientValues.isQuiting) fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+            if (DisconnectionManager.isIntentionalDisconnect 
+                && (DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToMenu 
+                || DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToOS))
+            {
+                fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+            }
             else fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);

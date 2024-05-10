@@ -1,6 +1,7 @@
 ﻿using Shared;
 using System.Net;
 using System.Net.Sockets;
+using static Shared.CommonEnumerators;
 using Mono.Nat;
 
 namespace GameServer
@@ -26,9 +27,11 @@ namespace GameServer
             connection = new TcpListener(localAddress, port);
             connection.Start();
 
-            Logger.WriteToConsole("Type 'help' to get a list of available commands", Logger.LogMode.Warning);
-            Logger.WriteToConsole($"Listening for users at {localAddress}:{port}", Logger.LogMode.Warning);
-            Logger.WriteToConsole("Server launched", Logger.LogMode.Warning);
+            Threader.GenerateServerThread(Threader.ServerMode.Sites);
+
+            Logger.WriteToConsole("Type 'help' to get a list of available commands", LogMode.Warning);
+            Logger.WriteToConsole($"Listening for users at {localAddress}:{port}", LogMode.Warning);
+            Logger.WriteToConsole("Server launched", LogMode.Warning);
             Master.ChangeTitle();
 
             while (true) ListenForIncomingUsers();
@@ -54,7 +57,7 @@ namespace GameServer
                 if (connectedClients.ToArray().Count() >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
                     UserManager.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
-                    Logger.WriteToConsole($"[Warning] > Server Full", Logger.LogMode.Warning);
+                    Logger.WriteToConsole($"[Warning] > Server Full", LogMode.Warning);
                 }
 
                 else
@@ -77,16 +80,14 @@ namespace GameServer
                 connectedClients.Remove(client);
                 client.listener.DestroyConnection();
 
-                UserManager.SendPlayerRecount();
-
                 Master.ChangeTitle();
-
+                UserManager.SendPlayerRecount();
                 Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
             }
 
             catch
             {
-                Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", LogMode.Warning);
             }
         }
     }

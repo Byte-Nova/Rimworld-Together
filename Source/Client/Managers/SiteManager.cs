@@ -52,7 +52,7 @@ namespace GameClient
 
             catch 
             {
-                Log.Warning("Server didn't have site rewards set, defaulting to 0");
+                Logger.Warning("Server didn't have site rewards set, defaulting to 0");
 
                 siteRewardCount = new int[9]
                 {
@@ -208,7 +208,7 @@ namespace GameClient
             List<string> pawnNames = new List<string>();
             foreach (Pawn pawn in pawns)
             {
-                if (TransferManagerHelper.CheckIfThingIsHuman(pawn)) pawnNames.Add(pawn.Label);
+                if (DeepScribeHelper.CheckIfThingIsHuman(pawn)) pawnNames.Add(pawn.Label);
             }
 
             RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Pawn Selection", "Select the pawn you wish to send", 
@@ -223,7 +223,7 @@ namespace GameClient
             List<Pawn> caravanHumans = new List<Pawn>();
             foreach (Pawn pawn in caravanPawns)
             {
-                if (TransferManagerHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
+                if (DeepScribeHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
             }
 
             Pawn pawnToSend = caravanHumans[DialogManager.dialogListingWithButtonResult];
@@ -337,7 +337,7 @@ namespace GameClient
 
             catch 
             {
-                Log.Warning("Server didn't have personal site prices set, defaulting to 0");
+                Logger.Warning("Server didn't have personal site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {
@@ -405,7 +405,7 @@ namespace GameClient
 
             catch
             {
-                Log.Warning("Server didn't have faction site prices set, defaulting to 0");
+                Logger.Warning("Server didn't have faction site prices set, defaulting to 0");
 
                 sitePrices = new int[9]
                 {
