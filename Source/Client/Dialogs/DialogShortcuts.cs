@@ -138,8 +138,7 @@ namespace GameClient
                     PreferenceManager.SaveConnectionData(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
                 }
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Network.StartConnection();
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server", Network.StartConnection));
             }
 
             else

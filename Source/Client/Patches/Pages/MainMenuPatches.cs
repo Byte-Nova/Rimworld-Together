@@ -93,8 +93,7 @@ namespace GameClient
                     {
                         ClientValues.ToggleQuickConnecting(true);
 
-                        DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                        Network.StartConnection();
+                        DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server", Network.StartConnection));
 
                         if (Network.isConnectedToServer)
                         {

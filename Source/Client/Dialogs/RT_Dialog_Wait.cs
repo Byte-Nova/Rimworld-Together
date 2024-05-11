@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using UnityEngine;
 using Verse;
+using System;
 
 namespace GameClient
 {
@@ -11,10 +12,15 @@ namespace GameClient
         private string title = "WAIT";
         private string description = "";
 
-        public RT_Dialog_Wait(string description)
+        private Action actionToWaitFor;
+
+        private int tick = 0;
+
+        public RT_Dialog_Wait(string description, Action actionToWaitFor = null)
         {
             DialogManager.dialogWait = this;
             this.description = description;
+            this.actionToWaitFor = actionToWaitFor;
 
             forcePause = true;
             absorbInputAroundWindow = true;
@@ -28,6 +34,10 @@ namespace GameClient
 
         public override void DoWindowContents(Rect rect)
         {
+            if(tick == 5 && actionToWaitFor != null)
+                actionToWaitFor.Invoke();
+            tick++;
+
             float centeredX = rect.width / 2;
             float horizontalLineDif = Text.CalcSize(description).y + StandardMargin / 2;
             float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;
