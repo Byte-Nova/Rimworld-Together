@@ -1,4 +1,5 @@
-﻿using static GameServer.ServerCommandManager;
+﻿using Shared;
+using static GameServer.ServerCommandManager;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -352,6 +353,13 @@ namespace GameServer
             },
 
             {
+                "decompress", new Command("decompress", 1,
+                "decompresses a player's save file",
+                "decompres [Player]\n  Player - decompresses the save of the given player",
+                DecompressCommandAction)
+            },
+
+            {
                 "forcesave", new Command("forcesave", 1,
                 "Forces a player to sync their save",
                 "forcesave [Player]\n  Player - forces the given player to save their game",
@@ -413,7 +421,7 @@ namespace GameServer
                 "forcequit", new Command("forcequit", 0,
                 "Closes the server without saving player details",
                 "forcequit [] - closes the server without saving player details",
-                ForceQuitCommandAction) 
+                ForceQuitCommandAction)
             },
 
             {
@@ -437,11 +445,11 @@ namespace GameServer
                         Logger.WriteToConsole($"{command.command} - {command.description}", LogMode.Warning, writeToLogs: false, false);
                     }
                     Logger.WriteToConsole("----------------------------------------", LogMode.Title, false, false);
-                    Logger.WriteToConsole($"Write 'help [Command]' to get help for the given command", displayTime:false);
+                    Logger.WriteToConsole($"Write 'help [Command]' to get help for the given command", displayTime: false);
                     break;
                 case 1:
 
-                    if (!commandDictionary.ContainsKey(parsedParameters[0])){
+                    if (!commandDictionary.ContainsKey(parsedParameters[0])) {
                         Logger.WriteToConsole($"Error: Could not find the command {parsedParameters[0]}");
                         return;
                     }
@@ -481,7 +489,7 @@ namespace GameServer
         private static void OpCommandAction()
         {
             ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == parsedParameters[0]);
-            if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{parsedParameters[0]}' was not found", 
+            if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{parsedParameters[0]}' was not found",
                 LogMode.Warning);
 
             else
@@ -518,7 +526,7 @@ namespace GameServer
         private static void DeopCommandAction()
         {
             ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == parsedParameters[0]);
-            if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{parsedParameters[0]}' was not found", 
+            if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{parsedParameters[0]}' was not found",
                 LogMode.Warning);
 
             else
@@ -701,13 +709,13 @@ namespace GameServer
 
             else
             {
-                for(int i = 0; i < eventTypes.Count(); i++)
+                for (int i = 0; i < eventTypes.Count(); i++)
                 {
                     if (eventTypes[i] == parsedParameters[1])
                     {
                         CommandManager.SendEventCommand(toFind, i);
 
-                        Logger.WriteToConsole($"Sent event '{parsedParameters[1]}' to {toFind.username}", 
+                        Logger.WriteToConsole($"Sent event '{parsedParameters[1]}' to {toFind.username}",
                             LogMode.Warning);
 
                         return;
@@ -716,7 +724,7 @@ namespace GameServer
 
                 Logger.WriteToConsole($"[ERROR] > Event '{parsedParameters[1]}' was not found",
                     LogMode.Warning);
-            }   
+            }
         }
 
         private static void EventAllCommandAction()
@@ -755,7 +763,7 @@ namespace GameServer
         private static void BroadcastCommandAction()
         {
             string fullText = "";
-            foreach(string str in parsedParameters)
+            foreach (string str in parsedParameters)
             {
                 fullText += $"{str} ";
             }
@@ -769,7 +777,7 @@ namespace GameServer
         private static void ServerMessageCommandAction()
         {
             string fullText = "";
-            foreach(string str in parsedParameters)
+            foreach (string str in parsedParameters)
             {
                 fullText += $"{str} ";
             }
@@ -844,6 +852,31 @@ namespace GameServer
         }
 
         private static void WhitelistToggleCommandAction() { WhitelistManager.ToggleWhitelist(); }
+
+        private static void DecompressCommandAction()
+        {
+            try
+            {
+                string player = parsedParameters[0];
+                byte[] playerSave = SaveManager.GetUserSaveFromUsername(player);
+                if (playerSave == null)
+                {
+                    Logger.Error($"Could not find a save for player {player}");
+                    return;
+                }
+                byte[] decompressedSave = GZip.Decompress(playerSave);
+                string decomrpressedSavePath = Path.Combine(Master.savesPath, player + ".rws");
+                File.WriteAllBytes(decomrpressedSavePath, decompressedSave);
+                Logger.WriteToConsole(Master.standardSeparator, LogMode.Title);
+                Logger.Warning($"Successfully decompressed save for player {player}");
+                Logger.Warning($"save is located at {decomrpressedSavePath}");
+                Logger.WriteToConsole(Master.standardSeparator, LogMode.Title);
+
+            }catch(Exception e)
+            {
+                Logger.Error(e.ToString());
+            }
+        }
 
         private static void ForceSaveCommandAction()
         {

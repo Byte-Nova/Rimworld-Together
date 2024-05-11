@@ -49,6 +49,10 @@ namespace GameServer
 
         public static bool isClosing;
 
+        //strings
+
+        public static string standardSeparator = $"----------------------------------------";
+
         public static void Main()
         {
             Console.ForegroundColor = ConsoleColor.White;
@@ -127,7 +131,7 @@ namespace GameServer
         {
             Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", LogMode.Title);
             Logger.WriteToConsole($"Loading all necessary resources", LogMode.Title);
-            Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
+            Logger.WriteToConsole(standardSeparator, LogMode.Title);
 
             LoadSiteValues();
             LoadEventValues();
@@ -139,7 +143,7 @@ namespace GameServer
             WhitelistManager.LoadServerWhitelist();
             CustomDifficultyManager.LoadCustomDifficulty();
 
-            Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
+            Logger.WriteToConsole(standardSeparator, LogMode.Title);
         }
 
         private static void LoadServerConfig()
