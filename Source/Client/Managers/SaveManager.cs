@@ -31,7 +31,7 @@ namespace GameClient
                 Logger.Message($"Receiving save from server");
 
                 customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
-                string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
+                string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rwsTemp" });
 
                 Network.listener.downloadManager = new DownloadManager();
                 Network.listener.downloadManager.PrepareDownload(filePath, fileTransferData.fileParts);
@@ -43,6 +43,15 @@ namespace GameClient
             {
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
+
+                customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
+                string saveFilePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
+                string tempFilePath = $"{saveFilePath}temp";
+
+                byte[] compressedSave = File.ReadAllBytes(tempFilePath);
+                byte[] save = GZip.Decompress(compressedSave);
+                File.WriteAllBytes(saveFilePath, save);
+                File.Delete(tempFilePath);
 
                 GameDataSaveLoader.LoadGame(customSaveName);
             }
@@ -61,9 +70,15 @@ namespace GameClient
                 ClientValues.ToggleSendingSaveToServer(true);
 
                 string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
+                string tempFilePath = $"{filePath}.temp";
+
+                byte[] saveBytes = File.ReadAllBytes(filePath); ;
+                byte[] compressedSave = GZip.Compress(saveBytes);
+                File.WriteAllBytes(tempFilePath, compressedSave);
+
 
                 Network.listener.uploadManager = new UploadManager();
-                Network.listener.uploadManager.PrepareUpload(filePath);
+                Network.listener.uploadManager.PrepareUpload(tempFilePath);
             }
 
             FileTransferData fileTransferData = new FileTransferData();
@@ -86,7 +101,11 @@ namespace GameClient
             if (Network.listener.uploadManager.isLastPart) 
             {
                 ClientValues.ToggleSendingSaveToServer(false);
-                Network.listener.uploadManager = null; 
+                Network.listener.uploadManager = null;
+
+                string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
+                string tempFilePath = $"{filePath}.temp";
+                File.Delete(tempFilePath);
             }
         }
     }

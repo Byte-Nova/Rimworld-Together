@@ -25,10 +25,8 @@ namespace GameServer
                 client.listener.downloadManager.FinishFileWrite();
                 client.listener.downloadManager = null;
 
-                byte[] saveBytes = File.ReadAllBytes(tempClientSavePath);
-                byte[] compressedSave = GZip.Compress(saveBytes);
-
-                File.WriteAllBytes(baseClientSavePath, compressedSave);
+                byte[] completedSave = File.ReadAllBytes(tempClientSavePath);
+                File.WriteAllBytes(baseClientSavePath, completedSave);
                 File.Delete(tempClientSavePath);
 
                 OnUserSave(client, fileTransferData);
@@ -50,11 +48,8 @@ namespace GameServer
             {
                 Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
 
-                byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(baseClientSavePath));
-                File.WriteAllBytes(tempClientSavePath, decompressedSave);
-
                 client.listener.uploadManager = new UploadManager();
-                client.listener.uploadManager.PrepareUpload(tempClientSavePath);
+                client.listener.uploadManager.PrepareUpload(baseClientSavePath);
             }
 
             FileTransferData fileTransferData = new FileTransferData();
@@ -68,7 +63,6 @@ namespace GameServer
 
             if (client.listener.uploadManager.isLastPart)
             {
-                File.Delete(tempClientSavePath);
                 client.listener.uploadManager = null;
             }
         }
