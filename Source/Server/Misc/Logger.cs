@@ -5,7 +5,7 @@ namespace GameServer
 {
     public static class Logger
     {
-        public static Semaphore semaphore = new Semaphore(1, 1);
+        public static Semaphore loggerSemaphore = new Semaphore(1, 1);
 
         public static Dictionary<LogMode, ConsoleColor> colorDictionary = new Dictionary<LogMode, ConsoleColor>
         {
@@ -25,52 +25,57 @@ namespace GameServer
 
         public static void Error(string message) { WriteToConsole(message, LogMode.Error); }
 
-        public static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true, bool allowLogMultiplier = false)
+        public static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true, bool allowLogMultiplier = false, bool displayTime = true)
         {
-            semaphore.WaitOne();
-
-            Console.CursorVisible = false;
-
-            if (writeToLogs) WriteToLogs(text);
-
-            var (Left, Top) = Console.GetCursorPosition();
-
-            Console.ForegroundColor = colorDictionary[mode];
-            Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
-
-            //Check if the last log is the same as this log, if so then put a multiplier on the log
-            if (text == previousText && allowLogMultiplier)
+            loggerSemaphore.WaitOne();
+            try
             {
-                repetitionCounter++;
+                Console.CursorVisible = false;
 
-                Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text} x {repetitionCounter}");
-                Console.SetCursorPosition(Left, Top);
+                if (writeToLogs) WriteToLogs(text);
+
+                var (Left, Top) = Console.GetCursorPosition();
+
+                Console.ForegroundColor = colorDictionary[mode];
+                Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
+
+                //Check if the last log is the same as this log, if so then put a multiplier on the log
+                if (text == previousText && allowLogMultiplier)
+                {
+                    repetitionCounter++;
+
+                    Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
+                    Console.WriteLine($"{(displayTime ? $"[{DateTime.Now:HH:mm:ss}] " : "")}{text} x {repetitionCounter}");
+                    Console.SetCursorPosition(Left, Top);
+                }
+
+                else
+                {
+                    repetitionCounter = 1;
+                    Console.WriteLine($"{(displayTime ? $"[{DateTime.Now:HH:mm:ss}] " : "")}{text}");
+                    ServerCommandManager.WriteCurrentCommand();
+                }
+
+                Console.ForegroundColor = ConsoleColor.White;
+                previousText = text;
+
+                Console.CursorVisible = true;
             }
-
-            else
+            finally
             {
-                repetitionCounter = 1;
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text}");
-                ServerCommandManager.WriteCurrentCommand();
+                loggerSemaphore.Release();
             }
-
-            Console.ForegroundColor = ConsoleColor.White;
-            previousText = text;
-
-            Console.CursorVisible = true;
-            semaphore.Release();
         }
 
         public static void ClearCurrentLine()
         {
-            semaphore.WaitOne();
+            loggerSemaphore.WaitOne();
 
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
             Console.Write(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
 
-            semaphore.Release();
+            loggerSemaphore.Release();
         }
 
         private static void WriteToLogs(string toLog)
