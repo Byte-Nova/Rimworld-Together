@@ -11,9 +11,9 @@ namespace GameClient
 {
     public static class SaveManager
     {
-        public static string customSaveName = "ServerSave";
-        private static string tempSaveFilePath => Path.Combine(Master.savesFolderPath, $"Server - {Network.ip} - {ClientValues.username}" + ".rws.temp");
+        public static string customSaveName => $"Server - {Network.ip} - {ClientValues.username}";
         private static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
+        private static string tempSaveFilePath => saveFilePath + ".temp";
 
         public static void ForceSave()
         {
@@ -22,7 +22,6 @@ namespace GameClient
 
             ClientValues.autosaveCurrentTicks = 0;
 
-            customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
             GameDataSaveLoader.SaveGame(customSaveName);
         }
 
