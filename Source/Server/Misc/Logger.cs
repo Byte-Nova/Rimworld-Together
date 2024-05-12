@@ -67,7 +67,7 @@ namespace GameServer
             semaphore.WaitOne();
 
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
-            Console.Write(new string(' ', Console.WindowWidth));
+            Console.Write(new string(' ', Console.WindowWidth -1));
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
 
             semaphore.Release();
