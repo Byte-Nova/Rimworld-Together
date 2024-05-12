@@ -83,10 +83,7 @@ namespace GameServer
             foreach(string save in saves)
             {
                 if (!save.EndsWith(".mpsave")) continue;
-                if (Path.GetFileNameWithoutExtension(save) == client.username)
-                {
-                    return true;
-                }
+                if (Path.GetFileNameWithoutExtension(save) == client.username) return true;
             }
 
             return false;
@@ -98,10 +95,7 @@ namespace GameServer
             foreach (string save in saves)
             {
                 if (!save.EndsWith(".mpsave")) continue;
-                if (Path.GetFileNameWithoutExtension(save) == username)
-                {
-                    return File.ReadAllBytes(save);
-                }
+                if (Path.GetFileNameWithoutExtension(save) == username) return File.ReadAllBytes(save);
             }
 
             return null;
@@ -111,7 +105,9 @@ namespace GameServer
         {
             if (!CheckIfUserHasSave(client)) 
             { 
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save"); 
+                ResponseShortcutManager.SendIllegalPacket(client, 
+                    $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save"); 
+
                 return;
             }
             
@@ -122,7 +118,7 @@ namespace GameServer
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == client.username);
             if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
-                Logger.WriteToConsole($"[Delete save] > {client.username}", LogMode.Warning);
+            Logger.WriteToConsole($"[Delete save] > {client.username}", LogMode.Warning);
 
             MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
             foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
