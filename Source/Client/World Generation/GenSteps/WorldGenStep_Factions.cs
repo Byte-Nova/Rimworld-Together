@@ -27,13 +27,16 @@ namespace GameClient
 
 		public override void GenerateFresh(string seed)
 		{
+            //If this is the first generation, run the vanilla Factions generations step code
             if (WorldGeneratorManager.firstGeneration)
             {
                 FactionGenerator.GenerateFactionsIntoWorld(Current.CreatingWorld.info.factions);
+
                 return;
             }
 
 
+            //Add Factions to the faction manager using their FactionDefs
 			List<FactionDef> factions = Current.CreatingWorld.info.factions;
             if (factions != null)
             {
@@ -43,25 +46,26 @@ namespace GameClient
                 }
             }
 
-            IEnumerable<Faction> source = Find.World.factionManager.AllFactionsListForReading.Where((Faction x) => !x.def.isPlayer && !x.Hidden && !x.temporary);
+            //Get list of all factions
+            IEnumerable<Faction> factionList = Find.World.factionManager.AllFactionsListForReading.Where((Faction x) => !x.def.isPlayer && !x.Hidden && !x.temporary);
+
+            //Deserialize FactionData Dictionary
             IEnumerable<FactionData> factionDatas = WorldGeneratorManager.cachedWorldData.factions.Values.ToList().ConvertAll(x => (FactionData)Serializer.ConvertBytesToObject(x));
 
             //For each faction, add all the settlements to the world
-            if (source.Any())
+            if (factionList.Any())
             {
-                foreach (Faction faction in source)
-                {
-                    FactionData factionData = factionDatas.ToList().FirstOrDefault(fetch => fetch.defName == faction.def.defName);
-                    IEnumerable<SettlementData> settlementDatas = factionData.settlementDatas.ConvertAll(x => (SettlementData)Serializer.ConvertBytesToObject(x));
+                IEnumerable<SettlementData> settlementDatas = WorldGeneratorManager.cachedWorldData.SettlementDatas.ConvertAll(x => (SettlementData)Serializer.ConvertBytesToObject(x));
 
-                    foreach (SettlementData settlementData in settlementDatas)
-                    {
-                        Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                        settlement.SetFaction(faction);
-                        settlement.Tile = settlementData.tile;
-                        settlement.Name = settlementData.settlementName;
-                        Find.WorldObjects.Add(settlement);
-                    }
+                foreach (SettlementData settlementData in settlementDatas)
+                {
+                    Faction faction = factionList.FirstOrDefault(fetch => fetch.def.defName == settlementData.owner);
+
+                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                    settlement.SetFaction(faction);
+                    settlement.Tile = settlementData.tile;
+                    settlement.Name = settlementData.settlementName;
+                    Find.WorldObjects.Add(settlement);
                 }
             }
             Find.IdeoManager.SortIdeos();

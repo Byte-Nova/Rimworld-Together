@@ -20,6 +20,9 @@ namespace Shared
         // value - Faction Details
         public Dictionary<string, byte[]> factions = new Dictionary<string, byte[]>();
 
+        //List of serialized SettlementData
+        public List<byte[]> SettlementDatas = new List<byte[]>();
+
         // key - Deflate Label
         // value - World Deflate
         public Dictionary<string, string> deflateDictionary = new Dictionary<string, string>();

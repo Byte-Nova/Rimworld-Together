@@ -104,7 +104,7 @@ namespace GameClient
             XmlNode localWorldObjects = GetChildNodeInNode(worldNode, "worldObjects");
             localWorldObjects = GetChildNodeInNode(localWorldObjects, "worldObjects");
 
-            //grab server o
+            //grab server objects
             XmlNode ServerWorldObjectsDoc = new XmlDocument();
             ServerWorldObjectsDoc.InnerXml = worldData.WorldObjects;
             XmlNode ServerWorldObjects = GetChildNodeInNode(ServerWorldObjectsDoc, "worldObjects");

@@ -21,7 +21,5 @@ namespace Shared
         public string factionIconPath;
         public string settlementTexturePath;
         public bool hidden;
-
-        public List<byte[]> settlementDatas = new List<byte[]>();
     }
 }

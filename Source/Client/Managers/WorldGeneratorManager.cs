@@ -210,11 +210,9 @@ namespace GameClient
             List<WorldGenStepDef> worldGenSteps;
             if (firstGeneration)
             {
-                Log.Message("1");
                 worldGenSteps = GenStepsInOrder.ToList();
             }
             else {
-                Log.Message("2");
                 worldGenSteps = WorldGenerationData.RT_WorldGenSteps.ToList();
             }
 
@@ -375,13 +373,27 @@ namespace GameClient
             worldData.population = ((int)population).ToString();
             worldData.pollution = pollution.ToString();
 
+            //Save factions
             foreach (FactionDef factionDef in factions)
             {
                 FactionData factionData = FactionScribeManager.factionToFactionDetails(factionDef);
                 worldData.factions[factionDef.defName] = Serializer.ConvertObjectToBytes(factionData);
             }
 
-            worldData = XmlParser.GetWorldXmlData(worldData);
+            //save settlements
+            List<Settlement> settlementList = Current.CreatingWorld.worldObjects.SettlementBases;
+            foreach (Settlement settlement in settlementList)
+            {
+                SettlementData settlementData = new();
+                settlementData.tile = settlement.Tile;
+                settlementData.settlementName = settlement.Name;
+                settlementData.owner = settlement.Faction.def.defName;
+
+                worldData.SettlementDatas.Add(Serializer.ConvertObjectToBytes(settlement));
+            }
+
+
+                worldData = XmlParser.GetWorldXmlData(worldData);
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);
         }
