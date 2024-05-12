@@ -4,6 +4,7 @@ using Shared;
 using System.IO;
 using System.Reflection;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -33,8 +34,8 @@ namespace GameClient
                 Logger.Message($"Receiving save from server");
 
                 customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
-                tempSaveFilePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws.temp" });
-                saveFilePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
+                tempSaveFilePath = Path.Combine( Master.savesFolderPath, customSaveName + ".rws.temp" );
+                saveFilePath = Path.Combine( Master.savesFolderPath, customSaveName + ".rws" );
 
                 Network.listener.downloadManager = new DownloadManager();
                 Network.listener.downloadManager.PrepareDownload(tempSaveFilePath, fileTransferData.fileParts);
@@ -68,7 +69,7 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(true);
 
-                saveFilePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
+                saveFilePath = Path.Combine( Master.savesFolderPath, fileName + ".rws" );
                 tempSaveFilePath = $"{saveFilePath}.temp";
 
                 byte[] saveBytes = File.ReadAllBytes(saveFilePath); ;
@@ -89,9 +90,9 @@ namespace GameClient
                 && (DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToMenu 
                 || DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToOS))
             {
-                fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+                fileTransferData.instructions = (int)SaveMode.Disconnect;
             }
-            else fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
+            else fileTransferData.instructions = (int)SaveMode.Autosave;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             Network.listener.EnqueuePacket(packet);
@@ -101,7 +102,7 @@ namespace GameClient
                 ClientValues.ToggleSendingSaveToServer(false);
                 Network.listener.uploadManager = null;
 
-                Logger.WriteToConsole(tempSaveFilePath, CommonEnumerators.LogMode.Error);
+                Logger.WriteToConsole(tempSaveFilePath, LogMode.Error);
                 File.Delete(tempSaveFilePath);
             }
         }

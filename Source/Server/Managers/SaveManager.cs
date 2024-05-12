@@ -69,7 +69,7 @@ namespace GameServer
 
         private static void OnUserSave(ServerClient client, FileTransferData fileTransferData)
         {
-            if (fileTransferData.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
+            if (fileTransferData.instructions == (int)SaveMode.Disconnect)
             {
                 client.listener.disconnectFlag = true;
                 Logger.WriteToConsole($"[Save game] > {client.username} > Disconnect");
