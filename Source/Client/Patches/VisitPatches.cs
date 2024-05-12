@@ -13,10 +13,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return true;
-            if (ClientValues.isInVisit) 
-                return false;
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.isInVisit) return false;
             return true;
         }
     }
@@ -27,10 +25,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return;
-            if (ClientValues.isInVisit) 
-                OnlineVisitManager.StopVisit();
+            if (Network.state == NetworkState.Disconnected) return;
+            if (ClientValues.isInVisit) OnlineVisitManager.StopVisit();
         }
     }
 
@@ -40,10 +36,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return;
-            if (ClientValues.isInVisit) 
-                OnlineVisitManager.StopVisit();
+            if (Network.state == NetworkState.Disconnected) return;
+            if (ClientValues.isInVisit) OnlineVisitManager.StopVisit();
         }
     }
 
@@ -53,10 +47,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return;
-            if (ClientValues.isInVisit) 
-                OnlineVisitManager.StopVisit();
+            if (Network.state == NetworkState.Disconnected) return;
+            if (ClientValues.isInVisit) OnlineVisitManager.StopVisit();
         }
     }
 }

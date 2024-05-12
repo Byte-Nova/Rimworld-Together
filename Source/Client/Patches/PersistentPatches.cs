@@ -9,7 +9,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if ( Network.state == NetworkState.Connected ) ClientValues.ManageDevOptions();
+            if (Network.state == NetworkState.Connected) ClientValues.ManageDevOptions();
             else return;
         }
     }
@@ -20,7 +20,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if ( Network.state == NetworkState.Connected ) CustomDifficultyManager.EnforceCustomDifficulty();
+            if (Network.state == NetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
             else return;
         }
     }

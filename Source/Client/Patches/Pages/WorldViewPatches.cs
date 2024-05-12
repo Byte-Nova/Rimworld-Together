@@ -16,7 +16,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref WITab[] ___TileTabs)
         {
-            if ( ___TileTabs.Count() != 5 && Network.state == NetworkState.Connected )
+            if (___TileTabs.Count() != 5 && Network.state == NetworkState.Connected)
             {
                 ___TileTabs = new WITab[5]
                 {
@@ -38,8 +38,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref int tile, ref List<Pair<Settlement, int>> outOffsets)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             int maxDist = SettlementProximityGoodwillUtility.MaxDist;
             List<Settlement> settlements = Find.WorldObjects.Settlements;
@@ -69,8 +68,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return;
+            if (Network.state == NetworkState.Disconnected) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
@@ -169,8 +167,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance, Caravan caravan)
         {
-            if ( Network.state == NetworkState.Disconnected )
-                return;
+            if (Network.state == NetworkState.Disconnected) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
@@ -362,8 +359,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Site __instance)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return;
+            if (Network.state == NetworkState.Disconnected) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
@@ -433,7 +429,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<Gizmo> __result, Caravan __instance)
         {
-            if ( Network.state == NetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
+            if (Network.state == NetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
             {
                 Site presentSite = Find.World.worldObjects.Sites.ToList().Find(x => x.Tile == __instance.Tile);
                 Settlement presentSettlement = Find.World.worldObjects.Settlements.ToList().Find(x => x.Tile == __instance.Tile);
@@ -568,7 +564,7 @@ namespace GameClient
                 var floatMenuList = __result.ToList();
                 floatMenuList.Clear();
 
-                if ( Network.state == NetworkState.Connected )
+                if (Network.state == NetworkState.Connected)
                 {
                     ClientValues.chosenSettlement = settlement;
                     ClientValues.chosendPods = representative;
@@ -611,8 +607,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return;
+            if (Network.state == NetworkState.Disconnected) return;
 
             var gizmoList = __result.ToList();
             List<Gizmo> removeList = new List<Gizmo>();

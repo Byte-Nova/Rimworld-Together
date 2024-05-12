@@ -52,14 +52,15 @@ namespace GameClient
 
         public static bool TryConnectToServer()
         {
-            if ( state != NetworkState.Disconnected ) 
-                return false;
-            try {
+            if (state != NetworkState.Disconnected) return false;
+
+            try 
+            {
                 state = NetworkState.Connecting;
                 listener = new Listener(new(ip, int.Parse(port)));
-            } catch { 
-                return false; 
-            }
+            } 
+            catch { return false; }
+
             return true;
         }
 

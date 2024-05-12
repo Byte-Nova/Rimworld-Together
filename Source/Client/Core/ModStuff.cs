@@ -118,7 +118,7 @@ namespace GameClient
 
         private void GenerateWorldFile()
         {
-            if ( Network.state == NetworkState.Connected )
+            if (Network.state == NetworkState.Connected)
             {
                 WorldValuesFile worldValuesFile = new WorldValuesFile();
 

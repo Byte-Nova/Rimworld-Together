@@ -14,7 +14,7 @@ namespace GameClient
         {
             try
             {
-                if ( Network.state == NetworkState.Disconnected ) return true;
+                if (Network.state == NetworkState.Disconnected) return true;
                 if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
 
                 ClientValues.ToggleSavingGame(true);
@@ -55,8 +55,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             return false;
         }
@@ -68,8 +67,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             ClientValues.autosaveCurrentTicks++;
 

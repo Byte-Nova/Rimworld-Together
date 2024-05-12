@@ -14,8 +14,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             if (DifficultyValues.UseCustomDifficulty)
             {
@@ -34,10 +33,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return;
-            if (ClientValues.needsToGenerateWorld) 
-                return;
+            if (Network.state == NetworkState.Disconnected) return;
+            if (ClientValues.needsToGenerateWorld) return;
 
             Text.Font = GameFont.Small;
             Vector2 buttonSize = new Vector2(150f, 38f);
@@ -52,8 +49,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStorytellerInGame __instance)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             if (DifficultyValues.UseCustomDifficulty)
             {
@@ -83,11 +79,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return;
-
-            if (DifficultyValues.UseCustomDifficulty) 
-                return;
+            if (Network.state == NetworkState.Disconnected) return;
+            if (DifficultyValues.UseCustomDifficulty) return;
 
             if (ServerValues.isAdmin)
             {
@@ -95,8 +88,7 @@ namespace GameClient
                 Vector2 buttonSize = new Vector2(150f, 38f);
                 Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
                 if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty")) { }
-            }
-            
+            }          
         }
     }
 
@@ -131,10 +123,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref StorytellerDef chosenStoryteller, ref DifficultyDef difficulty, ref Difficulty difficultyValues, Listing_Standard infoListing)
         {
-            if ( Network.state == NetworkState.Disconnected ) 
-                return true;
-            if (Current.ProgramState != ProgramState.Entry) 
-                return true;
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (Current.ProgramState != ProgramState.Entry) return true;
             
             Widgets.BeginGroup(rect);
             Rect outRect = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x + 16f, rect.height);
