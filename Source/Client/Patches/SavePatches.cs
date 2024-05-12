@@ -3,6 +3,8 @@ using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Shared;
+using System.IO;
 
 namespace GameClient
 {
@@ -22,10 +24,12 @@ namespace GameClient
                 ClientValues.ManageDevOptions();
                 CustomDifficultyManager.EnforceCustomDifficulty();
 
-                Logger.Message("Creating local save");
+                string filePath = GenFilePaths.FilePathForSavedGame(fileName);
+
+                Logger.Message($"Creating local save at {filePath}");
                 try
                 {
-                    SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
+                    SafeSaver.Save(filePath, "savegame", delegate
                     {
                         ScribeMetaHeaderUtility.WriteMetaHeader();
                         Game target = Current.Game;
