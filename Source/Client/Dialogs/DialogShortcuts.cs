@@ -42,7 +42,7 @@ namespace GameClient
                 },
                 delegate 
                 {
-                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu ); 
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu); 
                     Network.listener.disconnectFlag = true; 
                 });
 

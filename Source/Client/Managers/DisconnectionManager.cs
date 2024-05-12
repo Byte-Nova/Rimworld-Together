@@ -69,7 +69,7 @@ namespace GameClient
 
         public static void DisconnectToMenu()
         {
-            Network.CleanValues();
+            Network.state = NetworkState.Disconnected;
             OnlineChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
