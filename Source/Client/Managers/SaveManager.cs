@@ -96,8 +96,6 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(false);
                 Network.listener.uploadManager = null;
-
-                Logger.WriteToConsole(tempSaveFilePath, LogMode.Error);
                 File.Delete(tempSaveFilePath);
             }
         }
