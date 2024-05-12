@@ -13,12 +13,11 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!Network.isConnectedToServer) return true;
-            else
-            {
-                if (ClientValues.isInVisit) return false;
-                else return true;
-            }
+            if ( Network.state == NetworkState.Disconnected ) 
+                return true;
+            if (ClientValues.isInVisit) 
+                return false;
+            return true;
         }
     }
 
@@ -28,12 +27,10 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (!Network.isConnectedToServer) return;
-            else
-            {
-                if (ClientValues.isInVisit) OnlineVisitManager.StopVisit();
-                else return;
-            }
+            if ( Network.state == NetworkState.Disconnected ) 
+                return;
+            if (ClientValues.isInVisit) 
+                OnlineVisitManager.StopVisit();
         }
     }
 
@@ -43,12 +40,10 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (!Network.isConnectedToServer) return;
-            else
-            {
-                if (ClientValues.isInVisit) OnlineVisitManager.StopVisit();
-                else return;
-            }
+            if ( Network.state == NetworkState.Disconnected ) 
+                return;
+            if (ClientValues.isInVisit) 
+                OnlineVisitManager.StopVisit();
         }
     }
 
@@ -58,12 +53,10 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (!Network.isConnectedToServer) return;
-            else
-            {
-                if (ClientValues.isInVisit) OnlineVisitManager.StopVisit();
-                else return;
-            }
+            if ( Network.state == NetworkState.Disconnected ) 
+                return;
+            if (ClientValues.isInVisit) 
+                OnlineVisitManager.StopVisit();
         }
     }
 }

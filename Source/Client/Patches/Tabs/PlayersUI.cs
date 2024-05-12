@@ -24,7 +24,7 @@ namespace GameClient
 
         protected override void FillTab()
         {
-            if (Network.isConnectedToServer)
+            if ( Network.state == NetworkState.Connected )
             {
                 tabTitle = $"Players Online [{ServerValues.currentPlayers}]";
 
