@@ -7,9 +7,9 @@ namespace Shared
     {
         public string eventStepMode;
 
-        public string fromTile;
+        public int fromTile;
 
-        public string toTile;
+        public int toTile;
 
         public string eventID;
     }

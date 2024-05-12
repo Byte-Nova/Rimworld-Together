@@ -6,16 +6,16 @@ namespace Shared
     [Serializable]
     public class FactionGoodwillData
     {
-        public string tile;
+        public int tile;
 
         public string owner;
 
         public string goodwill;
 
-        public List<string> settlementTiles = new List<string>();
+        public List<int> settlementTiles = new List<int>();
         public List<string> settlementGoodwills = new List<string>();
 
-        public List<string> siteTiles = new List<string>();
+        public List<int> siteTiles = new List<int>();
         public List<string> siteGoodwills = new List<string>();
     }
 }

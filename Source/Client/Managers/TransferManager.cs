@@ -68,16 +68,16 @@ namespace GameClient
 
         public static void TakeTransferItems(TransferLocation transferLocation)
         {
-            ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
+            ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile;
 
             if (transferLocation == TransferLocation.Caravan)
             {
-                ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
+                ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile;
             }
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile.ToString();
+                ClientValues.outgoingManifest.toTile = ClientValues.incomingManifest.fromTile;
             }
 
             if (TradeSession.deal.TryExecute(out bool actuallyTraded))
@@ -96,8 +96,8 @@ namespace GameClient
         public static void TakeTransferItemsFromPods(CompLaunchable representative)
         {
             ClientValues.outgoingManifest.transferMode = ((int)TransferMode.Pod).ToString();
-            ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-            ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
+            ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile;
+            ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile;
 
             foreach (CompTransporter pod in representative.TransportersInGroup)
             {
@@ -182,7 +182,7 @@ namespace GameClient
             Action r1 = delegate
             {
                 Map map = null;
-                if (customMap) map = Find.Maps.Find(x => x.Tile == int.Parse(ClientValues.incomingManifest.toTile));
+                if (customMap) map = Find.Maps.Find(x => x.Tile == ClientValues.incomingManifest.toTile);
                 else map = Find.AnyPlayerHomeMap;
 
                 IntVec3 location = TransferManagerHelper.GetTransferLocationInMap(map);

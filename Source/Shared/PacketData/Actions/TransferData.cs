@@ -10,9 +10,9 @@ namespace Shared
 
         public string transferMode;
 
-        public string fromTile;
+        public int fromTile;
 
-        public string toTile;
+        public int toTile;
 
         public List<byte[]> humanDatas = new List<byte[]>();
 

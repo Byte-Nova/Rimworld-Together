@@ -96,8 +96,8 @@ namespace GameClient
 
                 EventData eventData = new EventData();
                 eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
-                eventData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                eventData.toTile = ClientValues.chosenSettlement.Tile.ToString();
+                eventData.fromTile = Find.AnyPlayerHomeMap.Tile;
+                eventData.toTile = ClientValues.chosenSettlement.Tile;
                 eventData.eventID = DialogManager.selectedScrollButton.ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);

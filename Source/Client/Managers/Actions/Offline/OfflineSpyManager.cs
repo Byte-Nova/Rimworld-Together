@@ -65,7 +65,7 @@ namespace GameClient
 
                     SpyData spyData = new SpyData();
                     spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
-                    spyData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+                    spyData.targetTile = ClientValues.chosenSettlement.Tile;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                     Network.listener.EnqueuePacket(packet);

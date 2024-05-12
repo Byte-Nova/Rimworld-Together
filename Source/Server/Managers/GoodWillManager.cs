@@ -79,7 +79,7 @@ namespace GameServer
             client.listener.EnqueuePacket(rPacket);
         }
 
-        public static int GetGoodwillFromTile(ServerClient client, string tileToCheck)
+        public static int GetGoodwillFromTile(ServerClient client, int tileToCheck)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(tileToCheck);
             SiteFile siteFile = SiteManager.GetSiteFileFromTile(tileToCheck);

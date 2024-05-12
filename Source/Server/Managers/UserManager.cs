@@ -155,12 +155,12 @@ namespace GameServer
             SaveUserFile(client, userFile);
         }
 
-        public static string[] GetUserStructuresTilesFromUsername(string username)
+        public static int[] GetUserStructuresTilesFromUsername(string username)
         {
             SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.owner == username).ToArray();
             SiteFile[] sites = SiteManager.GetAllSites().ToList().FindAll(x => x.owner == username).ToArray();
 
-            List<string> tilesToExclude = new List<string>();
+            List<int> tilesToExclude = new List<int>();
             foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.tile);
             foreach (SiteFile site in sites) tilesToExclude.Add(site.tile);
 

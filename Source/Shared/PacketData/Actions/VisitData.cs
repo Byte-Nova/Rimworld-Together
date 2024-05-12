@@ -9,8 +9,8 @@ namespace Shared
         public int visitStepMode;
 
         public string visitorName;
-        public string fromTile;
-        public string targetTile;
+        public int fromTile;
+        public int targetTile;
 
         public List<byte[]> mapHumans = new List<byte[]>();
         public List<byte[]> mapAnimals = new List<byte[]>();

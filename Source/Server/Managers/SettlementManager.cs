@@ -7,15 +7,16 @@ namespace GameServer
     {
         public static void ParseSettlementPacket(ServerClient client, Packet packet)
         {
+            Logger.Message("1");
             SettlementData settlementData = (SettlementData)Serializer.ConvertBytesToObject(packet.contents);
-
+            Logger.Message("2");
             switch (int.Parse(settlementData.settlementStepMode))
             {
-                case (int)CommonEnumerators.SettlementStepMode.Add:
+                case (int)SettlementStepMode.Add:
                     AddSettlement(client, settlementData);
                     break;
 
-                case (int)CommonEnumerators.SettlementStepMode.Remove:
+                case (int)SettlementStepMode.Remove:
                     RemoveSettlement(client, settlementData);
                     break;
             }
@@ -83,7 +84,7 @@ namespace GameServer
             }
         }
 
-        public static bool CheckIfTileIsInUse(string tileToCheck)
+        public static bool CheckIfTileIsInUse(int tileToCheck)
         {
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach(string settlement in settlements)
@@ -96,7 +97,7 @@ namespace GameServer
             return false;
         }
 
-        public static SettlementFile GetSettlementFileFromTile(string tileToGet)
+        public static SettlementFile GetSettlementFileFromTile(int tileToGet)
         {
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)

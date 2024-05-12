@@ -7,7 +7,7 @@ namespace Shared
     {
         public string raidStepMode;
 
-        public string targetTile;
+        public int targetTile;
 
         public byte[] mapData;
     }

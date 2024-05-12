@@ -7,7 +7,9 @@ namespace Shared
     {
         public string settlementStepMode;
 
-        public string tile;
+        public string settlementName;
+
+        public int tile;
 
         public string owner;
 

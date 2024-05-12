@@ -147,7 +147,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site information"));
 
             SiteData siteData = new SiteData();
-            siteData.tile = ClientValues.chosenSite.Tile.ToString();
+            siteData.tile = ClientValues.chosenSite.Tile;
             siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Info).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
@@ -230,7 +230,7 @@ namespace GameClient
             ClientValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteData siteData = new SiteData();
-            siteData.tile = ClientValues.chosenSite.Tile.ToString();
+            siteData.tile = ClientValues.chosenSite.Tile;
             siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Deposit).ToString();
             siteData.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
@@ -247,7 +247,7 @@ namespace GameClient
             Action r1 = delegate
             {
                 SiteData siteData = new SiteData();
-                siteData.tile = ClientValues.chosenSite.Tile.ToString();
+                siteData.tile = ClientValues.chosenSite.Tile;
                 siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Destroy).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
@@ -272,7 +272,7 @@ namespace GameClient
 
                 foreach (Site site in sites)
                 {
-                    if (siteData.sitesWithRewards.Contains(site.Tile.ToString())) rewardedSites.Add(site);
+                    if (siteData.sitesWithRewards.Contains(site.Tile)) rewardedSites.Add(site);
                 }
 
                 Thing[] rewards = GetSiteRewards(rewardedSites.ToArray());
@@ -369,7 +369,7 @@ namespace GameClient
 
                 SiteData siteData = new SiteData();
                 siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
-                siteData.tile = ClientValues.chosenCaravan.Tile.ToString();
+                siteData.tile = ClientValues.chosenCaravan.Tile;
                 siteData.type = DialogManager.selectedScrollButton.ToString();
                 siteData.isFromFaction = false;
 
@@ -437,7 +437,7 @@ namespace GameClient
 
                 SiteData siteData = new SiteData();
                 siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
-                siteData.tile = ClientValues.chosenCaravan.Tile.ToString();
+                siteData.tile = ClientValues.chosenCaravan.Tile;
                 siteData.type = DialogManager.selectedScrollButton.ToString();
                 siteData.isFromFaction = true;
 

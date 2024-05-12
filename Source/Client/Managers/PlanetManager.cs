@@ -98,7 +98,7 @@ namespace GameClient
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = int.Parse(PlanetManagerHelper.tempSettlementTiles[i]);
+                    settlement.Tile = PlanetManagerHelper.tempSettlementTiles[i];
                     settlement.Name = $"{PlanetManagerHelper.tempSettlementOwners[i]}'s settlement";
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSettlementGoodwills[i])));
 
@@ -167,7 +167,7 @@ namespace GameClient
                         PlanetManagerHelper.tempSiteIsFromFactions[i]);
 
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: int.Parse(PlanetManagerHelper.tempSiteTiles[i]),
+                        tile: PlanetManagerHelper.tempSiteTiles[i],
                         threatPoints: 1000,
                         faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSiteGoodwills[i])));
 
@@ -191,7 +191,7 @@ namespace GameClient
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = int.Parse(newSettlementJSON.tile);
+                    settlement.Tile = newSettlementJSON.tile;
                     settlement.Name = $"{newSettlementJSON.owner}'s settlement";
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(newSettlementJSON.value)));
 
@@ -210,7 +210,7 @@ namespace GameClient
             {
                 try
                 {
-                    Settlement toGet = playerSettlements.Find(x => x.Tile.ToString() == newSettlementJSON.tile);
+                    Settlement toGet = playerSettlements.Find(x => x.Tile == newSettlementJSON.tile);
 
                     playerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
@@ -231,7 +231,7 @@ namespace GameClient
                         siteData.isFromFaction);
 
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: int.Parse(siteData.tile),
+                        tile: siteData.tile,
                         threatPoints: 1000,
                         faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(siteData.goodwill)));
 
@@ -250,7 +250,7 @@ namespace GameClient
             {
                 try
                 {
-                    Site toGet = playerSites.Find(x => x.Tile.ToString() == siteData.tile);
+                    Site toGet = playerSites.Find(x => x.Tile == siteData.tile);
 
                     playerSites.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
@@ -264,13 +264,13 @@ namespace GameClient
 
     public static class PlanetManagerHelper
     {
-        public static string[] tempSettlementTiles;
+        public static int[] tempSettlementTiles;
 
         public static string[] tempSettlementOwners;
 
         public static string[] tempSettlementGoodwills;
 
-        public static string[] tempSiteTiles;
+        public static int[] tempSiteTiles;
 
         public static string[] tempSiteOwners;
 

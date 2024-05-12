@@ -60,7 +60,7 @@ namespace GameClient
         public static void RequestChangeStructureGoodwill(int structureTile, int value)
         {
             FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
-            factionGoodwillData.tile = structureTile.ToString();
+            factionGoodwillData.tile = structureTile;
             factionGoodwillData.goodwill = value.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
@@ -84,9 +84,9 @@ namespace GameClient
         private static void ChangeSettlementGoodwills(FactionGoodwillData factionGoodwillData)
         {
             List<Settlement> toChange = new List<Settlement>();
-            foreach (string settlementTile in factionGoodwillData.settlementTiles)
+            foreach (int settlementTile in factionGoodwillData.settlementTiles)
             {
-                toChange.Add(Find.WorldObjects.Settlements.Find(x => x.Tile == int.Parse(settlementTile)));
+                toChange.Add(Find.WorldObjects.Settlements.Find(x => x.Tile == settlementTile));
             }
 
             for (int i = 0; i < toChange.Count(); i++)
@@ -109,9 +109,9 @@ namespace GameClient
         private static void ChangeSiteGoodwills(FactionGoodwillData factionGoodwillData)
         {
             List<Site> toChange = new List<Site>();
-            foreach (string siteTile in factionGoodwillData.siteTiles)
+            foreach (int siteTile in factionGoodwillData.siteTiles)
             {
-                toChange.Add(Find.WorldObjects.Sites.Find(x => x.Tile == int.Parse(siteTile)));
+                toChange.Add(Find.WorldObjects.Sites.Find(x => x.Tile == siteTile));
             }
 
             for (int i = 0; i < toChange.Count(); i++)

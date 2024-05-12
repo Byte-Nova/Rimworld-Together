@@ -19,7 +19,7 @@ namespace GameClient
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = __instance.CurrentMap.Tile.ToString();
+                    settlementData.tile = __instance.CurrentMap.Tile;
                     settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -63,7 +63,7 @@ namespace GameClient
                 if (Network.isConnectedToServer)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = caravan.Tile.ToString();
+                    settlementData.tile = caravan.Tile;
                     settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -83,7 +83,7 @@ namespace GameClient
                 if (Network.isConnectedToServer)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = map.Tile.ToString();
+                    settlementData.tile = map.Tile;
                     settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -103,7 +103,7 @@ namespace GameClient
                 if (Network.isConnectedToServer)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = settlement.Tile.ToString();
+                    settlementData.tile = settlement.Tile;
                     settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);

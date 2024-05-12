@@ -42,7 +42,7 @@ namespace GameServer
             return mapDatas.ToArray();
         }
 
-        public static bool CheckIfMapExists(string mapTileToCheck)
+        public static bool CheckIfMapExists(int mapTileToCheck)
         {
             MapFileData[] maps = GetAllMapFiles();
             foreach (MapFileData map in maps)
@@ -70,7 +70,7 @@ namespace GameServer
             return userMaps.ToArray();
         }
 
-        public static MapFileData GetUserMapFromTile(string mapTileToGet)
+        public static MapFileData GetUserMapFromTile(int mapTileToGet)
         {
             MapFileData[] mapFiles = GetAllMapFiles();
 

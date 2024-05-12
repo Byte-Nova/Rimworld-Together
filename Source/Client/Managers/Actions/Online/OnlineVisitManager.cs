@@ -68,8 +68,8 @@ namespace GameClient
 
                     VisitData visitData = new VisitData();
                     visitData.visitStepMode = (int)VisitStepMode.Request;
-                    visitData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                    visitData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+                    visitData.fromTile = Find.AnyPlayerHomeMap.Tile;
+                    visitData.targetTile = ClientValues.chosenSettlement.Tile;
                     visitData.caravanHumans = OnlineVisitHelper.GetHumansForVisit(FetchMode.Player);
                     visitData.caravanAnimals = OnlineVisitHelper.GetAnimalsForVisit(FetchMode.Player);
 
@@ -115,7 +115,7 @@ namespace GameClient
             {
                 ClientValues.ToggleVisit(true);
 
-                visitMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == int.Parse(visitData.targetTile)).Map;
+                visitMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == visitData.targetTile).Map;
                 factionPawns = OnlineVisitHelper.GetMapPawns(FetchMode.Host, null);
                 mapThings = OnlineVisitHelper.GetMapThings(visitMap);
 

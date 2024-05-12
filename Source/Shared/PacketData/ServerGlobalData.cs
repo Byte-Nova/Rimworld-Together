@@ -66,11 +66,11 @@ namespace Shared
         public float AdultAgingRate;
         public float WastepackInfestationChanceFactor;
 
-        public List<string> settlementTiles = new List<string>();
+        public List<int> settlementTiles = new List<int>();
         public List<string> settlementOwners = new List<string>();
         public List<string> settlementGoodwills = new List<string>();
 
-        public List<string> siteTiles = new List<string>();
+        public List<int> siteTiles = new List<int>();
         public List<string> siteOwners = new List<string>();
         public List<string> siteGoodwills = new List<string>();
         public List<string> siteTypes = new List<string>();

@@ -21,6 +21,7 @@ namespace GameClient
         public static List<FactionDef> factions = new List<FactionDef>();
         public static List<FactionDef> initialFactions = new List<FactionDef>();
         public static WorldData cachedWorldData;
+        public static bool firstGeneration;
 
         public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
                                                                       orderby x.order, x.index
@@ -133,7 +134,6 @@ namespace GameClient
 
         public static FactionDef FirstOrCreate(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate)
         {
-            Log.Message("1");
             Log.Message($"currentFaction is {(currentFaction == null ? ("null") : ("not null"))}");
             //Try to find the exact faction saved on the server
             FactionDef factionToReturn = factionDefs.FirstOrDefault(predicate);
@@ -141,7 +141,6 @@ namespace GameClient
 
             if (factionToReturn == null)
             {
-                Log.Message("2");
                 //try to find a similar faction that is currently in the world
 
                 Log.Message($"game is {(Current.Game == null ? ("null") : ("not null"))}");
@@ -150,24 +149,19 @@ namespace GameClient
                                 (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
                                 ((byte)fetch.techLevel == currentFaction.techLevel) &&
                                 (fetch.hidden == currentFaction.hidden));
-                Log.Message("3");
 
-                Log.Message("4");
                 //if try to find a similar faction in all factionDefs
                 if (factionToReturn == null)
                 {
-                    Log.Message("5");
                     factionToReturn = factionDefs.FirstOrDefault(
                         fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
                                 (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
                                 ((byte)fetch.techLevel == currentFaction.techLevel) &&
                                 (fetch.hidden == currentFaction.hidden));
 
-                    Log.Message("6");
                     //if a faction cannot be found with similar details, then make a new faction using the sent faction's details
                     if (factionToReturn == null)
                     {
-                        Log.Message("");
                         factionToReturn = FactionScribeManager.factionDetailsToFaction(currentFaction);
                     }
 
@@ -180,6 +174,7 @@ namespace GameClient
 
         public static void GeneratePatchedWorld(bool firstGeneration)
         {
+            WorldGeneratorManager.firstGeneration = firstGeneration;
             LongEventHandler.QueueLongEvent(delegate
             {
                 Find.GameInitData.ResetWorldRelatedMapInitData();
@@ -212,7 +207,16 @@ namespace GameClient
             Current.CreatingWorld.info.pollution = pollution;
 
             WorldGenerationData.initializeGenerationDefs();
-            List<WorldGenStepDef> worldGenSteps = WorldGenerationData.RT_WorldGenSteps.ToList();
+            List<WorldGenStepDef> worldGenSteps;
+            if (firstGeneration)
+            {
+                Log.Message("1");
+                worldGenSteps = GenStepsInOrder.ToList();
+            }
+            else {
+                Log.Message("2");
+                worldGenSteps = WorldGenerationData.RT_WorldGenSteps.ToList();
+            }
 
             for (int i = 0; i < worldGenSteps.Count(); i++)
             {

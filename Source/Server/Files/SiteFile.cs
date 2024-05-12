@@ -3,7 +3,7 @@
     [Serializable]
     public class SiteFile
     {
-        public string tile;
+        public int tile;
 
         public string owner;
 

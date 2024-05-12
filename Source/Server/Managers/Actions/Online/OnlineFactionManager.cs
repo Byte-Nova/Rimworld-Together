@@ -215,7 +215,7 @@ namespace GameServer
         private static void AddMemberToFaction(ServerClient client, PlayerFactionData factionManifest)
         {
             FactionFile factionFile = GetFactionFromClient(client);
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestData);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(int.Parse(factionManifest.manifestData));
             ServerClient toAdd = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
             if (factionFile == null) return;
@@ -279,7 +279,7 @@ namespace GameServer
         private static void RemoveMemberFromFaction(ServerClient client, PlayerFactionData factionManifest)
         {
             FactionFile factionFile = GetFactionFromClient(client);
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestData);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(int.Parse(factionManifest.manifestData));
             UserFile toRemoveLocal = UserManager.GetUserFileFromName(settlementFile.owner);
             ServerClient toRemove = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
@@ -355,7 +355,7 @@ namespace GameServer
 
         private static void PromoteMember(ServerClient client, PlayerFactionData factionManifest)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestData);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(int.Parse(factionManifest.manifestData));
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
@@ -392,7 +392,7 @@ namespace GameServer
 
         private static void DemoteMember(ServerClient client, PlayerFactionData factionManifest)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestData);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(int.Parse(factionManifest.manifestData));
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 

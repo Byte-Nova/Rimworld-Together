@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace GameClient
 {
     public static class WorldGenerationData
     {
+        public static WorldData worldData;
+
         public static List<WorldGenStepDef> RT_WorldGenSteps;
 
         public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs

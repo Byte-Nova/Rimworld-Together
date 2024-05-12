@@ -7,7 +7,7 @@ namespace Shared
     {
         public string offlineVisitStepMode;
 
-        public string targetTile;
+        public int targetTile;
 
         public byte[] mapData;
     }

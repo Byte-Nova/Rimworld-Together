@@ -39,7 +39,7 @@ namespace GameClient
 
             OfflineVisitData offlineVisitData = new OfflineVisitData();
             offlineVisitData.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Request).ToString();
-            offlineVisitData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+            offlineVisitData.targetTile = ClientValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
             Network.listener.EnqueuePacket(packet);

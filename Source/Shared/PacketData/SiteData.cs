@@ -8,7 +8,7 @@ namespace Shared
     {
         public string siteStep;
 
-        public string tile;
+        public int tile;
 
         public string type;
 
@@ -20,6 +20,7 @@ namespace Shared
 
         public bool isFromFaction;
 
-        public List<string> sitesWithRewards = new List<string>();
+        //list of tiles of sites that have rewards
+        public List<int> sitesWithRewards = new List<int>();
     }
 }

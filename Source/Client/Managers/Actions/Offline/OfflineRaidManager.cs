@@ -38,7 +38,7 @@ namespace GameClient
 
             RaidData raidData = new RaidData();
             raidData.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
-            raidData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+            raidData.targetTile = ClientValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
             Network.listener.EnqueuePacket(packet);

@@ -229,7 +229,7 @@ namespace GameClient
 
             else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
-                TradeSession.SetupWith(Find.WorldObjects.SettlementAt(int.Parse(ClientValues.incomingManifest.fromTile)), 
+                TradeSession.SetupWith(Find.WorldObjects.SettlementAt(ClientValues.incomingManifest.fromTile), 
                     playerNegotiator, true);
             }
         }
@@ -324,7 +324,7 @@ namespace GameClient
 
             else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
-                Map map = Find.Maps.Find(x => x.Tile == int.Parse(ClientValues.incomingManifest.toTile));
+                Map map = Find.Maps.Find(x => x.Tile == ClientValues.incomingManifest.toTile);
 
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);

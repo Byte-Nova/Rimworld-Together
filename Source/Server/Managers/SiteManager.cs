@@ -33,7 +33,7 @@ namespace GameServer
             }
         }
 
-        public static bool CheckIfTileIsInUse(string tileToCheck)
+        public static bool CheckIfTileIsInUse(int tileToCheck)
         {
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
@@ -51,7 +51,7 @@ namespace GameServer
             SaveSite(siteFile);
 
             SiteData siteData = new SiteData();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
+            siteData.siteStep = ((int)SiteStepMode.Build).ToString();
             siteData.tile = siteFile.tile;
             siteData.owner = client.username;
             siteData.type = siteFile.type;
@@ -109,7 +109,7 @@ namespace GameServer
             return sitesList.ToArray();
         }
 
-        public static SiteFile GetSiteFileFromTile(string tileToGet)
+        public static SiteFile GetSiteFileFromTile(int tileToGet)
         {
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
