@@ -6,6 +6,7 @@ using Shared;
 using Verse;
 using Verse.Profile;
 using System;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -91,22 +92,33 @@ namespace GameClient
                 factionDictionary[str] = (FactionData)Serializer.ConvertBytesToObject(worldData.factions[str]);
             }
 
+            Log.Message("All Faction Defs");
+            foreach(FactionDef faction in DefDatabase<FactionDef>.AllDefs)
+            {
+                Log.Message(faction.defName);
+            }
+
             //for each faction in worldDetails, try to add it to the client's world
             FactionData factionData = new FactionData();
+            List<string> excludedFactionDefs = new List<string>();
             foreach (string factionName in factionDictionary.Keys)
             {
-                factionToAdd = DefDatabase<FactionDef>.AllDefs.FirstOrCreate(factionDictionary[factionName] ,fetch => fetch.defName == factionName);
+                factionToAdd = DefDatabase<FactionDef>.AllDefs.FirstOrCreate(factionDictionary[factionName] ,fetch => fetch.defName == factionName, excludedFactionDefs);
+                Log.Message($"factionName: {factionName} Found Name: {factionToAdd.defName}");
+                factionToAdd.defName = factionName;
+                excludedFactionDefs.Add(factionToAdd.defName);
 
-                factionToAdd.fixedName = factionDictionary[factionName].fixedName;
+
                 factions.Add(factionToAdd);
                 factionData = FactionScribeManager.factionToFactionDetails(factionToAdd);
                 cacheDetailsFactionDict.TryAdd(factionName,Serializer.ConvertObjectToBytes(factionData));
             }
 
+
+
             worldData.factions = cacheDetailsFactionDict;
             cachedWorldData = worldData;
         }
-
 
         private static void ResetFactionCounts()
         {
@@ -132,42 +144,45 @@ namespace GameClient
             initialFactions.AddRange(factions);
         }
 
-        public static FactionDef FirstOrCreate(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate)
+        public static FactionDef FirstOrCreate(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate, List<string> excludedDefs)
         {
-            Log.Message($"currentFaction is {(currentFaction == null ? ("null") : ("not null"))}");
             //Try to find the exact faction saved on the server
             FactionDef factionToReturn = factionDefs.FirstOrDefault(predicate);
 
 
             if (factionToReturn == null)
             {
-                //try to find a similar faction that is currently in the world
+                //try to find a similar faction that is currently generated in the world
 
-                Log.Message($"game is {(Current.Game == null ? ("null") : ("not null"))}");
                 factionToReturn = initialFactions.FirstOrDefault(
                                 fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
                                 (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
                                 ((byte)fetch.techLevel == currentFaction.techLevel) &&
-                                (fetch.hidden == currentFaction.hidden));
+                                (fetch.hidden == currentFaction.hidden) &&
+                                !(excludedDefs.Contains(fetch.defName)));
 
-                //if try to find a similar faction in all factionDefs
+                //try to find a similar faction in all factionDefs
                 if (factionToReturn == null)
                 {
                     factionToReturn = factionDefs.FirstOrDefault(
                         fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
                                 (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
                                 ((byte)fetch.techLevel == currentFaction.techLevel) &&
-                                (fetch.hidden == currentFaction.hidden));
+                                (fetch.hidden == currentFaction.hidden) &&
+                                !(excludedDefs.Contains(fetch.defName)));
 
                     //if a faction cannot be found with similar details, then make a new faction using the sent faction's details
                     if (factionToReturn == null)
                     {
+                        Log.Message("Creating new faction def");
                         factionToReturn = FactionScribeManager.factionDetailsToFaction(currentFaction);
                     }
 
 
                 }
             }
+
+            factionToReturn.fixedName = currentFaction.fixedName;
 
             return factionToReturn;
         }
@@ -208,13 +223,8 @@ namespace GameClient
 
             WorldGenerationData.initializeGenerationDefs();
             List<WorldGenStepDef> worldGenSteps;
-            if (firstGeneration)
-            {
-                worldGenSteps = GenStepsInOrder.ToList();
-            }
-            else {
-                worldGenSteps = WorldGenerationData.RT_WorldGenSteps.ToList();
-            }
+
+            worldGenSteps = WorldGenerationData.RT_WorldGenSteps.ToList();
 
             for (int i = 0; i < worldGenSteps.Count(); i++)
             {
@@ -363,7 +373,7 @@ namespace GameClient
         public static void SendWorldToServer()
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
+            worldData.worldStepMode = WorldStepMode.Required;
 
             worldData.seedString = seedString;
             worldData.persistentRandomValue = persistentRandomValue;
@@ -381,7 +391,7 @@ namespace GameClient
             }
 
             //save settlements
-            List<Settlement> settlementList = Current.CreatingWorld.worldObjects.SettlementBases;
+            List<Settlement> settlementList = Find.WorldObjects.SettlementBases.ToList();
             foreach (Settlement settlement in settlementList)
             {
                 SettlementData settlementData = new();
@@ -389,11 +399,11 @@ namespace GameClient
                 settlementData.settlementName = settlement.Name;
                 settlementData.owner = settlement.Faction.def.defName;
 
-                worldData.SettlementDatas.Add(Serializer.ConvertObjectToBytes(settlement));
+                worldData.SettlementDatas.Add(Serializer.ConvertObjectToBytes(settlementData));
             }
 
 
-                worldData = XmlParser.GetWorldXmlData(worldData);
+            XmlParser.GetWorldXmlData(worldData);
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);
         }

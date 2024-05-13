@@ -17,7 +17,7 @@ namespace GameClient
     {
         //  Gets each deflate from the player's world save
         //  This is typically used once during server creation
-        public static WorldData GetWorldXmlData(WorldData worldData)
+        public static void GetWorldXmlData(WorldData worldData)
         {
             string filePath = Path.Combine(new string[] { Master.savesFolderPath, SaveManager.customSaveName + ".rws" });
 
@@ -39,7 +39,6 @@ namespace GameClient
             XmlNode worldObjectsNode = GetChildNodeInNode(worldNode, "worldObjects");
 
             worldData.WorldObjects = worldObjectsNode.InnerXml;
-            return worldData;
         }
 
         public static void parseGrid(WorldData worldData, Dictionary<string, byte[]> tileData)

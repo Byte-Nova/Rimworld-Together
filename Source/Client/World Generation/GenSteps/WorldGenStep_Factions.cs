@@ -34,7 +34,7 @@ namespace GameClient
 
                 return;
             }
-
+            Log.Message("Adding Factions");
 
             //Add Factions to the faction manager using their FactionDefs
 			List<FactionDef> factions = Current.CreatingWorld.info.factions;
@@ -45,6 +45,7 @@ namespace GameClient
                     AddFactionToManager(faction2);
                 }
             }
+            Log.Message("adding settlements");
 
             //Get list of all factions
             IEnumerable<Faction> factionList = Find.World.factionManager.AllFactionsListForReading.Where((Faction x) => !x.def.isPlayer && !x.Hidden && !x.temporary);
@@ -52,17 +53,32 @@ namespace GameClient
             //Deserialize FactionData Dictionary
             IEnumerable<FactionData> factionDatas = WorldGeneratorManager.cachedWorldData.factions.Values.ToList().ConvertAll(x => (FactionData)Serializer.ConvertBytesToObject(x));
 
+            Log.Message(factionDatas.ToList().Count());
+
             //For each faction, add all the settlements to the world
             if (factionList.Any())
             {
-                IEnumerable<SettlementData> settlementDatas = WorldGeneratorManager.cachedWorldData.SettlementDatas.ConvertAll(x => (SettlementData)Serializer.ConvertBytesToObject(x));
+                Log.Message("There are some");
+                List<SettlementData> settlementDatas = WorldGeneratorManager.cachedWorldData.SettlementDatas.ConvertAll(x => (SettlementData)Serializer.ConvertBytesToObject(x));
+                Log.Message(settlementDatas.Count());
+
+                Log.Message("faction list:");
+                foreach (Faction faction in factionList)
+                {
+                    Log.Message(faction.def.defName);
+                }
 
                 foreach (SettlementData settlementData in settlementDatas)
                 {
+                    Log.Message(settlementData.settlementName);
+                    Log.Message(settlementData.owner);
                     Faction faction = factionList.FirstOrDefault(fetch => fetch.def.defName == settlementData.owner);
 
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                    if (faction == null) Log.Message("No faction");
                     settlement.SetFaction(faction);
+                    if(settlement.Faction.color == null) Log.Message("not exist");
+                    if (settlement.Faction.def.settlementTexturePath == null) Log.Message("No settlement texture");
                     settlement.Tile = settlementData.tile;
                     settlement.Name = settlementData.settlementName;
                     Find.WorldObjects.Add(settlement);

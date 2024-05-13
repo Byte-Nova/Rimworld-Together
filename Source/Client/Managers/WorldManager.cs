@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -9,13 +10,13 @@ namespace GameClient
         {
             WorldData worldData = (WorldData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(worldData.worldStepMode))
+            switch (worldData.worldStepMode)
             {
-                case (int)CommonEnumerators.WorldStepMode.Required:
+                case WorldStepMode.Required:
                     OnRequireWorld();
                     break;
 
-                case (int)CommonEnumerators.WorldStepMode.Existing:
+                case WorldStepMode.Existing:
                     OnExistingWorld(worldData);
                     break;
             }

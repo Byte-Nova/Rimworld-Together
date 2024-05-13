@@ -13,13 +13,13 @@ namespace GameServer
         {
             WorldData worldData = (WorldData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(worldData.worldStepMode))
+            switch (worldData.worldStepMode)
             {
-                case (int)CommonEnumerators.WorldStepMode.Required:
+                case WorldStepMode.Required:
                     SaveWorldPrefab(client, worldData);
                     break;
 
-                case (int)CommonEnumerators.WorldStepMode.Existing:
+                case WorldStepMode.Existing:
                     //Do nothing
                     break;
             }
@@ -39,6 +39,7 @@ namespace GameServer
             worldValues.pollution               = worldData.pollution;
             worldValues.factions                = worldData.factions;
             worldValues.deflateDictionary       = worldData.deflateDictionary;
+            worldValues.SettlementDatas         = worldData.SettlementDatas;
 
             Master.worldValues = worldValues;
             Serializer.SerializeToFile(worldFilePath, worldValues);
@@ -48,7 +49,7 @@ namespace GameServer
         public static void RequireWorldFile(ServerClient client)
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
+            worldData.worldStepMode = WorldStepMode.Required;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
@@ -59,16 +60,18 @@ namespace GameServer
             WorldValuesFile worldValues = Master.worldValues;
 
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
+            worldData.worldStepMode = WorldStepMode.Existing;
 
-            worldData.seedString = worldValues.seedString;
+            worldData.seedString            = worldValues.seedString;
             worldData.persistentRandomValue = worldValues.persistentRandomValue;
-            worldData.planetCoverage = worldValues.planetCoverage;
-            worldData.rainfall = worldValues.rainfall;
-            worldData.temperature = worldValues.temperature;
-            worldData.population = worldValues.population;
-            worldData.pollution = worldValues.pollution;
-            worldData.factions = worldValues.factions;
+            worldData.planetCoverage        = worldValues.planetCoverage;
+            worldData.rainfall              = worldValues.rainfall;
+            worldData.temperature           = worldValues.temperature;
+            worldData.population            = worldValues.population;
+            worldData.pollution             = worldValues.pollution;
+            worldData.factions              = worldValues.factions;
+            worldData.deflateDictionary     = worldValues.deflateDictionary;
+            worldData.SettlementDatas       = worldValues.SettlementDatas;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
