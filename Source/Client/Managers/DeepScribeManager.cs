@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using RimWorld;
 using Shared;
@@ -507,7 +508,6 @@ namespace GameClient
                 float g;
                 float b;
                 float a;
-
                 string favoriteColor = humanData.favoriteColor.Replace("RGBA(", "").Replace(")", "");
                 string[] isolatedFavoriteColor = favoriteColor.Split(',');
                 r = float.Parse(isolatedFavoriteColor[0]);
@@ -1509,26 +1509,5 @@ namespace GameClient
             return factionData;
         }
 
-        public static FactionDef factionDetailsToFaction(FactionData factionData)
-        {
-            FactionDef factionDef = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(
-                fetch => (fetch.permanentEnemy == factionData.permanentEnemy) &&
-                         (fetch.naturalEnemy == factionData.naturalEnemy));
-            factionDef.defName = factionData.defName;
-            factionDef.fixedName = factionData.fixedName;
-            factionDef.autoFlee = factionData.autoFlee;
-            factionDef.canSiege = factionData.canSiege;
-            factionDef.canStageAttacks = factionData.canStageAttacks;
-            factionDef.canUseAvoidGrid = factionData.canUseAvoidGrid;
-            factionDef.earliestRaidDays = factionData.earliestRaidDays;
-            factionDef.rescueesCanJoin = factionData.rescueesCanJoin;
-            factionDef.permanentEnemy = factionData.permanentEnemy;
-            factionDef.permanentEnemyToEveryoneExceptPlayer = factionData.permanentEnemyToEveryoneExceptPlayer;
-            factionDef.techLevel = (TechLevel)factionData.techLevel;
-            factionDef.factionIconPath = factionData.factionIconPath;
-            factionDef.hidden = factionData.hidden;
-
-            return factionDef;
-        }
     }
 }

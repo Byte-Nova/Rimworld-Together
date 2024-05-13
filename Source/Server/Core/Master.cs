@@ -50,7 +50,7 @@ namespace GameServer
         public static bool isClosing;
 
         public static void Main()
-        {
+       {
             Console.ForegroundColor = ConsoleColor.White;
 
             TryDisablyQuickEdit();

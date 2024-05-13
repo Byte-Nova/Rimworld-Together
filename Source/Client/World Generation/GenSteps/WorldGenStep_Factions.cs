@@ -31,10 +31,14 @@ namespace GameClient
             if (WorldGeneratorManager.firstGeneration)
             {
                 FactionGenerator.GenerateFactionsIntoWorld(Current.CreatingWorld.info.factions);
-
                 return;
             }
-            Log.Message("Adding Factions");
+
+            foreach(FactionDef factionDef in WorldGeneratorManager.factions)
+            {
+                Log.Message(factionDef.defName);
+            }
+
 
             //Add Factions to the faction manager using their FactionDefs
 			List<FactionDef> factions = Current.CreatingWorld.info.factions;
@@ -45,43 +49,50 @@ namespace GameClient
                     AddFactionToManager(faction2);
                 }
             }
-            Log.Message("adding settlements");
 
             //Get list of all factions
             IEnumerable<Faction> factionList = Find.World.factionManager.AllFactionsListForReading.Where((Faction x) => !x.def.isPlayer && !x.Hidden && !x.temporary);
 
+
             //Deserialize FactionData Dictionary
             IEnumerable<FactionData> factionDatas = WorldGeneratorManager.cachedWorldData.factions.Values.ToList().ConvertAll(x => (FactionData)Serializer.ConvertBytesToObject(x));
-
-            Log.Message(factionDatas.ToList().Count());
 
             //For each faction, add all the settlements to the world
             if (factionList.Any())
             {
-                Log.Message("There are some");
                 List<SettlementData> settlementDatas = WorldGeneratorManager.cachedWorldData.SettlementDatas.ConvertAll(x => (SettlementData)Serializer.ConvertBytesToObject(x));
-                Log.Message(settlementDatas.Count());
+                
+                List<Settlement> leaderSettlements  = Find.WorldObjects.SettlementBases.Where((Settlement x) => !x.Faction.def.isPlayer && !x.Faction.Hidden && !x.Faction.temporary).ToList();
 
-                Log.Message("faction list:");
-                foreach (Faction faction in factionList)
+                foreach(Settlement settlement in leaderSettlements)
                 {
-                    Log.Message(faction.def.defName);
+                    Log.Warning($"Faction Name : {settlement.Faction.Name}");
                 }
-
+                Log.Warning(settlementDatas.Count.ToString());
                 foreach (SettlementData settlementData in settlementDatas)
                 {
+                    Log.Message($"leader settlements left : {leaderSettlements.Count()}");
                     Log.Message(settlementData.settlementName);
-                    Log.Message(settlementData.owner);
-                    Faction faction = factionList.FirstOrDefault(fetch => fetch.def.defName == settlementData.owner);
 
-                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    if (faction == null) Log.Message("No faction");
-                    settlement.SetFaction(faction);
-                    if(settlement.Faction.color == null) Log.Message("not exist");
-                    if (settlement.Faction.def.settlementTexturePath == null) Log.Message("No settlement texture");
-                    settlement.Tile = settlementData.tile;
-                    settlement.Name = settlementData.settlementName;
-                    Find.WorldObjects.Add(settlement);
+                    Faction faction = factionList.FirstOrDefault(fetch => fetch.Name == settlementData.owner);
+                    Settlement leaderSettlement = leaderSettlements.FirstOrDefault(fetch => fetch.Faction.Name == settlementData.owner);
+                    Settlement settlement;
+                    if (leaderSettlement == null)
+                    {
+                        Log.Message("New object");
+                        settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                        settlement.SetFaction(faction);
+                        settlement.Tile = settlementData.tile;
+                        settlement.Name = settlementData.settlementName;
+                        Find.WorldObjects.Add(settlement);
+                    }
+                    else
+                    {
+                        Log.Message("existing object");
+                        leaderSettlements.Remove(leaderSettlement);
+                        leaderSettlement.Tile = settlementData.tile;
+                        leaderSettlement.Name = settlementData.settlementName;
+                    }
                 }
             }
             Find.IdeoManager.SortIdeos();
@@ -94,15 +105,24 @@ namespace GameClient
 
         private static void AddFactionToManager(FactionDef facDef)
         {
+            Faction faction = null;
             if (facDef.fixedIdeo)
             {
                 IdeoGenerationParms ideoGenerationParms = new IdeoGenerationParms(facDef, forceNoExpansionIdeo: false, null, null, name: facDef.ideoName, styles: facDef.styles, deities: facDef.deityPresets, hidden: facDef.hiddenIdeo, description: facDef.ideoDescription, forcedMemes: facDef.forcedMemes, classicExtra: false, forceNoWeaponPreference: false, forNewFluidIdeo: false, fixedIdeo: true, requiredPreceptsOnly: facDef.requiredPreceptsOnly);
-                Find.FactionManager.Add(NewGeneratedFaction(new FactionGeneratorParms(facDef, ideoGenerationParms)));
+
+                faction = NewGeneratedFaction(new FactionGeneratorParms(facDef, ideoGenerationParms));
             }
             else
             {
-                Find.FactionManager.Add(NewGeneratedFaction(new FactionGeneratorParms(facDef)));
+                faction = NewGeneratedFaction(new FactionGeneratorParms(facDef));
             }
+
+            FactionData factionData = WorldGeneratorManager.factionDictionary.Values.ToList().First(fetch => fetch.localDefName == facDef.defName);
+            faction.Name = factionData.Name;
+            faction.colorFromSpectrum = factionData.colorFromSpectrum;
+            faction.neverFlee = factionData.neverFlee;
+            factionData.localDefName = "";
+            Find.FactionManager.Add(faction);
         }
 
         public static Faction NewGeneratedFaction(FactionGeneratorParms parms)

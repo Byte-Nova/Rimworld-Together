@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Shared
 {
     [Serializable]
     public class FactionData
     {
+        public string Name;
+        public float colorFromSpectrum;
+        public bool neverFlee;
+
+        public string localDefName;
         public string defName;
         public string fixedName;
         public bool autoFlee;

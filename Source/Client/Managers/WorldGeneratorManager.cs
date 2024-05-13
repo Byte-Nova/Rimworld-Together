@@ -24,6 +24,10 @@ namespace GameClient
         public static WorldData cachedWorldData;
         public static bool firstGeneration;
 
+
+        //A dictionary of faction defs and their corrosponding FactionData
+        public static Dictionary<string, FactionData> factionDictionary = new Dictionary<string, FactionData>();
+
         public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
                                                                       orderby x.order, x.index
                                                                       select x;
@@ -78,9 +82,6 @@ namespace GameClient
             //We might want to add a message for the players to let them know factions are missing
             //For now, we output into the console for debugging purposes
 
-            factions = new List<FactionDef>();
-            FactionDef factionToAdd;
-            Dictionary<string, FactionData> factionDictionary = new Dictionary<string, FactionData>();
             Dictionary<string, byte[]> cacheDetailsFactionDict = new Dictionary<string, byte[]>();
 
             //Create the default faction list
@@ -88,9 +89,8 @@ namespace GameClient
 
             //Convert the string-byte[] dictionary into a string-FactionData dictionary
             foreach (string str in worldData.factions.Keys)
-            {
                 factionDictionary[str] = (FactionData)Serializer.ConvertBytesToObject(worldData.factions[str]);
-            }
+
 
             Log.Message("All Faction Defs");
             foreach(FactionDef faction in DefDatabase<FactionDef>.AllDefs)
@@ -98,20 +98,18 @@ namespace GameClient
                 Log.Message(faction.defName);
             }
 
+
             //for each faction in worldDetails, try to add it to the client's world
-            FactionData factionData = new FactionData();
+            factions = new List<FactionDef>();
             List<string> excludedFactionDefs = new List<string>();
             foreach (string factionName in factionDictionary.Keys)
             {
-                factionToAdd = DefDatabase<FactionDef>.AllDefs.FirstOrCreate(factionDictionary[factionName] ,fetch => fetch.defName == factionName, excludedFactionDefs);
+                FactionDef factionToAdd = DefDatabase<FactionDef>.AllDefs.FirstOrCreate(factionDictionary[factionName] ,fetch => fetch.defName == factionName);
+                factionDictionary[factionName].localDefName = factionToAdd.defName;
                 Log.Message($"factionName: {factionName} Found Name: {factionToAdd.defName}");
-                factionToAdd.defName = factionName;
                 excludedFactionDefs.Add(factionToAdd.defName);
 
-
                 factions.Add(factionToAdd);
-                factionData = FactionScribeManager.factionToFactionDetails(factionToAdd);
-                cacheDetailsFactionDict.TryAdd(factionName,Serializer.ConvertObjectToBytes(factionData));
             }
 
 
@@ -133,6 +131,7 @@ namespace GameClient
                     }
                 }
             }
+
             foreach (FactionDef faction in FactionGenerator.ConfigurableFactions)
             {
                 if (faction.replacesFaction != null)
@@ -140,11 +139,13 @@ namespace GameClient
                     factions.RemoveAll((FactionDef x) => x == faction.replacesFaction);
                 }
             }
+
             initialFactions = new List<FactionDef>();
             initialFactions.AddRange(factions);
+            factions.Clear();
         }
 
-        public static FactionDef FirstOrCreate(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate, List<string> excludedDefs)
+        public static FactionDef FirstOrCreate(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate)
         {
             //Try to find the exact faction saved on the server
             FactionDef factionToReturn = factionDefs.FirstOrDefault(predicate);
@@ -158,8 +159,7 @@ namespace GameClient
                                 fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
                                 (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
                                 ((byte)fetch.techLevel == currentFaction.techLevel) &&
-                                (fetch.hidden == currentFaction.hidden) &&
-                                !(excludedDefs.Contains(fetch.defName)));
+                                (fetch.hidden == currentFaction.hidden));
 
                 //try to find a similar faction in all factionDefs
                 if (factionToReturn == null)
@@ -168,21 +168,20 @@ namespace GameClient
                         fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
                                 (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
                                 ((byte)fetch.techLevel == currentFaction.techLevel) &&
-                                (fetch.hidden == currentFaction.hidden) &&
-                                !(excludedDefs.Contains(fetch.defName)));
+                                (fetch.hidden == currentFaction.hidden));
 
-                    //if a faction cannot be found with similar details, then make a new faction using the sent faction's details
+                    //if a faction cannot be found with similar details, then use the bare minimum faction
                     if (factionToReturn == null)
                     {
-                        Log.Message("Creating new faction def");
-                        factionToReturn = FactionScribeManager.factionDetailsToFaction(currentFaction);
+                        factionToReturn = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(
+                            fetch => (fetch.permanentEnemy == currentFaction.permanentEnemy) &&
+                                     (fetch.naturalEnemy == currentFaction.naturalEnemy) &&
+                                     (fetch.hidden == currentFaction.hidden));
                     }
 
 
                 }
             }
-
-            factionToReturn.fixedName = currentFaction.fixedName;
 
             return factionToReturn;
         }
@@ -383,21 +382,27 @@ namespace GameClient
             worldData.population = ((int)population).ToString();
             worldData.pollution = pollution.ToString();
 
+            
+
             //Save factions
-            foreach (FactionDef factionDef in factions)
+            foreach (Faction faction in Find.World.factionManager.AllFactions)
             {
-                FactionData factionData = FactionScribeManager.factionToFactionDetails(factionDef);
-                worldData.factions[factionDef.defName] = Serializer.ConvertObjectToBytes(factionData);
+                FactionData factionData = FactionScribeManager.factionToFactionDetails(faction.def);
+                factionData.Name = faction.Name;
+                factionData.colorFromSpectrum = faction.colorFromSpectrum;
+                factionData.neverFlee = faction.neverFlee;
+                worldData.factions[faction.def.defName] = Serializer.ConvertObjectToBytes(factionData);
             }
 
             //save settlements
             List<Settlement> settlementList = Find.WorldObjects.SettlementBases.ToList();
+            settlementList.RemoveAll(fetch => fetch.Faction == Find.FactionManager.OfPlayer);
             foreach (Settlement settlement in settlementList)
             {
                 SettlementData settlementData = new();
                 settlementData.tile = settlement.Tile;
                 settlementData.settlementName = settlement.Name;
-                settlementData.owner = settlement.Faction.def.defName;
+                settlementData.owner = settlement.Faction.Name;
 
                 worldData.SettlementDatas.Add(Serializer.ConvertObjectToBytes(settlementData));
             }
