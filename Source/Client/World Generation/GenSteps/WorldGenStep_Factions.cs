@@ -34,12 +34,6 @@ namespace GameClient
                 return;
             }
 
-            foreach(FactionDef factionDef in WorldGeneratorManager.factions)
-            {
-                Log.Message(factionDef.defName);
-            }
-
-
             //Add Factions to the faction manager using their FactionDefs
 			List<FactionDef> factions = Current.CreatingWorld.info.factions;
             if (factions != null)
@@ -62,37 +56,33 @@ namespace GameClient
             {
                 List<SettlementData> settlementDatas = WorldGeneratorManager.cachedWorldData.SettlementDatas.ConvertAll(x => (SettlementData)Serializer.ConvertBytesToObject(x));
                 
+                //Creating a Faction generates one settlement for the faction leader. Get the list of all leader settlements
                 List<Settlement> leaderSettlements  = Find.WorldObjects.SettlementBases.Where((Settlement x) => !x.Faction.def.isPlayer && !x.Faction.Hidden && !x.Faction.temporary).ToList();
 
-                foreach(Settlement settlement in leaderSettlements)
-                {
-                    Log.Warning($"Faction Name : {settlement.Faction.Name}");
-                }
-                Log.Warning(settlementDatas.Count.ToString());
                 foreach (SettlementData settlementData in settlementDatas)
                 {
-                    Log.Message($"leader settlements left : {leaderSettlements.Count()}");
-                    Log.Message(settlementData.settlementName);
 
                     Faction faction = factionList.FirstOrDefault(fetch => fetch.Name == settlementData.owner);
                     Settlement leaderSettlement = leaderSettlements.FirstOrDefault(fetch => fetch.Faction.Name == settlementData.owner);
                     Settlement settlement;
-                    if (leaderSettlement == null)
+
+                    //If a leader settlement was found, change its name and tile instead of making a new settlement
+                    if (leaderSettlement != null)
                     {
-                        Log.Message("New object");
+                        leaderSettlements.Remove(leaderSettlement);
+                        leaderSettlement.Tile = settlementData.tile;
+                        leaderSettlement.Name = settlementData.settlementName;
+                    }
+                    //if no leader settlement was found, make a new settlement
+                    else
+                    {
                         settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                         settlement.SetFaction(faction);
                         settlement.Tile = settlementData.tile;
                         settlement.Name = settlementData.settlementName;
                         Find.WorldObjects.Add(settlement);
                     }
-                    else
-                    {
-                        Log.Message("existing object");
-                        leaderSettlements.Remove(leaderSettlement);
-                        leaderSettlement.Tile = settlementData.tile;
-                        leaderSettlement.Name = settlementData.settlementName;
-                    }
+                    
                 }
             }
             Find.IdeoManager.SortIdeos();

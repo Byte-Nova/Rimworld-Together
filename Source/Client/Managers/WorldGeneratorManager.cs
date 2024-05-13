@@ -91,22 +91,16 @@ namespace GameClient
             foreach (string str in worldData.factions.Keys)
                 factionDictionary[str] = (FactionData)Serializer.ConvertBytesToObject(worldData.factions[str]);
 
-
-            Log.Message("All Faction Defs");
-            foreach(FactionDef faction in DefDatabase<FactionDef>.AllDefs)
-            {
-                Log.Message(faction.defName);
-            }
-
-
             //for each faction in worldDetails, try to add it to the client's world
             factions = new List<FactionDef>();
             List<string> excludedFactionDefs = new List<string>();
             foreach (string factionName in factionDictionary.Keys)
             {
-                FactionDef factionToAdd = DefDatabase<FactionDef>.AllDefs.FirstOrCreate(factionDictionary[factionName] ,fetch => fetch.defName == factionName);
+                //find the faction def with the best match to the one the server provided
+                FactionDef factionToAdd = DefDatabase<FactionDef>.AllDefs.BestMatch(factionDictionary[factionName] ,fetch => fetch.defName == factionName);
+                
+                //the local def name may be different from the server def name i.e. "pirate" and "yttakinPirate" respectively
                 factionDictionary[factionName].localDefName = factionToAdd.defName;
-                Log.Message($"factionName: {factionName} Found Name: {factionToAdd.defName}");
                 excludedFactionDefs.Add(factionToAdd.defName);
 
                 factions.Add(factionToAdd);
@@ -145,7 +139,7 @@ namespace GameClient
             factions.Clear();
         }
 
-        public static FactionDef FirstOrCreate(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate)
+        public static FactionDef BestMatch(this IEnumerable<FactionDef> factionDefs,FactionData currentFaction, Func<FactionDef,bool> predicate)
         {
             //Try to find the exact faction saved on the server
             FactionDef factionToReturn = factionDefs.FirstOrDefault(predicate);
