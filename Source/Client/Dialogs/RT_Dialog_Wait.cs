@@ -13,14 +13,16 @@ namespace GameClient
         private string description = "";
 
         private Action actionToWaitFor;
+        private Action postWaitAction;
 
         private int tick = 0;
 
-        public RT_Dialog_Wait(string description, Action actionToWaitFor = null)
+        public RT_Dialog_Wait(string description, Action actionToWaitFor = null, Action postWait = null)
         {
             DialogManager.dialogWait = this;
             this.description = description;
             this.actionToWaitFor = actionToWaitFor;
+            this.postWaitAction = postWait;
 
             forcePause = true;
             absorbInputAroundWindow = true;
@@ -34,8 +36,11 @@ namespace GameClient
 
         public override void DoWindowContents(Rect rect)
         {
-            if(tick == 5 && actionToWaitFor != null)
+            if (tick == 5 && actionToWaitFor != null)
+            {
                 actionToWaitFor.Invoke();
+                Close();
+            }
             tick++;
 
             float centeredX = rect.width / 2;
@@ -49,6 +54,11 @@ namespace GameClient
 
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
+        }
+
+        public override void PostClose()
+        {
+            Master.threadDispatcher.Enqueue(postWaitAction);
         }
     }
 }

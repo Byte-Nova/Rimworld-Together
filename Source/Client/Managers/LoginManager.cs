@@ -1,4 +1,6 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
+using System;
 
 namespace GameClient
 {
@@ -11,49 +13,53 @@ namespace GameClient
         public static void ReceiveLoginResponse(Packet packet)
         {
             LoginData loginData = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
+            Action postDisconnectAction = delegate { };
 
-            switch(int.Parse(loginData.tryResponse))
+            switch (loginData.tryResponse)
             {
-                case (int)CommonEnumerators.LoginResponse.InvalidLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Login details are invalid! Please try again!"));
+                case LoginResponse.InvalidLogin:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error("Login details are invalid! Please try again!")); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.BannedLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You are banned from this server!"));
+                case LoginResponse.BannedLogin:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error("You are banned from this server!")); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.RegisterInUse:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("That username is already in use! Please try again!"));
+                case LoginResponse.RegisterInUse:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error("That username is already in use! Please try again!")); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.RegisterError:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("There was an error registering! Please try again!"));
+                case LoginResponse.RegisterError:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error("There was an error registering! Please try again!")); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.ExtraLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You connected from another place!"));
+                case LoginResponse.ExtraLogin:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error("You connected from another place!")); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.WrongMods:
-                    ModManager.GetConflictingMods(packet);
+                case LoginResponse.WrongMods:
+                    postDisconnectAction = delegate { ModManager.GetConflictingMods(packet); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.ServerFull:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Server is full!"));
+                case LoginResponse.ServerFull:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error("Server is full!")); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.Whitelist:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Server is whitelisted!"));
+                case LoginResponse.Whitelist:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error("Server is whitelisted!")); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.WrongVersion:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginData.extraDetails[0]}"));
+                case LoginResponse.WrongVersion:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginData.extraDetails[0]}")); };
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.NoWorld:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Server is currently being set up! Join again later!"));
+                case LoginResponse.NoWorld:
+                    postDisconnectAction = delegate { DialogManager.PushNewDialog(new RT_Dialog_Error($"Server is currently being set up! Join again later!")); };
                     break;
             }
+
+            ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.Custom, loginData.ToString(), postDisconnectAction);
+            Network.listener.disconnectFlag = true;
         }
     }
 }

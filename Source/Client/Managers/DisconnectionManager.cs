@@ -1,4 +1,6 @@
-﻿using Verse;
+﻿using System;
+using Verse;
+using static RimWorld.PsychicRitualRoleDef;
 
 namespace GameClient
 {
@@ -11,6 +13,7 @@ namespace GameClient
         public enum DCReason
         {
             None,
+            Custom,
             SaveQuitToMenu,
             SaveQuitToOS,
             QuitToMenu
@@ -18,11 +21,15 @@ namespace GameClient
 
         public static bool isIntentionalDisconnect;
         public static DCReason intentionalDisconnectReason;
+        public static string customDisconnectReason;
+        public static Action customDisconnectAction;
 
         //Executes different actions depending on the disconnection mode
 
         public static void HandleDisconnect()
         {
+            DialogManager.PopDialog(DialogManager.currentDialog);
+            DialogManager.PopDialog(DialogManager.previousDialog);
             if (isIntentionalDisconnect)
             {
                 string reason = "ERROR";
@@ -33,7 +40,11 @@ namespace GameClient
                         reason = "No reason given.";
                         DisconnectToMenu();
                         break;
-
+                    case DCReason.Custom:
+                        reason = customDisconnectReason;
+                        customDisconnectAction.Invoke();
+                        DisconnectToMenu();
+                        break;
                     case DCReason.QuitToMenu:
                         reason = "Quit to menu.";
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Returning to main menu.", delegate { DisconnectToMenu(); }));

@@ -3,6 +3,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using System;
 
 namespace GameClient
 {
@@ -56,10 +57,12 @@ namespace GameClient
 
         public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
     
-        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None) 
+        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None, string customDisconnectReason = "", Action postDisconnectAction = null) 
         { 
             DisconnectionManager.isIntentionalDisconnect = mode;
             DisconnectionManager.intentionalDisconnectReason = reason; 
+            DisconnectionManager.customDisconnectReason = customDisconnectReason;
+            DisconnectionManager.customDisconnectAction = postDisconnectAction;
         }
 
         public static void ToggleReadyToPlay(bool mode) { isReadyToPlay = mode; }

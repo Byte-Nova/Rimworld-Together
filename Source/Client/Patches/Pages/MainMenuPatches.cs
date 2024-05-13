@@ -95,20 +95,26 @@ namespace GameClient
                     {
                         ClientValues.ToggleQuickConnecting(true);
 
-                        DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server", Network.StartConnection));
+                        DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server", Network.StartConnection, 
+                            delegate
+                            {
+                                Log.Message($"POst close {Network.state.ToString()}");
+                                if (Network.state == NetworkState.Connected)
+                                {
+                                    string[] details = PreferenceManager.LoadLoginData();
+                                    LoginData loginData = new LoginData();
+                                    loginData.username = details[0];
+                                    loginData.password = Hasher.GetHashFromString(details[1]);
+                                    loginData.clientVersion = CommonValues.executableVersion;
+                                    loginData.runningMods = ModManager.GetRunningModList().ToList();
 
-                        if (Network.state == NetworkState.Connected)
-                        {
-                            string[] details = PreferenceManager.LoadLoginData();
-                            LoginData loginData = new LoginData();
-                            loginData.username = details[0];
-                            loginData.password = Hasher.GetHashFromString(details[1]);
-                            loginData.clientVersion = CommonValues.executableVersion;
-                            loginData.runningMods = ModManager.GetRunningModList().ToList();
+                                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginData);
+                                    Network.listener.EnqueuePacket(packet);
+                                }
 
-                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginData);
-                            Network.listener.EnqueuePacket(packet);
-                        }
+                            }));
+
+                        
                     });
 
                     list.Add(item);
