@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -919,6 +920,58 @@ namespace GameClient
 
     public static class ThingScribeManager
     {
+        private class ComponentMapper
+        {
+            Action<Thing, Dictionary<string, string>> toString;
+            Action<Thing, Dictionary<string, string>> fromString;
+
+            public ComponentMapper(Action<Thing, Dictionary<string, string>> toString, Action<Thing, Dictionary<string, string>> fromString)
+            {
+                this.toString = toString;
+                this.fromString = fromString;
+            }
+
+            public void ToString(Thing thing, Dictionary<string, string> componentJsons)
+            {
+                toString(thing, componentJsons);
+            }
+
+            public void FromString(Thing thing, Dictionary<string, string> componentJsons)
+            {
+                fromString(thing, componentJsons);
+            }
+        }
+
+        private static List<ComponentMapper> componentMappers = new() {
+            new ComponentMapper(
+                (thing, componentJsons) => {
+                    thing = thing.GetInnerIfMinified();
+
+                    if (thing.TryGetComp<CompPowerBattery>() is CompPowerBattery battery)
+                    {
+                        Dictionary<string, string> dict = new();
+
+                        dict.Add("StoredEnergyPct", battery.StoredEnergyPct.ToString());
+
+                        componentJsons.Add("CompPowerBattery", JsonConvert.SerializeObject(dict));
+                    }
+                },
+                (thing, componentJsons) => {
+                    thing = thing.GetInnerIfMinified();
+
+                    if (componentJsons.TryGetValue("CompPowerBattery", out string batteryJson) && thing.TryGetComp<CompPowerBattery>() is CompPowerBattery battery)
+                    {
+                        var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(batteryJson);
+
+                        if (dict.TryGetValue("StoredEnergyPct", out string StoredEnergyPct))
+                        {
+                            battery.SetStoredEnergyPct(float.Parse(StoredEnergyPct));
+                        }
+                    }
+                }
+            )
+        };
+
         //Functions
 
         public static Thing[] GetItemsFromString(TransferData transferData)
@@ -958,6 +1011,8 @@ namespace GameClient
 
             GetItemRotation(toUse, itemData);
 
+            GetItemComponents(toUse, itemData);
+
             return itemData;
         }
 
@@ -976,6 +1031,8 @@ namespace GameClient
             SetItemRotation(thing, itemData);
 
             SetItemMinified(thing, itemData);
+
+            SetItemComponents(thing, itemData);
 
             return thing;
         }
@@ -1042,6 +1099,22 @@ namespace GameClient
             catch { Logger.Warning($"Failed to get minified of thing {thing.def.defName}"); }
 
             return false;
+        }
+
+        private static void GetItemComponents(Thing thing, ItemData itemData)
+        {
+            try
+            {
+                Dictionary<string, string> componentJsons = new();
+
+                foreach (var componentMapper in componentMappers)
+                {
+                    componentMapper.ToString(thing, componentJsons);
+                }
+
+                itemData.components = JsonConvert.SerializeObject(componentJsons);
+            }
+            catch { Log.Warning($"Failed to get components of thing {thing.def.defName}"); }
         }
 
         //Setters
@@ -1115,6 +1188,20 @@ namespace GameClient
                 //This function is where you should transform the item back into a minified.
                 //However, this isn't needed and is likely to cause issues with caravans if used
             }
+        }
+
+        private static void SetItemComponents(Thing thing, ItemData itemData)
+        {
+            try
+            {
+                var componentJsons = JsonConvert.DeserializeObject<Dictionary<string, string>>(itemData.components);
+
+                foreach (var componentMapper in componentMappers)
+                {
+                    componentMapper.FromString(thing, componentJsons);
+                }
+            }
+            catch { Log.Warning($"Failed to get components of thing {thing.def.defName}"); }
         }
     }
 

@@ -350,6 +350,12 @@ namespace GameServer
                 "toggleverboselogs", new Command("toggleverboselogs",0,
                 "toggles verbose logs to be true or false",
                 ToggleVerboseLogs)
+            },
+
+            {
+                "syncsettlements", new Command("syncsettlements", 1,
+                "Forces a player to sync their settlements",
+                SyncSettlementsCommandAction)
             }
         };
 
@@ -765,6 +771,21 @@ namespace GameServer
                 CommandManager.SendForceSaveCommand(toFind);
 
                 Logger.WriteToConsole($"User '{parsedParameters[0]}' has been forced to save",
+                    LogMode.Warning);
+            }
+        }
+
+        private static void SyncSettlementsCommandAction()
+        {
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == parsedParameters[0]);
+            if (toFind == null) Logger.WriteToConsole($"[ERROR] > User '{parsedParameters[0]}' was not found",
+                LogMode.Warning);
+
+            else
+            {
+                CommandManager.SyncSettlementsCommand(toFind);
+
+                Logger.WriteToConsole($"User '{parsedParameters[0]}' has been forced to sync settlements",
                     LogMode.Warning);
             }
         }

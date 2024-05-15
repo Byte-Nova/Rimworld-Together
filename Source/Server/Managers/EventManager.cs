@@ -40,24 +40,25 @@ namespace GameServer
                 else
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
-                    if (target.inSafeZone)
-                    {
-                        eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
-                        client.listener.EnqueuePacket(packet);
-                    }
+                    /* @TODO(jrseducate@gmail.com): Re-enable this once [target.inSafeZone] is properly updated based on it's intended purpose */
+                    //if (target.inSafeZone)
+                    //{
+                    //    eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
+                    //    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                    //    client.listener.EnqueuePacket(packet);
+                    //}
 
-                    else
-                    {
-                        target.inSafeZone = true;
+                    //else
+                    //{
+                    //    target.inSafeZone = true;
 
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
-                        client.listener.EnqueuePacket(packet);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                    client.listener.EnqueuePacket(packet);
 
-                        eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
-                        target.listener.EnqueuePacket(rPacket);
-                    }
+                    eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
+                    Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                    target.listener.EnqueuePacket(rPacket);
+                    //}
                 }
             }
         }

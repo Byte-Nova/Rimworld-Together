@@ -27,6 +27,8 @@ namespace GameClient
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
 
                 Logger.Message($"Creating local save at {filePath}");
+                if (ClientValues.saveMessageBool) Messages.Message("Game Saving...", MessageTypeDefOf.SilentInput);
+
                 try
                 {
                     SafeSaver.Save(filePath, "savegame", delegate
@@ -36,8 +38,14 @@ namespace GameClient
                         Scribe_Deep.Look(ref target, "game");
                     }, Find.GameInfo.permadeathMode);
                     ___lastSaveTick = Find.TickManager.TicksGame;
+
+                    if (ClientValues.saveMessageBool) Messages.Message("Game Saved!", MessageTypeDefOf.SilentInput);
                 }
-                catch (Exception e) { Logger.Error("Exception while saving game: " + e); }
+                catch (Exception e) 
+                { 
+                    Logger.Error("Exception while saving game: " + e);
+                    if (ClientValues.saveMessageBool) Messages.Message("Game Save Failed! (See log for details)", MessageTypeDefOf.NegativeEvent); 
+                }
 
                 Logger.Message("Sending maps to server");
                 MapManager.SendPlayerMapsToServer();

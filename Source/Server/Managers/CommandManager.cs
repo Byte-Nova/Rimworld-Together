@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Newtonsoft.Json;
+using Shared;
 
 namespace GameServer
 {
@@ -66,10 +67,30 @@ namespace GameServer
             }
         }
 
-        public static void SendForceSaveCommand(ServerClient client)
+        public static void SendForceSaveCommand(ServerClient client, bool isDisconnecting = true)
         {
             CommandData commandData = new CommandData();
             commandData.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
+            commandData.commandDetails = isDisconnecting ? "" : "isNotDisconnecting";
+
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
+            client.listener.EnqueuePacket(packet);
+        }
+
+        public static void SyncSettlementsCommand(ServerClient client)
+        {
+            var settlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
+
+            CommandData commandData = new CommandData();
+            commandData.commandType = ((int)CommonEnumerators.CommandType.SyncSettlements).ToString();
+
+            List<string> tiles = new();
+            foreach(var settlement in settlements)
+            {
+                tiles.Add(settlement.tile);
+            }
+
+            commandData.commandDetails = string.Join(',', tiles);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);

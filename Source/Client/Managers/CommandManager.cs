@@ -1,5 +1,9 @@
-﻿using RimWorld;
+﻿using Newtonsoft.Json;
+using RimWorld;
 using Shared;
+using System.Collections.Generic;
+using System.Linq;
+using Verse;
 
 namespace GameClient
 {
@@ -28,7 +32,11 @@ namespace GameClient
                     break;
 
                 case (int)CommonEnumerators.CommandType.ForceSave:
-                    OnForceSaveCommand();
+                    OnForceSaveCommand(commandData);
+                    break;
+
+                case (int)CommonEnumerators.CommandType.SyncSettlements:
+                    OnSyncSettlementsCommand(commandData);
                     break;
             }
         }
@@ -54,13 +62,64 @@ namespace GameClient
             RimworldManager.GenerateLetter("Server Broadcast", commandData.commandDetails, LetterDefOf.PositiveEvent);
         }
 
-        private static void OnForceSaveCommand()
+        private static void OnForceSaveCommand(CommandData commandData)
         {
             if (!ClientValues.isReadyToPlay) DisconnectionManager.DisconnectToMenu();
             else
             {
-                ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
+                bool isDisconnecting = commandData.commandDetails != "isNotDisconnecting";
+
+                ClientValues.SetIntentionalDisconnect(isDisconnecting, DisconnectionManager.DCReason.SaveQuitToMenu);
                 SaveManager.ForceSave();
+            }
+        }
+
+        private static void OnSyncSettlementsCommand(CommandData commandData)
+        {
+            if (Network.state == NetworkState.Connected)
+            {
+                List<string> tilesServer = new List<string>(commandData.commandDetails.Split(','));
+                List<string> tilesClient = new();
+
+                foreach (Map map in Find.Maps.ToArray())
+                {
+                    if (map.IsPlayerHome)
+                    {
+                        string tile = map.Tile.ToString();
+
+                        tilesClient.Add(tile);
+
+                        if (tilesServer.Contains(tile))
+                        {
+                            continue;
+                        }
+
+                        SettlementData settlementData = new SettlementData();
+                        settlementData.tile = tile;
+                        settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Network.listener.EnqueuePacket(packet);
+                    }
+                }
+
+                foreach(string tileServer in tilesServer)
+                {
+                    if (tileServer.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    if (!tilesClient.Contains(tileServer))
+                    {
+                        SettlementData settlementData = new SettlementData();
+                        settlementData.tile = tileServer;
+                        settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
+
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Network.listener.EnqueuePacket(packet);
+                    }
+                }
             }
         }
     }

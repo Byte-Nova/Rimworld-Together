@@ -11,7 +11,7 @@
 
         //Commands
 
-        public enum CommandType { Op, Deop, Broadcast, ForceSave }
+        public enum CommandType { Op, Deop, Broadcast, ForceSave, SyncSettlements }
 
         //Events
 

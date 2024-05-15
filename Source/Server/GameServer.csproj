@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>GameServer</RootNamespace>
+		<PublishSingleFile>true</PublishSingleFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,6 +20,7 @@
     <ItemGroup>
       <PackageReference Include="Mono.Nat" Version="3.0.4" />
       <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
+	  <ProjectReference Include="..\PluginServer\PluginServer.csproj" />
     </ItemGroup>
 
     <ItemGroup>

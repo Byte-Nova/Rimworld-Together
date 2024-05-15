@@ -18,5 +18,6 @@ namespace Shared
         public int rotation;
 
         public float growthTicks;
+        public string components;
     }
 }

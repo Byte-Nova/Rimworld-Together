@@ -32,6 +32,7 @@ namespace GameClient
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.rejectSiteRewardsBool, "Automatically site rewards");
             listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref modConfigs.muteChatSoundBool, "Mute chat messages");
+            listingStandard.CheckboxLabeled("[When Playing] Show all saves as messages", ref modConfigs.saveMessageBool, "Shows save messages");
             if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s"))
             {
                 ShowAutosaveFloatMenu();

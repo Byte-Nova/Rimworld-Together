@@ -68,6 +68,9 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(true);
 
+                Log.Message($"[Rimworld Together] > Sending save to server");
+                if (ClientValues.saveMessageBool) Messages.Message("Save Syncing With Server...", MessageTypeDefOf.SilentInput);
+
                 saveFilePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
                 tempSaveFilePath = $"{saveFilePath}.temp";
 
@@ -100,6 +103,10 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(false);
                 Network.listener.uploadManager = null;
+
+                Log.Message($"[Rimworld Together] > Save sent to server");
+                if (ClientValues.saveMessageBool) Messages.Message("Save Synced With Server!", MessageTypeDefOf.SilentInput);
+
                 File.Delete(tempSaveFilePath);
             }
         }

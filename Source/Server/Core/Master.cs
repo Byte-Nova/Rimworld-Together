@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Globalization;
+using System.Runtime.Loader;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -8,6 +9,11 @@ namespace GameServer
 
     public static class Master
     {
+        // Plugins
+
+        public static string pluginsPath;
+        public static PluginManager.Plugins plugins = new PluginManager.Plugins();
+
         //Paths
 
         public static string mainPath;
@@ -111,6 +117,9 @@ namespace GameServer
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
             if (!Directory.Exists(optionalModsPath)) Directory.CreateDirectory(optionalModsPath);
             if (!Directory.Exists(forbiddenModsPath)) Directory.CreateDirectory(forbiddenModsPath);
+
+            pluginsPath = Path.Combine(mainPath, "Plugins");
+            if (!Directory.Exists(pluginsPath)) Directory.CreateDirectory(pluginsPath);
         }
 
         private static void SetCulture()
@@ -128,6 +137,8 @@ namespace GameServer
             Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", LogMode.Title);
             Logger.WriteToConsole($"Loading all necessary resources", LogMode.Title);
             Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
+
+            PluginManager.LoadPlugins();
 
             LoadSiteValues();
             LoadEventValues();

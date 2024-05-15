@@ -28,6 +28,8 @@ namespace GameServer
 
         [NonSerialized] public bool inSafeZone;
 
+        [NonSerialized] public bool isReady = false;
+
         [NonSerialized] public List<string> runningMods = new List<string>();
 
         [NonSerialized] public List<string> allyPlayers = new List<string>();

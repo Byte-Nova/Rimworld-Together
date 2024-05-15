@@ -41,6 +41,7 @@ namespace GameClient
         public static bool muteSoundBool;
         public static bool rejectTransferBool;
         public static bool rejectSiteRewardsBool;
+        public static bool saveMessageBool;
 
         public static float autosaveDays = 1.0f;
         public static float autosaveCurrentTicks;
