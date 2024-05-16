@@ -172,5 +172,10 @@ namespace GameClient
         {
             //Empty
         }
+
+        public static void ReadyToPlayPacket()
+        {
+            //Empty
+        }
     }
 }

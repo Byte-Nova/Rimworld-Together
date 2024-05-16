@@ -28,7 +28,7 @@ namespace GameServer
 
         [NonSerialized] public bool inSafeZone;
 
-        [NonSerialized] public bool isReady = false;
+        [NonSerialized] public bool isReadyToPlay = false;
 
         [NonSerialized] public List<string> runningMods = new List<string>();
 

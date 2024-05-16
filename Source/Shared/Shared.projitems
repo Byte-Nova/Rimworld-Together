@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\SpyData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\VisitData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\ReadyToPlayData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\DifficultyData.cs" />

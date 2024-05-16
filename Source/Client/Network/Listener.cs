@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using RimWorld;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -110,8 +111,6 @@ namespace GameClient
                 }
             }
             catch { }
-
-            Thread.Sleep(1000);
 
             Master.threadDispatcher.Enqueue(delegate { Network.DisconnectFromServer(); });
         }

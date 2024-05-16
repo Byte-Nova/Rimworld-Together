@@ -155,5 +155,11 @@ namespace GameServer
         {
             //Empty
         }
+
+        public static void ReadyToPlayPacket(ServerClient client, Packet packet)
+        {
+            ReadyToPlayData readyToPlayData = (ReadyToPlayData)Serializer.ConvertBytesToObject(packet.contents);
+            client.isReadyToPlay = readyToPlayData.ReadyToPlay;
+        }
     }
 }

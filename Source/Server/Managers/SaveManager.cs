@@ -64,9 +64,6 @@ namespace GameServer
             if (client.listener.uploadManager.isLastPart)
             {
                 client.listener.uploadManager = null;
-
-                /* @TODO(jrseducate@gmail.com): This should be its own packet when ClientValues.ToggleReadyToPlay() is called client-side */
-                client.isReady = true;
             }
         }
 

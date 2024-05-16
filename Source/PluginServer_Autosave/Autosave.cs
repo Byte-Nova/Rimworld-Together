@@ -87,7 +87,7 @@ namespace PluginServer_Autosave
                 var savingClients = new List<ServerClient>();
                 foreach (ServerClient client in connectedClients)
                 {
-                    if (client.isReady)
+                    if (client.isReadyToPlay)
                     {
                         CommandManager.SendForceSaveCommand(client, false);
                         savingClients.Add(client);
