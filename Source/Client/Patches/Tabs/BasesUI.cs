@@ -3,6 +3,7 @@ using RimWorld.Planet;
 using Shared;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -100,8 +101,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(Shared.CommonEnumerators.Goodwills.Enemy,
-                            Shared.CommonEnumerators.GoodwillTarget.Settlement);
+                        GoodwillManager.TryRequestGoodwill(Goodwills.Enemy,
+                            GoodwillTarget.Settlement);
 
                         break;
                     }
@@ -116,8 +117,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                        GoodwillManager.TryRequestGoodwill(Goodwills.Neutral,
+                            GoodwillTarget.Settlement);
 
                         break;
                     }
@@ -132,8 +133,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                        GoodwillManager.TryRequestGoodwill(Goodwills.Ally,
+                            GoodwillTarget.Settlement);
 
                         break;
                     }

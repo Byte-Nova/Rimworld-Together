@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class ChatData
     {
-        public List<string> userColors = new List<string>();
+        public UserColor[] userColors = new UserColor[0];
 
-        public List<string> messageColors = new List<string>();
+        public MessageColor[] messageColors = new MessageColor[0];
 
         public List<string> usernames = new List<string>();
 

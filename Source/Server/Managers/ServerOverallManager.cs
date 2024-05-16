@@ -178,7 +178,7 @@ namespace GameServer
             {
                 globalData.siteTiles.Add(site.tile);
                 globalData.siteOwners.Add(site.owner);
-                globalData.siteGoodwills.Add(GoodwillManager.GetSiteGoodwill(client, site).ToString());
+                globalData.siteGoodwills.Add(GoodwillManager.GetSiteGoodwill(client, site));
                 globalData.siteTypes.Add(site.type);
                 globalData.isFromFactions.Add(site.isFromFaction);
             }

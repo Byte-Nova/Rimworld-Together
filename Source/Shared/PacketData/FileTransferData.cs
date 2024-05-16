@@ -1,4 +1,5 @@
 ﻿using System;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
@@ -10,6 +11,6 @@ namespace Shared
         public byte[] fileBytes;
 
         public bool isLastPart;
-        public string additionalInstructions;
+        public SaveMode saveMode;
     }
 }

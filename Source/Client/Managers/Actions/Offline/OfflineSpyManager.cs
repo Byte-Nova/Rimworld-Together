@@ -3,6 +3,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -21,13 +22,13 @@ namespace GameClient
         {
             SpyData spyData = (SpyData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(spyData.spyStepMode))
+            switch(spyData.spyStepMode)
             {
-                case (int)CommonEnumerators.SpyStepMode.Request:
+                case SpyStepMode.Request:
                     OnSpyAccept(spyData);
                     break;
 
-                case (int)CommonEnumerators.SpyStepMode.Deny:
+                case SpyStepMode.Deny:
                     OnSpyDeny();
                     break;
             }
@@ -64,7 +65,7 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
                     SpyData spyData = new SpyData();
-                    spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
+                    spyData.spyStepMode = SpyStepMode.Request;
                     spyData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);

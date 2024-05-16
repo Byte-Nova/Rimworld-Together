@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class SiteData
     {
-        public string siteStep;
+        public SiteStepMode siteStep;
 
         public string tile;
 
@@ -16,7 +17,7 @@ namespace Shared
 
         public byte[] workerData;
 
-        public string goodwill;
+        public Goodwills goodwill;
 
         public bool isFromFaction;
 

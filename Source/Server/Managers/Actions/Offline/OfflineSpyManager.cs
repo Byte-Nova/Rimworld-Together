@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -8,13 +9,13 @@ namespace GameServer
         {
             SpyData spyData = (SpyData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(spyData.spyStepMode))
+            switch (spyData.spyStepMode)
             {
-                case (int)CommonEnumerators.SpyStepMode.Request:
+                case SpyStepMode.Request:
                     SendRequestedMap(client, spyData);
                     break;
 
-                case (int)CommonEnumerators.SpyStepMode.Deny:
+                case SpyStepMode.Deny:
                     //Nothing goes here
                     break;
             }
@@ -24,7 +25,7 @@ namespace GameServer
         {
             if (!MapManager.CheckIfMapExists(spyData.targetTile))
             {
-                spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
+                spyData.spyStepMode = SpyStepMode.Deny;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                 client.listener.EnqueuePacket(packet);
             }
@@ -35,7 +36,7 @@ namespace GameServer
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Deny).ToString();
+                    spyData.spyStepMode = SpyStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                     client.listener.EnqueuePacket(packet);
                 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
@@ -10,12 +11,12 @@ namespace Shared
 
         public string owner;
 
-        public string goodwill;
+        public Goodwills goodwill;
 
         public List<string> settlementTiles = new List<string>();
-        public List<string> settlementGoodwills = new List<string>();
+        public Goodwills[] settlementGoodwills = new Goodwills[0];
 
         public List<string> siteTiles = new List<string>();
-        public List<string> siteGoodwills = new List<string>();
+        public Goodwills[] siteGoodwills = new Goodwills[0];
     }
 }

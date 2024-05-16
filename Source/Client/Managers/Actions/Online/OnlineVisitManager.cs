@@ -31,27 +31,27 @@ namespace GameClient
 
             switch (visitData.visitStepMode)
             {
-                case (int)VisitStepMode.Request:
+                case VisitStepMode.Request:
                     OnVisitRequest(visitData);
                     break;
 
-                case (int)VisitStepMode.Accept:
+                case VisitStepMode.Accept:
                     OnVisitAccept(visitData);
                     break;
 
-                case (int)VisitStepMode.Reject:
+                case VisitStepMode.Reject:
                     OnVisitReject();
                     break;
 
-                case (int)VisitStepMode.Unavailable:
+                case VisitStepMode.Unavailable:
                     OnVisitUnavailable();
                     break;
 
-                case (int)VisitStepMode.Action:
+                case VisitStepMode.Action:
                     VisitActionGetter.ReceiveActions(visitData);
                     break;
 
-                case (int)VisitStepMode.Stop:
+                case VisitStepMode.Stop:
                     OnVisitStop();
                     break;
             }
@@ -67,7 +67,7 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
 
                     VisitData visitData = new VisitData();
-                    visitData.visitStepMode = (int)VisitStepMode.Request;
+                    visitData.visitStepMode = VisitStepMode.Request;
                     visitData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
                     visitData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
                     visitData.caravanHumans = OnlineVisitHelper.GetHumansForVisit(FetchMode.Player);
@@ -103,7 +103,7 @@ namespace GameClient
         public static void StopVisit()
         {
             VisitData visitData = new VisitData();
-            visitData.visitStepMode = (int)VisitStepMode.Stop;
+            visitData.visitStepMode = VisitStepMode.Stop;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
             Network.listener.dataQueue.Enqueue(packet);
@@ -128,7 +128,7 @@ namespace GameClient
 
             Action r2 = delegate
             {
-                visitData.visitStepMode = (int)VisitStepMode.Reject;
+                visitData.visitStepMode = VisitStepMode.Reject;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                 Network.listener.dataQueue.Enqueue(packet);
             };
@@ -178,7 +178,7 @@ namespace GameClient
 
         private static void SendRequestedMap(VisitData visitData)
         {
-            visitData.visitStepMode = (int)VisitStepMode.Accept;
+            visitData.visitStepMode = VisitStepMode.Accept;
             visitData.mapHumans = OnlineVisitHelper.GetHumansForVisit(FetchMode.Host);
             visitData.mapAnimals = OnlineVisitHelper.GetAnimalsForVisit(FetchMode.Host);
 
@@ -231,7 +231,7 @@ namespace GameClient
         private static void ActionClockTick()
         {
             VisitData visitData = new VisitData();
-            visitData.visitStepMode = (int)VisitStepMode.Action;
+            visitData.visitStepMode = VisitStepMode.Action;
             visitData.mapTicks = OnlineVisitHelper.GetGameTicks();
 
             foreach (Pawn pawn in OnlineVisitHelper.GetFactionPawnsSecure())
@@ -306,7 +306,7 @@ namespace GameClient
             {
                 if (targetInfo.Thing == null)
                 {
-                    visitData.actionTargetType.Add(((int)ActionTargetType.Cell));
+                    visitData.actionTargetType = visitData.actionTargetType.Add(ActionTargetType.Cell);
                     return ValueParser.Vector3ToString(targetInfo.Cell);
                 }
 
@@ -314,19 +314,19 @@ namespace GameClient
                 {
                     if (DeepScribeHelper.CheckIfThingIsHuman(targetInfo.Thing))
                     {
-                        visitData.actionTargetType.Add((int)ActionTargetType.Human);
+                        visitData.actionTargetType = visitData.actionTargetType.Add(ActionTargetType.Human);
                         return Serializer.SerializeToString(HumanScribeManager.HumanToString(targetInfo.Pawn));
                     }
 
                     else if (DeepScribeHelper.CheckIfThingIsAnimal(targetInfo.Thing))
                     {
-                        visitData.actionTargetType.Add((int)ActionTargetType.Animal);
+                        visitData.actionTargetType = visitData.actionTargetType.Add(ActionTargetType.Animal);
                         return Serializer.SerializeToString(AnimalScribeManager.AnimalToString(targetInfo.Pawn));
                     }
 
                     else
                     {
-                        visitData.actionTargetType.Add((int)ActionTargetType.Thing);
+                        visitData.actionTargetType = visitData.actionTargetType.Add(ActionTargetType.Thing);
                         return Serializer.SerializeToString(ThingScribeManager.ItemToString(targetInfo.Thing, 1));
                     }
                 }

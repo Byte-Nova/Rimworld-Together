@@ -7,6 +7,7 @@ using Shared;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -32,13 +33,13 @@ namespace GameClient
 
         private Pawn playerNegotiator;
 
-        CommonEnumerators.TransferLocation transferLocation;
+        TransferLocation transferLocation;
 
         private bool allowItems;
         private bool allowAnimals;
         private bool allowHumans;
 
-        public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
+        public RT_Dialog_TransferMenu(TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
             bool allowHumans = false)
         {
             DialogManager.dialogTransferMenu = this;
@@ -131,17 +132,17 @@ namespace GameClient
 
         private void OnAccept()
         {
-            if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
+            if (transferLocation == TransferLocation.Caravan)
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Gift).ToString();
+                    ClientValues.outgoingManifest.transferMode = TransferMode.Gift;
                     postChoosing();
                 };
 
                 Action r2 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Trade).ToString();
+                    ClientValues.outgoingManifest.transferMode = TransferMode.Trade;
                     postChoosing();
                 };
 
@@ -154,11 +155,11 @@ namespace GameClient
                 DialogManager.PushNewDialog(d1);
             }
 
-            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
+            else if (transferLocation == TransferLocation.Settlement)
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
+                    ClientValues.outgoingManifest.transferMode = TransferMode.Rebound;
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -181,9 +182,9 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
+                if (transferLocation == TransferLocation.Settlement)
                 {
-                    TransferManager.RejectRequest(CommonEnumerators.TransferMode.Trade);
+                    TransferManager.RejectRequest(TransferMode.Trade);
                 }
 
                 TransferManager.FinishTransfer(false);
@@ -191,7 +192,7 @@ namespace GameClient
                 Close();
             };
 
-            if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
+            if (transferLocation == TransferLocation.Settlement)
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
                     r1, null));
@@ -209,12 +210,12 @@ namespace GameClient
 
         private void GetNegotiator()
         {
-            if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
+            if (transferLocation == TransferLocation.Caravan)
             {
                 playerNegotiator = ClientValues.chosenCaravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
 
-            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
+            else if (transferLocation == TransferLocation.Settlement)
             {
                 playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
@@ -222,12 +223,12 @@ namespace GameClient
 
         private void SetupTrade()
         {
-            if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
+            if (transferLocation == TransferLocation.Caravan)
             {
                 TradeSession.SetupWith(ClientValues.chosenSettlement, playerNegotiator, true);
             }
 
-            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
+            else if (transferLocation == TransferLocation.Settlement)
             {
                 TradeSession.SetupWith(Find.WorldObjects.SettlementAt(int.Parse(ClientValues.incomingManifest.fromTile)), 
                     playerNegotiator, true);
@@ -277,7 +278,7 @@ namespace GameClient
         {
             ClientValues.listToShowInTradesMenu = new List<Tradeable>();
 
-            if (transferLocation == CommonEnumerators.TransferLocation.Caravan)
+            if (transferLocation == TransferLocation.Caravan)
             {
                 List<Thing> caravanItems = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan);
 
@@ -322,7 +323,7 @@ namespace GameClient
                 }
             }
 
-            else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
+            else if (transferLocation == TransferLocation.Settlement)
             {
                 Map map = Find.Maps.Find(x => x.Tile == int.Parse(ClientValues.incomingManifest.toTile));
 

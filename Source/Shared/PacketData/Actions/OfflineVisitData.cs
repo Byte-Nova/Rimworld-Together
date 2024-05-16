@@ -1,11 +1,12 @@
 ﻿using System;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class OfflineVisitData
     {
-        public string offlineVisitStepMode;
+        public OfflineVisitStepMode offlineVisitStepMode;
 
         public string targetTile;
 

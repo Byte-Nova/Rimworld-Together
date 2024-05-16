@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {

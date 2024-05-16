@@ -5,6 +5,7 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using Verse.AI.Group;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -18,13 +19,13 @@ namespace GameClient
         {
             RaidData raidData = (RaidData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(raidData.raidStepMode))
+            switch (raidData.raidStepMode)
             {
-                case (int)CommonEnumerators.RaidStepMode.Request:
+                case RaidStepMode.Request:
                     OnRaidAccept(raidData);
                     break;
 
-                case (int)CommonEnumerators.RaidStepMode.Deny:
+                case RaidStepMode.Deny:
                     OnRaidDeny();
                     break;
             }
@@ -37,7 +38,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             RaidData raidData = new RaidData();
-            raidData.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
+            raidData.raidStepMode = RaidStepMode.Request;
             raidData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);

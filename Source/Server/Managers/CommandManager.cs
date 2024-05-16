@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -8,17 +9,17 @@ namespace GameServer
         {
             CommandData commandData = (CommandData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(commandData.commandType))
+            switch (commandData.commandType)
             {
-                case (int)CommonEnumerators.CommandType.Op:
+                case CommandName.Op:
                     //Do nothing
                     break;
 
-                case (int)CommonEnumerators.CommandType.Deop:
+                case CommandName.Deop:
                     //Do nothing
                     break;
 
-                case (int)CommonEnumerators.CommandType.Broadcast:
+                case CommandName.Broadcast:
                     //Do nothing
                     break;
             }
@@ -27,7 +28,7 @@ namespace GameServer
         public static void SendOpCommand(ServerClient client)
         {
             CommandData commandData = new CommandData();
-            commandData.commandType = ((int)CommonEnumerators.CommandType.Op).ToString();
+            commandData.commandType = CommandName.Op;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
@@ -36,7 +37,7 @@ namespace GameServer
         public static void SendDeOpCommand(ServerClient client)
         {
             CommandData commandData = new CommandData();
-            commandData.commandType = ((int)CommonEnumerators.CommandType.Deop).ToString();
+            commandData.commandType = CommandName.Deop;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
@@ -46,7 +47,7 @@ namespace GameServer
         public static void SendEventCommand(ServerClient client, int eventID)
         {
             EventData eventData = new EventData();
-            eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
+            eventData.eventStepMode = EventStepMode.Receive;
             eventData.eventID = eventID.ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
@@ -56,7 +57,7 @@ namespace GameServer
         public static void SendBroadcastCommand(string str)
         {
             CommandData commandData = new CommandData();
-            commandData.commandType = ((int)CommonEnumerators.CommandType.Broadcast).ToString();
+            commandData.commandType = CommandName.Broadcast;
             commandData.commandDetails = str;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
@@ -69,7 +70,7 @@ namespace GameServer
         public static void SendForceSaveCommand(ServerClient client)
         {
             CommandData commandData = new CommandData();
-            commandData.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
+            commandData.commandType = CommandName.ForceSave;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);

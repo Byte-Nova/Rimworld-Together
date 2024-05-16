@@ -9,13 +9,13 @@ namespace GameServer
         {
             SettlementData settlementData = (SettlementData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(settlementData.settlementStepMode))
+            switch (settlementData.settlementStepMode)
             {
-                case (int)CommonEnumerators.SettlementStepMode.Add:
+                case SettlementStepMode.Add:
                     AddSettlement(client, settlementData);
                     break;
 
-                case (int)CommonEnumerators.SettlementStepMode.Remove:
+                case SettlementStepMode.Remove:
                     RemoveSettlement(client, settlementData);
                     break;
             }
@@ -33,13 +33,13 @@ namespace GameServer
                 settlementFile.owner = client.username;
                 Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"), settlementFile);
 
-                settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                settlementData.settlementStepMode = SettlementStepMode.Add;
                 foreach (ServerClient cClient in Network.connectedClients.ToArray())
                 {
                     if (cClient == client) continue;
                     else
                     {
-                        settlementData.value = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile).ToString();
+                        settlementData.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
 
                         Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                         cClient.listener.EnqueuePacket(rPacket);
@@ -63,7 +63,7 @@ namespace GameServer
                 {
                     File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
 
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
+                    settlementData.settlementStepMode = SettlementStepMode.Remove;
                     Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     foreach (ServerClient cClient in Network.connectedClients.ToArray())
                     {

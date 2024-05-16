@@ -5,6 +5,7 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using Verse.Profile;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {

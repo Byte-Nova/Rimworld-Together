@@ -5,6 +5,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -98,37 +99,37 @@ namespace GameClient
         {
             SiteData siteData = (SiteData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(siteData.siteStep))
+            switch(siteData.siteStep)
             {
-                case (int)CommonEnumerators.SiteStepMode.Accept:
+                case SiteStepMode.Accept:
                     OnSiteAccept();
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Build:
+                case SiteStepMode.Build:
                     PlanetManager.SpawnSingleSite(siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Destroy:
+                case SiteStepMode.Destroy:
                     PlanetManager.RemoveSingleSite(siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Info:
+                case SiteStepMode.Info:
                     OnSimpleSiteOpen(siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Deposit:
+                case SiteStepMode.Deposit:
                     //Nothing goes here
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Retrieve:
+                case SiteStepMode.Retrieve:
                     OnWorkerRetrieval(siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Reward:
+                case SiteStepMode.Reward:
                     ReceiveSitesRewards(siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.WorkerError:
+                case SiteStepMode.WorkerError:
                     OnWorkerError();
                     break;
             }
@@ -148,7 +149,7 @@ namespace GameClient
 
             SiteData siteData = new SiteData();
             siteData.tile = ClientValues.chosenSite.Tile.ToString();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Info).ToString();
+            siteData.siteStep = SiteStepMode.Info;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
@@ -179,7 +180,7 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site worker"));
 
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Retrieve).ToString();
+            siteData.siteStep = SiteStepMode.Retrieve;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
@@ -231,7 +232,7 @@ namespace GameClient
 
             SiteData siteData = new SiteData();
             siteData.tile = ClientValues.chosenSite.Tile.ToString();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Deposit).ToString();
+            siteData.siteStep = SiteStepMode.Deposit;
             siteData.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
@@ -248,7 +249,7 @@ namespace GameClient
             {
                 SiteData siteData = new SiteData();
                 siteData.tile = ClientValues.chosenSite.Tile.ToString();
-                siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Destroy).ToString();
+                siteData.siteStep = SiteStepMode.Destroy;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);
@@ -368,7 +369,7 @@ namespace GameClient
                 TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
-                siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
+                siteData.siteStep = SiteStepMode.Build;
                 siteData.tile = ClientValues.chosenCaravan.Tile.ToString();
                 siteData.type = DialogManager.selectedScrollButton.ToString();
                 siteData.isFromFaction = false;
@@ -436,7 +437,7 @@ namespace GameClient
                 TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
-                siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
+                siteData.siteStep = SiteStepMode.Build;
                 siteData.tile = ClientValues.chosenCaravan.Tile.ToString();
                 siteData.type = DialogManager.selectedScrollButton.ToString();
                 siteData.isFromFaction = true;

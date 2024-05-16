@@ -188,7 +188,7 @@ namespace GameServer
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
             LoginData loginData = new LoginData();
-            loginData.tryResponse = ((int)response).ToString();
+            loginData.tryResponse = response;
 
             if (response == LoginResponse.WrongMods) loginData.extraDetails = (List<string>)extraDetails;
             else if (response == LoginResponse.WrongVersion) loginData.extraDetails = new List<string>() { CommonValues.executableVersion };

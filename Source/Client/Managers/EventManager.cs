@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -28,17 +29,17 @@ namespace GameClient
         {
             EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(eventData.eventStepMode))
+            switch (eventData.eventStepMode)
             {
-                case (int)CommonEnumerators.EventStepMode.Send:
+                case EventStepMode.Send:
                     OnEventSent();
                     break;
 
-                case (int)CommonEnumerators.EventStepMode.Receive:
+                case EventStepMode.Receive:
                     OnEventReceived(eventData);
                     break;
 
-                case (int)CommonEnumerators.EventStepMode.Recover:
+                case EventStepMode.Recover:
                     OnRecoverEventSilver();
                     break;
             }
@@ -95,7 +96,7 @@ namespace GameClient
                 TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
                 EventData eventData = new EventData();
-                eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
+                eventData.eventStepMode = EventStepMode.Send;
                 eventData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
                 eventData.toTile = ClientValues.chosenSettlement.Tile.ToString();
                 eventData.eventID = DialogManager.selectedScrollButton.ToString();

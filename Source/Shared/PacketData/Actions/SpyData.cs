@@ -1,11 +1,12 @@
 ﻿using System;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class SpyData
     {
-        public string spyStepMode;
+        public SpyStepMode spyStepMode;
 
         public string targetTile;
 

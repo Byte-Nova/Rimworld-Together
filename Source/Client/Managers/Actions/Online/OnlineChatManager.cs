@@ -72,8 +72,8 @@ namespace GameClient
             for (int i = 0; i < chatData.usernames.Count(); i++) 
             {
                 AddMessageToChat(chatData.usernames[i], chatData.messages[i], 
-                    (UserColor)int.Parse(chatData.userColors[i]), 
-                    (MessageColor)int.Parse(chatData.messageColors[i]));
+                    chatData.userColors[i], 
+                    chatData.messageColors[i]);
             }
 
             if (!ClientValues.isReadyToPlay) return;

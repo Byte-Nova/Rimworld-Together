@@ -9,25 +9,25 @@ namespace GameServer
         {
             SiteData siteData = (SiteData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(siteData.siteStep))
+            switch(siteData.siteStep)
             {
-                case (int)CommonEnumerators.SiteStepMode.Build:
+                case SiteStepMode.Build:
                     AddNewSite(client, siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Destroy:
+                case SiteStepMode.Destroy:
                     DestroySite(client, siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Info:
+                case SiteStepMode.Info:
                     GetSiteInfo(client, siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Deposit:
+                case SiteStepMode.Deposit:
                     DepositWorkerToSite(client, siteData);
                     break;
 
-                case (int)CommonEnumerators.SiteStepMode.Retrieve:
+                case SiteStepMode.Retrieve:
                     RetrieveWorkerFromSite(client, siteData);
                     break;
             }
@@ -51,7 +51,7 @@ namespace GameServer
             SaveSite(siteFile);
 
             SiteData siteData = new SiteData();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Build).ToString();
+            siteData.siteStep = SiteStepMode.Build;
             siteData.tile = siteFile.tile;
             siteData.owner = client.username;
             siteData.type = siteFile.type;
@@ -59,13 +59,13 @@ namespace GameServer
 
             foreach (ServerClient cClient in Network.connectedClients.ToArray())
             {
-                siteData.goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile).ToString();
+                siteData.goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
 
                 cClient.listener.EnqueuePacket(packet);
             }
 
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Accept).ToString();
+            siteData.siteStep = SiteStepMode.Accept;
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(rPacket);
 
@@ -134,7 +134,7 @@ namespace GameServer
                 {
                     FactionFile factionFile = OnlineFactionManager.GetFactionFromClient(client);
 
-                    if (OnlineFactionManager.GetMemberRank(factionFile, client.username) == CommonEnumerators.FactionRanks.Member)
+                    if (OnlineFactionManager.GetMemberRank(factionFile, client.username) == FactionRanks.Member)
                     {
                         ResponseShortcutManager.SendNoPowerPacket(client, new PlayerFactionData());
                         return;
@@ -175,8 +175,8 @@ namespace GameServer
                 {
                     FactionFile factionFile = OnlineFactionManager.GetFactionFromClient(client);
 
-                    if (OnlineFactionManager.GetMemberRank(factionFile, client.username) !=
-                        CommonEnumerators.FactionRanks.Member) DestroySiteFromFile(siteFile);
+                    if (OnlineFactionManager.GetMemberRank(factionFile, client.username) != FactionRanks.Member) 
+                        DestroySiteFromFile(siteFile);
 
                     else ResponseShortcutManager.SendNoPowerPacket(client, new PlayerFactionData());
                 }
@@ -193,7 +193,7 @@ namespace GameServer
         public static void DestroySiteFromFile(SiteFile siteFile)
         {
             SiteData siteData = new SiteData();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Destroy).ToString();
+            siteData.siteStep = SiteStepMode.Destroy;
             siteData.tile = siteFile.tile;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
@@ -276,7 +276,7 @@ namespace GameServer
             SiteFile[] sites = GetAllSites();
 
             SiteData siteData = new SiteData();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.Reward).ToString();
+            siteData.siteStep = SiteStepMode.Reward;
 
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {

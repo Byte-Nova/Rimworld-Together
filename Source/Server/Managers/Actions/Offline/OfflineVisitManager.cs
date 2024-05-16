@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -8,13 +9,13 @@ namespace GameServer
         {
             OfflineVisitData offlineVisitData = (OfflineVisitData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(offlineVisitData.offlineVisitStepMode))
+            switch (offlineVisitData.offlineVisitStepMode)
             {
-                case (int)CommonEnumerators.OfflineVisitStepMode.Request:
+                case OfflineVisitStepMode.Request:
                     SendRequestedMap(client, offlineVisitData);
                     break;
 
-                case (int)CommonEnumerators.OfflineVisitStepMode.Deny:
+                case OfflineVisitStepMode.Deny:
                     //Nothing goes here
                     break;
             }
@@ -24,7 +25,7 @@ namespace GameServer
         {
             if (!MapManager.CheckIfMapExists(offlineVisitData.targetTile))
             {
-                offlineVisitData.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
+                offlineVisitData.offlineVisitStepMode = OfflineVisitStepMode.Deny;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
                 client.listener.EnqueuePacket(packet);
             }
@@ -35,7 +36,7 @@ namespace GameServer
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    offlineVisitData.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Deny).ToString();
+                    offlineVisitData.offlineVisitStepMode = OfflineVisitStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
                     client.listener.EnqueuePacket(packet);
                 }
