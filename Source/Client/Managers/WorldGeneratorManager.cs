@@ -381,6 +381,7 @@ namespace GameClient
             //Save factions
             foreach (Faction faction in Find.World.factionManager.AllFactions)
             {
+                if (faction.IsPlayer) continue;
                 FactionData factionData = FactionScribeManager.factionToFactionDetails(faction.def);
                 factionData.Name = faction.Name;
                 factionData.colorFromSpectrum = faction.colorFromSpectrum;
