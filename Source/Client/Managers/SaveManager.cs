@@ -4,14 +4,16 @@ using Shared;
 using System.IO;
 using System.Reflection;
 using Verse;
+using static Shared.CommonEnumerators;
+using static GameClient.DisconnectionManager;
 
 namespace GameClient
 {
     public static class SaveManager
     {
-        public static string customSaveName = "ServerSave";
-        private static string tempSaveFilePath;
-        private static string saveFilePath;
+        public static string customSaveName => $"Server - {Network.ip} - {ClientValues.username}";
+        private static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
+        private static string tempSaveFilePath => saveFilePath + ".temp";
 
         public static void ForceSave()
         {
@@ -20,7 +22,6 @@ namespace GameClient
 
             ClientValues.autosaveCurrentTicks = 0;
 
-            customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
             GameDataSaveLoader.SaveGame(customSaveName);
         }
 
@@ -28,13 +29,10 @@ namespace GameClient
         {
             FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
 
+            //If this is the first packet
             if (Network.listener.downloadManager == null)
             {
                 Logger.Message($"Receiving save from server");
-
-                customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
-                tempSaveFilePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws.temp" });
-                saveFilePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
 
                 Network.listener.downloadManager = new DownloadManager();
                 Network.listener.downloadManager.PrepareDownload(tempSaveFilePath, fileTransferData.fileParts);
@@ -42,6 +40,7 @@ namespace GameClient
 
             Network.listener.downloadManager.WriteFilePart(fileTransferData.fileBytes);
 
+            //If this is the last packet
             if (fileTransferData.isLastPart)
             {
                 Network.listener.downloadManager.FinishFileWrite();
@@ -53,26 +52,22 @@ namespace GameClient
                 File.Delete(tempSaveFilePath);
 
                 GameDataSaveLoader.LoadGame(customSaveName);
+                return;
             }
 
-            else
-            {
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
-                Network.listener.EnqueuePacket(rPacket);
-            }
+            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
+            Network.listener.EnqueuePacket(rPacket);
         }
 
-        public static void SendSavePartToServer(string fileName = null)
+        public static void SendSavePartToServer()
         {
+            //if this is the first packet
             if (Network.listener.uploadManager == null)
             {
-                ClientValues.ToggleSendingSaveToServer(true);
-
                 Log.Message($"[Rimworld Together] > Sending save to server");
                 if (ClientValues.saveMessageBool) Messages.Message("Save Syncing With Server...", MessageTypeDefOf.SilentInput);
 
-                saveFilePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
-                tempSaveFilePath = $"{saveFilePath}.temp";
+                ClientValues.ToggleSendingSaveToServer(true);
 
                 byte[] saveBytes = File.ReadAllBytes(saveFilePath); ;
                 byte[] compressedSave = GZip.Compress(saveBytes);
@@ -82,23 +77,23 @@ namespace GameClient
                 Network.listener.uploadManager.PrepareUpload(tempSaveFilePath);
             }
 
+            //Create a new file part packet
             FileTransferData fileTransferData = new FileTransferData();
             fileTransferData.fileSize = Network.listener.uploadManager.fileSize;
             fileTransferData.fileParts = Network.listener.uploadManager.fileParts;
             fileTransferData.fileBytes = Network.listener.uploadManager.ReadFilePart();
             fileTransferData.isLastPart = Network.listener.uploadManager.isLastPart;
 
-            if (DisconnectionManager.isIntentionalDisconnect 
-                && (DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToMenu 
-                || DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToOS))
-            {
-                fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
-            }
-            else fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
+            //Set the instructions of the packet
+            if (isIntentionalDisconnect && (intentionalDisconnectReason == DCReason.SaveQuitToMenu || intentionalDisconnectReason == DCReason.SaveQuitToOS))
+                fileTransferData.instructions = (int)SaveMode.Disconnect;
+            else 
+                fileTransferData.instructions = (int)SaveMode.Autosave;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             Network.listener.EnqueuePacket(packet);
 
+            //if this is the last packet
             if (Network.listener.uploadManager.isLastPart) 
             {
                 ClientValues.ToggleSendingSaveToServer(false);
