@@ -43,7 +43,7 @@ namespace GameClient
                 MapManager.SendPlayerMapsToServer();
 
                 Logger.Message("Sending save to server");
-                SaveManager.SendSavePartToServer(fileName);
+                SaveManager.SendSavePartToServer();
             }
             catch (Exception e) { Logger.Error($"{e}"); }
 
