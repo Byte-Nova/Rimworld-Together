@@ -56,13 +56,22 @@ namespace GameClient
                 }
 
                 Logger.Message($"Disconnected from server: {reason}");
+                return;
+            }
+            
+            Logger.Message($"Disconnected from server: Connection Lost");
+            if ( Current.ProgramState == ProgramState.Playing )
+            {
+                DialogManager.PushNewDialog( new RT_Dialog_YesNo( "Your connection to the server has been lost. Would you like to save your game locally before returning to the menu?", 
+                  delegate { SaveManager.ForceSave(); DisconnectToMenu(); }, delegate { DisconnectToMenu(); }));
+                return;
             }
 
-            else
-            {
-                Logger.Message($"Disconnected from server: Connection Lost");
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Your connection to the server has been lost...", delegate { DisconnectToMenu(); }));
-            }
+            /// I don't think we need a dialogue saying you were disconnected from the server if you aren't playing the game, but if you want one it'd go here:
+            //DialogManager.PushNewDialog( new RT_Dialog_Error( "Your connection to the server has been lost.", delegate { DisconnectToMenu(); }));
+            
+            /// Otherwise, all you need is this:
+            DisconnectToMenu();
         }
 
         //Kicks the client into the main menu
