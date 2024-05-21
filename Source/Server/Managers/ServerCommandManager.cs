@@ -82,6 +82,13 @@ namespace GameServer
 
             while (true)
             {
+
+                if (!Console.KeyAvailable)
+                {
+                    Thread.Sleep(1);
+                    continue;
+                }
+                
                 ConsoleKeyInfo cki = Console.ReadKey(true);
 
                 switch (cki.Key)
@@ -147,6 +154,7 @@ namespace GameServer
                 Console.Write($"{commandHistory[commandHistoryPosition]}");
 
                 Console.CursorVisible = true;
+                
             }
         }
 
