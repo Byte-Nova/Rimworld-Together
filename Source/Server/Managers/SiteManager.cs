@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -37,6 +38,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.tile == tileToCheck) return true;
             }
@@ -67,7 +69,7 @@ namespace GameServer
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(rPacket);
 
-            Logger.WriteToConsole($"[Created site] > {client.username}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Created site] > {client.username}", LogMode.Warning);
         }
 
         public static void SaveSite(SiteFile siteFile)
@@ -82,6 +84,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
+                if (!site.EndsWith(".json")) continue;
                 sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
             }
 
@@ -95,6 +98,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (!siteFile.isFromFaction && siteFile.owner == username)
                 {
@@ -110,6 +114,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.tile == tileToGet) return siteFile;
             }
@@ -195,7 +200,7 @@ namespace GameServer
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + ".json"));
-            Logger.WriteToConsole($"[Destroyed site] > {siteFile.tile}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Destroyed site] > {siteFile.tile}", LogMode.Warning);
         }
 
         private static void GetSiteInfo(ServerClient client, SiteData siteData)

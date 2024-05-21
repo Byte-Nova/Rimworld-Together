@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
@@ -61,7 +60,7 @@ namespace GameClient
             {
                 FactionDef faction = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
                 if (faction != null) factions.Add(faction);
-                else Log.Warning($"[Rimworld Together] > Faction '{str}' wasn't found in the client's game, ignoring");
+                else Logger.Warning($"Faction '{str}' wasn't found in the client's game, ignoring");
             }
 
             cachedWorldData = worldData;

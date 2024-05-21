@@ -60,8 +60,6 @@ namespace GameClient
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         //Executes when raid request is denied
@@ -77,21 +75,13 @@ namespace GameClient
 
         private static void PrepareMapForRaid(MapData mapData)
         {
-            Map map = MapScribeManager.StringToMap(mapData, true, true, true, true);
+            Map map = MapScribeManager.StringToMap(mapData, true, true, true, true, true, true, true);
 
             HandleMapFactions(map);
 
             SettlementUtility.Attack(ClientValues.chosenCaravan, ClientValues.chosenSettlement);
 
             PrepareMapLord(map);
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
-            {
-                "You are now in raid mode!",
-                "Raid mode allows you to raid player settlements",
-                "Down all their enemy pawns and get loot for it!",
-            });
-            DialogManager.PushNewDialog(d1);
         }
 
         //Handles the factions of a desired map for the raid order

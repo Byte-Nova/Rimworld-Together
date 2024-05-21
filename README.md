@@ -13,7 +13,7 @@ Welcome to the Github repository for "Rimworld Together"! In here you will find 
 > 
 > Discord: https://discord.gg/NCsArSaqBW
 >
-> Incompatibility list: https://docs.google.com/spreadsheets/d/14f4oJIV82SzqNK-Tyewr0OKxVRgge8xFasivACwRlsA/edit#gid=0
+> Incompatibility list: https://github.com/RimworldTogether/Rimworld-Together/blob/development/IncompatibilityList.md
 
 > [!CAUTION]
 > To minimize the risk of mod incompatibility issues, please give Rimworld Together as high of a priority as you can in your mod list priority list!

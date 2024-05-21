@@ -63,17 +63,20 @@ namespace GameClient
         private void ShowAutosaveFloatMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            List<Tuple<string, int>> savedServers = new List<Tuple<string, int>>()
+            List<Tuple<string, float>> autosaveDays = new List<Tuple<string, float>>()
             {
-                Tuple.Create("1 Day", 1),
-                Tuple.Create("2 Days", 2),
-                Tuple.Create("3 Days", 3),
-                Tuple.Create("5 Days", 5),
-                Tuple.Create("7 Days", 7),
-                Tuple.Create("14 Days", 14)
+                Tuple.Create("0.125 Days", 0.125f),
+                Tuple.Create("0.25 Days", 0.25f),
+                Tuple.Create("0.5 Days", 0.5f),
+                Tuple.Create("1 Day", 1.0f),
+                Tuple.Create("2 Days", 2.0f),
+                Tuple.Create("3 Days", 3.0f),
+                Tuple.Create("5 Days", 5.0f),
+                Tuple.Create("7 Days", 7.0f),
+                Tuple.Create("14 Days", 14.0f)
             };
 
-            foreach (Tuple<string, int> tuple in savedServers)
+            foreach (Tuple<string, float> tuple in autosaveDays)
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
@@ -115,7 +118,7 @@ namespace GameClient
 
         private void GenerateWorldFile()
         {
-            if (Network.isConnectedToServer)
+            if (Network.state == NetworkState.Connected)
             {
                 WorldValuesFile worldValuesFile = new WorldValuesFile();
 
@@ -142,7 +145,7 @@ namespace GameClient
         private void StartProcess(string processPath)
         {
             try { System.Diagnostics.Process.Start(processPath); } 
-            catch { Log.Warning($"Failed to start process {processPath}"); }
+            catch { Logger.Warning($"Failed to start process {processPath}"); }
         }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using Shared;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Verse;
 
 namespace GameClient
@@ -13,6 +10,8 @@ namespace GameClient
     public static class SaveManager
     {
         public static string customSaveName = "ServerSave";
+        private static string tempSaveFilePath;
+        private static string saveFilePath;
 
         public static void ForceSave()
         {
@@ -31,13 +30,14 @@ namespace GameClient
 
             if (Network.listener.downloadManager == null)
             {
-                Log.Message($"[Rimworld Together] > Receiving save from server");
+                Logger.Message($"Receiving save from server");
 
                 customSaveName = $"Server - {Network.ip} - {ClientValues.username}";
-                string filePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
+                tempSaveFilePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws.temp" });
+                saveFilePath = Path.Combine(new string[] { Master.savesFolderPath, customSaveName + ".rws" });
 
                 Network.listener.downloadManager = new DownloadManager();
-                Network.listener.downloadManager.PrepareDownload(filePath, fileTransferData.fileParts);
+                Network.listener.downloadManager.PrepareDownload(tempSaveFilePath, fileTransferData.fileParts);
             }
 
             Network.listener.downloadManager.WriteFilePart(fileTransferData.fileBytes);
@@ -46,6 +46,11 @@ namespace GameClient
             {
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
+
+                byte[] compressedSave = File.ReadAllBytes(tempSaveFilePath);
+                byte[] save = GZip.Decompress(compressedSave);
+                File.WriteAllBytes(saveFilePath, save);
+                File.Delete(tempSaveFilePath);
 
                 GameDataSaveLoader.LoadGame(customSaveName);
             }
@@ -63,12 +68,15 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(true);
 
-                Log.Message($"[Rimworld Together] > Sending save to server");
+                saveFilePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
+                tempSaveFilePath = $"{saveFilePath}.temp";
 
-                string filePath = Path.Combine(new string[] { Master.savesFolderPath, fileName + ".rws" });
+                byte[] saveBytes = File.ReadAllBytes(saveFilePath); ;
+                byte[] compressedSave = GZip.Compress(saveBytes);
+                File.WriteAllBytes(tempSaveFilePath, compressedSave);
 
                 Network.listener.uploadManager = new UploadManager();
-                Network.listener.uploadManager.PrepareUpload(filePath);
+                Network.listener.uploadManager.PrepareUpload(tempSaveFilePath);
             }
 
             FileTransferData fileTransferData = new FileTransferData();
@@ -77,7 +85,12 @@ namespace GameClient
             fileTransferData.fileBytes = Network.listener.uploadManager.ReadFilePart();
             fileTransferData.isLastPart = Network.listener.uploadManager.isLastPart;
 
-            if (ClientValues.isDisconnecting || ClientValues.isQuiting) fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+            if (DisconnectionManager.isIntentionalDisconnect 
+                && (DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToMenu 
+                || DisconnectionManager.intentionalDisconnectReason == DisconnectionManager.DCReason.SaveQuitToOS))
+            {
+                fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Disconnect).ToString();
+            }
             else fileTransferData.additionalInstructions = ((int)CommonEnumerators.SaveMode.Autosave).ToString();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
@@ -86,7 +99,8 @@ namespace GameClient
             if (Network.listener.uploadManager.isLastPart) 
             {
                 ClientValues.ToggleSendingSaveToServer(false);
-                Network.listener.uploadManager = null; 
+                Network.listener.uploadManager = null;
+                File.Delete(tempSaveFilePath);
             }
         }
     }

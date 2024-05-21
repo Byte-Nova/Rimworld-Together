@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -51,6 +52,7 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach(string faction in factions)
             {
+                if (!faction.EndsWith(".json")) continue;
                 factionFiles.Add(Serializer.SerializeFromFile<FactionFile>(faction));
             }
 
@@ -62,6 +64,7 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach (string faction in factions)
             {
+                if (!faction.EndsWith(".json")) continue;
                 FactionFile factionFile = Serializer.SerializeFromFile<FactionFile>(faction);
                 if (factionFile.factionName == client.factionName) return factionFile;
             }
@@ -74,8 +77,10 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach (string faction in factions)
             {
+                if (!faction.EndsWith(".json")) continue;
                 FactionFile factionFile = Serializer.SerializeFromFile<FactionFile>(faction);
                 if (factionFile.factionName == factionName) return factionFile;
+                
             }
 
             return null;
@@ -152,7 +157,7 @@ namespace GameServer
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                 client.listener.EnqueuePacket(packet);
 
-                Logger.WriteToConsole($"[Created faction] > {client.username} > {factionFile.factionName}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Created faction] > {client.username} > {factionFile.factionName}", LogMode.Warning);
             }
         }
 
@@ -202,7 +207,7 @@ namespace GameServer
                     foreach(SiteFile site in factionSites) SiteManager.DestroySiteFromFile(site);
 
                     File.Delete(Path.Combine(Master.factionsPath, factionFile.factionName + ".json"));
-                    Logger.WriteToConsole($"[Deleted Faction] > {client.username} > {factionFile.factionName}", Logger.LogMode.Warning);
+                    Logger.WriteToConsole($"[Deleted Faction] > {client.username} > {factionFile.factionName}", LogMode.Warning);
                 }
             }
         }

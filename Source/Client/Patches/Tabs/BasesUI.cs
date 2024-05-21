@@ -24,7 +24,7 @@ namespace GameClient
 
         protected override void FillTab()
         {
-            if (Network.isConnectedToServer)
+            if (Network.state == NetworkState.Connected)
             {
                 tabTitle = $"Player Bases [{PlanetManager.playerSettlements.Count()}]";
 

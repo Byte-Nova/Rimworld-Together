@@ -40,7 +40,7 @@ namespace GameClient
             try { spyCost = int.Parse(serverGlobalData.SpyCost); }
             catch
             {
-                Log.Warning("Server didn't have spy cost set, defaulting to 0");
+                Logger.Warning("Server didn't have spy cost set, defaulting to 0");
 
                 spyCost = 0;
             }
@@ -92,8 +92,6 @@ namespace GameClient
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         //Executes after being denied a spy order
@@ -115,22 +113,12 @@ namespace GameClient
 
         private static void PrepareMapForSpy(MapData mapData)
         {
-            Map map = MapScribeManager.StringToMap(mapData, false, false, false, false);
+            Map map = MapScribeManager.StringToMap(mapData, false, true, false, true, false, true);
 
             HandleMapFactions(map);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
-            {
-                "You are now in spy mode!",
-                "Spy mode allows you to check out another player's base",
-                "To stop the spy exit the map creating a caravan"
-            });
-            DialogManager.PushNewDialog(d1);
-
-            FloodFillerFog.DebugRefogMap(map);
         }
 
         //Handles the factions of the desired map for the spy order

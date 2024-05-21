@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 using System.Linq.Expressions;
 
 namespace GameServer
@@ -25,10 +26,8 @@ namespace GameServer
                 client.listener.downloadManager.FinishFileWrite();
                 client.listener.downloadManager = null;
 
-                byte[] saveBytes = File.ReadAllBytes(tempClientSavePath);
-                byte[] compressedSave = GZip.Compress(saveBytes);
-
-                File.WriteAllBytes(baseClientSavePath, compressedSave);
+                byte[] completedSave = File.ReadAllBytes(tempClientSavePath);
+                File.WriteAllBytes(baseClientSavePath, completedSave);
                 File.Delete(tempClientSavePath);
 
                 OnUserSave(client, fileTransferData);
@@ -50,11 +49,8 @@ namespace GameServer
             {
                 Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
 
-                byte[] decompressedSave = GZip.Decompress(File.ReadAllBytes(baseClientSavePath));
-                File.WriteAllBytes(tempClientSavePath, decompressedSave);
-
                 client.listener.uploadManager = new UploadManager();
-                client.listener.uploadManager.PrepareUpload(tempClientSavePath);
+                client.listener.uploadManager.PrepareUpload(baseClientSavePath);
             }
 
             FileTransferData fileTransferData = new FileTransferData();
@@ -68,7 +64,6 @@ namespace GameServer
 
             if (client.listener.uploadManager.isLastPart)
             {
-                File.Delete(tempClientSavePath);
                 client.listener.uploadManager = null;
             }
         }
@@ -88,10 +83,8 @@ namespace GameServer
             string[] saves = Directory.GetFiles(Master.savesPath);
             foreach(string save in saves)
             {
-                if (Path.GetFileNameWithoutExtension(save) == client.username)
-                {
-                    return true;
-                }
+                if (!save.EndsWith(".mpsave")) continue;
+                if (Path.GetFileNameWithoutExtension(save) == client.username) return true;
             }
 
             return false;
@@ -102,10 +95,8 @@ namespace GameServer
             string[] saves = Directory.GetFiles(Master.savesPath);
             foreach (string save in saves)
             {
-                if (Path.GetFileNameWithoutExtension(save) == username)
-                {
-                    return File.ReadAllBytes(save);
-                }
+                if (!save.EndsWith(".mpsave")) continue;
+                if (Path.GetFileNameWithoutExtension(save) == username) return File.ReadAllBytes(save);
             }
 
             return null;
@@ -183,7 +174,7 @@ namespace GameServer
                 SettlementManager.RemoveSettlement(null, settlementData, false);
             }
 
-            Logger.WriteToConsole($"[Deleted player data] > {username}", Logger.LogMode.Warning);
+            Logger.WriteToConsole($"[Deleted player data] > {username}", LogMode.Warning);
         }
     }
 }
