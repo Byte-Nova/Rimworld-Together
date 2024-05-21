@@ -15,7 +15,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre()
             {
-                if (!Network.isConnectedToServer) return true;
+                if (Network.state == NetworkState.Disconnected) return true;
 
                 int num = TutorSystem.TutorialMode ? 4 : 5;
                 int num2 = (num < 4 || !((float)UI.screenWidth < 540f + (float)num * (150f + 10f))) ? 1 : 2;
@@ -46,7 +46,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (!Network.isConnectedToServer) return;
+                if (Network.state == NetworkState.Disconnected) return;
 
                 int num = TutorSystem.TutorialMode ? 4 : 5;
                 int num2 = (num < 4 || !((float)UI.screenWidth < 540f + (float)num * (150f + 10f))) ? 1 : 2;
@@ -73,7 +73,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (!Network.isConnectedToServer) return;
+                if (Network.state == NetworkState.Disconnected) return;
 
                 PlanetManager.BuildPlanet();
                 ClientValues.ToggleReadyToPlay(true);

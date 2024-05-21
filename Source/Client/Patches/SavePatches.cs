@@ -3,6 +3,8 @@ using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Shared;
+using System.IO;
 
 namespace GameClient
 {
@@ -14,7 +16,7 @@ namespace GameClient
         {
             try
             {
-                if (!Network.isConnectedToServer) return true;
+                if (Network.state == NetworkState.Disconnected) return true;
                 if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
 
                 ClientValues.ToggleSavingGame(true);
@@ -22,10 +24,12 @@ namespace GameClient
                 ClientValues.ManageDevOptions();
                 CustomDifficultyManager.EnforceCustomDifficulty();
 
-                Logger.Message("Creating local save");
+                string filePath = GenFilePaths.FilePathForSavedGame(fileName);
+
+                Logger.Message($"Creating local save at {filePath}");
                 try
                 {
-                    SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
+                    SafeSaver.Save(filePath, "savegame", delegate
                     {
                         ScribeMetaHeaderUtility.WriteMetaHeader();
                         Game target = Current.Game;
@@ -55,8 +59,9 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!Network.isConnectedToServer) return true;
-            else return false;
+            if (Network.state == NetworkState.Disconnected) return true;
+
+            return false;
         }
     }
 
@@ -66,18 +71,17 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!Network.isConnectedToServer) return true;
-            else
+            if (Network.state == NetworkState.Disconnected) return true;
+
+            ClientValues.autosaveCurrentTicks++;
+
+            if (ClientValues.autosaveCurrentTicks >= ClientValues.autosaveInternalTicks && !GameDataSaveLoader.SavingIsTemporarilyDisabled)
             {
-                ClientValues.autosaveCurrentTicks++;
-
-                if (ClientValues.autosaveCurrentTicks >= ClientValues.autosaveInternalTicks && !GameDataSaveLoader.SavingIsTemporarilyDisabled)
-                {
-                    SaveManager.ForceSave();
-                }
-
-                return false;
+                SaveManager.ForceSave();
             }
+
+            return false;
+            
         }
     }
 }

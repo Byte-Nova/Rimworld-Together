@@ -13,7 +13,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
@@ -42,7 +42,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
@@ -60,7 +60,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Caravan caravan)
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
                     settlementData.tile = caravan.Tile;
@@ -80,7 +80,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Map map)
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
                     settlementData.tile = map.Tile;
@@ -100,7 +100,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
                     settlementData.tile = settlement.Tile;
