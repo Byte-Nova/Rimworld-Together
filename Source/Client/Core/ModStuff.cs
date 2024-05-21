@@ -118,7 +118,7 @@ namespace GameClient
 
         private void GenerateWorldFile()
         {
-            if (Network.isConnectedToServer)
+            if (Network.state == NetworkState.Connected)
             {
                 WorldValuesFile worldValuesFile = new WorldValuesFile();
 
@@ -145,7 +145,7 @@ namespace GameClient
         private void StartProcess(string processPath)
         {
             try { System.Diagnostics.Process.Start(processPath); } 
-            catch { Log.Warning($"Failed to start process {processPath}"); }
+            catch { Logger.Warning($"Failed to start process {processPath}"); }
         }
     }
 }
