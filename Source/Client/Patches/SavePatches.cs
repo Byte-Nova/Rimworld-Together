@@ -1,7 +1,10 @@
 ﻿using System;
 using HarmonyLib;
 using RimWorld;
+using UnityEngine;
 using Verse;
+using Shared;
+using System.IO;
 
 namespace GameClient
 {
@@ -11,29 +14,38 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
-            if (!Network.isConnectedToServer) return true;
-            if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
-
-            ClientValues.ToggleSavingGame(true);
-
-            ClientValues.ForcePermadeath();
-            ClientValues.ManageDevOptions();
-            CustomDifficultyManager.EnforceCustomDifficulty();
-
             try
             {
-                SafeSaver.Save(GenFilePaths.FilePathForSavedGame(fileName), "savegame", delegate
-                {
-                    ScribeMetaHeaderUtility.WriteMetaHeader();
-                    Game target = Current.Game;
-                    Scribe_Deep.Look(ref target, "game");
-                }, Find.GameInfo.permadeathMode);
-                ___lastSaveTick = Find.TickManager.TicksGame;
-            }
-            catch (Exception ex) { Log.Error("Exception while saving game: " + ex); }
+                if (Network.state == NetworkState.Disconnected) return true;
+                if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
 
-            MapManager.SendPlayerMapsToServer();
-            SaveManager.SendSavePartToServer(fileName);
+                ClientValues.ToggleSavingGame(true);
+                ClientValues.ForcePermadeath();
+                ClientValues.ManageDevOptions();
+                CustomDifficultyManager.EnforceCustomDifficulty();
+
+                string filePath = GenFilePaths.FilePathForSavedGame(fileName);
+
+                Logger.Message($"Creating local save at {filePath}");
+                try
+                {
+                    SafeSaver.Save(filePath, "savegame", delegate
+                    {
+                        ScribeMetaHeaderUtility.WriteMetaHeader();
+                        Game target = Current.Game;
+                        Scribe_Deep.Look(ref target, "game");
+                    }, Find.GameInfo.permadeathMode);
+                    ___lastSaveTick = Find.TickManager.TicksGame;
+                }
+                catch (Exception e) { Logger.Error("Exception while saving game: " + e); }
+
+                Logger.Message("Sending maps to server");
+                MapManager.SendPlayerMapsToServer();
+
+                Logger.Message("Sending save to server");
+                SaveManager.SendSavePartToServer();
+            }
+            catch (Exception e) { Logger.Error($"{e}"); }
 
             ClientValues.ToggleSavingGame(false);
 
@@ -47,8 +59,9 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!Network.isConnectedToServer) return true;
-            else return false;
+            if (Network.state == NetworkState.Disconnected) return true;
+
+            return false;
         }
     }
 
@@ -58,18 +71,17 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!Network.isConnectedToServer) return true;
-            else
+            if (Network.state == NetworkState.Disconnected) return true;
+
+            ClientValues.autosaveCurrentTicks++;
+
+            if (ClientValues.autosaveCurrentTicks >= ClientValues.autosaveInternalTicks && !GameDataSaveLoader.SavingIsTemporarilyDisabled)
             {
-                ClientValues.autosaveCurrentTicks++;
-
-                if (ClientValues.autosaveCurrentTicks >= ClientValues.autosaveInternalTicks && !GameDataSaveLoader.SavingIsTemporarilyDisabled)
-                {
-                    SaveManager.ForceSave();
-                }
-
-                return false;
+                SaveManager.ForceSave();
             }
+
+            return false;
+            
         }
     }
 }

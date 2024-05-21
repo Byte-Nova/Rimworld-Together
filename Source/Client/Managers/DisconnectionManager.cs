@@ -55,12 +55,12 @@ namespace GameClient
                         break;
                 }
 
-                Log.Message($"[Rimworld Together] > Disconnected from server: {reason}");
+                Logger.Message($"Disconnected from server: {reason}");
             }
 
             else
             {
-                Log.Message($"[Rimworld Together] > Disconnected from server: Connection Lost");
+                Logger.Message($"Disconnected from server: Connection Lost");
                 DialogManager.PushNewDialog(new RT_Dialog_Error("Your connection to the server has been lost...", delegate { DisconnectToMenu(); }));
             }
         }
@@ -69,7 +69,7 @@ namespace GameClient
 
         public static void DisconnectToMenu()
         {
-            Network.CleanValues();
+            Network.state = NetworkState.Disconnected;
             OnlineChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
