@@ -1,0 +1,51 @@
+name: Project Release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build-server:
+    strategy:
+      matrix:
+        version:
+          #- 8
+          - 7.0.x
+        target: 
+          - linux-arm
+          - linux-arm64
+          - linux-x64
+          - win-x64
+          - win-x86
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet ${{ matrix.version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.version}}
+      - name: Compile target
+        run: dotnet publish Source/Server/GameServer.csproj -c Release -r ${{ matrix.target }} --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true
+      - name: Find release
+        run: ls Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish
+
+      - name: Rename Linux release
+        run: cp Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish/GameServer ${{ matrix.target }}
+        if: startsWith( matrix.target, 'linux')
+      - name: Rename Windows release
+        run: cp Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish/GameServer.exe ${{ matrix.target }}.exe
+        if: startsWith( matrix.target, 'win')
+
+
+      
+      - name: Linux release
+        uses: softprops/action-gh-release@v2
+        if: startsWith( matrix.target, 'linux')
+        with:
+          files: ${{ matrix.target }}
+      - name: Windows release
+        uses: softprops/action-gh-release@v2
+        if: startsWith( matrix.target, 'win')
+        with:
+          files: ${{ matrix.target }}.exe
