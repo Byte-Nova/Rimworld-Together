@@ -15,11 +15,12 @@ namespace GameServer
             client.factionName = file.factionName;
             client.hasFaction = file.hasFaction;
             client.isAdmin = file.isAdmin;
+            client.isOperator = file.isOperator;
             client.isBanned = file.isBanned;
             client.enemyPlayers = file.enemyPlayers;
             client.allyPlayers = file.allyPlayers;
 
-            Logger.WriteToConsole($"[Handshake] > {client.username} | {client.SavedIP}");
+            ConsoleManager.WriteToConsole($"[Handshake] > {client.username} | {client.SavedIP}");
         }
 
         public static UserFile GetUserFile(ServerClient client)
@@ -218,7 +219,7 @@ namespace GameServer
             if (loginData.clientVersion == CommonValues.executableVersion) return true;
             else
             {
-                Logger.WriteToConsole($"[Version Mismatch] > {client.username}", LogMode.Warning);
+                ConsoleManager.WriteToConsole($"[Version Mismatch] > {client.username}", LogMode.Warning);
                 SendLoginResponse(client, LoginResponse.WrongVersion);
                 return false;
             }

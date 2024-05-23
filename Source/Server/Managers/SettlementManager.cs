@@ -46,7 +46,7 @@ namespace GameServer
                     }
                 }
 
-                Logger.WriteToConsole($"[Added settlement] > {settlementFile.tile} > {client.username}", LogMode.Warning);
+                ConsoleManager.WriteToConsole($"[Added settlement] > {settlementFile.tile} > {client.username}", LogMode.Warning);
             }
         }
 
@@ -71,7 +71,7 @@ namespace GameServer
                         else cClient.listener.EnqueuePacket(rPacket);
                     }
 
-                    Logger.WriteToConsole($"[Remove settlement] > {settlementData.tile} > {client.username}", LogMode.Warning);
+                    ConsoleManager.WriteToConsole($"[Remove settlement] > {settlementData.tile} > {client.username}", LogMode.Warning);
                 }
             }
 
@@ -79,7 +79,7 @@ namespace GameServer
             {
                 File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
 
-                Logger.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", LogMode.Warning);
+                ConsoleManager.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", LogMode.Warning);
             }
         }
 

@@ -50,7 +50,7 @@ namespace GameClient
 
         public static void ManageDevOptions()
         {
-            if (ServerValues.isAdmin) return;
+            if (ServerValues.isOperator) return;
             else Prefs.DevMode = false;
         }
 

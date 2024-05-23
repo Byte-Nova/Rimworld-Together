@@ -11,7 +11,7 @@ namespace GameServer
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}",allowLogMultiplier:true);
+            if (Master.serverConfig.VerboseLogs) ConsoleManager.WriteToConsole($"[Header] > {packet.header}",allowLogMultiplier:true, broadcast: false);
 
             client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);
@@ -147,6 +147,11 @@ namespace GameServer
         }
 
         public static void CommandPacket()
+        {
+            //Empty
+        }
+
+        public static void ConsolePacket()
         {
             //Empty
         }

@@ -17,7 +17,7 @@ namespace GameServer
 
         public UPnP()
         {
-            Logger.WriteToConsole($"[UPnP] > Attempting to forward port '{Network.port}'", LogMode.Warning);
+            ConsoleManager.WriteToConsole($"[UPnP] > Attempting to forward port '{Network.port}'", LogMode.Warning);
 
             NatUtility.DeviceFound += DeviceFound;
 
@@ -38,7 +38,7 @@ namespace GameServer
 
             if (!autoPortForwardSuccessful)
             {
-                Logger.WriteToConsole("Could not enable UPnP - Possible causes:\n" +
+                ConsoleManager.WriteToConsole("Could not enable UPnP - Possible causes:\n" +
                     "- the port is being used\n" +
                     "- the router has UPnP disabled\n" +
                     "- the router/modem does not have ports available",
@@ -56,12 +56,12 @@ namespace GameServer
                 device.CreatePortMap(new Mapping(Protocol.Tcp, Network.port, Network.port));
 
                 //This line can run multiple times if you are connected to multiple devices (Theres no reason for that, so only print it once)
-                if (!autoPortForwardSuccessful) Logger.WriteToConsole("successfully portforwarded the server", LogMode.Warning);
+                if (!autoPortForwardSuccessful) ConsoleManager.WriteToConsole("successfully portforwarded the server", LogMode.Warning);
                 autoPortForwardSuccessful = true;
 
-                Logger.WriteToConsole("UPnP forward successful", LogMode.Warning);
+                ConsoleManager.WriteToConsole("UPnP forward successful", LogMode.Warning);
             }
-            catch (Exception e) { Logger.WriteToConsole(e.ToString(), LogMode.Error); }
+            catch (Exception e) { ConsoleManager.WriteToConsole(e.ToString(), LogMode.Error); }
         }
     }
 }

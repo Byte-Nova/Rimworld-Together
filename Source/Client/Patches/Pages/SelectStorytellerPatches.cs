@@ -60,7 +60,7 @@ namespace GameClient
 
             else
             {
-                if (ServerValues.isAdmin)
+                if (ServerValues.isOperator)
                 {
                     Text.Font = GameFont.Small;
                     Vector2 buttonSize = new Vector2(150f, 38f);
@@ -82,7 +82,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (DifficultyValues.UseCustomDifficulty) return;
 
-            if (ServerValues.isAdmin)
+            if (ServerValues.isOperator)
             {
                 Text.Font = GameFont.Small;
                 Vector2 buttonSize = new Vector2(150f, 38f);

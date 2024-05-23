@@ -9,6 +9,7 @@ namespace Shared
         public bool AllowCustomScenarios;
 
         public bool isClientAdmin;
+        public bool isClientOperator;
 
         public bool isClientFactionMember;
 

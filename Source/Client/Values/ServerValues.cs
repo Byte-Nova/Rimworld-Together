@@ -9,6 +9,8 @@ namespace GameClient
 
         public static bool isAdmin;
 
+        public static bool isOperator;
+
         public static bool hasFaction;
 
         public static int currentPlayers;
@@ -23,7 +25,7 @@ namespace GameClient
         public static void SetAccountData(ServerGlobalData serverGlobalData)
         {
             isAdmin = serverGlobalData.isClientAdmin;
-
+            isOperator = serverGlobalData.isClientOperator;
             hasFaction = serverGlobalData.isClientFactionMember;
         }
 
@@ -39,6 +41,8 @@ namespace GameClient
             AllowCustomScenarios = false;
 
             isAdmin = false;
+
+            isOperator = false;
 
             hasFaction = false;
 

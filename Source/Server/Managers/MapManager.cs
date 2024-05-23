@@ -13,7 +13,7 @@ namespace GameServer
             byte[] compressedMapBytes = GZip.Compress(Serializer.ConvertObjectToBytes(mapFileData));
             File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + ".mpmap"), compressedMapBytes);
 
-            Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileData.mapTile}");
+            ConsoleManager.WriteToConsole($"[Save map] > {client.username} > {mapFileData.mapTile}");
         }
 
         public static void DeleteMap(MapFileData mapFile)
@@ -22,7 +22,7 @@ namespace GameServer
 
             File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + ".json"));
 
-            Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", LogMode.Warning);
+            ConsoleManager.WriteToConsole($"[Remove map] > {mapFile.mapTile}", LogMode.Warning);
         }
 
         public static MapFileData[] GetAllMapFiles()

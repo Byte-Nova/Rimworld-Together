@@ -36,6 +36,11 @@ namespace GameClient
             OnlineChatManager.ReceiveMessages(packet);
         }
 
+        public static void ConsolePacket(Packet packet)
+        {
+            OnlineChatManager.ReceiveMessages(packet);
+        }
+
         public static void CommandPacket(Packet packet)
         {
             CommandManager.ParseCommand(packet);

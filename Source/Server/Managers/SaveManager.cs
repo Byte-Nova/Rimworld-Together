@@ -49,7 +49,7 @@ namespace GameServer
             //if this is the first packet
             if (client.listener.uploadManager == null)
             {
-                Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
+                ConsoleManager.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
 
                 client.listener.uploadManager = new UploadManager();
                 client.listener.uploadManager.PrepareUpload(baseClientSavePath);
@@ -74,9 +74,9 @@ namespace GameServer
             if (fileTransferData.instructions == (int)SaveMode.Disconnect)
             {
                 client.listener.disconnectFlag = true;
-                Logger.WriteToConsole($"[Save game] > {client.username} > Disconnect");
+                ConsoleManager.WriteToConsole($"[Save game] > {client.username} > Disconnect");
             }
-            else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");
+            else ConsoleManager.WriteToConsole($"[Save game] > {client.username} > Autosave");
         }
 
         public static bool CheckIfUserHasSave(ServerClient client)
@@ -120,7 +120,7 @@ namespace GameServer
             string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == client.username);
             if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
 
-            Logger.WriteToConsole($"[Delete save] > {client.username}", LogMode.Warning);
+            ConsoleManager.WriteToConsole($"[Delete save] > {client.username}", LogMode.Warning);
 
             MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
             foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
@@ -164,7 +164,7 @@ namespace GameServer
                 SettlementManager.RemoveSettlement(null, settlementData, false);
             }
 
-            Logger.WriteToConsole($"[Deleted player data] > {username}", LogMode.Warning);
+            ConsoleManager.WriteToConsole($"[Deleted player data] > {username}", LogMode.Warning);
         }
     }
 }

@@ -10,11 +10,11 @@ namespace GameServer
 
             switch (int.Parse(commandData.commandType))
             {
-                case (int)CommonEnumerators.CommandType.Op:
+                case (int)CommonEnumerators.CommandType.Grant:
                     //Do nothing
                     break;
 
-                case (int)CommonEnumerators.CommandType.Deop:
+                case (int)CommonEnumerators.CommandType.Revoke:
                     //Do nothing
                     break;
 
@@ -24,19 +24,21 @@ namespace GameServer
             }
         }
 
-        public static void SendOpCommand(ServerClient client)
+        public static void SendGrantCommand(ServerClient client, string flag)
         {
             CommandData commandData = new CommandData();
-            commandData.commandType = ((int)CommonEnumerators.CommandType.Op).ToString();
+            commandData.commandType = ((int)CommonEnumerators.CommandType.Grant).ToString();
+            commandData.commandDetails = flag;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
         }
 
-        public static void SendDeOpCommand(ServerClient client)
+        public static void SendRevokeCommand(ServerClient client, string flag)
         {
             CommandData commandData = new CommandData();
-            commandData.commandType = ((int)CommonEnumerators.CommandType.Deop).ToString();
+            commandData.commandType = ((int)CommonEnumerators.CommandType.Revoke).ToString();
+            commandData.commandDetails = flag;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);

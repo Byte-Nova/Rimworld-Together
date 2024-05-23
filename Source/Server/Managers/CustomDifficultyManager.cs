@@ -13,7 +13,7 @@ namespace GameServer
 
         public static void SetCustomDifficulty(ServerClient client, DifficultyData difficultyData)
         {
-            if (!client.isAdmin) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to set the custom difficulty while not being an admin");
+            if (!client.isOperator) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to set the custom difficulty while not being an operator");
             else
             {
                 DifficultyValuesFile newDifficultyValues = new DifficultyValuesFile();
@@ -104,7 +104,7 @@ namespace GameServer
 
                 newDifficultyValues.WastepackInfestationChanceFactor = difficultyData.WastepackInfestationChanceFactor;
 
-                Logger.WriteToConsole($"[Set difficulty] > {client.username}", LogMode.Warning);
+                ConsoleManager.WriteToConsole($"[Set difficulty] > {client.username}", LogMode.Warning);
 
                 SaveCustomDifficulty(newDifficultyValues);
             }
@@ -130,7 +130,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, Master.difficultyValues);
             }
 
-            Logger.WriteToConsole("Loaded difficulty values", LogMode.Warning);
+            ConsoleManager.WriteToConsole("Loaded difficulty values", LogMode.Warning);
         }
     }
 }

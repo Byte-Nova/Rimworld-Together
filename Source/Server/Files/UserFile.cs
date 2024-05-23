@@ -15,6 +15,8 @@
 
         public bool isAdmin;
 
+        public bool isOperator;
+
         public bool isBanned;
 
         public string SavedIP;

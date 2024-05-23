@@ -22,6 +22,8 @@ namespace GameServer
 
         public bool isAdmin;
 
+        public bool isOperator;
+
         public bool isBanned;
 
         [NonSerialized] public ServerClient inVisitWith;

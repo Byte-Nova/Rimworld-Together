@@ -20,6 +20,7 @@ namespace GameClient
         public static Dictionary<UserColor, string> userColorDictionary = new Dictionary<UserColor, string>()
         {
             { UserColor.Normal, "<color=grey>" },
+            { UserColor.Operator, "<color=blue>" },
             { UserColor.Admin, "<color=red>" },
             { UserColor.Console, "<color=yellow>" }
         };
@@ -27,6 +28,7 @@ namespace GameClient
         public static Dictionary<MessageColor, string> messageColorDictionary = new Dictionary<MessageColor, string>()
         {
             { MessageColor.Normal, "<color=white>" },
+            { MessageColor.Operator, "<color=white>" },
             { MessageColor.Admin, "<color=white>" },
             { MessageColor.Console, "<color=yellow>" }
         };

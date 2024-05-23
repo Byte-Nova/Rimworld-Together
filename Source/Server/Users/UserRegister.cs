@@ -28,7 +28,7 @@ namespace GameServer
 
                 UserLogin.TryLoginUser(client, packet);
 
-                Logger.WriteToConsole($"[Registered] > {client.username}");
+                ConsoleManager.WriteToConsole($"[Registered] > {client.username}");
             }
             catch { UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError); }
         }

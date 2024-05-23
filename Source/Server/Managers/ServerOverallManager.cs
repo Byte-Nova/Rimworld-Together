@@ -39,7 +39,7 @@ namespace GameServer
         private static ServerGlobalData GetClientValues(ServerClient client, ServerGlobalData globalData)
         {
             globalData.isClientAdmin = client.isAdmin;
-
+            globalData.isClientOperator = client.isOperator;
             globalData.isClientFactionMember = client.hasFaction;
 
             return globalData;

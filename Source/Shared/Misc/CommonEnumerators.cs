@@ -3,7 +3,7 @@
     public class CommonEnumerators
     {
         //Logger
-        public enum LogMode { Message, Warning, Error, Title }
+        public enum LogMode { Title, Message, Warning, Error }
 
         public enum FetchMode { Host, Player }
 
@@ -11,7 +11,7 @@
 
         //Commands
 
-        public enum CommandType { Op, Deop, Broadcast, ForceSave }
+        public enum CommandType { Grant, Revoke, Broadcast, ForceSave }
 
         //Events
 
@@ -82,9 +82,9 @@
 
         //Chat
 
-        public enum UserColor { Normal, Admin, Console }
+        public enum UserColor { Normal, Operator, Admin, Console }
 
-        public enum MessageColor { Normal, Admin, Console }
+        public enum MessageColor { Normal, Operator, Admin, Console }
 
         //Login
 
