@@ -30,22 +30,15 @@ jobs:
       - name: Find release
         run: ls Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish
 
-      - name: Rename Linux release
-        run: cp Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish/GameServer ${{ matrix.target }}
+      - name: Rename and Zip Linux release
+        run: zip ${{ matrix.target }}.zip Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish/GameServer
         if: startsWith( matrix.target, 'linux')
-      - name: Rename Windows release
-        run: cp Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish/GameServer.exe ${{ matrix.target }}.exe
+      - name: Rename and Zip Windows release
+        run:  zip ${{ matrix.target }}.zip Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish/GameServer.exe
         if: startsWith( matrix.target, 'win')
 
+      - name: Upload compressed release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.target }}.zip
 
-      
-      - name: Linux release
-        uses: softprops/action-gh-release@v2
-        if: startsWith( matrix.target, 'linux')
-        with:
-          files: ${{ matrix.target }}
-      - name: Windows release
-        uses: softprops/action-gh-release@v2
-        if: startsWith( matrix.target, 'win')
-        with:
-          files: ${{ matrix.target }}.exe
