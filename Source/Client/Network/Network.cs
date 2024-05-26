@@ -20,7 +20,7 @@ namespace GameClient
         public static string port = "";
 
         //TCP listener that will handle the connection with the server
-        public static Listener listener;
+        public static Listener? listener;
 
         //Entry point function of the network class
 
@@ -67,9 +67,18 @@ namespace GameClient
         //Disconnects client from the server
         public static void DisconnectFromServer()
         {
-            listener.DestroyConnection();
 
+            Network.Cleanup();
             DisconnectionManager.HandleDisconnect();
+        }
+
+        public static void Cleanup()
+        {
+            if (listener != null)
+            {
+                listener.DestroyConnection();
+                listener = null;
+            }
         }
     }
 }
