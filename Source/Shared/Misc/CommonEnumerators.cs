@@ -78,7 +78,7 @@
 
         //Saving
 
-        public enum SaveMode { Disconnect, Autosave }
+        public enum SaveMode { Disconnect, Autosave, Strict }
 
         //Chat
 
