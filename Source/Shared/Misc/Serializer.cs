@@ -46,18 +46,12 @@ namespace Shared
 
         public static string SerializePacketToString(Packet packet)
         {
-            byte[] packetBytes = ConvertObjectToBytes(packet);
-            packetBytes = GZip.Compress(packetBytes);
-
-            return Convert.ToBase64String(packetBytes);
+            return SerializeToString(packet);
         }
 
         public static Packet SerializeStringToPacket(string serializable)
         {
-            byte[] packetBytes = Convert.FromBase64String(serializable);
-            packetBytes = GZip.Decompress(packetBytes);
-
-            return (Packet)ConvertBytesToObject(packetBytes);
+            return SerializeFromString<Packet>(serializable);
         }
 
         //Serialize from and to strings

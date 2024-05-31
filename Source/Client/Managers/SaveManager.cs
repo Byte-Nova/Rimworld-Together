@@ -107,7 +107,7 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(true);
 
-                byte[] saveBytes = File.ReadAllBytes(saveFilePath); ;
+                byte[] saveBytes = File.ReadAllBytes(saveFilePath);
                 byte[] compressedSave = GZip.Compress(saveBytes);
                 File.WriteAllBytes(tempSaveFilePath, compressedSave);
 
