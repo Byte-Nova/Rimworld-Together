@@ -55,22 +55,24 @@ namespace GameClient
                 File.WriteAllBytes(serverSaveFilePath, save);
                 File.Delete(tempSaveFilePath);
 
-                if(fileTransferData.instructions != (int)SaveMode.Strict) { 
+                if(fileTransferData.instructions != (int)SaveMode.Strict) 
+                { 
                     Logger.Message("Comparing remote vs local save (if exists)");
 
-                    if (float.Parse(GetRealPlayTimeInteractingFromSave(serverSaveFilePath)) >=
-                    float.Parse(GetRealPlayTimeInteractingFromSave(saveFilePath)))
+                    if (float.Parse(GetRealPlayTimeInteractingFromSave(serverSaveFilePath)) >= float.Parse(GetRealPlayTimeInteractingFromSave(saveFilePath)))
                     {
                         Logger.Message("Loading remote save");
                         File.Delete(saveFilePath);
                         File.Move(serverSaveFilePath, saveFilePath);
                     }
+
                     else
                     {
                         Logger.Message("Loading local save");
                         File.Delete(serverSaveFilePath);
                     }
                 }
+
                 GameDataSaveLoader.LoadGame(customSaveName);
                 return;
             }

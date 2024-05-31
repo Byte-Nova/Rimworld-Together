@@ -12,7 +12,7 @@ namespace GameClient
     //Main class that is used to handle the connection with the server
     public static class Network
     {
-
+        //Variable that points what the state of the network might be for the client
         public static NetworkState state;
 
         //IP and Port that the connection will be bound to
@@ -67,13 +67,14 @@ namespace GameClient
         //Disconnects client from the server
         public static void DisconnectFromServer()
         {
-
-            Network.Cleanup();
+            CleanNetworkVariables();
             DisconnectionManager.HandleDisconnect();
         }
 
-        public static void Cleanup()
+        public static void CleanNetworkVariables()
         {
+            state = NetworkState.Disconnected;
+
             if (listener != null)
             {
                 listener.DestroyConnection();
