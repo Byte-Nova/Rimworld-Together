@@ -55,7 +55,7 @@ namespace GameClient
                 File.WriteAllBytes(serverSaveFilePath, save);
                 File.Delete(tempSaveFilePath);
 
-                if(fileTransferData.instructions != (int)SaveMode.Strict) 
+                if(fileTransferData.instructions != (int)SaveMode.Strict && File.Exists(saveFilePath)) 
                 { 
                     Logger.Message("Comparing remote vs local save (if exists)");
 
@@ -73,12 +73,20 @@ namespace GameClient
                     }
                 }
 
+                else
+                {
+                    File.Delete(saveFilePath);
+                    File.Move(serverSaveFilePath, saveFilePath);
+                }
+
                 GameDataSaveLoader.LoadGame(customSaveName);
-                return;
             }
 
-            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
-            Network.listener.EnqueuePacket(rPacket);
+            else
+            {
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
+                Network.listener.EnqueuePacket(rPacket);
+            }
         }
 
         private static string GetRealPlayTimeInteractingFromSave(string filePath)
