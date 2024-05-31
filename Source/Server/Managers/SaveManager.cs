@@ -60,6 +60,7 @@ namespace GameServer
             fileTransferData.fileParts = client.listener.uploadManager.fileParts;
             fileTransferData.fileBytes = client.listener.uploadManager.ReadFilePart();
             fileTransferData.isLastPart = client.listener.uploadManager.isLastPart;
+            if(!Master.serverConfig.SyncLocalSave) fileTransferData.instructions = (int)SaveMode.Strict;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             client.listener.EnqueuePacket(packet);

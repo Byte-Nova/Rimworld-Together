@@ -358,6 +358,12 @@ namespace GameServer
                 "toggleverboselogs", new Command("toggleverboselogs",0,
                 "toggles verbose logs to be true or false",
                 ToggleVerboseLogs)
+            },
+
+            {
+                "togglesynclocalsave", new Command("togglesynclocalsave", 0,
+                    "toggles allowing local saves to sync with server to be true or false",
+                    ToggleSyncLocalSave)
             }
         };
 
@@ -903,6 +909,13 @@ namespace GameServer
         {
             Master.serverConfig.VerboseLogs = !Master.serverConfig.VerboseLogs;
             Logger.Warning($"Verbose Logs set to {Master.serverConfig.VerboseLogs}");
+            Master.SaveServerConfig();
+        }
+
+        private static void ToggleSyncLocalSave()
+        {
+            Master.serverConfig.SyncLocalSave = !Master.serverConfig.SyncLocalSave;
+            Logger.Warning($"Sync Local Save set to {Master.serverConfig.SyncLocalSave}");
             Master.SaveServerConfig();
         }
 

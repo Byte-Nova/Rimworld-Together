@@ -6,6 +6,9 @@ using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
 using static GameClient.DisconnectionManager;
+using System.Xml;
+using System.Xml.XPath;
+using System;
 
 namespace GameClient
 {
@@ -13,7 +16,8 @@ namespace GameClient
     {
         public static string customSaveName => $"Server - {Network.ip} - {ClientValues.username}";
         private static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
-        private static string tempSaveFilePath => saveFilePath + ".temp";
+        private static string tempSaveFilePath => saveFilePath + ".mpsave";
+        private static string serverSaveFilePath => saveFilePath + ".rws.temp";
 
         public static void ForceSave()
         {
@@ -48,8 +52,26 @@ namespace GameClient
 
                 byte[] compressedSave = File.ReadAllBytes(tempSaveFilePath);
                 byte[] save = GZip.Decompress(compressedSave);
-                File.WriteAllBytes(saveFilePath, save);
+                File.WriteAllBytes(serverSaveFilePath, save);
                 File.Delete(tempSaveFilePath);
+
+                if(fileTransferData.instructions != (int)SaveMode.Strict) 
+                { 
+                    Logger.Message("Comparing remote vs local save (if exists)");
+
+                    if (float.Parse(GetRealPlayTimeInteractingFromSave(serverSaveFilePath)) >= float.Parse(GetRealPlayTimeInteractingFromSave(saveFilePath)))
+                    {
+                        Logger.Message("Loading remote save");
+                        File.Delete(saveFilePath);
+                        File.Move(serverSaveFilePath, saveFilePath);
+                    }
+
+                    else
+                    {
+                        Logger.Message("Loading local save");
+                        File.Delete(serverSaveFilePath);
+                    }
+                }
 
                 GameDataSaveLoader.LoadGame(customSaveName);
                 return;
@@ -57,6 +79,17 @@ namespace GameClient
 
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
             Network.listener.EnqueuePacket(rPacket);
+        }
+
+        private static string GetRealPlayTimeInteractingFromSave(string filePath)
+        {
+            if (!File.Exists(filePath)) return "0";
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(filePath);
+            XPathNavigator nav = doc.CreateNavigator();
+            
+            return nav.SelectSingleNode("/savegame/game/info/realPlayTimeInteracting").Value;
         }
 
         public static void SendSavePartToServer()
