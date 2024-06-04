@@ -1,12 +1,13 @@
 using System;
+using Shared;
 
 namespace Shared
 {
     [Serializable]
     public class MarketData
     {
-        public int marketStepMode;
-        public int marketType;
+        public CommonEnumerators.MarketStepMode marketStepMode;
+        public CommonEnumerators.MarketType marketType;
 
         public ItemData[] currentStock;
         public ItemData stockToManage;

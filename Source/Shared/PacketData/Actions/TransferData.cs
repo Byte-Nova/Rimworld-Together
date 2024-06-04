@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Shared;
 
 namespace Shared
 {
     [Serializable]
     public class TransferData
     {
-        public string transferStepMode;
+        public CommonEnumerators.TransferStepMode transferStepMode;
 
-        public string transferMode;
+        public CommonEnumerators.TransferMode transferMode;
 
         public string fromTile;
 

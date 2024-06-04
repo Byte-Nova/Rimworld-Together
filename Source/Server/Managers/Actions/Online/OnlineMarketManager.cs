@@ -16,15 +16,15 @@ namespace GameServer
 
             switch (marketData.marketStepMode)
             {
-                case (int)MarketStepMode.Add:
+                case MarketStepMode.Add:
                     AddToMarket(client, marketData);
                     break;
 
-                case (int)MarketStepMode.Request:
+                case MarketStepMode.Request:
                     RequestFromMarket(client, marketData);
                     break;
 
-                case (int)MarketStepMode.Reload:
+                case MarketStepMode.Reload:
                     SendMarketStock(client, marketData);
                     break;
             }

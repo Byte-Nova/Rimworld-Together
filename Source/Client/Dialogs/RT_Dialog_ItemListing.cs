@@ -147,7 +147,7 @@ namespace GameClient
 
                 else if (transferMode == CommonEnumerators.TransferMode.Rebound)
                 {
-                    ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
+                    ClientValues.incomingManifest.transferStepMode = CommonEnumerators.TransferStepMode.TradeReAccept;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);

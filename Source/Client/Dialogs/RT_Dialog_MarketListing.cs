@@ -99,8 +99,8 @@ namespace GameClient
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload"))
             {
                 MarketData marketData = new MarketData();
-                marketData.marketStepMode = (int)MarketStepMode.Reload;
-                marketData.marketType = (int)marketType;
+                marketData.marketStepMode = MarketStepMode.Reload;
+                marketData.marketType = marketType;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
                 Network.listener.EnqueuePacket(packet);

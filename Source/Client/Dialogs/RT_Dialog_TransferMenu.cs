@@ -131,13 +131,13 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Gift).ToString();
+                    ClientValues.outgoingManifest.transferMode = CommonEnumerators.TransferMode.Gift;
                     postChoosing();
                 };
 
                 Action r2 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Trade).ToString();
+                    ClientValues.outgoingManifest.transferMode = CommonEnumerators.TransferMode.Trade;
                     postChoosing();
                 };
 
@@ -154,7 +154,7 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
+                    ClientValues.outgoingManifest.transferMode = CommonEnumerators.TransferMode.Rebound;
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -169,7 +169,7 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Market).ToString();
+                    ClientValues.outgoingManifest.transferMode = CommonEnumerators.TransferMode.Market;
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -227,7 +227,7 @@ namespace GameClient
 
             else if (transferLocation == CommonEnumerators.TransferLocation.Settlement)
             {
-                playerNegotiator = ClientValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+                playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
 
             else if (transferLocation == CommonEnumerators.TransferLocation.World)

@@ -160,7 +160,7 @@ namespace GameClient
                     defaultLabel = "Global Market Menu",
                     defaultDesc = "Access the global market",
                     icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
-                    action = delegate { OnlineMarketManager.RequestMarketStock(CommonEnumerators.MarketType.Global); }
+                    action = delegate { OnlineMarketManager.RequestMarketReload(CommonEnumerators.MarketType.Global); }
                 };
 
                 Command_Action command_FactionMarketMenu = new Command_Action
@@ -168,7 +168,7 @@ namespace GameClient
                     defaultLabel = "Faction Market Menu",
                     defaultDesc = "Access your faction market menu",
                     icon = ContentFinder<Texture2D>.Get("Commands/FactionMarket"),
-                    action = delegate { OnlineMarketManager.RequestMarketStock(CommonEnumerators.MarketType.Faction); }
+                    action = delegate { OnlineMarketManager.RequestMarketReload(CommonEnumerators.MarketType.Faction); }
                 };
 
                 gizmoList.Add(command_FactionMenu);
