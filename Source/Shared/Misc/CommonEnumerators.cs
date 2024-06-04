@@ -21,8 +21,6 @@
 
         public enum MarketStepMode { Add, Request, Reload }
 
-        public enum MarketType { Global, Faction }
-
         //Factions
 
         public enum FactionManifestMode

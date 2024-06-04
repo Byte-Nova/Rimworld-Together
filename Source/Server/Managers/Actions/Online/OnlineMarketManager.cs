@@ -10,6 +10,8 @@ namespace GameServer
 {
     public static class OnlineMarketManager
     {
+        private static List<ItemData> currentStock;
+
         public static void ParseMarketPacket(ServerClient client, Packet packet)
         {
             MarketData marketData = (MarketData)Serializer.ConvertBytesToObject(packet.contents);
@@ -21,7 +23,7 @@ namespace GameServer
                     break;
 
                 case MarketStepMode.Request:
-                    RequestFromMarket(client, marketData);
+                    RemoveFromMarket(client, marketData);
                     break;
 
                 case MarketStepMode.Reload:
@@ -30,41 +32,64 @@ namespace GameServer
             }
         }
 
-        private static void AddToMarket(ServerClient client, MarketData marketData)
-        {
-            AddStockFile(client, marketData);
-        }
+        //TODO
+        //MAKE SURE WE ONLY CREATE THE STOCK FILE IF THERE WAS NONE PREVIOUSLY
 
-        private static void RequestFromMarket(ServerClient client, MarketData marketData) 
-        {
-            RemoveStockFile(client, marketData);
-        }
-
-        private static void SendMarketStock(ServerClient client, MarketData marketData)
+        public static void LoadMarketStock()
         {
             ItemData itemData = new ItemData();
             itemData.defName = "Steel";
             itemData.materialDefName = "null";
-            itemData.quantity = 5;
+            itemData.quantity = 500;
             itemData.quality = "0";
             itemData.hitpoints = 0;
 
-            marketData.currentStock = new ItemData[] { itemData };
+            ItemData itemData2 = new ItemData();
+            itemData2.defName = "Steel";
+            itemData2.materialDefName = "null";
+            itemData2.quantity = 1;
+            itemData2.quality = "0";
+            itemData2.hitpoints = 0;
+
+            currentStock = new List<ItemData> { itemData, itemData2 };
+
+            SaveMarketStock();
+        }
+
+        private static void AddToMarket(ServerClient client, MarketData marketData)
+        {
+            Logger.Warning("Added!");
+
+            currentStock.Add(marketData.stockToManage);
+
+            SaveMarketStock();
+        }
+
+        private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
+        {
+            Logger.Warning("Removed!");
+
+            marketData.stockToManage = currentStock[marketData.indexToManage];
+            currentStock.RemoveAt(marketData.indexToManage);
+
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            client.listener.EnqueuePacket(packet);
+
+            SaveMarketStock();
+        }
+
+        private static void SendMarketStock(ServerClient client, MarketData marketData)
+        {
+            marketData.currentStock = currentStock.ToArray();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
         }
 
-        private static void AddStockFile(ServerClient client, MarketData marketData)
+        private static void SaveMarketStock()
         {
-            string stockPath = Path.Combine(Master.globalMarketsPath, "test.stock");
-            Serializer.SerializeToFile(stockPath, marketData.stockToManage);
-        }
-
-        private static void RemoveStockFile(ServerClient client, MarketData marketData)
-        {
-            string stockPath = Path.Combine(Master.globalMarketsPath, "test.stock");
-            File.Delete(stockPath);
+            string stockPath = Path.Combine(Master.marketPath, "Market.stock");
+            Serializer.SerializeToFile(stockPath, currentStock);
         }
     }
 }

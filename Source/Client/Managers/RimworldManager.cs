@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -33,6 +34,29 @@ namespace GameClient
         {
             Map map = Find.AnyPlayerHomeMap;
             if (map != null) return true;
+            else return false;
+        }
+
+        public static bool CheckIfHasEnoughSilverInMap(Map map, int requiredQuantity)
+        {
+            if (requiredQuantity == 0) return true;
+
+            List<Thing> silverInMap = new List<Thing>();
+            foreach (Zone zone in map.zoneManager.AllZones)
+            {
+                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                {
+                    if (thing.def == ThingDefOf.Silver && !thing.Position.Fogged(map))
+                    {
+                        silverInMap.Add(thing);
+                    }
+                }
+            }
+
+            int totalSilver = 0;
+            foreach (Thing silverStack in silverInMap) totalSilver += silverStack.stackCount;
+
+            if (totalSilver >= requiredQuantity) return true;
             else return false;
         }
 

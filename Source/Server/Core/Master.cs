@@ -23,9 +23,7 @@ namespace GameServer
         public static string settlementsPath;
         public static string archivedWorldPath;
 
-        public static string marketsPath;
-        public static string globalMarketsPath;
-        public static string factionMarketsPath;
+        public static string marketPath;
 
         public static string modsPath;
         public static string requiredModsPath;
@@ -94,9 +92,7 @@ namespace GameServer
             settlementsPath = Path.Combine(mainPath, "Settlements");
             archivedWorldPath = Path.Combine(mainPath, "ArchivedWorlds");
 
-            marketsPath = Path.Combine(mainPath, "Markets");
-            globalMarketsPath = Path.Combine(marketsPath, "Global Market");
-            factionMarketsPath = Path.Combine(marketsPath, "Faction Markets");
+            marketPath = Path.Combine(mainPath, "Market");
 
             modsPath = Path.Combine(mainPath, "Mods");
             requiredModsPath = Path.Combine(modsPath, "Required");
@@ -115,9 +111,7 @@ namespace GameServer
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
             if (!Directory.Exists(archivedWorldPath)) Directory.CreateDirectory(archivedWorldPath);
 
-            if (!Directory.Exists(marketsPath)) Directory.CreateDirectory(marketsPath);
-            if (!Directory.Exists(globalMarketsPath)) Directory.CreateDirectory(globalMarketsPath);
-            if (!Directory.Exists(factionMarketsPath)) Directory.CreateDirectory(factionMarketsPath);
+            if (!Directory.Exists(marketPath)) Directory.CreateDirectory(marketPath);
 
             if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
@@ -150,6 +144,7 @@ namespace GameServer
             WorldManager.LoadWorldFile();
             WhitelistManager.LoadServerWhitelist();
             CustomDifficultyManager.LoadCustomDifficulty();
+            OnlineMarketManager.LoadMarketStock();
 
             Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
         }

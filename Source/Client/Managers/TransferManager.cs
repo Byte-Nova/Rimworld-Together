@@ -490,18 +490,55 @@ namespace GameClient
                 .FindAll(x => x.def == thingDef);
 
             int takenQuantity = 0;
-            foreach (Thing unit in caravanQuantity)
+            foreach (Thing thing in caravanQuantity)
             {
-                if (takenQuantity + unit.stackCount >= requiredQuantity)
+                if (takenQuantity + thing.stackCount >= requiredQuantity)
                 {
-                    unit.holdingOwner.Take(unit, requiredQuantity - takenQuantity);
+                    thing.holdingOwner.Take(thing, requiredQuantity - takenQuantity);
                     break;
                 }
 
-                else if (takenQuantity + unit.stackCount < requiredQuantity)
+                else if (takenQuantity + thing.stackCount < requiredQuantity)
                 {
-                    unit.holdingOwner.Take(unit, unit.stackCount);
-                    takenQuantity += unit.stackCount;
+                    thing.holdingOwner.Take(thing, thing.stackCount);
+                    takenQuantity += thing.stackCount;
+                }
+            }
+        }
+
+
+        //Removes an item from the settlement
+
+        public static void RemoveThingFromSettlement(Map map, ThingDef thingDef, int requiredQuantity)
+        {
+            if (requiredQuantity == 0) return;
+
+            List<Thing> thingInMap = new List<Thing>();
+            foreach (Zone zone in map.zoneManager.AllZones)
+            {
+                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                {
+                    if (thing.def == thingDef && !thing.Position.Fogged(map))
+                    {
+                        thingInMap.Add(thing);
+                    }
+                }
+            }
+
+            int takenQuantity = 0;
+            foreach (Thing thing in thingInMap)
+            {
+                if (takenQuantity + thing.stackCount >= requiredQuantity)
+                {
+                    thing.stackCount -= requiredQuantity - takenQuantity;
+                    if (thing.stackCount <= 0) thing.Destroy();
+                    break;
+                }
+
+                else if (takenQuantity + thing.stackCount < requiredQuantity)
+                {
+                    thing.Destroy();
+                    takenQuantity += thing.stackCount;
                 }
             }
         }

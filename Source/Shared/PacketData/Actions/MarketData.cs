@@ -7,9 +7,10 @@ namespace Shared
     public class MarketData
     {
         public CommonEnumerators.MarketStepMode marketStepMode;
-        public CommonEnumerators.MarketType marketType;
 
         public ItemData[] currentStock;
+
+        public int indexToManage;
         public ItemData stockToManage;
     }
 }

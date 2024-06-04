@@ -32,26 +32,14 @@ namespace GameClient
 
         //Variables
 
-        private readonly MarketType marketType;
-
         private readonly ItemData[] elements;
 
-        public RT_Dialog_MarketListing(MarketType marketType, ItemData[] elements, Action actionClick = null, Action actionCancel = null)
+        public RT_Dialog_MarketListing(ItemData[] elements, Action actionClick = null, Action actionCancel = null)
         {
             DialogManager.dialogMarketListing = this;
-            this.marketType = marketType;
 
-            if (marketType == MarketType.Global)
-            {
-                title = "Global Market";
-                description = "Trade with the rest of the world remotely";
-            }
-
-            else if (marketType == MarketType.Faction)
-            {
-                title = "Faction Market";
-                description = "Trade with your faction members remotely";
-            }
+            title = "Global Market";
+            description = "Trade with the rest of the world remotely";
 
             this.elements = elements;
             this.actionClick = actionClick;
@@ -100,7 +88,6 @@ namespace GameClient
             {
                 MarketData marketData = new MarketData();
                 marketData.marketStepMode = MarketStepMode.Reload;
-                marketData.marketType = marketType;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
                 Network.listener.EnqueuePacket(packet);
@@ -150,7 +137,15 @@ namespace GameClient
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
             {
                 DialogManager.dialogMarketListingResult = index;
-                actionClick?.Invoke();
+
+                int requiredSilver = (int)(toDisplay.MarketValue * toDisplay.stackCount);
+                if (RimworldManager.CheckIfHasEnoughSilverInMap(Find.AnyPlayerHomeMap, requiredSilver))
+                {
+                    TransferManagerHelper.RemoveThingFromSettlement(Find.AnyPlayerHomeMap, ThingDefOf.Silver, requiredSilver);
+                    actionClick?.Invoke();
+                }
+                else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+
                 Close();
             }
         }
