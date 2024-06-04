@@ -23,7 +23,6 @@ namespace GameServer
         {
             if (Master.serverConfig.UseUPnP) { _ = new UPnP(); }
 
-            Threader.GenerateServerThread(Threader.ServerMode.Sites);
             connection = new TcpListener(localAddress, port);
             connection.Start();
 

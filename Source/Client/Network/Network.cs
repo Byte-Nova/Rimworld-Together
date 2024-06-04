@@ -2,20 +2,25 @@
 
 namespace GameClient
 {
+    public enum NetworkState
+    {
+        Disconnected = 0,
+        Connecting,
+        Connected
+    }
+    
     //Main class that is used to handle the connection with the server
-
     public static class Network
     {
+        //Variable that points what the state of the network might be for the client
+        public static NetworkState state;
+
         //IP and Port that the connection will be bound to
         public static string ip = "";
         public static string port = "";
 
         //TCP listener that will handle the connection with the server
-        public static Listener listener;
-
-        //Useful booleans to check connection status with the server
-        public static bool isConnectedToServer;
-        public static bool isTryingToConnect;
+        public static Listener? listener;
 
         //Entry point function of the network class
 
@@ -33,55 +38,48 @@ namespace GameClient
                 if (!ClientValues.isQuickConnecting) DialogShortcuts.ShowLoginOrRegisterDialogs();
 
                 Logger.Message($"Connected to server");
+                state = NetworkState.Connected;
+                return;
             }
 
-            else
-            {
-                DialogManager.PopWaitDialog();
-
-                RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
-                DialogManager.PushNewDialog(d1);
-
-                CleanValues();
-            }
+            DialogManager.PopWaitDialog();
+            RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
+            DialogManager.PushNewDialog(d1);
+            state = NetworkState.Disconnected;
         }
 
         //Tries to connect into the specified server
 
         public static bool TryConnectToServer()
         {
-            if (isTryingToConnect || isConnectedToServer) return false;
-            else
+            if (state != NetworkState.Disconnected) return false;
+
+            try 
             {
-                try
-                {
-                    isTryingToConnect = true;
+                state = NetworkState.Connecting;
+                listener = new Listener(new(ip, int.Parse(port)));
+            } 
+            catch { return false; }
 
-                    isConnectedToServer = true;
-
-                    listener = new Listener(new(ip, int.Parse(port)));
-
-                    return true;
-                }
-                catch { return false; }
-            }
+            return true;
         }
 
         //Disconnects client from the server
         public static void DisconnectFromServer()
         {
-            listener.DestroyConnection();
-
+            CleanNetworkVariables();
             DisconnectionManager.HandleDisconnect();
         }
 
-
-        //Clears all related values
-
-        public static void CleanValues()
+        public static void CleanNetworkVariables()
         {
-            isTryingToConnect = false;
-            isConnectedToServer = false;
+            state = NetworkState.Disconnected;
+
+            if (listener != null)
+            {
+                listener.DestroyConnection();
+                listener = null;
+            }
         }
     }
 }
