@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Shared;
 
 namespace Shared
@@ -8,9 +9,10 @@ namespace Shared
     {
         public CommonEnumerators.MarketStepMode marketStepMode;
 
-        public ItemData[] currentStock;
-
         public int indexToManage;
-        public ItemData stockToManage;
+
+        public List<byte[]> currentStockBytes;
+
+        public List<byte[]> transferThingBytes;
     }
 }

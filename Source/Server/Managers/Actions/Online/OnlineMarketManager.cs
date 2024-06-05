@@ -10,7 +10,7 @@ namespace GameServer
 {
     public static class OnlineMarketManager
     {
-        private static List<ItemData> currentStock;
+        private static readonly string marketFileName = "Market.json";
 
         public static void ParseMarketPacket(ServerClient client, Packet packet)
         {
@@ -32,55 +32,63 @@ namespace GameServer
             }
         }
 
-        //TODO
-        //MAKE SURE WE ONLY CREATE THE STOCK FILE IF THERE WAS NONE PREVIOUSLY
-
         public static void LoadMarketStock()
         {
-            ItemData itemData = new ItemData();
-            itemData.defName = "Steel";
-            itemData.materialDefName = "null";
-            itemData.quantity = 500;
-            itemData.quality = "0";
-            itemData.hitpoints = 0;
+            string marketFilePath = Path.Combine(Master.corePath, marketFileName);
+            if (File.Exists(marketFilePath)) Master.marketFile = Serializer.SerializeFromFile<MarketFile>(marketFilePath);
+            else
+            {
+                Master.marketFile = new MarketFile();
+                SaveMarketStock();
+            }
 
-            ItemData itemData2 = new ItemData();
-            itemData2.defName = "Steel";
-            itemData2.materialDefName = "null";
-            itemData2.quantity = 1;
-            itemData2.quality = "0";
-            itemData2.hitpoints = 0;
-
-            currentStock = new List<ItemData> { itemData, itemData2 };
-
-            SaveMarketStock();
+            Logger.WriteToConsole("Loaded market stock", LogMode.Warning);
         }
 
         private static void AddToMarket(ServerClient client, MarketData marketData)
         {
-            Logger.Warning("Added!");
-
-            currentStock.Add(marketData.stockToManage);
+            List<ItemData> itemsToAdd = new List<ItemData>();
+            foreach (byte[] bytes in marketData.transferThingBytes) itemsToAdd.Add((ItemData)Serializer.ConvertBytesToObject(bytes));
+            foreach (ItemData item in itemsToAdd) TryCombineStackIfAvailable(item);
 
             SaveMarketStock();
+
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            client.listener.EnqueuePacket(packet);
+
+            marketData.marketStepMode = MarketStepMode.Reload;
+            marketData.currentStockBytes = ItemsToBytes(Master.marketFile.MarketStock);
+            packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            foreach (ServerClient sc in Network.connectedClients.ToArray())
+            {
+                if (sc == client) continue;
+                else sc.listener.EnqueuePacket(packet);
+            }
         }
 
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
         {
-            Logger.Warning("Removed!");
-
-            marketData.stockToManage = currentStock[marketData.indexToManage];
-            currentStock.RemoveAt(marketData.indexToManage);
+            marketData.transferThingBytes = new List<byte[]>() { Serializer.ConvertObjectToBytes(Master.marketFile.MarketStock[marketData.indexToManage]) };
+            Master.marketFile.MarketStock.RemoveAt(marketData.indexToManage);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
+
+            marketData.marketStepMode = MarketStepMode.Reload;
+            marketData.currentStockBytes = ItemsToBytes(Master.marketFile.MarketStock);
+            packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            foreach (ServerClient sc in Network.connectedClients.ToArray())
+            {
+                if (sc == client) continue;
+                else sc.listener.EnqueuePacket(packet);
+            }
 
             SaveMarketStock();
         }
 
         private static void SendMarketStock(ServerClient client, MarketData marketData)
         {
-            marketData.currentStock = currentStock.ToArray();
+            marketData.currentStockBytes = ItemsToBytes(Master.marketFile.MarketStock);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
@@ -88,8 +96,29 @@ namespace GameServer
 
         private static void SaveMarketStock()
         {
-            string stockPath = Path.Combine(Master.marketPath, "Market.stock");
-            Serializer.SerializeToFile(stockPath, currentStock);
+            string stockPath = Path.Combine(Master.corePath, marketFileName);
+            Serializer.SerializeToFile(stockPath, Master.marketFile);
+        }
+
+        private static List<byte[]> ItemsToBytes(List<ItemData> itemData)
+        {
+            List<byte[]> itemBytes = new List<byte[]>();
+            foreach(ItemData data in itemData) itemBytes.Add(Serializer.ConvertObjectToBytes(data));
+            return itemBytes;
+        }
+
+        private static void TryCombineStackIfAvailable(ItemData itemData)
+        {
+            foreach (ItemData stockedItem in Master.marketFile.MarketStock.ToArray())
+            {
+                if (stockedItem.defName == itemData.defName && stockedItem.materialDefName == itemData.materialDefName)
+                {
+                    stockedItem.quantity += itemData.quantity;
+                    return;
+                }
+            }
+
+            Master.marketFile.MarketStock.Add(itemData);
         }
     }
 }

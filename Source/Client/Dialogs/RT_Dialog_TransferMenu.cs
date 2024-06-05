@@ -50,7 +50,7 @@ namespace GameClient
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
-            //soundClose = SoundDefOf.CommsWindow_Close;
+            
             closeOnAccept = false;
             closeOnCancel = false;
 
@@ -232,7 +232,7 @@ namespace GameClient
 
             else if (transferLocation == CommonEnumerators.TransferLocation.World)
             {
-                playerNegotiator = ClientValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+                playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
         }
 
@@ -251,7 +251,8 @@ namespace GameClient
 
             else if (transferLocation == CommonEnumerators.TransferLocation.World)
             {
-                TradeSession.SetupWith(ClientValues.chosenSettlement, playerNegotiator, true);
+                Settlement toUse = Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction));
+                TradeSession.SetupWith(toUse, playerNegotiator, true);
             }
         }
 
@@ -405,7 +406,7 @@ namespace GameClient
 
             else if (transferLocation == CommonEnumerators.TransferLocation.World)
             {
-                Map map = ClientValues.chosenSettlement.Map;
+                Map map = Find.AnyPlayerHomeMap;
 
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);

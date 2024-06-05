@@ -142,9 +142,11 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.World)
             {
-                ClientValues.outgoingManifest.transferStepMode = TransferStepMode.Market;
+                MarketData marketData = new MarketData();
+                marketData.marketStepMode = MarketStepMode.Add;
+                marketData.transferThingBytes = ClientValues.outgoingManifest.itemDatas;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
                 Network.listener.EnqueuePacket(packet);
             }
         }

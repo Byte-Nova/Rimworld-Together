@@ -160,7 +160,11 @@ namespace GameClient
                     defaultLabel = "Global Market Menu",
                     defaultDesc = "Access the global market",
                     icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
-                    action = delegate { OnlineMarketManager.RequestMarketReload(); }
+                    action = delegate 
+                    {
+                        ClientValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
+                        OnlineMarketManager.RequestReloadStock(); 
+                    }
                 };
 
                 gizmoList.Add(command_GlobalMarketMenu);

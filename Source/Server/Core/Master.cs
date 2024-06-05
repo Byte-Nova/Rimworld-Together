@@ -23,8 +23,6 @@ namespace GameServer
         public static string settlementsPath;
         public static string archivedWorldPath;
 
-        public static string marketPath;
-
         public static string modsPath;
         public static string requiredModsPath;
         public static string optionalModsPath;
@@ -38,6 +36,7 @@ namespace GameServer
 
         //References
 
+        public static MarketFile marketFile;
         public static WhitelistFile whitelist;
         public static SiteValuesFile siteValues;
         public static WorldValuesFile worldValues;
@@ -92,8 +91,6 @@ namespace GameServer
             settlementsPath = Path.Combine(mainPath, "Settlements");
             archivedWorldPath = Path.Combine(mainPath, "ArchivedWorlds");
 
-            marketPath = Path.Combine(mainPath, "Market");
-
             modsPath = Path.Combine(mainPath, "Mods");
             requiredModsPath = Path.Combine(modsPath, "Required");
             optionalModsPath = Path.Combine(modsPath, "Optional");
@@ -110,8 +107,6 @@ namespace GameServer
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
             if (!Directory.Exists(archivedWorldPath)) Directory.CreateDirectory(archivedWorldPath);
-
-            if (!Directory.Exists(marketPath)) Directory.CreateDirectory(marketPath);
 
             if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);

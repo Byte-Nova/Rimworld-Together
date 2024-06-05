@@ -16,9 +16,9 @@ namespace GameClient
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        private readonly string title;
+        private readonly string title = "Global Market";
 
-        private readonly string description;
+        private readonly string description = "Trade items with the rest of the world remotely";
 
         private readonly Action actionClick;
 
@@ -38,9 +38,6 @@ namespace GameClient
         {
             DialogManager.dialogMarketListing = this;
 
-            title = "Global Market";
-            description = "Trade with the rest of the world remotely";
-
             this.elements = elements;
             this.actionClick = actionClick;
             this.actionCancel = actionCancel;
@@ -50,7 +47,7 @@ namespace GameClient
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
-            //soundClose = SoundDefOf.CommsWindow_Close;
+            
             closeOnAccept = false;
             closeOnCancel = false;
         }
@@ -70,34 +67,24 @@ namespace GameClient
 
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
-            Text.Font = GameFont.Medium;
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New")) OnlineMarketManager.RequestAddStock();
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload")) OnlineMarketManager.RequestReloadStock();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close")) 
             {
-                ClientValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
-                ClientValues.chosenCaravan = Find.WorldObjects.Caravans.First(fetch => fetch.Faction == Faction.OfPlayer);
-                RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.World, true, true, true);
-                DialogManager.PushNewDialog(d1);
+                DialogManager.dialogMarketListing = null;
+                Close(); 
             }
+        }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload"))
-            {
-                MarketData marketData = new MarketData();
-                marketData.marketStepMode = MarketStepMode.Reload;
-
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
-                Network.listener.EnqueuePacket(packet);
-            }
-
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close"))
-            {
-                ClientValues.ToggleTransfer(false);
-                Close();
-            }
+        public override void PreClose()
+        {
+            base.PreClose();
+            ClientValues.ToggleTransfer(false);
         }
 
         private void FillMainRect(Rect mainRect)
@@ -117,7 +104,8 @@ namespace GameClient
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
 
                     Thing thing = ThingScribeManager.StringToItem(elements[i]);
-                    DrawCustomRow(rect, thing, num4);
+                    if (thing.MarketValue > 0) DrawCustomRow(rect, thing, num4);
+                    else continue;
                 }
 
                 num += 30f;
