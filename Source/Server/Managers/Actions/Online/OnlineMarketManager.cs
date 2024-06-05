@@ -69,7 +69,8 @@ namespace GameServer
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
         {
             ItemData itemData = Master.marketFile.MarketStock[marketData.indexToManage];
-            if (itemData.quantity > marketData.quantityToManage) itemData.quantity -= marketData.quantityToManage;
+            if (marketData.quantityToManage == 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
+            else if (itemData.quantity > marketData.quantityToManage) itemData.quantity -= marketData.quantityToManage;
             else if (itemData.quantity == marketData.quantityToManage) Master.marketFile.MarketStock.RemoveAt(marketData.indexToManage);
             else ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
 

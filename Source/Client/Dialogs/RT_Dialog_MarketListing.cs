@@ -129,14 +129,19 @@ namespace GameClient
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            Widgets.Label(fixedRect, $"{toDisplay.Label} > ${toDisplay.MarketValue}/u > ${toDisplay.MarketValue * toDisplay.stackCount} max");
+            Widgets.Label(fixedRect, $"{toDisplay.Label} > ${toDisplay.MarketValue}/u");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
             {
                 DialogManager.dialogMarketListingResult = index;
 
                 Action toDo = delegate
                 {
-                    if (toDisplay.stackCount < int.Parse(DialogManager.dialog1ResultOne))
+                    if (int.Parse(DialogManager.dialog1ResultOne) <= 0)
+                    {
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("You are trying to request an invalid quantity!"));
+                    }
+
+                    else if (toDisplay.stackCount < int.Parse(DialogManager.dialog1ResultOne))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_Error("You are trying to request more than is available!"));
                     }

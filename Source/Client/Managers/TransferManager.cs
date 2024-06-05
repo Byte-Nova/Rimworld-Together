@@ -267,7 +267,7 @@ namespace GameClient
 
                 if (!ClientValues.isReadyToPlay || ClientValues.isInTransfer || ClientValues.rejectTransferBool)
                 {
-                    RejectRequest(transferData.transferMode);
+                    RejectRequest(transferData.transferMode, false);
                 }
 
                 else
@@ -344,7 +344,7 @@ namespace GameClient
 
         //Executes when rejecting a transfer request
 
-        public static void RejectRequest(TransferMode transferMode)
+        public static void RejectRequest(TransferMode transferMode, bool finishTransfer = true)
         {
             if (transferMode == TransferMode.Gift)
             {
@@ -374,7 +374,7 @@ namespace GameClient
                 RecoverTradeItems(TransferLocation.Caravan);
             }
 
-            FinishTransfer(false);
+            if (finishTransfer) FinishTransfer(false);
         }
 
         //Launchs the drop pods with the desired transfer request
