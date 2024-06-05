@@ -63,7 +63,7 @@ namespace GameServer
                 {
                     File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
 
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
+                    settlementData.settlementStepMode = ((int)SettlementStepMode.Remove).ToString();
                     Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     foreach (ServerClient cClient in Network.connectedClients.ToArray())
                     {

@@ -112,61 +112,71 @@ namespace GameServer
                 ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save");
                 return;
             }
+            client.listener.disconnectFlag = true;
 
+            //Locate and make sure there's no other backup save in the server
             string playerArchivedSavePath = Path.Combine(Master.archivedSavesPath, client.username);
-
             if (Directory.Exists(playerArchivedSavePath)) Directory.Delete(playerArchivedSavePath,true);
             Directory.CreateDirectory(playerArchivedSavePath);
 
+            //Assign save paths to the backup files
             string mapsArchivePath = Path.Combine(playerArchivedSavePath, "Maps");
             string savesArchivePath = Path.Combine(playerArchivedSavePath, "Saves");
+            string sitesArchivePath = Path.Combine(playerArchivedSavePath, "Sites");
             string settlementsArchivePath = Path.Combine(playerArchivedSavePath, "Settlements");
-            string SitesArchivePath = Path.Combine(playerArchivedSavePath, "Sites");
 
+            //Create directories for the backup files
             Directory.CreateDirectory(mapsArchivePath);
             Directory.CreateDirectory(savesArchivePath);
+            Directory.CreateDirectory(sitesArchivePath);
             Directory.CreateDirectory(settlementsArchivePath);
-            Directory.CreateDirectory(SitesArchivePath);
 
-            client.listener.disconnectFlag = true;
+            //Copy save file to archive
+            try { File.Copy(Path.Combine(Master.savesPath, client.username + ".mpsave"), Path.Combine(savesArchivePath , client.username + ".mpsave")); }
+            catch { Logger.Warning($"Failed to find {client.username}'s save"); }
 
-            string[] saves = Directory.GetFiles(Master.savesPath);
-
-            try{ File.Move(Path.Combine(Master.savesPath, client.username + ".mpsave"), Path.Combine(savesArchivePath , client.username + ".mpsave")); }
-            catch { Logger.WriteToConsole($"Failed to find {client.username}'s save", Logger.LogMode.Warning); }
-            Logger.WriteToConsole($"[Delete save] > {client.username}", Logger.LogMode.Warning);
-
-            //move Map files to archive
+            //Copy map files to archive
             MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
             foreach (MapFileData map in userMaps)
-                File.Move(Path.Combine(Master.mapsPath, map.mapTile + ".mpmap"), Path.Combine(mapsArchivePath, map.mapTile + ".mpmap"));
+            {
+                File.Copy(Path.Combine(Master.mapsPath, map.mapTile + ".mpmap"), Path.Combine(mapsArchivePath, map.mapTile + ".mpmap"));
+            }
 
-            //Move site files to archive
+            //Copy site files to archive
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
             foreach (SiteFile site in playerSites)
-                File.Move(Path.Combine(Master.sitesPath, site.tile + ".json"), Path.Combine(mapsArchivePath, site.tile + ".json"));
+            {
+                File.Copy(Path.Combine(Master.sitesPath, site.tile + ".json"), Path.Combine(sitesArchivePath, site.tile + ".json"));
+            }
 
-            //Move SettlementFile to archive
+            //Copy settlement files to archive
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
             foreach (SettlementFile settlementFile in playerSettlements)
-                File.Move(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"), Path.Combine(settlementsArchivePath, settlementFile.tile + ".json"));
+            {
+                File.Copy(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"), Path.Combine(settlementsArchivePath, settlementFile.tile + ".json"));
+            }
+
+            DeletePlayerData(client.username, client);
         }
 
-        public static void DeletePlayerData(string username)
+        public static void DeletePlayerData(string username, ServerClient extraClientDetails = null)
         {
             ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
             if (connectedUser != null) connectedUser.listener.disconnectFlag = true;
 
-            string[] saves = Directory.GetFiles(Master.savesPath);
-            string toDelete = saves.ToList().Find(x => Path.GetFileNameWithoutExtension(x) == username);
-            if (!string.IsNullOrWhiteSpace(toDelete)) File.Delete(toDelete);
+            //Delete save file
+            try { File.Delete(Path.Combine(Master.savesPath, username + ".mpsave")); }
+            catch { Logger.Warning($"Failed to find {username}'s save"); }
 
+            //Delete map files
             MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(username);
             foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
 
+            //Delete site files
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(username);
             foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
 
+            //Delete settlement files
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
@@ -174,7 +184,7 @@ namespace GameServer
                 settlementData.tile = settlementFile.tile;
                 settlementData.owner = settlementFile.owner;
 
-                SettlementManager.RemoveSettlement(null, settlementData, false);
+                SettlementManager.RemoveSettlement(extraClientDetails, settlementData, true);
             }
 
             Logger.WriteToConsole($"[Deleted player data] > {username}", LogMode.Warning);

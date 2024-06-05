@@ -59,7 +59,7 @@ namespace GameClient
 
                         Action r1 = delegate
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion."));
+                            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
 
                             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ResetSavePacket));
                             Network.listener.EnqueuePacket(packet);
