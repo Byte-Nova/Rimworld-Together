@@ -1,16 +1,17 @@
 ﻿using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
+    //Class that is in charge of the online market functions for the mod
+
     public static class OnlineMarketManager
     {
+        //Variables
+
         private static readonly string marketFileName = "Market.json";
+
+        //Parses received market packets into something usable
 
         public static void ParseMarketPacket(ServerClient client, Packet packet)
         {

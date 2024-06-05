@@ -4,10 +4,11 @@ using RimWorld;
 using Shared;
 using UnityEngine;
 using Verse;
-using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    //Dialog window for the market functions
+
     public class RT_Dialog_MarketListing : Window
     {
         //UI
@@ -16,12 +17,10 @@ namespace GameClient
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        private readonly string title = "Global Market";
-
-        private readonly string description = "Trade items with the rest of the world remotely";
+        private readonly string title;
+        private readonly string description;
 
         private readonly Action actionClick;
-
         private readonly Action actionCancel;
 
         private readonly float buttonX = 100f;
@@ -78,6 +77,7 @@ namespace GameClient
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New"))
             {
+                DialogManager.dialogMarketListing = null;
                 OnlineMarketManager.RequestAddStock();
                 Close();
             }
@@ -151,7 +151,6 @@ namespace GameClient
                         int requiredSilver = (int)(toDisplay.MarketValue * int.Parse(DialogManager.dialog1ResultOne));
                         if (RimworldManager.CheckIfHasEnoughSilverInMap(settlementMap, requiredSilver))
                         {
-                            TransferManagerHelper.RemoveThingFromSettlement(settlementMap, ThingDefOf.Silver, requiredSilver);
                             actionClick?.Invoke();
                             Close();
                         }

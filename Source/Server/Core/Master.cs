@@ -248,7 +248,5 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverConfig);
             }
         }
-
-
     }
 }

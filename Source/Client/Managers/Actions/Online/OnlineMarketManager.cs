@@ -2,18 +2,19 @@
 using Shared;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
-using Verse.AI;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    //Class that is in charge of the online market functions for the mod
+
     public static class OnlineMarketManager
     {
+        //Parses received market packets into something usable
+
         public static void ParseMarketPacket(Packet packet)
         {
             MarketData marketData = (MarketData)Serializer.ConvertBytesToObject(packet.contents);
@@ -88,6 +89,10 @@ namespace GameClient
 
             Thing toReceive = ThingScribeManager.StringToItem((ItemData)Serializer.ConvertBytesToObject(marketData.transferThingBytes[0]));
             TransferManager.GetTransferedItemsToSettlement(new Thing[] { toReceive }, customMap: false);
+
+            int silverToPay = (int)(toReceive.MarketValue * toReceive.stackCount);
+            TransferManagerHelper.RemoveThingFromSettlement(Find.AnyPlayerHomeMap, ThingDefOf.Silver, silverToPay);
+
             SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
         }
 
