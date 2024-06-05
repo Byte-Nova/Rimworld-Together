@@ -34,22 +34,26 @@ namespace GameClient
 
         private readonly ItemData[] elements;
 
-        public RT_Dialog_MarketListing(ItemData[] elements, Action actionClick = null, Action actionCancel = null)
+        private readonly Map settlementMap;
+
+        public RT_Dialog_MarketListing(ItemData[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
         {
             DialogManager.dialogMarketListing = this;
+
+            title = "Global Market";
+            description = $"Silver available for trade: {RimworldManager.GetSilverInMap(settlementMap)}";
 
             this.elements = elements;
             this.actionClick = actionClick;
             this.actionCancel = actionCancel;
-
-            ClientValues.ToggleTransfer(true);
+            this.settlementMap = settlementMap;
 
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
             
             closeOnAccept = false;
-            closeOnCancel = false;
+            closeOnCancel = true;
         }
 
         public override void DoWindowContents(Rect rect)
@@ -72,19 +76,23 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New")) OnlineMarketManager.RequestAddStock();
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload")) OnlineMarketManager.RequestReloadStock();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New"))
+            {
+                OnlineMarketManager.RequestAddStock();
+                Close();
+            }
+
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload"))
+            {
+                OnlineMarketManager.RequestReloadStock();
+            }
+
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close")) 
             {
                 DialogManager.dialogMarketListing = null;
+                ClientValues.ToggleTransfer(false);
                 Close(); 
             }
-        }
-
-        public override void PreClose()
-        {
-            base.PreClose();
-            ClientValues.ToggleTransfer(false);
         }
 
         private void FillMainRect(Rect mainRect)
@@ -121,20 +129,31 @@ namespace GameClient
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            Widgets.Label(fixedRect, $"{toDisplay.Label} > ${toDisplay.MarketValue}");
+            Widgets.Label(fixedRect, $"{toDisplay.Label} > ${toDisplay.MarketValue}/u > ${toDisplay.MarketValue * toDisplay.stackCount} max");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
             {
                 DialogManager.dialogMarketListingResult = index;
 
-                int requiredSilver = (int)(toDisplay.MarketValue * toDisplay.stackCount);
-                if (RimworldManager.CheckIfHasEnoughSilverInMap(Find.AnyPlayerHomeMap, requiredSilver))
+                Action toDo = delegate
                 {
-                    TransferManagerHelper.RemoveThingFromSettlement(Find.AnyPlayerHomeMap, ThingDefOf.Silver, requiredSilver);
-                    actionClick?.Invoke();
-                }
-                else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                    if (toDisplay.stackCount < int.Parse(DialogManager.dialog1ResultOne))
+                    {
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("You are trying to request more than is available!"));
+                    }
 
-                Close();
+                    else
+                    {
+                        int requiredSilver = (int)(toDisplay.MarketValue * int.Parse(DialogManager.dialog1ResultOne));
+                        if (RimworldManager.CheckIfHasEnoughSilverInMap(settlementMap, requiredSilver))
+                        {
+                            TransferManagerHelper.RemoveThingFromSettlement(settlementMap, ThingDefOf.Silver, requiredSilver);
+                            actionClick?.Invoke();
+                            Close();
+                        }
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                    }
+                };
+                DialogManager.PushNewDialog(new RT_Dialog_1Input("Quantity to request", "Type the quantity you want to request", toDo, null));
             }
         }
     }

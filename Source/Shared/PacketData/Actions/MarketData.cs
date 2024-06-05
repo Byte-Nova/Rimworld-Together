@@ -10,6 +10,7 @@ namespace Shared
         public CommonEnumerators.MarketStepMode marketStepMode;
 
         public int indexToManage;
+        public int quantityToManage;
 
         public List<byte[]> currentStockBytes;
 

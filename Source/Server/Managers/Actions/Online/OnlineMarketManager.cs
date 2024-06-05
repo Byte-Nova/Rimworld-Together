@@ -49,7 +49,7 @@ namespace GameServer
         {
             List<ItemData> itemsToAdd = new List<ItemData>();
             foreach (byte[] bytes in marketData.transferThingBytes) itemsToAdd.Add((ItemData)Serializer.ConvertBytesToObject(bytes));
-            foreach (ItemData item in itemsToAdd) TryCombineStackIfAvailable(item);
+            foreach (ItemData item in itemsToAdd) TryCombineStackIfAvailable(client, item);
 
             SaveMarketStock();
 
@@ -68,9 +68,12 @@ namespace GameServer
 
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
         {
-            marketData.transferThingBytes = new List<byte[]>() { Serializer.ConvertObjectToBytes(Master.marketFile.MarketStock[marketData.indexToManage]) };
-            Master.marketFile.MarketStock.RemoveAt(marketData.indexToManage);
+            ItemData itemData = Master.marketFile.MarketStock[marketData.indexToManage];
+            if (itemData.quantity > marketData.quantityToManage) itemData.quantity -= marketData.quantityToManage;
+            else if (itemData.quantity == marketData.quantityToManage) Master.marketFile.MarketStock.RemoveAt(marketData.indexToManage);
+            else ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
 
+            marketData.transferThingBytes = new List<byte[]>() { Serializer.ConvertObjectToBytes(Master.marketFile.MarketStock[marketData.indexToManage]) };
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
 
@@ -107,8 +110,14 @@ namespace GameServer
             return itemBytes;
         }
 
-        private static void TryCombineStackIfAvailable(ItemData itemData)
+        private static void TryCombineStackIfAvailable(ServerClient client, ItemData itemData)
         {
+            if (itemData.quantity <= 0)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
+                return;
+            }
+
             foreach (ItemData stockedItem in Master.marketFile.MarketStock.ToArray())
             {
                 if (stockedItem.defName == itemData.defName && stockedItem.materialDefName == itemData.materialDefName)

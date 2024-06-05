@@ -36,14 +36,16 @@ namespace GameClient
         private readonly bool allowItems;
         private readonly bool allowAnimals;
         private readonly bool allowHumans;
+        private readonly bool allowFreeThings;
 
-        public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false)
+        public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false, bool allowFreeThings = true)
         {
             DialogManager.dialogTransferMenu = this;
             this.transferLocation = transferLocation;
             this.allowItems = allowItems;
             this.allowAnimals = allowAnimals;
             this.allowHumans = allowHumans;
+            this.allowFreeThings = allowFreeThings;
 
             ClientValues.ToggleTransfer(true);
 
@@ -305,11 +307,15 @@ namespace GameClient
 
                 if (allowItems)
                 {
-                    foreach (Thing item in caravanItems)
+                    foreach (Thing thing in caravanItems)
                     {
-                        Tradeable tradeable = new Tradeable();
-                        tradeable.AddThing(item, Transactor.Colony);
-                        ClientValues.listToShowInTradesMenu.Add(tradeable);
+                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
+                        else
+                        {
+                            Tradeable tradeable = new Tradeable();
+                            tradeable.AddThing(thing, Transactor.Colony);
+                            ClientValues.listToShowInTradesMenu.Add(tradeable);
+                        }
                     }
                 }
 
@@ -367,9 +373,12 @@ namespace GameClient
                 {
                     foreach(Thing thing in thingsInMap)
                     {
-                        Tradeable tradeable = new Tradeable();
-                        tradeable.AddThing(thing, Transactor.Colony);
-                        ClientValues.listToShowInTradesMenu.Add(tradeable);
+                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
+                        {
+                            Tradeable tradeable = new Tradeable();
+                            tradeable.AddThing(thing, Transactor.Colony);
+                            ClientValues.listToShowInTradesMenu.Add(tradeable);
+                        }
                     }
                 }
 
@@ -427,9 +436,13 @@ namespace GameClient
                 {
                     foreach (Thing thing in thingsInMap)
                     {
-                        Tradeable tradeable = new Tradeable();
-                        tradeable.AddThing(thing, Transactor.Colony);
-                        ClientValues.listToShowInTradesMenu.Add(tradeable);
+                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
+                        else
+                        {
+                            Tradeable tradeable = new Tradeable();
+                            tradeable.AddThing(thing, Transactor.Colony);
+                            ClientValues.listToShowInTradesMenu.Add(tradeable);
+                        }
                     }
                 }
 

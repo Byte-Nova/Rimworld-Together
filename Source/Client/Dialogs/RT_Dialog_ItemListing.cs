@@ -128,7 +128,7 @@ namespace GameClient
 
                 else if (transferMode == CommonEnumerators.TransferMode.Trade)
                 {
-                    if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Settlement))
+                    if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
                     }

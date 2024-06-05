@@ -163,7 +163,9 @@ namespace GameClient
                     action = delegate 
                     {
                         ClientValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
-                        OnlineMarketManager.RequestReloadStock(); 
+
+                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(ClientValues.chosenSettlement.Map)) OnlineMarketManager.RequestReloadStock();
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
                     }
                 };
 
@@ -252,7 +254,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Caravan))
+                        if (RimworldManager.CheckIfSocialPawnInCaravan(ClientValues.chosenCaravan))
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }

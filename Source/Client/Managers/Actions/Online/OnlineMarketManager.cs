@@ -38,14 +38,13 @@ namespace GameClient
 
         public static void RequestAddStock()
         {
-            RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.World, true, false, false);
+            RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.World, true, false, false, false);
             DialogManager.PushNewDialog(d1);
         }
 
         public static void ConfirmAddStock()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PopDialog(DialogManager.dialogMarketListing);
             DialogManager.dialogMarketListing = null;
 
             int silverToGet = 0;
@@ -62,20 +61,21 @@ namespace GameClient
 
             else
             {
-                SaveManager.ForceSave();
+                TransferManager.FinishTransfer(true);
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
             }
         }
 
         //Get from stock functions
 
-        public static void RequestGetStock(int marketIndex)
+        public static void RequestGetStock(int marketIndex, int quantity)
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData data = new MarketData();
             data.marketStepMode = MarketStepMode.Request;
             data.indexToManage = marketIndex;
+            data.quantityToManage = quantity;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -84,12 +84,10 @@ namespace GameClient
         public static void ConfirmGetStock(MarketData marketData)
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PopDialog(DialogManager.dialogMarketListing);
             DialogManager.dialogMarketListing = null;
 
             Thing toReceive = ThingScribeManager.StringToItem((ItemData)Serializer.ConvertBytesToObject(marketData.transferThingBytes[0]));
             TransferManager.GetTransferedItemsToSettlement(new Thing[] { toReceive }, customMap: false);
-
             SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
         }
 
@@ -97,7 +95,7 @@ namespace GameClient
 
         public static void RequestReloadStock()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ItemData[] { }, null, null));
+            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ItemData[] { }, ClientValues.chosenSettlement.Map, null, null));
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData marketData = new MarketData();
@@ -109,15 +107,15 @@ namespace GameClient
 
         private static void ConfirmReloadStock(MarketData marketData)
         {
-            if (DialogManager.dialogMarketListing != null)
+            if (DialogManager.dialogMarketListing != null && !ClientValues.isInTransfer)
             {
                 DialogManager.PopWaitDialog();
 
                 List<ItemData> allItems = new List<ItemData>();
                 foreach (byte[] itemBytes in marketData.currentStockBytes) allItems.Add((ItemData)Serializer.ConvertBytesToObject(itemBytes));
 
-                Action toDo = delegate { RequestGetStock(DialogManager.dialogMarketListingResult); };
-                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(allItems.ToArray(), toDo, null);
+                Action toDo = delegate { RequestGetStock(DialogManager.dialogMarketListingResult, int.Parse(DialogManager.dialog1ResultOne)); };
+                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(allItems.ToArray(), ClientValues.chosenSettlement.Map, toDo, null);
                 DialogManager.PushNewDialog(dialog);
             }
         }
