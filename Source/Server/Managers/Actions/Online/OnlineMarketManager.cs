@@ -68,13 +68,14 @@ namespace GameServer
 
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
         {
+            marketData.transferThingBytes = new List<byte[]>() { Serializer.ConvertObjectToBytes(Master.marketFile.MarketStock[marketData.indexToManage]) };
+
             ItemData itemData = Master.marketFile.MarketStock[marketData.indexToManage];
             if (marketData.quantityToManage == 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
             else if (itemData.quantity > marketData.quantityToManage) itemData.quantity -= marketData.quantityToManage;
             else if (itemData.quantity == marketData.quantityToManage) Master.marketFile.MarketStock.RemoveAt(marketData.indexToManage);
             else ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
 
-            marketData.transferThingBytes = new List<byte[]>() { Serializer.ConvertObjectToBytes(Master.marketFile.MarketStock[marketData.indexToManage]) };
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
 
