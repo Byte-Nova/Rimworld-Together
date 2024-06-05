@@ -170,6 +170,7 @@ namespace GameClient
                 };
 
                 gizmoList.Add(command_GlobalMarketMenu);
+                gizmoList.Add(command_FactionMenu);
                 __result = gizmoList;
             }
         }
