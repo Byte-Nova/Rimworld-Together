@@ -16,5 +16,7 @@
         public bool DisplayChatInConsole = false;
 
         public bool UseUPnP = false;
+
+        public bool SyncLocalSave = true;
     }
 }

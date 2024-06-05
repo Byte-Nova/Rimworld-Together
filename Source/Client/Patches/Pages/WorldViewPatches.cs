@@ -155,6 +155,21 @@ namespace GameClient
                     }
                 };
 
+                Command_Action command_GlobalMarketMenu = new Command_Action
+                {
+                    defaultLabel = "Global Market Menu",
+                    defaultDesc = "Access the global market",
+                    icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
+                    action = delegate 
+                    {
+                        ClientValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
+
+                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(ClientValues.chosenSettlement.Map)) OnlineMarketManager.RequestReloadStock();
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
+                    }
+                };
+
+                gizmoList.Add(command_GlobalMarketMenu);
                 gizmoList.Add(command_FactionMenu);
                 __result = gizmoList;
             }
@@ -240,7 +255,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Caravan))
+                        if (RimworldManager.CheckIfSocialPawnInCaravan(ClientValues.chosenCaravan))
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }

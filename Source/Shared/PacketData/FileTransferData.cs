@@ -10,6 +10,6 @@ namespace Shared
         public byte[] fileBytes;
 
         public bool isLastPart;
-        public string additionalInstructions;
+        public int instructions = -1;
     }
 }

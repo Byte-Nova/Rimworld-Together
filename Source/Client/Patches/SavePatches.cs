@@ -39,11 +39,14 @@ namespace GameClient
                 }
                 catch (Exception e) { Logger.Error("Exception while saving game: " + e); }
 
-                Logger.Message("Sending maps to server");
-                MapManager.SendPlayerMapsToServer();
+                if (Network.state.Equals(NetworkState.Connected))
+                {
+                    Logger.Message("Sending maps to server");
+                    MapManager.SendPlayerMapsToServer();
 
-                Logger.Message("Sending save to server");
-                SaveManager.SendSavePartToServer(fileName);
+                    Logger.Message("Sending save to server");
+                    SaveManager.SendSavePartToServer();
+                }
             }
             catch (Exception e) { Logger.Error($"{e}"); }
 

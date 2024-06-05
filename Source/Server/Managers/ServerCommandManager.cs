@@ -5,13 +5,10 @@ namespace GameServer
 {
     public static class ServerCommandManager
     {
-
         //history of commands and the current one being written
         //Index 0 is the current command being written
         public static List<string> commandHistory = new() { "" };
         public static int commandHistoryPosition = 0;
-
-
 
         public class Command
         {
@@ -82,6 +79,13 @@ namespace GameServer
 
             while (true)
             {
+
+                if (!Console.KeyAvailable)
+                {
+                    Thread.Sleep(1);
+                    continue;
+                }
+                
                 ConsoleKeyInfo cki = Console.ReadKey(true);
 
                 switch (cki.Key)
@@ -147,6 +151,7 @@ namespace GameServer
                 Console.Write($"{commandHistory[commandHistoryPosition]}");
 
                 Console.CursorVisible = true;
+                
             }
         }
 
@@ -162,194 +167,206 @@ namespace GameServer
         {
             {
                 "help", new Command("help", 0,
-                "Shows a list of all available commands to use",
-                HelpCommandAction)
+                    "Shows a list of all available commands to use",
+                    HelpCommandAction)
             },
 
             {
                 "list", new Command("list", 0,
-                "Shows all connected players",
-                ListCommandAction)
+                    "Shows all connected players",
+                    ListCommandAction)
             },
 
             {
                 "op", new Command("op", 1,
-                "Gives admin privileges to the selected player",
-                OpCommandAction)
+                    "Gives admin privileges to the selected player",
+                    OpCommandAction)
             },
 
             {
                 "deop", new Command("deop", 1,
-                "Removes admin privileges from the selected player",
-                DeopCommandAction)
+                    "Removes admin privileges from the selected player",
+                    DeopCommandAction)
             },
 
             {
                 "kick", new Command("kick", 1,
-                "Kicks the selected player from the server",
-                KickCommandAction)
+                    "Kicks the selected player from the server",
+                    KickCommandAction)
             },
 
             {
                 "ban", new Command("ban", 1,
-                "Bans the selected player from the server",
-                BanCommandAction)
+                    "Bans the selected player from the server",
+                    BanCommandAction)
             },
 
             {
                 "pardon", new Command("pardon", 1,
-                "Pardons the selected player from the server",
-                PardonCommandAction)
+                    "Pardons the selected player from the server",
+                    PardonCommandAction)
             },
 
             {
                 "deeplist", new Command("deeplist", 0,
-                "Shows a list of all server players",
-                DeepListCommandAction)
+                    "Shows a list of all server players",
+                    DeepListCommandAction)
             },
 
             {
                 "banlist", new Command("banlist", 0,
-                "Shows a list of all banned server players",
-                BanListCommandAction)
+                    "Shows a list of all banned server players",
+                    BanListCommandAction)
             },
 
             {
                 "reload", new Command("reload", 0,
-                "Reloads all server resources",
-                ReloadCommandAction)
+                    "Reloads all server resources",
+                    ReloadCommandAction)
             },
 
             {
                 "modlist", new Command("modlist", 0,
-                "Shows all currently loaded mods",
-                ModListCommandAction)
+                    "Shows all currently loaded mods",
+                    ModListCommandAction)
             },
 
             {
                 "dositerewards", new Command("dositerewards", 0,
-                "Forces site rewards to run",
-                DoSiteRewardsCommandAction)
+                    "Forces site rewards to run",
+                    DoSiteRewardsCommandAction)
             },
 
             {
                 "event", new Command("event", 2,
-                "Sends a command to the selecter players",
-                EventCommandAction)
+                    "Sends a command to the selecter players",
+                    EventCommandAction)
             },
 
             {
                 "eventall", new Command("eventall", 1,
-                "Sends a command to all connected players",
-                EventAllCommandAction)
+                    "Sends a command to all connected players",
+                    EventAllCommandAction)
             },
 
             {
                 "eventlist", new Command("eventlist", 0,
-                "Shows a list of all available events to use",
-                EventListCommandAction)
+                    "Shows a list of all available events to use",
+                    EventListCommandAction)
             },
 
             {
                 "broadcast", new Command("broadcast", -1,
-                "Broadcast a message to all connected players",
-                BroadcastCommandAction)
+                    "Broadcast a message to all connected players",
+                    BroadcastCommandAction)
             },
 
             {
                 "chat", new Command("chat", -1,
-                "Send a message in chat from the Server",
-                ServerMessageCommandAction)
-            },
-
-            {
-                "clear", new Command("clear", 0,
-                "Clears the console output",
-                ClearCommandAction)
+                    "Send a message in chat from the Server",
+                    ServerMessageCommandAction)
             },
 
             {
                 "whitelist", new Command("whitelist", 0,
-                "Shows all whitelisted players",
-                WhitelistCommandAction)
+                    "Shows all whitelisted players",
+                    WhitelistCommandAction)
             },
 
             {
                 "whitelistadd", new Command("whitelistadd", 1,
-                "Adds a player to the whitelist",
-                WhitelistAddCommandAction)
+                    "Adds a player to the whitelist",
+                    WhitelistAddCommandAction)
             },
 
             {
                 "whitelistremove", new Command("whitelistremove", 1,
-                "Removes a player from the whitelist",
-                WhitelistRemoveCommandAction)
+                    "Removes a player from the whitelist",
+                    WhitelistRemoveCommandAction)
             },
 
             {
                 "togglewhitelist", new Command("togglewhitelist", 0,
-                "Toggles the whitelist ON or OFF",
-                WhitelistToggleCommandAction)
+                    "Toggles the whitelist ON or OFF",
+                    WhitelistToggleCommandAction)
             },
 
             {
                 "forcesave", new Command("forcesave", 1,
-                "Forces a player to sync their save",
-                ForceSaveCommandAction)
+                    "Forces a player to sync their save",
+                    ForceSaveCommandAction)
             },
 
             {
                 "deleteplayer", new Command("deleteplayer", 1,
-                "Deletes all data of a player",
-                DeletePlayerCommandAction)
+                    "Deletes all data of a player",
+                    DeletePlayerCommandAction)
             },
 
             {
                 "enabledifficulty", new Command("enabledifficulty", 0,
-                "Enables custom difficulty in the server",
-                EnableDifficultyCommandAction)
+                    "Enables custom difficulty in the server",
+                    EnableDifficultyCommandAction)
             },
 
             {
                 "disabledifficulty", new Command("disabledifficulty", 0,
-                "Disables custom difficulty in the server",
-                DisableDifficultyCommandAction)
+                    "Disables custom difficulty in the server",
+                    DisableDifficultyCommandAction)
             },
 
             {
                 "togglecustomscenarios", new Command("togglecustomscenarios", 0,
-                "enables/disables custom scenarios on the server",
-                ToggleCustomScenariosCommandAction)
+                    "enables/disables custom scenarios on the server",
+                    ToggleCustomScenariosCommandAction)
             },
 
             {
                 "toggleupnp", new Command("toggleupnp", 0,
-                "enables/disables UPnP port mapping (auto-portforwarding)",
-                ToggleUPnPCommandAction)
+                    "enables/disables UPnP port mapping (auto-portforwarding)",
+                    ToggleUPnPCommandAction)
             },
 
             {
                 "portforward", new Command("portforward", 0,
-                "will use UPnP to portforward the server",
-                PortForwardCommandAction)
-            },
-
-            {
-                "quit", new Command("quit", 0,
-                "Saves all player details and then closes the server",
-                QuitCommandAction)
-            },
-
-            {
-                "forcequit", new Command("forcequit", 0,
-                "Closes the server without saving player details",
-                ForceQuitCommandAction) 
+                    "will use UPnP to portforward the server",
+                    PortForwardCommandAction)
             },
 
             {
                 "toggleverboselogs", new Command("toggleverboselogs",0,
-                "toggles verbose logs to be true or false",
-                ToggleVerboseLogs)
+                    "toggles verbose logs to be true or false",
+                    ToggleVerboseLogs)
+            },
+
+            {
+                "togglesynclocalsave", new Command("togglesynclocalsave", 0,
+                    "toggles allowing local saves to sync with server to be true or false",
+                    ToggleSyncLocalSave)
+            },
+
+            {
+                "resetworld", new Command("resetworld", 0, 
+                    "Resets all the world related data and stores a backup of it", 
+                    ResetWorldCommandAction)
+            },
+
+            {
+                "quit", new Command("quit", 0,
+                    "Saves all player details and then closes the server",
+                    QuitCommandAction)
+            },
+
+            {
+                "forcequit", new Command("forcequit", 0,
+                    "Closes the server without saving player details",
+                    ForceQuitCommandAction) 
+            },
+
+            {
+                "clear", new Command("clear", 0,
+                    "Clears the console output",
+                    ClearCommandAction)
             }
         };
 
@@ -863,34 +880,6 @@ namespace GameServer
             else _ = new UPnP();
         }
 
-        private static void QuitCommandAction()
-        {
-            Master.isClosing = true;
-
-            Logger.WriteToConsole($"Waiting for all saves to quit", LogMode.Warning);
-
-            foreach (ServerClient client in Network.connectedClients.ToArray())
-            {
-                CommandManager.SendForceSaveCommand(client);
-            }
-
-            while (Network.connectedClients.ToArray().Length > 0)
-            {
-                Thread.Sleep(1);
-            }
-
-            Environment.Exit(0);
-        }
-
-        private static void ForceQuitCommandAction() { Environment.Exit(0); }
-
-        private static void ClearCommandAction()
-        {
-            Console.Clear();
-
-            Logger.WriteToConsole("[Cleared console]", LogMode.Title);
-        }
-
         private static void ToggleVerboseLogs()
         {
             Master.serverConfig.VerboseLogs = !Master.serverConfig.VerboseLogs;
@@ -898,7 +887,13 @@ namespace GameServer
             Master.SaveServerConfig();
         }
 
-        //May be a bit messy, but it's trying its best (;_;) 
+        private static void ToggleSyncLocalSave()
+        {
+            Master.serverConfig.SyncLocalSave = !Master.serverConfig.SyncLocalSave;
+            Logger.Warning($"Sync Local Save set to {Master.serverConfig.SyncLocalSave}");
+            Master.SaveServerConfig();
+        }
+
         private static void ResetWorldCommandAction()
         {
             //Make sure the user wants to reset the world
@@ -909,7 +904,7 @@ namespace GameServer
             string response = Console.ReadLine();
 
             if (response == "NO") return;
-            else if (response != "YES") 
+            else if (response != "YES")
             {
                 Logger.WriteToConsole($"{response} is not a valid option; The options must be capitalized", LogMode.Error);
                 goto deleteWorldQuestion;
@@ -928,20 +923,21 @@ namespace GameServer
 
             if (response == "YES")
             {
+
                 customName:
-                Console.WriteLine("Please enter the name you would like to use:", LogMode.Warning);
-                newWorldFolderName = Console.ReadLine();
-                newWorldFolderPath = $"{Master.archivedWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
+                    Console.WriteLine("Please enter the name you would like to use:", LogMode.Warning);
+                    newWorldFolderName = Console.ReadLine();
+                    newWorldFolderPath = $"{Master.archivedWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
 
-                try { if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}"); }
-                catch
-                {
-                    Logger.WriteToConsole("The name you entered is invalid.\n" +
-                        " Please make sure your name does not contain any of these sybols:\n" +
-                        "\\/*:<>?\"|", LogMode.Error);
+                    try { if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}"); }
+                    catch
+                    {
+                        Logger.WriteToConsole("The name you entered is invalid.\n" +
+                            " Please make sure your name does not contain any of these sybols:\n" +
+                            "\\/*:<>?\"|", LogMode.Error);
 
-                    goto customName;
-                }
+                        goto customName;
+                    }
             }
 
             else if (response == "NO")
@@ -981,6 +977,34 @@ namespace GameServer
             Master.SetPaths();
 
             Logger.WriteToConsole("World has been successfully reset and archived", LogMode.Warning);
+        }
+
+        private static void QuitCommandAction()
+        {
+            Master.isClosing = true;
+
+            Logger.WriteToConsole($"Waiting for all saves to quit", LogMode.Warning);
+
+            foreach (ServerClient client in Network.connectedClients.ToArray())
+            {
+                CommandManager.SendForceSaveCommand(client);
+            }
+
+            while (Network.connectedClients.ToArray().Length > 0)
+            {
+                Thread.Sleep(1);
+            }
+
+            Environment.Exit(0);
+        }
+
+        private static void ForceQuitCommandAction() { Environment.Exit(0); }
+
+        private static void ClearCommandAction()
+        {
+            Console.Clear();
+
+            Logger.WriteToConsole("[Cleared console]", LogMode.Title);
         }
     }
 }

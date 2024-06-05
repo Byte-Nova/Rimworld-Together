@@ -13,6 +13,7 @@ namespace GameServer
 
             FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
 
+            //if this is the first packet
             if (client.listener.downloadManager == null)
             {
                 client.listener.downloadManager = new DownloadManager();
@@ -21,6 +22,7 @@ namespace GameServer
 
             client.listener.downloadManager.WriteFilePart(fileTransferData.fileBytes);
 
+            //if this is the last packet
             if (fileTransferData.isLastPart)
             {
                 client.listener.downloadManager.FinishFileWrite();
@@ -45,6 +47,7 @@ namespace GameServer
             string baseClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsave");
             string tempClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsavetemp");
 
+            //if this is the first packet
             if (client.listener.uploadManager == null)
             {
                 Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
@@ -58,19 +61,19 @@ namespace GameServer
             fileTransferData.fileParts = client.listener.uploadManager.fileParts;
             fileTransferData.fileBytes = client.listener.uploadManager.ReadFilePart();
             fileTransferData.isLastPart = client.listener.uploadManager.isLastPart;
+            if(!Master.serverConfig.SyncLocalSave) fileTransferData.instructions = (int)SaveMode.Strict;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             client.listener.EnqueuePacket(packet);
 
+            //if this is the last packet
             if (client.listener.uploadManager.isLastPart)
-            {
                 client.listener.uploadManager = null;
-            }
         }
 
         private static void OnUserSave(ServerClient client, FileTransferData fileTransferData)
         {
-            if (fileTransferData.additionalInstructions == ((int)CommonEnumerators.SaveMode.Disconnect).ToString())
+            if (fileTransferData.instructions == (int)SaveMode.Disconnect)
             {
                 client.listener.disconnectFlag = true;
                 Logger.WriteToConsole($"[Save game] > {client.username} > Disconnect");

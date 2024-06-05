@@ -37,6 +37,7 @@ namespace GameServer
 
         //References
 
+        public static MarketFile marketFile;
         public static WhitelistFile whitelist;
         public static SiteValuesFile siteValues;
         public static WorldValuesFile worldValues;
@@ -141,6 +142,7 @@ namespace GameServer
             WorldManager.LoadWorldFile();
             WhitelistManager.LoadServerWhitelist();
             CustomDifficultyManager.LoadCustomDifficulty();
+            OnlineMarketManager.LoadMarketStock();
 
             Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
         }
@@ -249,7 +251,5 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverConfig);
             }
         }
-
-
     }
 }

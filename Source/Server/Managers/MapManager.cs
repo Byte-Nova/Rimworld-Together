@@ -10,7 +10,7 @@ namespace GameServer
             MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(packet.contents);
             mapFileData.mapOwner = client.username;
 
-            byte[] compressedMapBytes = GZip.Compress(Serializer.ConvertObjectToBytes(mapFileData));
+            byte[] compressedMapBytes = Serializer.ConvertObjectToBytes(mapFileData);
             File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + ".mpmap"), compressedMapBytes);
 
             Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileData.mapTile}");
@@ -33,7 +33,7 @@ namespace GameServer
             foreach (string map in maps)
             {
                 if (!map.EndsWith(".mpmap")) continue;
-                byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(map));
+                byte[] decompressedBytes = File.ReadAllBytes(map);
 
                 MapFileData newMap = (MapFileData)Serializer.ConvertBytesToObject(decompressedBytes);
                 mapDatas.Add(newMap);

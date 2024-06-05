@@ -7,8 +7,6 @@ namespace GameClient
 {
     public static class EventManager
     {
-        
-
         public static string[] eventNames = new string[]
         {
             "Raid",
@@ -85,7 +83,7 @@ namespace GameClient
         {
             DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(eventCosts[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, eventCosts[DialogManager.selectedScrollButton]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
