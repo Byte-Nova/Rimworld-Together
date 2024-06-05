@@ -6,10 +6,15 @@ namespace GameServer
 {
     public static class SaveManager
     {
+        //Variables
+
+        public readonly static string fileExtension = ".mpsave";
+        private readonly static string tempFileExtension = ".mpsavetemp";
+
         public static void ReceiveSavePartFromClient(ServerClient client, Packet packet)
         {
-            string baseClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsave");
-            string tempClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsavetemp");
+            string baseClientSavePath = Path.Combine(Master.savesPath, client.username + fileExtension);
+            string tempClientSavePath = Path.Combine(Master.savesPath, client.username + tempFileExtension);
 
             FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
 
@@ -44,8 +49,8 @@ namespace GameServer
 
         public static void SendSavePartToClient(ServerClient client)
         {
-            string baseClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsave");
-            string tempClientSavePath = Path.Combine(Master.savesPath, client.username + ".mpsavetemp");
+            string baseClientSavePath = Path.Combine(Master.savesPath, client.username + fileExtension);
+            string tempClientSavePath = Path.Combine(Master.savesPath, client.username + tempFileExtension);
 
             //if this is the first packet
             if (client.listener.uploadManager == null)
@@ -86,7 +91,7 @@ namespace GameServer
             string[] saves = Directory.GetFiles(Master.savesPath);
             foreach(string save in saves)
             {
-                if (!save.EndsWith(".mpsave")) continue;
+                if (!save.EndsWith(fileExtension)) continue;
                 if (Path.GetFileNameWithoutExtension(save) == client.username) return true;
             }
 
@@ -98,7 +103,7 @@ namespace GameServer
             string[] saves = Directory.GetFiles(Master.savesPath);
             foreach (string save in saves)
             {
-                if (!save.EndsWith(".mpsave")) continue;
+                if (!save.EndsWith(fileExtension)) continue;
                 if (Path.GetFileNameWithoutExtension(save) == username) return File.ReadAllBytes(save);
             }
 
@@ -132,28 +137,31 @@ namespace GameServer
             Directory.CreateDirectory(settlementsArchivePath);
 
             //Copy save file to archive
-            try { File.Copy(Path.Combine(Master.savesPath, client.username + ".mpsave"), Path.Combine(savesArchivePath , client.username + ".mpsave")); }
+            try { File.Copy(Path.Combine(Master.savesPath, client.username + fileExtension), Path.Combine(savesArchivePath , client.username + fileExtension)); }
             catch { Logger.Warning($"Failed to find {client.username}'s save"); }
 
             //Copy map files to archive
             MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
             foreach (MapFileData map in userMaps)
             {
-                File.Copy(Path.Combine(Master.mapsPath, map.mapTile + ".mpmap"), Path.Combine(mapsArchivePath, map.mapTile + ".mpmap"));
+                File.Copy(Path.Combine(Master.mapsPath, map.mapTile + MapManager.fileExtension), 
+                    Path.Combine(mapsArchivePath, map.mapTile + MapManager.fileExtension));
             }
 
             //Copy site files to archive
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
             foreach (SiteFile site in playerSites)
             {
-                File.Copy(Path.Combine(Master.sitesPath, site.tile + ".json"), Path.Combine(sitesArchivePath, site.tile + ".json"));
+                File.Copy(Path.Combine(Master.sitesPath, site.tile + SiteManager.fileExtension), 
+                    Path.Combine(sitesArchivePath, site.tile + SiteManager.fileExtension));
             }
 
             //Copy settlement files to archive
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
-                File.Copy(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"), Path.Combine(settlementsArchivePath, settlementFile.tile + ".json"));
+                File.Copy(Path.Combine(Master.settlementsPath, settlementFile.tile + SettlementManager.fileExtension), 
+                    Path.Combine(settlementsArchivePath, settlementFile.tile + SettlementManager.fileExtension));
             }
 
             DeletePlayerData(client.username, client);
@@ -165,7 +173,7 @@ namespace GameServer
             if (connectedUser != null) connectedUser.listener.disconnectFlag = true;
 
             //Delete save file
-            try { File.Delete(Path.Combine(Master.savesPath, username + ".mpsave")); }
+            try { File.Delete(Path.Combine(Master.savesPath, username + fileExtension)); }
             catch { Logger.Warning($"Failed to find {username}'s save"); }
 
             //Delete map files

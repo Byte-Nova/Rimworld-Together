@@ -5,13 +5,17 @@ namespace GameServer
 {
     public static class MapManager
     {
+        //Variables
+
+        public readonly static string fileExtension = ".mpmap";
+
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
             MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(packet.contents);
             mapFileData.mapOwner = client.username;
 
             byte[] compressedMapBytes = Serializer.ConvertObjectToBytes(mapFileData);
-            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + ".mpmap"), compressedMapBytes);
+            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + fileExtension), compressedMapBytes);
 
             Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileData.mapTile}");
         }
@@ -20,7 +24,7 @@ namespace GameServer
         {
             if (mapFile == null) return;
 
-            File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + ".mpmap"));
+            File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + fileExtension));
 
             Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", LogMode.Warning);
         }
@@ -32,7 +36,7 @@ namespace GameServer
             string[] maps = Directory.GetFiles(Master.mapsPath);
             foreach (string map in maps)
             {
-                if (!map.EndsWith(".mpmap")) continue;
+                if (!map.EndsWith(fileExtension)) continue;
                 byte[] decompressedBytes = File.ReadAllBytes(map);
 
                 MapFileData newMap = (MapFileData)Serializer.ConvertBytesToObject(decompressedBytes);
