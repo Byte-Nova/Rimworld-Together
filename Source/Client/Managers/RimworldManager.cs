@@ -56,8 +56,7 @@ namespace GameClient
         {
             if (requiredQuantity == 0) return true;
 
-            List<Thing> caravanSilver = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan)
-                .FindAll(x => x.def == ThingDefOf.Silver);
+            List<Thing> caravanSilver = CaravanInventoryUtility.AllInventoryItems(caravan).FindAll(x => x.def == ThingDefOf.Silver);
 
             int silverInCaravan = GetSilverInCaravan(ClientValues.chosenCaravan);
             if (silverInCaravan >= requiredQuantity) return true;
