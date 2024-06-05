@@ -38,10 +38,8 @@ namespace GameClient
 
             forcePause = true;
             absorbInputAroundWindow = true;
-
             soundAppear = SoundDefOf.CommsWindow_Open;
-            //soundClose = SoundDefOf.CommsWindow_Close;
-
+            
             closeOnAccept = false;
             closeOnCancel = false;
         }
@@ -77,10 +75,9 @@ namespace GameClient
 
         private void DrawInputOne(float centeredX, float labelDif, float normalDif)
         {
-            Text.Font = GameFont.Medium;
+            Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputOneLabel).x / 2, labelDif, Text.CalcSize(inputOneLabel).x, Text.CalcSize(inputOneLabel).y), inputOneLabel);
 
-            Text.Font = GameFont.Small;
             string inputOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif + 10f, 200f, 30f), inputOneResult);
             if (AcceptsInput && inputOne.Length <= 32) inputOneResult = inputOne;
 
