@@ -20,7 +20,7 @@ namespace GameServer
         {
             if (mapFile == null) return;
 
-            File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + ".json"));
+            File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + ".mpmap"));
 
             Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", LogMode.Warning);
         }

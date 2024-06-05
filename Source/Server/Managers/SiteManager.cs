@@ -200,7 +200,7 @@ namespace GameServer
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + ".json"));
-            Logger.WriteToConsole($"[Destroyed site] > {siteFile.tile}", LogMode.Warning);
+            Logger.WriteToConsole($"[Remove site] > {siteFile.tile}", LogMode.Warning);
         }
 
         private static void GetSiteInfo(ServerClient client, SiteData siteData)
