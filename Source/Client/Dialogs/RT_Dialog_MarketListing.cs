@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using RimWorld;
+using RimWorld.Planet;
 using Shared;
 using UnityEngine;
 using Verse;
@@ -77,8 +78,13 @@ namespace GameClient
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New"))
             {
+                if (Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction)) == null)
+                {
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("There's no one in the server to trade with!"));
+                }
+                else { OnlineMarketManager.RequestAddStock(); }
+
                 DialogManager.dialogMarketListing = null;
-                OnlineMarketManager.RequestAddStock();
                 Close();
             }
 
