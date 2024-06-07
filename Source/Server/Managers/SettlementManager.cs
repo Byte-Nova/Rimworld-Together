@@ -1,84 +1,89 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
     public static class SettlementManager
     {
+        //Variables
+
+        public readonly static string fileExtension = ".mpsettlement";
+
         public static void ParseSettlementPacket(ServerClient client, Packet packet)
         {
-            SettlementDetailsJSON settlementDetailsJSON = (SettlementDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            SettlementData settlementData = (SettlementData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(settlementDetailsJSON.settlementStepMode))
+            switch (int.Parse(settlementData.settlementStepMode))
             {
                 case (int)CommonEnumerators.SettlementStepMode.Add:
-                    AddSettlement(client, settlementDetailsJSON);
+                    AddSettlement(client, settlementData);
                     break;
 
                 case (int)CommonEnumerators.SettlementStepMode.Remove:
-                    RemoveSettlement(client, settlementDetailsJSON);
+                    RemoveSettlement(client, settlementData);
                     break;
             }
         }
 
-        public static void AddSettlement(ServerClient client, SettlementDetailsJSON settlementDetailsJSON)
+        public static void AddSettlement(ServerClient client, SettlementData settlementData)
         {
-            if (CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to add a settlement at tile {settlementDetailsJSON.tile}, but that tile already has a settlement");
+            if (CheckIfTileIsInUse(settlementData.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to add a settlement at tile {settlementData.tile}, but that tile already has a settlement");
             else
             {
-                settlementDetailsJSON.owner = client.username;
+                settlementData.owner = client.username;
 
                 SettlementFile settlementFile = new SettlementFile();
-                settlementFile.tile = settlementDetailsJSON.tile;
+                settlementFile.tile = settlementData.tile;
                 settlementFile.owner = client.username;
-                Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"), settlementFile);
+                Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension), settlementFile);
 
-                settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
                 foreach (ServerClient cClient in Network.connectedClients.ToArray())
                 {
                     if (cClient == client) continue;
                     else
                     {
-                        settlementDetailsJSON.value = LikelihoodManager.GetSettlementLikelihood(cClient, settlementFile).ToString();
+                        settlementData.value = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile).ToString();
 
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
+                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                         cClient.listener.EnqueuePacket(rPacket);
                     }
                 }
 
-                Logger.WriteToConsole($"[Added settlement] > {settlementFile.tile} > {client.username}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Added settlement] > {settlementFile.tile} > {client.username}", LogMode.Warning);
             }
         }
 
-        public static void RemoveSettlement(ServerClient client, SettlementDetailsJSON settlementDetailsJSON, bool sendRemoval = true)
+        public static void RemoveSettlement(ServerClient client, SettlementData settlementData, bool sendRemoval = true)
         {
-            if (!CheckIfTileIsInUse(settlementDetailsJSON.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementDetailsJSON.tile} was attempted to be removed, but the tile doesn't contain a settlement");
+            if (!CheckIfTileIsInUse(settlementData.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.tile} was attempted to be removed, but the tile doesn't contain a settlement");
 
-            SettlementFile settlementFile = GetSettlementFileFromTile(settlementDetailsJSON.tile);
+            SettlementFile settlementFile = GetSettlementFileFromTile(settlementData.tile);
 
             if (sendRemoval)
             {
-                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementDetailsJSON.tile} attempted to be removed by {client.username}, but {settlementFile.owner} owns the settlement");
+                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.tile} attempted to be removed by {client.username}, but {settlementFile.owner} owns the settlement");
                 else
                 {
-                    File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
+                    File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension));
 
-                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
-                    Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
+                    settlementData.settlementStepMode = ((int)SettlementStepMode.Remove).ToString();
+                    Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     foreach (ServerClient cClient in Network.connectedClients.ToArray())
                     {
                         if (cClient == client) continue;
                         else cClient.listener.EnqueuePacket(rPacket);
                     }
 
-                    Logger.WriteToConsole($"[Remove settlement] > {settlementDetailsJSON.tile} > {client.username}", Logger.LogMode.Warning);
+                    Logger.WriteToConsole($"[Remove settlement] > {settlementData.tile} > {client.username}", LogMode.Warning);
                 }
             }
 
             else
             {
-                File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + ".json"));
+                File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension));
 
-                Logger.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", Logger.LogMode.Warning);
+                Logger.WriteToConsole($"[Remove settlement] > {settlementFile.tile}", LogMode.Warning);
             }
         }
 
@@ -87,6 +92,8 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach(string settlement in settlements)
             {
+                if (!settlement.EndsWith(fileExtension)) continue;
+
                 SettlementFile settlementJSON = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementJSON.tile == tileToCheck) return true;
             }
@@ -99,6 +106,8 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
+                if (!settlement.EndsWith(fileExtension)) continue;
+
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.tile == tileToGet) return settlementFile;
             }
@@ -111,6 +120,8 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
+                if (!settlement.EndsWith(fileExtension)) continue;
+
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.owner == usernameToGet) return settlementFile;
             }
@@ -125,6 +136,7 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
+                if (!settlement.EndsWith(fileExtension)) continue;
                 settlementList.Add(Serializer.SerializeFromFile<SettlementFile>(settlement));
             }
 
@@ -138,6 +150,8 @@ namespace GameServer
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
             foreach (string settlement in settlements)
             {
+                if (!settlement.EndsWith(fileExtension)) continue;
+
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.owner == usernameToCheck) settlementList.Add(settlementFile);
             }

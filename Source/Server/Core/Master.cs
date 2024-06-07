@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Globalization;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -20,6 +21,8 @@ namespace GameServer
         public static string sitesPath;
         public static string factionsPath;
         public static string settlementsPath;
+        public static string archivedWorldPath;
+        public static string archivedSavesPath;
 
         public static string modsPath;
         public static string requiredModsPath;
@@ -34,6 +37,7 @@ namespace GameServer
 
         //References
 
+        public static MarketFile marketFile;
         public static WhitelistFile whitelist;
         public static SiteValuesFile siteValues;
         public static WorldValuesFile worldValues;
@@ -73,7 +77,7 @@ namespace GameServer
             catch { };
         }
 
-        private static void SetPaths()
+        public static void SetPaths()
         {
             mainPath = Directory.GetCurrentDirectory();
             corePath = Path.Combine(mainPath, "Core");
@@ -86,6 +90,8 @@ namespace GameServer
             sitesPath = Path.Combine(mainPath, "Sites");
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
+            archivedSavesPath = Path.Combine(mainPath, "ArchivedSaves");
+            archivedWorldPath = Path.Combine(mainPath, "ArchivedWorlds");
 
             modsPath = Path.Combine(mainPath, "Mods");
             requiredModsPath = Path.Combine(modsPath, "Required");
@@ -102,6 +108,8 @@ namespace GameServer
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
+            if (!Directory.Exists(archivedSavesPath)) Directory.CreateDirectory(archivedSavesPath);
+            if (!Directory.Exists(archivedWorldPath)) Directory.CreateDirectory(archivedWorldPath);
 
             if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
@@ -116,14 +124,14 @@ namespace GameServer
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
 
-            Logger.WriteToConsole($"Loading server culture > [{CultureInfo.CurrentCulture}]", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Loading server culture > [{CultureInfo.CurrentCulture}]", LogMode.Title);
         }
 
         public static void LoadResources()
         {
-            Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", Logger.LogMode.Title);
-            Logger.WriteToConsole($"Loading all necessary resources", Logger.LogMode.Title);
-            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
+            Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", LogMode.Title);
+            Logger.WriteToConsole($"Loading all necessary resources", LogMode.Title);
+            Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
 
             LoadSiteValues();
             LoadEventValues();
@@ -134,8 +142,9 @@ namespace GameServer
             WorldManager.LoadWorldFile();
             WhitelistManager.LoadServerWhitelist();
             CustomDifficultyManager.LoadCustomDifficulty();
+            OnlineMarketManager.LoadMarketStock();
 
-            Logger.WriteToConsole($"----------------------------------------", Logger.LogMode.Title);
+            Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
         }
 
         private static void LoadServerConfig()
@@ -149,7 +158,17 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverConfig);
             }
 
-            Logger.WriteToConsole("Loaded server configs", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded server configs", LogMode.Warning);
+        }
+
+        public static void SaveServerConfig(ServerConfigFile serverConfig)
+        {
+            string path = Path.Combine(corePath, "ServerConfig.json");
+
+            Serializer.SerializeToFile(path, serverConfig);
+
+            Logger.WriteToConsole("Saved server Config", LogMode.Warning);
+
         }
 
         private static void LoadServerValues()
@@ -163,7 +182,16 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverValues);
             }
 
-            Logger.WriteToConsole("Loaded server values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded server values", LogMode.Warning);
+        }
+
+        public static void SaveServerValues(ServerValuesFile serverValues)
+        {
+            string path = Path.Combine(corePath, "ServerValues.json");
+
+            Serializer.SerializeToFile(path, serverValues);
+
+            Logger.WriteToConsole("Saved server values", LogMode.Warning);
         }
 
         private static void LoadEventValues()
@@ -177,7 +205,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, eventValues);
             }
 
-            Logger.WriteToConsole("Loaded event values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded event values", LogMode.Warning);
         }
 
         private static void LoadSiteValues()
@@ -191,7 +219,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, siteValues);
             }
 
-            Logger.WriteToConsole("Loaded site values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded site values", LogMode.Warning);
         }
 
         private static void LoadActionValues()
@@ -205,13 +233,23 @@ namespace GameServer
                 Serializer.SerializeToFile(path, actionValues);
             }
 
-            Logger.WriteToConsole("Loaded action values", Logger.LogMode.Warning);
+            Logger.WriteToConsole("Loaded action values", LogMode.Warning);
         }
 
         public static void ChangeTitle()
         {
             Console.Title = $"Rimworld Together {CommonValues.executableVersion} - " +
                 $"Players [{Network.connectedClients.Count}/{serverConfig.MaxPlayers}]";
+        }
+
+        public static void SaveServerConfig()
+        {
+            string path = Path.Combine(corePath, "ServerConfig.json");
+
+            if (serverConfig != null)
+            {
+                Serializer.SerializeToFile(path, serverConfig);
+            }
         }
     }
 }

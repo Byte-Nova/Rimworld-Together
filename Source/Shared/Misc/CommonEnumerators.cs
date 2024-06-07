@@ -2,6 +2,9 @@
 {
     public class CommonEnumerators
     {
+        //Logger
+        public enum LogMode { Message, Warning, Error, Title }
+
         public enum FetchMode { Host, Player }
 
         public enum SearchLocation { Caravan, Settlement }
@@ -13,6 +16,10 @@
         //Events
 
         public enum EventStepMode { Send, Receive, Recover }
+
+        //Market
+
+        public enum MarketStepMode { Add, Request, Reload }
 
         //Factions
 
@@ -33,19 +40,19 @@
 
         public enum FactionRanks { Member, Moderator, Admin }
 
-        //Likelihoods
+        //Goodwills
 
-        public enum Likelihoods { Enemy, Neutral, Ally, Faction, Personal }
+        public enum Goodwills { Enemy, Neutral, Ally, Faction, Personal }
 
-        public enum LikelihoodTarget { Settlement, Site }
+        public enum GoodwillTarget { Settlement, Site }
 
         //Transfers
 
-        public enum TransferMode { Gift, Trade, Rebound, Pod }
+        public enum TransferMode { Gift, Trade, Rebound, Pod, Market }
 
-        public enum TransferLocation { Caravan, Settlement, Pod }
+        public enum TransferLocation { Caravan, Settlement, Pod, World }
 
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod, Market }
 
         //Offline visit
 
@@ -75,7 +82,7 @@
 
         //Saving
 
-        public enum SaveMode { Disconnect, Autosave }
+        public enum SaveMode { Disconnect, Autosave, Strict }
 
         //Chat
 

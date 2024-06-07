@@ -90,7 +90,7 @@ namespace GameClient
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Log.Warning($"[Rimworld Together] > {e}");
+                if (ClientValues.verboseBool)  Logger.Warning($"{e}");
 
                 disconnectFlag = true;
             }
@@ -126,8 +126,8 @@ namespace GameClient
                 {
                     Thread.Sleep(1000);
 
-                    KeepAliveJSON keepAliveJSON = new KeepAliveJSON();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.KeepAlivePacket), keepAliveJSON);
+                    KeepAliveData keepAliveData = new KeepAliveData();
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.KeepAlivePacket), keepAliveData);
                     EnqueuePacket(packet);
                 }
             }
@@ -138,6 +138,7 @@ namespace GameClient
 
         public void DestroyConnection()
         {
+            disconnectFlag = true;
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();

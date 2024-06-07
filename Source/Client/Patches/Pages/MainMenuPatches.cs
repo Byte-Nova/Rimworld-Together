@@ -23,15 +23,15 @@ namespace GameClient
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y + 0.5f);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
-                        if (Network.isConnectedToServer || Network.isTryingToConnect) return true;
-                        else DialogShortcuts.ShowConnectDialogs();
+                        if (Network.state != NetworkState.Disconnected) return true;
+                        DialogShortcuts.ShowConnectDialogs();
                     }
 
                     buttonSize = new Vector2(45f, 45f);
                     buttonLocation = new Vector2(rect.x - 50f, rect.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
-                        if (Network.isConnectedToServer || Network.isTryingToConnect) return true;
+                        if (Network.state != NetworkState.Disconnected) return true;
 
                         SetupQuickConnectVariables();
 
@@ -40,8 +40,10 @@ namespace GameClient
                         if (string.IsNullOrWhiteSpace(Network.port)) isInvalid = true;
                         if (string.IsNullOrWhiteSpace(ClientValues.username)) isInvalid = true;
 
-                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
-                        else ShowQuickConnectFloatMenu();
+                        if (isInvalid) 
+                            DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
+                        else 
+                            ShowQuickConnectFloatMenu();
                     }
                 }
 
@@ -71,11 +73,11 @@ namespace GameClient
 
             private static void SetupQuickConnectVariables()
             {
-                string[] details = PreferenceManager.LoadConnectionDetails();
+                string[] details = PreferenceManager.LoadConnectionData();
                 Network.ip = details[0];
                 Network.port = details[1];
 
-                details = PreferenceManager.LoadLoginDetails();
+                details = PreferenceManager.LoadLoginData();
                 ClientValues.username = details[0];
             }
 
@@ -96,16 +98,16 @@ namespace GameClient
                         DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                         Network.StartConnection();
 
-                        if (Network.isConnectedToServer)
+                        if (Network.state == NetworkState.Connected)
                         {
-                            string[] details = PreferenceManager.LoadLoginDetails();
-                            JoinDetailsJSON loginDetails = new JoinDetailsJSON();
-                            loginDetails.username = details[0];
-                            loginDetails.password = Hasher.GetHashFromString(details[1]);
-                            loginDetails.clientVersion = CommonValues.executableVersion;
-                            loginDetails.runningMods = ModManager.GetRunningModList().ToList();
+                            string[] details = PreferenceManager.LoadLoginData();
+                            LoginData loginData = new LoginData();
+                            loginData.username = details[0];
+                            loginData.password = Hasher.GetHashFromString(details[1]);
+                            loginData.clientVersion = CommonValues.executableVersion;
+                            loginData.runningMods = ModManager.GetRunningModList().ToList();
 
-                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginDetails);
+                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginData);
                             Network.listener.EnqueuePacket(packet);
                         }
                     });

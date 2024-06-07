@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Threading;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -37,12 +38,12 @@ namespace GameServer
     
         public static void ParseClientMessages(ServerClient client, Packet packet)
         {
-            ChatMessagesJSON chatMessagesJSON = (ChatMessagesJSON)Serializer.ConvertBytesToObject(packet.contents);
+            ChatData chatData = (ChatData)Serializer.ConvertBytesToObject(packet.contents);
             
-            for(int i = 0; i < chatMessagesJSON.messages.Count(); i++)
+            for(int i = 0; i < chatData.messages.Count(); i++)
             {
-                if (chatMessagesJSON.messages[i].StartsWith("/")) ExecuteChatCommand(client, chatMessagesJSON.messages[i]);
-                else BroadcastChatMessage(client, chatMessagesJSON.messages[i]);
+                if (chatData.messages[i].StartsWith("/")) ExecuteChatCommand(client, chatData.messages[i]);
+                else BroadcastChatMessage(client, chatData.messages[i]);
             }
         }
 
@@ -65,56 +66,56 @@ namespace GameServer
 
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
-            ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
-            chatMessagesJSON.usernames.Add(client.username);
-            chatMessagesJSON.messages.Add(message);
+            ChatData chatData = new ChatData();
+            chatData.usernames.Add(client.username);
+            chatData.messages.Add(message);
 
             if (client.isAdmin)
             {
-                chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
-                chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
+                chatData.userColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
+                chatData.messageColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
             }
 
             else
             {
-                chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
-                chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
+                chatData.userColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
+                chatData.messageColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
             }
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
 
             WriteToLogs(client.username, message);
-            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > {client.username} > {message}", Logger.LogMode.Normal, false);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > {client.username} > {message}", LogMode.Message, false);
         }
 
         public static void BroadcastServerMessage(string messageToSend)
         {
-            ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
-            chatMessagesJSON.usernames.Add("CONSOLE");
-            chatMessagesJSON.messages.Add(messageToSend);
-            chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
-            chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
+            ChatData chatData = new ChatData();
+            chatData.usernames.Add("CONSOLE");
+            chatData.messages.Add(messageToSend);
+            chatData.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
+            chatData.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             WriteToLogs("CONSOLE", messageToSend);
-            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > CONSOLE > {messageToSend}", Logger.LogMode.Normal, false);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > CONSOLE > {messageToSend}", LogMode.Message, false);
         }
 
         public static void BroadcastSystemMessage(ServerClient client, string[] messagesToSend)
         {
-            ChatMessagesJSON chatMessagesJSON = new ChatMessagesJSON();
+            ChatData chatData = new ChatData();
             for(int i = 0; i < messagesToSend.Count(); i++)
             {
-                chatMessagesJSON.usernames.Add("CONSOLE");
-                chatMessagesJSON.messages.Add(messagesToSend[i]);
-                chatMessagesJSON.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
-                chatMessagesJSON.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
+                chatData.usernames.Add("CONSOLE");
+                chatData.messages.Add(messagesToSend[i]);
+                chatData.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
+                chatData.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
             }
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatMessagesJSON);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
             client.listener.EnqueuePacket(packet);
         }
     }
@@ -167,10 +168,7 @@ namespace GameServer
 
         private static void ChatStopVisitCommandAction()
         {
-            VisitDetailsJSON visitDetailsJSON = new VisitDetailsJSON();
-            visitDetailsJSON.visitStepMode = ((int)CommonEnumerators.VisitStepMode.Stop).ToString();
-
-            OnlineVisitManager.SendVisitStop(targetClient, visitDetailsJSON);
+            OnlineVisitManager.SendVisitStop(targetClient);
         }
     }
 }

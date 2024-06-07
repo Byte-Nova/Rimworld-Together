@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Net.Sockets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -90,7 +91,7 @@ namespace GameServer
 
             catch (Exception e)
             {
-                if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
+                if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole(e.ToString(), LogMode.Warning);
 
                 disconnectFlag = true;
             }
@@ -144,6 +145,7 @@ namespace GameServer
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
+            if (targetClient.inVisitWith != null) OnlineVisitManager.SendVisitStop(targetClient);
         }
     }
 }

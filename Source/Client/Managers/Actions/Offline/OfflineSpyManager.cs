@@ -19,12 +19,12 @@ namespace GameClient
 
         public static void ParseSpyPacket(Packet packet)
         {
-            SpyDetailsJSON spyDetailsJSON = (SpyDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            SpyData spyData = (SpyData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(spyDetailsJSON.spyStepMode))
+            switch(int.Parse(spyData.spyStepMode))
             {
                 case (int)CommonEnumerators.SpyStepMode.Request:
-                    OnSpyAccept(spyDetailsJSON);
+                    OnSpyAccept(spyData);
                     break;
 
                 case (int)CommonEnumerators.SpyStepMode.Deny:
@@ -35,12 +35,12 @@ namespace GameClient
 
         //Sets the cost of the spying function from the server
 
-        public static void SetSpyCost(ServerOverallJSON serverOverallJSON)
+        public static void SetSpyCost(ServerGlobalData serverGlobalData)
         {
-            try { spyCost = int.Parse(serverOverallJSON.SpyCost); }
+            try { spyCost = int.Parse(serverGlobalData.SpyCost); }
             catch
             {
-                Log.Warning("Server didn't have spy cost set, defaulting to 0");
+                Logger.Warning("Server didn't have spy cost set, defaulting to 0");
 
                 spyCost = 0;
             }
@@ -52,7 +52,7 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(spyCost))
+                if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, spyCost))
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
                 }
@@ -63,11 +63,11 @@ namespace GameClient
 
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
-                    SpyDetailsJSON spyDetailsJSON = new SpyDetailsJSON();
-                    spyDetailsJSON.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
-                    spyDetailsJSON.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+                    SpyData spyData = new SpyData();
+                    spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
+                    spyData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                     Network.listener.EnqueuePacket(packet);
                 }
             };
@@ -78,22 +78,20 @@ namespace GameClient
 
         //Executes after being confirmed a spy order
 
-        private static void OnSpyAccept(SpyDetailsJSON spyDetailsJSON)
+        private static void OnSpyAccept(SpyData spyData)
         {
             DialogManager.PopWaitDialog();
 
-            MapFileJSON mapFileJSON = (MapFileJSON)Serializer.ConvertBytesToObject(spyDetailsJSON.mapDetails);
-            MapDetailsJSON mapDetailsJSON = (MapDetailsJSON)Serializer.ConvertBytesToObject(mapFileJSON.mapData);
+            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(spyData.mapData);
+            MapData mapData = (MapData)Serializer.ConvertBytesToObject(mapFileData.mapData);
 
-            Action r1 = delegate { PrepareMapForSpy(mapDetailsJSON); };
+            Action r1 = delegate { PrepareMapForSpy(mapData); };
 
-            if (ModManager.CheckIfMapHasConflictingMods(mapDetailsJSON))
+            if (ModManager.CheckIfMapHasConflictingMods(mapData))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Game might hang temporarily depending on map complexity"));
         }
 
         //Executes after being denied a spy order
@@ -113,24 +111,14 @@ namespace GameClient
 
         //Prepares a given map for the spy order
 
-        private static void PrepareMapForSpy(MapDetailsJSON mapDetailsJSON)
+        private static void PrepareMapForSpy(MapData mapData)
         {
-            Map map = MapScribeManager.StringToMap(mapDetailsJSON, false, false, false, false);
+            Map map = MapScribeManager.StringToMap(mapData, false, true, false, true, false, true);
 
             HandleMapFactions(map);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[]
-            {
-                "You are now in spy mode!",
-                "Spy mode allows you to check out another player's base",
-                "To stop the spy exit the map creating a caravan"
-            });
-            DialogManager.PushNewDialog(d1);
-
-            FloodFillerFog.DebugRefogMap(map);
         }
 
         //Handles the factions of the desired map for the spy order

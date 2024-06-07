@@ -11,16 +11,12 @@ namespace GameServer
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}");
+            if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}",allowLogMultiplier:true);
 
+            client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);
             MethodInfo methodInfo = toUse.GetMethod(packet.header);
             methodInfo.Invoke(packet.header, new object[] { client, packet });
-        }
-
-        public static void KeepAlivePacket(ServerClient client, Packet packet)
-        {
-            client.listener.KAFlag = true;
         }
 
         public static void LoginClientPacket(ServerClient client, Packet packet)
@@ -43,14 +39,19 @@ namespace GameServer
             SaveManager.ReceiveSavePartFromClient(client, packet);
         }
 
-        public static void LikelihoodPacket(ServerClient client, Packet packet)
+        public static void GoodwillPacket(ServerClient client, Packet packet)
         {
-            LikelihoodManager.ChangeUserLikelihoods(client, packet);
+            GoodwillManager.ChangeUserGoodwills(client, packet);
         }
 
         public static void TransferPacket(ServerClient client, Packet packet)
         {
             TransferManager.ParseTransferPacket(client, packet);
+        }
+
+        public static void MarketPacket(ServerClient client, Packet packet)
+        {
+            OnlineMarketManager.ParseMarketPacket(client, packet);
         }
 
         public static void SitePacket(ServerClient client, Packet packet)
@@ -119,6 +120,11 @@ namespace GameServer
         }
 
         //Empty functions
+
+        public static void KeepAlivePacket(ServerClient client, Packet packet)
+        {
+            //Empty
+        }
 
         public static void UserUnavailablePacket()
         {

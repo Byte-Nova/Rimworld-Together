@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
+using System.Linq;
 using Verse;
 using Verse.AI;
 
@@ -11,7 +12,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Settlement factionBase)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
 
@@ -25,11 +26,11 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Job newJob, Pawn ___pawn)
         {
-            if (Network.isConnectedToServer)
+            if (Network.state == NetworkState.Connected)
             {
                 if (ClientValues.isInVisit)
                 {
-                    if (OnlineVisitManager.otherPlayerPawns.Contains(___pawn))
+                    if (OnlineVisitManager.nonFactionPawns.Contains(___pawn))
                     {
                         if (newJob.exitMapOnArrival) return false;
                     }

@@ -15,13 +15,14 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, Page_SelectScenario __instance)
             {
-                if (!Network.isConnectedToServer) return true;
+                if (Network.state == NetworkState.Disconnected) return true;
 
                 Vector2 buttonSize = new Vector2(150f, 38f);
                 Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
                 if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                 {
                     __instance.Close();
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
                     Network.listener.disconnectFlag = true;
                 }
                 return true;
@@ -30,7 +31,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost(Rect rect)
             {
-                if (!Network.isConnectedToServer) return;
+                if (Network.state == NetworkState.Disconnected) return;
 
                 Text.Font = GameFont.Small;
                 Vector2 buttonSize = new Vector2(150f, 38f);
@@ -45,7 +46,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre()
             {
-                if (!Network.isConnectedToServer) return true;
+                if (Network.state == NetworkState.Disconnected) return true;
                 if (ServerValues.AllowCustomScenarios) return true;
 
                 DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!"));
@@ -63,7 +64,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, ref Scenario ___curScen)
             {
-                if (!Network.isConnectedToServer) return true;
+                if (Network.state == NetworkState.Disconnected) return true;
                 if (ServerValues.AllowCustomScenarios) return true;
 
                 if (curScen != null) ___curScen = curScen;

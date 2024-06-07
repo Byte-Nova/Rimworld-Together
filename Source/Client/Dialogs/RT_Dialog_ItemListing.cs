@@ -39,7 +39,7 @@ namespace GameClient
             absorbInputAroundWindow = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            //soundClose = SoundDefOf.CommsWindow_Close;
+            
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -101,12 +101,12 @@ namespace GameClient
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (TransferManagerHelper.CheckIfThingIsHuman(thing))
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
             {
                 Widgets.Label(fixedRect, $"[H] {itemName}");
             }
 
-            else if (TransferManagerHelper.CheckIfThingIsAnimal(thing))
+            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
             {
                 Widgets.Label(fixedRect, $"[A] {itemName}");
             }
@@ -128,7 +128,7 @@ namespace GameClient
 
                 else if (transferMode == CommonEnumerators.TransferMode.Trade)
                 {
-                    if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Settlement))
+                    if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
                     }
@@ -147,7 +147,7 @@ namespace GameClient
 
                 else if (transferMode == CommonEnumerators.TransferMode.Rebound)
                 {
-                    ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
+                    ClientValues.incomingManifest.transferStepMode = CommonEnumerators.TransferStepMode.TradeReAccept;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);

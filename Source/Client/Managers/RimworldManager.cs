@@ -1,34 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using Verse.Noise;
 
 namespace GameClient
 {
     public static class RimworldManager
     {
-        public static bool CheckForAnySocialPawn(CommonEnumerators.SearchLocation location)
-        {
-            if (location == CommonEnumerators.SearchLocation.Caravan)
-            {
-                Caravan caravan = ClientValues.chosenCaravan;
-
-                Pawn playerNegotiator = caravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
-                if (playerNegotiator != null) return true;
-            }
-
-            else if (location == CommonEnumerators.SearchLocation.Settlement)
-            {
-                Map map = Find.AnyPlayerHomeMap;
-
-                Pawn playerNegotiator = map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
-                if (playerNegotiator != null) return true;
-            }
-
-            return false;
-        }
-
         public static bool CheckIfPlayerHasMap()
         {
             Map map = Find.AnyPlayerHomeMap;
@@ -36,18 +17,91 @@ namespace GameClient
             else return false;
         }
 
-        public static bool CheckIfHasEnoughSilverInCaravan(int requiredQuantity)
+        public static bool CheckIfSocialPawnInMap(Map map)
+        {
+            Pawn playerNegotiator = map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+            if (playerNegotiator != null) return true;
+            else return false;
+        }
+
+        public static bool CheckIfSocialPawnInCaravan(Caravan caravan)
+        {
+            Pawn playerNegotiator = caravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+            if (playerNegotiator != null) return true;
+            else return false;
+        }
+
+        public static bool CheckIfHasEnoughSilverInMap(Map map, int requiredQuantity)
         {
             if (requiredQuantity == 0) return true;
 
-            List<Thing> caravanSilver = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan)
-                .FindAll(x => x.def == ThingDefOf.Silver);
+            List<Thing> silverInMap = new List<Thing>();
+            foreach (Zone zone in map.zoneManager.AllZones)
+            {
+                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                {
+                    if (thing.def == ThingDefOf.Silver && !thing.Position.Fogged(map))
+                    {
+                        silverInMap.Add(thing);
+                    }
+                }
+            }
 
-            int silverInCaravan = 0;
-            foreach (Thing silverStack in caravanSilver) silverInCaravan += silverStack.stackCount;
+            int totalSilver = GetSilverInMap(map);
+            if (totalSilver >= requiredQuantity) return true;
+            else return false;
+        }
 
+        public static bool CheckIfHasEnoughSilverInCaravan(Caravan caravan, int requiredQuantity)
+        {
+            if (requiredQuantity == 0) return true;
+
+            List<Thing> caravanSilver = CaravanInventoryUtility.AllInventoryItems(caravan).FindAll(x => x.def == ThingDefOf.Silver);
+
+            int silverInCaravan = GetSilverInCaravan(ClientValues.chosenCaravan);
             if (silverInCaravan >= requiredQuantity) return true;
             else return false;
+        }
+
+        public static int GetSilverInMap(Map map)
+        {
+            List<Thing> silverInMap = new List<Thing>();
+            foreach (Zone zone in map.zoneManager.AllZones)
+            {
+                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                {
+                    if (thing.def == ThingDefOf.Silver && !thing.Position.Fogged(map))
+                    {
+                        silverInMap.Add(thing);
+                    }
+                }
+            }
+
+            int totalSilver = 0;
+            foreach (Thing silverStack in silverInMap) totalSilver += silverStack.stackCount;
+
+            return totalSilver;
+        }
+
+        public static int GetSilverInCaravan(Caravan caravan)
+        {
+            List<Thing> caravanSilver = CaravanInventoryUtility.AllInventoryItems(caravan)
+                .FindAll(x => x.def == ThingDefOf.Silver);
+
+            int totalSilver = 0;
+            foreach (Thing silverStack in caravanSilver) totalSilver += silverStack.stackCount;
+
+            return totalSilver;
+        }
+
+        public static bool CheckIfPlayerHasConsoleInMap(Map map)
+        {
+            foreach (Thing thing in map.listerThings.AllThings)
+            {
+                if (thing.def == ThingDefOf.CommsConsole && thing.Faction == Faction.OfPlayer) return true;
+            }
+
+            return false;
         }
 
         public static void GenerateLetter(string title, string description, LetterDef letterType)

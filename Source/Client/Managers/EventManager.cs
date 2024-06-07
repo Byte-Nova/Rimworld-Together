@@ -7,8 +7,6 @@ namespace GameClient
 {
     public static class EventManager
     {
-        
-
         public static string[] eventNames = new string[]
         {
             "Raid",
@@ -26,16 +24,16 @@ namespace GameClient
 
         public static void ParseEventPacket(Packet packet)
         {
-            EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(eventDetailsJSON.eventStepMode))
+            switch (int.Parse(eventData.eventStepMode))
             {
                 case (int)CommonEnumerators.EventStepMode.Send:
                     OnEventSent();
                     break;
 
                 case (int)CommonEnumerators.EventStepMode.Receive:
-                    OnEventReceived(eventDetailsJSON);
+                    OnEventReceived(eventData);
                     break;
 
                 case (int)CommonEnumerators.EventStepMode.Recover:
@@ -44,27 +42,27 @@ namespace GameClient
             }
         }
 
-        public static void SetEventPrices(ServerOverallJSON serverOverallJSON)
+        public static void SetEventPrices(ServerGlobalData serverGlobalData)
         {
             try
             {
                 eventCosts = new int[9]
                 {
-                    int.Parse(serverOverallJSON.RaidCost),
-                    int.Parse(serverOverallJSON.InfestationCost),
-                    int.Parse(serverOverallJSON.MechClusterCost),
-                    int.Parse(serverOverallJSON.ToxicFalloutCost),
-                    int.Parse(serverOverallJSON.ManhunterCost),
-                    int.Parse(serverOverallJSON.WandererCost),
-                    int.Parse(serverOverallJSON.FarmAnimalsCost),
-                    int.Parse(serverOverallJSON.ShipChunkCost),
-                    int.Parse(serverOverallJSON.TraderCaravanCost)
+                    int.Parse(serverGlobalData.RaidCost),
+                    int.Parse(serverGlobalData.InfestationCost),
+                    int.Parse(serverGlobalData.MechClusterCost),
+                    int.Parse(serverGlobalData.ToxicFalloutCost),
+                    int.Parse(serverGlobalData.ManhunterCost),
+                    int.Parse(serverGlobalData.WandererCost),
+                    int.Parse(serverGlobalData.FarmAnimalsCost),
+                    int.Parse(serverGlobalData.ShipChunkCost),
+                    int.Parse(serverGlobalData.TraderCaravanCost)
                 };
             }
 
             catch 
             { 
-                Log.Warning("Server didn't have event prices set, defaulting to 0");
+                Logger.Warning("Server didn't have event prices set, defaulting to 0");
 
                 eventCosts = new int[9]
                 {
@@ -85,7 +83,7 @@ namespace GameClient
         {
             DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(eventCosts[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, eventCosts[DialogManager.selectedScrollButton]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
@@ -94,22 +92,22 @@ namespace GameClient
             {
                 TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
-                EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
-                eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
-                eventDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                eventDetailsJSON.toTile = ClientValues.chosenSettlement.Tile.ToString();
-                eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();
+                EventData eventData = new EventData();
+                eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
+                eventData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
+                eventData.toTile = ClientValues.chosenSettlement.Tile.ToString();
+                eventData.eventID = DialogManager.selectedScrollButton.ToString();
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }
         }
 
-        public static void OnEventReceived(EventDetailsJSON eventDetailsJSON)
+        public static void OnEventReceived(EventData eventData)
         {
-            if (ClientValues.isReadyToPlay) LoadEvent(int.Parse(eventDetailsJSON.eventID));
+            if (ClientValues.isReadyToPlay) LoadEvent(int.Parse(eventData.eventID));
         }
 
         public static void LoadEvent(int eventID)

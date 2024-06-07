@@ -13,7 +13,7 @@ namespace GameClient
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");
+            if (ClientValues.verboseBool) Logger.Message($"[Header] > {packet.header}");
 
             Action toDo = delegate
             {
@@ -33,7 +33,7 @@ namespace GameClient
 
         public static void ChatPacket(Packet packet)
         {
-            ChatManager.ReceiveMessages(packet);
+            OnlineChatManager.ReceiveMessages(packet);
         }
 
         public static void CommandPacket(Packet packet)
@@ -44,6 +44,11 @@ namespace GameClient
         public static void TransferPacket(Packet packet)
         {
             TransferManager.ParseTransferPacket(packet);
+        }
+
+        public static void MarketPacket(Packet packet)
+        {
+            OnlineMarketManager.ParseMarketPacket(packet);
         }
 
         public static void FactionPacket(Packet packet)
@@ -106,10 +111,10 @@ namespace GameClient
             ServerValues.SetServerPlayers(packet);
         }
 
-        public static void LikelihoodPacket(Packet packet)
+        public static void GoodwillPacket(Packet packet)
         {
             DialogManager.PopWaitDialog();
-            LikelihoodManager.ChangeStructureLikelihood(packet);
+            GoodwillManager.ChangeStructureGoodwill(packet);
         }
 
         public static void EventPacket(Packet packet)
@@ -131,14 +136,14 @@ namespace GameClient
 
         public static void ServerValuesPacket(Packet packet)
         {
-            ServerOverallJSON serverOverallJSON = (ServerOverallJSON)Serializer.ConvertBytesToObject(packet.contents);
-            ServerValues.SetServerParameters(serverOverallJSON);
-            ServerValues.SetAccountDetails(serverOverallJSON);
-            PlanetManagerHelper.SetWorldFeatures(serverOverallJSON);
-            EventManager.SetEventPrices(serverOverallJSON);
-            SiteManager.SetSiteDetails(serverOverallJSON);
-            OfflineSpyManager.SetSpyCost(serverOverallJSON);
-            CustomDifficultyManager.SetCustomDifficulty(serverOverallJSON);
+            ServerGlobalData serverGlobalData = (ServerGlobalData)Serializer.ConvertBytesToObject(packet.contents);
+            ServerValues.SetServerParameters(serverGlobalData);
+            ServerValues.SetAccountData(serverGlobalData);
+            PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
+            EventManager.SetEventPrices(serverGlobalData);
+            SiteManager.SetSiteData(serverGlobalData);
+            OfflineSpyManager.SetSpyCost(serverGlobalData);
+            CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
         }
 
         //Empty functions

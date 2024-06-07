@@ -16,7 +16,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref WITab[] ___TileTabs)
         {
-            if (___TileTabs.Count() != 5 && Network.isConnectedToServer)
+            if (___TileTabs.Count() != 5 && Network.state == NetworkState.Connected)
             {
                 ___TileTabs = new WITab[5]
                 {
@@ -38,7 +38,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref int tile, ref List<Pair<Settlement, int>> outOffsets)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             int maxDist = SettlementProximityGoodwillUtility.MaxDist;
             List<Settlement> settlements = Find.WorldObjects.Settlements;
@@ -68,32 +68,32 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance)
         {
-            if (!Network.isConnectedToServer) return;
+            if (Network.state == NetworkState.Disconnected) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
 
-                Command_Action command_Likelihood = new Command_Action
+                Command_Action command_Goodwill = new Command_Action
                 {
-                    defaultLabel = "Change Likelihood",
-                    defaultDesc = "Change the likelihood of this settlement",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
+                    defaultLabel = "Change Goodwill",
+                    defaultDesc = "Change the goodwill of this settlement",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                     action = delegate
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        Action r1 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy, 
-                            CommonEnumerators.LikelihoodTarget.Settlement); };
+                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy, 
+                            CommonEnumerators.GoodwillTarget.Settlement); };
 
-                        Action r2 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
-                            CommonEnumerators.LikelihoodTarget.Settlement); };
+                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
+                            CommonEnumerators.GoodwillTarget.Settlement); };
 
-                        Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
-                            CommonEnumerators.LikelihoodTarget.Settlement); };
+                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
+                            CommonEnumerators.GoodwillTarget.Settlement); };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
@@ -129,7 +129,7 @@ namespace GameClient
                 };
 
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Likelihood);
+                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
                 if (__instance.Map != null && __instance.Map.mapPawns.AllPawns.ToList().Find(fetch => fetch.Faction == Faction.OfPlayer) != null)
                 {
                     gizmoList.Add(command_Caravan);
@@ -155,6 +155,21 @@ namespace GameClient
                     }
                 };
 
+                Command_Action command_GlobalMarketMenu = new Command_Action
+                {
+                    defaultLabel = "Global Market Menu",
+                    defaultDesc = "Access the global market",
+                    icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
+                    action = delegate 
+                    {
+                        ClientValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
+
+                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(ClientValues.chosenSettlement.Map)) OnlineMarketManager.RequestReloadStock();
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
+                    }
+                };
+
+                gizmoList.Add(command_GlobalMarketMenu);
                 gizmoList.Add(command_FactionMenu);
                 __result = gizmoList;
             }
@@ -167,7 +182,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance, Caravan caravan)
         {
-            if (!Network.isConnectedToServer) return;
+            if (Network.state == NetworkState.Disconnected) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
@@ -240,7 +255,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Caravan))
+                        if (RimworldManager.CheckIfSocialPawnInCaravan(ClientValues.chosenCaravan))
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }
@@ -265,31 +280,31 @@ namespace GameClient
                     }
                 };
 
-                Command_Action command_Likelihood = new Command_Action
+                Command_Action command_Goodwill = new Command_Action
                 {
-                    defaultLabel = "Change Likelihood",
-                    defaultDesc = "Change the likelihood of this settlement",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
+                    defaultLabel = "Change Goodwill",
+                    defaultDesc = "Change the goodwill of this settlement",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                     action = delegate
                     {
                         ClientValues.chosenSettlement = __instance;
 
                         Action r1 = delegate {
-                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
-                            CommonEnumerators.LikelihoodTarget.Settlement);
+                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
+                            CommonEnumerators.GoodwillTarget.Settlement);
                         };
 
                         Action r2 = delegate {
-                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
-                            CommonEnumerators.LikelihoodTarget.Settlement);
+                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
+                            CommonEnumerators.GoodwillTarget.Settlement);
                         };
 
                         Action r3 = delegate {
-                            LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
-                            CommonEnumerators.LikelihoodTarget.Settlement);
+                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
+                            CommonEnumerators.GoodwillTarget.Settlement);
                         };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set settlement's likelihood to",
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
@@ -319,7 +334,7 @@ namespace GameClient
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
                 if (__instance.Faction != FactionValues.yourOnlineFaction)
                 {
-                    gizmoList.Add(command_Likelihood);
+                    gizmoList.Add(command_Goodwill);
                     gizmoList.Add(command_Spy);
                     gizmoList.Add(command_Raid);
                 }
@@ -359,39 +374,39 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Site __instance)
         {
-            if (!Network.isConnectedToServer) return;
+            if (Network.state == NetworkState.Disconnected) return;
 
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
 
-                Command_Action command_Likelihood = new Command_Action
+                Command_Action command_Goodwill = new Command_Action
                 {
-                    defaultLabel = "Change Likelihood",
-                    defaultDesc = "Change the likelihood of this site",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
+                    defaultLabel = "Change Goodwill",
+                    defaultDesc = "Change the goodwill of this site",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                     action = delegate
                     {
                         ClientValues.chosenSite = __instance;
 
-                        Action r1 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
-                            CommonEnumerators.LikelihoodTarget.Site); };
+                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
+                            CommonEnumerators.GoodwillTarget.Site); };
 
-                        Action r2 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
-                            CommonEnumerators.LikelihoodTarget.Site); };
+                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
+                            CommonEnumerators.GoodwillTarget.Site); };
 
-                        Action r3 = delegate { LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
-                            CommonEnumerators.LikelihoodTarget.Site); };
+                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
+                            CommonEnumerators.GoodwillTarget.Site); };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
                     }
                 };
 
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Likelihood);
+                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
 
                 __result = gizmoList;
             }
@@ -429,7 +444,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<Gizmo> __result, Caravan __instance)
         {
-            if (Network.isConnectedToServer && RimworldManager.CheckIfPlayerHasMap())
+            if (Network.state == NetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
             {
                 Site presentSite = Find.World.worldObjects.Sites.ToList().Find(x => x.Tile == __instance.Tile);
                 Settlement presentSettlement = Find.World.worldObjects.Settlements.ToList().Find(x => x.Tile == __instance.Tile);
@@ -475,31 +490,31 @@ namespace GameClient
 
                 else if (presentSite != null)
                 {
-                    Command_Action command_Likelihood = new Command_Action
+                    Command_Action command_Goodwill = new Command_Action
                     {
-                        defaultLabel = "Change Likelihood",
-                        defaultDesc = "Change the likelihood of this site",
-                        icon = ContentFinder<Texture2D>.Get("Commands/Likelihood"),
+                        defaultLabel = "Change Goodwill",
+                        defaultDesc = "Change the goodwill of this site",
+                        icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                         action = delegate
                         {
                             ClientValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                             Action r1 = delegate {
-                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Enemy,
-                                    CommonEnumerators.LikelihoodTarget.Site);
+                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
+                                    CommonEnumerators.GoodwillTarget.Site);
                             };
 
                             Action r2 = delegate {
-                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
-                                    CommonEnumerators.LikelihoodTarget.Site);
+                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
+                                    CommonEnumerators.GoodwillTarget.Site);
                             };
 
                             Action r3 = delegate {
-                                LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
-                                    CommonEnumerators.LikelihoodTarget.Site);
+                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
+                                    CommonEnumerators.GoodwillTarget.Site);
                             };
 
-                            RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Likelihood", "Set site's likelihood to",
+                            RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
                                 "Enemy", "Neutral", "Ally", r1, r2, r3, null);
 
                             DialogManager.PushNewDialog(d1);
@@ -545,7 +560,7 @@ namespace GameClient
                         gizmoList.Add(command_DestroySite);
                     }
 
-                    else gizmoList.Add(command_Likelihood);
+                    else gizmoList.Add(command_Goodwill);
                 }
 
                 __result = gizmoList;
@@ -564,7 +579,7 @@ namespace GameClient
                 var floatMenuList = __result.ToList();
                 floatMenuList.Clear();
 
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
                     ClientValues.chosenSettlement = settlement;
                     ClientValues.chosendPods = representative;
@@ -607,7 +622,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result)
         {
-            if (!Network.isConnectedToServer) return;
+            if (Network.state == NetworkState.Disconnected) return;
 
             var gizmoList = __result.ToList();
             List<Gizmo> removeList = new List<Gizmo>();

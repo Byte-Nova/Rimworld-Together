@@ -11,14 +11,12 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref List<Tradeable> ___tradeables)
         {
-            if (!Network.isConnectedToServer) return true;
-            else if (!FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
-            else
-            {
-                ___tradeables = new List<Tradeable>();
-                ___tradeables.AddRange(ClientValues.listToShowInTradesMenu);
-                return false;
-            }
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (!FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
+            
+            ___tradeables = new List<Tradeable>();
+            ___tradeables.AddRange(ClientValues.listToShowInTradesMenu);
+            return false;
         }
     }
 
@@ -28,12 +26,9 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
         {
-            if (Network.isConnectedToServer)
+            if (Network.state == NetworkState.Connected && FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) 
             {
-                if (FactionValues.playerFactions.Contains(TradeSession.trader.Faction))
-                {
-                    TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], ___countToTransfer);
-                }
+                TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], ___countToTransfer);                
             }
 
             return true;

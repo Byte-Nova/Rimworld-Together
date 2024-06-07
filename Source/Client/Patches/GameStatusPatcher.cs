@@ -13,16 +13,16 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
-                    SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
-                    settlementDetailsJSON.tile = __instance.CurrentMap.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    SettlementData settlementData = new SettlementData();
+                    settlementData.tile = __instance.CurrentMap.Tile.ToString();
+                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -42,7 +42,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
@@ -60,13 +60,13 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Caravan caravan)
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
-                    SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
-                    settlementDetailsJSON.tile = caravan.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    SettlementData settlementData = new SettlementData();
+                    settlementData.tile = caravan.Tile.ToString();
+                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -80,13 +80,13 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Map map)
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
-                    SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
-                    settlementDetailsJSON.tile = map.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    SettlementData settlementData = new SettlementData();
+                    settlementData.tile = map.Tile.ToString();
+                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -100,13 +100,13 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.isConnectedToServer)
+                if (Network.state == NetworkState.Connected)
                 {
-                    SettlementDetailsJSON settlementDetailsJSON = new SettlementDetailsJSON();
-                    settlementDetailsJSON.tile = settlement.Tile.ToString();
-                    settlementDetailsJSON.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
+                    SettlementData settlementData = new SettlementData();
+                    settlementData.tile = settlement.Tile.ToString();
+                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementDetailsJSON);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();

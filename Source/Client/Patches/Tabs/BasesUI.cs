@@ -24,7 +24,7 @@ namespace GameClient
 
         protected override void FillTab()
         {
-            if (Network.isConnectedToServer)
+            if (Network.state == NetworkState.Connected)
             {
                 tabTitle = $"Player Bases [{PlanetManager.playerSettlements.Count()}]";
 
@@ -100,8 +100,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        LikelihoodManager.TryRequestLikelihood(Shared.CommonEnumerators.Likelihoods.Enemy,
-                            Shared.CommonEnumerators.LikelihoodTarget.Settlement);
+                        GoodwillManager.TryRequestGoodwill(Shared.CommonEnumerators.Goodwills.Enemy,
+                            Shared.CommonEnumerators.GoodwillTarget.Settlement);
 
                         break;
                     }
@@ -116,8 +116,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Neutral,
-                            CommonEnumerators.LikelihoodTarget.Settlement);
+                        GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
+                            CommonEnumerators.GoodwillTarget.Settlement);
 
                         break;
                     }
@@ -132,8 +132,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = settlement;
 
-                        LikelihoodManager.TryRequestLikelihood(CommonEnumerators.Likelihoods.Ally,
-                            CommonEnumerators.LikelihoodTarget.Settlement);
+                        GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
+                            CommonEnumerators.GoodwillTarget.Settlement);
 
                         break;
                     }
