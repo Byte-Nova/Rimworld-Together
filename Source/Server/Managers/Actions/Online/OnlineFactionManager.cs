@@ -5,6 +5,10 @@ namespace GameServer
 {
     public static class OnlineFactionManager
     {
+        //Variables
+
+        public readonly static string fileExtension = ".mpfaction";
+
         public static void ParseFactionPacket(ServerClient client, Packet packet)
         {
             PlayerFactionData factionManifest = (PlayerFactionData)Serializer.ConvertBytesToObject(packet.contents);
@@ -52,7 +56,7 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach(string faction in factions)
             {
-                if (!faction.EndsWith(".json")) continue;
+                if (!faction.EndsWith(fileExtension)) continue;
                 factionFiles.Add(Serializer.SerializeFromFile<FactionFile>(faction));
             }
 
@@ -64,7 +68,8 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach (string faction in factions)
             {
-                if (!faction.EndsWith(".json")) continue;
+                if (!faction.EndsWith(fileExtension)) continue;
+
                 FactionFile factionFile = Serializer.SerializeFromFile<FactionFile>(faction);
                 if (factionFile.factionName == client.factionName) return factionFile;
             }
@@ -77,10 +82,10 @@ namespace GameServer
             string[] factions = Directory.GetFiles(Master.factionsPath);
             foreach (string faction in factions)
             {
-                if (!faction.EndsWith(".json")) continue;
+                if (!faction.EndsWith(fileExtension)) continue;
+
                 FactionFile factionFile = Serializer.SerializeFromFile<FactionFile>(faction);
                 if (factionFile.factionName == factionName) return factionFile;
-                
             }
 
             return null;
@@ -111,7 +116,7 @@ namespace GameServer
 
         public static void SaveFactionFile(FactionFile factionFile)
         {
-            string savePath = Path.Combine(Master.factionsPath, factionFile.factionName + ".json");
+            string savePath = Path.Combine(Master.factionsPath, factionFile.factionName + fileExtension);
             Serializer.SerializeToFile(savePath, factionFile);
         }
 
@@ -206,7 +211,7 @@ namespace GameServer
                     SiteFile[] factionSites = GetFactionSites(factionFile);
                     foreach(SiteFile site in factionSites) SiteManager.DestroySiteFromFile(site);
 
-                    File.Delete(Path.Combine(Master.factionsPath, factionFile.factionName + ".json"));
+                    File.Delete(Path.Combine(Master.factionsPath, factionFile.factionName + fileExtension));
                     Logger.WriteToConsole($"[Deleted Faction] > {client.username} > {factionFile.factionName}", LogMode.Warning);
                 }
             }

@@ -6,6 +6,10 @@ namespace GameServer
 {
     public static class UserManager
     {
+        //Variables
+
+        public readonly static string fileExtension = ".mpuser";
+
         public static void LoadDataFromFile(ServerClient client)
         {
             UserFile file = GetUserFile(client);
@@ -28,7 +32,8 @@ namespace GameServer
 
             foreach(string userFile in userFiles)
             {
-                if (!userFile.EndsWith(".json")) continue;
+                if (!userFile.EndsWith(fileExtension)) continue;
+
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
                 if (file.username == client.username) return file;
             }
@@ -42,7 +47,8 @@ namespace GameServer
 
             foreach (string userFile in userFiles)
             {
-                if (!userFile.EndsWith(".json")) continue;
+                if (!userFile.EndsWith(fileExtension)) continue;
+
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
                 if (file.username == username) return file;
             }
@@ -57,7 +63,7 @@ namespace GameServer
             string[] existingUsers = Directory.GetFiles(Master.usersPath);
             foreach (string user in existingUsers) 
             {
-                if (!user.EndsWith(".json")) continue;
+                if (!user.EndsWith(fileExtension)) continue;
                 userFiles.Add(Serializer.SerializeFromFile<UserFile>(user)); 
             }
             return userFiles.ToArray();
@@ -65,13 +71,13 @@ namespace GameServer
 
         public static void SaveUserFile(ServerClient client, UserFile userFile)
         {
-            string savePath = Path.Combine(Master.usersPath, client.username + ".json");
+            string savePath = Path.Combine(Master.usersPath, client.username + fileExtension);
             Serializer.SerializeToFile(savePath, userFile);
         }
 
         public static void SaveUserFileFromName(string username, UserFile userFile)
         {
-            string savePath = Path.Combine(Master.usersPath, username + ".json");
+            string savePath = Path.Combine(Master.usersPath, username + fileExtension);
             Serializer.SerializeToFile(savePath, userFile);
         }
 
@@ -106,7 +112,8 @@ namespace GameServer
 
             foreach (string user in existingUsers)
             {
-                if (!user.EndsWith(".json")) continue;
+                if (!user.EndsWith(fileExtension)) continue;
+
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
                 if (existingUser.username.ToLower() == data.username.ToLower())
                 {
@@ -125,7 +132,7 @@ namespace GameServer
 
             foreach (string user in existingUsers)
             {
-                if (!user.EndsWith(".json")) continue;
+                if (!user.EndsWith(fileExtension)) continue;
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
                 if (existingUser.username == data.username)
                 {
