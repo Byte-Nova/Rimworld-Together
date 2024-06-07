@@ -128,8 +128,8 @@ namespace GameClient
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
-
-            Widgets.Label(fixedRect, $"{toDisplay.Label} > ${toDisplay.MarketValue}/u");
+            
+            Widgets.Label(fixedRect, $"{toDisplay.Label.CapitalizeFirst()} > ${toDisplay.MarketValue}/u");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
             {
                 DialogManager.dialogMarketListingResult = index;
