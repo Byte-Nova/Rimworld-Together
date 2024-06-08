@@ -14,9 +14,9 @@ namespace GameClient
     {
         public static void Message(string message) { WriteToConsole(message, LogMode.Message); }
 
-        public static void Warning(string message) { WriteToConsole(message, LogMode.Warning); }
+        public static void Warning(string message) { WriteToConsole(message); }
 
-        public static void Error(string message) { WriteToConsole(message, LogMode.Error); }
+        public static void Error(string message) { WriteToConsole(message); }
 
         public static void WriteToConsole(string text, LogMode mode = LogMode.Message)
         {

@@ -55,7 +55,7 @@ namespace GameServer
         {
             Console.ForegroundColor = ConsoleColor.White;
 
-            TryDisablyQuickEdit();
+            //TryDisablyQuickEdit();
             SetPaths();
             SetCulture();
             LoadResources();
@@ -124,14 +124,14 @@ namespace GameServer
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
 
-            Logger.WriteToConsole($"Loading server culture > [{CultureInfo.CurrentCulture}]", LogMode.Title);
+            Logger.Title($"Loading server culture > [{CultureInfo.CurrentCulture}]");
         }
 
         public static void LoadResources()
         {
-            Logger.WriteToConsole($"Loading version {CommonValues.executableVersion}", LogMode.Title);
-            Logger.WriteToConsole($"Loading all necessary resources", LogMode.Title);
-            Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
+            Logger.Title($"Loading version {CommonValues.executableVersion}");
+            Logger.Title($"Loading all necessary resources");
+            Logger.Title($"----------------------------------------");
 
             LoadSiteValues();
             LoadEventValues();
@@ -144,7 +144,10 @@ namespace GameServer
             CustomDifficultyManager.LoadCustomDifficulty();
             OnlineMarketManager.LoadMarketStock();
 
-            Logger.WriteToConsole($"----------------------------------------", LogMode.Title);
+            //Keep this function in here until next release, after that it can safely be removed
+            ExecuteBackwardsCompatiblePatch();
+
+            Logger.Title($"----------------------------------------");
         }
 
         private static void LoadServerConfig()
@@ -158,7 +161,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverConfig);
             }
 
-            Logger.WriteToConsole("Loaded server configs", LogMode.Warning);
+            Logger.Warning("Loaded server configs");
         }
 
         public static void SaveServerConfig(ServerConfigFile serverConfig)
@@ -167,7 +170,7 @@ namespace GameServer
 
             Serializer.SerializeToFile(path, serverConfig);
 
-            Logger.WriteToConsole("Saved server Config", LogMode.Warning);
+            Logger.Warning("Saved server Config");
 
         }
 
@@ -182,7 +185,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, serverValues);
             }
 
-            Logger.WriteToConsole("Loaded server values", LogMode.Warning);
+            Logger.Warning("Loaded server values");
         }
 
         public static void SaveServerValues(ServerValuesFile serverValues)
@@ -191,7 +194,7 @@ namespace GameServer
 
             Serializer.SerializeToFile(path, serverValues);
 
-            Logger.WriteToConsole("Saved server values", LogMode.Warning);
+            Logger.Warning("Saved server values");
         }
 
         private static void LoadEventValues()
@@ -205,7 +208,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, eventValues);
             }
 
-            Logger.WriteToConsole("Loaded event values", LogMode.Warning);
+            Logger.Warning("Loaded event values");
         }
 
         private static void LoadSiteValues()
@@ -219,7 +222,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, siteValues);
             }
 
-            Logger.WriteToConsole("Loaded site values", LogMode.Warning);
+            Logger.Warning("Loaded site values");
         }
 
         private static void LoadActionValues()
@@ -233,7 +236,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, actionValues);
             }
 
-            Logger.WriteToConsole("Loaded action values", LogMode.Warning);
+            Logger.Warning("Loaded action values");
         }
 
         public static void ChangeTitle()
@@ -250,6 +253,43 @@ namespace GameServer
             {
                 Serializer.SerializeToFile(path, serverConfig);
             }
+        }
+
+        //Keep this function in here until next release, after that it can safely be removed
+
+        public static void ExecuteBackwardsCompatiblePatch()
+        {
+            foreach (string file in Directory.GetFiles(usersPath))
+            {
+                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", UserManager.fileExtension)); }
+                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
+            }
+
+            foreach (string file in Directory.GetFiles(sitesPath))
+            {
+                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", SiteManager.fileExtension)); }
+                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
+            }
+
+            foreach (string file in Directory.GetFiles(settlementsPath))
+            {
+                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", SettlementManager.fileExtension)); }
+                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
+            }
+
+            foreach (string file in Directory.GetFiles(mapsPath))
+            {
+                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", MapManager.fileExtension)); }
+                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
+            }
+
+            foreach (string file in Directory.GetFiles(factionsPath))
+            {
+                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", OnlineFactionManager.fileExtension)); }
+                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
+            }
+
+            Logger.Warning($"Converted old server data");
         }
     }
 }

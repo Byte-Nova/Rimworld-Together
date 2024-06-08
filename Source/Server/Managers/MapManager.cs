@@ -17,7 +17,7 @@ namespace GameServer
             byte[] compressedMapBytes = Serializer.ConvertObjectToBytes(mapFileData);
             File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + fileExtension), compressedMapBytes);
 
-            Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileData.mapTile}");
+            Logger.Message($"[Save map] > {client.username} > {mapFileData.mapTile}");
         }
 
         public static void DeleteMap(MapFileData mapFile)
@@ -26,7 +26,7 @@ namespace GameServer
 
             File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + fileExtension));
 
-            Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", LogMode.Warning);
+            Logger.Warning($"[Remove map] > {mapFile.mapTile}");
         }
 
         public static MapFileData[] GetAllMapFiles()

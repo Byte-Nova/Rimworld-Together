@@ -35,20 +35,8 @@ namespace GameClient
         {
             if (requiredQuantity == 0) return true;
 
-            List<Thing> silverInMap = new List<Thing>();
-            foreach (Zone zone in map.zoneManager.AllZones)
-            {
-                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
-                {
-                    if (thing.def == ThingDefOf.Silver && !thing.Position.Fogged(map))
-                    {
-                        silverInMap.Add(thing);
-                    }
-                }
-            }
-
-            int totalSilver = GetSilverInMap(map);
-            if (totalSilver >= requiredQuantity) return true;
+            int silverInMap = GetSilverInMap(map);
+            if (silverInMap >= requiredQuantity) return true;
             else return false;
         }
 
@@ -56,9 +44,7 @@ namespace GameClient
         {
             if (requiredQuantity == 0) return true;
 
-            List<Thing> caravanSilver = CaravanInventoryUtility.AllInventoryItems(caravan).FindAll(x => x.def == ThingDefOf.Silver);
-
-            int silverInCaravan = GetSilverInCaravan(ClientValues.chosenCaravan);
+            int silverInCaravan = GetSilverInCaravan(caravan);
             if (silverInCaravan >= requiredQuantity) return true;
             else return false;
         }
