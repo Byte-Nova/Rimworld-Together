@@ -55,7 +55,7 @@ namespace GameServer
         {
             Console.ForegroundColor = ConsoleColor.White;
 
-            //TryDisablyQuickEdit();
+            TryDisableQuickEdit();
             SetPaths();
             SetCulture();
             LoadResources();
@@ -67,7 +67,7 @@ namespace GameServer
             while (true) Thread.Sleep(1);
         }
 
-        private static void TryDisablyQuickEdit()
+        private static void TryDisableQuickEdit()
         {
             try
             {
