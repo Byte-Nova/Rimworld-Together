@@ -190,15 +190,15 @@ namespace GameServer
             "will use UPnP to portforward the server",
             PortForwardCommandAction);
 
-        private static ServerCommand toggleVerboseLogsCommand = new ServerCommand("toggleVerboseLogs", 0,
+        private static ServerCommand toggleVerboseLogsCommand = new ServerCommand("toggleverboselogs", 0,
             "toggles verbose logs to be true or false",
             ToggleVerboseLogsCommandAction);
 
-        private static ServerCommand toggleSyncLocalSaveCommand = new ServerCommand("toggleSyncLocalSave", 0,
+        private static ServerCommand toggleSyncLocalSaveCommand = new ServerCommand("togglesynclocalsave", 0,
             "toggles allowing local saves to sync with server to be true or false",
             ToggleSyncLocalSaveCommandAction);
 
-        private static ServerCommand resetWorldCommand = new ServerCommand("resetWorld", 0,
+        private static ServerCommand resetWorldCommand = new ServerCommand("resetworld", 0,
             "Resets all the world related data and stores a backup of it",
             ResetWorldCommandAction);
 
