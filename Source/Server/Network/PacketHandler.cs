@@ -11,7 +11,7 @@ namespace GameServer
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole($"[Header] > {packet.header}",allowLogMultiplier:true);
+            if (Master.serverConfig.VerboseLogs) Logger.Message($"[Header] > {packet.header}");
 
             client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);
@@ -47,6 +47,11 @@ namespace GameServer
         public static void TransferPacket(ServerClient client, Packet packet)
         {
             TransferManager.ParseTransferPacket(client, packet);
+        }
+
+        public static void MarketPacket(ServerClient client, Packet packet)
+        {
+            OnlineMarketManager.ParseMarketPacket(client, packet);
         }
 
         public static void SitePacket(ServerClient client, Packet packet)

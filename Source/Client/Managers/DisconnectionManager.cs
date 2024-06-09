@@ -13,7 +13,8 @@ namespace GameClient
             None,
             SaveQuitToMenu,
             SaveQuitToOS,
-            QuitToMenu
+            QuitToMenu,
+            ConnectionLost
         }
 
         public static bool isIntentionalDisconnect;
@@ -49,6 +50,11 @@ namespace GameClient
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { QuitGame(); }));
                         break;
 
+                    case DCReason.ConnectionLost:
+                        reason = "Connection to server lost";
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { DisconnectToMenu(); }));
+                        break;
+
                     default:
                         reason = $"{intentionalDisconnectReason}";
                         DisconnectToMenu();
@@ -61,7 +67,14 @@ namespace GameClient
             else
             {
                 Logger.Message($"Disconnected from server: Connection Lost");
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Your connection to the server has been lost...", delegate { DisconnectToMenu(); }));
+
+                if (Current.ProgramState != ProgramState.Entry)
+                {
+                    DialogManager.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?", 
+                        delegate { SaveManager.ForceSave(); DisconnectToMenu(); }, delegate { DisconnectToMenu(); }));
+                }
+
+                DialogManager.PopWaitDialog();
             }
         }
 
@@ -69,7 +82,6 @@ namespace GameClient
 
         public static void DisconnectToMenu()
         {
-            Network.state = NetworkState.Disconnected;
             OnlineChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
