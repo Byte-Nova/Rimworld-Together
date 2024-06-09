@@ -28,9 +28,9 @@ namespace GameServer
 
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
 
-            Logger.Warning("Type 'help' to get a list of available commands");
-            Logger.Warning($"Listening for users at {localAddress}:{port}");
-            Logger.Warning("Server launched");
+            Logger.WriteToConsole("Type 'help' to get a list of available commands", LogMode.Warning);
+            Logger.WriteToConsole($"Listening for users at {localAddress}:{port}", LogMode.Warning);
+            Logger.WriteToConsole("Server launched", LogMode.Warning);
             Master.ChangeTitle();
 
             while (true) ListenForIncomingUsers();
@@ -56,7 +56,7 @@ namespace GameServer
                 if (connectedClients.ToArray().Count() >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
                     UserManager.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
-                    Logger.Warning($"[Warning] > Server Full");
+                    Logger.WriteToConsole($"[Warning] > Server Full", LogMode.Warning);
                 }
 
                 else
@@ -65,7 +65,7 @@ namespace GameServer
 
                     Master.ChangeTitle();
 
-                    Logger.Message($"[Connect] > {newServerClient.username} | {newServerClient.SavedIP}");
+                    Logger.WriteToConsole($"[Connect] > {newServerClient.username} | {newServerClient.SavedIP}");
                 }
             }
         }
@@ -81,9 +81,13 @@ namespace GameServer
 
                 Master.ChangeTitle();
                 UserManager.SendPlayerRecount();
-                Logger.Message($"[Disconnect] > {client.username} | {client.SavedIP}");
+                Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
             }
-            catch { Logger.Warning($"Error disconnecting user {client.username}, this will cause memory overhead"); }
+
+            catch
+            {
+                Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", LogMode.Warning);
+            }
         }
     }
 }

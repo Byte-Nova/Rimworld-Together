@@ -138,7 +138,6 @@ namespace GameClient
 
         public void DestroyConnection()
         {
-            disconnectFlag = true;
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();

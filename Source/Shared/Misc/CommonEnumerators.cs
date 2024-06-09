@@ -17,10 +17,6 @@
 
         public enum EventStepMode { Send, Receive, Recover }
 
-        //Market
-
-        public enum MarketStepMode { Add, Request, Reload }
-
         //Factions
 
         public enum FactionManifestMode
@@ -48,11 +44,11 @@
 
         //Transfers
 
-        public enum TransferMode { Gift, Trade, Rebound, Pod, Market }
+        public enum TransferMode { Gift, Trade, Rebound, Pod }
 
-        public enum TransferLocation { Caravan, Settlement, Pod, World }
+        public enum TransferLocation { Caravan, Settlement, Pod }
 
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod, Market }
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
 
         //Offline visit
 
@@ -82,7 +78,7 @@
 
         //Saving
 
-        public enum SaveMode { Disconnect, Autosave, Strict }
+        public enum SaveMode { Disconnect, Autosave }
 
         //Chat
 

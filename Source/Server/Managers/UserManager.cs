@@ -6,10 +6,6 @@ namespace GameServer
 {
     public static class UserManager
     {
-        //Variables
-
-        public readonly static string fileExtension = ".mpuser";
-
         public static void LoadDataFromFile(ServerClient client)
         {
             UserFile file = GetUserFile(client);
@@ -23,7 +19,7 @@ namespace GameServer
             client.enemyPlayers = file.enemyPlayers;
             client.allyPlayers = file.allyPlayers;
 
-            Logger.Message($"[Handshake] > {client.username} | {client.SavedIP}");
+            Logger.WriteToConsole($"[Handshake] > {client.username} | {client.SavedIP}");
         }
 
         public static UserFile GetUserFile(ServerClient client)
@@ -32,8 +28,7 @@ namespace GameServer
 
             foreach(string userFile in userFiles)
             {
-                if (!userFile.EndsWith(fileExtension)) continue;
-
+                if (!userFile.EndsWith(".json")) continue;
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
                 if (file.username == client.username) return file;
             }
@@ -47,8 +42,7 @@ namespace GameServer
 
             foreach (string userFile in userFiles)
             {
-                if (!userFile.EndsWith(fileExtension)) continue;
-
+                if (!userFile.EndsWith(".json")) continue;
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
                 if (file.username == username) return file;
             }
@@ -63,7 +57,7 @@ namespace GameServer
             string[] existingUsers = Directory.GetFiles(Master.usersPath);
             foreach (string user in existingUsers) 
             {
-                if (!user.EndsWith(fileExtension)) continue;
+                if (!user.EndsWith(".json")) continue;
                 userFiles.Add(Serializer.SerializeFromFile<UserFile>(user)); 
             }
             return userFiles.ToArray();
@@ -71,13 +65,13 @@ namespace GameServer
 
         public static void SaveUserFile(ServerClient client, UserFile userFile)
         {
-            string savePath = Path.Combine(Master.usersPath, client.username + fileExtension);
+            string savePath = Path.Combine(Master.usersPath, client.username + ".json");
             Serializer.SerializeToFile(savePath, userFile);
         }
 
         public static void SaveUserFileFromName(string username, UserFile userFile)
         {
-            string savePath = Path.Combine(Master.usersPath, username + fileExtension);
+            string savePath = Path.Combine(Master.usersPath, username + ".json");
             Serializer.SerializeToFile(savePath, userFile);
         }
 
@@ -112,8 +106,7 @@ namespace GameServer
 
             foreach (string user in existingUsers)
             {
-                if (!user.EndsWith(fileExtension)) continue;
-
+                if (!user.EndsWith(".json")) continue;
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
                 if (existingUser.username.ToLower() == data.username.ToLower())
                 {
@@ -132,7 +125,7 @@ namespace GameServer
 
             foreach (string user in existingUsers)
             {
-                if (!user.EndsWith(fileExtension)) continue;
+                if (!user.EndsWith(".json")) continue;
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
                 if (existingUser.username == data.username)
                 {
@@ -225,7 +218,7 @@ namespace GameServer
             if (loginData.clientVersion == CommonValues.executableVersion) return true;
             else
             {
-                Logger.Warning($"[Version Mismatch] > {client.username}");
+                Logger.WriteToConsole($"[Version Mismatch] > {client.username}", LogMode.Warning);
                 SendLoginResponse(client, LoginResponse.WrongVersion);
                 return false;
             }

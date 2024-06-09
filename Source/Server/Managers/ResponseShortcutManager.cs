@@ -13,8 +13,8 @@ namespace GameServer
 
             if (shouldBroadcast) 
             { 
-                Logger.Warning($"[Illegal action] > {client.username} > {client.SavedIP}");
-                Logger.Warning($"[Illegal reason] > {message}");
+                Logger.WriteToConsole($"[Illegal action] > {client.username} > {client.SavedIP}", LogMode.Warning);
+                Logger.WriteToConsole($"[Illegal reason] > {message}", LogMode.Warning);
             }
         }
 

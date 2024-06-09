@@ -12,47 +12,49 @@ namespace GameClient
 {
     public class RT_Dialog_TransferMenu : Window
     {
-        //UI
-
         public override Vector2 InitialSize => new Vector2(600f, 512f);
-        private Vector2 scrollPosition = Vector2.zero;
 
-        public readonly string title = "Transfer Menu";
-        public readonly string description = "Select the items you wish to transfer";
+        public string title = "Transfer Menu";
 
-        private readonly float buttonX = 100f;
-        private readonly float buttonY = 37f;
+        public string description = "Select the items you wish to transfer";
 
-        private readonly int startAcceptingInputAtFrame;
+        private float buttonX = 100f;
+
+        private float buttonY = 37f;
+
+        private int startAcceptingInputAtFrame;
 
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
-        //Variables
+        private Vector2 scrollPosition = Vector2.zero;
 
-        private readonly CommonEnumerators.TransferLocation transferLocation;
         private List<Tradeable> cachedTradeables;
+
         private Pawn playerNegotiator;
 
-        private readonly bool allowItems;
-        private readonly bool allowAnimals;
-        private readonly bool allowHumans;
-        private readonly bool allowFreeThings;
+        CommonEnumerators.TransferLocation transferLocation;
 
-        public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false, bool allowFreeThings = true)
+        private bool allowItems;
+        private bool allowAnimals;
+        private bool allowHumans;
+
+        public RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, 
+            bool allowHumans = false)
         {
             DialogManager.dialogTransferMenu = this;
             this.transferLocation = transferLocation;
             this.allowItems = allowItems;
             this.allowAnimals = allowAnimals;
             this.allowHumans = allowHumans;
-            this.allowFreeThings = allowFreeThings;
 
             ClientValues.ToggleTransfer(true);
 
             forcePause = true;
             absorbInputAroundWindow = true;
+
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+            //soundClose = SoundDefOf.CommsWindow_Close;
+
             closeOnAccept = false;
             closeOnCancel = false;
 
@@ -83,9 +85,20 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 55f, rect.width, rect.height - buttonY - 65));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept")) OnAccept();
-            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reset")) OnReset();
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel")) OnCancel();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept"))
+            {
+                OnAccept();
+            }
+
+            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reset"))
+            {
+                OnReset();
+            }
+
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            {
+                OnCancel();
+            }
         }
 
         private void FillMainRect(Rect mainRect)
@@ -122,13 +135,13 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = CommonEnumerators.TransferMode.Gift;
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Gift).ToString();
                     postChoosing();
                 };
 
                 Action r2 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = CommonEnumerators.TransferMode.Trade;
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Trade).ToString();
                     postChoosing();
                 };
 
@@ -145,22 +158,7 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = CommonEnumerators.TransferMode.Rebound;
-                    DialogManager.PopDialog(DialogManager.dialogItemListing);
-                    postChoosing();
-                };
-
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    r1, null);
-
-                DialogManager.PushNewDialog(d1);
-            }
-
-            else if (transferLocation == CommonEnumerators.TransferLocation.World)
-            {
-                Action r1 = delegate
-                {
-                    ClientValues.outgoingManifest.transferMode = CommonEnumerators.TransferMode.Market;
+                    ClientValues.outgoingManifest.transferMode = ((int)CommonEnumerators.TransferMode.Rebound).ToString();
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -220,11 +218,6 @@ namespace GameClient
             {
                 playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
-
-            else if (transferLocation == CommonEnumerators.TransferLocation.World)
-            {
-                playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
-            }
         }
 
         private void SetupTrade()
@@ -238,12 +231,6 @@ namespace GameClient
             {
                 TradeSession.SetupWith(Find.WorldObjects.SettlementAt(int.Parse(ClientValues.incomingManifest.fromTile)), 
                     playerNegotiator, true);
-            }
-
-            else if (transferLocation == CommonEnumerators.TransferLocation.World)
-            {
-                Settlement toUse = Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction));
-                TradeSession.SetupWith(toUse, playerNegotiator, true);
             }
         }
 
@@ -296,15 +283,11 @@ namespace GameClient
 
                 if (allowItems)
                 {
-                    foreach (Thing thing in caravanItems)
+                    foreach (Thing item in caravanItems)
                     {
-                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
-                        else
-                        {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(thing, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
-                        }
+                        Tradeable tradeable = new Tradeable();
+                        tradeable.AddThing(item, Transactor.Colony);
+                        ClientValues.listToShowInTradesMenu.Add(tradeable);
                     }
                 }
 
@@ -362,76 +345,9 @@ namespace GameClient
                 {
                     foreach(Thing thing in thingsInMap)
                     {
-                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
-                        {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(thing, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
-                        }
-                    }
-                }
-
-                if (allowHumans || allowAnimals)
-                {
-                    foreach (Pawn pawn in pawnsInMap)
-                    {
-                        if (DeepScribeHelper.CheckIfThingIsAnimal(pawn))
-                        {
-                            if (allowAnimals)
-                            {
-                                Tradeable tradeable = new Tradeable();
-                                tradeable.AddThing(pawn, Transactor.Colony);
-                                ClientValues.listToShowInTradesMenu.Add(tradeable);
-                            }
-                        }
-
-                        else
-                        {
-                            if (allowHumans)
-                            {
-                                if (pawn == playerNegotiator) continue;
-                                else
-                                {
-                                    Tradeable tradeable = new Tradeable();
-                                    tradeable.AddThing(pawn, Transactor.Colony);
-                                    ClientValues.listToShowInTradesMenu.Add(tradeable);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            else if (transferLocation == CommonEnumerators.TransferLocation.World)
-            {
-                Map map = Find.AnyPlayerHomeMap;
-
-                List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
-                pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
-
-                List<Thing> thingsInMap = new List<Thing>();
-                foreach (Zone zone in map.zoneManager.AllZones)
-                {
-                    foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
-                    {
-                        if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
-                        {
-                            thingsInMap.Add(thing);
-                        }
-                    }
-                }
-
-                if (allowItems)
-                {
-                    foreach (Thing thing in thingsInMap)
-                    {
-                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
-                        else
-                        {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(thing, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
-                        }
+                        Tradeable tradeable = new Tradeable();
+                        tradeable.AddThing(thing, Transactor.Colony);
+                        ClientValues.listToShowInTradesMenu.Add(tradeable);
                     }
                 }
 

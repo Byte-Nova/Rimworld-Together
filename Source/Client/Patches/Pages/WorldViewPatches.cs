@@ -70,7 +70,27 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Disconnected) return;
 
-            if (FactionValues.playerFactions.Contains(__instance.Faction))
+            if (__instance.Faction == Find.FactionManager.OfPlayer)
+            {
+                var gizmoList = __result.ToList();
+
+                Command_Action command_FactionMenu = new Command_Action
+                {
+                    defaultLabel = "Faction Menu",
+                    defaultDesc = "Access your faction menu",
+                    icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
+                    action = delegate
+                    {
+                        ClientValues.chosenSettlement = __instance;
+
+                        if (ServerValues.hasFaction) OnlineFactionManager.OnFactionOpen();
+                        else OnlineFactionManager.OnNoFactionOpen();
+                    }
+                };
+
+                gizmoList.Add(command_FactionMenu);
+                __result = gizmoList;
+            }else if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
                 var gizmoList = __result.ToList();
                 gizmoList.Clear();
@@ -134,43 +154,6 @@ namespace GameClient
                 {
                     gizmoList.Add(command_Caravan);
                 }
-                __result = gizmoList;
-            }
-
-            else if (__instance.Faction == Find.FactionManager.OfPlayer)
-            {
-                var gizmoList = __result.ToList();
-
-                Command_Action command_FactionMenu = new Command_Action
-                {
-                    defaultLabel = "Faction Menu",
-                    defaultDesc = "Access your faction menu",
-                    icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
-                    action = delegate
-                    {
-                        ClientValues.chosenSettlement = __instance;
-
-                        if (ServerValues.hasFaction) OnlineFactionManager.OnFactionOpen();
-                        else OnlineFactionManager.OnNoFactionOpen();
-                    }
-                };
-
-                Command_Action command_GlobalMarketMenu = new Command_Action
-                {
-                    defaultLabel = "Global Market Menu",
-                    defaultDesc = "Access the global market",
-                    icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
-                    action = delegate 
-                    {
-                        ClientValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
-
-                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(ClientValues.chosenSettlement.Map)) OnlineMarketManager.RequestReloadStock();
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
-                    }
-                };
-
-                gizmoList.Add(command_GlobalMarketMenu);
-                gizmoList.Add(command_FactionMenu);
                 __result = gizmoList;
             }
         }
@@ -255,7 +238,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckIfSocialPawnInCaravan(ClientValues.chosenCaravan))
+                        if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Caravan))
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
                         }

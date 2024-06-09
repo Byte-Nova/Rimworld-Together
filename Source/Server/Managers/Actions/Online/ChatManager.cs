@@ -59,7 +59,7 @@ namespace GameServer
                 toFind.commandAction.Invoke();
             }
 
-            Logger.Message($"[Chat command] > {client.username} > {command}");
+            Logger.WriteToConsole($"[Chat command] > {client.username} > {command}");
 
             commandSemaphore.Release();
         }
@@ -86,7 +86,7 @@ namespace GameServer
             foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
 
             WriteToLogs(client.username, message);
-            if (Master.serverConfig.DisplayChatInConsole) Logger.Message($"[Chat] > {client.username} > {message}");
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > {client.username} > {message}", LogMode.Message, false);
         }
 
         public static void BroadcastServerMessage(string messageToSend)
@@ -101,7 +101,7 @@ namespace GameServer
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             WriteToLogs("CONSOLE", messageToSend);
-            if (Master.serverConfig.DisplayChatInConsole) Logger.Message($"[Chat] > CONSOLE > {messageToSend}");
+            if (Master.serverConfig.DisplayChatInConsole) Logger.WriteToConsole($"[Chat] > CONSOLE > {messageToSend}", LogMode.Message, false);
         }
 
         public static void BroadcastSystemMessage(ServerClient client, string[] messagesToSend)

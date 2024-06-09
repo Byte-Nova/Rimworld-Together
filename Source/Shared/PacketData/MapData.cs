@@ -22,7 +22,6 @@ namespace Shared
 
         public List<string> tileDefNames = new List<string>();
         public List<string> roofDefNames = new List<string>();
-        public List<bool> tilePollutions = new List<bool>();
 
         //Things
 

@@ -65,8 +65,7 @@ namespace GameClient
                             Network.listener.EnqueuePacket(packet);
                         };
 
-                        Action d2 = delegate { DialogManager.PushNewDialog(new RT_Dialog_OK("A backup will be made of your save", r1)); };
-                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to delete your save?", d2, null);
+                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to reset your save?", r1, null);
                         DialogManager.PushNewDialog(d1);
                     }
                 }
@@ -82,12 +81,10 @@ namespace GameClient
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
-                GUI.color = new Color(1f, 0.3f, 0.35f);
-                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "Delete Save"))
+                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "Reset Save"))
                 {
 
                 }
-                GUI.color = Color.white;
             }
 
             return;

@@ -30,7 +30,7 @@ namespace GameClient
             drawInScreenshotMode = false;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+            //soundClose = SoundDefOf.CommsWindow_Close;
 
             closeOnAccept = false;
             closeOnCancel = true;

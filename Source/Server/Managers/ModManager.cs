@@ -19,10 +19,10 @@ namespace GameServer
                         if (!Master.loadedRequiredMods.Contains(str.ToLower())) Master.loadedRequiredMods.Add(str.ToLower());
                     }
                 }
-                catch { Logger.Error($"[Error] > Failed to load About.xml of mod at '{modPath}'"); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
-            Logger.Warning($"Loaded required mods [{Master.loadedRequiredMods.Count()}]");
+            Logger.WriteToConsole($"Loaded required mods [{Master.loadedRequiredMods.Count()}]", LogMode.Warning);
 
             Master.loadedOptionalMods.Clear();
             string[] optionalModsToLoad = Directory.GetDirectories(Master.optionalModsPath);
@@ -39,10 +39,10 @@ namespace GameServer
                         }
                     }
                 }
-                catch { Logger.Error($"[Error] > Failed to load About.xml of mod at '{modPath}'"); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
-            Logger.Warning($"Loaded optional mods [{Master.loadedOptionalMods.Count()}]");
+            Logger.WriteToConsole($"Loaded optional mods [{Master.loadedOptionalMods.Count()}]", LogMode.Warning);
 
             Master.loadedForbiddenMods.Clear();
             string[] forbiddenModsToLoad = Directory.GetDirectories(Master.forbiddenModsPath);
@@ -59,10 +59,10 @@ namespace GameServer
                         }
                     }
                 }
-                catch { Logger.Error($"[Error] > Failed to load About.xml of mod at '{modPath}'"); }
+                catch { Logger.WriteToConsole($"[Error] > Failed to load About.xml of mod at '{modPath}'", LogMode.Error); }
             }
 
-            Logger.Warning($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]");
+            Logger.WriteToConsole($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]", LogMode.Warning);
         }
 
         public static bool CheckIfModConflict(ServerClient client, LoginData loginData)
@@ -117,14 +117,14 @@ namespace GameServer
             {
                 if (client.isAdmin)
                 {
-                    Logger.Warning($"[Mod bypass] > {client.username}");
+                    Logger.WriteToConsole($"[Mod bypass] > {client.username}", LogMode.Warning);
                     client.runningMods = loginData.runningMods;
                     return false;
                 }
 
                 else
                 {
-                    Logger.Warning($"[Mod Mismatch] > {client.username}");
+                    Logger.WriteToConsole($"[Mod Mismatch] > {client.username}", LogMode.Warning);
                     UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }

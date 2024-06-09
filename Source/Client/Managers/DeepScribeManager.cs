@@ -1183,7 +1183,6 @@ namespace GameClient
                     IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
                     mapData.tileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
-                    mapData.tilePollutions.Add(map.pollutionGrid.IsPolluted(vectorToCheck));
 
                     if (map.roofGrid.RoofAt(vectorToCheck) == null) mapData.roofDefNames.Add("null");
                     else mapData.roofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
@@ -1272,7 +1271,6 @@ namespace GameClient
                             mapData.tileDefNames[index]);
 
                         map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
-                        map.pollutionGrid.SetPolluted(vectorToCheck, mapData.tilePollutions[index]);
 
                     }
                     catch { Logger.Warning($"Failed to set terrain at {vectorToCheck}"); }

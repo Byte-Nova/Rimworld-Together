@@ -52,7 +52,7 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, spyCost))
+                if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(spyCost))
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
                 }

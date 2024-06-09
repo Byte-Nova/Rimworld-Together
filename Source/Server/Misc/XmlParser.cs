@@ -29,7 +29,7 @@ namespace GameServer
 
                 return result.ToArray();
             }
-            catch (Exception e) { Logger.Error($"[Error] > Failed to parse mod at '{xmlPath}'. Exception: {e}"); }
+            catch (Exception e) { Logger.WriteToConsole($"[Error] > Failed to parse mod at '{xmlPath}'. Exception: {e}", LogMode.Error); }
 
             return result.ToArray();
         }

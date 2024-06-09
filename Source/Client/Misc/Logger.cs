@@ -18,7 +18,7 @@ namespace GameClient
 
         public static void Error(string message) { WriteToConsole(message, LogMode.Error); }
 
-        private static void WriteToConsole(string text, LogMode mode = LogMode.Message)
+        public static void WriteToConsole(string text, LogMode mode = LogMode.Message)
         {
             string toWrite = $"[Rimworld Together] > {text}";
 

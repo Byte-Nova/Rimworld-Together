@@ -39,7 +39,7 @@ namespace GameClient
             absorbInputAroundWindow = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+            //soundClose = SoundDefOf.CommsWindow_Close;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -128,7 +128,7 @@ namespace GameClient
 
                 else if (transferMode == CommonEnumerators.TransferMode.Trade)
                 {
-                    if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
+                    if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Settlement))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
                     }
@@ -147,7 +147,7 @@ namespace GameClient
 
                 else if (transferMode == CommonEnumerators.TransferMode.Rebound)
                 {
-                    ClientValues.incomingManifest.transferStepMode = CommonEnumerators.TransferStepMode.TradeReAccept;
+                    ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);

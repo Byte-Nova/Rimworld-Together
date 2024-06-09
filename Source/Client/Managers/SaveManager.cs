@@ -6,9 +6,6 @@ using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
 using static GameClient.DisconnectionManager;
-using System.Xml;
-using System.Xml.XPath;
-using System;
 
 namespace GameClient
 {
@@ -16,8 +13,7 @@ namespace GameClient
     {
         public static string customSaveName => $"Server - {Network.ip} - {ClientValues.username}";
         private static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
-        private static string tempSaveFilePath => saveFilePath + ".mpsave";
-        private static string serverSaveFilePath => saveFilePath + ".rws.temp";
+        private static string tempSaveFilePath => saveFilePath + ".temp";
 
         public static void ForceSave()
         {
@@ -50,59 +46,17 @@ namespace GameClient
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
 
-                byte[] fileBytes = File.ReadAllBytes(tempSaveFilePath);
-                fileBytes = GZip.Decompress(fileBytes);
-
-                File.WriteAllBytes(serverSaveFilePath, fileBytes);
+                byte[] compressedSave = File.ReadAllBytes(tempSaveFilePath);
+                byte[] save = GZip.Decompress(compressedSave);
+                File.WriteAllBytes(saveFilePath, save);
                 File.Delete(tempSaveFilePath);
 
-                if(fileTransferData.instructions != (int)SaveMode.Strict && File.Exists(saveFilePath)) 
-                { 
-                    Logger.Message("Comparing remote vs local save (if exists)");
-
-                    if (GetRealPlayTimeInteractingFromSave(serverSaveFilePath) >= GetRealPlayTimeInteractingFromSave(saveFilePath))
-                    {
-                        Logger.Message("Loading remote save");
-                        File.Delete(saveFilePath);
-                        File.Move(serverSaveFilePath, saveFilePath);
-                    }
-
-                    else
-                    {
-                        Logger.Message("Loading local save");
-                        File.Delete(serverSaveFilePath);
-                    }
-                }
-
-                else
-                {
-                    File.Delete(saveFilePath);
-                    File.Move(serverSaveFilePath, saveFilePath);
-                }
-
                 GameDataSaveLoader.LoadGame(customSaveName);
+                return;
             }
 
-            else
-            {
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
-                Network.listener.EnqueuePacket(rPacket);
-            }
-        }
-
-        private static double GetRealPlayTimeInteractingFromSave(string filePath)
-        {
-            if (!File.Exists(filePath)) return 0;
-
-            try
-            {
-                XmlDocument doc = new XmlDocument();
-                doc.Load(filePath);
-                XPathNavigator nav = doc.CreateNavigator();
-
-                return double.Parse(nav.SelectSingleNode("/savegame/game/info/realPlayTimeInteracting").Value);
-            }
-            catch { return 0; }
+            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
+            Network.listener.EnqueuePacket(rPacket);
         }
 
         public static void SendSavePartToServer()
@@ -112,10 +66,10 @@ namespace GameClient
             {
                 ClientValues.ToggleSendingSaveToServer(true);
 
-                byte[] saveBytes = File.ReadAllBytes(saveFilePath);
-                saveBytes = GZip.Compress(saveBytes);
+                byte[] saveBytes = File.ReadAllBytes(saveFilePath); ;
+                byte[] compressedSave = GZip.Compress(saveBytes);
+                File.WriteAllBytes(tempSaveFilePath, compressedSave);
 
-                File.WriteAllBytes(tempSaveFilePath, saveBytes);
                 Network.listener.uploadManager = new UploadManager();
                 Network.listener.uploadManager.PrepareUpload(tempSaveFilePath);
             }
@@ -129,10 +83,9 @@ namespace GameClient
 
             //Set the instructions of the packet
             if (isIntentionalDisconnect && (intentionalDisconnectReason == DCReason.SaveQuitToMenu || intentionalDisconnectReason == DCReason.SaveQuitToOS))
-            {
                 fileTransferData.instructions = (int)SaveMode.Disconnect;
-            }
-            else fileTransferData.instructions = (int)SaveMode.Autosave;
+            else 
+                fileTransferData.instructions = (int)SaveMode.Autosave;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             Network.listener.EnqueuePacket(packet);

@@ -19,7 +19,7 @@ namespace GameClient
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+            //soundClose = SoundDefOf.CommsWindow_Close;
 
             closeOnAccept = false;
             closeOnCancel = false;

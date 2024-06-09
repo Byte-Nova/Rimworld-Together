@@ -21,42 +21,42 @@ namespace GameClient
         {
             TransferData transferData = (TransferData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (transferData.transferStepMode)
+            switch (int.Parse(transferData.transferStepMode))
             {
-                case TransferStepMode.TradeRequest:
+                case (int)TransferStepMode.TradeRequest:
                     ReceiveTransferRequest(transferData);
                     break;
 
-                case TransferStepMode.TradeAccept:
+                case (int)TransferStepMode.TradeAccept:
                     DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
-                    if (transferData.transferMode == TransferMode.Pod) LaunchDropPods();
+                    if (int.Parse(transferData.transferMode) == (int)TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
-                case TransferStepMode.TradeReject:
+                case (int)TransferStepMode.TradeReject:
                     DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
-                case TransferStepMode.TradeReRequest:
+                case (int)TransferStepMode.TradeReRequest:
                     DialogManager.PopWaitDialog();
                     ReceiveReboundRequest(transferData);
                     break;
 
-                case TransferStepMode.TradeReAccept:
+                case (int)TransferStepMode.TradeReAccept:
                     DialogManager.PopWaitDialog();
                     GetTransferedItemsToSettlement(TransferManagerHelper.GetAllTransferedItems(ClientValues.incomingManifest));
                     break;
 
-                case TransferStepMode.TradeReReject:
+                case (int)TransferStepMode.TradeReReject:
                     DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
-                case TransferStepMode.Recover:
+                case (int)TransferStepMode.Recover:
                     DialogManager.PopWaitDialog();
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
                     RecoverTradeItems(TransferLocation.Caravan);
@@ -95,7 +95,7 @@ namespace GameClient
 
         public static void TakeTransferItemsFromPods(CompLaunchable representative)
         {
-            ClientValues.outgoingManifest.transferMode = TransferMode.Pod;
+            ClientValues.outgoingManifest.transferMode = ((int)TransferMode.Pod).ToString();
             ClientValues.outgoingManifest.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
             ClientValues.outgoingManifest.toTile = ClientValues.chosenSettlement.Tile.ToString();
 
@@ -118,7 +118,7 @@ namespace GameClient
 
             if (transferLocation == TransferLocation.Caravan)
             {
-                ClientValues.outgoingManifest.transferStepMode = TransferStepMode.TradeRequest;
+                ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
@@ -126,7 +126,7 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                ClientValues.outgoingManifest.transferStepMode = TransferStepMode.TradeReRequest;
+                ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeReRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
@@ -134,19 +134,9 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.Pod)
             {
-                ClientValues.outgoingManifest.transferStepMode = TransferStepMode.TradeRequest;
+                ClientValues.outgoingManifest.transferStepMode = ((int)TransferStepMode.TradeRequest).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
-                Network.listener.EnqueuePacket(packet);
-            }
-
-            else if (transferLocation == TransferLocation.World)
-            {
-                MarketData marketData = new MarketData();
-                marketData.marketStepMode = MarketStepMode.Add;
-                marketData.transferThingBytes = ClientValues.outgoingManifest.itemDatas;
-
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -267,43 +257,43 @@ namespace GameClient
 
                 if (!ClientValues.isReadyToPlay || ClientValues.isInTransfer || ClientValues.rejectTransferBool)
                 {
-                    RejectRequest(transferData.transferMode, false);
+                    RejectRequest((TransferMode)int.Parse(transferData.transferMode));
                 }
 
                 else
                 {
                     Action r1 = delegate
                     {
-                        if (transferData.transferMode == TransferMode.Gift)
+                        if (int.Parse(transferData.transferMode) == (int)TransferMode.Gift)
                         {
                             RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Gift);
                             DialogManager.PushNewDialog(d1);
                         }
 
-                        else if (transferData.transferMode == TransferMode.Trade)
+                        else if (int.Parse(transferData.transferMode) == (int)TransferMode.Trade)
                         {
                             RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Trade);
                             DialogManager.PushNewDialog(d1);
                         }
 
-                        else if (transferData.transferMode == TransferMode.Pod)
+                        else if (int.Parse(transferData.transferMode) == (int)TransferMode.Pod)
                         {
                             RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Pod);
                             DialogManager.PushNewDialog(d1);
                         }
                     };
 
-                    if (transferData.transferMode == TransferMode.Gift)
+                    if (int.Parse(transferData.transferMode) == (int)TransferMode.Gift)
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
                     }
 
-                    else if (transferData.transferMode == TransferMode.Trade)
+                    else if (int.Parse(transferData.transferMode) == (int)TransferMode.Trade)
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a trade request", r1));
                     }
 
-                    else if (transferData.transferMode == TransferMode.Pod)
+                    else if (int.Parse(transferData.transferMode) == (int)TransferMode.Pod)
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
                     }
@@ -344,7 +334,7 @@ namespace GameClient
 
         //Executes when rejecting a transfer request
 
-        public static void RejectRequest(TransferMode transferMode, bool finishTransfer = true)
+        public static void RejectRequest(TransferMode transferMode)
         {
             if (transferMode == TransferMode.Gift)
             {
@@ -353,7 +343,7 @@ namespace GameClient
 
             else if (transferMode == TransferMode.Trade)
             {
-                ClientValues.incomingManifest.transferStepMode = TransferStepMode.TradeReject;
+                ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReject).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
@@ -366,7 +356,7 @@ namespace GameClient
 
             else if (transferMode == TransferMode.Rebound)
             {
-                ClientValues.incomingManifest.transferStepMode = TransferStepMode.TradeReReject;
+                ClientValues.incomingManifest.transferStepMode = ((int)TransferStepMode.TradeReReject).ToString();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
@@ -374,7 +364,7 @@ namespace GameClient
                 RecoverTradeItems(TransferLocation.Caravan);
             }
 
-            if (finishTransfer) FinishTransfer(false);
+            FinishTransfer(false);
         }
 
         //Launchs the drop pods with the desired transfer request
@@ -492,55 +482,18 @@ namespace GameClient
                 .FindAll(x => x.def == thingDef);
 
             int takenQuantity = 0;
-            foreach (Thing thing in caravanQuantity)
+            foreach (Thing unit in caravanQuantity)
             {
-                if (takenQuantity + thing.stackCount >= requiredQuantity)
+                if (takenQuantity + unit.stackCount >= requiredQuantity)
                 {
-                    thing.holdingOwner.Take(thing, requiredQuantity - takenQuantity);
+                    unit.holdingOwner.Take(unit, requiredQuantity - takenQuantity);
                     break;
                 }
 
-                else if (takenQuantity + thing.stackCount < requiredQuantity)
+                else if (takenQuantity + unit.stackCount < requiredQuantity)
                 {
-                    thing.holdingOwner.Take(thing, thing.stackCount);
-                    takenQuantity += thing.stackCount;
-                }
-            }
-        }
-
-
-        //Removes an item from the settlement
-
-        public static void RemoveThingFromSettlement(Map map, ThingDef thingDef, int requiredQuantity)
-        {
-            if (requiredQuantity == 0) return;
-
-            List<Thing> thingInMap = new List<Thing>();
-            foreach (Zone zone in map.zoneManager.AllZones)
-            {
-                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
-                {
-                    if (thing.def == thingDef && !thing.Position.Fogged(map))
-                    {
-                        thingInMap.Add(thing);
-                    }
-                }
-            }
-
-            int takenQuantity = 0;
-            foreach (Thing thing in thingInMap)
-            {
-                if (takenQuantity + thing.stackCount >= requiredQuantity)
-                {
-                    thing.stackCount -= requiredQuantity - takenQuantity;
-                    if (thing.stackCount <= 0) thing.Destroy();
-                    break;
-                }
-
-                else if (takenQuantity + thing.stackCount < requiredQuantity)
-                {
-                    thing.Destroy();
-                    takenQuantity += thing.stackCount;
+                    unit.holdingOwner.Take(unit, unit.stackCount);
+                    takenQuantity += unit.stackCount;
                 }
             }
         }

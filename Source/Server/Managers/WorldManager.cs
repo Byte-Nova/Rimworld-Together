@@ -41,7 +41,7 @@ namespace GameServer
 
             Master.worldValues = worldValues;
             Serializer.SerializeToFile(worldFilePath, worldValues);
-            Logger.Title($"[Save world] > {client.username}");
+            Logger.WriteToConsole($"[Save world] > {client.username}", LogMode.Title);
         }
 
         public static void RequireWorldFile(ServerClient client)
@@ -79,10 +79,10 @@ namespace GameServer
             {
                 Master.worldValues = Serializer.SerializeFromFile<WorldValuesFile>(worldFilePath);
 
-                Logger.Warning("Loaded world values");
+                Logger.WriteToConsole("Loaded world values", LogMode.Warning);
             }
 
-            else Logger.Warning("[Warning] > World is missing. Join server to create it");   
+            else Logger.WriteToConsole("[Warning] > World is missing. Join server to create it", LogMode.Warning);   
         }
     }
 }

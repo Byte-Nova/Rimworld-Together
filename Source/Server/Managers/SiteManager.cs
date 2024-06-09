@@ -5,10 +5,6 @@ namespace GameServer
 {
     public static class SiteManager
     {
-        //Variables
-
-        public readonly static string fileExtension = ".mpsite";
-
         public static void ParseSitePacket(ServerClient client, Packet packet)
         {
             SiteData siteData = (SiteData)Serializer.ConvertBytesToObject(packet.contents);
@@ -42,8 +38,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
-                if (!site.EndsWith(fileExtension)) continue;
-
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.tile == tileToCheck) return true;
             }
@@ -74,12 +69,12 @@ namespace GameServer
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(rPacket);
 
-            Logger.Warning($"[Created site] > {client.username}");
+            Logger.WriteToConsole($"[Created site] > {client.username}", LogMode.Warning);
         }
 
         public static void SaveSite(SiteFile siteFile)
         {
-            Serializer.SerializeToFile(Path.Combine(Master.sitesPath, siteFile.tile + fileExtension), siteFile);
+            Serializer.SerializeToFile(Path.Combine(Master.sitesPath, siteFile.tile + ".json"), siteFile);
         }
 
         public static SiteFile[] GetAllSites()
@@ -89,7 +84,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
-                if (!site.EndsWith(fileExtension)) continue;
+                if (!site.EndsWith(".json")) continue;
                 sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
             }
 
@@ -103,10 +98,12 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
-                if (!site.EndsWith(fileExtension)) continue;
-
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
-                if (!siteFile.isFromFaction && siteFile.owner == username) sitesList.Add(siteFile);
+                if (!siteFile.isFromFaction && siteFile.owner == username)
+                {
+                    sitesList.Add(siteFile);
+                }
             }
 
             return sitesList.ToArray();
@@ -117,8 +114,7 @@ namespace GameServer
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
-                if (!site.EndsWith(fileExtension)) continue;
-
+                if (!site.EndsWith(".json")) continue;
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.tile == tileToGet) return siteFile;
             }
@@ -203,8 +199,8 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
-            File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + fileExtension));
-            Logger.Warning($"[Remove site] > {siteFile.tile}");
+            File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + ".json"));
+            Logger.WriteToConsole($"[Destroyed site] > {siteFile.tile}", LogMode.Warning);
         }
 
         private static void GetSiteInfo(ServerClient client, SiteData siteData)
@@ -311,7 +307,7 @@ namespace GameServer
                 }
             }
 
-            Logger.Message($"[Site tick]");
+            Logger.WriteToConsole($"[Site tick]");
         }
     }
 }
