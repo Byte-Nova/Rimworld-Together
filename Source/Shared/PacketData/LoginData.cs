@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
@@ -10,7 +11,7 @@ namespace Shared
 
         public string password;
 
-        public string tryResponse;
+        public LoginResponse tryResponse;
 
         public string clientVersion;
 

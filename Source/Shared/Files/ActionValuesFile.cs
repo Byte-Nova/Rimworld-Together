@@ -1,8 +1,10 @@
-﻿namespace GameServer
+﻿using System;
+
+namespace Shared
 {
     [Serializable]
     public class ActionValuesFile
     {
-        public string SpyCost = "";
+        public int SpyCost;
     }
 }

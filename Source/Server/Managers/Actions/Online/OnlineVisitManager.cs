@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -6,33 +7,33 @@ namespace GameServer
     {
         public static void ParseVisitPacket(ServerClient client, Packet packet)
         {
-            VisitData visitData = (VisitData)Serializer.ConvertBytesToObject(packet.contents);
+            OnlineVisitData visitData = (OnlineVisitData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (visitData.visitStepMode)
             {
-                case (int)CommonEnumerators.VisitStepMode.Request:
+                case VisitStepMode.Request:
                     SendVisitRequest(client, visitData);
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Accept:
+                case VisitStepMode.Accept:
                     AcceptVisitRequest(client, visitData);
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Reject:
+                case VisitStepMode.Reject:
                     RejectVisitRequest(client, visitData);
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Action:
+                case VisitStepMode.Action:
                     SendVisitActions(client, visitData);
                     break;
 
-                case (int)CommonEnumerators.VisitStepMode.Stop:
+                case VisitStepMode.Stop:
                     SendVisitStop(client);
                     break;
             }
         }
 
-        private static void SendVisitRequest(ServerClient client, VisitData visitData)
+        private static void SendVisitRequest(ServerClient client, OnlineVisitData visitData)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitData.targetTile);
             if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} tried to visit a settlement at tile {visitData.targetTile}, but no settlement could be found");
@@ -41,7 +42,7 @@ namespace GameServer
                 ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
-                    visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Unavailable;
+                    visitData.visitStepMode = VisitStepMode.Unavailable;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                     client.listener.EnqueuePacket(packet);
                 }
@@ -50,7 +51,7 @@ namespace GameServer
                 {
                     if (toGet.inVisitWith != null)
                     {
-                        visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Unavailable;
+                        visitData.visitStepMode = VisitStepMode.Unavailable;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                         client.listener.EnqueuePacket(packet);
                     }
@@ -65,7 +66,7 @@ namespace GameServer
             }
         }
 
-        private static void AcceptVisitRequest(ServerClient client, VisitData visitData)
+        private static void AcceptVisitRequest(ServerClient client, OnlineVisitData visitData)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitData.fromTile);
             if (settlementFile == null) return;
@@ -84,7 +85,7 @@ namespace GameServer
             }
         }
 
-        private static void RejectVisitRequest(ServerClient client, VisitData visitData)
+        private static void RejectVisitRequest(ServerClient client, OnlineVisitData visitData)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitData.fromTile);
             if (settlementFile == null) return;
@@ -100,11 +101,11 @@ namespace GameServer
             }
         }
 
-        private static void SendVisitActions(ServerClient client, VisitData visitData)
+        private static void SendVisitActions(ServerClient client, OnlineVisitData visitData)
         {
             if (client.inVisitWith == null)
             {
-                visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Stop;
+                visitData.visitStepMode = VisitStepMode.Stop;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                 client.listener.EnqueuePacket(packet);
             }
@@ -118,8 +119,8 @@ namespace GameServer
 
         public static void SendVisitStop(ServerClient client)
         {
-            VisitData visitData = new VisitData();
-            visitData.visitStepMode = (int)CommonEnumerators.VisitStepMode.Stop;
+            OnlineVisitData visitData = new OnlineVisitData();
+            visitData.visitStepMode = VisitStepMode.Stop;
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
 
             if (client.inVisitWith == null) client.listener.EnqueuePacket(packet);

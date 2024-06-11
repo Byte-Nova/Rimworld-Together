@@ -1,8 +1,6 @@
 ﻿using RimWorld;
 using UnityEngine;
 using Verse;
-using System.Diagnostics;
-using System;
 
 namespace GameClient
 {

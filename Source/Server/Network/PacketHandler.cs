@@ -11,7 +11,7 @@ namespace GameServer
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs) Logger.Message($"[Header] > {packet.header}");
+            if (Master.serverConfig.VerboseLogs) Logger.Message($"[H] > {packet.header}");
 
             client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);

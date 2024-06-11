@@ -1,5 +1,4 @@
 ﻿using static GameServer.ServerCommandManager;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -29,12 +28,12 @@ namespace GameServer
             try
             {
                 ServerCommand commandToFetch = ServerCommandStorage.serverCommands.ToList().Find(x => x.prefix == parsedPrefix);
-                if (commandToFetch == null) Logger.Warning($"[ERROR] > Command '{parsedPrefix}' was not found");
+                if (commandToFetch == null) Logger.Warning($"Command '{parsedPrefix}' was not found");
                 else
                 {
                     if (commandToFetch.parameters != parsedParameters && commandToFetch.parameters != -1)
                     {
-                        Logger.Warning($"[ERROR] > Command '{commandToFetch.prefix}' wanted [{commandToFetch.parameters}] parameters "
+                        Logger.Warning($"Command '{commandToFetch.prefix}' wanted [{commandToFetch.parameters}] parameters "
                             + $"but was passed [{parsedParameters}]");
                     }
 
@@ -42,28 +41,19 @@ namespace GameServer
                     {
                         if (commandToFetch.commandAction != null) commandToFetch.commandAction.Invoke();
 
-                        else Logger.Warning($"[ERROR] > Command '{commandToFetch.prefix}' didn't have any action built in");
+                        else Logger.Warning($"Command '{commandToFetch.prefix}' didn't have any action built in");
                     }
                 }
             }
-            catch (Exception e) { Logger.Error($"[Error] > Couldn't parse command '{parsedPrefix}'. Reason: {e}"); }
+            catch (Exception e) { Logger.Error($"Couldn't parse command '{parsedPrefix}'. Reason: {e}"); }
         }
 
         public static void ListenForServerCommands()
         {
-            bool interactiveConsole;
+            bool interactiveConsole = false;
 
-            try
-            {
-                if (Console.In.Peek() != -1) interactiveConsole = true;
-                else interactiveConsole = false;
-            }
-
-            catch
-            {
-                interactiveConsole = false;
-                Logger.Warning($"[Warning] > Couldn't found interactive console, disabling commands");
-            }
+            try { interactiveConsole = Console.In.Peek() != -1 ? true : false; }
+            catch { Logger.Warning($"Couldn't find interactive console, disabling commands"); }
 
             if (interactiveConsole)
             {
@@ -72,149 +62,148 @@ namespace GameServer
                     ParseServerCommands(Console.ReadLine());
                 }
             }
-            else Logger.Warning($"[Warning] > Couldn't found interactive console, disabling commands");
         }
     }
 
     public static class ServerCommandStorage
     {
-        private static ServerCommand helpCommand = new ServerCommand("help", 0,
+        private static readonly ServerCommand helpCommand = new ServerCommand("help", 0,
             "Shows a list of all available commands to use",
             HelpCommandAction);
 
-        private static ServerCommand listCommand = new ServerCommand("list", 0,
+        private static readonly ServerCommand listCommand = new ServerCommand("list", 0,
             "Shows all connected players",
             ListCommandAction);
 
-        private static ServerCommand opCommand = new ServerCommand("op", 1,
+        private static readonly ServerCommand opCommand = new ServerCommand("op", 1,
             "Gives admin privileges to the selected player",
             OpCommandAction);
 
-        private static ServerCommand deopCommand = new ServerCommand("deop", 1,
+        private static readonly ServerCommand deopCommand = new ServerCommand("deop", 1,
             "Removes admin privileges from the selected player",
             DeopCommandAction);
 
-        private static ServerCommand kickCommand = new ServerCommand("kick", 1,
+        private static readonly ServerCommand kickCommand = new ServerCommand("kick", 1,
             "Kicks the selected player from the server",
             KickCommandAction);
 
-        private static ServerCommand banCommand = new ServerCommand("ban", 1,
+        private static readonly ServerCommand banCommand = new ServerCommand("ban", 1,
             "Bans the selected player from the server",
             BanCommandAction);
 
-        private static ServerCommand pardonCommand = new ServerCommand("pardon", 1,
+        private static readonly ServerCommand pardonCommand = new ServerCommand("pardon", 1,
             "Pardons the selected player from the server",
             PardonCommandAction);
 
-        private static ServerCommand deepListCommand = new ServerCommand("deeplist", 0,
+        private static readonly ServerCommand deepListCommand = new ServerCommand("deeplist", 0,
             "Shows a list of all server players",
             DeepListCommandAction);
 
-        private static ServerCommand banListCommand = new ServerCommand("banlist", 0,
+        private static readonly ServerCommand banListCommand = new ServerCommand("banlist", 0,
             "Shows a list of all banned server players",
             BanListCommandAction);
 
-        private static ServerCommand reloadCommand = new ServerCommand("reload", 0,
+        private static readonly ServerCommand reloadCommand = new ServerCommand("reload", 0,
             "Reloads all server resources",
             ReloadCommandAction);
 
-        private static ServerCommand modListCommand = new ServerCommand("modlist", 0,
+        private static readonly ServerCommand modListCommand = new ServerCommand("modlist", 0,
             "Shows all currently loaded mods",
             ModListCommandAction);
 
-        private static ServerCommand doSiteRewards = new ServerCommand("dositerewards", 0,
+        private static  readonly ServerCommand doSiteRewards = new ServerCommand("dositerewards", 0,
             "Forces site rewards to run",
             DoSiteRewardsCommandAction);
 
-        private static ServerCommand eventCommand = new ServerCommand("event", 2,
+        private static readonly ServerCommand eventCommand = new ServerCommand("event", 2,
             "Sends a command to the selecter players",
             EventCommandAction);
 
-        private static ServerCommand eventAllCommand = new ServerCommand("eventall", 1,
+        private static readonly ServerCommand eventAllCommand = new ServerCommand("eventall", 1,
             "Sends a command to all connected players",
             EventAllCommandAction);
 
-        private static ServerCommand eventListCommand = new ServerCommand("eventlist", 0,
+        private static readonly ServerCommand eventListCommand = new ServerCommand("eventlist", 0,
             "Shows a list of all available events to use",
             EventListCommandAction);
 
-        private static ServerCommand broadcastCommand = new ServerCommand("broadcast", -1,
+        private static readonly ServerCommand broadcastCommand = new ServerCommand("broadcast", -1,
             "Broadcast a message to all connected players",
             BroadcastCommandAction);
 
-        private static ServerCommand serverMessageCommand = new ServerCommand("chat", -1,
+        private static readonly ServerCommand serverMessageCommand = new ServerCommand("chat", -1,
             "Send a message in chat from the Server",
             ServerMessageCommandAction);
 
-        private static ServerCommand whitelistCommand = new ServerCommand("whitelist", 0,
+        private static readonly ServerCommand whitelistCommand = new ServerCommand("whitelist", 0,
             "Shows all whitelisted players",
             WhitelistCommandAction);
 
-        private static ServerCommand whitelistAddCommand = new ServerCommand("whitelistadd", 1,
+        private static readonly ServerCommand whitelistAddCommand = new ServerCommand("whitelistadd", 1,
             "Adds a player to the whitelist",
             WhitelistAddCommandAction);
 
-        private static ServerCommand whitelistRemoveCommand = new ServerCommand("whitelistremove", 1,
+        private static readonly ServerCommand whitelistRemoveCommand = new ServerCommand("whitelistremove", 1,
             "Removes a player from the whitelist",
             WhitelistRemoveCommandAction);
 
-        private static ServerCommand whitelistToggleCommand = new ServerCommand("togglewhitelist", 0,
+        private static readonly ServerCommand whitelistToggleCommand = new ServerCommand("togglewhitelist", 0,
             "Toggles the whitelist ON or OFF",
             WhitelistToggleCommandAction);
 
-        private static ServerCommand forceSaveCommand = new ServerCommand("forcesave", 1,
+        private static readonly ServerCommand forceSaveCommand = new ServerCommand("forcesave", 1,
             "Forces a player to sync their save",
             ForceSaveCommandAction);
 
-        private static ServerCommand deletePlayerCommand = new ServerCommand("deleteplayer", 1,
+        private static readonly ServerCommand deletePlayerCommand = new ServerCommand("deleteplayer", 1,
             "Deletes all data of a player",
             DeletePlayerCommandAction);
 
-        private static ServerCommand enableDifficultyCommand = new ServerCommand("enabledifficulty", 0,
+        private static readonly ServerCommand enableDifficultyCommand = new ServerCommand("enabledifficulty", 0,
             "Enables custom difficulty in the server",
             EnableDifficultyCommandAction);
 
-        private static ServerCommand disableDifficultyCommand = new ServerCommand("disabledifficulty", 0,
+        private static readonly ServerCommand disableDifficultyCommand = new ServerCommand("disabledifficulty", 0,
             "Disables custom difficulty in the server",
             DisableDifficultyCommandAction);
 
-        private static ServerCommand toggleCustomScenariosCommand = new ServerCommand("togglecustomscenarios", 0,
+        private static readonly ServerCommand toggleCustomScenariosCommand = new ServerCommand("togglecustomscenarios", 0,
             "enables/disables custom scenarios on the server",
             ToggleCustomScenariosCommandAction);
 
-        private static ServerCommand toggleUPnPCommand = new ServerCommand("toggleupnp", 0,
+        private static readonly ServerCommand toggleUPnPCommand = new ServerCommand("toggleupnp", 0,
             "enables/disables UPnP port mapping (auto-portforwarding)",
             ToggleUPnPCommandAction);
 
-        private static ServerCommand portforwardCommand = new ServerCommand("portforward", 0,
+        private static readonly ServerCommand portforwardCommand = new ServerCommand("portforward", 0,
             "will use UPnP to portforward the server",
             PortForwardCommandAction);
 
-        private static ServerCommand toggleVerboseLogsCommand = new ServerCommand("toggleverboselogs", 0,
+        private static readonly ServerCommand toggleVerboseLogsCommand = new ServerCommand("toggleverboselogs", 0,
             "toggles verbose logs to be true or false",
             ToggleVerboseLogsCommandAction);
 
-        private static ServerCommand toggleSyncLocalSaveCommand = new ServerCommand("togglesynclocalsave", 0,
+        private static readonly ServerCommand toggleSyncLocalSaveCommand = new ServerCommand("togglesynclocalsave", 0,
             "toggles allowing local saves to sync with server to be true or false",
             ToggleSyncLocalSaveCommandAction);
 
-        private static ServerCommand resetWorldCommand = new ServerCommand("resetworld", 0,
+        private static readonly ServerCommand resetWorldCommand = new ServerCommand("resetworld", 0,
             "Resets all the world related data and stores a backup of it",
             ResetWorldCommandAction);
 
-        private static ServerCommand quitCommand = new ServerCommand("quit", 0,
+        private static readonly ServerCommand quitCommand = new ServerCommand("quit", 0,
             "Saves all player data and then closes the server",
             QuitCommandAction);
 
-        private static ServerCommand forceQuitCommand = new ServerCommand("forcequit", 0,
+        private static readonly ServerCommand forceQuitCommand = new ServerCommand("forcequit", 0,
             "Closes the server without saving player data",
             ForceQuitCommandAction);
 
-        private static ServerCommand clearCommand = new ServerCommand("clear", 0,
+        private static readonly ServerCommand clearCommand = new ServerCommand("clear", 0,
             "Clears the console output",
             ClearCommandAction);
 
-        public static ServerCommand[] serverCommands = new ServerCommand[]
+        public static readonly ServerCommand[] serverCommands = new ServerCommand[]
         {
             helpCommand,
             listCommand,
@@ -289,8 +278,8 @@ namespace GameServer
 
         private static void OpCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
-            if (toFind == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
             {
@@ -305,7 +294,7 @@ namespace GameServer
 
                     CommandManager.SendOpCommand(toFind);
 
-                    Logger.Warning($"User '{ServerCommandManager.commandParameters[0]}' has now admin privileges");
+                    Logger.Warning($"User '{commandParameters[0]}' has now admin privileges");
                 }
             }
 
@@ -313,7 +302,7 @@ namespace GameServer
             {
                 if (client.isAdmin)
                 {
-                    Logger.Warning($"[ERROR] > User '{client.username}' was already an admin");
+                    Logger.Warning($"User '{client.username}' was already an admin");
                     return true;
                 }
 
@@ -323,8 +312,8 @@ namespace GameServer
 
         private static void DeopCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
-            if (toFind == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
             {
@@ -347,7 +336,7 @@ namespace GameServer
             {
                 if (!client.isAdmin)
                 {
-                    Logger.Warning($"[ERROR] > User '{client.username}' was not an admin");
+                    Logger.Warning($"User '{client.username}' was not an admin");
                     return true;
                 }
 
@@ -357,24 +346,24 @@ namespace GameServer
 
         private static void KickCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
-            if (toFind == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
             {
                 toFind.listener.disconnectFlag = true;
 
-                Logger.Warning($"User '{ServerCommandManager.commandParameters[0]}' has been kicked from the server");
+                Logger.Warning($"User '{commandParameters[0]}' has been kicked from the server");
             }
         }
 
         private static void BanCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
             if (toFind == null)
             {
-                UserFile userFile = UserManager.GetUserFileFromName(ServerCommandManager.commandParameters[0]);
-                if (userFile == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+                UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+                if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
                 else
                 {
@@ -384,7 +373,7 @@ namespace GameServer
                         userFile.isBanned = true;
                         UserManager.SaveUserFileFromName(userFile.username, userFile);
 
-                        Logger.Warning($"User '{ServerCommandManager.commandParameters[0]}' has been banned from the server");
+                        Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
                     }
                 }
             }
@@ -397,14 +386,14 @@ namespace GameServer
                 userFile.isBanned = true;
                 UserManager.SaveUserFile(toFind, userFile);
 
-                Logger.Warning($"User '{ServerCommandManager.commandParameters[0]}' has been banned from the server");
+                Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
             }
 
             bool CheckIfIsAlready(UserFile userFile)
             {
                 if (userFile.isBanned)
                 {
-                    Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' " +
+                    Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was already banned from the server");
                     return true;
                 }
@@ -428,8 +417,8 @@ namespace GameServer
 
         private static void PardonCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(ServerCommandManager.commandParameters[0]);
-            if (userFile == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
             {
@@ -439,7 +428,7 @@ namespace GameServer
                     userFile.isBanned = false;
                     UserManager.SaveUserFileFromName(userFile.username, userFile);
 
-                    Logger.Warning($"User '{ServerCommandManager.commandParameters[0]}' is no longer banned from the server");
+                    Logger.Warning($"User '{commandParameters[0]}' is no longer banned from the server");
                 }
             }
 
@@ -447,7 +436,7 @@ namespace GameServer
             {
                 if (!userFile.isBanned)
                 {
-                    Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' " +
+                    Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was not banned from the server");
                     return true;
                 }
@@ -496,52 +485,52 @@ namespace GameServer
 
         private static void EventCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
-            if (toFind == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
             {
-                for (int i = 0; i < ServerCommandManager.eventTypes.Count(); i++)
+                for (int i = 0; i < eventTypes.Count(); i++)
                 {
-                    if (ServerCommandManager.eventTypes[i] == ServerCommandManager.commandParameters[1])
+                    if (eventTypes[i] == commandParameters[1])
                     {
                         CommandManager.SendEventCommand(toFind, i);
 
-                        Logger.Warning($"Sent event '{ServerCommandManager.commandParameters[1]}' to {toFind.username}");
+                        Logger.Warning($"Sent event '{commandParameters[1]}' to {toFind.username}");
 
                         return;
                     }
                 }
 
-                Logger.Warning($"[ERROR] > Event '{ServerCommandManager.commandParameters[1]}' was not found");
+                Logger.Warning($"Event '{commandParameters[1]}' was not found");
             }
         }
 
         private static void EventAllCommandAction()
         {
-            for (int i = 0; i < ServerCommandManager.eventTypes.Count(); i++)
+            for (int i = 0; i < eventTypes.Count(); i++)
             {
-                if (ServerCommandManager.eventTypes[i] == ServerCommandManager.commandParameters[0])
+                if (eventTypes[i] == commandParameters[0])
                 {
                     foreach (ServerClient client in Network.connectedClients.ToArray())
                     {
                         CommandManager.SendEventCommand(client, i);
                     }
 
-                    Logger.Title($"Sent event '{ServerCommandManager.commandParameters[0]}' to every connected player");
+                    Logger.Title($"Sent event '{commandParameters[0]}' to every connected player");
 
                     return;
                 }
             }
 
-            Logger.Warning($"[ERROR] > Event '{ServerCommandManager.commandParameters[0]}' was not found");
+            Logger.Warning($"Event '{commandParameters[0]}' was not found");
         }
 
         private static void EventListCommandAction()
         {
-            Logger.Title($"Available events: [{ServerCommandManager.eventTypes.Count()}]");
+            Logger.Title($"Available events: [{eventTypes.Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (string str in ServerCommandManager.eventTypes)
+            foreach (string str in eventTypes)
             {
                 Logger.Warning($"{str}");
             }
@@ -551,7 +540,7 @@ namespace GameServer
         private static void BroadcastCommandAction()
         {
             string fullText = "";
-            foreach (string str in ServerCommandManager.commandParameters)
+            foreach (string str in commandParameters)
             {
                 fullText += $"{str} ";
             }
@@ -565,7 +554,7 @@ namespace GameServer
         private static void ServerMessageCommandAction()
         {
             string fullText = "";
-            foreach (string str in ServerCommandManager.commandParameters)
+            foreach (string str in commandParameters)
             {
                 fullText += $"{str} ";
             }
@@ -589,20 +578,20 @@ namespace GameServer
 
         private static void WhitelistAddCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(ServerCommandManager.commandParameters[0]);
-            if (userFile == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
             {
                 if (CheckIfIsAlready(userFile)) return;
-                else WhitelistManager.AddUserToWhitelist(ServerCommandManager.commandParameters[0]);
+                else WhitelistManager.AddUserToWhitelist(commandParameters[0]);
             }
 
             bool CheckIfIsAlready(UserFile userFile)
             {
                 if (Master.whitelist.WhitelistedUsers.Contains(userFile.username))
                 {
-                    Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' " +
+                    Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was already whitelisted");
 
                     return true;
@@ -614,20 +603,20 @@ namespace GameServer
 
         private static void WhitelistRemoveCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(ServerCommandManager.commandParameters[0]);
-            if (userFile == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
             {
                 if (CheckIfIsAlready(userFile)) return;
-                else WhitelistManager.RemoveUserFromWhitelist(ServerCommandManager.commandParameters[0]);
+                else WhitelistManager.RemoveUserFromWhitelist(commandParameters[0]);
             }
 
             bool CheckIfIsAlready(UserFile userFile)
             {
                 if (!Master.whitelist.WhitelistedUsers.Contains(userFile.username))
                 {
-                    Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' " +
+                    Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was not whitelisted");
 
                     return true;
@@ -644,21 +633,21 @@ namespace GameServer
 
         private static void ForceSaveCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == ServerCommandManager.commandParameters[0]);
-            if (toFind == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
             {
                 CommandManager.SendForceSaveCommand(toFind);
 
-                Logger.Warning($"User '{ServerCommandManager.commandParameters[0]}' has been forced to save");
+                Logger.Warning($"User '{commandParameters[0]}' has been forced to save");
             }
         }
 
         private static void DeletePlayerCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(ServerCommandManager.commandParameters[0]);
-            if (userFile == null) Logger.Warning($"[ERROR] > User '{ServerCommandManager.commandParameters[0]}' was not found");
+            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else SaveManager.DeletePlayerData(userFile.username);
         }
@@ -667,7 +656,7 @@ namespace GameServer
         {
             if (Master.difficultyValues.UseCustomDifficulty == true)
             {
-                Logger.Warning($"[ERROR] > Custom difficulty was already enabled");
+                Logger.Warning($"Custom difficulty was already enabled");
             }
 
             else
@@ -683,7 +672,7 @@ namespace GameServer
         {
             if (Master.difficultyValues.UseCustomDifficulty == false)
             {
-                Logger.Warning($"[ERROR] > Custom difficulty was already disabled");
+                Logger.Warning($"Custom difficulty was already disabled");
             }
 
             else

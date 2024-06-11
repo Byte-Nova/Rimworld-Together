@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class SiteData
     {
-        public string siteStep;
+        public SiteStepMode siteStepMode;
 
-        public string tile;
+        public int tile;
 
-        public string type;
+        public int type;
 
         public string owner;
 
         public byte[] workerData;
 
-        public string goodwill;
+        public Goodwill goodwill;
 
         public bool isFromFaction;
 
-        public List<string> sitesWithRewards = new List<string>();
+        public List<int> sitesWithRewards = new List<int>();
     }
 }

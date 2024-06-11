@@ -3,6 +3,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -21,14 +22,18 @@ namespace GameClient
         {
             SpyData spyData = (SpyData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(spyData.spyStepMode))
+            switch(spyData.spyStepMode)
             {
-                case (int)CommonEnumerators.SpyStepMode.Request:
-                    OnSpyAccept(spyData);
+                case OfflineSpyStepMode.Request:
+                    OnOfflineSpyAccept(spyData);
                     break;
 
-                case (int)CommonEnumerators.SpyStepMode.Deny:
-                    OnSpyDeny();
+                case OfflineSpyStepMode.Deny:
+                    OnOfflineSpyDeny();
+                    break;
+
+                case OfflineSpyStepMode.Unavailable:
+                    OnOfflineSpyUnavailable();
                     break;
             }
         }
@@ -37,7 +42,7 @@ namespace GameClient
 
         public static void SetSpyCost(ServerGlobalData serverGlobalData)
         {
-            try { spyCost = int.Parse(serverGlobalData.SpyCost); }
+            try { spyCost = serverGlobalData.actionValues.SpyCost; }
             catch
             {
                 Logger.Warning("Server didn't have spy cost set, defaulting to 0");
@@ -64,8 +69,8 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
                     SpyData spyData = new SpyData();
-                    spyData.spyStepMode = ((int)CommonEnumerators.SpyStepMode.Request).ToString();
-                    spyData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+                    spyData.spyStepMode = OfflineSpyStepMode.Request;
+                    spyData.targetTile = ClientValues.chosenSettlement.Tile;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                     Network.listener.EnqueuePacket(packet);
@@ -78,7 +83,7 @@ namespace GameClient
 
         //Executes after being confirmed a spy order
 
-        private static void OnSpyAccept(SpyData spyData)
+        private static void OnOfflineSpyAccept(SpyData spyData)
         {
             DialogManager.PopWaitDialog();
 
@@ -96,7 +101,7 @@ namespace GameClient
 
         //Executes after being denied a spy order
 
-        private static void OnSpyDeny()
+        private static void OnOfflineSpyDeny()
         {
             DialogManager.PopWaitDialog();
 
@@ -105,8 +110,21 @@ namespace GameClient
             TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
 
             DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
-
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+        }
+
+        //Executes after the action is unavailable
+
+        private static void OnOfflineSpyUnavailable()
+        {
+            DialogManager.PopWaitDialog();
+
+            Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
+            silverToReturn.stackCount = spyCost;
+            TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
+
+            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("This user is currently unavailable!"));
         }
 
         //Prepares a given map for the spy order

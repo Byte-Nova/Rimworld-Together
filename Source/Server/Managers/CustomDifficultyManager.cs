@@ -1,5 +1,4 @@
 ﻿using Shared;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {

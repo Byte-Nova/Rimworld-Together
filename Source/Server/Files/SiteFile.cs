@@ -3,11 +3,11 @@
     [Serializable]
     public class SiteFile
     {
-        public string tile;
+        public int tile;
 
         public string owner;
 
-        public string type;
+        public int type;
 
         public byte[] workerData;
 

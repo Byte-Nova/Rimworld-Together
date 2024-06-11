@@ -27,31 +27,31 @@ namespace GameClient
 
         public static void ParseVisitPacket(Packet packet)
         {
-            VisitData visitData = (VisitData)Serializer.ConvertBytesToObject(packet.contents);
+            OnlineVisitData visitData = (OnlineVisitData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (visitData.visitStepMode)
             {
-                case (int)VisitStepMode.Request:
+                case VisitStepMode.Request:
                     OnVisitRequest(visitData);
                     break;
 
-                case (int)VisitStepMode.Accept:
+                case VisitStepMode.Accept:
                     OnVisitAccept(visitData);
                     break;
 
-                case (int)VisitStepMode.Reject:
+                case VisitStepMode.Reject:
                     OnVisitReject();
                     break;
 
-                case (int)VisitStepMode.Unavailable:
+                case VisitStepMode.Unavailable:
                     OnVisitUnavailable();
                     break;
 
-                case (int)VisitStepMode.Action:
+                case VisitStepMode.Action:
                     VisitActionGetter.ReceiveActions(visitData);
                     break;
 
-                case (int)VisitStepMode.Stop:
+                case VisitStepMode.Stop:
                     OnVisitStop();
                     break;
             }
@@ -66,10 +66,10 @@ namespace GameClient
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
 
-                    VisitData visitData = new VisitData();
+                    OnlineVisitData visitData = new OnlineVisitData();
                     visitData.visitStepMode = (int)VisitStepMode.Request;
-                    visitData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                    visitData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+                    visitData.fromTile = Find.AnyPlayerHomeMap.Tile;
+                    visitData.targetTile = ClientValues.chosenSettlement.Tile;
                     visitData.caravanHumans = OnlineVisitHelper.GetHumansForVisit(FetchMode.Player);
                     visitData.caravanAnimals = OnlineVisitHelper.GetAnimalsForVisit(FetchMode.Player);
 
@@ -82,7 +82,7 @@ namespace GameClient
             }
         }
 
-        private static void VisitMap(MapData mapData, VisitData visitData)
+        private static void VisitMap(MapData mapData, OnlineVisitData visitData)
         {
             ClientValues.ToggleVisit(true);
 
@@ -102,20 +102,20 @@ namespace GameClient
 
         public static void StopVisit()
         {
-            VisitData visitData = new VisitData();
-            visitData.visitStepMode = (int)VisitStepMode.Stop;
+            OnlineVisitData visitData = new OnlineVisitData();
+            visitData.visitStepMode = VisitStepMode.Stop;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
             Network.listener.dataQueue.Enqueue(packet);
         }
 
-        private static void OnVisitRequest(VisitData visitData)
+        private static void OnVisitRequest(OnlineVisitData visitData)
         {
             Action r1 = delegate
             {
                 ClientValues.ToggleVisit(true);
 
-                visitMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == int.Parse(visitData.targetTile)).Map;
+                visitMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == visitData.targetTile).Map;
                 factionPawns = OnlineVisitHelper.GetMapPawns(FetchMode.Host, null);
                 mapThings = OnlineVisitHelper.GetMapThings(visitMap);
 
@@ -128,7 +128,7 @@ namespace GameClient
 
             Action r2 = delegate
             {
-                visitData.visitStepMode = (int)VisitStepMode.Reject;
+                visitData.visitStepMode = VisitStepMode.Reject;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                 Network.listener.dataQueue.Enqueue(packet);
             };
@@ -137,7 +137,7 @@ namespace GameClient
             DialogManager.PushNewDialog(d1);
         }
 
-        private static void OnVisitAccept(VisitData visitData)
+        private static void OnVisitAccept(OnlineVisitData visitData)
         {
             DialogManager.PopWaitDialog();
 
@@ -176,9 +176,9 @@ namespace GameClient
             }
         }
 
-        private static void SendRequestedMap(VisitData visitData)
+        private static void SendRequestedMap(OnlineVisitData visitData)
         {
-            visitData.visitStepMode = (int)VisitStepMode.Accept;
+            visitData.visitStepMode = VisitStepMode.Accept;
             visitData.mapHumans = OnlineVisitHelper.GetHumansForVisit(FetchMode.Host);
             visitData.mapAnimals = OnlineVisitHelper.GetAnimalsForVisit(FetchMode.Host);
 
@@ -192,7 +192,7 @@ namespace GameClient
 
     public static class VisitThingHelper
     {
-        public static void SpawnPawnsForVisit(FetchMode mode, VisitData visitData)
+        public static void SpawnPawnsForVisit(FetchMode mode, OnlineVisitData visitData)
         {
             if (mode == FetchMode.Host)
             {
@@ -230,8 +230,8 @@ namespace GameClient
 
         private static void ActionClockTick()
         {
-            VisitData visitData = new VisitData();
-            visitData.visitStepMode = (int)VisitStepMode.Action;
+            OnlineVisitData visitData = new OnlineVisitData();
+            visitData.visitStepMode = VisitStepMode.Action;
             visitData.mapTicks = OnlineVisitHelper.GetGameTicks();
 
             foreach (Pawn pawn in OnlineVisitHelper.GetFactionPawnsSecure())
@@ -263,7 +263,7 @@ namespace GameClient
             Network.listener.dataQueue.Enqueue(packet);
         }
 
-        public static void ReceiveActions(VisitData visitData)
+        public static void ReceiveActions(OnlineVisitData visitData)
         {
             if (!ClientValues.isInVisit) return;
 
@@ -300,7 +300,7 @@ namespace GameClient
 
     public static class VisitActionHelper
     {
-        public static string ActionTargetToString(LocalTargetInfo targetInfo, VisitData visitData)
+        public static string ActionTargetToString(LocalTargetInfo targetInfo, OnlineVisitData visitData)
         {
             try
             {
@@ -587,7 +587,7 @@ namespace GameClient
             else return pawn.drafter.Drafted;
         }
 
-        public static Pawn[] GetMapPawns(FetchMode mode, VisitData visitData)
+        public static Pawn[] GetMapPawns(FetchMode mode, OnlineVisitData visitData)
         {
             if (mode == FetchMode.Host)
             {
@@ -630,7 +630,7 @@ namespace GameClient
             }
         }
 
-        public static Pawn[] GetCaravanPawns(FetchMode mode, VisitData visitData)
+        public static Pawn[] GetCaravanPawns(FetchMode mode, OnlineVisitData visitData)
         {
             if (mode == FetchMode.Host)
             {

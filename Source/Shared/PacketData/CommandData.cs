@@ -1,11 +1,12 @@
 ﻿using System;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class CommandData
     {
-        public string commandType;
+        public CommandMode commandMode;
 
         public string commandDetails;
     }

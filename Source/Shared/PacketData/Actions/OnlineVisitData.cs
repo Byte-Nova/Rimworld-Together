@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
-    public class VisitData
+    public class OnlineVisitData
     {
-        public int visitStepMode;
+        public VisitStepMode visitStepMode;
 
         public string visitorName;
-        public string fromTile;
-        public string targetTile;
+        public int fromTile;
+        public int targetTile;
 
         public List<byte[]> mapHumans = new List<byte[]>();
         public List<byte[]> mapAnimals = new List<byte[]>();

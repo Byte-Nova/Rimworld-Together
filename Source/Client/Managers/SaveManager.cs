@@ -8,7 +8,6 @@ using static Shared.CommonEnumerators;
 using static GameClient.DisconnectionManager;
 using System.Xml;
 using System.Xml.XPath;
-using System;
 
 namespace GameClient
 {
@@ -58,8 +57,6 @@ namespace GameClient
 
                 if(fileTransferData.instructions != (int)SaveMode.Strict && File.Exists(saveFilePath)) 
                 { 
-                    Logger.Message("Comparing remote vs local save (if exists)");
-
                     if (GetRealPlayTimeInteractingFromSave(serverSaveFilePath) >= GetRealPlayTimeInteractingFromSave(saveFilePath))
                     {
                         Logger.Message("Loading remote save");

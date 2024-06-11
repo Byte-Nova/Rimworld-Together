@@ -4,9 +4,9 @@ using System.Linq;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -84,14 +84,14 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy, 
-                            CommonEnumerators.GoodwillTarget.Settlement); };
+                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
+                            GoodwillTarget.Settlement); };
 
-                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                            CommonEnumerators.GoodwillTarget.Settlement); };
+                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
+                            GoodwillTarget.Settlement); };
 
-                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                            CommonEnumerators.GoodwillTarget.Settlement); };
+                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
+                            GoodwillTarget.Settlement); };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
@@ -257,7 +257,7 @@ namespace GameClient
 
                         if (RimworldManager.CheckIfSocialPawnInCaravan(ClientValues.chosenCaravan))
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Caravan, true, true, true));
+                            DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
                     }
@@ -290,18 +290,18 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
 
                         Action r1 = delegate {
-                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
+                            GoodwillTarget.Settlement);
                         };
 
                         Action r2 = delegate {
-                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
+                            GoodwillTarget.Settlement);
                         };
 
                         Action r3 = delegate {
-                            GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                            CommonEnumerators.GoodwillTarget.Settlement);
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
+                            GoodwillTarget.Settlement);
                         };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
@@ -390,14 +390,14 @@ namespace GameClient
                     {
                         ClientValues.chosenSite = __instance;
 
-                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
-                            CommonEnumerators.GoodwillTarget.Site); };
+                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
+                            GoodwillTarget.Site); };
 
-                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                            CommonEnumerators.GoodwillTarget.Site); };
+                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
+                            GoodwillTarget.Site); };
 
-                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                            CommonEnumerators.GoodwillTarget.Site); };
+                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
+                            GoodwillTarget.Site); };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
@@ -500,18 +500,18 @@ namespace GameClient
                             ClientValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                             Action r1 = delegate {
-                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Enemy,
-                                    CommonEnumerators.GoodwillTarget.Site);
+                                GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
+                                    GoodwillTarget.Site);
                             };
 
                             Action r2 = delegate {
-                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Neutral,
-                                    CommonEnumerators.GoodwillTarget.Site);
+                                GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
+                                    GoodwillTarget.Site);
                             };
 
                             Action r3 = delegate {
-                                GoodwillManager.TryRequestGoodwill(CommonEnumerators.Goodwills.Ally,
-                                    CommonEnumerators.GoodwillTarget.Site);
+                                GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
+                                    GoodwillTarget.Site);
                             };
 
                             RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
@@ -588,7 +588,7 @@ namespace GameClient
                     Action toDo = delegate
                     {
                         TransferManager.TakeTransferItemsFromPods(ClientValues.chosendPods);
-                        TransferManager.SendTransferRequestToServer(CommonEnumerators.TransferLocation.Pod);
+                        TransferManager.SendTransferRequestToServer(TransferLocation.Pod);
                     };
 
                     FloatMenuOption floatMenuOption = new FloatMenuOption(optionLabel, toDo);

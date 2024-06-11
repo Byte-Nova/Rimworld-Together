@@ -1,8 +1,6 @@
-﻿using Shared;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
-using Mono.Nat;
 
 namespace GameServer
 {
@@ -50,13 +48,13 @@ namespace GameServer
             Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
 
             if (Master.isClosing) newServerClient.listener.disconnectFlag = true;
-            else if (Master.worldValues == null && connectedClients.Count() > 0) UserManager.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.NoWorld);
+            else if (Master.worldValues == null && connectedClients.Count() > 0) UserManager.SendLoginResponse(newServerClient, LoginResponse.NoWorld);
             else
             {
                 if (connectedClients.ToArray().Count() >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
-                    UserManager.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
-                    Logger.Warning($"[Warning] > Server Full");
+                    UserManager.SendLoginResponse(newServerClient, LoginResponse.ServerFull);
+                    Logger.Warning($"Server Full");
                 }
 
                 else

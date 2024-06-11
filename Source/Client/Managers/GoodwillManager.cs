@@ -4,6 +4,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -14,54 +15,54 @@ namespace GameClient
     {
         //Tries to request a goodwill change depending on the values given
 
-        public static void TryRequestGoodwill(CommonEnumerators.Goodwills type, CommonEnumerators.GoodwillTarget target)
+        public static void TryRequestGoodwill(Goodwill type, GoodwillTarget target)
         {
             int tileToUse = 0;
-            if (target == CommonEnumerators.GoodwillTarget.Settlement) tileToUse = ClientValues.chosenSettlement.Tile;
-            else if (target == CommonEnumerators.GoodwillTarget.Site) tileToUse = ClientValues.chosenSite.Tile;
+            if (target == GoodwillTarget.Settlement) tileToUse = ClientValues.chosenSettlement.Tile;
+            else if (target == GoodwillTarget.Site) tileToUse = ClientValues.chosenSite.Tile;
 
             Faction factionToUse = null;
-            if (target == CommonEnumerators.GoodwillTarget.Settlement) factionToUse = ClientValues.chosenSettlement.Faction;
-            else if (target == CommonEnumerators.GoodwillTarget.Site) factionToUse = ClientValues.chosenSite.Faction;
+            if (target == GoodwillTarget.Settlement) factionToUse = ClientValues.chosenSettlement.Faction;
+            else if (target == GoodwillTarget.Site) factionToUse = ClientValues.chosenSite.Faction;
 
-            if (type == CommonEnumerators.Goodwills.Enemy)
+            if (type == Goodwill.Enemy)
             {
                 if (factionToUse == FactionValues.enemyPlayer)
                 {
                     RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as enemy!");
                     DialogManager.PushNewDialog(d1);
                 }
-                else RequestChangeStructureGoodwill(tileToUse, 0);
+                else RequestChangeStructureGoodwill(tileToUse, Goodwill.Enemy);
             }
 
-            else if (type == CommonEnumerators.Goodwills.Neutral)
+            else if (type == Goodwill.Neutral)
             {
                 if (factionToUse == FactionValues.neutralPlayer)
                 {
                     RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as neutral!");
                     DialogManager.PushNewDialog(d1);
                 }
-                else RequestChangeStructureGoodwill(tileToUse, 1);
+                else RequestChangeStructureGoodwill(tileToUse, Goodwill.Neutral);
             }
 
-            else if (type == CommonEnumerators.Goodwills.Ally)
+            else if (type == Goodwill.Ally)
             {
                 if (factionToUse == FactionValues.allyPlayer)
                 {
                     RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as ally!");
                     DialogManager.PushNewDialog(d1);
                 }
-                else RequestChangeStructureGoodwill(tileToUse, 2);
+                else RequestChangeStructureGoodwill(tileToUse, Goodwill.Ally);
             }
         }
 
         //Requests a structure goodwill change to the server
 
-        public static void RequestChangeStructureGoodwill(int structureTile, int value)
+        public static void RequestChangeStructureGoodwill(int structureTile, Goodwill goodwill)
         {
             FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
-            factionGoodwillData.tile = structureTile.ToString();
-            factionGoodwillData.goodwill = value.ToString();
+            factionGoodwillData.tile = structureTile;
+            factionGoodwillData.goodwill = goodwill;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             Network.listener.EnqueuePacket(packet);
@@ -84,9 +85,9 @@ namespace GameClient
         private static void ChangeSettlementGoodwills(FactionGoodwillData factionGoodwillData)
         {
             List<Settlement> toChange = new List<Settlement>();
-            foreach (string settlementTile in factionGoodwillData.settlementTiles)
+            foreach (int settlementTile in factionGoodwillData.settlementTiles)
             {
-                toChange.Add(Find.WorldObjects.Settlements.Find(x => x.Tile == int.Parse(settlementTile)));
+                toChange.Add(Find.WorldObjects.Settlements.Find(x => x.Tile == settlementTile));
             }
 
             for (int i = 0; i < toChange.Count(); i++)
@@ -97,7 +98,7 @@ namespace GameClient
                 Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                 newSettlement.Tile = toChange[i].Tile;
                 newSettlement.Name = toChange[i].Name;
-                newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(factionGoodwillData.settlementGoodwills[i])));
+                newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(factionGoodwillData.settlementGoodwills[i]));
 
                 PlanetManager.playerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
@@ -109,10 +110,7 @@ namespace GameClient
         private static void ChangeSiteGoodwills(FactionGoodwillData factionGoodwillData)
         {
             List<Site> toChange = new List<Site>();
-            foreach (string siteTile in factionGoodwillData.siteTiles)
-            {
-                toChange.Add(Find.WorldObjects.Sites.Find(x => x.Tile == int.Parse(siteTile)));
-            }
+            foreach (int siteTile in factionGoodwillData.siteTiles) { toChange.Add(Find.WorldObjects.Sites.Find(x => x.Tile == siteTile)); }
 
             for (int i = 0; i < toChange.Count(); i++)
             {
@@ -122,7 +120,7 @@ namespace GameClient
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
                             tile: toChange[i].Tile,
                             threatPoints: 1000,
-                            faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(factionGoodwillData.siteGoodwills[i])));
+                            faction: PlanetManagerHelper.GetPlayerFaction(factionGoodwillData.siteGoodwills[i]));
 
                 PlanetManager.playerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);

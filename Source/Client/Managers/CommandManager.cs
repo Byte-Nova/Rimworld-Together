@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -13,21 +14,21 @@ namespace GameClient
         {
             CommandData commandData = (CommandData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch(int.Parse(commandData.commandType))
+            switch(commandData.commandMode)
             {
-                case (int)CommonEnumerators.CommandType.Op:
+                case CommandMode.Op:
                     OnOpCommand();
                     break;
 
-                case (int)CommonEnumerators.CommandType.Deop:
+                case CommandMode.Deop:
                     OnDeopCommand();
                     break;
 
-                case (int)CommonEnumerators.CommandType.Broadcast:
+                case CommandMode.Broadcast:
                     OnBroadcastCommand(commandData);
                     break;
 
-                case (int)CommonEnumerators.CommandType.ForceSave:
+                case CommandMode.ForceSave:
                     OnForceSaveCommand();
                     break;
             }

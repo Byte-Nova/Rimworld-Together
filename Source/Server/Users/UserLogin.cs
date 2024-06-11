@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -10,9 +11,9 @@ namespace GameServer
 
             if (!UserManager.CheckIfUserUpdated(client, loginData)) return;
 
-            if (!UserManager.CheckLoginData(client, loginData, CommonEnumerators.LoginMode.Login)) return;
+            if (!UserManager.CheckLoginData(client, loginData, LoginMode.Login)) return;
 
-            if (!UserManager.CheckIfUserExists(client, loginData, CommonEnumerators.LoginMode.Login)) return;
+            if (!UserManager.CheckIfUserExists(client, loginData, LoginMode.Login)) return;
 
             if (!UserManager.CheckIfUserAuthCorrect(client, loginData)) return;
 
@@ -38,7 +39,7 @@ namespace GameServer
 
             UserManager.SendPlayerRecount();
 
-            ServerOverallManager.SendServerOveralls(client);
+            ServerGlobalDataManager.SendServerGlobalData(client);
 
             ChatManager.BroadcastSystemMessage(client, ChatManager.defaultJoinMessages);
 
@@ -59,7 +60,7 @@ namespace GameServer
                 {
                     if (cClient.username == client.username)
                     {
-                        UserManager.SendLoginResponse(cClient, CommonEnumerators.LoginResponse.ExtraLogin);
+                        UserManager.SendLoginResponse(cClient, LoginResponse.ExtraLogin);
                     }
                 }
             }

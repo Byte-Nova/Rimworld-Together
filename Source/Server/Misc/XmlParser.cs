@@ -1,5 +1,4 @@
 ﻿using System.Xml;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -29,7 +28,7 @@ namespace GameServer
 
                 return result.ToArray();
             }
-            catch (Exception e) { Logger.Error($"[Error] > Failed to parse mod at '{xmlPath}'. Exception: {e}"); }
+            catch (Exception e) { Logger.Error($"Failed to parse mod at '{xmlPath}'. Exception: {e}"); }
 
             return result.ToArray();
         }

@@ -1,4 +1,4 @@
-﻿namespace GameServer
+﻿namespace Shared
 {
     [Serializable]
     public class ServerValuesFile

@@ -2,6 +2,7 @@
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -19,8 +20,8 @@ namespace GameClient
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = __instance.CurrentMap.Tile.ToString();
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    settlementData.tile = __instance.CurrentMap.Tile;
+                    settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -63,8 +64,8 @@ namespace GameClient
                 if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = caravan.Tile.ToString();
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    settlementData.tile = caravan.Tile;
+                    settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -83,8 +84,8 @@ namespace GameClient
                 if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = map.Tile.ToString();
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    settlementData.tile = map.Tile;
+                    settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -103,8 +104,8 @@ namespace GameClient
                 if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = settlement.Tile.ToString();
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
+                    settlementData.tile = settlement.Tile;
+                    settlementData.settlementStepMode = SettlementStepMode.Remove;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);

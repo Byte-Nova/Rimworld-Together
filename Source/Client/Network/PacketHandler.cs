@@ -1,7 +1,6 @@
 ﻿using Shared;
 using System;
 using System.Reflection;
-using Verse;
 
 namespace GameClient
 {
@@ -13,7 +12,7 @@ namespace GameClient
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool) Logger.Message($"[Header] > {packet.header}");
+            if (ClientValues.verboseBool) Logger.Message($"[H] > {packet.header}");
 
             Action toDo = delegate
             {

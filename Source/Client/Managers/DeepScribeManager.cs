@@ -1166,7 +1166,7 @@ namespace GameClient
 
         private static void GetMapTile(MapData mapData, Map map)
         {
-            mapData.mapTile = map.Tile.ToString();
+            mapData.mapTile = map.Tile;
         }
 
         private static void GetMapSize(MapData mapData, Map map)
