@@ -43,7 +43,7 @@ namespace GameServer
                 SaveMarketStock();
             }
 
-            Logger.WriteToConsole("Loaded market stock", LogMode.Warning);
+            Logger.Warning("Loaded market stock");
         }
 
         private static void AddToMarket(ServerClient client, MarketData marketData)

@@ -60,7 +60,7 @@ namespace GameClient
                 { 
                     Logger.Message("Comparing remote vs local save (if exists)");
 
-                    if (float.Parse(GetRealPlayTimeInteractingFromSave(serverSaveFilePath)) >= float.Parse(GetRealPlayTimeInteractingFromSave(saveFilePath)))
+                    if (GetRealPlayTimeInteractingFromSave(serverSaveFilePath) >= GetRealPlayTimeInteractingFromSave(saveFilePath))
                     {
                         Logger.Message("Loading remote save");
                         File.Delete(saveFilePath);
@@ -90,15 +90,19 @@ namespace GameClient
             }
         }
 
-        private static string GetRealPlayTimeInteractingFromSave(string filePath)
+        private static double GetRealPlayTimeInteractingFromSave(string filePath)
         {
-            if (!File.Exists(filePath)) return "0";
+            if (!File.Exists(filePath)) return 0;
 
-            XmlDocument doc = new XmlDocument();
-            doc.Load(filePath);
-            XPathNavigator nav = doc.CreateNavigator();
-            
-            return nav.SelectSingleNode("/savegame/game/info/realPlayTimeInteracting").Value;
+            try
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(filePath);
+                XPathNavigator nav = doc.CreateNavigator();
+
+                return double.Parse(nav.SelectSingleNode("/savegame/game/info/realPlayTimeInteracting").Value);
+            }
+            catch { return 0; }
         }
 
         public static void SendSavePartToServer()

@@ -23,7 +23,7 @@ namespace GameServer
             client.enemyPlayers = file.enemyPlayers;
             client.allyPlayers = file.allyPlayers;
 
-            Logger.WriteToConsole($"[Handshake] > {client.username} | {client.SavedIP}");
+            Logger.Message($"[Handshake] > {client.username} | {client.SavedIP}");
         }
 
         public static UserFile GetUserFile(ServerClient client)
@@ -225,7 +225,7 @@ namespace GameServer
             if (loginData.clientVersion == CommonValues.executableVersion) return true;
             else
             {
-                Logger.WriteToConsole($"[Version Mismatch] > {client.username}", LogMode.Warning);
+                Logger.Warning($"[Version Mismatch] > {client.username}");
                 SendLoginResponse(client, LoginResponse.WrongVersion);
                 return false;
             }

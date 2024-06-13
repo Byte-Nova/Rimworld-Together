@@ -104,7 +104,7 @@ namespace GameServer
 
                 newDifficultyValues.WastepackInfestationChanceFactor = difficultyData.WastepackInfestationChanceFactor;
 
-                Logger.WriteToConsole($"[Set difficulty] > {client.username}", LogMode.Warning);
+                Logger.Warning($"[Set difficulty] > {client.username}");
 
                 SaveCustomDifficulty(newDifficultyValues);
             }
@@ -130,7 +130,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, Master.difficultyValues);
             }
 
-            Logger.WriteToConsole("Loaded difficulty values", LogMode.Warning);
+            Logger.Warning("Loaded difficulty values");
         }
     }
 }

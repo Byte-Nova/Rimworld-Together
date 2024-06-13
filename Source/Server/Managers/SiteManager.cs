@@ -74,7 +74,7 @@ namespace GameServer
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(rPacket);
 
-            Logger.WriteToConsole($"[Created site] > {client.username}", LogMode.Warning);
+            Logger.Warning($"[Created site] > {client.username}");
         }
 
         public static void SaveSite(SiteFile siteFile)
@@ -204,7 +204,7 @@ namespace GameServer
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + fileExtension));
-            Logger.WriteToConsole($"[Remove site] > {siteFile.tile}", LogMode.Warning);
+            Logger.Warning($"[Remove site] > {siteFile.tile}");
         }
 
         private static void GetSiteInfo(ServerClient client, SiteData siteData)
@@ -311,7 +311,7 @@ namespace GameServer
                 }
             }
 
-            Logger.WriteToConsole($"[Site tick]");
+            Logger.Message($"[Site tick]");
         }
     }
 }

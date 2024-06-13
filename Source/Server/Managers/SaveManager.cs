@@ -55,7 +55,7 @@ namespace GameServer
             //if this is the first packet
             if (client.listener.uploadManager == null)
             {
-                Logger.WriteToConsole($"[Load save] > {client.username} | {client.SavedIP}");
+                Logger.Message($"[Load save] > {client.username} | {client.SavedIP}");
 
                 client.listener.uploadManager = new UploadManager();
                 client.listener.uploadManager.PrepareUpload(baseClientSavePath);
@@ -81,9 +81,9 @@ namespace GameServer
             if (fileTransferData.instructions == (int)SaveMode.Disconnect)
             {
                 client.listener.disconnectFlag = true;
-                Logger.WriteToConsole($"[Save game] > {client.username} > Disconnect");
+                Logger.Message($"[Save game] > {client.username} > Disconnect");
             }
-            else Logger.WriteToConsole($"[Save game] > {client.username} > Autosave");
+            else Logger.Message($"[Save game] > {client.username} > Autosave");
         }
 
         public static bool CheckIfUserHasSave(ServerClient client)
@@ -195,7 +195,7 @@ namespace GameServer
                 SettlementManager.RemoveSettlement(extraClientDetails, settlementData, true);
             }
 
-            Logger.WriteToConsole($"[Deleted player data] > {username}", LogMode.Warning);
+            Logger.Warning($"[Deleted player data] > {username}");
         }
     }
 }

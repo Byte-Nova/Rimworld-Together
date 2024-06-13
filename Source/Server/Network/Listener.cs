@@ -91,7 +91,7 @@ namespace GameServer
 
             catch (Exception e)
             {
-                if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole(e.ToString(), LogMode.Warning);
+                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
 
                 disconnectFlag = true;
             }

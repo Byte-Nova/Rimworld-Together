@@ -5,6 +5,8 @@ namespace GameServer
 {
     public static class Logger
     {
+        //Variables
+
         public static Semaphore semaphore = new Semaphore(1, 1);
 
         public static Dictionary<LogMode, ConsoleColor> colorDictionary = new Dictionary<LogMode, ConsoleColor>
@@ -15,63 +17,38 @@ namespace GameServer
             { LogMode.Title, ConsoleColor.Green }
         };
 
-        //Variables to help with condensing similar logs to a single log with a multiplier
-        private static int repetitionCounter = 1;
-        private static string previousText = string.Empty;
+        //Wrapper to write log in white color
 
         public static void Message(string message) { WriteToConsole(message, LogMode.Message); }
 
+        //Wrapper to write log in yellow color
+
         public static void Warning(string message) { WriteToConsole(message, LogMode.Warning); }
+
+        //Wrapper to write log in red color
 
         public static void Error(string message) { WriteToConsole(message, LogMode.Error); }
 
-        public static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true, bool allowLogMultiplier = false)
+        //Wrapper to write log in green color
+
+        public static void Title(string message) { WriteToConsole(message, LogMode.Title); }
+
+        //Actual function that writes to the console
+
+        private static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true)
         {
             semaphore.WaitOne();
-
-            Console.CursorVisible = false;
 
             if (writeToLogs) WriteToLogs(text);
 
-            var (Left, Top) = Console.GetCursorPosition();
-
             Console.ForegroundColor = colorDictionary[mode];
-            Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
-
-            //Check if the last log is the same as this log, if so then put a multiplier on the log
-            if (text == previousText && allowLogMultiplier)
-            {
-                repetitionCounter++;
-
-                Console.SetCursorPosition(0, Console.GetCursorPosition().Top - 1);
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text} x {repetitionCounter}");
-                Console.SetCursorPosition(Left, Top);
-            }
-
-            else
-            {
-                repetitionCounter = 1;
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {text}");
-                ServerCommandManager.WriteCurrentCommand();
-            }
-
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
             Console.ForegroundColor = ConsoleColor.White;
-            previousText = text;
-
-            Console.CursorVisible = true;
-            semaphore.Release();
-        }
-
-        public static void ClearCurrentLine()
-        {
-            semaphore.WaitOne();
-
-            Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
-            Console.Write(new string(' ', Console.WindowWidth -1));
-            Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
 
             semaphore.Release();
         }
+
+        //Function that writes contents to log file
 
         private static void WriteToLogs(string toLog)
         {
