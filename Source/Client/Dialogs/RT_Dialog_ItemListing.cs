@@ -4,6 +4,7 @@ using RimWorld;
 using Shared;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -25,9 +26,9 @@ namespace GameClient
 
         private Thing[] listedThings;
 
-        private CommonEnumerators.TransferMode transferMode;
+        private TransferMode transferMode;
 
-        public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
+        public RT_Dialog_ItemListing(Thing[] listedThings, TransferMode transferMode)
         {
             DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
@@ -121,16 +122,16 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                if (transferMode == CommonEnumerators.TransferMode.Gift)
+                if (transferMode == TransferMode.Gift)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
-                else if (transferMode == CommonEnumerators.TransferMode.Trade)
+                else if (transferMode == TransferMode.Trade)
                 {
                     if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
+                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Settlement, true, true, true));
                     }
 
                     else
@@ -140,14 +141,14 @@ namespace GameClient
                     }
                 }
 
-                else if (transferMode == CommonEnumerators.TransferMode.Pod)
+                else if (transferMode == TransferMode.Pod)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
-                else if (transferMode == CommonEnumerators.TransferMode.Rebound)
+                else if (transferMode == TransferMode.Rebound)
                 {
-                    ClientValues.incomingManifest.transferStepMode = CommonEnumerators.TransferStepMode.TradeReAccept;
+                    ClientValues.incomingManifest.transferStepMode = TransferStepMode.TradeReAccept;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);

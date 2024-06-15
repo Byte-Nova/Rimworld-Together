@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Shared;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class MarketData
     {
-        public CommonEnumerators.MarketStepMode marketStepMode;
+        public MarketStepMode marketStepMode;
 
         public int indexToManage;
         public int quantityToManage;

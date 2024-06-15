@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -26,17 +27,17 @@ namespace GameClient
         {
             EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(eventData.eventStepMode))
+            switch (eventData.eventStepMode)
             {
-                case (int)CommonEnumerators.EventStepMode.Send:
+                case EventStepMode.Send:
                     OnEventSent();
                     break;
 
-                case (int)CommonEnumerators.EventStepMode.Receive:
+                case EventStepMode.Receive:
                     OnEventReceived(eventData);
                     break;
 
-                case (int)CommonEnumerators.EventStepMode.Recover:
+                case EventStepMode.Recover:
                     OnRecoverEventSilver();
                     break;
             }
@@ -44,31 +45,18 @@ namespace GameClient
 
         public static void SetEventPrices(ServerGlobalData serverGlobalData)
         {
-            try
+            eventCosts = new int[]
             {
-                eventCosts = new int[9]
-                {
-                    int.Parse(serverGlobalData.RaidCost),
-                    int.Parse(serverGlobalData.InfestationCost),
-                    int.Parse(serverGlobalData.MechClusterCost),
-                    int.Parse(serverGlobalData.ToxicFalloutCost),
-                    int.Parse(serverGlobalData.ManhunterCost),
-                    int.Parse(serverGlobalData.WandererCost),
-                    int.Parse(serverGlobalData.FarmAnimalsCost),
-                    int.Parse(serverGlobalData.ShipChunkCost),
-                    int.Parse(serverGlobalData.TraderCaravanCost)
-                };
-            }
-
-            catch 
-            { 
-                Logger.Warning("Server didn't have event prices set, defaulting to 0");
-
-                eventCosts = new int[9]
-                {
-                    0, 0, 0, 0, 0, 0, 0, 0, 0
-                };
-            }
+                serverGlobalData.eventValues.RaidCost,
+                serverGlobalData.eventValues.InfestationCost,
+                serverGlobalData.eventValues.MechClusterCost,
+                serverGlobalData.eventValues.ToxicFalloutCost,
+                serverGlobalData.eventValues.ManhunterCost,
+                serverGlobalData.eventValues.WandererCost,
+                serverGlobalData.eventValues.FarmAnimalsCost,
+                serverGlobalData.eventValues.ShipChunkCost,
+                serverGlobalData.eventValues.TraderCaravanCost
+            };
         }
 
         public static void ShowSendEventDialog()
@@ -93,10 +81,10 @@ namespace GameClient
                 TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
                 EventData eventData = new EventData();
-                eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
-                eventData.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                eventData.toTile = ClientValues.chosenSettlement.Tile.ToString();
-                eventData.eventID = DialogManager.selectedScrollButton.ToString();
+                eventData.eventStepMode = EventStepMode.Send;
+                eventData.fromTile = Find.AnyPlayerHomeMap.Tile;
+                eventData.toTile = ClientValues.chosenSettlement.Tile;
+                eventData.eventID = DialogManager.selectedScrollButton;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                 Network.listener.EnqueuePacket(packet);
@@ -107,7 +95,7 @@ namespace GameClient
 
         public static void OnEventReceived(EventData eventData)
         {
-            if (ClientValues.isReadyToPlay) LoadEvent(int.Parse(eventData.eventID));
+            if (ClientValues.isReadyToPlay) LoadEvent(eventData.eventID);
         }
 
         public static void LoadEvent(int eventID)

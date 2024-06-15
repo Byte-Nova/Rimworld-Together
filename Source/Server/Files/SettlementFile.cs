@@ -3,7 +3,7 @@
     [Serializable]
     public class SettlementFile
     {
-        public string tile;
+        public int tile;
 
         public string owner;
     }

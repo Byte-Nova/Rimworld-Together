@@ -5,6 +5,7 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using Verse.AI.Group;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
@@ -19,14 +20,18 @@ namespace GameClient
         {
             OfflineVisitData offlineVisitData = (OfflineVisitData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(offlineVisitData.offlineVisitStepMode))
+            switch (offlineVisitData.offlineVisitStepMode)
             {
-                case (int)CommonEnumerators.OfflineVisitStepMode.Request:
+                case OfflineVisitStepMode.Request:
                     OnRequestAccepted(offlineVisitData);
                     break;
 
-                case (int)CommonEnumerators.OfflineVisitStepMode.Deny:
+                case OfflineVisitStepMode.Deny:
                     OnOfflineVisitDeny();
+                    break;
+
+                case OfflineVisitStepMode.Unavailable:
+                    OnOfflineVisitUnavailable();
                     break;
             }
         }
@@ -38,8 +43,8 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             OfflineVisitData offlineVisitData = new OfflineVisitData();
-            offlineVisitData.offlineVisitStepMode = ((int)CommonEnumerators.OfflineVisitStepMode.Request).ToString();
-            offlineVisitData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+            offlineVisitData.offlineVisitStepMode = OfflineVisitStepMode.Request;
+            offlineVisitData.targetTile = ClientValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
             Network.listener.EnqueuePacket(packet);
@@ -52,6 +57,15 @@ namespace GameClient
             DialogManager.PopWaitDialog();
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+        }
+
+        //Executes after the action is unavailable
+
+        private static void OnOfflineVisitUnavailable()
+        {
+            DialogManager.PopWaitDialog();
+
+            DialogManager.PushNewDialog(new RT_Dialog_Error("This user is currently unavailable!"));
         }
 
         //Executes when offline visit is accepted

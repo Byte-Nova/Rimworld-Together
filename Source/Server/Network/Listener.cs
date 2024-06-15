@@ -1,6 +1,5 @@
 ﻿using Shared;
 using System.Net.Sockets;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {

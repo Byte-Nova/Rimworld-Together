@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -8,13 +9,13 @@ namespace GameServer
         {
             RaidData raidData = (RaidData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(raidData.raidStepMode))
+            switch (raidData.raidStepMode)
             {
-                case (int)CommonEnumerators.RaidStepMode.Request:
+                case OfflineRaidStepMode.Request:
                     SendRequestedMap(client, raidData);
                     break;
 
-                case (int)CommonEnumerators.RaidStepMode.Deny:
+                case OfflineRaidStepMode.Deny:
                     //Do nothing
                     break;
             }
@@ -24,7 +25,7 @@ namespace GameServer
         {
             if (!MapManager.CheckIfMapExists(raidData.targetTile))
             {
-                raidData.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
+                raidData.raidStepMode = OfflineRaidStepMode.Unavailable;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
                 client.listener.EnqueuePacket(packet);
             }
@@ -35,7 +36,7 @@ namespace GameServer
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    raidData.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Deny).ToString();
+                    raidData.raidStepMode = OfflineRaidStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
                     client.listener.EnqueuePacket(packet);
                 }

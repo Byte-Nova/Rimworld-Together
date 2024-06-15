@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -8,17 +9,17 @@ namespace GameServer
         {
             EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(eventData.eventStepMode))
+            switch (eventData.eventStepMode)
             {
-                case (int)CommonEnumerators.EventStepMode.Send:
+                case EventStepMode.Send:
                     SendEvent(client, eventData);
                     break;
 
-                case (int)CommonEnumerators.EventStepMode.Receive:
+                case EventStepMode.Receive:
                     //Nothing goes here
                     break;
 
-                case (int)CommonEnumerators.EventStepMode.Recover:
+                case EventStepMode.Recover:
                     //Nothing goes here
                     break;
             }
@@ -32,7 +33,7 @@ namespace GameServer
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
-                    eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
+                    eventData.eventStepMode = EventStepMode.Recover;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
@@ -42,7 +43,7 @@ namespace GameServer
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
                     if (target.inSafeZone)
                     {
-                        eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Recover).ToString();
+                        eventData.eventStepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
@@ -54,7 +55,7 @@ namespace GameServer
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
 
-                        eventData.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
+                        eventData.eventStepMode = EventStepMode.Receive;
                         Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         target.listener.EnqueuePacket(rPacket);
                     }

@@ -5,6 +5,7 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using Verse.AI.Group;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -18,14 +19,18 @@ namespace GameClient
         {
             RaidData raidData = (RaidData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(raidData.raidStepMode))
+            switch (raidData.raidStepMode)
             {
-                case (int)CommonEnumerators.RaidStepMode.Request:
-                    OnRaidAccept(raidData);
+                case OfflineRaidStepMode.Request:
+                    OnOfflineRaidAccept(raidData);
                     break;
 
-                case (int)CommonEnumerators.RaidStepMode.Deny:
-                    OnRaidDeny();
+                case OfflineRaidStepMode.Deny:
+                    OnOfflineRaidDeny();
+                    break;
+
+                case OfflineRaidStepMode.Unavailable:
+                    OnOfflineRaidUnavailable();
                     break;
             }
         }
@@ -37,8 +42,8 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             RaidData raidData = new RaidData();
-            raidData.raidStepMode = ((int)CommonEnumerators.RaidStepMode.Request).ToString();
-            raidData.targetTile = ClientValues.chosenSettlement.Tile.ToString();
+            raidData.raidStepMode = OfflineRaidStepMode.Request;
+            raidData.targetTile = ClientValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
             Network.listener.EnqueuePacket(packet);
@@ -46,7 +51,7 @@ namespace GameClient
 
         //Executes when raid request is accepted
 
-        private static void OnRaidAccept(RaidData raidData)
+        private static void OnOfflineRaidAccept(RaidData raidData)
         {
             DialogManager.PopWaitDialog();
 
@@ -64,11 +69,20 @@ namespace GameClient
 
         //Executes when raid request is denied
 
-        private static void OnRaidDeny()
+        private static void OnOfflineRaidDeny()
         {
             DialogManager.PopWaitDialog();
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+        }
+
+        //Executes after the action is unavailable
+
+        private static void OnOfflineRaidUnavailable()
+        {
+            DialogManager.PopWaitDialog();
+
+            DialogManager.PushNewDialog(new RT_Dialog_Error("This user is currently unavailable!"));
         }
 
         //Prepares a map for the raid order from a request

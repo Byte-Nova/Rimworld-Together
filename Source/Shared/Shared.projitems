@@ -9,6 +9,12 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\EventValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\OnlineSiteFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\OnlineSettlementFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
@@ -17,7 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RaidData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\SpyData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\VisitData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OnlineVisitData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\DifficultyData.cs" />
@@ -49,7 +55,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Assemblies\Mono.Nat.dll" />
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
   </ItemGroup>
 </Project>

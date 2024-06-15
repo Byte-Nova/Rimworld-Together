@@ -1,6 +1,4 @@
-﻿using Verse;
-
-namespace GameClient
+﻿namespace GameClient
 {
     public enum NetworkState
     {

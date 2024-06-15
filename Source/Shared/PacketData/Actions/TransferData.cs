@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Shared;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class TransferData
     {
-        public CommonEnumerators.TransferStepMode transferStepMode;
+        public TransferStepMode transferStepMode;
 
-        public CommonEnumerators.TransferMode transferMode;
+        public TransferMode transferMode;
 
-        public string fromTile;
+        public int fromTile;
 
-        public string toTile;
+        public int toTile;
 
         public List<byte[]> humanDatas = new List<byte[]>();
 

@@ -32,7 +32,7 @@ namespace GameServer
 
         public static void SendNoPowerPacket(ServerClient client, PlayerFactionData factionManifest)
         {
-            factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NoPower).ToString();
+            factionManifest.manifestMode = FactionManifestMode.NoPower;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
             client.listener.EnqueuePacket(packet);
@@ -41,7 +41,7 @@ namespace GameServer
         public static void SendWorkerInsidePacket(ServerClient client)
         {
             SiteData siteData = new SiteData();
-            siteData.siteStep = ((int)CommonEnumerators.SiteStepMode.WorkerError).ToString();
+            siteData.siteStepMode = SiteStepMode.WorkerError;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(packet);

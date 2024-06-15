@@ -1,4 +1,6 @@
-﻿namespace GameServer
+﻿using System;
+
+namespace Shared
 {
     [Serializable]
     public class DifficultyValuesFile

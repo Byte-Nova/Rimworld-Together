@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -10,9 +11,9 @@ namespace GameServer
 
             if (!UserManager.CheckIfUserUpdated(client, loginData)) return;
 
-            if (!UserManager.CheckLoginData(client, loginData, CommonEnumerators.LoginMode.Register)) return;
+            if (!UserManager.CheckLoginData(client, loginData, LoginMode.Register)) return;
 
-            if (UserManager.CheckIfUserExists(client, loginData, CommonEnumerators.LoginMode.Register)) return;
+            if (UserManager.CheckIfUserExists(client, loginData, LoginMode.Register)) return;
 
             client.username = loginData.username;
             client.password = loginData.password;
@@ -30,7 +31,7 @@ namespace GameServer
 
                 Logger.Message($"[Registered] > {client.username}");
             }
-            catch { UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError); }
+            catch { UserManager.SendLoginResponse(client, LoginResponse.RegisterError); }
         }
 
         private static string GetNewUIDForUser(ServerClient client)

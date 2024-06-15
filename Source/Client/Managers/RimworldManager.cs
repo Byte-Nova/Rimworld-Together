@@ -2,9 +2,7 @@
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
 using Verse;
-using Verse.Noise;
 
 namespace GameClient
 {

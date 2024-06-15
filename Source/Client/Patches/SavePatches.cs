@@ -1,10 +1,7 @@
 ﻿using System;
 using HarmonyLib;
 using RimWorld;
-using UnityEngine;
 using Verse;
-using Shared;
-using System.IO;
 
 namespace GameClient
 {

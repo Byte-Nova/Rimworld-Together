@@ -1,17 +1,13 @@
-﻿using System;
+using System;
 using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
-    public class SettlementData
+    public class DummySettlementFile
     {
-        public SettlementStepMode settlementStepMode;
-
         public int tile;
-
         public string owner;
-
         public Goodwill goodwill;
     }
 }

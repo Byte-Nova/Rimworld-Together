@@ -5,6 +5,7 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using Verse.Profile;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -27,7 +28,7 @@ namespace GameClient
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
             WorldGeneratorManager.seedString = seedString;
-            WorldGeneratorManager.persistentRandomValue = GenText.StableStringHash(seedString);
+            persistentRandomValue = GenText.StableStringHash(seedString);
             WorldGeneratorManager.planetCoverage = planetCoverage;
             WorldGeneratorManager.rainfall = rainfall;
             WorldGeneratorManager.temperature = temperature;
@@ -113,7 +114,7 @@ namespace GameClient
         public static void SendWorldToServer()
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
+            worldData.worldStepMode = WorldStepMode.Required;
 
             worldData.seedString = seedString;
             worldData.persistentRandomValue = persistentRandomValue;

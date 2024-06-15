@@ -1,7 +1,5 @@
 ﻿using Shared;
-using System;
 using System.Text;
-using System.Threading;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -72,14 +70,14 @@ namespace GameServer
 
             if (client.isAdmin)
             {
-                chatData.userColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
-                chatData.messageColors.Add(((int)CommonEnumerators.MessageColor.Admin).ToString());
+                chatData.userColors.Add(((int)MessageColor.Admin).ToString());
+                chatData.messageColors.Add(((int)MessageColor.Admin).ToString());
             }
 
             else
             {
-                chatData.userColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
-                chatData.messageColors.Add(((int)CommonEnumerators.MessageColor.Normal).ToString());
+                chatData.userColors.Add(((int)MessageColor.Normal).ToString());
+                chatData.messageColors.Add(((int)MessageColor.Normal).ToString());
             }
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
@@ -94,8 +92,8 @@ namespace GameServer
             ChatData chatData = new ChatData();
             chatData.usernames.Add("CONSOLE");
             chatData.messages.Add(messageToSend);
-            chatData.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
-            chatData.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
+            chatData.userColors.Add(((int)MessageColor.Console).ToString());
+            chatData.messageColors.Add(((int)MessageColor.Console).ToString());
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
@@ -111,8 +109,8 @@ namespace GameServer
             {
                 chatData.usernames.Add("CONSOLE");
                 chatData.messages.Add(messagesToSend[i]);
-                chatData.userColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
-                chatData.messageColors.Add(((int)CommonEnumerators.MessageColor.Console).ToString());
+                chatData.userColors.Add(((int)MessageColor.Console).ToString());
+                chatData.messageColors.Add(((int)MessageColor.Console).ToString());
             }
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
