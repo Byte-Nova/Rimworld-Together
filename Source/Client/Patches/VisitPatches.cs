@@ -33,8 +33,6 @@ namespace GameClient
             if (!OnlineVisitManager.isHost) return;
             if (__instance is Mote) return;
 
-            OnlineVisitManager.semaphore.WaitOne();
-
             CreationOrder creationOrder = new CreationOrder();
 
             if (DeepScribeHelper.CheckIfThingIsHuman(__instance)) creationOrder.creationType = CreationType.Human;
@@ -57,10 +55,8 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
             Network.listener.EnqueuePacket(packet);
 
-            OnlineVisitManager.mapThings.Add(__instance);
-            Logger.Warning($"Created! > {OnlineVisitManager.mapThings.IndexOf(__instance)} > {__instance.OccupiedRect().CenterCell}");
-
-            OnlineVisitManager.semaphore.Release();
+            //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+            if (OnlineVisitManager.isHost) OnlineVisitHelper.AddToVisitList(__instance);
         }
     }
 
@@ -75,10 +71,8 @@ namespace GameClient
             if (!OnlineVisitManager.isHost) return;
             if (!OnlineVisitManager.mapThings.Contains(__instance)) return;
 
-            OnlineVisitManager.semaphore.WaitOne();
-
             DestructionOrder destructionOrder = new DestructionOrder();
-            destructionOrder.indexToDestroy = OnlineVisitManager.mapThings.FirstIndexOf(fetch => fetch == __instance);
+            destructionOrder.indexToDestroy = OnlineVisitManager.mapThings.IndexOf(__instance);
 
             OnlineVisitData onlineVisitData = new OnlineVisitData();
             onlineVisitData.visitStepMode = OnlineVisitStepMode.Destroy;
@@ -87,10 +81,8 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
             Network.listener.EnqueuePacket(packet);
 
-            Logger.Warning($"Destroyed! > {OnlineVisitManager.mapThings.IndexOf(__instance)}");
-            OnlineVisitManager.mapThings.Remove(__instance);
-
-            OnlineVisitManager.semaphore.Release();
+            //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+            if (OnlineVisitManager.isHost) OnlineVisitHelper.RemoveFromVisitList(__instance);
         }
     }
 

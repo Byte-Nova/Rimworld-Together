@@ -27,8 +27,6 @@ namespace GameClient
         public static List<Thing> mapThings = new List<Thing>();
         public static Map visitMap;
 
-        public static Semaphore semaphore = new Semaphore(1, 1);
-
         public static bool isHost;
         public static readonly int tickTime = 1000;
 
@@ -267,48 +265,55 @@ namespace GameClient
 
         public static void ReceiveCreationOrder(OnlineVisitData visitData)
         {
+            Thing toSpawn;
+
             if (visitData.creationOrder.creationType == CreationType.Human)
             {
                 HumanData data = (HumanData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
-                Pawn toSpawn = HumanScribeManager.StringToHuman(data);
-                RimworldManager.PlaceThingInMap(toSpawn, OnlineVisitManager.visitMap);
-
-                OnlineVisitManager.nonFactionPawns.Add(toSpawn);
-                Logger.Warning($"Created! > {OnlineVisitManager.nonFactionPawns.IndexOf(toSpawn)}");
+                toSpawn = HumanScribeManager.StringToHuman(data);
             }
 
             else if (visitData.creationOrder.creationType == CreationType.Animal)
             {
                 AnimalData data = (AnimalData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
-                Pawn toSpawn = AnimalScribeManager.StringToAnimal(data);
-                RimworldManager.PlaceThingInMap(toSpawn, OnlineVisitManager.visitMap);
-
-                OnlineVisitManager.nonFactionPawns.Add(toSpawn);
-                Logger.Warning($"Created! > {OnlineVisitManager.nonFactionPawns.IndexOf(toSpawn)}");
+                toSpawn = AnimalScribeManager.StringToAnimal(data);
             }
 
             else
             {
                 ItemData data = (ItemData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
-                Thing toSpawn = ThingScribeManager.StringToItem(data);
-                RimworldManager.PlaceThingInMap(toSpawn, OnlineVisitManager.visitMap);
-
-                OnlineVisitManager.mapThings.Add(toSpawn);
-                Logger.Warning($"Created! > {OnlineVisitManager.mapThings.IndexOf(toSpawn)}");
+                toSpawn = ThingScribeManager.StringToItem(data);
             }
+
+            RimworldManager.PlaceThingInMap(toSpawn, OnlineVisitManager.visitMap);
+            AddToVisitList(toSpawn);
         }
 
         public static void ReceiveDestructionOrder(OnlineVisitData visitData)
         {
-            try
-            {
-                Thing toDestroy = OnlineVisitManager.mapThings[visitData.destructionOrder.indexToDestroy];
-                toDestroy.Destroy(DestroyMode.Vanish);
+            Thing toDestroy = OnlineVisitManager.mapThings[visitData.destructionOrder.indexToDestroy];
+            toDestroy.Destroy(DestroyMode.Vanish);
+            RemoveFromVisitList(toDestroy);
+        }
 
-                Logger.Warning($"Destroyed! > {OnlineVisitManager.mapThings.IndexOf(toDestroy)}");
-                OnlineVisitManager.mapThings.RemoveAt(visitData.destructionOrder.indexToDestroy);
-            }
-            catch { }
+        public enum VisitListType { Pawn, Things }
+
+        public static void AddToVisitList(Thing thing)
+        {
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing)) OnlineVisitManager.nonFactionPawns.Add((Pawn)thing);
+            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) OnlineVisitManager.nonFactionPawns.Add((Pawn)thing);
+            else OnlineVisitManager.mapThings.Add(thing);
+
+            Logger.Warning($"Created! > {thing.def.defName}");
+        }
+
+        public static void RemoveFromVisitList(Thing thing)
+        {
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing)) OnlineVisitManager.nonFactionPawns.Remove((Pawn)thing);
+            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) OnlineVisitManager.nonFactionPawns.Remove((Pawn)thing);
+            else OnlineVisitManager.mapThings.Remove(thing);
+
+            Logger.Warning($"Destroyed! > {thing.def.defName}");
         }
 
         public static LocalTargetInfo GetActionTargetsFromString(PawnOrder pawnOrder, int index)
