@@ -27,6 +27,8 @@ namespace GameClient
         public static List<Thing> mapThings = new List<Thing>();
         public static Map visitMap;
 
+        public static Semaphore semaphore = new Semaphore(1, 1);
+
         public static bool isHost;
         public static readonly int tickTime = 1000;
 

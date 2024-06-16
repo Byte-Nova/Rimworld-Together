@@ -33,6 +33,8 @@ namespace GameClient
             if (!OnlineVisitManager.isHost) return;
             if (__instance is Mote) return;
 
+            OnlineVisitManager.semaphore.WaitOne();
+
             CreationOrder creationOrder = new CreationOrder();
 
             if (DeepScribeHelper.CheckIfThingIsHuman(__instance)) creationOrder.creationType = CreationType.Human;
@@ -57,6 +59,8 @@ namespace GameClient
 
             OnlineVisitManager.mapThings.Add(__instance);
             Logger.Warning($"Created! > {OnlineVisitManager.mapThings.IndexOf(__instance)} > {__instance.OccupiedRect().CenterCell}");
+
+            OnlineVisitManager.semaphore.Release();
         }
     }
 
@@ -71,6 +75,8 @@ namespace GameClient
             if (!OnlineVisitManager.isHost) return;
             if (!OnlineVisitManager.mapThings.Contains(__instance)) return;
 
+            OnlineVisitManager.semaphore.WaitOne();
+
             DestructionOrder destructionOrder = new DestructionOrder();
             destructionOrder.indexToDestroy = OnlineVisitManager.mapThings.FirstIndexOf(fetch => fetch == __instance);
 
@@ -83,7 +89,8 @@ namespace GameClient
 
             Logger.Warning($"Destroyed! > {OnlineVisitManager.mapThings.IndexOf(__instance)}");
             OnlineVisitManager.mapThings.Remove(__instance);
-            return;
+
+            OnlineVisitManager.semaphore.Release();
         }
     }
 
