@@ -105,7 +105,7 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
             Network.listener.dataQueue.Enqueue(packet);
 
-            Logger.Warning($"New job! > {newJob.def.defName} > {___pawn.Label}");
+            //Logger.Warning($"New job! > {newJob.def.defName} > {___pawn.Label}");
         }
     }
 

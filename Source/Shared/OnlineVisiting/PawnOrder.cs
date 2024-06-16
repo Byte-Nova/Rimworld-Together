@@ -7,11 +7,21 @@ namespace Shared
     [Serializable]
     public class PawnOrder
     {
-        public int pawnIndex;
         public string defName;
-        public string actionTargetA;
-        public int actionTargetIndex;
-        public ActionTargetType actionTargetType;
+        public int pawnIndex;
+        public int count;
+
+        public string[] actionTargets;
+        public int[] actionIndexes;
+        public ActionTargetType[] actionTypes;
+
+        public string[] queueTargetsA;
+        public int[] queueIndexesA;
+        public ActionTargetType[] queueTypesA;
+
+        public string[] queueTargetsB;
+        public int[] queueIndexesB;
+        public ActionTargetType[] queueTypesB;
 
         public bool isDrafted;
         public string positionSync;

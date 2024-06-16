@@ -102,7 +102,10 @@ namespace GameClient
 
         public static JobDef GetJobFromDef(string defToFind) { return DefDatabase<JobDef>.AllDefs.ToList().Find(fetch => fetch.defName == defToFind); }
 
-        public static Job SetJobFromDef(JobDef jobDef, LocalTargetInfo localTargetA) { return JobMaker.MakeJob(jobDef, localTargetA); }
+        public static Job SetJobFromDef(JobDef jobDef, LocalTargetInfo targetA, LocalTargetInfo targetB, LocalTargetInfo targetC)
+        {
+            return JobMaker.MakeJob(jobDef, targetA, targetB, targetC);
+        }
 
         public static Thing[] GetThingsInMap(Map map)
         {
