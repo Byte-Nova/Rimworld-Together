@@ -229,6 +229,34 @@ namespace GameClient
             return pawnOrder;
         }
 
+        public static CreationOrder CreateCreationOrder(Thing thing)
+        {
+            CreationOrder creationOrder = new CreationOrder();
+
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing)) creationOrder.creationType = CreationType.Human;
+            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) creationOrder.creationType = CreationType.Animal;
+            else creationOrder.creationType = CreationType.Thing;
+
+            if (creationOrder.creationType == CreationType.Human) creationOrder.dataToCreate = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString((Pawn)thing));
+            else if (creationOrder.creationType == CreationType.Animal) creationOrder.dataToCreate = Serializer.ConvertObjectToBytes(AnimalScribeManager.AnimalToString((Pawn)thing));
+            else
+            {
+                //Modify position based on center cell because RimWorld doesn't store it by default
+                thing.Position = thing.OccupiedRect().CenterCell;
+                creationOrder.dataToCreate = Serializer.ConvertObjectToBytes(ThingScribeManager.ItemToString(thing, thing.stackCount));
+            }
+
+            return creationOrder;
+        }
+
+        public static DestructionOrder CreateDestructionOrder(Thing thing)
+        {
+            DestructionOrder destructionOrder = new DestructionOrder();
+            destructionOrder.indexToDestroy = OnlineVisitManager.mapThings.IndexOf(thing);
+
+            return destructionOrder;
+        }
+
         public static void ReceivePawnOrder(OnlineVisitData visitData)
         {
             if (!ClientValues.isInVisit) return;

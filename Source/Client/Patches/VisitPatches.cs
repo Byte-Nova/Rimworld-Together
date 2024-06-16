@@ -25,64 +25,54 @@ namespace GameClient
     [HarmonyPatch(typeof(Thing), "SpawnSetup")]
     public static class PatchCreateThingDuringVisit
     {
-        [HarmonyPostfix]
-        public static void DoPost(Thing __instance)
+        [HarmonyPrefix]
+        public static bool DoPost(Thing __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return;
-            if (!ClientValues.isInVisit) return;
-            if (!OnlineVisitManager.isHost) return;
-            if (__instance is Mote) return;
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (!ClientValues.isInVisit) return true;
+            if (__instance is Mote) return true;
 
-            CreationOrder creationOrder = new CreationOrder();
+            if (OnlineVisitManager.isHost)
+            {               
+                OnlineVisitData onlineVisitData = new OnlineVisitData();
+                onlineVisitData.visitStepMode = OnlineVisitStepMode.Create;
+                onlineVisitData.creationOrder = OnlineVisitHelper.CreateCreationOrder(__instance);
 
-            if (DeepScribeHelper.CheckIfThingIsHuman(__instance)) creationOrder.creationType = CreationType.Human;
-            else if (DeepScribeHelper.CheckIfThingIsAnimal(__instance)) creationOrder.creationType = CreationType.Animal;
-            else creationOrder.creationType = CreationType.Thing;
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
+                Network.listener.EnqueuePacket(packet);
 
-            if (creationOrder.creationType == CreationType.Human) creationOrder.dataToCreate = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString((Pawn)__instance));
-            else if (creationOrder.creationType == CreationType.Animal) creationOrder.dataToCreate = Serializer.ConvertObjectToBytes(AnimalScribeManager.AnimalToString((Pawn)__instance));
-            else
-            {
-                //Modify position based on center cell because RimWorld doesn't store it by default
-                __instance.Position = __instance.OccupiedRect().CenterCell;
-                creationOrder.dataToCreate = Serializer.ConvertObjectToBytes(ThingScribeManager.ItemToString(__instance, __instance.stackCount));
+                //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+                OnlineVisitHelper.AddToVisitList(__instance);
+                return true;
             }
-
-            OnlineVisitData onlineVisitData = new OnlineVisitData();
-            onlineVisitData.visitStepMode = OnlineVisitStepMode.Create;
-            onlineVisitData.creationOrder = creationOrder;
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
-            Network.listener.EnqueuePacket(packet);
-
-            //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-            if (OnlineVisitManager.isHost) OnlineVisitHelper.AddToVisitList(__instance);
+            else return true;
         }
     }
 
     [HarmonyPatch(typeof(Thing), "Destroy")]
     public static class PatchDestroyThingDuringVisit
     {
-        [HarmonyPostfix]
-        public static void DoPost(Thing __instance)
+        [HarmonyPrefix]
+        public static bool DoPre(Thing __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return;
-            if (!ClientValues.isInVisit) return;
-            if (!OnlineVisitManager.isHost) return;
-            if (!OnlineVisitManager.mapThings.Contains(__instance)) return;
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (!ClientValues.isInVisit) return true;
+            if (!OnlineVisitManager.mapThings.Contains(__instance)) return true;
 
-            DestructionOrder destructionOrder = new DestructionOrder();
-            destructionOrder.indexToDestroy = OnlineVisitManager.mapThings.IndexOf(__instance);
+            if (OnlineVisitManager.isHost)
+            {
+                OnlineVisitData onlineVisitData = new OnlineVisitData();
+                onlineVisitData.visitStepMode = OnlineVisitStepMode.Destroy;
+                onlineVisitData.destructionOrder = OnlineVisitHelper.CreateDestructionOrder(__instance);
 
-            OnlineVisitData onlineVisitData = new OnlineVisitData();
-            onlineVisitData.visitStepMode = OnlineVisitStepMode.Destroy;
-            onlineVisitData.destructionOrder = destructionOrder;
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
+                Network.listener.EnqueuePacket(packet);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
-            Network.listener.EnqueuePacket(packet);
-
-            //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-            if (OnlineVisitManager.isHost) OnlineVisitHelper.RemoveFromVisitList(__instance);
+                //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+                OnlineVisitHelper.RemoveFromVisitList(__instance);
+                return true;
+            }
+            else return true;
         }
     }
 
