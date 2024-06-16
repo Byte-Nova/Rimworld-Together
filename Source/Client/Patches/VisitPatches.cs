@@ -50,11 +50,9 @@ namespace GameClient
 
             else
             {
-                if (!OnlineVisitManager.queuedThings.Contains(__instance))
+                if (OnlineVisitManager.queuedThing != __instance)
                 {
                     if (OnlineVisitManager.mapThings.Contains(__instance)) return true;
-
-                    Logger.Warning("Asking for permission!");
 
                     OnlineVisitData onlineVisitData = new OnlineVisitData();
                     onlineVisitData.visitStepMode = OnlineVisitStepMode.Create;
@@ -62,14 +60,11 @@ namespace GameClient
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
                     Network.listener.EnqueuePacket(packet);
-                    return true;
+                    return false;
                 }
 
                 else
                 {
-                    Logger.Warning("Executing from queue!");
-
-                    OnlineVisitHelper.RemoveFromQueueList(__instance);
                     OnlineVisitHelper.AddToVisitList(__instance);
                     return true;
                 }
@@ -104,11 +99,9 @@ namespace GameClient
 
             else
             {
-                if (!OnlineVisitManager.queuedThings.Contains(__instance))
+                if (OnlineVisitManager.queuedThing != __instance)
                 {
                     if (!OnlineVisitManager.mapThings.Contains(__instance)) return true;
-
-                    Logger.Warning("Asking for permission!");
 
                     OnlineVisitData onlineVisitData = new OnlineVisitData();
                     onlineVisitData.visitStepMode = OnlineVisitStepMode.Destroy;
@@ -116,14 +109,11 @@ namespace GameClient
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
                     Network.listener.EnqueuePacket(packet);
-                    return true;
+                    return false;
                 }
 
                 else
                 {
-                    Logger.Warning("Executing from queue!");
-
-                    OnlineVisitHelper.RemoveFromQueueList(__instance);
                     OnlineVisitHelper.RemoveFromVisitList(__instance);
                     return true;
                 }
