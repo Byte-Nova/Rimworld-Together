@@ -3,6 +3,7 @@ using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
 using Verse;
+using Verse.AI;
 
 namespace GameClient
 {
@@ -93,6 +94,28 @@ namespace GameClient
             Find.LetterStack.ReceiveLetter(title,
                 description,
                 letterType);
+        }
+
+        public static int GetGameTicks() { return Find.TickManager.TicksSinceSettle; }
+
+        public static void SetGameTicks(int newGameTicks) { Find.TickManager.DebugSetTicksGame(newGameTicks); }
+
+        public static JobDef GetJobFromDef(string defToFind) { return DefDatabase<JobDef>.AllDefs.ToList().Find(fetch => fetch.defName == defToFind); }
+
+        public static Job SetJobFromDef(JobDef jobDef, LocalTargetInfo localTargetA) { return JobMaker.MakeJob(jobDef, localTargetA); }
+
+        public static Thing[] GetThingsInMap(Map map)
+        {
+            return map.listerThings.AllThings.Where(fetch =>
+                !DeepScribeHelper.CheckIfThingIsHuman(fetch) &&
+                !DeepScribeHelper.CheckIfThingIsAnimal(fetch))
+                .ToArray();
+        }
+
+        public static void PlaceThingInMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct)
+        {
+            if (thing is Pawn) GenSpawn.Spawn(thing, thing.Position, map, thing.Rotation);
+            else GenPlace.TryPlaceThing(thing, thing.Position, map, placeMode, rot: thing.Rotation);
         }
     }
 }

@@ -45,11 +45,13 @@
 
         public enum OfflineSpyStepMode { Request, Deny, Unavailable }
 
-        public enum VisitStepMode { Request, Accept, Reject, Unavailable, Action, Stop }
+        public enum OnlineVisitStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Stop }
+
+        public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
+
+        public enum CreationType { Human, Animal, Thing }
 
         public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward, WorkerError }
-
-        public enum ActionTargetType { Thing, Human, Animal, Cell }
 
         public enum SettlementStepMode { Add, Remove }
 

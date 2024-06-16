@@ -11,23 +11,31 @@ namespace GameServer
 
             switch (visitData.visitStepMode)
             {
-                case VisitStepMode.Request:
+                case OnlineVisitStepMode.Request:
                     SendVisitRequest(client, visitData);
                     break;
 
-                case VisitStepMode.Accept:
+                case OnlineVisitStepMode.Accept:
                     AcceptVisitRequest(client, visitData);
                     break;
 
-                case VisitStepMode.Reject:
+                case OnlineVisitStepMode.Reject:
                     RejectVisitRequest(client, visitData);
                     break;
 
-                case VisitStepMode.Action:
+                case OnlineVisitStepMode.Action:
                     SendVisitActions(client, visitData);
                     break;
 
-                case VisitStepMode.Stop:
+                case OnlineVisitStepMode.Create:
+                    SendVisitActions(client, visitData);
+                    break;
+
+                case OnlineVisitStepMode.Destroy:
+                    SendVisitActions(client, visitData);
+                    break;
+
+                case OnlineVisitStepMode.Stop:
                     SendVisitStop(client);
                     break;
             }
@@ -42,7 +50,7 @@ namespace GameServer
                 ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
-                    visitData.visitStepMode = VisitStepMode.Unavailable;
+                    visitData.visitStepMode = OnlineVisitStepMode.Unavailable;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                     client.listener.EnqueuePacket(packet);
                 }
@@ -51,7 +59,7 @@ namespace GameServer
                 {
                     if (toGet.inVisitWith != null)
                     {
-                        visitData.visitStepMode = VisitStepMode.Unavailable;
+                        visitData.visitStepMode = OnlineVisitStepMode.Unavailable;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                         client.listener.EnqueuePacket(packet);
                     }
@@ -105,7 +113,7 @@ namespace GameServer
         {
             if (client.inVisitWith == null)
             {
-                visitData.visitStepMode = VisitStepMode.Stop;
+                visitData.visitStepMode = OnlineVisitStepMode.Stop;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                 client.listener.EnqueuePacket(packet);
             }
@@ -120,7 +128,7 @@ namespace GameServer
         public static void SendVisitStop(ServerClient client)
         {
             OnlineVisitData visitData = new OnlineVisitData();
-            visitData.visitStepMode = VisitStepMode.Stop;
+            visitData.visitStepMode = OnlineVisitStepMode.Stop;
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
 
             if (client.inVisitWith == null) client.listener.EnqueuePacket(packet);

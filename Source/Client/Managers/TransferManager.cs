@@ -196,11 +196,11 @@ namespace GameClient
                 else map = Find.AnyPlayerHomeMap;
 
                 IntVec3 location = TransferManagerHelper.GetTransferLocationInMap(map);
-
                 foreach (Thing thing in things)
                 {
-                    if (thing is Pawn) GenSpawn.Spawn(thing, location, map, Rot4.Random);
-                    else GenPlace.TryPlaceThing(thing, location, map, ThingPlaceMode.Near);
+                    thing.Position = location;
+                    thing.SetFactionDirect(Faction.OfPlayer);
+                    RimworldManager.PlaceThingInMap(thing, map, ThingPlaceMode.Near);
                 }
 
                 FinishTransfer(success);
@@ -464,12 +464,8 @@ namespace GameClient
 
         public static void TransferPawnIntoCaravan(Pawn pawnToTransfer)
         {
-            if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawnToTransfer))
-            {
-                Find.WorldPawns.PassToWorld(pawnToTransfer);
-            }
-
-            pawnToTransfer.SetFaction(Faction.OfPlayer);
+            if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawnToTransfer)) Find.WorldPawns.PassToWorld(pawnToTransfer);
+            pawnToTransfer.SetFactionDirect(Faction.OfPlayer);
             ClientValues.chosenCaravan.AddPawn(pawnToTransfer, false);
         }
 

@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.Noise;
 using static Shared.CommonEnumerators;
 
 
@@ -15,15 +18,13 @@ namespace GameClient
 {
     public static class OnlineVisitManager
     {
-        public static Pawn[] factionPawns = new Pawn[] { };
+        public static List<Pawn> factionPawns = new List<Pawn>();
+        public static List<Pawn> nonFactionPawns = new List<Pawn>();
+        public static List<Thing> mapThings = new List<Thing>();
+        public static Map visitMap;
 
-        public static Pawn[] nonFactionPawns = new Pawn[] { };
-
-        public static Thing[] mapThings = new Thing[] { };
-
-        public static Map visitMap = new Map();
-
-        public static bool syncedTime = false;
+        public static bool isHost;
+        public static readonly int tickTime = 1000;
 
         public static void ParseVisitPacket(Packet packet)
         {
@@ -31,27 +32,35 @@ namespace GameClient
 
             switch (visitData.visitStepMode)
             {
-                case VisitStepMode.Request:
+                case OnlineVisitStepMode.Request:
                     OnVisitRequest(visitData);
                     break;
 
-                case VisitStepMode.Accept:
+                case OnlineVisitStepMode.Accept:
                     OnVisitAccept(visitData);
                     break;
 
-                case VisitStepMode.Reject:
+                case OnlineVisitStepMode.Reject:
                     OnVisitReject();
                     break;
 
-                case VisitStepMode.Unavailable:
+                case OnlineVisitStepMode.Unavailable:
                     OnVisitUnavailable();
                     break;
 
-                case VisitStepMode.Action:
-                    VisitActionGetter.ReceiveActions(visitData);
+                case OnlineVisitStepMode.Action:
+                    OnlineVisitHelper.ReceiveOrder(visitData);
                     break;
 
-                case VisitStepMode.Stop:
+                case OnlineVisitStepMode.Create:
+                    OnlineVisitHelper.CreateThing(visitData);
+                    break;
+
+                case OnlineVisitStepMode.Destroy:
+                    OnlineVisitHelper.DestroyThing(visitData);
+                    break;
+
+                case OnlineVisitStepMode.Stop:
                     OnVisitStop();
                     break;
             }
@@ -67,7 +76,7 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
 
                     OnlineVisitData visitData = new OnlineVisitData();
-                    visitData.visitStepMode = (int)VisitStepMode.Request;
+                    visitData.visitStepMode = (int)OnlineVisitStepMode.Request;
                     visitData.fromTile = Find.AnyPlayerHomeMap.Tile;
                     visitData.targetTile = ClientValues.chosenSettlement.Tile;
                     visitData.caravanHumans = OnlineVisitHelper.GetHumansForVisit(FetchMode.Player);
@@ -84,26 +93,23 @@ namespace GameClient
 
         private static void VisitMap(MapData mapData, OnlineVisitData visitData)
         {
+            isHost = false;
             ClientValues.ToggleVisit(true);
 
-            visitMap = OnlineVisitHelper.GetMapForVisit(mapData);
+            visitMap = MapScribeManager.StringToMap(mapData, true, true, false, true, false, true);
             factionPawns = OnlineVisitHelper.GetCaravanPawns(FetchMode.Player, null);
-            mapThings = OnlineVisitHelper.GetMapThings(visitMap);
+            mapThings = RimworldManager.GetThingsInMap(visitMap).OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToList();
 
-            syncedTime = false;
-
-            VisitThingHelper.SpawnPawnsForVisit(FetchMode.Player, visitData);
+            OnlineVisitHelper.SpawnPawnsForVisit(FetchMode.Player, visitData);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, visitMap, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
-
-            Threader.GenerateThread(Threader.Mode.Visit);
         }
 
         public static void StopVisit()
         {
             OnlineVisitData visitData = new OnlineVisitData();
-            visitData.visitStepMode = VisitStepMode.Stop;
+            visitData.visitStepMode = OnlineVisitStepMode.Stop;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
             Network.listener.dataQueue.Enqueue(packet);
@@ -113,22 +119,19 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                ClientValues.ToggleVisit(true);
-
+                isHost = true;
                 visitMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == visitData.targetTile).Map;
                 factionPawns = OnlineVisitHelper.GetMapPawns(FetchMode.Host, null);
-                mapThings = OnlineVisitHelper.GetMapThings(visitMap);
-
-                syncedTime = true;
+                mapThings = RimworldManager.GetThingsInMap(visitMap).OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToList();
 
                 SendRequestedMap(visitData);
-                VisitThingHelper.SpawnPawnsForVisit(FetchMode.Host, visitData);
-                Threader.GenerateThread(Threader.Mode.Visit);
+                OnlineVisitHelper.SpawnPawnsForVisit(FetchMode.Host, visitData);
+                ClientValues.ToggleVisit(true);
             };
 
             Action r2 = delegate
             {
-                visitData.visitStepMode = VisitStepMode.Reject;
+                visitData.visitStepMode = OnlineVisitStepMode.Reject;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
                 Network.listener.dataQueue.Enqueue(packet);
             };
@@ -178,7 +181,7 @@ namespace GameClient
 
         private static void SendRequestedMap(OnlineVisitData visitData)
         {
-            visitData.visitStepMode = VisitStepMode.Accept;
+            visitData.visitStepMode = OnlineVisitStepMode.Accept;
             visitData.mapHumans = OnlineVisitHelper.GetHumansForVisit(FetchMode.Host);
             visitData.mapAnimals = OnlineVisitHelper.GetAnimalsForVisit(FetchMode.Host);
 
@@ -190,239 +193,100 @@ namespace GameClient
         }
     }
 
-    public static class VisitThingHelper
-    {
-        public static void SpawnPawnsForVisit(FetchMode mode, OnlineVisitData visitData)
-        {
-            if (mode == FetchMode.Host)
-            {
-                OnlineVisitManager.nonFactionPawns = OnlineVisitHelper.GetCaravanPawns(FetchMode.Host, visitData);
-                foreach (Pawn pawn in OnlineVisitManager.nonFactionPawns)
-                {
-                    pawn.SetFaction(FactionValues.allyPlayer);
-                    GenSpawn.Spawn(pawn, OnlineVisitManager.visitMap.Center, OnlineVisitManager.visitMap, Rot4.Random);
-                }
-            }
-
-            else if (mode == FetchMode.Player)
-            {
-                OnlineVisitManager.nonFactionPawns = OnlineVisitHelper.GetMapPawns(FetchMode.Player, visitData);
-                foreach (Pawn pawn in OnlineVisitManager.nonFactionPawns)
-                {
-                    pawn.SetFaction(FactionValues.allyPlayer);
-                    GenSpawn.Spawn(pawn, OnlineVisitManager.visitMap.Center, OnlineVisitManager.visitMap, Rot4.Random);
-                }
-            }
-        }
-    }
-
-    public static class VisitActionGetter
-    {
-        public static void StartActionClock()
-        {
-            while (ClientValues.isInVisit)
-            {
-                Thread.Sleep(1000);
-
-                ActionClockTick();
-            }
-        }
-
-        private static void ActionClockTick()
-        {
-            OnlineVisitData visitData = new OnlineVisitData();
-            visitData.visitStepMode = VisitStepMode.Action;
-            visitData.mapTicks = OnlineVisitHelper.GetGameTicks();
-
-            foreach (Pawn pawn in OnlineVisitHelper.GetFactionPawnsSecure())
-            {
-                try
-                {
-                    if (pawn.jobs.curJob == null)
-                    {
-                        visitData.pawnActionDefNames.Add("null");
-                        visitData.actionTargetA.Add("null");
-                        visitData.actionTargetIndex.Add(0);
-                    }
-
-                    else
-                    {
-                        visitData.pawnActionDefNames.Add(pawn.jobs.curJob.def.defName);
-                        visitData.actionTargetA.Add(VisitActionHelper.ActionTargetToString(pawn.jobs.curJob.targetA, visitData));
-                        visitData.actionTargetIndex.Add(OnlineVisitHelper.GetActionTargetIndex(pawn.jobs.curJob.targetA));
-                    }
-
-                    visitData.isDrafted.Add(OnlineVisitHelper.GetPawnDraftState(pawn));
-                    visitData.positionSync.Add(ValueParser.Vector3ToString(pawn.Position));
-                    visitData.rotationSync.Add(ValueParser.Rot4ToInt(pawn.Rotation));
-                }
-                catch { Logger.Warning($"Couldn't get job for human {pawn.Name}"); }
-            }
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), visitData);
-            Network.listener.dataQueue.Enqueue(packet);
-        }
-
-        public static void ReceiveActions(OnlineVisitData visitData)
-        {
-            if (!ClientValues.isInVisit) return;
-
-            OnlineVisitHelper.SetGameTicks(visitData.mapTicks);
-
-            Pawn[] otherPawns = OnlineVisitHelper.GetOtherFactionPawnsSecure();
-            for (int i = 0; i < otherPawns.Count(); i++)
-            {
-                try
-                {
-                    JobDef jobDef = OnlineVisitHelper.TryGetJobDefForJob(otherPawns[i], visitData.pawnActionDefNames[i]);
-
-                    if (jobDef == null) return;
-
-                    LocalTargetInfo localTargetInfoA = OnlineVisitHelper.TryGetLocalTargetInfo(otherPawns[i],
-                        visitData.actionTargetA[i], (ActionTargetType)visitData.actionTargetType[i],
-                        visitData.actionTargetIndex[i]);
-
-                    Job newJob = OnlineVisitHelper.TryCreateNewJob(otherPawns[i], jobDef, localTargetInfoA);
-
-                    if (newJob == null) return;
-
-                    IntVec3 jobPositionStart = ValueParser.StringToVector3(visitData.positionSync[i]);
-                    Rot4 jobRotationStart = ValueParser.StringToRot4(visitData.rotationSync[i]);
-
-                    VisitActionHelper.ChangeCurrentJobSpeedIfNeeded(newJob);
-                    VisitActionHelper.HandlePawnDrafting(otherPawns[i], visitData.isDrafted[i]);
-                    VisitActionHelper.ChangeCurrentJobIfNeeded(otherPawns[i], newJob, jobPositionStart, jobRotationStart);
-                }
-                catch { Logger.Warning($"Couldn't set job for human {otherPawns[i].Name}"); }
-            }
-        }
-    }
-
-    public static class VisitActionHelper
-    {
-        public static string ActionTargetToString(LocalTargetInfo targetInfo, OnlineVisitData visitData)
-        {
-            try
-            {
-                if (targetInfo.Thing == null)
-                {
-                    visitData.actionTargetType.Add(((int)ActionTargetType.Cell));
-                    return ValueParser.Vector3ToString(targetInfo.Cell);
-                }
-
-                else
-                {
-                    if (DeepScribeHelper.CheckIfThingIsHuman(targetInfo.Thing))
-                    {
-                        visitData.actionTargetType.Add((int)ActionTargetType.Human);
-                        return Serializer.SerializeToString(HumanScribeManager.HumanToString(targetInfo.Pawn));
-                    }
-
-                    else if (DeepScribeHelper.CheckIfThingIsAnimal(targetInfo.Thing))
-                    {
-                        visitData.actionTargetType.Add((int)ActionTargetType.Animal);
-                        return Serializer.SerializeToString(AnimalScribeManager.AnimalToString(targetInfo.Pawn));
-                    }
-
-                    else
-                    {
-                        visitData.actionTargetType.Add((int)ActionTargetType.Thing);
-                        return Serializer.SerializeToString(ThingScribeManager.ItemToString(targetInfo.Thing, 1));
-                    }
-                }
-            }
-            catch { Logger.Error($"failed to parse {targetInfo}"); }
-
-            return null;
-        }
-
-        public static void HandlePawnDrafting(Pawn pawn, bool shouldBeDrafted)
-        {
-            try
-            {
-                pawn.drafter ??= new Pawn_DraftController(pawn);
-
-                if (shouldBeDrafted) pawn.drafter.Drafted = true;
-                else { pawn.drafter.Drafted = false; }
-            }
-            catch(Exception e) { Logger.Warning(e.ToString()); }
-        }
-
-        public static void TryChangePawnPosition(Pawn pawn, IntVec3 pawnPosition, Rot4 pawnRotation)
-        {
-            try
-            {
-                pawn.Position = pawnPosition;
-                pawn.Rotation = pawnRotation;
-                pawn.pather.Notify_Teleported_Int();
-            }
-            catch { Logger.Warning($"Couldn't set position of {pawn.Name}"); }
-        }
-
-        public static void ChangeCurrentJobIfNeeded(Pawn pawn, Job newJob, IntVec3 positionSync, Rot4 rotationSync)
-        {
-            if (pawn.jobs.curJob == null) pawn.jobs.StartJob(newJob);
-            else
-            {
-                if (pawn.jobs.curJob.def == newJob.def)
-                {
-                    if (pawn.jobs.curJob.targetA == newJob.targetA) return;
-                    else
-                    {
-                        TryChangePawnPosition(pawn, positionSync, rotationSync);
-                        pawn.jobs.EndCurrentOrQueuedJob(pawn.jobs.curJob, JobCondition.InterruptForced);
-                        pawn.jobs.StartJob(newJob);
-                    }
-                }
-
-                else
-                {
-                    TryChangePawnPosition(pawn, positionSync, rotationSync);
-                    pawn.jobs.EndCurrentOrQueuedJob(pawn.jobs.curJob, JobCondition.InterruptForced);
-                    pawn.jobs.StartJob(newJob);
-                }
-            }
-        }
-
-        public static void ChangeCurrentJobSpeedIfNeeded(Job job)
-        {
-            if (job.def == JobDefOf.GotoWander) job.locomotionUrgency = LocomotionUrgency.Walk;
-            else if (job.def == JobDefOf.Wait_Wander) job.locomotionUrgency = LocomotionUrgency.Walk;
-        }
-    }
-
     public static class OnlineVisitHelper
     {
-        public static int GetGameTicks()
+        public static void ReceiveOrder(OnlineVisitData visitData)
         {
-            return Find.TickManager.TicksSinceSettle;
+            if (!ClientValues.isInVisit) return;
+            if (!OnlineVisitManager.isHost) RimworldManager.SetGameTicks(visitData.mapTicks);
+
+            List<Pawn> otherPawns = GetOtherFactionPawnsSecure();
+            Pawn pawn = otherPawns[visitData.pawnOrder.pawnIndex];
+
+            IntVec3 jobPositionStart = ValueParser.StringToVector3(visitData.pawnOrder.positionSync);
+            Rot4 jobRotationStart = ValueParser.StringToRot4(visitData.pawnOrder.rotationSync);
+            ChangePawnTransform(pawn, jobPositionStart, jobRotationStart);
+            HandlePawnDrafting(pawn, visitData.pawnOrder.isDrafted);
+
+            try
+            {
+                JobDef jobDef = RimworldManager.GetJobFromDef(visitData.pawnOrder.defName);
+                LocalTargetInfo localTargetInfoA = GetActionTargetFromString(visitData.pawnOrder.actionTargetA, visitData.pawnOrder.actionTargetType, visitData.pawnOrder.actionTargetIndex);
+                Job newJob = RimworldManager.SetJobFromDef(jobDef, localTargetInfoA);
+
+                ChangeCurrentJob(pawn, newJob);
+                ChangeJobSpeedIfNeeded(newJob);
+            }
+            catch { Logger.Warning($"Couldn't set job for human {pawn.Name}"); }
         }
 
-        public static void SetGameTicks(int newGameTicks)
+        public static PawnOrder CreatePawnOrder(Pawn pawn)
         {
-            if (!OnlineVisitManager.syncedTime)
+            PawnOrder pawnOrder = new PawnOrder();
+            pawnOrder.pawnIndex = OnlineVisitManager.factionPawns.IndexOf(pawn);
+
+            if (pawn.jobs.curJob != null)
             {
-                Find.TickManager.DebugSetTicksGame(newGameTicks);
+                pawnOrder.defName = pawn.jobs.curJob.def.defName;
+                pawnOrder.actionTargetA = GetActionTarget(pawn.jobs.curJob.targetA);
+                pawnOrder.actionTargetIndex = GetActionTargetIndex(pawn.jobs.curJob.targetA);
+                pawnOrder.actionTargetType = GetActionTargetType(pawn.jobs.curJob.targetA);
+            }
+
+            pawnOrder.isDrafted = GetPawnDraftState(pawn);
+            pawnOrder.positionSync = ValueParser.Vector3ToString(pawn.Position);
+            pawnOrder.rotationSync = ValueParser.Rot4ToInt(pawn.Rotation);
+
+            return pawnOrder;
+        }
+
+        public static void CreateThing(OnlineVisitData visitData)
+        {
+            if (visitData.creationOrder.creationType == CreationType.Human)
+            {
+                HumanData data = (HumanData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
+                Pawn toSpawn = HumanScribeManager.StringToHuman(data);
+                RimworldManager.PlaceThingInMap(toSpawn, OnlineVisitManager.visitMap);
+
+                OnlineVisitManager.nonFactionPawns.Add(toSpawn);
+                Logger.Warning($"Created! > {OnlineVisitManager.nonFactionPawns.IndexOf(toSpawn)}");
+            }
+
+            else if (visitData.creationOrder.creationType == CreationType.Animal)
+            {
+                AnimalData data = (AnimalData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
+                Pawn toSpawn = AnimalScribeManager.StringToAnimal(data);
+                RimworldManager.PlaceThingInMap(toSpawn, OnlineVisitManager.visitMap);
+
+                OnlineVisitManager.nonFactionPawns.Add(toSpawn);
+                Logger.Warning($"Created! > {OnlineVisitManager.nonFactionPawns.IndexOf(toSpawn)}");
+            }
+
+            else
+            {
+                ItemData data = (ItemData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
+                Thing toSpawn = ThingScribeManager.StringToItem(data);
+                RimworldManager.PlaceThingInMap(toSpawn, OnlineVisitManager.visitMap);
+
+                OnlineVisitManager.mapThings.Add(toSpawn);
+                Logger.Warning($"Created! > {OnlineVisitManager.mapThings.IndexOf(toSpawn)}");
             }
         }
 
-        public static JobDef TryGetJobDefForJob(Pawn pawnForJob, string jobDefName)
+        public static void DestroyThing(OnlineVisitData visitData)
         {
-            try { return DefDatabase<JobDef>.AllDefs.ToArray().First(fetch => fetch.defName == jobDefName); }
-            catch { Logger.Warning($"Couldn't get job def of human {pawnForJob.Name}"); }
+            try
+            {
+                Thing toDestroy = OnlineVisitManager.mapThings[visitData.destructionOrder.indexToDestroy];
+                toDestroy.Destroy(DestroyMode.Vanish);
 
-            return null;
+                Logger.Warning($"Destroyed! > {OnlineVisitManager.mapThings.IndexOf(toDestroy)}");
+                OnlineVisitManager.mapThings.RemoveAt(visitData.destructionOrder.indexToDestroy);
+            }
+            catch { }
         }
 
-        public static Job TryCreateNewJob(Pawn pawnForJob, JobDef jobDef, LocalTargetInfo localTargetA)
-        {
-            try { return JobMaker.MakeJob(jobDef, localTargetA); }
-            catch { Logger.Warning($"Couldn't create job for human {pawnForJob.Name}"); }
-
-            return null;
-        }
-
-        public static LocalTargetInfo TryGetActionTargetFromString(string toReadFrom, ActionTargetType type, int index)
+        public static LocalTargetInfo GetActionTargetFromString(string toReadFrom, ActionTargetType type, int index)
         {
             LocalTargetInfo target = LocalTargetInfo.Invalid;
 
@@ -443,58 +307,121 @@ namespace GameClient
                         break;
 
                     case ActionTargetType.Cell:
-                        IntVec3 cell = ValueParser.StringToVector3(toReadFrom);
-                        if (cell != null) target = new LocalTargetInfo(cell);
+                        target = new LocalTargetInfo(ValueParser.StringToVector3(toReadFrom));
                         break;
                 }
             }
-            catch { Logger.Error($"Failed to get target from {toReadFrom}"); }
+            catch (Exception e) { Logger.Error(e.ToString()); }
 
             return target;
         }
 
-        public static LocalTargetInfo TryGetLocalTargetInfo(Pawn pawnForJob, string actionTarget, ActionTargetType type, int index)
+        public static string GetActionTarget(LocalTargetInfo targetInfo)
         {
-            try { return TryGetActionTargetFromString(actionTarget, type, index); }
-            catch { Logger.Warning($"Couldn't get job target for {pawnForJob.Label}"); }
+            try
+            {
+                if (targetInfo.Thing == null) return ValueParser.Vector3ToString(targetInfo.Cell);
+                else
+                {
+                    if (DeepScribeHelper.CheckIfThingIsHuman(targetInfo.Thing)) return Serializer.SerializeToString(HumanScribeManager.HumanToString(targetInfo.Pawn));
+                    else if (DeepScribeHelper.CheckIfThingIsAnimal(targetInfo.Thing)) return Serializer.SerializeToString(AnimalScribeManager.AnimalToString(targetInfo.Pawn));
+                    else return Serializer.SerializeToString(ThingScribeManager.ItemToString(targetInfo.Thing, 1));
+                }
+            }
+            catch { Logger.Error($"failed to parse {targetInfo}"); }
 
             return null;
         }
 
         public static int GetActionTargetIndex(LocalTargetInfo targetInfo)
         {
-            int toReturn = 0;
-
             try
             {
-                if (targetInfo.Thing == null) toReturn = 0;
-
+                if (targetInfo.Thing == null) return 0;
                 else
                 {
-                    if (DeepScribeHelper.CheckIfThingIsHuman(targetInfo.Thing))
-                    {
-                        toReturn = OnlineVisitManager.factionPawns.FirstIndexOf(fetch => fetch == targetInfo.Thing);
-                    }
+                    if (DeepScribeHelper.CheckIfThingIsHuman(targetInfo.Thing)) return OnlineVisitManager.factionPawns.FirstIndexOf(fetch => fetch == targetInfo.Thing);
+                    else if (DeepScribeHelper.CheckIfThingIsAnimal(targetInfo.Thing)) return OnlineVisitManager.factionPawns.FirstIndexOf(fetch => fetch == targetInfo.Thing);
+                    else return OnlineVisitManager.mapThings.FirstIndexOf(fetch => fetch == targetInfo.Thing);
+                }
+            }
+            catch { Logger.Error($"Failed to parse {targetInfo}"); }
 
-                    else if (DeepScribeHelper.CheckIfThingIsAnimal(targetInfo.Thing))
-                    {
-                        toReturn = OnlineVisitManager.factionPawns.FirstIndexOf(fetch => fetch == targetInfo.Thing);
-                    }
+            return 0;
+        }
 
-                    else
-                    {
-                        toReturn = OnlineVisitManager.mapThings.FirstIndexOf(fetch => fetch == targetInfo.Thing);
-                    }
+        public static ActionTargetType GetActionTargetType(LocalTargetInfo targetInfo)
+        {
+            try
+            {
+                if (targetInfo.Thing == null) return ActionTargetType.Cell;
+                else
+                {
+                    if (DeepScribeHelper.CheckIfThingIsHuman(targetInfo.Thing)) return ActionTargetType.Human;
+                    else if (DeepScribeHelper.CheckIfThingIsAnimal(targetInfo.Thing)) return ActionTargetType.Animal;
+                    else return ActionTargetType.Thing;
                 }
             }
             catch { Logger.Error($"failed to parse {targetInfo}"); }
 
-            return toReturn;
+            return ActionTargetType.Invalid;
         }
 
-        public static Map GetMapForVisit(MapData mapData)
+        public static void HandlePawnDrafting(Pawn pawn, bool shouldBeDrafted)
         {
-            return MapScribeManager.StringToMap(mapData, true, true, false, true, false, true);
+            try
+            {
+                pawn.drafter ??= new Pawn_DraftController(pawn);
+
+                if (shouldBeDrafted) pawn.drafter.Drafted = true;
+                else { pawn.drafter.Drafted = false; }
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        public static void ChangePawnTransform(Pawn pawn, IntVec3 pawnPosition, Rot4 pawnRotation)
+        {
+            pawn.Position = pawnPosition;
+            pawn.Rotation = pawnRotation;
+            pawn.pather.Notify_Teleported_Int();
+        }
+
+        public static void ChangeCurrentJob(Pawn pawn, Job newJob)
+        {
+            if (pawn.jobs.curJob != null) pawn.jobs.EndCurrentJob(JobCondition.None, false);
+
+            pawn.Reserve(newJob.targetA, newJob);
+            newJob.TryMakePreToilReservations(pawn, false);
+            pawn.jobs.StartJob(newJob);
+        }
+
+        public static void ChangeJobSpeedIfNeeded(Job job)
+        {
+            if (job.def == JobDefOf.GotoWander) job.locomotionUrgency = LocomotionUrgency.Walk;
+            else if (job.def == JobDefOf.Wait_Wander) job.locomotionUrgency = LocomotionUrgency.Walk;
+        }
+
+        public static void SpawnPawnsForVisit(FetchMode mode, OnlineVisitData visitData)
+        {
+            if (mode == FetchMode.Host)
+            {
+                OnlineVisitManager.nonFactionPawns = GetCaravanPawns(FetchMode.Host, visitData);
+                foreach (Pawn pawn in OnlineVisitManager.nonFactionPawns)
+                {
+                    pawn.SetFaction(FactionValues.allyPlayer);
+                    GenSpawn.Spawn(pawn, OnlineVisitManager.visitMap.Center, OnlineVisitManager.visitMap, Rot4.Random);
+                }
+            }
+
+            else if (mode == FetchMode.Player)
+            {
+                OnlineVisitManager.nonFactionPawns = GetMapPawns(FetchMode.Player, visitData);
+                foreach (Pawn pawn in OnlineVisitManager.nonFactionPawns)
+                {
+                    pawn.SetFaction(FactionValues.allyPlayer);
+                    GenSpawn.Spawn(pawn, OnlineVisitManager.visitMap.Center, OnlineVisitManager.visitMap, Rot4.Random);
+                }
+            }
         }
 
         public static List<byte[]> GetHumansForVisit(FetchMode mode)
@@ -571,23 +498,13 @@ namespace GameClient
             }
         }
 
-        public static Pawn[] GetFactionPawnsSecure()
-        {
-            return OnlineVisitManager.factionPawns.ToArray();
-        }
-
-        public static Pawn[] GetOtherFactionPawnsSecure()
-        {
-            return OnlineVisitManager.nonFactionPawns.ToArray();
-        }
-
         public static bool GetPawnDraftState(Pawn pawn)
         {
             if (pawn.drafter == null) return false;
             else return pawn.drafter.Drafted;
         }
 
-        public static Pawn[] GetMapPawns(FetchMode mode, OnlineVisitData visitData)
+        public static List<Pawn> GetMapPawns(FetchMode mode, OnlineVisitData visitData)
         {
             if (mode == FetchMode.Host)
             {
@@ -605,7 +522,7 @@ namespace GameClient
                 foreach (Pawn pawn in mapHumans) allPawns.Add(pawn);
                 foreach (Pawn pawn in mapAnimals) allPawns.Add(pawn);
 
-                return allPawns.ToArray();
+                return allPawns.ToList();
             }
 
             else
@@ -626,11 +543,11 @@ namespace GameClient
                     pawnList.Add(animal);
                 }
 
-                return pawnList.ToArray();
+                return pawnList.ToList();
             }
         }
 
-        public static Pawn[] GetCaravanPawns(FetchMode mode, OnlineVisitData visitData)
+        public static List<Pawn> GetCaravanPawns(FetchMode mode, OnlineVisitData visitData)
         {
             if (mode == FetchMode.Host)
             {
@@ -650,7 +567,7 @@ namespace GameClient
                     pawnList.Add(animal);
                 }
 
-                return pawnList.ToArray();
+                return pawnList.ToList();
             }
 
             else
@@ -669,21 +586,12 @@ namespace GameClient
                 foreach (Pawn pawn in caravanHumans) allPawns.Add(pawn);
                 foreach (Pawn pawn in caravanAnimals) allPawns.Add(pawn);
 
-                return allPawns.ToArray();
+                return allPawns.ToList();
             }
         }
 
-        public static Thing[] GetMapThings(Map map)
-        {
-            List<Thing> thingsInMap = new List<Thing>();
-            foreach (Thing thing in map.listerThings.AllThings)
-            {
-                if (DeepScribeHelper.CheckIfThingIsHuman(thing)) continue;
-                else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) continue;
-                else thingsInMap.Add(thing);
-            }
+        public static List<Pawn> GetFactionPawnsSecure() { return OnlineVisitManager.factionPawns.ToList(); }
 
-            return thingsInMap.OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToArray();
-        }
+        public static List<Pawn> GetOtherFactionPawnsSecure() { return OnlineVisitManager.nonFactionPawns.ToList(); }
     }
 }
