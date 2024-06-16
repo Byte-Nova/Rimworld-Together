@@ -330,8 +330,6 @@ namespace GameClient
             else toDestroy.Destroy(DestroyMode.Deconstruct);
         }
 
-        public enum VisitListType { Pawn, Things }
-
         public static void AddToVisitList(Thing thing)
         {
             if (DeepScribeHelper.CheckIfThingIsHuman(thing)) OnlineVisitManager.nonFactionPawns.Add((Pawn)thing);
