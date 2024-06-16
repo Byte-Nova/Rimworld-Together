@@ -26,14 +26,16 @@ namespace GameClient
     public static class PatchCreateThingDuringVisit
     {
         [HarmonyPrefix]
-        public static bool DoPost(Thing __instance)
+        public static bool DoPre(Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (!ClientValues.isInVisit) return true;
             if (__instance is Mote) return true;
 
             if (OnlineVisitManager.isHost)
-            {               
+            {
+                if (OnlineVisitManager.mapThings.Contains(__instance)) return true;
+
                 OnlineVisitData onlineVisitData = new OnlineVisitData();
                 onlineVisitData.visitStepMode = OnlineVisitStepMode.Create;
                 onlineVisitData.creationOrder = OnlineVisitHelper.CreateCreationOrder(__instance);
@@ -45,7 +47,33 @@ namespace GameClient
                 OnlineVisitHelper.AddToVisitList(__instance);
                 return true;
             }
-            else return true;
+
+            else
+            {
+                if (!OnlineVisitManager.queuedThings.Contains(__instance))
+                {
+                    if (OnlineVisitManager.mapThings.Contains(__instance)) return true;
+
+                    Logger.Warning("Asking for permission!");
+
+                    OnlineVisitData onlineVisitData = new OnlineVisitData();
+                    onlineVisitData.visitStepMode = OnlineVisitStepMode.Create;
+                    onlineVisitData.creationOrder = OnlineVisitHelper.CreateCreationOrder(__instance);
+
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
+                    Network.listener.EnqueuePacket(packet);
+                    return true;
+                }
+
+                else
+                {
+                    Logger.Warning("Executing from queue!");
+
+                    OnlineVisitHelper.RemoveFromQueueList(__instance);
+                    OnlineVisitHelper.AddToVisitList(__instance);
+                    return true;
+                }
+            }
         }
     }
 
@@ -57,10 +85,11 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (!ClientValues.isInVisit) return true;
-            if (!OnlineVisitManager.mapThings.Contains(__instance)) return true;
 
             if (OnlineVisitManager.isHost)
             {
+                if (!OnlineVisitManager.mapThings.Contains(__instance)) return true;
+
                 OnlineVisitData onlineVisitData = new OnlineVisitData();
                 onlineVisitData.visitStepMode = OnlineVisitStepMode.Destroy;
                 onlineVisitData.destructionOrder = OnlineVisitHelper.CreateDestructionOrder(__instance);
@@ -72,7 +101,33 @@ namespace GameClient
                 OnlineVisitHelper.RemoveFromVisitList(__instance);
                 return true;
             }
-            else return true;
+
+            else
+            {
+                if (!OnlineVisitManager.queuedThings.Contains(__instance))
+                {
+                    if (!OnlineVisitManager.mapThings.Contains(__instance)) return true;
+
+                    Logger.Warning("Asking for permission!");
+
+                    OnlineVisitData onlineVisitData = new OnlineVisitData();
+                    onlineVisitData.visitStepMode = OnlineVisitStepMode.Destroy;
+                    onlineVisitData.destructionOrder = OnlineVisitHelper.CreateDestructionOrder(__instance);
+
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
+                    Network.listener.EnqueuePacket(packet);
+                    return true;
+                }
+
+                else
+                {
+                    Logger.Warning("Executing from queue!");
+
+                    OnlineVisitHelper.RemoveFromQueueList(__instance);
+                    OnlineVisitHelper.RemoveFromVisitList(__instance);
+                    return true;
+                }
+            }
         }
     }
 

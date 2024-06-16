@@ -25,6 +25,7 @@ namespace GameClient
         public static List<Pawn> factionPawns = new List<Pawn>();
         public static List<Pawn> nonFactionPawns = new List<Pawn>();
         public static List<Thing> mapThings = new List<Thing>();
+        public static List<Thing> queuedThings = new List<Thing>();
         public static Map visitMap;
 
         public static bool isHost;
@@ -313,15 +314,21 @@ namespace GameClient
                 toSpawn = ThingScribeManager.StringToItem(data);
             }
 
+            //Request
+            if (!OnlineVisitManager.isHost) AddToQueueList(toSpawn);
+
             RimworldManager.PlaceThingInMap(toSpawn, OnlineVisitManager.visitMap);
-            AddToVisitList(toSpawn);
         }
 
         public static void ReceiveDestructionOrder(OnlineVisitData visitData)
         {
             Thing toDestroy = OnlineVisitManager.mapThings[visitData.destructionOrder.indexToDestroy];
-            toDestroy.Destroy(DestroyMode.Vanish);
-            RemoveFromVisitList(toDestroy);
+
+            //Request
+            if (!OnlineVisitManager.isHost) AddToQueueList(toDestroy);
+
+            try { toDestroy.Destroy(DestroyMode.Vanish); }
+            catch { }
         }
 
         public enum VisitListType { Pawn, Things }
@@ -343,6 +350,10 @@ namespace GameClient
 
             Logger.Warning($"Destroyed! > {thing.def.defName}");
         }
+
+        public static void AddToQueueList(Thing thing) { OnlineVisitManager.queuedThings.Add(thing); }
+
+        public static void RemoveFromQueueList(Thing thing) { OnlineVisitManager.queuedThings.Remove(thing); }
 
         public static LocalTargetInfo GetActionTargetsFromString(PawnOrder pawnOrder, int index)
         {
