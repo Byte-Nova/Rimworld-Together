@@ -32,6 +32,8 @@ namespace GameClient
             if (!ClientValues.isInVisit) return true;
             if (__instance is Mote) return true;
 
+            //HOST
+
             if (OnlineVisitManager.isHost)
             {
                 if (OnlineVisitManager.mapThings.Contains(__instance)) return true;
@@ -48,10 +50,24 @@ namespace GameClient
                 return true;
             }
 
+            //PLAYER
+
             else
             {
-                if (OnlineVisitManager.queuedThing != __instance)
+                //IF COMING FROM HOST
+
+                if (OnlineVisitManager.queuedThing == __instance)
                 {
+                    OnlineVisitHelper.AddToVisitList(__instance);
+                    return true;
+                }
+
+                //IF PLAYER ASKING FOR
+
+                else
+                {
+                    if (__instance is Filth) return false;
+
                     if (OnlineVisitManager.mapThings.Contains(__instance)) return true;
 
                     OnlineVisitData onlineVisitData = new OnlineVisitData();
@@ -61,12 +77,6 @@ namespace GameClient
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
                     Network.listener.EnqueuePacket(packet);
                     return false;
-                }
-
-                else
-                {
-                    OnlineVisitHelper.AddToVisitList(__instance);
-                    return true;
                 }
             }
         }
@@ -80,6 +90,9 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (!ClientValues.isInVisit) return true;
+            if (__instance is Mote) return true;
+
+            //HOST
 
             if (OnlineVisitManager.isHost)
             {
@@ -97,9 +110,21 @@ namespace GameClient
                 return true;
             }
 
+            //PLAYER
+
             else
             {
-                if (OnlineVisitManager.queuedThing != __instance)
+                //IF COMING FROM HOST
+
+                if (OnlineVisitManager.queuedThing == __instance)
+                {
+                    OnlineVisitHelper.RemoveFromVisitList(__instance);
+                    return true;
+                }
+
+                //IF PLAYER ASKING FOR
+
+                else
                 {
                     if (!OnlineVisitManager.mapThings.Contains(__instance)) return true;
 
@@ -110,12 +135,6 @@ namespace GameClient
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.VisitPacket), onlineVisitData);
                     Network.listener.EnqueuePacket(packet);
                     return false;
-                }
-
-                else
-                {
-                    OnlineVisitHelper.RemoveFromVisitList(__instance);
-                    return true;
                 }
             }
         }

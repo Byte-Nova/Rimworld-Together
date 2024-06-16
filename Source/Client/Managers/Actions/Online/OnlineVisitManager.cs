@@ -332,8 +332,18 @@ namespace GameClient
 
         public static void AddToVisitList(Thing thing)
         {
-            if (DeepScribeHelper.CheckIfThingIsHuman(thing)) OnlineVisitManager.nonFactionPawns.Add((Pawn)thing);
-            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) OnlineVisitManager.nonFactionPawns.Add((Pawn)thing);
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+            {
+                if (OnlineVisitManager.isHost) OnlineVisitManager.factionPawns.Add((Pawn)thing);
+                else OnlineVisitManager.nonFactionPawns.Add((Pawn)thing);
+            }
+
+            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
+            {
+                if (OnlineVisitManager.isHost) OnlineVisitManager.factionPawns.Add((Pawn)thing);
+                else OnlineVisitManager.nonFactionPawns.Add((Pawn)thing);
+            }
+
             else OnlineVisitManager.mapThings.Add(thing);
 
             Logger.Warning($"Created! > {thing.def.defName}");
