@@ -71,14 +71,11 @@ namespace GameClient
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                     settlement.Tile = PlanetNPCSettlement.tile;
                     settlement.Name = PlanetNPCSettlement.name;
-
-                    Faction toUse = PlanetManagerHelper.GetNPCFactionFromDefName(PlanetNPCSettlement.factionDefName);
-                    if (toUse == null) continue;
-                    else settlement.SetFaction(toUse);
+                    settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(PlanetNPCSettlement.factionDefName));
 
                     Find.WorldObjects.Add(settlement);
                 }
-                catch (Exception e) { Logger.Error($"Failed to build settlement at {PlanetNPCSettlement.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to build NPC settlement at {PlanetNPCSettlement.tile}. Reason: {e}"); }
             }
         }
 
@@ -297,7 +294,7 @@ namespace GameClient
 
         public static Faction GetNPCFactionFromDefName(string defName)
         {
-            return Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.def.defName == defName);
+            return Find.World.factionManager.AllFactions.First(fetch => fetch.def.defName == defName);
         }
 
         //Gets the default generator for the map builder
