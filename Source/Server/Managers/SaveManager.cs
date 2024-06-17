@@ -119,7 +119,7 @@ namespace GameServer
             client.listener.disconnectFlag = true;
 
             //Locate and make sure there's no other backup save in the server
-            string playerArchivedSavePath = Path.Combine(Master.archivedSavesPath, client.username);
+            string playerArchivedSavePath = Path.Combine(Master.backupUsersPath, client.username);
             if (Directory.Exists(playerArchivedSavePath)) Directory.Delete(playerArchivedSavePath,true);
             Directory.CreateDirectory(playerArchivedSavePath);
 
