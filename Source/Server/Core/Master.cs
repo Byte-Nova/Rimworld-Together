@@ -20,8 +20,10 @@ namespace GameServer
         public static string sitesPath;
         public static string factionsPath;
         public static string settlementsPath;
-        public static string archivedWorldPath;
-        public static string archivedSavesPath;
+
+        public static string backupsPath;
+        public static string backupWorldPath;
+        public static string backupUsersPath;
 
         public static string modsPath;
         public static string requiredModsPath;
@@ -89,8 +91,10 @@ namespace GameServer
             sitesPath = Path.Combine(mainPath, "Sites");
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
-            archivedSavesPath = Path.Combine(mainPath, "ArchivedSaves");
-            archivedWorldPath = Path.Combine(mainPath, "ArchivedWorlds");
+
+            backupsPath = Path.Combine(mainPath, "Backups");
+            backupUsersPath = Path.Combine(backupsPath, "Users");
+            backupWorldPath = Path.Combine(backupsPath, "Worlds");
 
             modsPath = Path.Combine(mainPath, "Mods");
             requiredModsPath = Path.Combine(modsPath, "Required");
@@ -107,8 +111,8 @@ namespace GameServer
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
-            if (!Directory.Exists(archivedSavesPath)) Directory.CreateDirectory(archivedSavesPath);
-            if (!Directory.Exists(archivedWorldPath)) Directory.CreateDirectory(archivedWorldPath);
+            if (!Directory.Exists(backupUsersPath)) Directory.CreateDirectory(backupUsersPath);
+            if (!Directory.Exists(backupWorldPath)) Directory.CreateDirectory(backupWorldPath);
 
             if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
