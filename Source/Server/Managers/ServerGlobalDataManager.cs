@@ -83,7 +83,8 @@ namespace GameServer
                 }
             }
 
-            globalData.settlements = tempList.ToArray();
+            globalData.playerSettlements = tempList.ToArray();
+            if (Master.worldValues != null) globalData.npcSettlements = Master.worldValues.NPCSettlements;
 
             return globalData;
         }
@@ -105,7 +106,7 @@ namespace GameServer
                 tempList.Add(file);
             }
 
-            globalData.sites = tempList.ToArray();
+            globalData.playerSites = tempList.ToArray();
 
             return globalData;
         }

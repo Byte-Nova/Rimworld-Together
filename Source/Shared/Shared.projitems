@@ -17,9 +17,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\CreationOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\DestructionOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\PawnOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\MarketData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineVisitData.cs" />
@@ -35,6 +32,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\LoginData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapFileData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCFaction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerRecountData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ServerGlobalData.cs" />
@@ -53,6 +52,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCSettlement.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)PacketData\Misc\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />

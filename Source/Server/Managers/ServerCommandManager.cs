@@ -782,7 +782,7 @@ namespace GameServer
                     customName:
                         Console.WriteLine("Please enter the name you would like to use:");
                         newWorldFolderName = Console.ReadLine();
-                        newWorldFolderPath = $"{Master.archivedWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
+                        newWorldFolderPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
 
                         try { if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}"); }
                         catch
@@ -798,7 +798,7 @@ namespace GameServer
                 else if (response == "NO")
                 {
                     newWorldFolderName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}";
-                    newWorldFolderPath = $"{Master.archivedWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
+                    newWorldFolderPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
                     if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}");
                 }
 
@@ -828,6 +828,7 @@ namespace GameServer
                 if (Directory.Exists(Master.savesPath)) Directory.Move(Master.savesPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Saves");
                 if (Directory.Exists(Master.settlementsPath)) Directory.Move(Master.settlementsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Settlements");
                 if (Directory.Exists(Master.sitesPath)) Directory.Move(Master.sitesPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Sites");
+                if (Directory.Exists(Master.usersPath)) Directory.Move(Master.usersPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Users");
 
                 Master.SetPaths();
 
