@@ -4,9 +4,9 @@ using static Shared.CommonEnumerators;
 namespace Shared
 {
     [Serializable]
-    public class SpyData
+    public class OfflineRaidData
     {
-        public OfflineSpyStepMode spyStepMode;
+        public OfflineRaidStepMode raidStepMode;
 
         public int targetTile;
 

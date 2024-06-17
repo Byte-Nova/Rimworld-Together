@@ -134,16 +134,16 @@ namespace GameServer
             "Forcefully disconnects you from the server",
             ChatDisconnectCommandAction);
 
-        private static ChatCommand stopVisitCommand = new ChatCommand("/sv", 0,
+        private static ChatCommand StopOnlineActivityCommand = new ChatCommand("/sv", 0,
             "Forcefully disconnects you from a visit",
-            ChatStopVisitCommandAction);
+            ChatStopOnlineActivityCommandAction);
 
         public static ChatCommand[] chatCommands = new ChatCommand[]
         {
             helpCommand,
             pingCommand,
             disconnectCommand,
-            stopVisitCommand
+            StopOnlineActivityCommand
         };
 
         private static void ChatHelpCommandAction()
@@ -164,9 +164,9 @@ namespace GameServer
             targetClient.listener.disconnectFlag = true;
         }
 
-        private static void ChatStopVisitCommandAction()
+        private static void ChatStopOnlineActivityCommandAction()
         {
-            OnlineVisitManager.SendVisitStop(targetClient);
+            OnlineManager.SendVisitStop(targetClient);
         }
     }
 }

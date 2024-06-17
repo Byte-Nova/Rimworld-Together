@@ -6,7 +6,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    public static class EventManager
+    public static class OfflineEventManager
     {
         public static string[] eventNames = new string[]
         {

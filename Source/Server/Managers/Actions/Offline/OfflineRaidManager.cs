@@ -7,7 +7,7 @@ namespace GameServer
     {
         public static void ParseRaidPacket(ServerClient client, Packet packet)
         {
-            RaidData raidData = (RaidData)Serializer.ConvertBytesToObject(packet.contents);
+            OfflineRaidData raidData = (OfflineRaidData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (raidData.raidStepMode)
             {
@@ -21,7 +21,7 @@ namespace GameServer
             }
         }
 
-        private static void SendRequestedMap(ServerClient client, RaidData raidData)
+        private static void SendRequestedMap(ServerClient client, OfflineRaidData raidData)
         {
             if (!MapManager.CheckIfMapExists(raidData.targetTile))
             {

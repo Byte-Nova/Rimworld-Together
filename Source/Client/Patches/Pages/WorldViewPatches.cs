@@ -221,7 +221,13 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        OfflineRaidManager.RequestRaid();
+                        RT_Dialog_2Button d1 = new RT_Dialog_2Button("Raid Mode", "Please choose your raid mode",
+                            "Online", "Offline",
+                            delegate { OnlineManager.RequestOnlineActivity(OnlineActivityType.Raid); },
+                            delegate { OfflineRaidManager.RequestOfflineRaid(); },
+                            null);
+
+                        DialogManager.PushNewDialog(d1);
                     }
                 };
 
@@ -237,7 +243,7 @@ namespace GameClient
 
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
                             "Online", "Offline",
-                            delegate { OnlineVisitManager.RequestVisit(); },
+                            delegate { OnlineManager.RequestOnlineActivity(OnlineActivityType.Visit); },
                             delegate { OfflineVisitManager.RequestOfflineVisit(); },
                             null);
 
@@ -274,7 +280,7 @@ namespace GameClient
                         ClientValues.chosenCaravan = caravan;
 
                         RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
-                            EventManager.eventNames, EventManager.ShowSendEventDialog, null);
+                            OfflineEventManager.eventNames, OfflineEventManager.ShowSendEventDialog, null);
 
                         DialogManager.PushNewDialog(d1);
                     }

@@ -3,6 +3,7 @@ using RimWorld.Planet;
 using System.Linq;
 using Verse;
 using Verse.AI;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -15,7 +16,6 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
 
             if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
-
             else return true;
         }
     }
@@ -26,15 +26,12 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Job newJob, Pawn ___pawn)
         {
-            if (Network.state == NetworkState.Connected)
+            if (Network.state != NetworkState.Connected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            if (OnlineManager.nonFactionPawns.Contains(___pawn))
             {
-                if (ClientValues.isInVisit)
-                {
-                    if (OnlineVisitManager.nonFactionPawns.Contains(___pawn))
-                    {
-                        if (newJob.exitMapOnArrival) return false;
-                    }
-                }
+                if (newJob.exitMapOnArrival) return false;
             }
 
             return true;

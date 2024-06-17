@@ -71,32 +71,16 @@ namespace GameClient
 
         public static void ShowConnectDialogs()
         {
-            RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
-                ClientValues.serverBrowserContainer,
-                delegate { ParseConnectionDetails(true); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+            RT_Dialog_2Input dialog = new RT_Dialog_2Input(
+            "Connection Details", "IP", "Port",
+            delegate { ParseConnectionDetails(false); },
+            null);
 
-            RT_Dialog_2Input a2 = new RT_Dialog_2Input(
-                "Connection Details",
-                "IP",
-                "Port",
-                delegate { ParseConnectionDetails(false); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+            string[] details = PreferenceManager.LoadConnectionData();
+            DialogManager.dialog2Input.inputOneResult = details[0];
+            DialogManager.dialog2Input.inputTwoResult = details[1];
 
-            RT_Dialog_2Button newDialog = new RT_Dialog_2Button(
-                "Play Online",
-                "Choose the connection type",
-                "Server Browser",
-                "Direct Connect",
-                delegate { DialogManager.PushNewDialog(a1); },
-                delegate {
-                    DialogManager.PushNewDialog(a2);
-                    string[] details = PreferenceManager.LoadConnectionData();
-                    DialogManager.dialog2Input.inputOneResult = details[0];
-                    DialogManager.dialog2Input.inputTwoResult = details[1];
-                }, null);
-
-            DialogManager.PushNewDialog(newDialog);
+            DialogManager.PushNewDialog(dialog);
         }
 
         public static void ParseConnectionDetails(bool throughBrowser)

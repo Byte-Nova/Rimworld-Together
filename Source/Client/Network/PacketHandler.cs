@@ -55,9 +55,9 @@ namespace GameClient
             OnlineFactionManager.ParseFactionPacket(packet);
         }
 
-        public static void VisitPacket(Packet packet)
+        public static void OnlineActivityPacket(Packet packet)
         {
-            OnlineVisitManager.ParseVisitPacket(packet);
+            OnlineManager.ParseOnlinePacket(packet);
         }
 
         public static void OfflineVisitPacket(Packet packet)
@@ -118,7 +118,7 @@ namespace GameClient
 
         public static void EventPacket(Packet packet)
         {
-            EventManager.ParseEventPacket(packet);
+            OfflineEventManager.ParseEventPacket(packet);
         }
 
         public static void IllegalActionPacket(Packet packet)
@@ -139,7 +139,7 @@ namespace GameClient
             ServerValues.SetServerParameters(serverGlobalData);
             ServerValues.SetAccountData(serverGlobalData);
             PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
-            EventManager.SetEventPrices(serverGlobalData);
+            OfflineEventManager.SetEventPrices(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
             OfflineSpyManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);

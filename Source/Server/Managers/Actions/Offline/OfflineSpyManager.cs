@@ -7,7 +7,7 @@ namespace GameServer
     {
         public static void ParseSpyPacket(ServerClient client, Packet packet)
         {
-            SpyData spyData = (SpyData)Serializer.ConvertBytesToObject(packet.contents);
+            OfflineSpyData spyData = (OfflineSpyData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (spyData.spyStepMode)
             {
@@ -21,7 +21,7 @@ namespace GameServer
             }
         }
 
-        private static void SendRequestedMap(ServerClient client, SpyData spyData)
+        private static void SendRequestedMap(ServerClient client, OfflineSpyData spyData)
         {
             if (!MapManager.CheckIfMapExists(spyData.targetTile))
             {

@@ -45,7 +45,9 @@
 
         public enum OfflineSpyStepMode { Request, Deny, Unavailable }
 
-        public enum OnlineVisitStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Stop }
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Stop }
+
+        public enum OnlineActivityType { None, Visit, Raid, Misc }
 
         public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
 

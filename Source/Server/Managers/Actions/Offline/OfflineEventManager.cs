@@ -3,7 +3,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
-    public static class EventManager
+    public static class OfflineEventManager
     {
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {

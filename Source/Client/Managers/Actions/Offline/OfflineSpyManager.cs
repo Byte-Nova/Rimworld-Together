@@ -20,7 +20,7 @@ namespace GameClient
 
         public static void ParseSpyPacket(Packet packet)
         {
-            SpyData spyData = (SpyData)Serializer.ConvertBytesToObject(packet.contents);
+            OfflineSpyData spyData = (OfflineSpyData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch(spyData.spyStepMode)
             {
@@ -68,7 +68,7 @@ namespace GameClient
 
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
-                    SpyData spyData = new SpyData();
+                    OfflineSpyData spyData = new OfflineSpyData();
                     spyData.spyStepMode = OfflineSpyStepMode.Request;
                     spyData.targetTile = ClientValues.chosenSettlement.Tile;
 
@@ -83,11 +83,11 @@ namespace GameClient
 
         //Executes after being confirmed a spy order
 
-        private static void OnOfflineSpyAccept(SpyData spyData)
+        private static void OnOfflineSpyAccept(OfflineSpyData data)
         {
             DialogManager.PopWaitDialog();
 
-            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(spyData.mapData);
+            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(data.mapData);
             MapData mapData = (MapData)Serializer.ConvertBytesToObject(mapFileData.mapData);
 
             Action r1 = delegate { PrepareMapForSpy(mapData); };

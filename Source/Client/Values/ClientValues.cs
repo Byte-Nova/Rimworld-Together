@@ -3,6 +3,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -20,7 +21,7 @@ namespace GameClient
 
         public static bool isInTransfer;
 
-        public static bool isInVisit;
+        public static OnlineActivityType currentRealTimeEvent;
 
         public static Settlement chosenSettlement;
         public static Caravan chosenCaravan;
@@ -66,7 +67,7 @@ namespace GameClient
 
         public static void ToggleTransfer(bool mode) { isInTransfer = mode; }
 
-        public static void ToggleVisit(bool mode) { isInVisit = mode; }
+        public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }
 
         public static void ToggleChatScroll(bool mode) { OnlineChatManager.shouldScrollChat = mode; }
 
@@ -82,7 +83,7 @@ namespace GameClient
             SetIntentionalDisconnect(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
-            ToggleVisit(false);
+            ToggleOnlineFunction(OnlineActivityType.None);
             ToggleSavingGame(false);
             ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);

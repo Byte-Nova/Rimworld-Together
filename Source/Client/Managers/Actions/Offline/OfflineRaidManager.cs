@@ -17,7 +17,7 @@ namespace GameClient
 
         public static void ParseRaidPacket(Packet packet)
         {
-            RaidData raidData = (RaidData)Serializer.ConvertBytesToObject(packet.contents);
+            OfflineRaidData raidData = (OfflineRaidData)Serializer.ConvertBytesToObject(packet.contents);
 
             switch (raidData.raidStepMode)
             {
@@ -37,11 +37,11 @@ namespace GameClient
 
         //Requests a raid to the server
 
-        public static void RequestRaid()
+        public static void RequestOfflineRaid()
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
-            RaidData raidData = new RaidData();
+            OfflineRaidData raidData = new OfflineRaidData();
             raidData.raidStepMode = OfflineRaidStepMode.Request;
             raidData.targetTile = ClientValues.chosenSettlement.Tile;
 
@@ -51,7 +51,7 @@ namespace GameClient
 
         //Executes when raid request is accepted
 
-        private static void OnOfflineRaidAccept(RaidData raidData)
+        private static void OnOfflineRaidAccept(OfflineRaidData raidData)
         {
             DialogManager.PopWaitDialog();
 

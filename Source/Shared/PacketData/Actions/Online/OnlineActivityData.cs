@@ -5,9 +5,10 @@ using static Shared.CommonEnumerators;
 namespace Shared
 {
     [Serializable]
-    public class OnlineVisitData
+    public class OnlineActivityData
     {
-        public OnlineVisitStepMode visitStepMode;
+        public OnlineActivityStepMode activityStepMode;
+        public OnlineActivityType activityType;
 
         //Map
 
@@ -20,7 +21,7 @@ namespace Shared
 
         //Misc
 
-        public string visitorName;
+        public string otherPlayerName;
         public int fromTile;
         public int targetTile;
         public int mapTicks;

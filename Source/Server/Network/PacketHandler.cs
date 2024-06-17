@@ -59,9 +59,9 @@ namespace GameServer
             SiteManager.ParseSitePacket(client, packet);
         }
 
-        public static void VisitPacket(ServerClient client, Packet packet)
+        public static void OnlineActivityPacket(ServerClient client, Packet packet)
         {
-            OnlineVisitManager.ParseVisitPacket(client, packet);
+            OnlineManager.ParseVisitPacket(client, packet);
         }
 
         public static void OfflineVisitPacket(ServerClient client, Packet packet)
@@ -101,7 +101,7 @@ namespace GameServer
 
         public static void EventPacket(ServerClient client, Packet packet)
         {
-            EventManager.ParseEventPacket(client, packet);
+            OfflineEventManager.ParseEventPacket(client, packet);
         }
 
         public static void WorldPacket(ServerClient client, Packet packet)
