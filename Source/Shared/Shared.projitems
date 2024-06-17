@@ -50,8 +50,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\WorldAISettlement.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)PacketData\Misc\" />
+    <Folder Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\" />
     <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
   </ItemGroup>
   <ItemGroup>

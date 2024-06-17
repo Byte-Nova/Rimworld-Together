@@ -16,6 +16,8 @@ namespace Shared
         public string temperature;
         public string population;
         public string pollution;
-        public List<string> factions = new List<string>();
+
+        public string[] factions;
+        public WorldAISettlement[] npcSettlements;
     }
 }

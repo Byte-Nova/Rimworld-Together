@@ -18,7 +18,8 @@ namespace GameClient
         public static OverallTemperature temperature;
         public static OverallPopulation population;
         public static float pollution;
-        public static List<FactionDef> factions = new List<FactionDef>();
+        public static FactionDef[] factions;
+        public static WorldAISettlement[] npcSettlements;
         public static WorldData cachedWorldData;
 
         public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
@@ -34,12 +35,7 @@ namespace GameClient
             WorldGeneratorManager.temperature = temperature;
             WorldGeneratorManager.population = population;
             WorldGeneratorManager.pollution = pollution;
-            WorldGeneratorManager.factions = factions;
-
-            WorldGeneratorManager.factions.Add(FactionValues.neutralPlayerDef);
-            WorldGeneratorManager.factions.Add(FactionValues.allyPlayerDef);
-            WorldGeneratorManager.factions.Add(FactionValues.enemyPlayerDef);
-            WorldGeneratorManager.factions.Add(FactionValues.yourOnlineFactionDef);
+            WorldGeneratorManager.factions = GetWorldFactions(null, factions);
         }
 
         public static void SetValuesFromServer(WorldData worldData)
@@ -51,19 +47,7 @@ namespace GameClient
             temperature = (OverallTemperature)int.Parse(worldData.temperature);
             population = (OverallPopulation)int.Parse(worldData.population);
             pollution = float.Parse(worldData.pollution);
-
-            //TODO
-            //We might want to add a message for the players to let them know factions are missing
-            //For now, we output into the console for debugging purposes
-
-            factions = new List<FactionDef>();
-            foreach(string str in worldData.factions)
-            {
-                FactionDef faction = DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
-                if (faction != null) factions.Add(faction);
-                else Logger.Warning($"Faction '{str}' wasn't found in the client's game, ignoring");
-            }
-
+            factions = GetWorldFactions(worldData, null);
             cachedWorldData = worldData;
         }
 
@@ -94,14 +78,11 @@ namespace GameClient
             Current.CreatingWorld.info.overallTemperature = temperature;
             Current.CreatingWorld.info.overallPopulation = population;
             Current.CreatingWorld.info.name = NameGenerator.GenerateName(RulePackDefOf.NamerWorld);
-            Current.CreatingWorld.info.factions = factions;
+            Current.CreatingWorld.info.factions = factions.ToList();
             Current.CreatingWorld.info.pollution = pollution;
 
             WorldGenStepDef[] worldGenSteps = GenStepsInOrder.ToArray();
-            for (int i = 0; i < worldGenSteps.Count(); i++)
-            {
-                worldGenSteps[i].worldGenStep.GenerateFresh(seedString);
-            }
+            for (int i = 0; i < worldGenSteps.Count(); i++) worldGenSteps[i].worldGenStep.GenerateFresh(seedString);
 
             Current.CreatingWorld.grid.StandardizeTileData();
             Current.CreatingWorld.FinalizeInit();
@@ -123,11 +104,8 @@ namespace GameClient
             worldData.temperature = ((int)temperature).ToString();
             worldData.population = ((int)population).ToString();
             worldData.pollution = pollution.ToString();
-           
-            foreach(FactionDef faction in factions)
-            {
-                worldData.factions.Add(faction.defName);
-            }
+            worldData.factions = GetWorldFactionsDefNames();
+            worldData.npcSettlements = GetWorldSettlements();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);
@@ -156,6 +134,52 @@ namespace GameClient
 
             Find.WindowStack.Add(newSelectStartingSite);
             DialogShortcuts.ShowWorldGenerationDialogs();
+        }
+
+        private static FactionDef[] GetWorldFactions(WorldData worldData, List<FactionDef> factionData)
+        {
+            if (ClientValues.needsToGenerateWorld)
+            {
+                factionData.Add(FactionValues.neutralPlayerDef);
+                factionData.Add(FactionValues.allyPlayerDef);
+                factionData.Add(FactionValues.enemyPlayerDef);
+                factionData.Add(FactionValues.yourOnlineFactionDef);
+                return factionData.ToArray();
+            }
+
+            else
+            {
+                List<FactionDef> factionsToUse = new List<FactionDef>();
+                foreach (string str in worldData.factions)
+                {
+                    FactionDef faction = DefDatabase<FactionDef>.AllDefs.ToList().Find(fetch => fetch.defName == str);
+                    if (faction != null) factionsToUse.Add(faction);
+                    else Logger.Warning($"Faction '{str}' wasn't found in the client's game, ignoring");
+                }
+                return factionsToUse.ToArray();
+            }
+        }
+
+        private static string[] GetWorldFactionsDefNames()
+        {
+            List<string> factionDefNames = new List<string>();
+            foreach (FactionDef faction in factions) factionDefNames.Add(faction.defName);
+            return factionDefNames.ToArray();
+        }
+
+        private static WorldAISettlement[] GetWorldSettlements()
+        {
+            List<WorldAISettlement> npcSettlements = new List<WorldAISettlement>();
+            foreach (Settlement settlement in Find.World.worldObjects.Settlements.Where(fetch => factions.Contains(fetch.Faction.def)))
+            {
+                WorldAISettlement worldAISettlement = new WorldAISettlement();
+                worldAISettlement.tile = settlement.Tile;
+                worldAISettlement.factionDefName = settlement.Faction.def.defName;
+                worldAISettlement.name = settlement.Name;
+
+                npcSettlements.Add(worldAISettlement);
+            }
+            return npcSettlements.ToArray();
         }
     }
 }

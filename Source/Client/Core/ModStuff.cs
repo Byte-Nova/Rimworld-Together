@@ -130,11 +130,13 @@ namespace GameClient
                 worldValuesFile.population = ((int)Find.World.info.overallPopulation).ToString();
                 worldValuesFile.pollution = Find.World.info.pollution.ToString();
 
+                List<string> factionDefNames = new List<string>();
                 foreach (Faction faction in Find.World.factionManager.AllFactions)
                 {
                     if (faction.def == Faction.OfPlayer.def) continue;
-                    else worldValuesFile.factions.Add(faction.def.defName);
+                    else factionDefNames.Add(faction.def.defName);
                 }
+                worldValuesFile.factions = factionDefNames.ToArray();
 
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
 

@@ -38,6 +38,7 @@ namespace GameServer
             worldValues.population = worldData.population;
             worldValues.pollution = worldData.pollution;
             worldValues.factions = worldData.factions;
+            worldValues.worldAISettlements = worldData.npcSettlements;
 
             Master.worldValues = worldValues;
             Serializer.SerializeToFile(worldFilePath, worldValues);
@@ -68,6 +69,7 @@ namespace GameServer
             worldData.population = worldValues.population;
             worldData.pollution = worldValues.pollution;
             worldData.factions = worldValues.factions;
+            worldData.npcSettlements = worldValues.worldAISettlements;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);

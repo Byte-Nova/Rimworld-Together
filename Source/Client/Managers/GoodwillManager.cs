@@ -98,7 +98,7 @@ namespace GameClient
                 Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                 newSettlement.Tile = toChange[i].Tile;
                 newSettlement.Name = toChange[i].Name;
-                newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(factionGoodwillData.settlementGoodwills[i]));
+                newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData.settlementGoodwills[i]));
 
                 PlanetManager.playerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
@@ -120,7 +120,7 @@ namespace GameClient
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
                             tile: toChange[i].Tile,
                             threatPoints: 1000,
-                            faction: PlanetManagerHelper.GetPlayerFaction(factionGoodwillData.siteGoodwills[i]));
+                            faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData.siteGoodwills[i]));
 
                 PlanetManager.playerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);
