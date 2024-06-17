@@ -17,9 +17,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)onlinevisiting\CreationOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)onlinevisiting\DestructionOrder.cs" />
-    <Compile Include="..\Shared\onlinevisiting\PawnOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\CreationOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\DestructionOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\PawnOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\MarketData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineVisitData.cs" />
@@ -53,10 +53,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)OnlineVisiting\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
