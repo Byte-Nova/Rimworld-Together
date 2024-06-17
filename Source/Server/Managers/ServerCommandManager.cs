@@ -828,6 +828,7 @@ namespace GameServer
                 if (Directory.Exists(Master.savesPath)) Directory.Move(Master.savesPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Saves");
                 if (Directory.Exists(Master.settlementsPath)) Directory.Move(Master.settlementsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Settlements");
                 if (Directory.Exists(Master.sitesPath)) Directory.Move(Master.sitesPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Sites");
+                if (Directory.Exists(Master.usersPath)) Directory.Move(Master.usersPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Users");
 
                 Master.SetPaths();
 

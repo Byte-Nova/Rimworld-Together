@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -24,8 +25,11 @@ namespace GameClient
                 {
                     __instance.Close();
 
-                    WorldGeneratorManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall,
-                        ___temperature, ___population, ___factions, ___pollution);
+                    ___factions.Add(FactionValues.neutralPlayerDef);
+                    ___factions.Add(FactionValues.allyPlayerDef);
+                    ___factions.Add(FactionValues.enemyPlayerDef);
+                    ___factions.Add(FactionValues.yourOnlineFactionDef);
+                    WorldGeneratorManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall, ___temperature, ___population, ___factions, ___pollution);
 
                     WorldGeneratorManager.GeneratePatchedWorld();
                 }

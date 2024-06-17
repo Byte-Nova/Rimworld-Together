@@ -29,18 +29,8 @@ namespace GameServer
 
         public static void SaveWorldPrefab(ServerClient client, WorldData worldData)
         {
-            WorldValuesFile worldValues = new WorldValuesFile();
-            worldValues.seedString = worldData.seedString;
-            worldValues.persistentRandomValue = worldData.persistentRandomValue;
-            worldValues.planetCoverage = worldData.planetCoverage;
-            worldValues.rainfall = worldData.rainfall;
-            worldValues.temperature = worldData.temperature;
-            worldValues.population = worldData.population;
-            worldValues.pollution = worldData.pollution;
-            worldValues.factions = worldData.factions;
-
-            Master.worldValues = worldValues;
-            Serializer.SerializeToFile(worldFilePath, worldValues);
+            Master.worldValues = worldData.worldValuesFile;
+            Serializer.SerializeToFile(worldFilePath, Master.worldValues);
             Logger.Title($"[Save world] > {client.username}");
         }
 
@@ -55,19 +45,9 @@ namespace GameServer
 
         public static void SendWorldFile(ServerClient client)
         {
-            WorldValuesFile worldValues = Master.worldValues;
-
             WorldData worldData = new WorldData();
             worldData.worldStepMode = WorldStepMode.Existing;
-
-            worldData.seedString = worldValues.seedString;
-            worldData.persistentRandomValue = worldValues.persistentRandomValue;
-            worldData.planetCoverage = worldValues.planetCoverage;
-            worldData.rainfall = worldValues.rainfall;
-            worldData.temperature = worldValues.temperature;
-            worldData.population = worldValues.population;
-            worldData.pollution = worldValues.pollution;
-            worldData.factions = worldValues.factions;
+            worldData.worldValuesFile = Master.worldValues;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
