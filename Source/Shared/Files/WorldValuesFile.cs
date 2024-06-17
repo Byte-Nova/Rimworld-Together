@@ -6,6 +6,10 @@ namespace Shared
     [Serializable]
     public class WorldValuesFile
     {
+        //Misc
+
+        public int PersistentRandomValue;
+
         //World Values
 
         public string SeedString;
@@ -15,16 +19,16 @@ namespace Shared
         public int Population;
         public float Pollution;
 
-        //Misc
+        //World features
 
-        public int PersistentRandomValue;
+        public PlanetFeature[] Features;
 
         //NPC factions
 
-        public string[] NPCFactionDefNames;
+        public PlanetNPCFaction[] NPCFactions;
 
         //NPC settlements
 
-        public WorldAISettlement[] NPCSettlements;
+        public PlanetNPCSettlement[] NPCSettlements;
     }
 }

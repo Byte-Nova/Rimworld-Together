@@ -42,6 +42,7 @@ namespace GameClient
             FactionValues.FindPlayerFactionsInWorld();
             PlanetManagerHelper.GetMapGenerators();
 
+            //This step gets skiped if it's the first time building the planet
             if (!ClientValues.needsToGenerateWorld)
             {
                 RemoveNPCSettlements();
@@ -63,22 +64,21 @@ namespace GameClient
 
             for (int i = 0; i < PlanetManagerHelper.tempNPCSettlements.Count(); i++)
             {
-                WorldAISettlement worldAISettlement = PlanetManagerHelper.tempNPCSettlements[i];
+                PlanetNPCSettlement PlanetNPCSettlement = PlanetManagerHelper.tempNPCSettlements[i];
 
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = worldAISettlement.tile;
-                    settlement.Name = worldAISettlement.name;
+                    settlement.Tile = PlanetNPCSettlement.tile;
+                    settlement.Name = PlanetNPCSettlement.name;
 
-                    Faction toUse = PlanetManagerHelper.GetNPCFactionFromDefName(worldAISettlement.factionDefName);
+                    Faction toUse = PlanetManagerHelper.GetNPCFactionFromDefName(PlanetNPCSettlement.factionDefName);
                     if (toUse == null) continue;
                     else settlement.SetFaction(toUse);
 
                     Find.WorldObjects.Add(settlement);
-                    Logger.Warning($"Spawned > {settlement}");
                 }
-                catch (Exception e) { Logger.Error($"Failed to build settlement at {worldAISettlement.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to build settlement at {PlanetNPCSettlement.tile}. Reason: {e}"); }
             }
         }
 
@@ -246,7 +246,7 @@ namespace GameClient
 
     public static class PlanetManagerHelper
     {
-        public static WorldAISettlement[] tempNPCSettlements;
+        public static PlanetNPCSettlement[] tempNPCSettlements;
         public static OnlineSettlementFile[] tempSettlements;
         public static OnlineSiteFile[] tempSites;
 

@@ -15,7 +15,7 @@ namespace Shared
         public EventValuesFile eventValues;
         public ActionValuesFile actionValues;
         public DifficultyValuesFile difficultyValues;
-        public WorldAISettlement[] npcSettlements;
+        public PlanetNPCSettlement[] npcSettlements;
         public OnlineSettlementFile[] playerSettlements;
         public OnlineSiteFile[] playerSites;
     }

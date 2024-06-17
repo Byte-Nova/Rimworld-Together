@@ -3,7 +3,7 @@ using System;
 namespace Shared
 {
     [Serializable]
-    public class WorldAISettlement
+    public class PlanetNPCSettlement
     {
         public int tile;
         public string name;

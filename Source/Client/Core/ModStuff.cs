@@ -42,13 +42,11 @@ namespace GameClient
             listingStandard.Label("Compatibility");
             if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertFloatMenu(); }
             if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
-            if (listingStandard.ButtonTextLabeled("[When Playing] Get server world file", "Get")) { GenerateWorldFile(); }
             if (listingStandard.ButtonTextLabeled("Open server worlds folder", "Open")) StartProcess(Master.worldSavesFolderPath);
 
             listingStandard.GapLine();
             listingStandard.Label("Experimental");
             listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info on the logs");
-            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.mainPath);
 
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
@@ -114,34 +112,6 @@ namespace GameClient
             }
 
             Find.WindowStack.Add(new FloatMenu(list));
-        }
-
-        private void GenerateWorldFile()
-        {
-            if (Network.state == NetworkState.Connected)
-            {
-                WorldValuesFile worldValuesFile = new WorldValuesFile();
-
-                worldValuesFile.SeedString = Find.World.info.seedString;
-                worldValuesFile.PersistentRandomValue = Find.World.info.persistentRandomValue;
-                worldValuesFile.PlanetCoverage = Find.World.info.planetCoverage;
-                worldValuesFile.Rainfall = (int)Find.World.info.overallRainfall;
-                worldValuesFile.Temperature = (int)Find.World.info.overallTemperature;
-                worldValuesFile.Population = (int)Find.World.info.overallPopulation;
-                worldValuesFile.Pollution = Find.World.info.pollution;
-
-                List<string> factionDefNames = new List<string>();
-                foreach (Faction faction in Find.World.factionManager.AllFactions)
-                {
-                    if (faction.def == Faction.OfPlayer.def) continue;
-                    else factionDefNames.Add(faction.def.defName);
-                }
-                worldValuesFile.NPCFactionDefNames = factionDefNames.ToArray();
-
-                Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
-
-                DialogManager.PushNewDialog(new RT_Dialog_OK("World file was saved correctly!"));
-            }
         }
 
         private void StartProcess(string processPath)

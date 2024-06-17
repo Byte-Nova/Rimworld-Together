@@ -4,6 +4,7 @@ using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using UnityEngine;
 using Verse;
 using Verse.Profile;
 using static Shared.CommonEnumerators;
@@ -28,7 +29,7 @@ namespace GameClient
             cachedWorldValues.Temperature = (int)temperature;
             cachedWorldValues.Population = (int)population;
             cachedWorldValues.Pollution = pollution;
-            cachedWorldValues.NPCFactionDefNames = WorldGeneratorHelper.GetDefNamesFromFactionDefs(factions.ToArray());
+            cachedWorldValues.NPCFactions = WorldGeneratorHelper.GetNPCFactionsFromDef(factions.ToArray());
         }
 
         public static void SetValuesFromServer(WorldData worldData) { cachedWorldValues = worldData.worldValuesFile; }
@@ -61,7 +62,7 @@ namespace GameClient
             Current.CreatingWorld.info.overallTemperature = (OverallTemperature)cachedWorldValues.Temperature;
             Current.CreatingWorld.info.overallPopulation = (OverallPopulation)cachedWorldValues.Population;
             Current.CreatingWorld.info.name = NameGenerator.GenerateName(RulePackDefOf.NamerWorld);
-            Current.CreatingWorld.info.factions = WorldGeneratorHelper.GetFactionDefsFromDefNames(cachedWorldValues.NPCFactionDefNames).ToList();
+            Current.CreatingWorld.info.factions = WorldGeneratorHelper.GetFactionDefsFromNPCFaction(cachedWorldValues.NPCFactions).ToList();
             Current.CreatingWorld.info.pollution = cachedWorldValues.Pollution;
 
             WorldGenStepDef[] worldGenSteps = GenStepsInOrder.ToArray();
@@ -115,42 +116,133 @@ namespace GameClient
     {
         public static WorldValuesFile PopulateWorldValues()
         {
-            WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetWorldSettlements();
+            WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
+            WorldGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
+            WorldGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
             return WorldGeneratorManager.cachedWorldValues;
         }
 
-        public static string[] GetDefNamesFromFactionDefs(FactionDef[] factions)
+        public static PlanetNPCFaction[] GetNPCFactionsFromDef(FactionDef[] factionDefs)
         {
-            List<string> defList = new List<string>();
-            foreach (FactionDef def in factions) defList.Add(def.defName);
-            return defList.ToArray();
+            List<PlanetNPCFaction> npcFactions = new List<PlanetNPCFaction>();
+            foreach (FactionDef faction in factionDefs)
+            {
+                PlanetNPCFaction toCreate = new PlanetNPCFaction();
+                toCreate.factionDefName = faction.defName;
+                npcFactions.Add(toCreate);
+            }
+            return npcFactions.ToArray();
         }
 
-        public static FactionDef[] GetFactionDefsFromDefNames(string[] defNames)
+        public static FactionDef[] GetFactionDefsFromNPCFaction(PlanetNPCFaction[] factions)
         {
             List<FactionDef> defList = new List<FactionDef>();
-            foreach (string str in defNames)
+            foreach (PlanetNPCFaction faction in factions)
             {
-                FactionDef toFind = DefDatabase<FactionDef>.AllDefs.ToArray().FirstOrDefault(fetch => fetch.defName == str);
+                FactionDef toFind = DefDatabase<FactionDef>.AllDefs.ToArray().FirstOrDefault(fetch => fetch.defName == faction.factionDefName);
                 if (toFind != null) defList.Add(toFind);
             }
             return defList.ToArray();
         }
 
-        private static WorldAISettlement[] GetWorldSettlements()
+        public static PlanetNPCFaction[] GetPlanetNPCFactions()
         {
-            FactionDef[] worldFactionDefs = GetFactionDefsFromDefNames(WorldGeneratorManager.cachedWorldValues.NPCFactionDefNames);
-            List<WorldAISettlement> npcSettlements = new List<WorldAISettlement>();
+            List<PlanetNPCFaction> planetFactions = new List<PlanetNPCFaction>();
+            Faction[] existingFactions = Find.World.factionManager.AllFactions.ToArray();
+
+            foreach(Faction faction in existingFactions)
+            {
+                if (faction == Faction.OfPlayer) continue;
+                else
+                {
+                    PlanetNPCFaction planetFaction = new PlanetNPCFaction();
+                    planetFaction.factionDefName = faction.def.defName;
+                    planetFaction.factionName = faction.Name;
+                    planetFaction.factionColor = new float[] { faction.Color.r, faction.Color.g, faction.Color.b, faction.Color.a };
+
+                    planetFactions.Add(planetFaction);
+                }
+            }
+
+            return planetFactions.ToArray();
+        }
+
+        private static PlanetNPCSettlement[] GetPlanetNPCSettlements()
+        {
+            FactionDef[] worldFactionDefs = GetFactionDefsFromNPCFaction(WorldGeneratorManager.cachedWorldValues.NPCFactions);
+            List<PlanetNPCSettlement> npcSettlements = new List<PlanetNPCSettlement>();
             foreach (Settlement settlement in Find.World.worldObjects.Settlements.Where(fetch => worldFactionDefs.Contains(fetch.Faction.def)))
             {
-                WorldAISettlement worldAISettlement = new WorldAISettlement();
-                worldAISettlement.tile = settlement.Tile;
-                worldAISettlement.factionDefName = settlement.Faction.def.defName;
-                worldAISettlement.name = settlement.Name;
+                PlanetNPCSettlement PlanetNPCSettlement = new PlanetNPCSettlement();
+                PlanetNPCSettlement.tile = settlement.Tile;
+                PlanetNPCSettlement.factionDefName = settlement.Faction.def.defName;
+                PlanetNPCSettlement.name = settlement.Name;
 
-                npcSettlements.Add(worldAISettlement);
+                npcSettlements.Add(PlanetNPCSettlement);
             }
             return npcSettlements.ToArray();
+        }
+
+        private static PlanetFeature[] GetPlanetFeatures()
+        {
+            List<PlanetFeature> planetFeatures = new List<PlanetFeature>();
+            WorldFeature[] worldFeatures = Find.World.features.features.ToArray();
+            foreach (WorldFeature worldFeature in worldFeatures)
+            {
+                PlanetFeature planetFeature = new PlanetFeature();
+                planetFeature.featureName = worldFeature.name;
+                planetFeature.defName = worldFeature.def.defName;
+                planetFeature.maxDrawSizeInTiles = worldFeature.maxDrawSizeInTiles;
+                planetFeature.drawCenter = new float[] { worldFeature.drawCenter.x, worldFeature.drawCenter.y, worldFeature.drawCenter.z };
+
+                planetFeatures.Add(planetFeature);
+            }
+
+            return planetFeatures.ToArray();
+        }
+
+        public static void SetPlanetFeatures()
+        {
+            WorldFeature[] worldFeatures = Find.World.features.features.ToArray();
+            foreach (WorldFeature feature in worldFeatures) Find.World.features.features.Remove(feature);
+
+            PlanetFeature[] planetFeatures = WorldGeneratorManager.cachedWorldValues.Features.ToArray();
+            foreach (PlanetFeature planetFeature in planetFeatures)
+            {
+                WorldFeature worldFeature = new WorldFeature();
+
+                FeatureDef toGet = DefDatabase<FeatureDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == planetFeature.defName);
+                if (toGet == null) continue;
+                else worldFeature.def = toGet;
+
+                worldFeature.name = planetFeature.featureName;
+                worldFeature.maxDrawSizeInTiles = planetFeature.maxDrawSizeInTiles;
+                worldFeature.drawCenter = new Vector3(planetFeature.drawCenter[0], planetFeature.drawCenter[1], planetFeature.drawCenter[2]);
+
+                Find.World.features.features.Add(worldFeature);
+            }
+
+            Find.World.features.textsCreated = false;
+            Find.World.features.UpdateFeatures();
+        }
+
+        public static void SetPlanetFactions()
+        {
+            Faction[] planetFactions = Find.World.factionManager.AllFactions.ToArray();
+            foreach(PlanetNPCFaction faction in WorldGeneratorManager.cachedWorldValues.NPCFactions)
+            {
+                Faction toModify = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.def.defName == faction.factionDefName);
+                if (toModify == null) continue;
+                else
+                {
+                    toModify.Name = faction.factionName;
+
+                    toModify.color = new Color(faction.factionColor[0], 
+                        faction.factionColor[1], 
+                        faction.factionColor[2], 
+                        faction.factionColor[3]);
+                }
+            }
         }
     }
 }
