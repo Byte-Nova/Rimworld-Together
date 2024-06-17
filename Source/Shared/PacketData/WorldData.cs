@@ -9,15 +9,6 @@ namespace Shared
     {
         public WorldStepMode worldStepMode;
 
-        public string seedString;
-        public int persistentRandomValue;
-        public string planetCoverage;
-        public string rainfall;
-        public string temperature;
-        public string population;
-        public string pollution;
-
-        public string[] factions;
-        public WorldAISettlement[] npcSettlements;
+        public WorldValuesFile worldValuesFile;
     }
 }

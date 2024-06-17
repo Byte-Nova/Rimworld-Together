@@ -84,7 +84,7 @@ namespace GameServer
             }
 
             globalData.playerSettlements = tempList.ToArray();
-            if (Master.worldValues != null) globalData.npcSettlements = Master.worldValues.worldAISettlements;
+            if (Master.worldValues != null) globalData.npcSettlements = Master.worldValues.NPCSettlements;
 
             return globalData;
         }

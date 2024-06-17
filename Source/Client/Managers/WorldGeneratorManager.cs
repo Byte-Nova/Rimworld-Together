@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
@@ -11,45 +12,26 @@ namespace GameClient
 {
     public static class WorldGeneratorManager
     {
-        public static string seedString;
-        public static int persistentRandomValue;
-        public static float planetCoverage;
-        public static OverallRainfall rainfall;
-        public static OverallTemperature temperature;
-        public static OverallPopulation population;
-        public static float pollution;
-        public static FactionDef[] factions;
-        public static WorldAISettlement[] npcSettlements;
-        public static WorldData cachedWorldData;
+        public static WorldValuesFile cachedWorldValues;
 
-        public static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
+        private static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
                                                                       orderby x.order, x.index
                                                                       select x;
 
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
-            WorldGeneratorManager.seedString = seedString;
-            persistentRandomValue = GenText.StableStringHash(seedString);
-            WorldGeneratorManager.planetCoverage = planetCoverage;
-            WorldGeneratorManager.rainfall = rainfall;
-            WorldGeneratorManager.temperature = temperature;
-            WorldGeneratorManager.population = population;
-            WorldGeneratorManager.pollution = pollution;
-            WorldGeneratorManager.factions = GetWorldFactions(null, factions);
+            cachedWorldValues = new WorldValuesFile();
+            cachedWorldValues.SeedString = seedString;
+            cachedWorldValues.PersistentRandomValue = GenText.StableStringHash(seedString);
+            cachedWorldValues.PlanetCoverage = planetCoverage;
+            cachedWorldValues.Rainfall = (int)rainfall;
+            cachedWorldValues.Temperature = (int)temperature;
+            cachedWorldValues.Population = (int)population;
+            cachedWorldValues.Pollution = pollution;
+            cachedWorldValues.NPCFactionDefNames = WorldGeneratorHelper.GetDefNamesFromFactionDefs(factions.ToArray());
         }
 
-        public static void SetValuesFromServer(WorldData worldData)
-        {
-            seedString = worldData.seedString;
-            persistentRandomValue = worldData.persistentRandomValue;
-            planetCoverage = float.Parse(worldData.planetCoverage);
-            rainfall = (OverallRainfall)int.Parse(worldData.rainfall);
-            temperature = (OverallTemperature)int.Parse(worldData.temperature);
-            population = (OverallPopulation)int.Parse(worldData.population);
-            pollution = float.Parse(worldData.pollution);
-            factions = GetWorldFactions(worldData, null);
-            cachedWorldData = worldData;
-        }
+        public static void SetValuesFromServer(WorldData worldData) { cachedWorldValues = worldData.worldValuesFile; }
 
         public static void GeneratePatchedWorld()
         {
@@ -69,20 +51,21 @@ namespace GameClient
 
         private static World GenerateWorld()
         {
-            Rand.PushState(persistentRandomValue);
+            Rand.PushState(cachedWorldValues.PersistentRandomValue);
+
             Current.CreatingWorld = new World();
-            Current.CreatingWorld.info.seedString = seedString;
-            Current.CreatingWorld.info.persistentRandomValue = persistentRandomValue;
-            Current.CreatingWorld.info.planetCoverage = planetCoverage;
-            Current.CreatingWorld.info.overallRainfall = rainfall;
-            Current.CreatingWorld.info.overallTemperature = temperature;
-            Current.CreatingWorld.info.overallPopulation = population;
+            Current.CreatingWorld.info.seedString = cachedWorldValues.SeedString;
+            Current.CreatingWorld.info.persistentRandomValue = cachedWorldValues.PersistentRandomValue;
+            Current.CreatingWorld.info.planetCoverage = cachedWorldValues.PlanetCoverage;
+            Current.CreatingWorld.info.overallRainfall = (OverallRainfall)cachedWorldValues.Rainfall;
+            Current.CreatingWorld.info.overallTemperature = (OverallTemperature)cachedWorldValues.Temperature;
+            Current.CreatingWorld.info.overallPopulation = (OverallPopulation)cachedWorldValues.Population;
             Current.CreatingWorld.info.name = NameGenerator.GenerateName(RulePackDefOf.NamerWorld);
-            Current.CreatingWorld.info.factions = factions.ToList();
-            Current.CreatingWorld.info.pollution = pollution;
+            Current.CreatingWorld.info.factions = WorldGeneratorHelper.GetFactionDefsFromDefNames(cachedWorldValues.NPCFactionDefNames).ToList();
+            Current.CreatingWorld.info.pollution = cachedWorldValues.Pollution;
 
             WorldGenStepDef[] worldGenSteps = GenStepsInOrder.ToArray();
-            for (int i = 0; i < worldGenSteps.Count(); i++) worldGenSteps[i].worldGenStep.GenerateFresh(seedString);
+            for (int i = 0; i < worldGenSteps.Count(); i++) worldGenSteps[i].worldGenStep.GenerateFresh(cachedWorldValues.SeedString);
 
             Current.CreatingWorld.grid.StandardizeTileData();
             Current.CreatingWorld.FinalizeInit();
@@ -90,25 +73,6 @@ namespace GameClient
 
             if (!ModsConfig.IdeologyActive) Find.Scenario.PostIdeoChosen();
             return Current.CreatingWorld;
-        }
-
-        public static void SendWorldToServer()
-        {
-            WorldData worldData = new WorldData();
-            worldData.worldStepMode = WorldStepMode.Required;
-
-            worldData.seedString = seedString;
-            worldData.persistentRandomValue = persistentRandomValue;
-            worldData.planetCoverage = planetCoverage.ToString();
-            worldData.rainfall = ((int)rainfall).ToString();
-            worldData.temperature = ((int)temperature).ToString();
-            worldData.population = ((int)population).ToString();
-            worldData.pollution = pollution.ToString();
-            worldData.factions = GetWorldFactionsDefNames();
-            worldData.npcSettlements = GetWorldSettlements();
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
-            Network.listener.EnqueuePacket(packet);
         }
 
         public static void PostWorldGeneration()
@@ -136,41 +100,48 @@ namespace GameClient
             DialogShortcuts.ShowWorldGenerationDialogs();
         }
 
-        private static FactionDef[] GetWorldFactions(WorldData worldData, List<FactionDef> factionData)
+        public static void SendWorldToServer()
         {
-            if (ClientValues.needsToGenerateWorld)
-            {
-                factionData.Add(FactionValues.neutralPlayerDef);
-                factionData.Add(FactionValues.allyPlayerDef);
-                factionData.Add(FactionValues.enemyPlayerDef);
-                factionData.Add(FactionValues.yourOnlineFactionDef);
-                return factionData.ToArray();
-            }
+            WorldData worldData = new WorldData();
+            worldData.worldStepMode = WorldStepMode.Required;
+            worldData.worldValuesFile = WorldGeneratorHelper.PopulateWorldValues();
 
-            else
-            {
-                List<FactionDef> factionsToUse = new List<FactionDef>();
-                foreach (string str in worldData.factions)
-                {
-                    FactionDef faction = DefDatabase<FactionDef>.AllDefs.ToList().Find(fetch => fetch.defName == str);
-                    if (faction != null) factionsToUse.Add(faction);
-                    else Logger.Warning($"Faction '{str}' wasn't found in the client's game, ignoring");
-                }
-                return factionsToUse.ToArray();
-            }
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
+            Network.listener.EnqueuePacket(packet);
+        }
+    }
+
+    public static class WorldGeneratorHelper
+    {
+        public static WorldValuesFile PopulateWorldValues()
+        {
+            WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetWorldSettlements();
+            return WorldGeneratorManager.cachedWorldValues;
         }
 
-        private static string[] GetWorldFactionsDefNames()
+        public static string[] GetDefNamesFromFactionDefs(FactionDef[] factions)
         {
-            List<string> factionDefNames = new List<string>();
-            foreach (FactionDef faction in factions) factionDefNames.Add(faction.defName);
-            return factionDefNames.ToArray();
+            List<string> defList = new List<string>();
+            foreach (FactionDef def in factions) defList.Add(def.defName);
+            return defList.ToArray();
+        }
+
+        public static FactionDef[] GetFactionDefsFromDefNames(string[] defNames)
+        {
+            List<FactionDef> defList = new List<FactionDef>();
+            foreach (string str in defNames)
+            {
+                FactionDef toFind = DefDatabase<FactionDef>.AllDefs.ToArray().FirstOrDefault(fetch => fetch.defName == str);
+                if (toFind != null) defList.Add(toFind);
+            }
+            return defList.ToArray();
         }
 
         private static WorldAISettlement[] GetWorldSettlements()
         {
+            FactionDef[] worldFactionDefs = GetFactionDefsFromDefNames(WorldGeneratorManager.cachedWorldValues.NPCFactionDefNames);
             List<WorldAISettlement> npcSettlements = new List<WorldAISettlement>();
-            foreach (Settlement settlement in Find.World.worldObjects.Settlements.Where(fetch => factions.Contains(fetch.Faction.def)))
+            foreach (Settlement settlement in Find.World.worldObjects.Settlements.Where(fetch => worldFactionDefs.Contains(fetch.Faction.def)))
             {
                 WorldAISettlement worldAISettlement = new WorldAISettlement();
                 worldAISettlement.tile = settlement.Tile;

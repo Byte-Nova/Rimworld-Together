@@ -122,13 +122,13 @@ namespace GameClient
             {
                 WorldValuesFile worldValuesFile = new WorldValuesFile();
 
-                worldValuesFile.seedString = Find.World.info.seedString;
-                worldValuesFile.persistentRandomValue = Find.World.info.persistentRandomValue;
-                worldValuesFile.planetCoverage = Find.World.info.planetCoverage.ToString();
-                worldValuesFile.rainfall = ((int)Find.World.info.overallRainfall).ToString();
-                worldValuesFile.temperature = ((int)Find.World.info.overallTemperature).ToString(); ;
-                worldValuesFile.population = ((int)Find.World.info.overallPopulation).ToString();
-                worldValuesFile.pollution = Find.World.info.pollution.ToString();
+                worldValuesFile.SeedString = Find.World.info.seedString;
+                worldValuesFile.PersistentRandomValue = Find.World.info.persistentRandomValue;
+                worldValuesFile.PlanetCoverage = Find.World.info.planetCoverage;
+                worldValuesFile.Rainfall = (int)Find.World.info.overallRainfall;
+                worldValuesFile.Temperature = (int)Find.World.info.overallTemperature;
+                worldValuesFile.Population = (int)Find.World.info.overallPopulation;
+                worldValuesFile.Pollution = Find.World.info.pollution;
 
                 List<string> factionDefNames = new List<string>();
                 foreach (Faction faction in Find.World.factionManager.AllFactions)
@@ -136,7 +136,7 @@ namespace GameClient
                     if (faction.def == Faction.OfPlayer.def) continue;
                     else factionDefNames.Add(faction.def.defName);
                 }
-                worldValuesFile.factions = factionDefNames.ToArray();
+                worldValuesFile.NPCFactionDefNames = factionDefNames.ToArray();
 
                 Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
 

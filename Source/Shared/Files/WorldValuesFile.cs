@@ -6,14 +6,25 @@ namespace Shared
     [Serializable]
     public class WorldValuesFile
     {
-        public string seedString;
-        public int persistentRandomValue;
-        public string planetCoverage;
-        public string rainfall;
-        public string temperature;
-        public string population;
-        public string pollution;
-        public string[] factions;
-        public WorldAISettlement[] worldAISettlements;
+        //World Values
+
+        public string SeedString;
+        public float PlanetCoverage;
+        public int Rainfall;
+        public int Temperature;
+        public int Population;
+        public float Pollution;
+
+        //Misc
+
+        public int PersistentRandomValue;
+
+        //NPC factions
+
+        public string[] NPCFactionDefNames;
+
+        //NPC settlements
+
+        public WorldAISettlement[] NPCSettlements;
     }
 }
