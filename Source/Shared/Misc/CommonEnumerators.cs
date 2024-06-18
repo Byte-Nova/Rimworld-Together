@@ -4,8 +4,6 @@
     {
         public enum LogMode { Message, Warning, Error, Title }
 
-        public enum FetchMode { Host, Player }
-
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
         public enum EventStepMode { Send, Receive, Recover }

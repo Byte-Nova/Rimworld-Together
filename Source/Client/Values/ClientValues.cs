@@ -39,6 +39,7 @@ namespace GameClient
         //ModStuff values go below. Do not change manually
 
         public static bool verboseBool;
+        public static bool extremeVerboseBool;
         public static bool muteSoundBool;
         public static bool rejectTransferBool;
         public static bool rejectSiteRewardsBool;

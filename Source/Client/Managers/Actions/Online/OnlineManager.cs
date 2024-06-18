@@ -23,6 +23,7 @@ namespace GameClient
 
         public static Thing queuedThing;
         public static int queuedTimeSpeed;
+        public static TimeSpeed maximumAllowedTimeSpeed = TimeSpeed.Fast;
 
         public static void ParseOnlinePacket(Packet packet)
         {
@@ -83,6 +84,8 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
+                    OnlineManagerHelper.SetHost(false);
+
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
 
                     OnlineActivityData data = new OnlineActivityData();
@@ -90,8 +93,8 @@ namespace GameClient
                     data.activityType = toRequest;
                     data.fromTile = Find.AnyPlayerHomeMap.Tile;
                     data.targetTile = ClientValues.chosenSettlement.Tile;
-                    data.caravanHumans = OnlineManagerHelper.GetActivityHumanBytes(FetchMode.Player);
-                    data.caravanAnimals = OnlineManagerHelper.GetActivityAnimalBytes(FetchMode.Player);
+                    data.caravanHumans = OnlineManagerHelper.GetActivityHumanBytes();
+                    data.caravanAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                     Network.listener.EnqueuePacket(packet);
@@ -104,21 +107,21 @@ namespace GameClient
 
         private static void JoinMap(MapData mapData, OnlineActivityData activityData)
         {
-            OnlineManagerHelper.SetHost(false);
-            OnlineManagerHelper.ReceiveTimeSpeedOrder(activityData);
-
-            onlineMap = MapScribeManager.StringToMap(mapData, true, true, false, true, false, true);
-            factionPawns = OnlineManagerHelper.GetCaravanPawns(FetchMode.Player, null).ToList();
+            onlineMap = MapScribeManager.StringToMap(mapData, true, true, false, false, false, false);
+            factionPawns = OnlineManagerHelper.GetCaravanPawns().ToList();
             mapThings = RimworldManager.GetThingsInMap(onlineMap).OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToList();
 
-            OnlineManagerHelper.SpawnPawnsForActivity(FetchMode.Player, activityData);
+            OnlineManagerHelper.SpawnMapPawns(activityData);
 
             CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, onlineMap, CaravanEnterMode.Edge,
                 CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
 
             CameraJumper.TryJump(factionPawns[0].Position, onlineMap);
 
+            //ALWAYS BEFORE RECEIVING ANY ORDERS BECAUSE THEY WILL BE IGNORED OTHERWISE
             ClientValues.ToggleOnlineFunction(activityData.activityType);
+
+            OnlineManagerHelper.ReceiveTimeSpeedOrder(activityData);
         }
 
         public static void StopOnlineActivity()
@@ -135,12 +138,15 @@ namespace GameClient
             Action r1 = delegate
             {
                 OnlineManagerHelper.SetHost(true);
+
                 onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == activityData.targetTile).Map;
-                factionPawns = OnlineManagerHelper.GetMapPawns(FetchMode.Host, null).ToList();
+                factionPawns = OnlineManagerHelper.GetMapPawns().ToList();
                 mapThings = RimworldManager.GetThingsInMap(onlineMap).OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToList();
 
                 SendRequestedMap(activityData);
-                OnlineManagerHelper.SpawnPawnsForActivity(FetchMode.Host, activityData);
+                OnlineManagerHelper.SpawnMapPawns(activityData);
+
+                //ALWAYS LAST TO MAKE SURE WE DON'T SEND NON-NEEDED DETAILS BEFORE EVERYTHING IS READY
                 ClientValues.ToggleOnlineFunction(activityData.activityType);
             };
 
@@ -188,6 +194,8 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
             else
             {
+                OnlineManagerHelper.SetHost(false);
+
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Online activity ended"));
 
                 foreach (Pawn pawn in nonFactionPawns.ToArray()) pawn.Destroy();
@@ -199,11 +207,11 @@ namespace GameClient
         private static void SendRequestedMap(OnlineActivityData visitData)
         {
             visitData.activityStepMode = OnlineActivityStepMode.Accept;
-            visitData.mapHumans = OnlineManagerHelper.GetActivityHumanBytes(FetchMode.Host);
-            visitData.mapAnimals = OnlineManagerHelper.GetActivityAnimalBytes(FetchMode.Host);
+            visitData.mapHumans = OnlineManagerHelper.GetActivityHumanBytes();
+            visitData.mapAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
             visitData.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
 
-            MapData mapData = MapManager.ParseMap(onlineMap, true, true, true, true);
+            MapData mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
             visitData.mapDetails = Serializer.ConvertObjectToBytes(mapData);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
@@ -333,7 +341,7 @@ namespace GameClient
                 IntVec3 jobPositionStart = ValueParser.StringToVector3(data.pawnOrder.positionSync);
                 Rot4 jobRotationStart = ValueParser.StringToRot4(data.pawnOrder.rotationSync);
                 ChangePawnTransform(pawn, jobPositionStart, jobRotationStart);
-                HandlePawnDrafting(pawn, data.pawnOrder.isDrafted);
+                SetPawnDraftState(pawn, data.pawnOrder.isDrafted);
 
                 JobDef jobDef = RimworldManager.GetJobFromDef(data.pawnOrder.defName);
                 LocalTargetInfo targetA = GetActionTargetsFromString(data.pawnOrder, 0);
@@ -482,7 +490,7 @@ namespace GameClient
 
         public static void SetHost(bool mode) { OnlineManager.isHost = mode; }
 
-        public static void AddToVisitList(Thing thing)
+        public static void AddToMapThings(Thing thing)
         {
             if (DeepScribeHelper.CheckIfThingIsHuman(thing))
             {
@@ -501,7 +509,7 @@ namespace GameClient
             Logger.Warning($"Created! > {thing.def.defName}");
         }
 
-        public static void RemoveFromVisitList(Thing thing)
+        public static void RemoveFromMapThings(Thing thing)
         {
             if (DeepScribeHelper.CheckIfThingIsHuman(thing)) OnlineManager.nonFactionPawns.Remove((Pawn)thing);
             else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) OnlineManager.nonFactionPawns.Remove((Pawn)thing);
@@ -761,7 +769,7 @@ namespace GameClient
             return targetTypeList.ToArray();
         }
 
-        public static void HandlePawnDrafting(Pawn pawn, bool shouldBeDrafted)
+        public static void SetPawnDraftState(Pawn pawn, bool shouldBeDrafted)
         {
             try
             {
@@ -770,7 +778,13 @@ namespace GameClient
                 if (shouldBeDrafted) pawn.drafter.Drafted = true;
                 else { pawn.drafter.Drafted = false; }
             }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
+            catch (Exception e) { Logger.Warning($"Couldn't apply pawn draft state for {pawn.Label}. Reason: {e}"); }
+        }
+
+        public static bool GetPawnDraftState(Pawn pawn)
+        {
+            if (pawn.drafter == null) return false;
+            else return pawn.drafter.Drafted;
         }
 
         public static void ChangePawnTransform(Pawn pawn, IntVec3 pawnPosition, Rot4 pawnRotation)
@@ -799,32 +813,122 @@ namespace GameClient
             else if (job.def == JobDefOf.Wait_Wander) job.locomotionUrgency = LocomotionUrgency.Walk;
         }
 
-        public static void SpawnPawnsForActivity(FetchMode mode, OnlineActivityData visitData)
+        public static void SpawnMapPawns(OnlineActivityData activityData)
         {
-            if (mode == FetchMode.Host)
+            if (OnlineManager.isHost)
             {
-                OnlineManager.nonFactionPawns = GetCaravanPawns(FetchMode.Host, visitData).ToList(); ;
+                OnlineManager.nonFactionPawns = GetCaravanPawns(activityData).ToList();
                 foreach (Pawn pawn in OnlineManager.nonFactionPawns)
                 {
                     pawn.SetFaction(FactionValues.allyPlayer);
+
+                    //Initial position and rotation left to default since caravan doesn't have it stored
                     GenSpawn.Spawn(pawn, OnlineManager.onlineMap.Center, OnlineManager.onlineMap, Rot4.Random);
                 }
             }
 
-            else if (mode == FetchMode.Player)
+            else
             {
-                OnlineManager.nonFactionPawns = GetMapPawns(FetchMode.Player, visitData).ToList(); ;
+                OnlineManager.nonFactionPawns = GetMapPawns(activityData).ToList();
                 foreach (Pawn pawn in OnlineManager.nonFactionPawns)
                 {
                     pawn.SetFaction(FactionValues.allyPlayer);
-                    GenSpawn.Spawn(pawn, OnlineManager.onlineMap.Center, OnlineManager.onlineMap, Rot4.Random);
+
+                    //Initial position and rotation grabbed from online details
+                    GenSpawn.Spawn(pawn, pawn.Position, OnlineManager.onlineMap, pawn.Rotation);
                 }
             }
         }
 
-        public static List<byte[]> GetActivityHumanBytes(FetchMode mode)
+        public static Pawn[] GetMapPawns(OnlineActivityData activityData = null)
         {
-            if (mode == FetchMode.Host)
+            if (OnlineManager.isHost)
+            {
+                List<Pawn> mapHumans = OnlineManager.onlineMap.mapPawns.AllPawns
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
+                    .OrderBy(p => p.def.defName)
+                    .ToList();
+
+                List<Pawn> mapAnimals = OnlineManager.onlineMap.mapPawns.AllPawns
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
+                    .OrderBy(p => p.def.defName)
+                    .ToList();
+
+                List<Pawn> allPawns = new List<Pawn>();
+                foreach (Pawn pawn in mapHumans) allPawns.Add(pawn);
+                foreach (Pawn pawn in mapAnimals) allPawns.Add(pawn);
+
+                return allPawns.ToArray();
+            }
+
+            else
+            {
+                List<Pawn> pawnList = new List<Pawn>();
+
+                foreach (byte[] compressedHuman in activityData.mapHumans)
+                {
+                    HumanData humanDetailsJSON = (HumanData)Serializer.ConvertBytesToObject(compressedHuman);
+                    Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
+                    pawnList.Add(human);
+                }
+
+                foreach (byte[] compressedAnimal in activityData.mapAnimals)
+                {
+                    AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
+                    Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
+                    pawnList.Add(animal);
+                }
+
+                return pawnList.ToArray();
+            }
+        }
+
+        public static Pawn[] GetCaravanPawns(OnlineActivityData activityData = null)
+        {
+            if (OnlineManager.isHost)
+            {
+                List<Pawn> pawnList = new List<Pawn>();
+
+                foreach (byte[] compressedHuman in activityData.caravanHumans)
+                {
+                    HumanData humanDetailsJSON = (HumanData)Serializer.ConvertBytesToObject(compressedHuman);
+                    Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
+                    pawnList.Add(human);
+                }
+
+                foreach (byte[] compressedAnimal in activityData.caravanAnimals)
+                {
+                    AnimalData animalDetailsJSON = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
+                    Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
+                    pawnList.Add(animal);
+                }
+
+                return pawnList.ToArray();
+            }
+
+            else
+            {
+                List<Pawn> caravanHumans = ClientValues.chosenCaravan.PawnsListForReading
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
+                    .OrderBy(p => p.def.defName)
+                    .ToList();
+
+                List<Pawn> caravanAnimals = ClientValues.chosenCaravan.PawnsListForReading
+                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
+                    .OrderBy(p => p.def.defName)
+                    .ToList();
+
+                List<Pawn> allPawns = new List<Pawn>();
+                foreach (Pawn pawn in caravanHumans) allPawns.Add(pawn);
+                foreach (Pawn pawn in caravanAnimals) allPawns.Add(pawn);
+
+                return allPawns.ToArray();
+            }
+        }
+
+        public static List<byte[]> GetActivityHumanBytes()
+        {
+            if (OnlineManager.isHost)
             {
                 List<Pawn> mapHumans = OnlineManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
@@ -836,6 +940,7 @@ namespace GameClient
                 {
                     HumanData data = HumanScribeManager.HumanToString(human);
                     convertedList.Add(Serializer.ConvertObjectToBytes(data));
+                    Logger.Warning($"Pawn > {human.Label}");
                 }
 
                 return convertedList;
@@ -859,9 +964,9 @@ namespace GameClient
             }
         }
 
-        public static List<byte[]> GetActivityAnimalBytes(FetchMode mode)
+        public static List<byte[]> GetActivityAnimalBytes()
         {
-            if (mode == FetchMode.Host)
+            if (OnlineManager.isHost)
             {
                 List<Pawn> mapAnimals = OnlineManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
@@ -896,96 +1001,11 @@ namespace GameClient
             }
         }
 
-        public static bool GetPawnDraftState(Pawn pawn)
+        public static bool CheckIfIgnoreThingSync(Thing toCheck)
         {
-            if (pawn.drafter == null) return false;
-            else return pawn.drafter.Drafted;
-        }
-
-        public static Pawn[] GetMapPawns(FetchMode mode, OnlineActivityData visitData)
-        {
-            if (mode == FetchMode.Host)
-            {
-                List<Pawn> mapHumans = OnlineManager.onlineMap.mapPawns.AllPawns
-                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
-                    .OrderBy(p => p.def.defName)
-                    .ToList();
-
-                List<Pawn> mapAnimals = OnlineManager.onlineMap.mapPawns.AllPawns
-                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
-                    .OrderBy(p => p.def.defName)
-                    .ToList();
-
-                List<Pawn> allPawns = new List<Pawn>();
-                foreach (Pawn pawn in mapHumans) allPawns.Add(pawn);
-                foreach (Pawn pawn in mapAnimals) allPawns.Add(pawn);
-
-                return allPawns.ToArray();
-            }
-
-            else
-            {
-                List<Pawn> pawnList = new List<Pawn>();
-
-                foreach (byte[] compressedHuman in visitData.mapHumans)
-                {
-                    HumanData humanDetailsJSON = (HumanData)Serializer.ConvertBytesToObject(compressedHuman);
-                    Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
-                    pawnList.Add(human);
-                }
-
-                foreach (byte[] compressedAnimal in visitData.mapAnimals)
-                {
-                    AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
-                    Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
-                    pawnList.Add(animal);
-                }
-
-                return pawnList.ToArray();
-            }
-        }
-
-        public static Pawn[] GetCaravanPawns(FetchMode mode, OnlineActivityData visitData)
-        {
-            if (mode == FetchMode.Host)
-            {
-                List<Pawn> pawnList = new List<Pawn>();
-
-                foreach (byte[] compressedHuman in visitData.caravanHumans)
-                {
-                    HumanData humanDetailsJSON = (HumanData)Serializer.ConvertBytesToObject(compressedHuman);
-                    Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
-                    pawnList.Add(human);
-                }
-
-                foreach (byte[] compressedAnimal in visitData.caravanAnimals)
-                {
-                    AnimalData animalDetailsJSON = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
-                    Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
-                    pawnList.Add(animal);
-                }
-
-                return pawnList.ToArray();
-            }
-
-            else
-            {
-                List<Pawn> caravanHumans = ClientValues.chosenCaravan.PawnsListForReading
-                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
-                    .OrderBy(p => p.def.defName)
-                    .ToList();
-
-                List<Pawn> caravanAnimals = ClientValues.chosenCaravan.PawnsListForReading
-                    .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
-                    .OrderBy(p => p.def.defName)
-                    .ToList();
-
-                List<Pawn> allPawns = new List<Pawn>();
-                foreach (Pawn pawn in caravanHumans) allPawns.Add(pawn);
-                foreach (Pawn pawn in caravanAnimals) allPawns.Add(pawn);
-
-                return allPawns.ToArray();
-            }
+            if (toCheck is Projectile) return true;
+            else if (toCheck is Mote) return true;
+            else return false;
         }
     }
 }

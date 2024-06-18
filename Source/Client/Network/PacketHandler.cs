@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace GameClient
@@ -8,11 +9,19 @@ namespace GameClient
 
     public static class PacketHandler
     {
+        //Packet headers in this array won't output into the logs by default
+
+        private static readonly string[] ignoreLogPackets =
+        {
+            nameof(OnlineActivityPacket)
+        };
+
         //Function that opens handles the action that the packet should do, then sends it to the correct one below
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool) Logger.Message($"[H] > {packet.header}");
+            if (ClientValues.verboseBool && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}");
+            else if (ClientValues.extremeVerboseBool) Logger.Message($"[N] > {packet.header}");
 
             Action toDo = delegate
             {

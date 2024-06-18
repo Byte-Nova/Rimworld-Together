@@ -64,7 +64,7 @@ namespace GameClient
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received, continue?", r1, null));
+            else r1.Invoke();
         }
 
         //Executes when raid request is denied

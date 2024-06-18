@@ -7,11 +7,19 @@ namespace GameServer
 
     public static class PacketHandler
     {
+        //Packet headers in this array won't output into the logs by default
+
+        private static readonly string[] ignoreLogPackets =
+        {
+            nameof(OnlineActivityPacket)
+        };
+
         //Function that opens handles the action that the packet should do, then sends it to the correct one below
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs) Logger.Message($"[H] > {packet.header}");
+            if (Master.serverConfig.VerboseLogs && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[H] > {packet.header}");
+            else if (Master.serverConfig.ExtremeVerboseLogs) Logger.Message($"[H] > {packet.header}");
 
             client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);

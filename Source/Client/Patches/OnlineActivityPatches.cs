@@ -10,7 +10,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    [HarmonyPatch(typeof(Thing), "SpawnSetup")]
+    [HarmonyPatch(typeof(Thing), nameof(Thing.SpawnSetup))]
     public static class PatchCreateThing
     {
         [HarmonyPrefix]
@@ -18,10 +18,7 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
-
-            if (__instance is Mote) return true;
-            if (__instance is Projectile) return true;
-            if (__instance is Filth) return true;
+            if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.Visit)
             {
@@ -37,7 +34,7 @@ namespace GameClient
                     Network.listener.EnqueuePacket(packet);
 
                     //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineManagerHelper.AddToVisitList(__instance);
+                    OnlineManagerHelper.AddToMapThings(__instance);
                     return true;
                 }
 
@@ -48,7 +45,7 @@ namespace GameClient
                     if (OnlineManager.queuedThing == __instance)
                     {
                         OnlineManagerHelper.ClearThingQueue();
-                        OnlineManagerHelper.AddToVisitList(__instance);
+                        OnlineManagerHelper.AddToMapThings(__instance);
                         return true;
                     }
 
@@ -56,10 +53,6 @@ namespace GameClient
 
                     else
                     {
-                        if (__instance is Filth) return false;
-
-                        if (OnlineManager.mapThings.Contains(__instance)) return true;
-
                         OnlineActivityData OnlineActivityData = new OnlineActivityData();
                         OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
                         OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
@@ -85,7 +78,7 @@ namespace GameClient
                     Network.listener.EnqueuePacket(packet);
 
                     //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineManagerHelper.AddToVisitList(__instance);
+                    OnlineManagerHelper.AddToMapThings(__instance);
                     return true;
                 }
 
@@ -96,7 +89,7 @@ namespace GameClient
                     if (OnlineManager.queuedThing == __instance)
                     {
                         OnlineManagerHelper.ClearThingQueue();
-                        OnlineManagerHelper.AddToVisitList(__instance);
+                        OnlineManagerHelper.AddToMapThings(__instance);
                         return true;
                     }
 
@@ -110,7 +103,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(Thing), "Destroy")]
+    [HarmonyPatch(typeof(Thing), nameof(Thing.Destroy))]
     public static class PatchDestroyThing
     {
         [HarmonyPrefix]
@@ -118,11 +111,11 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
-            if (!OnlineManager.mapThings.Contains(__instance)) return true;
+            if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
-            if (__instance is Mote) return true;
-            if (__instance is Projectile) return true;
-            if (__instance is Filth) return true;
+            //TODO
+            //CHANGE THE WAY WE CHECK IF IT'S TARGETING THE ACTIVITY MAP
+            if (!OnlineManager.mapThings.Contains(__instance)) return true;
 
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.Visit)
             {
@@ -136,7 +129,7 @@ namespace GameClient
                     Network.listener.EnqueuePacket(packet);
 
                     //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineManagerHelper.RemoveFromVisitList(__instance);
+                    OnlineManagerHelper.RemoveFromMapThings(__instance);
                     return true;
                 }
 
@@ -147,7 +140,7 @@ namespace GameClient
                     if (OnlineManager.queuedThing == __instance)
                     {
                         OnlineManagerHelper.ClearThingQueue();
-                        OnlineManagerHelper.RemoveFromVisitList(__instance);
+                        OnlineManagerHelper.RemoveFromMapThings(__instance);
                         return true;
                     }
 
@@ -178,7 +171,7 @@ namespace GameClient
                     Network.listener.EnqueuePacket(packet);
 
                     //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineManagerHelper.RemoveFromVisitList(__instance);
+                    OnlineManagerHelper.RemoveFromMapThings(__instance);
                     return true;
                 }
 
@@ -189,7 +182,7 @@ namespace GameClient
                     if (OnlineManager.queuedThing == __instance)
                     {
                         OnlineManagerHelper.ClearThingQueue();
-                        OnlineManagerHelper.RemoveFromVisitList(__instance);
+                        OnlineManagerHelper.RemoveFromMapThings(__instance);
                         return true;
                     }
 
@@ -203,7 +196,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(Pawn_JobTracker), "StartJob")]
+    [HarmonyPatch(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.StartJob))]
     public static class PatchStartNewJob
     {
         [HarmonyPostfix]
@@ -225,7 +218,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(Thing), "TakeDamage")]
+    [HarmonyPatch(typeof(Thing), nameof(Thing.TakeDamage))]
     public static class PatchApplyDamage
     {
         [HarmonyPrefix]
@@ -277,7 +270,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(Pawn_HealthTracker), "AddHediff", new[] { typeof(Hediff), typeof(BodyPartRecord), typeof(DamageInfo), typeof(DamageWorker.DamageResult), })]
+    [HarmonyPatch(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.AddHediff), new[] { typeof(Hediff), typeof(BodyPartRecord), typeof(DamageInfo), typeof(DamageWorker.DamageResult), })]
     public static class PatchApplyHediff
     {
         [HarmonyPrefix]
@@ -329,7 +322,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(Pawn_HealthTracker), "RemoveHediff")]
+    [HarmonyPatch(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.RemoveHediff))]
     public static class PatchRemoveHediff
     {
         [HarmonyPrefix]
@@ -381,19 +374,6 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(CompSpawnerFilth), "TrySpawnFilth")]
-    public static class PatchFilth
-    {
-        [HarmonyPrefix]
-        public static bool DoPre()
-        {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
-
-            return false;
-        }
-    }
-
     [HarmonyPatch(typeof(TickManager), nameof(TickManager.TickManagerUpdate))]
     public static class PatchTickChanging
     {
@@ -405,6 +385,8 @@ namespace GameClient
 
             if (OnlineManager.isHost)
             {
+                if (__instance.CurTimeSpeed > OnlineManager.maximumAllowedTimeSpeed) __instance.CurTimeSpeed = OnlineManager.maximumAllowedTimeSpeed;
+
                 if (OnlineManager.queuedTimeSpeed != (int)__instance.CurTimeSpeed)
                 {
                     OnlineManager.queuedTimeSpeed = (int)__instance.CurTimeSpeed;
@@ -432,7 +414,32 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(CaravanExitMapUtility), "ExitMapAndCreateCaravan", new[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int), typeof(Direction8Way), typeof(int), typeof(bool) })]
+    //Not really needed, used to make the non-host player console not freak out when trying to spawn non-requested filth
+
+    [HarmonyPatch(typeof(Filth), nameof(Filth.SpawnSetup))]
+    public static class PatchCreateFilth
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Thing __instance)
+        {
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            if (OnlineManager.isHost) return true;
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedThing == __instance) return true;
+
+                //IF PLAYER ASKING FOR
+
+                else return false;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(CaravanExitMapUtility), nameof(CaravanExitMapUtility.ExitMapAndCreateCaravan), new[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int), typeof(Direction8Way), typeof(int), typeof(bool) })]
     public static class PatchCaravanExitMap1
     {
         [HarmonyPostfix]
@@ -447,7 +454,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(CaravanExitMapUtility), "ExitMapAndCreateCaravan", new[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int), typeof(int), typeof(int), typeof(bool) })]
+    [HarmonyPatch(typeof(CaravanExitMapUtility), nameof(CaravanExitMapUtility.ExitMapAndCreateCaravan), new[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int), typeof(int), typeof(int), typeof(bool) })]
     public static class PatchCaravanExitMap2
     {
         [HarmonyPostfix]
@@ -462,7 +469,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(CaravanExitMapUtility), "ExitMapAndJoinOrCreateCaravan")]
+    [HarmonyPatch(typeof(CaravanExitMapUtility), nameof(CaravanExitMapUtility.ExitMapAndJoinOrCreateCaravan))]
     public static class PatchCaravanExitMap3
     {
         [HarmonyPostfix]
