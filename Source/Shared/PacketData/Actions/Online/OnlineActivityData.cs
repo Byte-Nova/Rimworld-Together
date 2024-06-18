@@ -13,7 +13,6 @@ namespace Shared
         //Map
 
         public byte[] mapDetails;
-        public List<string> mapMods = new List<string>();
         public List<byte[]> mapHumans = new List<byte[]>();
         public List<byte[]> mapAnimals = new List<byte[]>();
         public List<byte[]> caravanHumans = new List<byte[]>();
@@ -24,7 +23,6 @@ namespace Shared
         public string otherPlayerName;
         public int fromTile;
         public int targetTile;
-        public int mapTicks;
 
         //Orders
 

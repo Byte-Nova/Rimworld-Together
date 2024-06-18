@@ -31,13 +31,13 @@ namespace GameClient
 
                     OnlineActivityData OnlineActivityData = new OnlineActivityData();
                     OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                    OnlineActivityData.creationOrder = OnlineHelper.CreateCreationOrder(__instance);
+                    OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                     Network.listener.EnqueuePacket(packet);
 
                     //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineHelper.AddToVisitList(__instance);
+                    OnlineManagerHelper.AddToVisitList(__instance);
                     return true;
                 }
 
@@ -47,8 +47,8 @@ namespace GameClient
 
                     if (OnlineManager.queuedThing == __instance)
                     {
-                        OnlineHelper.ClearThingQueue();
-                        OnlineHelper.AddToVisitList(__instance);
+                        OnlineManagerHelper.ClearThingQueue();
+                        OnlineManagerHelper.AddToVisitList(__instance);
                         return true;
                     }
 
@@ -62,7 +62,7 @@ namespace GameClient
 
                         OnlineActivityData OnlineActivityData = new OnlineActivityData();
                         OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                        OnlineActivityData.creationOrder = OnlineHelper.CreateCreationOrder(__instance);
+                        OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                         Network.listener.EnqueuePacket(packet);
@@ -79,13 +79,13 @@ namespace GameClient
 
                     OnlineActivityData OnlineActivityData = new OnlineActivityData();
                     OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                    OnlineActivityData.creationOrder = OnlineHelper.CreateCreationOrder(__instance);
+                    OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                     Network.listener.EnqueuePacket(packet);
 
                     //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineHelper.AddToVisitList(__instance);
+                    OnlineManagerHelper.AddToVisitList(__instance);
                     return true;
                 }
 
@@ -95,8 +95,8 @@ namespace GameClient
 
                     if (OnlineManager.queuedThing == __instance)
                     {
-                        OnlineHelper.ClearThingQueue();
-                        OnlineHelper.AddToVisitList(__instance);
+                        OnlineManagerHelper.ClearThingQueue();
+                        OnlineManagerHelper.AddToVisitList(__instance);
                         return true;
                     }
 
@@ -130,13 +130,13 @@ namespace GameClient
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
-                    onlineActivityData.destructionOrder = OnlineHelper.CreateDestructionOrder(__instance);
+                    onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
 
                     //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineHelper.RemoveFromVisitList(__instance);
+                    OnlineManagerHelper.RemoveFromVisitList(__instance);
                     return true;
                 }
 
@@ -146,8 +146,8 @@ namespace GameClient
 
                     if (OnlineManager.queuedThing == __instance)
                     {
-                        OnlineHelper.ClearThingQueue();
-                        OnlineHelper.RemoveFromVisitList(__instance);
+                        OnlineManagerHelper.ClearThingQueue();
+                        OnlineManagerHelper.RemoveFromVisitList(__instance);
                         return true;
                     }
 
@@ -157,7 +157,7 @@ namespace GameClient
                     {
                         OnlineActivityData onlineActivityData = new OnlineActivityData();
                         onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
-                        onlineActivityData.destructionOrder = OnlineHelper.CreateDestructionOrder(__instance);
+                        onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                         Network.listener.EnqueuePacket(packet);
@@ -172,13 +172,13 @@ namespace GameClient
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
-                    onlineActivityData.destructionOrder = OnlineHelper.CreateDestructionOrder(__instance);
+                    onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
 
                     //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineHelper.RemoveFromVisitList(__instance);
+                    OnlineManagerHelper.RemoveFromVisitList(__instance);
                     return true;
                 }
 
@@ -188,8 +188,8 @@ namespace GameClient
 
                     if (OnlineManager.queuedThing == __instance)
                     {
-                        OnlineHelper.ClearThingQueue();
-                        OnlineHelper.RemoveFromVisitList(__instance);
+                        OnlineManagerHelper.ClearThingQueue();
+                        OnlineManagerHelper.RemoveFromVisitList(__instance);
                         return true;
                     }
 
@@ -215,8 +215,8 @@ namespace GameClient
 
             OnlineActivityData data = new OnlineActivityData();
             data.activityStepMode = OnlineActivityStepMode.Action;
-            data.mapTicks = RimworldManager.GetGameTicks();
-            data.pawnOrder = OnlineHelper.CreatePawnOrder(___pawn);
+            data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn);
+            data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -245,7 +245,7 @@ namespace GameClient
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Damage;
-                    onlineActivityData.damageOrder = OnlineHelper.CreateDamageOrder(dinfo, __instance);
+                    onlineActivityData.damageOrder = OnlineManagerHelper.CreateDamageOrder(dinfo, __instance);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -260,7 +260,7 @@ namespace GameClient
 
                 if (OnlineManager.queuedThing == __instance)
                 {
-                    OnlineHelper.ClearThingQueue();
+                    OnlineManagerHelper.ClearThingQueue();
                     return true;
                 }
 
@@ -296,7 +296,7 @@ namespace GameClient
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
-                    onlineActivityData.hediffOrder = OnlineHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Add);
+                    onlineActivityData.hediffOrder = OnlineManagerHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Add);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -314,7 +314,7 @@ namespace GameClient
 
                 if (OnlineManager.queuedThing == ___pawn)
                 {
-                    OnlineHelper.ClearThingQueue();
+                    OnlineManagerHelper.ClearThingQueue();
 
                     if (hediff.Part != null) Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
                     else Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
@@ -348,7 +348,7 @@ namespace GameClient
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
-                    onlineActivityData.hediffOrder = OnlineHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Remove);
+                    onlineActivityData.hediffOrder = OnlineManagerHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Remove);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -366,7 +366,7 @@ namespace GameClient
 
                 if (OnlineManager.queuedThing == ___pawn)
                 {
-                    OnlineHelper.ClearThingQueue();
+                    OnlineManagerHelper.ClearThingQueue();
 
                     if (hediff.Part != null) Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
                     else Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
@@ -411,7 +411,7 @@ namespace GameClient
 
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.TimeSpeed;
-                    onlineActivityData.timeSpeedOrder = OnlineHelper.CreateTimeSpeedOrder();
+                    onlineActivityData.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
