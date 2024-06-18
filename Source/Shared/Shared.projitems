@@ -23,11 +23,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Offline\OfflineVisitData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Online\OnlineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Online\TransferData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\CreationOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)packetdata\misc\onlinevisiting\DamageOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\DestructionOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\HediffOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineVisiting\PawnOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\CreationOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DamageOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DestructionOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\HediffOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\PawnOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Online\MarketData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
