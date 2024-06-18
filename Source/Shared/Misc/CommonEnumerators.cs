@@ -49,8 +49,6 @@
 
         public enum OnlineActivityType { None, Visit, Raid, Misc }
 
-        public enum OnlineActivityTargetType { FactionPawn, NonFactionPawn, Things }
-
         public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
 
         public enum CreationType { Human, Animal, Thing }

@@ -122,6 +122,7 @@ namespace GameClient
 
             if (__instance is Mote) return true;
             if (__instance is Projectile) return true;
+            if (__instance is Filth) return true;
 
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.Visit)
             {

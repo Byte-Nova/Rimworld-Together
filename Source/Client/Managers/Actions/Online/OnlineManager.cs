@@ -265,29 +265,9 @@ namespace GameClient
             damageOrder.damageAmount = damageInfo.Amount;
             damageOrder.ignoreArmor = damageInfo.IgnoreArmor;
             damageOrder.armorPenetration = damageInfo.ArmorPenetrationInt;
+            damageOrder.targetIndex = OnlineManager.mapThings.IndexOf(afectedThing);
             if (damageInfo.Weapon != null) damageOrder.weaponDefName = damageInfo.Weapon.defName;
             if (damageInfo.HitPart != null) damageOrder.hitPartDefName = damageInfo.HitPart.def.defName;
-
-            if (DeepScribeHelper.CheckIfThingIsHuman(afectedThing) || DeepScribeHelper.CheckIfThingIsAnimal(afectedThing))
-            {
-                if (OnlineManager.factionPawns.Contains(afectedThing))
-                {
-                    damageOrder.targetType = OnlineActivityTargetType.FactionPawn;
-                    damageOrder.targetIndex = OnlineManager.factionPawns.IndexOf((Pawn)afectedThing);
-                }
-
-                else
-                {
-                    damageOrder.targetType = OnlineActivityTargetType.NonFactionPawn;
-                    damageOrder.targetIndex = OnlineManager.nonFactionPawns.IndexOf((Pawn)afectedThing);
-                }
-            }
-
-            else
-            {
-                damageOrder.targetType = OnlineActivityTargetType.Things;
-                damageOrder.targetIndex = OnlineManager.mapThings.IndexOf(afectedThing);
-            }
 
             return damageOrder;
         }
@@ -386,14 +366,10 @@ namespace GameClient
                 DamageInfo damageInfo = new DamageInfo(damageDef, data.damageOrder.damageAmount, data.damageOrder.armorPenetration, -1, null, bodyPartRecord, thingDef);
                 damageInfo.SetIgnoreArmor(data.damageOrder.ignoreArmor);
 
-                Thing toApplyTo = null;
-                if (data.damageOrder.targetType == OnlineActivityTargetType.FactionPawn) toApplyTo = OnlineManager.factionPawns[data.damageOrder.targetIndex];
-                if (data.damageOrder.targetType == OnlineActivityTargetType.NonFactionPawn) toApplyTo = OnlineManager.nonFactionPawns[data.damageOrder.targetIndex];
-                else toApplyTo = OnlineManager.mapThings[data.damageOrder.targetIndex];
-
                 //Request
                 if (!OnlineManager.isHost)
                 {
+                    Thing toApplyTo = OnlineManager.mapThings[data.damageOrder.targetIndex];
                     EnqueueThing(toApplyTo);
                     toApplyTo.TakeDamage(damageInfo);
                 }

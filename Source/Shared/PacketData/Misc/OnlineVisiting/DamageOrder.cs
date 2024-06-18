@@ -6,7 +6,6 @@ namespace Shared
     [Serializable]
     public class DamageOrder
     {
-        public OnlineActivityTargetType targetType;
         public int targetIndex;
 
         public string defName;
