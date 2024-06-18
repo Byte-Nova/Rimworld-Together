@@ -21,7 +21,7 @@ namespace GameClient
         public static Thing queuedThing;
         public static Map onlineMap;
         public static bool isHost;
-        public static TimeSpeed latestTimeSpeed;
+        public static int queuedTimeSpeed;
 
         public static void ParseOnlinePacket(Packet packet)
         {
@@ -65,9 +65,9 @@ namespace GameClient
                     OnlineHelper.ReceiveHediffOrder(data);
                     break;
 
-                //case OnlineActivityStepMode.TimeSpeed:
-                //    OnlineHelper.ReceiveHediffOrder(data);
-                //    break;
+                case OnlineActivityStepMode.TimeSpeed:
+                    OnlineHelper.ReceiveTimeSpeedOrder(data);
+                    break;
 
                 case OnlineActivityStepMode.Stop:
                     OnActivityStop();
@@ -308,6 +308,15 @@ namespace GameClient
             return hediffOrder;
         }
 
+        public static TimeSpeedOrder CreateTimeSpeedOrder()
+        {
+            TimeSpeedOrder timeSpeedOrder = new TimeSpeedOrder();
+            timeSpeedOrder.targetTimeSpeed = OnlineManager.queuedTimeSpeed;
+            timeSpeedOrder.targetMapTicks = RimworldManager.GetGameTicks();
+
+            return timeSpeedOrder;
+        }
+
         public static void ReceivePawnOrder(OnlineActivityData data)
         {
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
@@ -454,6 +463,18 @@ namespace GameClient
             catch (Exception e) { Logger.Warning($"Couldn't apply hediff order. Reason: {e}"); }
         }
 
+        public static void ReceiveTimeSpeedOrder(OnlineActivityData data)
+        {
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+
+            try
+            {
+                OnlineManager.queuedTimeSpeed = data.timeSpeedOrder.targetTimeSpeed;
+                RimworldManager.SetGameTicks(data.timeSpeedOrder.targetMapTicks);
+            }
+            catch (Exception e) { Logger.Warning($"Couldn't apply time speed order. Reason: {e}"); }
+        }
+
         public static void AddToVisitList(Thing thing)
         {
             if (DeepScribeHelper.CheckIfThingIsHuman(thing))
@@ -484,7 +505,9 @@ namespace GameClient
 
         public static void EnqueueThing(Thing thing) { OnlineManager.queuedThing = thing; }
 
-        public static void ClearQueue() { OnlineManager.queuedThing = null; }
+        public static void ClearThingQueue() { OnlineManager.queuedThing = null; }
+
+        public static void ClearTimeSpeedQueue() { OnlineManager.queuedTimeSpeed = -1; }
 
         public static LocalTargetInfo GetActionTargetsFromString(PawnOrder pawnOrder, int index)
         {

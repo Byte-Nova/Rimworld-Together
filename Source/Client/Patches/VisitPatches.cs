@@ -47,7 +47,7 @@ namespace GameClient
 
                     if (OnlineManager.queuedThing == __instance)
                     {
-                        OnlineHelper.ClearQueue();
+                        OnlineHelper.ClearThingQueue();
                         OnlineHelper.AddToVisitList(__instance);
                         return true;
                     }
@@ -95,7 +95,7 @@ namespace GameClient
 
                     if (OnlineManager.queuedThing == __instance)
                     {
-                        OnlineHelper.ClearQueue();
+                        OnlineHelper.ClearThingQueue();
                         OnlineHelper.AddToVisitList(__instance);
                         return true;
                     }
@@ -146,7 +146,7 @@ namespace GameClient
 
                     if (OnlineManager.queuedThing == __instance)
                     {
-                        OnlineHelper.ClearQueue();
+                        OnlineHelper.ClearThingQueue();
                         OnlineHelper.RemoveFromVisitList(__instance);
                         return true;
                     }
@@ -188,7 +188,7 @@ namespace GameClient
 
                     if (OnlineManager.queuedThing == __instance)
                     {
-                        OnlineHelper.ClearQueue();
+                        OnlineHelper.ClearThingQueue();
                         OnlineHelper.RemoveFromVisitList(__instance);
                         return true;
                     }
@@ -260,7 +260,7 @@ namespace GameClient
 
                 if (OnlineManager.queuedThing == __instance)
                 {
-                    OnlineHelper.ClearQueue();
+                    OnlineHelper.ClearThingQueue();
                     return true;
                 }
 
@@ -314,7 +314,7 @@ namespace GameClient
 
                 if (OnlineManager.queuedThing == ___pawn)
                 {
-                    OnlineHelper.ClearQueue();
+                    OnlineHelper.ClearThingQueue();
 
                     if (hediff.Part != null) Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
                     else Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
@@ -366,7 +366,7 @@ namespace GameClient
 
                 if (OnlineManager.queuedThing == ___pawn)
                 {
-                    OnlineHelper.ClearQueue();
+                    OnlineHelper.ClearThingQueue();
 
                     if (hediff.Part != null) Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
                     else Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
@@ -394,22 +394,38 @@ namespace GameClient
         }
     }
 
-    //TODO
-    //DO TIME SPEED SYNC
-
     [HarmonyPatch(typeof(TickManager), nameof(TickManager.TickManagerUpdate))]
     public static class PatchTickChanging
     {
         [HarmonyPrefix]
         public static bool DoPre(TickManager __instance)
         {
-            //if (Network.state == NetworkState.Disconnected) return true;
-            //if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (OnlineManager.latestTimeSpeed != __instance.CurTimeSpeed)
+            if (OnlineManager.isHost)
             {
-                OnlineManager.latestTimeSpeed = __instance.CurTimeSpeed;
-                Logger.Warning($"Changed speed > {__instance.CurTimeSpeed}");
+                if (OnlineManager.queuedTimeSpeed != (int)__instance.CurTimeSpeed)
+                {
+                    OnlineManager.queuedTimeSpeed = (int)__instance.CurTimeSpeed;
+
+                    OnlineActivityData onlineActivityData = new OnlineActivityData();
+                    onlineActivityData.activityStepMode = OnlineActivityStepMode.TimeSpeed;
+                    onlineActivityData.timeSpeedOrder = OnlineHelper.CreateTimeSpeedOrder();
+
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
+                    Network.listener.EnqueuePacket(packet);
+                }
+            }
+
+            else
+            {
+                //Always change the CurTimeSpeed to whatever last update we got from host
+
+                if (__instance.CurTimeSpeed != (TimeSpeed)OnlineManager.queuedTimeSpeed)
+                {
+                    __instance.CurTimeSpeed = (TimeSpeed)OnlineManager.queuedTimeSpeed;
+                }
             }
 
             return true;

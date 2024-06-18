@@ -33,5 +33,6 @@ namespace Shared
         public DestructionOrder destructionOrder;
         public DamageOrder damageOrder;
         public HediffOrder hediffOrder;
+        public TimeSpeedOrder timeSpeedOrder;
     }
 }
