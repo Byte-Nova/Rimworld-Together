@@ -60,8 +60,6 @@ namespace GameServer
                     if (dataQueue.Count() > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
-                        if (packet == null) continue;
-
                         streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
                         streamWriter.Flush();
                     }

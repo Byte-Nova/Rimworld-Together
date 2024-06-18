@@ -35,6 +35,14 @@ namespace GameServer
                     SendVisitActions(client, visitData);
                     break;
 
+                case OnlineActivityStepMode.Damage:
+                    SendVisitActions(client, visitData);
+                    break;
+
+                case OnlineActivityStepMode.Hediff:
+                    SendVisitActions(client, visitData);
+                    break;
+
                 case OnlineActivityStepMode.Stop:
                     SendVisitStop(client);
                     break;

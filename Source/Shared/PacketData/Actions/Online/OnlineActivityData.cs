@@ -31,5 +31,6 @@ namespace Shared
         public PawnOrder pawnOrder;
         public CreationOrder creationOrder;
         public DestructionOrder destructionOrder;
+        public DamageOrder damageOrder;
     }
 }

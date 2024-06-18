@@ -24,16 +24,16 @@ namespace GameClient
 
         public static void ParseOnlinePacket(Packet packet)
         {
-            OnlineActivityData visitData = (OnlineActivityData)Serializer.ConvertBytesToObject(packet.contents);
+            OnlineActivityData data = (OnlineActivityData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (visitData.activityStepMode)
+            switch (data.activityStepMode)
             {
                 case OnlineActivityStepMode.Request:
-                    OnActivityRequest(visitData);
+                    OnActivityRequest(data);
                     break;
 
                 case OnlineActivityStepMode.Accept:
-                    OnActivityAccept(visitData);
+                    OnActivityAccept(data);
                     break;
 
                 case OnlineActivityStepMode.Reject:
@@ -45,15 +45,19 @@ namespace GameClient
                     break;
 
                 case OnlineActivityStepMode.Action:
-                    OnlineHelper.ReceivePawnOrder(visitData);
+                    OnlineHelper.ReceivePawnOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Create:
-                    OnlineHelper.ReceiveCreationOrder(visitData);
+                    OnlineHelper.ReceiveCreationOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Destroy:
-                    OnlineHelper.ReceiveDestructionOrder(visitData);
+                    OnlineHelper.ReceiveDestructionOrder(data);
+                    break;
+
+                case OnlineActivityStepMode.Damage:
+                    OnlineHelper.ReceiveDamageOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Stop:
@@ -80,7 +84,7 @@ namespace GameClient
                     data.caravanAnimals = OnlineHelper.GetAnimalsForVisit(FetchMode.Player);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
-                    Network.listener.dataQueue.Enqueue(packet);
+                    Network.listener.EnqueuePacket(packet);
                 };
 
                 var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
@@ -113,7 +117,7 @@ namespace GameClient
             visitData.activityStepMode = OnlineActivityStepMode.Stop;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         private static void OnActivityRequest(OnlineActivityData visitData)
@@ -134,7 +138,7 @@ namespace GameClient
             {
                 visitData.activityStepMode = OnlineActivityStepMode.Reject;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
-                Network.listener.dataQueue.Enqueue(packet);
+                Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo promptDialog = null;
@@ -195,7 +199,7 @@ namespace GameClient
             visitData.mapDetails = Serializer.ConvertObjectToBytes(mapData);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
-            Network.listener.dataQueue.Enqueue(packet);
+            Network.listener.EnqueuePacket(packet);
         }
     }
 
@@ -254,30 +258,64 @@ namespace GameClient
             return destructionOrder;
         }
 
-        public static void ReceivePawnOrder(OnlineActivityData visitData)
+        public static DamageOrder CreateDamageOrder(DamageInfo damageInfo, Thing afectedThing)
+        {
+            DamageOrder damageOrder = new DamageOrder();
+            damageOrder.defName = damageInfo.Def.defName;
+            damageOrder.damageAmount = damageInfo.Amount;
+            damageOrder.ignoreArmor = damageInfo.IgnoreArmor;
+            damageOrder.armorPenetration = damageInfo.ArmorPenetrationInt;
+            if (damageInfo.Weapon != null) damageOrder.weaponDefName = damageInfo.Weapon.defName;
+            if (damageInfo.HitPart != null) damageOrder.hitPartDefName = damageInfo.HitPart.def.defName;
+
+            if (DeepScribeHelper.CheckIfThingIsHuman(afectedThing) || DeepScribeHelper.CheckIfThingIsAnimal(afectedThing))
+            {
+                if (OnlineManager.factionPawns.Contains(afectedThing))
+                {
+                    damageOrder.targetType = OnlineActivityTargetType.FactionPawn;
+                    damageOrder.targetIndex = OnlineManager.factionPawns.IndexOf((Pawn)afectedThing);
+                }
+
+                else
+                {
+                    damageOrder.targetType = OnlineActivityTargetType.NonFactionPawn;
+                    damageOrder.targetIndex = OnlineManager.nonFactionPawns.IndexOf((Pawn)afectedThing);
+                }
+            }
+
+            else
+            {
+                damageOrder.targetType = OnlineActivityTargetType.Things;
+                damageOrder.targetIndex = OnlineManager.mapThings.IndexOf(afectedThing);
+            }
+
+            return damageOrder;
+        }
+
+        public static void ReceivePawnOrder(OnlineActivityData data)
         {
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
-            if (!OnlineManager.isHost) RimworldManager.SetGameTicks(visitData.mapTicks);
+            if (!OnlineManager.isHost) RimworldManager.SetGameTicks(data.mapTicks);
 
             List<Pawn> otherPawns = GetOtherFactionPawnsSecure();
-            Pawn pawn = otherPawns[visitData.pawnOrder.pawnIndex];
+            Pawn pawn = otherPawns[data.pawnOrder.pawnIndex];
 
-            IntVec3 jobPositionStart = ValueParser.StringToVector3(visitData.pawnOrder.positionSync);
-            Rot4 jobRotationStart = ValueParser.StringToRot4(visitData.pawnOrder.rotationSync);
+            IntVec3 jobPositionStart = ValueParser.StringToVector3(data.pawnOrder.positionSync);
+            Rot4 jobRotationStart = ValueParser.StringToRot4(data.pawnOrder.rotationSync);
             ChangePawnTransform(pawn, jobPositionStart, jobRotationStart);
-            HandlePawnDrafting(pawn, visitData.pawnOrder.isDrafted);
+            HandlePawnDrafting(pawn, data.pawnOrder.isDrafted);
 
             try
             {
-                JobDef jobDef = RimworldManager.GetJobFromDef(visitData.pawnOrder.defName);
-                LocalTargetInfo targetA = GetActionTargetsFromString(visitData.pawnOrder, 0);
-                LocalTargetInfo targetB = GetActionTargetsFromString(visitData.pawnOrder, 1);
-                LocalTargetInfo targetC = GetActionTargetsFromString(visitData.pawnOrder, 2);
-                LocalTargetInfo[] targetQueueA = GetQueuedActionTargetsFromString(visitData.pawnOrder, 0);
-                LocalTargetInfo[] targetQueueB = GetQueuedActionTargetsFromString(visitData.pawnOrder, 1);
+                JobDef jobDef = RimworldManager.GetJobFromDef(data.pawnOrder.defName);
+                LocalTargetInfo targetA = GetActionTargetsFromString(data.pawnOrder, 0);
+                LocalTargetInfo targetB = GetActionTargetsFromString(data.pawnOrder, 1);
+                LocalTargetInfo targetC = GetActionTargetsFromString(data.pawnOrder, 2);
+                LocalTargetInfo[] targetQueueA = GetQueuedActionTargetsFromString(data.pawnOrder, 0);
+                LocalTargetInfo[] targetQueueB = GetQueuedActionTargetsFromString(data.pawnOrder, 1);
 
                 Job newJob = RimworldManager.SetJobFromDef(jobDef, targetA, targetB, targetC);
-                newJob.count = visitData.pawnOrder.count;
+                newJob.count = data.pawnOrder.count;
 
                 foreach (LocalTargetInfo target in targetQueueA) newJob.AddQueuedTarget(TargetIndex.A, target);
                 foreach (LocalTargetInfo target in targetQueueB) newJob.AddQueuedTarget(TargetIndex.B, target);
@@ -288,47 +326,79 @@ namespace GameClient
             catch { Logger.Warning($"Couldn't set job for human {pawn.Name}"); }
         }
 
-        public static void ReceiveCreationOrder(OnlineActivityData visitData)
+        public static void ReceiveCreationOrder(OnlineActivityData data)
         {
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             Thing toSpawn;
 
-            if (visitData.creationOrder.creationType == CreationType.Human)
+            if (data.creationOrder.creationType == CreationType.Human)
             {
-                HumanData data = (HumanData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
-                toSpawn = HumanScribeManager.StringToHuman(data);
+                HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                toSpawn = HumanScribeManager.StringToHuman(humanData);
             }
 
-            else if (visitData.creationOrder.creationType == CreationType.Animal)
+            else if (data.creationOrder.creationType == CreationType.Animal)
             {
-                AnimalData data = (AnimalData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
-                toSpawn = AnimalScribeManager.StringToAnimal(data);
+                AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                toSpawn = AnimalScribeManager.StringToAnimal(animalData);
             }
 
             else
             {
-                ItemData data = (ItemData)Serializer.ConvertBytesToObject(visitData.creationOrder.dataToCreate);
-                toSpawn = ThingScribeManager.StringToItem(data);
+                ItemData thingData = (ItemData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                toSpawn = ThingScribeManager.StringToItem(thingData);
             }
 
             //Request
-            if (!OnlineManager.isHost) AddToQueue(toSpawn);
+            if (!OnlineManager.isHost) EnqueueThing(toSpawn);
 
             RimworldManager.PlaceThingInMap(toSpawn, OnlineManager.onlineMap);
         }
 
-        public static void ReceiveDestructionOrder(OnlineActivityData visitData)
+        public static void ReceiveDestructionOrder(OnlineActivityData data)
         {
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            Thing toDestroy = OnlineManager.mapThings[visitData.destructionOrder.indexToDestroy];
+            Thing toDestroy = OnlineManager.mapThings[data.destructionOrder.indexToDestroy];
 
             //Request
-            if (!OnlineManager.isHost) AddToQueue(toDestroy);
+            if (OnlineManager.isHost) toDestroy.Destroy(DestroyMode.Deconstruct);
+            else
+            {
+                EnqueueThing(toDestroy);
+                toDestroy.Destroy(DestroyMode.Vanish);
+            }
+        }
 
-            if (!OnlineManager.isHost) toDestroy.Destroy(DestroyMode.Vanish);
-            else toDestroy.Destroy(DestroyMode.Deconstruct);
+        public static void ReceiveDamageOrder(OnlineActivityData data)
+        {
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+
+            try
+            {
+                BodyPartRecord bodyPartRecord = new BodyPartRecord();
+                bodyPartRecord.def = DefDatabase<BodyPartDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data.damageOrder.hitPartDefName);
+
+                DamageDef damageDef = DefDatabase<DamageDef>.AllDefs.First(fetch => fetch.defName == data.damageOrder.defName);
+                ThingDef thingDef = DefDatabase<ThingDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data.damageOrder.weaponDefName);
+
+                DamageInfo damageInfo = new DamageInfo(damageDef, data.damageOrder.damageAmount, data.damageOrder.armorPenetration, -1, null, bodyPartRecord, thingDef);
+                damageInfo.SetIgnoreArmor(data.damageOrder.ignoreArmor);
+
+                Thing toApplyTo = null;
+                if (data.damageOrder.targetType == OnlineActivityTargetType.FactionPawn) toApplyTo = OnlineManager.factionPawns[data.damageOrder.targetIndex];
+                if (data.damageOrder.targetType == OnlineActivityTargetType.NonFactionPawn) toApplyTo = OnlineManager.nonFactionPawns[data.damageOrder.targetIndex];
+                else toApplyTo = OnlineManager.mapThings[data.damageOrder.targetIndex];
+
+                //Request
+                if (!OnlineManager.isHost)
+                {
+                    EnqueueThing(toApplyTo);
+                    toApplyTo.TakeDamage(damageInfo);
+                }
+            }
+            catch (Exception e) { Logger.Warning($"Couldn't apply damage order. Reason: {e}"); }
         }
 
         public static void AddToVisitList(Thing thing)
@@ -359,7 +429,9 @@ namespace GameClient
             Logger.Warning($"Destroyed! > {thing.def.defName}");
         }
 
-        public static void AddToQueue(Thing thing) { OnlineManager.queuedThing = thing; }
+        public static void EnqueueThing(Thing thing) { OnlineManager.queuedThing = thing; }
+
+        public static void ClearQueue() { OnlineManager.queuedThing = null; }
 
         public static LocalTargetInfo GetActionTargetsFromString(PawnOrder pawnOrder, int index)
         {
@@ -632,7 +704,10 @@ namespace GameClient
             pawn.jobs.ClearQueuedJobs();
             if (pawn.jobs.curJob != null) pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, false);
 
-            pawn.Reserve(newJob.targetA, newJob);
+            //TODO
+            //Investigate if this can be implemented
+            //pawn.Reserve(newJob.targetA, newJob);
+
             newJob.TryMakePreToilReservations(pawn, false);
             pawn.jobs.StartJob(newJob);
         }
