@@ -277,11 +277,11 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(HediffMaker), "MakeHediff")]
+    [HarmonyPatch(typeof(Pawn_HealthTracker), "AddHediff", new[] { typeof(Hediff), typeof(BodyPartRecord), typeof(DamageInfo), typeof(DamageWorker.DamageResult), })]
     public static class PatchApplyHediff
     {
         [HarmonyPrefix]
-        public static bool DoPre(HediffDef def, Pawn pawn)
+        public static bool DoPre(Hediff hediff, BodyPartRecord part, DamageInfo? dinfo, DamageWorker.DamageResult result, Pawn ___pawn)
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
@@ -289,13 +289,95 @@ namespace GameClient
             if (OnlineManager.isHost)
             {
                 bool shouldCollect = false;
-                if (OnlineManager.factionPawns.Contains(pawn)) shouldCollect = true;
-                else if (OnlineManager.nonFactionPawns.Contains(pawn)) shouldCollect = true;
+                if (OnlineManager.factionPawns.Contains(___pawn)) shouldCollect = true;
+                else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldCollect = true;
 
-                if (shouldCollect) Logger.Warning($"Got hediff '{def.defName}' on {pawn.Label}");
+                if (shouldCollect)
+                {
+                    OnlineActivityData onlineActivityData = new OnlineActivityData();
+                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
+                    onlineActivityData.hediffOrder = OnlineHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Add);
+
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
+                    Network.listener.EnqueuePacket(packet);
+
+                    if (hediff.Part != null) Logger.Warning($"Got hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
+                    else Logger.Warning($"Got hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
+                }
+
                 return true;
             }
-            else return true;
+            
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedThing == ___pawn)
+                {
+                    OnlineHelper.ClearQueue();
+
+                    if (hediff.Part != null) Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
+                    else Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
+
+                    return true;
+                }
+
+                //IF PLAYER ASKING FOR
+
+                else return false;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_HealthTracker), "RemoveHediff")]
+    public static class PatchRemoveHediff
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Hediff hediff, Pawn ___pawn)
+        {
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            if (OnlineManager.isHost)
+            {
+                bool shouldCollect = false;
+                if (OnlineManager.factionPawns.Contains(___pawn)) shouldCollect = true;
+                else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldCollect = true;
+
+                if (shouldCollect)
+                {
+                    OnlineActivityData onlineActivityData = new OnlineActivityData();
+                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
+                    onlineActivityData.hediffOrder = OnlineHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Remove);
+
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
+                    Network.listener.EnqueuePacket(packet);
+
+                    if (hediff.Part != null) Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
+                    else Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
+                }
+
+                return true;
+            }
+
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedThing == ___pawn)
+                {
+                    OnlineHelper.ClearQueue();
+
+                    if (hediff.Part != null) Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
+                    else Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
+
+                    return true;
+                }
+
+                //IF PLAYER ASKING FOR
+
+                else return false;
+            }
         }
     }
 
@@ -309,6 +391,28 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             return false;
+        }
+    }
+
+    //TODO
+    //DO TIME SPEED SYNC
+
+    [HarmonyPatch(typeof(TickManager), nameof(TickManager.TickManagerUpdate))]
+    public static class PatchTickChanging
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(TickManager __instance)
+        {
+            //if (Network.state == NetworkState.Disconnected) return true;
+            //if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            if (OnlineManager.latestTimeSpeed != __instance.CurTimeSpeed)
+            {
+                OnlineManager.latestTimeSpeed = __instance.CurTimeSpeed;
+                Logger.Warning($"Changed speed > {__instance.CurTimeSpeed}");
+            }
+
+            return true;
         }
     }
 

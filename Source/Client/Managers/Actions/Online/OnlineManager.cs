@@ -21,6 +21,7 @@ namespace GameClient
         public static Thing queuedThing;
         public static Map onlineMap;
         public static bool isHost;
+        public static TimeSpeed latestTimeSpeed;
 
         public static void ParseOnlinePacket(Packet packet)
         {
@@ -59,6 +60,14 @@ namespace GameClient
                 case OnlineActivityStepMode.Damage:
                     OnlineHelper.ReceiveDamageOrder(data);
                     break;
+
+                case OnlineActivityStepMode.Hediff:
+                    OnlineHelper.ReceiveHediffOrder(data);
+                    break;
+
+                //case OnlineActivityStepMode.TimeSpeed:
+                //    OnlineHelper.ReceiveHediffOrder(data);
+                //    break;
 
                 case OnlineActivityStepMode.Stop:
                     OnActivityStop();
@@ -272,6 +281,33 @@ namespace GameClient
             return damageOrder;
         }
 
+        public static HediffOrder CreateHediffOrder(Hediff hediff, Pawn pawn, OnlineActivityApplyMode applyMode)
+        {
+            HediffOrder hediffOrder = new HediffOrder();
+            hediffOrder.applyMode = applyMode;
+
+            //Invert the enum because it needs to be mirrored for the non-host
+
+            if (OnlineManager.factionPawns.Contains(pawn))
+            {
+                hediffOrder.pawnType = OnlineActivityPawnType.NonFaction;
+                hediffOrder.hediffTargetIndex = OnlineManager.factionPawns.IndexOf(pawn);
+            }
+
+            else
+            {
+                hediffOrder.pawnType = OnlineActivityPawnType.Faction;
+                hediffOrder.hediffTargetIndex = OnlineManager.nonFactionPawns.IndexOf(pawn);
+            }
+
+            hediffOrder.hediffDefName = hediff.def.defName;
+            if (hediff.Part != null) hediffOrder.hediffPartDefName = hediff.Part.def.defName;
+            hediffOrder.hediffSeverity = hediff.Severity;
+            hediffOrder.hediffPermanent = hediff.IsPermanent();
+
+            return hediffOrder;
+        }
+
         public static void ReceivePawnOrder(OnlineActivityData data)
         {
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
@@ -375,6 +411,47 @@ namespace GameClient
                 }
             }
             catch (Exception e) { Logger.Warning($"Couldn't apply damage order. Reason: {e}"); }
+        }
+
+        public static void ReceiveHediffOrder(OnlineActivityData data)
+        {
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+
+            try
+            {
+                Pawn toTarget = null;
+                if (data.hediffOrder.pawnType == OnlineActivityPawnType.Faction) toTarget = OnlineManager.factionPawns[data.hediffOrder.hediffTargetIndex];
+                else toTarget = OnlineManager.nonFactionPawns[data.hediffOrder.hediffTargetIndex];
+
+                EnqueueThing(toTarget);
+
+                BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data.hediffOrder.hediffPartDefName);
+
+                if (data.hediffOrder.applyMode == OnlineActivityApplyMode.Add)
+                {
+                    HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.First(fetch => fetch.defName == data.hediffOrder.hediffDefName);
+                    Hediff toMake = HediffMaker.MakeHediff(hediffDef, toTarget, bodyPartRecord);
+                    toMake.Severity = data.hediffOrder.hediffSeverity;
+                    if (data.hediffOrder.hediffPermanent)
+                    {
+                        HediffComp_GetsPermanent hediffComp = toMake.TryGetComp<HediffComp_GetsPermanent>();
+                        hediffComp.IsPermanent = true;
+                    }
+
+                    //Request
+                    if (!OnlineManager.isHost) toTarget.health.AddHediff(toMake, bodyPartRecord);
+                }
+
+                else
+                {
+                    Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data.hediffOrder.hediffDefName && 
+                        fetch.Part.def.defName == bodyPartRecord.def.defName);
+
+                    //Request
+                    if (!OnlineManager.isHost) toTarget.health.RemoveHediff(hediff);
+                }
+            }
+            catch (Exception e) { Logger.Warning($"Couldn't apply hediff order. Reason: {e}"); }
         }
 
         public static void AddToVisitList(Thing thing)

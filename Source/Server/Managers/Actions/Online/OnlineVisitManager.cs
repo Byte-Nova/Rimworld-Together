@@ -1,5 +1,6 @@
 ﻿using Shared;
 using static Shared.CommonEnumerators;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer
 {
@@ -40,6 +41,10 @@ namespace GameServer
                     break;
 
                 case OnlineActivityStepMode.Hediff:
+                    SendVisitActions(client, visitData);
+                    break;
+
+                case OnlineActivityStepMode.TimeSpeed:
                     SendVisitActions(client, visitData);
                     break;
 

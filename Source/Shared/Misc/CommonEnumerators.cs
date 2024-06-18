@@ -45,7 +45,11 @@
 
         public enum OfflineSpyStepMode { Request, Deny, Unavailable }
 
-        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, Stop }        
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, TimeSpeed, Stop }
+
+        public enum OnlineActivityPawnType { Faction, NonFaction }
+
+        public enum OnlineActivityApplyMode { Add, Remove }
 
         public enum OnlineActivityType { None, Visit, Raid, Misc }
 
