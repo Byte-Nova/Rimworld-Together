@@ -248,6 +248,8 @@ namespace GameClient
             return pawnOrder;
         }
 
+        //This function doesn't take into account non-host thing creation right now, handle with care
+
         public static CreationOrder CreateCreationOrder(Thing thing)
         {
             CreationOrder creationOrder = new CreationOrder();
@@ -362,22 +364,25 @@ namespace GameClient
             catch { Logger.Warning($"Couldn't set order for pawn with index '{data.pawnOrder.pawnIndex}'"); }
         }
 
+        //This function doesn't take into account non-host thing creation right now, handle with care
+
         public static void ReceiveCreationOrder(OnlineActivityData data)
         {
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             Thing toSpawn;
-
             if (data.creationOrder.creationType == CreationType.Human)
             {
                 HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
                 toSpawn = HumanScribeManager.StringToHuman(humanData);
+                toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else if (data.creationOrder.creationType == CreationType.Animal)
             {
                 AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
                 toSpawn = AnimalScribeManager.StringToAnimal(animalData);
+                toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else
@@ -490,32 +495,23 @@ namespace GameClient
 
         public static void SetHost(bool mode) { OnlineManager.isHost = mode; }
 
-        public static void AddToMapThings(Thing thing)
+        //This function doesn't take into account non-host thing creation right now, handle with care
+
+        public static void AddThingToMap(Thing thing)
         {
-            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing) || DeepScribeHelper.CheckIfThingIsAnimal(thing))
             {
                 if (OnlineManager.isHost) OnlineManager.factionPawns.Add((Pawn)thing);
                 else OnlineManager.nonFactionPawns.Add((Pawn)thing);
             }
-
-            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
-            {
-                if (OnlineManager.isHost) OnlineManager.factionPawns.Add((Pawn)thing);
-                else OnlineManager.nonFactionPawns.Add((Pawn)thing);
-            }
-
             else OnlineManager.mapThings.Add(thing);
-
-            Logger.Warning($"Created! > {thing.def.defName}");
         }
 
-        public static void RemoveFromMapThings(Thing thing)
+        public static void RemoveThingFromMap(Thing thing)
         {
-            if (DeepScribeHelper.CheckIfThingIsHuman(thing)) OnlineManager.nonFactionPawns.Remove((Pawn)thing);
-            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) OnlineManager.nonFactionPawns.Remove((Pawn)thing);
+            if (OnlineManager.factionPawns.Contains(thing)) OnlineManager.factionPawns.Remove((Pawn)thing);
+            else if (OnlineManager.nonFactionPawns.Contains(thing)) OnlineManager.nonFactionPawns.Remove((Pawn)thing);
             else OnlineManager.mapThings.Remove(thing);
-
-            Logger.Warning($"Destroyed! > {thing.def.defName}");
         }
 
         public static void EnqueueThing(Thing thing) { OnlineManager.queuedThing = thing; }

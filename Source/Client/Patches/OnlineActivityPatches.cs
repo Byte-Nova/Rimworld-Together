@@ -20,86 +20,48 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.Visit)
+            if (OnlineManager.isHost)
             {
-                if (OnlineManager.isHost)
+                if (OnlineManager.mapThings.Contains(__instance)) return true;
+
+                OnlineActivityData OnlineActivityData = new OnlineActivityData();
+                OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
+                OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
+
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
+                Network.listener.EnqueuePacket(packet);
+
+                //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+                OnlineManagerHelper.AddThingToMap(__instance);
+                return true;
+            }
+
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedThing == __instance)
                 {
-                    if (OnlineManager.mapThings.Contains(__instance)) return true;
-
-                    OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                    OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                    OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
-
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
-                    Network.listener.EnqueuePacket(packet);
-
-                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineManagerHelper.AddToMapThings(__instance);
+                    OnlineManagerHelper.ClearThingQueue();
+                    OnlineManagerHelper.AddThingToMap(__instance);
                     return true;
                 }
 
-                else
-                {
-                    //IF COMING FROM HOST
-
-                    if (OnlineManager.queuedThing == __instance)
-                    {
-                        OnlineManagerHelper.ClearThingQueue();
-                        OnlineManagerHelper.AddToMapThings(__instance);
-                        return true;
-                    }
-
-                    //IF PLAYER ASKING FOR
-
-                    else
-                    {
-                        OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                        OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                        OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
-
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
-                        Network.listener.EnqueuePacket(packet);
-                        return false;
-                    }
-                }
-            }
-
-            else if (ClientValues.currentRealTimeEvent == OnlineActivityType.Raid)
-            {
-                if (OnlineManager.isHost)
-                {
-                    if (OnlineManager.mapThings.Contains(__instance)) return true;
-
-                    OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                    OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                    OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
-
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
-                    Network.listener.EnqueuePacket(packet);
-
-                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineManagerHelper.AddToMapThings(__instance);
-                    return true;
-                }
+                //IF PLAYER ASKING FOR
 
                 else
                 {
-                    //IF COMING FROM HOST
+                    return false;
 
-                    if (OnlineManager.queuedThing == __instance)
-                    {
-                        OnlineManagerHelper.ClearThingQueue();
-                        OnlineManagerHelper.AddToMapThings(__instance);
-                        return true;
-                    }
+                    //OnlineActivityData OnlineActivityData = new OnlineActivityData();
+                    //OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
+                    //OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
 
-                    //IF PLAYER ASKING FOR
-
-                    else return false;
+                    //Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
+                    //Network.listener.EnqueuePacket(packet);
+                    //return false;
                 }
             }
-
-            else return true;
         }
     }
 
@@ -117,9 +79,34 @@ namespace GameClient
             //CHANGE THE WAY WE CHECK IF IT'S TARGETING THE ACTIVITY MAP
             if (!OnlineManager.mapThings.Contains(__instance)) return true;
 
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.Visit)
+            if (OnlineManager.isHost)
             {
-                if (OnlineManager.isHost)
+                OnlineActivityData onlineActivityData = new OnlineActivityData();
+                onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
+                onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
+
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
+                Network.listener.EnqueuePacket(packet);
+
+                //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+                OnlineManagerHelper.RemoveThingFromMap(__instance);
+                return true;
+            }
+
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedThing == __instance)
+                {
+                    OnlineManagerHelper.ClearThingQueue();
+                    OnlineManagerHelper.RemoveThingFromMap(__instance);
+                    return true;
+                }
+
+                //IF PLAYER ASKING FOR
+
+                else
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
@@ -127,72 +114,9 @@ namespace GameClient
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
-
-                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineManagerHelper.RemoveFromMapThings(__instance);
-                    return true;
-                }
-
-                else
-                {
-                    //IF COMING FROM HOST
-
-                    if (OnlineManager.queuedThing == __instance)
-                    {
-                        OnlineManagerHelper.ClearThingQueue();
-                        OnlineManagerHelper.RemoveFromMapThings(__instance);
-                        return true;
-                    }
-
-                    //IF PLAYER ASKING FOR
-
-                    else
-                    {
-                        OnlineActivityData onlineActivityData = new OnlineActivityData();
-                        onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
-                        onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
-
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
-                        Network.listener.EnqueuePacket(packet);
-                        return false;
-                    }
+                    return false;
                 }
             }
-
-            else if (ClientValues.currentRealTimeEvent == OnlineActivityType.Raid)
-            {
-                if (OnlineManager.isHost)
-                {
-                    OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
-                    onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
-
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
-                    Network.listener.EnqueuePacket(packet);
-
-                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                    OnlineManagerHelper.RemoveFromMapThings(__instance);
-                    return true;
-                }
-
-                else
-                {
-                    //IF COMING FROM HOST
-
-                    if (OnlineManager.queuedThing == __instance)
-                    {
-                        OnlineManagerHelper.ClearThingQueue();
-                        OnlineManagerHelper.RemoveFromMapThings(__instance);
-                        return true;
-                    }
-
-                    //IF PLAYER ASKING FOR
-
-                    else return false;
-                }
-            }
-
-            else return true;
         }
     }
 
@@ -213,8 +137,6 @@ namespace GameClient
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
-
-            //Logger.Warning($"New job! > {newJob.def.defName} > {___pawn.Label}");
         }
     }
 
@@ -262,8 +184,7 @@ namespace GameClient
                 else
                 {
                     __result = new DamageWorker.DamageResult();
-                    __result.totalDamageDealt = 0;
-
+                    __result.totalDamageDealt = 0f;
                     return false;
                 }
             }
@@ -311,7 +232,6 @@ namespace GameClient
 
                     if (hediff.Part != null) Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
                     else Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
-
                     return true;
                 }
 
@@ -363,7 +283,6 @@ namespace GameClient
 
                     if (hediff.Part != null) Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
                     else Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
-
                     return true;
                 }
 
@@ -448,9 +367,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.Visit) OnlineManager.StopOnlineActivity();
-            else if (ClientValues.currentRealTimeEvent == OnlineActivityType.Raid) return;
-            else if (ClientValues.currentRealTimeEvent == OnlineActivityType.Misc) return;
+            OnlineManager.StopOnlineActivity();
         }
     }
 
@@ -463,9 +380,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.Visit) OnlineManager.StopOnlineActivity();
-            else if (ClientValues.currentRealTimeEvent == OnlineActivityType.Raid) return;
-            else if (ClientValues.currentRealTimeEvent == OnlineActivityType.Misc) return;
+            OnlineManager.StopOnlineActivity();
         }
     }
 
@@ -478,9 +393,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.Visit) OnlineManager.StopOnlineActivity();
-            else if (ClientValues.currentRealTimeEvent == OnlineActivityType.Raid) return;
-            else if (ClientValues.currentRealTimeEvent == OnlineActivityType.Misc) return;
+            OnlineManager.StopOnlineActivity();
         }
     }
 }
