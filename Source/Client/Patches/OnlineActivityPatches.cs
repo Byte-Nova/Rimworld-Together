@@ -24,7 +24,7 @@ namespace GameClient
             if (OnlineManager.onlineMap != map) return true;
             else
             {
-                if (OnlineManager.isHost)
+                if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData OnlineActivityData = new OnlineActivityData();
                     OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
@@ -76,7 +76,7 @@ namespace GameClient
             if (!shouldPatch) return true;
             else
             {
-                if (OnlineManager.isHost)
+                if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
@@ -133,7 +133,6 @@ namespace GameClient
                 OnlineActivityData data = new OnlineActivityData();
                 data.activityStepMode = OnlineActivityStepMode.Action;
                 data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn);
-                data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                 Network.listener.EnqueuePacket(packet);
@@ -153,7 +152,7 @@ namespace GameClient
             if (!OnlineManager.mapThings.Contains(__instance)) return true;
             else
             {
-                if (OnlineManager.isHost)
+                if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Damage;
@@ -204,7 +203,7 @@ namespace GameClient
             if (!shouldPatch) return true;
             else
             {
-                if (OnlineManager.isHost)
+                if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
@@ -249,7 +248,7 @@ namespace GameClient
             if (!shouldPatch) return true;
             else
             {
-                if (OnlineManager.isHost)
+                if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
@@ -287,7 +286,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (OnlineManager.isHost)
+            if (ClientValues.isRealTimeHost)
             {
                 if (__instance.CurTimeSpeed > OnlineManager.maximumAllowedTimeSpeed) __instance.CurTimeSpeed = OnlineManager.maximumAllowedTimeSpeed;
 
@@ -329,7 +328,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (OnlineManager.isHost) return true;
+            if (ClientValues.isRealTimeHost) return true;
             else
             {
                 //IF COMING FROM HOST
@@ -352,7 +351,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (OnlineManager.isHost) return true;
+            if (ClientValues.isRealTimeHost) return true;
             else
             {
                 //IF COMING FROM HOST

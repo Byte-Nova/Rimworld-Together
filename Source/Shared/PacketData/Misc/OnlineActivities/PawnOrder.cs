@@ -11,20 +11,23 @@ namespace Shared
         public int pawnIndex;
         public int count;
 
-        public string[] actionTargets;
-        public int[] actionIndexes;
-        public ActionTargetType[] actionTypes;
+        public string[] targets;
+        public int[] targetIndexes;
+        public ActionTargetType[] targetTypes;
+        public OnlineActivityTargetFaction[] targetFactions;
 
         public string[] queueTargetsA;
-        public int[] queueIndexesA;
-        public ActionTargetType[] queueTypesA;
+        public int[] queueTargetIndexesA;
+        public ActionTargetType[] queueTargetTypesA;
+        public OnlineActivityTargetFaction[] queueTargetFactionsA;
 
         public string[] queueTargetsB;
-        public int[] queueIndexesB;
-        public ActionTargetType[] queueTypesB;
+        public int[] queueTargetIndexesB;
+        public ActionTargetType[] queueTargetTypesB;
+        public OnlineActivityTargetFaction[] queueTargetFactionsB;
 
         public bool isDrafted;
-        public string positionSync;
-        public int rotationSync;
+        public int[] updatedPosition;
+        public int updatedRotation;
     }
 }

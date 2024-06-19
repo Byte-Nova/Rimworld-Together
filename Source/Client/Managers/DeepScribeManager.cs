@@ -1171,7 +1171,7 @@ namespace GameClient
 
         private static void GetMapSize(MapData mapData, Map map)
         {
-            mapData.mapSize = ValueParser.Vector3ToString(map.Size);
+            mapData.mapSize = ValueParser.IntVec3ToArray(map.Size);
         }
 
         private static void GetMapTerrain(MapData mapData, Map map)
@@ -1247,7 +1247,7 @@ namespace GameClient
 
         private static Map SetEmptyMap(MapData mapData)
         {
-            IntVec3 mapSize = ValueParser.StringToVector3(mapData.mapSize);
+            IntVec3 mapSize = ValueParser.ArrayToIntVec3(mapData.mapSize);
 
             PlanetManagerHelper.SetOverrideGenerators();
             Map toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null);

@@ -10,6 +10,7 @@ using Verse.AI;
 using Shared;
 using static Shared.CommonEnumerators;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient
 {
@@ -19,7 +20,6 @@ namespace GameClient
         public static List<Pawn> nonFactionPawns = new List<Pawn>();
         public static List<Thing> mapThings = new List<Thing>();
         public static Map onlineMap;
-        public static bool isHost;
 
         public static Thing queuedThing;
         public static int queuedTimeSpeed;
@@ -82,7 +82,7 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent != OnlineActivityType.None) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already in a real time activity!"));
             else
             {
-                OnlineManagerHelper.SetHost(false);
+                ClientValues.ToggleRealTimeHost(false);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
 
@@ -145,7 +145,7 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                OnlineManagerHelper.SetHost(true);
+                ClientValues.ToggleRealTimeHost(true);
 
                 onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == activityData.targetTile).Map;
                 factionPawns = OnlineManagerHelper.GetMapPawns().ToList();
@@ -208,9 +208,9 @@ namespace GameClient
                     pawn.Destroy();
                 }
 
-                if (!isHost) CaravanExitMapUtility.ExitMapAndCreateCaravan(factionPawns, Faction.OfPlayer, 0, Direction8Way.North, onlineMap.Tile);
+                if (!ClientValues.isRealTimeHost) CaravanExitMapUtility.ExitMapAndCreateCaravan(factionPawns, Faction.OfPlayer, 0, Direction8Way.North, onlineMap.Tile);
 
-                OnlineManagerHelper.SetHost(false);
+                ClientValues.ToggleRealTimeHost(false);
 
                 ClientValues.ToggleOnlineFunction(OnlineActivityType.None);
 
@@ -225,25 +225,31 @@ namespace GameClient
 
         public static PawnOrder CreatePawnOrder(Pawn pawn)
         {
+            //TODO
+            //CAPTURE COUNT OF CERTAIN JOBS
+
             PawnOrder pawnOrder = new PawnOrder();
             pawnOrder.pawnIndex = OnlineManager.factionPawns.IndexOf(pawn);
 
             pawnOrder.defName = pawn.jobs.curJob.def.defName;
-            pawnOrder.actionTargets = GetActionTargets(pawn.jobs.curJob);
-            pawnOrder.actionIndexes = GetActionIndexes(pawn.jobs.curJob, pawnOrder);
-            pawnOrder.actionTypes = GetActionTypes(pawn.jobs.curJob);
+            pawnOrder.targets = GetActionTargets(pawn.jobs.curJob);
+            pawnOrder.targetIndexes = GetActionIndexes(pawn.jobs.curJob);
+            pawnOrder.targetTypes = GetActionTypes(pawn.jobs.curJob);
+            pawnOrder.targetFactions = GetActionTargetFactions(pawn.jobs.curJob);
 
             pawnOrder.queueTargetsA = GetQueuedActionTargets(pawn.jobs.curJob, 0);
-            pawnOrder.queueIndexesA = GetQueuedActionIndexes(pawn.jobs.curJob, 0);
-            pawnOrder.queueTypesA = GetQueuedActionTypes(pawn.jobs.curJob, 0);
+            pawnOrder.queueTargetIndexesA = GetQueuedActionIndexes(pawn.jobs.curJob, 0);
+            pawnOrder.queueTargetTypesA = GetQueuedActionTypes(pawn.jobs.curJob, 0);
+            pawnOrder.queueTargetFactionsA = GetQueuedActionTargetFactions(pawn.jobs.curJob, 0);
 
             pawnOrder.queueTargetsB = GetQueuedActionTargets(pawn.jobs.curJob, 1);
-            pawnOrder.queueIndexesB = GetQueuedActionIndexes(pawn.jobs.curJob, 1);
-            pawnOrder.queueTypesB = GetQueuedActionTypes(pawn.jobs.curJob, 1);
+            pawnOrder.queueTargetIndexesB = GetQueuedActionIndexes(pawn.jobs.curJob, 1);
+            pawnOrder.queueTargetTypesB = GetQueuedActionTypes(pawn.jobs.curJob, 1);
+            pawnOrder.queueTargetFactionsB = GetQueuedActionTargetFactions(pawn.jobs.curJob, 1);
 
             pawnOrder.isDrafted = GetPawnDraftState(pawn);
-            pawnOrder.positionSync = ValueParser.Vector3ToString(pawn.Position);
-            pawnOrder.rotationSync = ValueParser.Rot4ToInt(pawn.Rotation);
+            pawnOrder.updatedPosition = ValueParser.IntVec3ToArray(pawn.Position);
+            pawnOrder.updatedRotation = ValueParser.Rot4ToInt(pawn.Rotation);
 
             return pawnOrder;
         }
@@ -301,13 +307,13 @@ namespace GameClient
 
             if (OnlineManager.factionPawns.Contains(pawn))
             {
-                hediffOrder.pawnType = OnlineActivityPawnType.NonFaction;
+                hediffOrder.pawnFaction = OnlineActivityTargetFaction.NonFaction;
                 hediffOrder.hediffTargetIndex = OnlineManager.factionPawns.IndexOf(pawn);
             }
 
             else
             {
-                hediffOrder.pawnType = OnlineActivityPawnType.Faction;
+                hediffOrder.pawnFaction = OnlineActivityTargetFaction.Faction;
                 hediffOrder.hediffTargetIndex = OnlineManager.nonFactionPawns.IndexOf(pawn);
             }
 
@@ -334,26 +340,24 @@ namespace GameClient
         {
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            //We also receive a time speed order in this packet
-            ReceiveTimeSpeedOrder(data);
-
             try
             {
                 Pawn pawn = OnlineManager.nonFactionPawns[data.pawnOrder.pawnIndex];
-                IntVec3 jobPositionStart = ValueParser.StringToVector3(data.pawnOrder.positionSync);
-                Rot4 jobRotationStart = ValueParser.StringToRot4(data.pawnOrder.rotationSync);
+                IntVec3 jobPositionStart = ValueParser.ArrayToIntVec3(data.pawnOrder.updatedPosition);
+                Rot4 jobRotationStart = ValueParser.IntToRot4(data.pawnOrder.updatedRotation);
                 ChangePawnTransform(pawn, jobPositionStart, jobRotationStart);
                 SetPawnDraftState(pawn, data.pawnOrder.isDrafted);
 
                 JobDef jobDef = RimworldManager.GetJobFromDef(data.pawnOrder.defName);
-                LocalTargetInfo targetA = GetActionTargetsFromString(data.pawnOrder, 0);
-                LocalTargetInfo targetB = GetActionTargetsFromString(data.pawnOrder, 1);
-                LocalTargetInfo targetC = GetActionTargetsFromString(data.pawnOrder, 2);
-                LocalTargetInfo[] targetQueueA = GetQueuedActionTargetsFromString(data.pawnOrder, 0);
-                LocalTargetInfo[] targetQueueB = GetQueuedActionTargetsFromString(data.pawnOrder, 1);
+                LocalTargetInfo targetA = SetActionTargetsFromString(data.pawnOrder, 0);
+                LocalTargetInfo targetB = SetActionTargetsFromString(data.pawnOrder, 1);
+                LocalTargetInfo targetC = SetActionTargetsFromString(data.pawnOrder, 2);
+                LocalTargetInfo[] targetQueueA = SetQueuedActionTargetsFromString(data.pawnOrder, 0);
+                LocalTargetInfo[] targetQueueB = SetQueuedActionTargetsFromString(data.pawnOrder, 1);
 
                 Job newJob = RimworldManager.SetJobFromDef(jobDef, targetA, targetB, targetC);
                 newJob.count = data.pawnOrder.count;
+                newJob.countQueue = new List<int> { 0, 0, 0 };
 
                 foreach (LocalTargetInfo target in targetQueueA) newJob.AddQueuedTarget(TargetIndex.A, target);
                 foreach (LocalTargetInfo target in targetQueueB) newJob.AddQueuedTarget(TargetIndex.B, target);
@@ -392,7 +396,7 @@ namespace GameClient
             }
 
             //Request
-            if (!OnlineManager.isHost) EnqueueThing(toSpawn);
+            if (!ClientValues.isRealTimeHost) EnqueueThing(toSpawn);
 
             RimworldManager.PlaceThingInMap(toSpawn, OnlineManager.onlineMap);
         }
@@ -404,7 +408,7 @@ namespace GameClient
             Thing toDestroy = OnlineManager.mapThings[data.destructionOrder.indexToDestroy];
 
             //Request
-            if (OnlineManager.isHost) toDestroy.Destroy(DestroyMode.Deconstruct);
+            if (ClientValues.isRealTimeHost) toDestroy.Destroy(DestroyMode.Deconstruct);
             else
             {
                 EnqueueThing(toDestroy);
@@ -428,7 +432,7 @@ namespace GameClient
                 damageInfo.SetIgnoreArmor(data.damageOrder.ignoreArmor);
 
                 //Request
-                if (!OnlineManager.isHost)
+                if (!ClientValues.isRealTimeHost)
                 {
                     Thing toApplyTo = OnlineManager.mapThings[data.damageOrder.targetIndex];
                     EnqueueThing(toApplyTo);
@@ -445,7 +449,7 @@ namespace GameClient
             try
             {
                 Pawn toTarget = null;
-                if (data.hediffOrder.pawnType == OnlineActivityPawnType.Faction) toTarget = OnlineManager.factionPawns[data.hediffOrder.hediffTargetIndex];
+                if (data.hediffOrder.pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineManager.factionPawns[data.hediffOrder.hediffTargetIndex];
                 else toTarget = OnlineManager.nonFactionPawns[data.hediffOrder.hediffTargetIndex];
 
                 EnqueueThing(toTarget);
@@ -464,7 +468,7 @@ namespace GameClient
                     }
 
                     //Request
-                    if (!OnlineManager.isHost) toTarget.health.AddHediff(toMake, bodyPartRecord);
+                    if (!ClientValues.isRealTimeHost) toTarget.health.AddHediff(toMake, bodyPartRecord);
                 }
 
                 else
@@ -473,7 +477,7 @@ namespace GameClient
                         fetch.Part.def.defName == bodyPartRecord.def.defName);
 
                     //Request
-                    if (!OnlineManager.isHost) toTarget.health.RemoveHediff(hediff);
+                    if (!ClientValues.isRealTimeHost) toTarget.health.RemoveHediff(hediff);
                 }
             }
             catch (Exception e) { Logger.Warning($"Couldn't apply hediff order. Reason: {e}"); }
@@ -493,15 +497,13 @@ namespace GameClient
 
         //Misc
 
-        public static void SetHost(bool mode) { OnlineManager.isHost = mode; }
-
         //This function doesn't take into account non-host thing creation right now, handle with care
 
         public static void AddThingToMap(Thing thing)
         {
             if (DeepScribeHelper.CheckIfThingIsHuman(thing) || DeepScribeHelper.CheckIfThingIsAnimal(thing))
             {
-                if (OnlineManager.isHost) OnlineManager.factionPawns.Add((Pawn)thing);
+                if (ClientValues.isRealTimeHost) OnlineManager.factionPawns.Add((Pawn)thing);
                 else OnlineManager.nonFactionPawns.Add((Pawn)thing);
             }
             else OnlineManager.mapThings.Add(thing);
@@ -517,87 +519,6 @@ namespace GameClient
         public static void EnqueueThing(Thing thing) { OnlineManager.queuedThing = thing; }
 
         public static void ClearThingQueue() { OnlineManager.queuedThing = null; }
-
-        public static LocalTargetInfo GetActionTargetsFromString(PawnOrder pawnOrder, int index)
-        {
-            LocalTargetInfo toGet = LocalTargetInfo.Invalid;
-
-            try
-            {
-                switch (pawnOrder.actionTypes[index])
-                {
-                    case ActionTargetType.Thing:
-                        toGet = new LocalTargetInfo(OnlineManager.mapThings[pawnOrder.actionIndexes[index]]);
-                        break;
-
-                    case ActionTargetType.Human:
-                        toGet = new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.actionIndexes[index]]);
-                        break;
-
-                    case ActionTargetType.Animal:
-                        toGet = new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.actionIndexes[index]]);
-                        break;
-
-                    case ActionTargetType.Cell:
-                        toGet = new LocalTargetInfo(ValueParser.StringToVector3(pawnOrder.actionTargets[index]));
-                        break;
-                }
-            }
-            catch (Exception e) { Logger.Error(e.ToString()); }
-
-            return toGet;
-        }
-
-        public static LocalTargetInfo[] GetQueuedActionTargetsFromString(PawnOrder pawnOrder, int index)
-        {
-            List<LocalTargetInfo> toGet = new List<LocalTargetInfo>();
-
-            int[] actionTargetIndexes = null;
-            string[] actionTargets = null;
-            ActionTargetType[] actionTargetTypes = null;
-
-            if (index == 0)
-            {
-                actionTargetIndexes = pawnOrder.queueIndexesA.ToArray();
-                actionTargets = pawnOrder.queueTargetsA.ToArray();
-                actionTargetTypes = pawnOrder.queueTypesA.ToArray();
-            }
-
-            else if (index == 1)
-            {
-                actionTargetIndexes = pawnOrder.queueIndexesB.ToArray();
-                actionTargets = pawnOrder.queueTargetsB.ToArray();
-                actionTargetTypes = pawnOrder.queueTypesB.ToArray();
-            }
-
-            for (int i = 0; i < actionTargets.Length; i++)
-            {
-                try
-                {
-                    switch (actionTargetTypes[index])
-                    {
-                        case ActionTargetType.Thing:
-                            toGet.Add(new LocalTargetInfo(OnlineManager.mapThings[actionTargetIndexes[i]]));
-                            break;
-
-                        case ActionTargetType.Human:
-                            toGet.Add(new LocalTargetInfo(OnlineManager.nonFactionPawns[actionTargetIndexes[i]]));
-                            break;
-
-                        case ActionTargetType.Animal:
-                            toGet.Add(new LocalTargetInfo(OnlineManager.nonFactionPawns[actionTargetIndexes[i]]));
-                            break;
-
-                        case ActionTargetType.Cell:
-                            toGet.Add(new LocalTargetInfo(ValueParser.StringToVector3(actionTargets[i])));
-                            break;
-                    }
-                }
-                catch (Exception e) { Logger.Error(e.ToString()); }
-            }
-
-            return toGet.ToArray();
-        }
 
         public static string[] GetActionTargets(Job job)
         {
@@ -626,7 +547,201 @@ namespace GameClient
             return targetInfoList.ToArray();
         }
 
-        public static int[] GetActionIndexes(Job job, PawnOrder pawnOrder)
+        public static string[] GetQueuedActionTargets(Job job, int index)
+        {
+            List<string> targetInfoList = new List<string>();
+
+            List<LocalTargetInfo> selectedQueue = new List<LocalTargetInfo>();
+            if (index == 0) selectedQueue = job.targetQueueA;
+            else if (index == 1) selectedQueue = job.targetQueueB;
+
+            if (selectedQueue == null) return targetInfoList.ToArray();
+            for (int i = 0; i < selectedQueue.Count; i++)
+            {
+                try
+                {
+                    if (selectedQueue[i].Thing == null) targetInfoList.Add(ValueParser.Vector3ToString(selectedQueue[i].Cell));
+                    else
+                    {
+                        if (DeepScribeHelper.CheckIfThingIsHuman(selectedQueue[i].Thing)) targetInfoList.Add(Serializer.SerializeToString(HumanScribeManager.HumanToString(selectedQueue[i].Pawn)));
+                        else if (DeepScribeHelper.CheckIfThingIsAnimal(selectedQueue[i].Thing)) targetInfoList.Add(Serializer.SerializeToString(AnimalScribeManager.AnimalToString(selectedQueue[i].Pawn)));
+                        else targetInfoList.Add(Serializer.SerializeToString(ThingScribeManager.ItemToString(selectedQueue[i].Thing, 1)));
+                    }
+                }
+                catch { Logger.Error($"failed to parse {selectedQueue[i]}"); }
+            }
+
+            return targetInfoList.ToArray();
+        }
+
+        public static LocalTargetInfo SetActionTargetsFromString(PawnOrder pawnOrder, int index)
+        {
+            LocalTargetInfo toGet = LocalTargetInfo.Invalid;
+
+            try
+            {
+                switch (pawnOrder.targetTypes[index])
+                {
+                    case ActionTargetType.Thing:
+                        toGet = new LocalTargetInfo(OnlineManager.mapThings[pawnOrder.targetIndexes[index]]);
+                        break;
+
+                    case ActionTargetType.Human:
+                        if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.Faction)
+                        {
+                            toGet = new LocalTargetInfo(OnlineManager.factionPawns[pawnOrder.targetIndexes[index]]);
+                        }
+                        else if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.NonFaction)
+                        {
+                            toGet = new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.targetIndexes[index]]);
+                        }
+                        break;
+
+                    case ActionTargetType.Animal:
+                        if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.Faction)
+                        {
+                            toGet = new LocalTargetInfo(OnlineManager.factionPawns[pawnOrder.targetIndexes[index]]);
+                        }
+                        else if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.NonFaction)
+                        {
+                            toGet = new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.targetIndexes[index]]);
+                        }
+                        break;
+
+                    case ActionTargetType.Cell:
+                        toGet = new LocalTargetInfo(ValueParser.StringToVector3(pawnOrder.targets[index]));
+                        break;
+                }
+            }
+            catch (Exception e) { Logger.Error(e.ToString()); }
+
+            return toGet;
+        }
+
+        public static LocalTargetInfo[] SetQueuedActionTargetsFromString(PawnOrder pawnOrder, int index)
+        {
+            List<LocalTargetInfo> toGet = new List<LocalTargetInfo>();
+
+            int[] actionTargetIndexes = null;
+            string[] actionTargets = null;
+            ActionTargetType[] actionTargetTypes = null;
+
+            if (index == 0)
+            {
+                actionTargetIndexes = pawnOrder.queueTargetIndexesA.ToArray();
+                actionTargets = pawnOrder.queueTargetsA.ToArray();
+                actionTargetTypes = pawnOrder.queueTargetTypesA.ToArray();
+            }
+
+            else if (index == 1)
+            {
+                actionTargetIndexes = pawnOrder.queueTargetIndexesB.ToArray();
+                actionTargets = pawnOrder.queueTargetsB.ToArray();
+                actionTargetTypes = pawnOrder.queueTargetTypesB.ToArray();
+            }
+
+            for (int i = 0; i < actionTargets.Length; i++)
+            {
+                try
+                {
+                    switch (actionTargetTypes[index])
+                    {
+                        case ActionTargetType.Thing:
+                            toGet.Add(new LocalTargetInfo(OnlineManager.mapThings[actionTargetIndexes[i]]));
+                            break;
+
+                        case ActionTargetType.Human:
+                            if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.Faction)
+                            {
+                                toGet.Add(new LocalTargetInfo(OnlineManager.factionPawns[pawnOrder.targetIndexes[index]]));
+                            }
+                            else if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.NonFaction)
+                            {
+                                toGet.Add(new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.targetIndexes[index]]));
+                            }
+                            break;
+
+                        case ActionTargetType.Animal:
+                            if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.Faction)
+                            {
+                                toGet.Add(new LocalTargetInfo(OnlineManager.factionPawns[pawnOrder.targetIndexes[index]]));
+                            }
+                            else if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.NonFaction)
+                            {
+                                toGet.Add(new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.targetIndexes[index]]));
+                            }
+                            break;
+
+                        case ActionTargetType.Cell:
+                            toGet.Add(new LocalTargetInfo(ValueParser.StringToVector3(actionTargets[i])));
+                            break;
+                    }
+                }
+                catch (Exception e) { Logger.Error(e.ToString()); }
+            }
+
+            return toGet.ToArray();
+        }
+
+        public static OnlineActivityTargetFaction[] GetActionTargetFactions(Job job)
+        {
+            List<OnlineActivityTargetFaction> targetFactions = new List<OnlineActivityTargetFaction>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                LocalTargetInfo target = null;
+                if (i == 0) target = job.targetA;
+                else if (i == 1) target = job.targetB;
+                else if (i == 2) target = job.targetC;
+
+                try
+                {
+                    if (target.Thing == null) targetFactions.Add(OnlineActivityTargetFaction.None);
+                    else
+                    {
+                        //Faction and non-faction pawns get inverted in here to send into the other side
+
+                        if (OnlineManager.factionPawns.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.NonFaction);
+                        else if (OnlineManager.nonFactionPawns.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.Faction);
+                        else if (OnlineManager.mapThings.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.None);
+                    }
+                }
+                catch { Logger.Error($"failed to parse {target}"); }
+            }
+
+            return targetFactions.ToArray();
+        }
+
+        public static OnlineActivityTargetFaction[] GetQueuedActionTargetFactions(Job job, int index)
+        {
+            List<OnlineActivityTargetFaction> targetFactions = new List<OnlineActivityTargetFaction>();
+
+            List<LocalTargetInfo> selectedQueue = new List<LocalTargetInfo>();
+            if (index == 0) selectedQueue = job.targetQueueA;
+            else if (index == 1) selectedQueue = job.targetQueueB;
+
+            if (selectedQueue == null) return targetFactions.ToArray();
+            for (int i = 0; i < selectedQueue.Count; i++)
+            {
+                try
+                {
+                    if (selectedQueue[i].Thing == null) targetFactions.Add(OnlineActivityTargetFaction.None);
+                    else
+                    {
+                        //Faction and non-faction pawns get inverted in here to send into the other side
+
+                        if (OnlineManager.factionPawns.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.NonFaction);
+                        else if (OnlineManager.nonFactionPawns.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.Faction);
+                        else if (OnlineManager.mapThings.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.None);
+                    }
+                }
+                catch { Logger.Error($"failed to parse {selectedQueue[i]}"); }
+            }
+
+            return targetFactions.ToArray();
+        }
+
+        public static int[] GetActionIndexes(Job job)
         {
             List<int> targetIndexList = new List<int>();
 
@@ -642,16 +757,39 @@ namespace GameClient
                     if (target.Thing == null) targetIndexList.Add(0);
                     else
                     {
-                        if (DeepScribeHelper.CheckIfThingIsHuman(target.Thing)) targetIndexList.Add(OnlineManager.factionPawns.FirstIndexOf(fetch => fetch == target.Thing));
-                        else if (DeepScribeHelper.CheckIfThingIsAnimal(target.Thing)) targetIndexList.Add(OnlineManager.factionPawns.FirstIndexOf(fetch => fetch == target.Thing));
-                        else
-                        {
-                            pawnOrder.count = OnlineManager.mapThings.Find(fetch => fetch == target.Thing).stackCount;
-                            targetIndexList.Add(OnlineManager.mapThings.FirstIndexOf(fetch => fetch == target.Thing));
-                        }
+                        if (OnlineManager.factionPawns.Contains(target.Thing)) targetIndexList.Add(OnlineManager.factionPawns.IndexOf((Pawn)target.Thing));
+                        else if (OnlineManager.nonFactionPawns.Contains(target.Thing)) targetIndexList.Add(OnlineManager.nonFactionPawns.IndexOf((Pawn)target.Thing));
+                        else if (OnlineManager.mapThings.Contains(target.Thing)) targetIndexList.Add(OnlineManager.mapThings.IndexOf(target.Thing));
                     }
                 }
                 catch { Logger.Error($"failed to parse {target}"); }
+            }
+
+            return targetIndexList.ToArray();
+        }
+
+        public static int[] GetQueuedActionIndexes(Job job, int index)
+        {
+            List<int> targetIndexList = new List<int>();
+
+            List<LocalTargetInfo> selectedQueue = new List<LocalTargetInfo>();
+            if (index == 0) selectedQueue = job.targetQueueA;
+            else if (index == 1) selectedQueue = job.targetQueueB;
+
+            if (selectedQueue == null) return targetIndexList.ToArray();
+            for (int i = 0; i < selectedQueue.Count; i++)
+            {
+                try
+                {
+                    if (selectedQueue[i].Thing == null) targetIndexList.Add(0);
+                    else
+                    {
+                        if (OnlineManager.factionPawns.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineManager.factionPawns.IndexOf((Pawn)selectedQueue[i].Thing));
+                        else if (OnlineManager.nonFactionPawns.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineManager.nonFactionPawns.IndexOf((Pawn)selectedQueue[i].Thing));
+                        else if (OnlineManager.mapThings.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineManager.mapThings.IndexOf(selectedQueue[i].Thing));
+                    }
+                }
+                catch { Logger.Error($"failed to parse {selectedQueue[i]}"); }
             }
 
             return targetIndexList.ToArray();
@@ -682,60 +820,6 @@ namespace GameClient
             }
 
             return targetTypeList.ToArray();
-        }
-
-        public static string[] GetQueuedActionTargets(Job job, int index)
-        {
-            List<string> targetInfoList = new List<string>();
-
-            List<LocalTargetInfo> selectedQueue = new List<LocalTargetInfo>();
-            if (index == 0) selectedQueue = job.targetQueueA;
-            else if (index == 1) selectedQueue = job.targetQueueB;
-
-            if (selectedQueue == null) return targetInfoList.ToArray();
-            for (int i = 0; i < selectedQueue.Count; i++)
-            {
-                try
-                {
-                    if (selectedQueue[i].Thing == null) targetInfoList.Add(ValueParser.Vector3ToString(selectedQueue[i].Cell));
-                    else
-                    {
-                        if (DeepScribeHelper.CheckIfThingIsHuman(selectedQueue[i].Thing)) targetInfoList.Add(Serializer.SerializeToString(HumanScribeManager.HumanToString(selectedQueue[i].Pawn)));
-                        else if (DeepScribeHelper.CheckIfThingIsAnimal(selectedQueue[i].Thing)) targetInfoList.Add(Serializer.SerializeToString(AnimalScribeManager.AnimalToString(selectedQueue[i].Pawn)));
-                        else targetInfoList.Add(Serializer.SerializeToString(ThingScribeManager.ItemToString(selectedQueue[i].Thing, 1)));
-                    }
-                }
-                catch { Logger.Error($"failed to parse {selectedQueue[i]}"); }
-            }
-
-            return targetInfoList.ToArray();
-        }
-
-        public static int[] GetQueuedActionIndexes(Job job, int index)
-        {
-            List<int> targetIndexList = new List<int>();
-
-            List<LocalTargetInfo> selectedQueue = new List<LocalTargetInfo>();
-            if (index == 0) selectedQueue = job.targetQueueA;
-            else if (index == 1) selectedQueue = job.targetQueueB;
-
-            if (selectedQueue == null) return targetIndexList.ToArray();
-            for (int i = 0; i < selectedQueue.Count; i++)
-            {
-                try
-                {
-                    if (selectedQueue[i].Thing == null) targetIndexList.Add(0);
-                    else
-                    {
-                        if (DeepScribeHelper.CheckIfThingIsHuman(selectedQueue[i].Thing)) targetIndexList.Add(OnlineManager.factionPawns.FirstIndexOf(fetch => fetch == selectedQueue[i].Thing));
-                        else if (DeepScribeHelper.CheckIfThingIsAnimal(selectedQueue[i].Thing)) targetIndexList.Add(OnlineManager.factionPawns.FirstIndexOf(fetch => fetch == selectedQueue[i].Thing));
-                        else targetIndexList.Add(OnlineManager.mapThings.FirstIndexOf(fetch => fetch == selectedQueue[i].Thing));
-                    }
-                }
-                catch { Logger.Error($"failed to parse {selectedQueue[i]}"); }
-            }
-
-            return targetIndexList.ToArray();
         }
 
         public static ActionTargetType[] GetQueuedActionTypes(Job job, int index)
@@ -811,7 +895,7 @@ namespace GameClient
 
         public static void SpawnMapPawns(OnlineActivityData activityData)
         {
-            if (OnlineManager.isHost)
+            if (ClientValues.isRealTimeHost)
             {
                 OnlineManager.nonFactionPawns = GetCaravanPawns(activityData).ToList();
                 foreach (Pawn pawn in OnlineManager.nonFactionPawns)
@@ -838,7 +922,7 @@ namespace GameClient
 
         public static Pawn[] GetMapPawns(OnlineActivityData activityData = null)
         {
-            if (OnlineManager.isHost)
+            if (ClientValues.isRealTimeHost)
             {
                 List<Pawn> mapHumans = OnlineManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
@@ -881,7 +965,7 @@ namespace GameClient
 
         public static Pawn[] GetCaravanPawns(OnlineActivityData activityData = null)
         {
-            if (OnlineManager.isHost)
+            if (ClientValues.isRealTimeHost)
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
@@ -924,7 +1008,7 @@ namespace GameClient
 
         public static List<byte[]> GetActivityHumanBytes()
         {
-            if (OnlineManager.isHost)
+            if (ClientValues.isRealTimeHost)
             {
                 List<Pawn> mapHumans = OnlineManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
@@ -936,7 +1020,6 @@ namespace GameClient
                 {
                     HumanData data = HumanScribeManager.HumanToString(human);
                     convertedList.Add(Serializer.ConvertObjectToBytes(data));
-                    Logger.Warning($"Pawn > {human.Label}");
                 }
 
                 return convertedList;
@@ -962,7 +1045,7 @@ namespace GameClient
 
         public static List<byte[]> GetActivityAnimalBytes()
         {
-            if (OnlineManager.isHost)
+            if (ClientValues.isRealTimeHost)
             {
                 List<Pawn> mapAnimals = OnlineManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))

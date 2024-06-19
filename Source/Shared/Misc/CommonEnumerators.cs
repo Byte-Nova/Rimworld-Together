@@ -45,7 +45,7 @@
 
         public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, TimeSpeed, Stop }
 
-        public enum OnlineActivityPawnType { Faction, NonFaction }
+        public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 
         public enum OnlineActivityApplyMode { Add, Remove }
 

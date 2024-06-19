@@ -11,7 +11,7 @@ namespace Shared
 
         public string mapOwner;
         public int mapTile;
-        public string mapSize;
+        public int[] mapSize;
 
         //Mods
 

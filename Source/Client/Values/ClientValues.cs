@@ -21,6 +21,8 @@ namespace GameClient
 
         public static bool isInTransfer;
 
+        public static bool isRealTimeHost;
+
         public static OnlineActivityType currentRealTimeEvent;
 
         public static Settlement chosenSettlement;
@@ -78,6 +80,8 @@ namespace GameClient
 
         public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
 
+        public static void ToggleRealTimeHost(bool mode) { isRealTimeHost = mode; }
+
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
@@ -88,6 +92,7 @@ namespace GameClient
             ToggleSavingGame(false);
             ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);
+            ToggleRealTimeHost(false);
 
             chosenSettlement = null;
             chosenCaravan = null;

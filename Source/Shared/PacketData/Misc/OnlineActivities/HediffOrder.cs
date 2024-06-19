@@ -6,7 +6,7 @@ namespace Shared
     [Serializable]
     public class HediffOrder
     {
-        public OnlineActivityPawnType pawnType;
+        public OnlineActivityTargetFaction pawnFaction;
         public OnlineActivityApplyMode applyMode;
         public int hediffTargetIndex;
 
