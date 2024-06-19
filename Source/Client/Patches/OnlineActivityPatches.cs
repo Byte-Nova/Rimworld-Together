@@ -14,52 +14,44 @@ namespace GameClient
     public static class PatchCreateThing
     {
         [HarmonyPrefix]
-        public static bool DoPre(Thing __instance)
+        public static bool DoPre(Map map, Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
-            if (OnlineManager.isHost)
-            {
-                if (OnlineManager.mapThings.Contains(__instance)) return true;
-
-                OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
-
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
-                Network.listener.EnqueuePacket(packet);
-
-                //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                OnlineManagerHelper.AddThingToMap(__instance);
-                return true;
-            }
-
+            //Don't execute patch if is different than the online one
+            if (OnlineManager.onlineMap != map) return true;
             else
             {
-                //IF COMING FROM HOST
-
-                if (OnlineManager.queuedThing == __instance)
+                if (OnlineManager.isHost)
                 {
-                    OnlineManagerHelper.ClearThingQueue();
+                    OnlineActivityData OnlineActivityData = new OnlineActivityData();
+                    OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
+                    OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
+
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
+                    Network.listener.EnqueuePacket(packet);
+
+                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
                     OnlineManagerHelper.AddThingToMap(__instance);
                     return true;
                 }
 
-                //IF PLAYER ASKING FOR
-
                 else
                 {
-                    return false;
+                    //IF COMING FROM HOST
 
-                    //OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                    //OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                    //OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
+                    if (OnlineManager.queuedThing == __instance)
+                    {
+                        OnlineManagerHelper.ClearThingQueue();
+                        OnlineManagerHelper.AddThingToMap(__instance);
+                        return true;
+                    }
 
-                    //Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
-                    //Network.listener.EnqueuePacket(packet);
-                    //return false;
+                    //IF PLAYER ASKING FOR
+
+                    else return false;
                 }
             }
         }
@@ -75,38 +67,16 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
-            //TODO
-            //CHANGE THE WAY WE CHECK IF IT'S TARGETING THE ACTIVITY MAP
-            if (!OnlineManager.mapThings.Contains(__instance)) return true;
+            //Don't execute patch if map doesn't contain the thing already
+            bool shouldPatch = false;
+            if (OnlineManager.factionPawns.Contains(__instance)) shouldPatch = true;
+            else if (OnlineManager.nonFactionPawns.Contains(__instance)) shouldPatch = true;
+            else if (OnlineManager.mapThings.Contains(__instance)) shouldPatch = true;
 
-            if (OnlineManager.isHost)
-            {
-                OnlineActivityData onlineActivityData = new OnlineActivityData();
-                onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
-                onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
-
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
-                Network.listener.EnqueuePacket(packet);
-
-                //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
-                OnlineManagerHelper.RemoveThingFromMap(__instance);
-                return true;
-            }
-
+            if (!shouldPatch) return true;
             else
             {
-                //IF COMING FROM HOST
-
-                if (OnlineManager.queuedThing == __instance)
-                {
-                    OnlineManagerHelper.ClearThingQueue();
-                    OnlineManagerHelper.RemoveThingFromMap(__instance);
-                    return true;
-                }
-
-                //IF PLAYER ASKING FOR
-
-                else
+                if (OnlineManager.isHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
@@ -114,7 +84,35 @@ namespace GameClient
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
-                    return false;
+
+                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+                    OnlineManagerHelper.RemoveThingFromMap(__instance);
+                    return true;
+                }
+
+                else
+                {
+                    //IF COMING FROM HOST
+
+                    if (OnlineManager.queuedThing == __instance)
+                    {
+                        OnlineManagerHelper.ClearThingQueue();
+                        OnlineManagerHelper.RemoveThingFromMap(__instance);
+                        return true;
+                    }
+
+                    //IF PLAYER ASKING FOR
+
+                    else
+                    {
+                        OnlineActivityData onlineActivityData = new OnlineActivityData();
+                        onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
+                        onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
+
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
+                        Network.listener.EnqueuePacket(packet);
+                        return false;
+                    }
                 }
             }
         }
@@ -128,15 +126,18 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+
             if (!OnlineManager.factionPawns.Contains(___pawn)) return;
+            else
+            {
+                OnlineActivityData data = new OnlineActivityData();
+                data.activityStepMode = OnlineActivityStepMode.Action;
+                data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn);
+                data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
 
-            OnlineActivityData data = new OnlineActivityData();
-            data.activityStepMode = OnlineActivityStepMode.Action;
-            data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn);
-            data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
-            Network.listener.EnqueuePacket(packet);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                Network.listener.EnqueuePacket(packet);
+            }
         }
     }
 
@@ -149,14 +150,10 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (OnlineManager.isHost)
+            if (!OnlineManager.mapThings.Contains(__instance)) return true;
+            else
             {
-                bool shouldCollect = false;
-                if (OnlineManager.factionPawns.Contains(__instance)) shouldCollect = true;
-                else if (OnlineManager.nonFactionPawns.Contains(__instance)) shouldCollect = true;
-                else if (OnlineManager.mapThings.Contains(__instance)) shouldCollect = true;
-
-                if (shouldCollect)
+                if (OnlineManager.isHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Damage;
@@ -164,28 +161,28 @@ namespace GameClient
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
-                }
-
-                return true;
-            }
-
-            else
-            {
-                //IF COMING FROM HOST
-
-                if (OnlineManager.queuedThing == __instance)
-                {
-                    OnlineManagerHelper.ClearThingQueue();
                     return true;
                 }
 
-                //IF PLAYER ASKING FOR
-
                 else
                 {
-                    __result = new DamageWorker.DamageResult();
-                    __result.totalDamageDealt = 0f;
-                    return false;
+                    //IF COMING FROM HOST
+
+                    if (OnlineManager.queuedThing == __instance)
+                    {
+                        OnlineManagerHelper.ClearThingQueue();
+                        return true;
+                    }
+
+                    //IF PLAYER ASKING FOR
+
+                    else
+                    {
+                        //Create empty DamageWorker.DamageResult so the functions expecting it don't freak out
+                        __result = new DamageWorker.DamageResult();
+                        __result.totalDamageDealt = 0f;
+                        return false;
+                    }
                 }
             }
         }
@@ -200,13 +197,14 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (OnlineManager.isHost)
-            {
-                bool shouldCollect = false;
-                if (OnlineManager.factionPawns.Contains(___pawn)) shouldCollect = true;
-                else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldCollect = true;
+            bool shouldPatch = false;
+            if (OnlineManager.factionPawns.Contains(___pawn)) shouldPatch = true;
+            else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
 
-                if (shouldCollect)
+            if (!shouldPatch) return true;
+            else
+            {
+                if (OnlineManager.isHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
@@ -214,30 +212,23 @@ namespace GameClient
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
-
-                    if (hediff.Part != null) Logger.Warning($"Got hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
-                    else Logger.Warning($"Got hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
-                }
-
-                return true;
-            }
-            
-            else
-            {
-                //IF COMING FROM HOST
-
-                if (OnlineManager.queuedThing == ___pawn)
-                {
-                    OnlineManagerHelper.ClearThingQueue();
-
-                    if (hediff.Part != null) Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
-                    else Logger.Warning($"Set hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
                     return true;
                 }
 
-                //IF PLAYER ASKING FOR
+                else
+                {
+                    //IF COMING FROM HOST
 
-                else return false;
+                    if (OnlineManager.queuedThing == ___pawn)
+                    {
+                        OnlineManagerHelper.ClearThingQueue();
+                        return true;
+                    }
+
+                    //IF PLAYER ASKING FOR
+
+                    else return false;
+                }
             }
         }
     }
@@ -251,13 +242,14 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (OnlineManager.isHost)
-            {
-                bool shouldCollect = false;
-                if (OnlineManager.factionPawns.Contains(___pawn)) shouldCollect = true;
-                else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldCollect = true;
+            bool shouldPatch = false;
+            if (OnlineManager.factionPawns.Contains(___pawn)) shouldPatch = true;
+            else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
 
-                if (shouldCollect)
+            if (!shouldPatch) return true;
+            else
+            {
+                if (OnlineManager.isHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
@@ -265,30 +257,23 @@ namespace GameClient
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
-
-                    if (hediff.Part != null) Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
-                    else Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
-                }
-
-                return true;
-            }
-
-            else
-            {
-                //IF COMING FROM HOST
-
-                if (OnlineManager.queuedThing == ___pawn)
-                {
-                    OnlineManagerHelper.ClearThingQueue();
-
-                    if (hediff.Part != null) Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity at body part '{hediff.Part.def.defName}'");
-                    else Logger.Warning($"Deleted hediff '{hediff.def.defName}' on {___pawn.Label} with '{hediff.Severity}' severity'");
                     return true;
                 }
 
-                //IF PLAYER ASKING FOR
+                else
+                {
+                    //IF COMING FROM HOST
 
-                else return false;
+                    if (OnlineManager.queuedThing == ___pawn)
+                    {
+                        OnlineManagerHelper.ClearThingQueue();
+                        return true;
+                    }
+
+                    //IF PLAYER ASKING FOR
+
+                    else return false;
+                }
             }
         }
     }
@@ -333,7 +318,30 @@ namespace GameClient
         }
     }
 
-    //Not really needed, used to make the non-host player console not freak out when trying to spawn non-requested filth
+    //Not really needed, used to make the non-host player console not freak out when trying to spawn non-requested things
+
+    [HarmonyPatch(typeof(Pawn), nameof(Pawn.SpawnSetup))]
+    public static class PatchCreatePawn
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Thing __instance)
+        {
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            if (OnlineManager.isHost) return true;
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedThing == __instance) return true;
+
+                //IF PLAYER ASKING FOR
+
+                else return false;
+            }
+        }
+    }
 
     [HarmonyPatch(typeof(Filth), nameof(Filth.SpawnSetup))]
     public static class PatchCreateFilth
@@ -357,6 +365,8 @@ namespace GameClient
             }
         }
     }
+
+    //Patches to make online events finish correctly when getting out of the map
 
     [HarmonyPatch(typeof(CaravanExitMapUtility), nameof(CaravanExitMapUtility.ExitMapAndCreateCaravan), new[] { typeof(IEnumerable<Pawn>), typeof(Faction), typeof(int), typeof(Direction8Way), typeof(int), typeof(bool) })]
     public static class PatchCaravanExitMap1
