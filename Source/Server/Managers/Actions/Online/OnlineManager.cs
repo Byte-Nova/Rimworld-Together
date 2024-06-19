@@ -52,6 +52,10 @@ namespace GameServer
                     SendVisitActions(client, visitData);
                     break;
 
+                case OnlineActivityStepMode.Weather:
+                    SendVisitActions(client, visitData);
+                    break;
+
                 case OnlineActivityStepMode.Stop:
                     SendVisitStop(client);
                     break;

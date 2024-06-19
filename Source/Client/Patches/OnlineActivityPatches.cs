@@ -292,11 +292,11 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(GameCondition), nameof(GameCondition.Init))]
+    [HarmonyPatch(typeof(GameConditionManager), nameof(GameConditionManager.RegisterCondition))]
     public static class PatchAddGameCondition
     {
         [HarmonyPrefix]
-        public static bool DoPre(GameCondition __instance)
+        public static bool DoPre(GameCondition cond)
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
@@ -305,10 +305,11 @@ namespace GameClient
             {
                 OnlineActivityData OnlineActivityData = new OnlineActivityData();
                 OnlineActivityData.activityStepMode = OnlineActivityStepMode.GameCondition;
-                OnlineActivityData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(__instance, OnlineActivityApplyMode.Add);
+                OnlineActivityData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(cond, OnlineActivityApplyMode.Add);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                 Network.listener.EnqueuePacket(packet);
+                Logger.Warning($"Game condition > {cond}");
                 return true;
             }
 
@@ -316,8 +317,9 @@ namespace GameClient
             {
                 //IF COMING FROM HOST
 
-                if (OnlineManager.queuedGameCondition == __instance)
+                if (OnlineManager.queuedGameCondition == cond)
                 {
+                    Logger.Warning($"Game condition > {cond}");
                     OnlineManagerHelper.ClearGameConditionQueue();
                     return true;
                 }
@@ -346,6 +348,7 @@ namespace GameClient
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                 Network.listener.EnqueuePacket(packet);
+                Logger.Warning($"Remove game condition > {__instance}");
                 return true;
             }
 
@@ -355,6 +358,7 @@ namespace GameClient
 
                 if (OnlineManager.queuedGameCondition == __instance)
                 {
+                    Logger.Warning($"Remove game condition > {__instance}");
                     OnlineManagerHelper.ClearGameConditionQueue();
                     return true;
                 }
@@ -367,7 +371,7 @@ namespace GameClient
     }
 
     [HarmonyPatch(typeof(TickManager), nameof(TickManager.TickManagerUpdate))]
-    public static class PatchTickChanging
+    public static class PatchTickSpeedChange
     {
         [HarmonyPrefix]
         public static bool DoPre(TickManager __instance)
@@ -403,6 +407,48 @@ namespace GameClient
             }
 
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(WeatherManager), nameof(WeatherManager.TransitionTo))]
+    public static class PatchWeatherChange
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(WeatherManager __instance, WeatherDef newWeather)
+        {
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (__instance.map != OnlineManager.onlineMap) return true;
+
+            if (ClientValues.isRealTimeHost)
+            {
+                OnlineManagerHelper.EnqueueWeather(newWeather);
+
+                OnlineActivityData onlineActivityData = new OnlineActivityData();
+                onlineActivityData.activityStepMode = OnlineActivityStepMode.Weather;
+                onlineActivityData.weatherOrder = OnlineManagerHelper.CreateWeatherOrder(newWeather);
+
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
+                Network.listener.EnqueuePacket(packet);
+                Logger.Warning($"Weather '{newWeather.defName}'");
+                return true;
+            }
+
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedWeather == newWeather)
+                {
+                    Logger.Warning($"Weather '{newWeather.defName}'");
+                    OnlineManagerHelper.ClearWeatherQueue();
+                    return true;
+                }
+
+                //IF PLAYER ASKING FOR
+
+                else return false;
+            }
         }
     }
 

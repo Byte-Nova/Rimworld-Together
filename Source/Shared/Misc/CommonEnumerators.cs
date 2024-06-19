@@ -43,7 +43,7 @@
 
         public enum OfflineSpyStepMode { Request, Deny, Unavailable }
 
-        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, TimeSpeed, GameCondition, Stop }
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, TimeSpeed, GameCondition, Weather, Stop }
 
         public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 

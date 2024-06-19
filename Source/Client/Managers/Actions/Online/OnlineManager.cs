@@ -23,6 +23,7 @@ namespace GameClient
 
         public static Thing queuedThing;
         public static int queuedTimeSpeed;
+        public static WeatherDef queuedWeather;
         public static GameCondition queuedGameCondition;
         public static TimeSpeed maximumAllowedTimeSpeed = TimeSpeed.Fast;
 
@@ -76,6 +77,10 @@ namespace GameClient
                     OnlineManagerHelper.ReceiveGameConditionOrder(data);
                     break;
 
+                case OnlineActivityStepMode.Weather:
+                    OnlineManagerHelper.ReceiveWeatherOrder(data);
+                    break;
+
                 case OnlineActivityStepMode.Stop:
                     OnActivityStop();
                     break;
@@ -87,6 +92,7 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent != OnlineActivityType.None) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already in a real time activity!"));
             else
             {
+                OnlineManagerHelper.ClearAllQueues();
                 ClientValues.ToggleRealTimeHost(false);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
@@ -130,6 +136,10 @@ namespace GameClient
             ClientValues.ToggleOnlineFunction(activityData.activityType);
 
             OnlineManagerHelper.ReceiveTimeSpeedOrder(activityData);
+
+            //OnlineManagerHelper.ReceiveWeatherOrder(activityData);
+
+            //OnlineManagerHelper.ReceiveGameConditionOrder(activityData);
         }
 
         private static void SendRequestedMap(OnlineActivityData visitData)
@@ -138,6 +148,8 @@ namespace GameClient
             visitData.mapHumans = OnlineManagerHelper.GetActivityHumanBytes();
             visitData.mapAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
             visitData.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
+            //visitData.weatherOrder = OnlineManagerHelper.CreateWeatherOrder();
+            //visitData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder();
 
             MapData mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
             visitData.mapDetails = Serializer.ConvertObjectToBytes(mapData);
@@ -150,6 +162,7 @@ namespace GameClient
         {
             Action r1 = delegate
             {
+                OnlineManagerHelper.ClearAllQueues();
                 ClientValues.ToggleRealTimeHost(true);
 
                 onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == activityData.targetTile).Map;
@@ -347,6 +360,14 @@ namespace GameClient
             gameConditionOrder.applyMode = applyMode;
 
             return gameConditionOrder;
+        }
+
+        public static WeatherOrder CreateWeatherOrder(WeatherDef weatherDef)
+        {
+            WeatherOrder weatherOrder = new WeatherOrder();
+            weatherOrder.weatherDefName = weatherDef.defName;
+
+            return weatherOrder;
         }
 
         //Receive orders
@@ -548,6 +569,20 @@ namespace GameClient
             catch (Exception e) { Logger.Warning($"Couldn't apply game condition order. Reason: {e}"); }
         }
 
+        public static void ReceiveWeatherOrder(OnlineActivityData data)
+        {
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+
+            try
+            {
+                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == data.weatherOrder.weatherDefName);
+
+                EnqueueWeather(weatherDef);
+                OnlineManager.onlineMap.weatherManager.TransitionTo(weatherDef);
+            }
+            catch (Exception e) { Logger.Warning($"Couldn't apply weather order. Reason: {e}"); }
+        }
+
         //Misc
 
         //This function doesn't take into account non-host thing creation right now, handle with care
@@ -569,15 +604,29 @@ namespace GameClient
             else OnlineManager.mapThings.Remove(thing);
         }
 
+        public static void ClearAllQueues()
+        {
+            ClearThingQueue();
+            ClearTimeSpeedQueue();
+            ClearWeatherQueue();
+            ClearGameConditionQueue();
+        }
+
         public static void EnqueueThing(Thing thing) { OnlineManager.queuedThing = thing; }
 
-        public static void ClearThingQueue() { OnlineManager.queuedThing = null; }
+        public static void EnqueueTimeSpeed(int timeSpeed) { OnlineManager.queuedTimeSpeed = timeSpeed; }
+
+        public static void EnqueueWeather(WeatherDef weatherDef) { OnlineManager.queuedWeather = weatherDef; }
 
         public static void EnqueueGameCondition(GameCondition gameCondition) { OnlineManager.queuedGameCondition = gameCondition; }
 
-        public static void ClearGameConditionQueue() { OnlineManager.queuedGameCondition = null; }
+        public static void ClearThingQueue() { OnlineManager.queuedThing = null; }
 
-        public static void EnqueueTimeSpeed(int timeSpeed) { OnlineManager.queuedTimeSpeed = timeSpeed; }
+        public static void ClearTimeSpeedQueue() { OnlineManager.queuedTimeSpeed = 0; }
+
+        public static void ClearWeatherQueue() { OnlineManager.queuedWeather = null; }
+
+        public static void ClearGameConditionQueue() { OnlineManager.queuedGameCondition = null; }
 
         public static string[] GetActionTargets(Job job)
         {

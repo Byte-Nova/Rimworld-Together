@@ -33,5 +33,6 @@ namespace Shared
         public HediffOrder hediffOrder;
         public TimeSpeedOrder timeSpeedOrder;
         public GameConditionOrder gameConditionOrder;
+        public WeatherOrder weatherOrder;
     }
 }
