@@ -103,16 +103,7 @@ namespace GameClient
 
                     //IF PLAYER ASKING FOR
 
-                    else
-                    {
-                        OnlineActivityData onlineActivityData = new OnlineActivityData();
-                        onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
-                        onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
-
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
-                        Network.listener.EnqueuePacket(packet);
-                        return false;
-                    }
+                    else return false;
                 }
             }
         }
@@ -121,30 +112,29 @@ namespace GameClient
     [HarmonyPatch(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.StartJob))]
     public static class PatchStartNewJob
     {
-        [HarmonyPostfix]
-        public static void DoPost(Job newJob, Pawn ___pawn)
+        [HarmonyPrefix]
+        public static bool DoPre(Job newJob, Pawn ___pawn)
         {
-            if (Network.state == NetworkState.Disconnected) return;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             //Don't execute patch if map doesn't contain the pawn
             bool shouldPatch = false;
             if (OnlineManager.factionPawns.Contains(___pawn)) shouldPatch = true;
             else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
 
-            if (!shouldPatch) return;
+            if (!shouldPatch) return true;
             else
             {
                 if (OnlineManager.factionPawns.Contains(___pawn))
                 {
                     OnlineActivityData data = new OnlineActivityData();
                     data.activityStepMode = OnlineActivityStepMode.Action;
-                    data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn);
+                    data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn, newJob);
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                     Network.listener.EnqueuePacket(packet);
-                    Logger.Warning("Your pawn");
-                    return;
+                    return true;
                 }
 
                 else
@@ -154,13 +144,12 @@ namespace GameClient
                     if (OnlineManager.queuedThing == ___pawn)
                     {
                         OnlineManagerHelper.ClearThingQueue();
-                        Logger.Warning("Do!");
-                        return;
+                        return true;
                     }
 
                     //IF PLAYER ASKING FOR
 
-                    else return;
+                    else return false;
                 }
             }
         }
@@ -214,7 +203,7 @@ namespace GameClient
     }
 
     [HarmonyPatch(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.AddHediff), new[] { typeof(Hediff), typeof(BodyPartRecord), typeof(DamageInfo), typeof(DamageWorker.DamageResult), })]
-    public static class PatchApplyHediff
+    public static class PatchAddHediff
     {
         [HarmonyPrefix]
         public static bool DoPre(Hediff hediff, BodyPartRecord part, DamageInfo? dinfo, DamageWorker.DamageResult result, Pawn ___pawn)
@@ -299,6 +288,80 @@ namespace GameClient
 
                     else return false;
                 }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(GameCondition), nameof(GameCondition.Init))]
+    public static class PatchAddGameCondition
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(GameCondition __instance)
+        {
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            if (ClientValues.isRealTimeHost)
+            {
+                OnlineActivityData OnlineActivityData = new OnlineActivityData();
+                OnlineActivityData.activityStepMode = OnlineActivityStepMode.GameCondition;
+                OnlineActivityData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(__instance, OnlineActivityApplyMode.Add);
+
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
+                Network.listener.EnqueuePacket(packet);
+                return true;
+            }
+
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedGameCondition == __instance)
+                {
+                    OnlineManagerHelper.ClearGameConditionQueue();
+                    return true;
+                }
+
+                //IF PLAYER ASKING FOR
+
+                else return false;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(GameCondition), nameof(GameCondition.End))]
+    public static class PatchRemoveGameCondition
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(GameCondition __instance)
+        {
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            if (ClientValues.isRealTimeHost)
+            {
+                OnlineActivityData OnlineActivityData = new OnlineActivityData();
+                OnlineActivityData.activityStepMode = OnlineActivityStepMode.GameCondition;
+                OnlineActivityData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(__instance, OnlineActivityApplyMode.Remove);
+
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
+                Network.listener.EnqueuePacket(packet);
+                return true;
+            }
+
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedGameCondition == __instance)
+                {
+                    OnlineManagerHelper.ClearGameConditionQueue();
+                    return true;
+                }
+
+                //IF PLAYER ASKING FOR
+
+                else return false;
             }
         }
     }

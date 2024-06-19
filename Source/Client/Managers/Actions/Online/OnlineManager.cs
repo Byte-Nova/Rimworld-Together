@@ -228,7 +228,7 @@ namespace GameClient
     {
         //Create orders
 
-        public static PawnOrder CreatePawnOrder(Pawn pawn)
+        public static PawnOrder CreatePawnOrder(Pawn pawn, Job newJob)
         {
             //TODO
             //CAPTURE COUNT OF CERTAIN JOBS
@@ -236,21 +236,21 @@ namespace GameClient
             PawnOrder pawnOrder = new PawnOrder();
             pawnOrder.pawnIndex = OnlineManager.factionPawns.IndexOf(pawn);
 
-            pawnOrder.defName = pawn.jobs.curJob.def.defName;
-            pawnOrder.targets = GetActionTargets(pawn.jobs.curJob);
-            pawnOrder.targetIndexes = GetActionIndexes(pawn.jobs.curJob);
-            pawnOrder.targetTypes = GetActionTypes(pawn.jobs.curJob);
-            pawnOrder.targetFactions = GetActionTargetFactions(pawn.jobs.curJob);
+            pawnOrder.defName = newJob.def.defName;
+            pawnOrder.targets = GetActionTargets(newJob);
+            pawnOrder.targetIndexes = GetActionIndexes(newJob);
+            pawnOrder.targetTypes = GetActionTypes(newJob);
+            pawnOrder.targetFactions = GetActionTargetFactions(newJob);
 
-            pawnOrder.queueTargetsA = GetQueuedActionTargets(pawn.jobs.curJob, 0);
-            pawnOrder.queueTargetIndexesA = GetQueuedActionIndexes(pawn.jobs.curJob, 0);
-            pawnOrder.queueTargetTypesA = GetQueuedActionTypes(pawn.jobs.curJob, 0);
-            pawnOrder.queueTargetFactionsA = GetQueuedActionTargetFactions(pawn.jobs.curJob, 0);
+            pawnOrder.queueTargetsA = GetQueuedActionTargets(newJob, 0);
+            pawnOrder.queueTargetIndexesA = GetQueuedActionIndexes(newJob, 0);
+            pawnOrder.queueTargetTypesA = GetQueuedActionTypes(newJob, 0);
+            pawnOrder.queueTargetFactionsA = GetQueuedActionTargetFactions(newJob, 0);
 
-            pawnOrder.queueTargetsB = GetQueuedActionTargets(pawn.jobs.curJob, 1);
-            pawnOrder.queueTargetIndexesB = GetQueuedActionIndexes(pawn.jobs.curJob, 1);
-            pawnOrder.queueTargetTypesB = GetQueuedActionTypes(pawn.jobs.curJob, 1);
-            pawnOrder.queueTargetFactionsB = GetQueuedActionTargetFactions(pawn.jobs.curJob, 1);
+            pawnOrder.queueTargetsB = GetQueuedActionTargets(newJob, 1);
+            pawnOrder.queueTargetIndexesB = GetQueuedActionIndexes(newJob, 1);
+            pawnOrder.queueTargetTypesB = GetQueuedActionTypes(newJob, 1);
+            pawnOrder.queueTargetFactionsB = GetQueuedActionTargetFactions(newJob, 1);
 
             pawnOrder.isDrafted = GetPawnDraftState(pawn);
             pawnOrder.updatedPosition = ValueParser.IntVec3ToArray(pawn.Position);
