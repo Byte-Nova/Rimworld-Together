@@ -32,5 +32,6 @@ namespace Shared
         public DamageOrder damageOrder;
         public HediffOrder hediffOrder;
         public TimeSpeedOrder timeSpeedOrder;
+        public GameConditionOrder gameConditionOrder;
     }
 }

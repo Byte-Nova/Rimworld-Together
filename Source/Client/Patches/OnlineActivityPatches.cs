@@ -127,15 +127,41 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            if (!OnlineManager.factionPawns.Contains(___pawn)) return;
+            //Don't execute patch if map doesn't contain the pawn
+            bool shouldPatch = false;
+            if (OnlineManager.factionPawns.Contains(___pawn)) shouldPatch = true;
+            else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
+
+            if (!shouldPatch) return;
             else
             {
-                OnlineActivityData data = new OnlineActivityData();
-                data.activityStepMode = OnlineActivityStepMode.Action;
-                data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn);
+                if (OnlineManager.factionPawns.Contains(___pawn))
+                {
+                    OnlineActivityData data = new OnlineActivityData();
+                    data.activityStepMode = OnlineActivityStepMode.Action;
+                    data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn);
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
-                Network.listener.EnqueuePacket(packet);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                    Network.listener.EnqueuePacket(packet);
+                    Logger.Warning("Your pawn");
+                    return;
+                }
+
+                else
+                {
+                    //IF COMING FROM HOST
+
+                    if (OnlineManager.queuedThing == ___pawn)
+                    {
+                        OnlineManagerHelper.ClearThingQueue();
+                        Logger.Warning("Do!");
+                        return;
+                    }
+
+                    //IF PLAYER ASKING FOR
+
+                    else return;
+                }
             }
         }
     }
@@ -321,6 +347,29 @@ namespace GameClient
 
     [HarmonyPatch(typeof(Pawn), nameof(Pawn.SpawnSetup))]
     public static class PatchCreatePawn
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Thing __instance)
+        {
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            if (ClientValues.isRealTimeHost) return true;
+            else
+            {
+                //IF COMING FROM HOST
+
+                if (OnlineManager.queuedThing == __instance) return true;
+
+                //IF PLAYER ASKING FOR
+
+                else return false;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Building), nameof(Building.SpawnSetup))]
+    public static class PatchCreateBuilding
     {
         [HarmonyPrefix]
         public static bool DoPre(Thing __instance)

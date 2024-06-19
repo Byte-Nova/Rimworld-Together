@@ -48,6 +48,10 @@ namespace GameServer
                     SendVisitActions(client, visitData);
                     break;
 
+                case OnlineActivityStepMode.GameCondition:
+                    SendVisitActions(client, visitData);
+                    break;
+
                 case OnlineActivityStepMode.Stop:
                     SendVisitStop(client);
                     break;

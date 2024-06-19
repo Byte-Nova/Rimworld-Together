@@ -23,6 +23,7 @@ namespace GameClient
 
         public static Thing queuedThing;
         public static int queuedTimeSpeed;
+        public static GameCondition queuedGameCondition;
         public static TimeSpeed maximumAllowedTimeSpeed = TimeSpeed.Fast;
 
         public static void ParseOnlinePacket(Packet packet)
@@ -69,6 +70,10 @@ namespace GameClient
 
                 case OnlineActivityStepMode.TimeSpeed:
                     OnlineManagerHelper.ReceiveTimeSpeedOrder(data);
+                    break;
+
+                case OnlineActivityStepMode.GameCondition:
+                    OnlineManagerHelper.ReceiveGameConditionOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Stop:
@@ -334,6 +339,16 @@ namespace GameClient
             return timeSpeedOrder;
         }
 
+        public static GameConditionOrder CreateGameConditionOrder(GameCondition gameCondition, OnlineActivityApplyMode applyMode)
+        {
+            GameConditionOrder gameConditionOrder = new GameConditionOrder();            
+            gameConditionOrder.conditionDefName = gameCondition.def.defName;
+            gameConditionOrder.duration = gameCondition.Duration;
+            gameConditionOrder.applyMode = applyMode;
+
+            return gameConditionOrder;
+        }
+
         //Receive orders
 
         public static void ReceivePawnOrder(OnlineActivityData data)
@@ -362,6 +377,7 @@ namespace GameClient
                 foreach (LocalTargetInfo target in targetQueueA) newJob.AddQueuedTarget(TargetIndex.A, target);
                 foreach (LocalTargetInfo target in targetQueueB) newJob.AddQueuedTarget(TargetIndex.B, target);
 
+                EnqueueThing(pawn);
                 ChangeCurrentJob(pawn, newJob);
                 ChangeJobSpeedIfNeeded(newJob);
             }
@@ -396,9 +412,11 @@ namespace GameClient
             }
 
             //Request
-            if (!ClientValues.isRealTimeHost) EnqueueThing(toSpawn);
-
-            RimworldManager.PlaceThingInMap(toSpawn, OnlineManager.onlineMap);
+            if (!ClientValues.isRealTimeHost)
+            {
+                EnqueueThing(toSpawn);
+                RimworldManager.PlaceThingInMap(toSpawn, OnlineManager.onlineMap);
+            }
         }
 
         public static void ReceiveDestructionOrder(OnlineActivityData data)
@@ -435,6 +453,7 @@ namespace GameClient
                 if (!ClientValues.isRealTimeHost)
                 {
                     Thing toApplyTo = OnlineManager.mapThings[data.damageOrder.targetIndex];
+
                     EnqueueThing(toApplyTo);
                     toApplyTo.TakeDamage(damageInfo);
                 }
@@ -452,32 +471,35 @@ namespace GameClient
                 if (data.hediffOrder.pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineManager.factionPawns[data.hediffOrder.hediffTargetIndex];
                 else toTarget = OnlineManager.nonFactionPawns[data.hediffOrder.hediffTargetIndex];
 
-                EnqueueThing(toTarget);
-
-                BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data.hediffOrder.hediffPartDefName);
-
-                if (data.hediffOrder.applyMode == OnlineActivityApplyMode.Add)
+                if (!ClientValues.isRealTimeHost)
                 {
-                    HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.First(fetch => fetch.defName == data.hediffOrder.hediffDefName);
-                    Hediff toMake = HediffMaker.MakeHediff(hediffDef, toTarget, bodyPartRecord);
-                    toMake.Severity = data.hediffOrder.hediffSeverity;
-                    if (data.hediffOrder.hediffPermanent)
+                    EnqueueThing(toTarget);
+
+                    BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data.hediffOrder.hediffPartDefName);
+
+                    if (data.hediffOrder.applyMode == OnlineActivityApplyMode.Add)
                     {
-                        HediffComp_GetsPermanent hediffComp = toMake.TryGetComp<HediffComp_GetsPermanent>();
-                        hediffComp.IsPermanent = true;
+                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.First(fetch => fetch.defName == data.hediffOrder.hediffDefName);
+                        Hediff toMake = HediffMaker.MakeHediff(hediffDef, toTarget, bodyPartRecord);
+                        toMake.Severity = data.hediffOrder.hediffSeverity;
+                        if (data.hediffOrder.hediffPermanent)
+                        {
+                            HediffComp_GetsPermanent hediffComp = toMake.TryGetComp<HediffComp_GetsPermanent>();
+                            hediffComp.IsPermanent = true;
+                        }
+
+                        //Request
+                        toTarget.health.AddHediff(toMake, bodyPartRecord);
                     }
 
-                    //Request
-                    if (!ClientValues.isRealTimeHost) toTarget.health.AddHediff(toMake, bodyPartRecord);
-                }
+                    else
+                    {
+                        Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data.hediffOrder.hediffDefName &&
+                            fetch.Part.def.defName == bodyPartRecord.def.defName);
 
-                else
-                {
-                    Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data.hediffOrder.hediffDefName && 
-                        fetch.Part.def.defName == bodyPartRecord.def.defName);
-
-                    //Request
-                    if (!ClientValues.isRealTimeHost) toTarget.health.RemoveHediff(hediff);
+                        //Request
+                        toTarget.health.RemoveHediff(hediff);
+                    }
                 }
             }
             catch (Exception e) { Logger.Warning($"Couldn't apply hediff order. Reason: {e}"); }
@@ -489,10 +511,41 @@ namespace GameClient
 
             try
             {
-                OnlineManager.queuedTimeSpeed = data.timeSpeedOrder.targetTimeSpeed;
+                EnqueueTimeSpeed(data.timeSpeedOrder.targetTimeSpeed);
                 RimworldManager.SetGameTicks(data.timeSpeedOrder.targetMapTicks);
             }
             catch (Exception e) { Logger.Warning($"Couldn't apply time speed order. Reason: {e}"); }
+        }
+
+        public static void ReceiveGameConditionOrder(OnlineActivityData data)
+        {
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+
+            try
+            {
+                if (!ClientValues.isRealTimeHost)
+                {
+                    GameCondition gameCondition = null;
+
+                    if (data.gameConditionOrder.applyMode == OnlineActivityApplyMode.Add)
+                    {
+                        GameConditionDef conditionDef = DefDatabase<GameConditionDef>.AllDefs.First(fetch => fetch.defName == data.gameConditionOrder.conditionDefName);
+                        gameCondition = GameConditionMaker.MakeCondition(conditionDef);
+                        gameCondition.Duration = data.gameConditionOrder.duration;
+                        EnqueueGameCondition(gameCondition);
+
+                        Find.World.gameConditionManager.RegisterCondition(gameCondition);
+                    }
+
+                    else
+                    {
+                        gameCondition = Find.World.gameConditionManager.ActiveConditions.First(fetch => fetch.def.defName == data.gameConditionOrder.conditionDefName);
+                        EnqueueGameCondition(gameCondition);
+                        gameCondition.End();
+                    }
+                }
+            }
+            catch (Exception e) { Logger.Warning($"Couldn't apply game condition order. Reason: {e}"); }
         }
 
         //Misc
@@ -519,6 +572,12 @@ namespace GameClient
         public static void EnqueueThing(Thing thing) { OnlineManager.queuedThing = thing; }
 
         public static void ClearThingQueue() { OnlineManager.queuedThing = null; }
+
+        public static void EnqueueGameCondition(GameCondition gameCondition) { OnlineManager.queuedGameCondition = gameCondition; }
+
+        public static void ClearGameConditionQueue() { OnlineManager.queuedGameCondition = null; }
+
+        public static void EnqueueTimeSpeed(int timeSpeed) { OnlineManager.queuedTimeSpeed = timeSpeed; }
 
         public static string[] GetActionTargets(Job job)
         {
