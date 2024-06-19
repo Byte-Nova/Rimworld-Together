@@ -142,15 +142,15 @@ namespace GameServer
         {
             OnlineActivityData visitData = new OnlineActivityData();
             visitData.activityStepMode = OnlineActivityStepMode.Stop;
+
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+            client.listener.EnqueuePacket(packet);
 
-            if (client.inVisitWith == null) client.listener.EnqueuePacket(packet);
-            else
+            ServerClient otherPlayer = client.inVisitWith;
+            if (otherPlayer != null)
             {
-                client.listener.EnqueuePacket(packet);
-                client.inVisitWith.listener.EnqueuePacket(packet);
-
-                client.inVisitWith.inVisitWith = null;
+                otherPlayer.listener.EnqueuePacket(packet);
+                otherPlayer.inVisitWith = null;
                 client.inVisitWith = null;
             }
         }

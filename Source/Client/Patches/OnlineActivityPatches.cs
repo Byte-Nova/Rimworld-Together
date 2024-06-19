@@ -377,7 +377,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            OnlineManager.StopOnlineActivity();
+            OnlineManager.RequestStopOnlineActivity();
         }
     }
 
@@ -390,7 +390,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            OnlineManager.StopOnlineActivity();
+            OnlineManager.RequestStopOnlineActivity();
         }
     }
 
@@ -403,7 +403,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            OnlineManager.StopOnlineActivity();
+            OnlineManager.RequestStopOnlineActivity();
         }
     }
 }

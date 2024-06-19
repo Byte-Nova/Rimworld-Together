@@ -82,27 +82,30 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent != OnlineActivityType.None) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already in a real time activity!"));
             else
             {
-                Action r1 = delegate
-                {
-                    OnlineManagerHelper.SetHost(false);
+                OnlineManagerHelper.SetHost(false);
 
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for visit response"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
 
-                    OnlineActivityData data = new OnlineActivityData();
-                    data.activityStepMode = OnlineActivityStepMode.Request;
-                    data.activityType = toRequest;
-                    data.fromTile = Find.AnyPlayerHomeMap.Tile;
-                    data.targetTile = ClientValues.chosenSettlement.Tile;
-                    data.caravanHumans = OnlineManagerHelper.GetActivityHumanBytes();
-                    data.caravanAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
+                OnlineActivityData data = new OnlineActivityData();
+                data.activityStepMode = OnlineActivityStepMode.Request;
+                data.activityType = toRequest;
+                data.fromTile = Find.AnyPlayerHomeMap.Tile;
+                data.targetTile = ClientValues.chosenSettlement.Tile;
+                data.caravanHumans = OnlineManagerHelper.GetActivityHumanBytes();
+                data.caravanAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
-                    Network.listener.EnqueuePacket(packet);
-                };
-
-                var d1 = new RT_Dialog_YesNo("This feature is still in beta, continue?", r1, null);
-                DialogManager.PushNewDialog(d1);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                Network.listener.EnqueuePacket(packet);
             }
+        }
+
+        public static void RequestStopOnlineActivity()
+        {
+            OnlineActivityData visitData = new OnlineActivityData();
+            visitData.activityStepMode = OnlineActivityStepMode.Stop;
+
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+            Network.listener.EnqueuePacket(packet);
         }
 
         private static void JoinMap(MapData mapData, OnlineActivityData activityData)
@@ -124,10 +127,15 @@ namespace GameClient
             OnlineManagerHelper.ReceiveTimeSpeedOrder(activityData);
         }
 
-        public static void StopOnlineActivity()
+        private static void SendRequestedMap(OnlineActivityData visitData)
         {
-            OnlineActivityData visitData = new OnlineActivityData();
-            visitData.activityStepMode = OnlineActivityStepMode.Stop;
+            visitData.activityStepMode = OnlineActivityStepMode.Accept;
+            visitData.mapHumans = OnlineManagerHelper.GetActivityHumanBytes();
+            visitData.mapAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
+            visitData.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
+
+            MapData mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
+            visitData.mapDetails = Serializer.ConvertObjectToBytes(mapData);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
             Network.listener.EnqueuePacket(packet);
@@ -172,7 +180,7 @@ namespace GameClient
             MapData mapData = (MapData)Serializer.ConvertBytesToObject(visitData.mapDetails);
 
             Action r1 = delegate { JoinMap(mapData, visitData); };
-            Action r2 = delegate { StopOnlineActivity(); };
+            Action r2 = delegate { RequestStopOnlineActivity(); };
             if (!ModManager.CheckIfMapHasConflictingMods(mapData)) r1.Invoke();
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, r2));
         }
@@ -180,7 +188,7 @@ namespace GameClient
         private static void OnActivityReject()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the visit!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the activity!"));
         }
 
         private static void OnActivityUnavailable()
@@ -194,28 +202,20 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
             else
             {
+                foreach (Pawn pawn in nonFactionPawns.ToArray())
+                {
+                    if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.RemovePawn(pawn);
+                    pawn.Destroy();
+                }
+
+                if (!isHost) CaravanExitMapUtility.ExitMapAndCreateCaravan(factionPawns, Faction.OfPlayer, 0, Direction8Way.North, onlineMap.Tile);
+
                 OnlineManagerHelper.SetHost(false);
 
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Online activity ended"));
-
-                foreach (Pawn pawn in nonFactionPawns.ToArray()) pawn.Destroy();
-
                 ClientValues.ToggleOnlineFunction(OnlineActivityType.None);
+
+                DialogManager.PushNewDialog(new RT_Dialog_OK("Online activity ended"));
             }
-        }
-
-        private static void SendRequestedMap(OnlineActivityData visitData)
-        {
-            visitData.activityStepMode = OnlineActivityStepMode.Accept;
-            visitData.mapHumans = OnlineManagerHelper.GetActivityHumanBytes();
-            visitData.mapAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
-            visitData.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
-
-            MapData mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
-            visitData.mapDetails = Serializer.ConvertObjectToBytes(mapData);
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
-            Network.listener.EnqueuePacket(packet);
         }
     }
 

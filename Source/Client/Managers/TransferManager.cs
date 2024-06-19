@@ -401,10 +401,9 @@ namespace GameClient
                 ClientValues.outgoingManifest.humanDatas.Add(Serializer.ConvertObjectToBytes
                     (HumanScribeManager.HumanToString(pawn, false)));
 
-                if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
-                {
-                    Find.WorldPawns.RemovePawn(pawn);
-                }
+                if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.RemovePawn(pawn);
+
+                pawn.Destroy();
             }
 
             else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
@@ -414,10 +413,9 @@ namespace GameClient
                 ClientValues.outgoingManifest.animalDatas.Add(Serializer.ConvertObjectToBytes
                     (AnimalScribeManager.AnimalToString(pawn)));
 
-                if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn))
-                {
-                    Find.WorldPawns.RemovePawn(pawn);
-                }
+                if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.RemovePawn(pawn);
+
+                pawn.Destroy();
             }
 
             else

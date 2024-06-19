@@ -222,7 +222,7 @@ namespace GameClient
                         ClientValues.chosenCaravan = caravan;
 
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Raid Mode", "Please choose your raid mode",
-                            "Online", "Offline",
+                            "[BETA] Online", "Offline",
                             delegate { OnlineManager.RequestOnlineActivity(OnlineActivityType.Raid); },
                             delegate { OfflineRaidManager.RequestOfflineRaid(); },
                             null);
@@ -242,7 +242,7 @@ namespace GameClient
                         ClientValues.chosenCaravan = caravan;
 
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
-                            "Online", "Offline",
+                            "[BETA] Online", "Offline",
                             delegate { OnlineManager.RequestOnlineActivity(OnlineActivityType.Visit); },
                             delegate { OfflineVisitManager.RequestOfflineVisit(); },
                             null);
