@@ -25,6 +25,8 @@ namespace GameClient
 
         public static OnlineActivityType currentRealTimeEvent;
 
+        public static OfflineActivityType latestOfflineActivity;
+
         public static Settlement chosenSettlement;
         public static Caravan chosenCaravan;
         public static Site chosenSite;
@@ -72,6 +74,8 @@ namespace GameClient
 
         public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }
 
+        public static void ToggleOfflineFunction(OfflineActivityType type) { latestOfflineActivity = type; }
+
         public static void ToggleChatScroll(bool mode) { OnlineChatManager.shouldScrollChat = mode; }
 
         public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
@@ -89,6 +93,7 @@ namespace GameClient
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleOnlineFunction(OnlineActivityType.None);
+            ToggleOfflineFunction(OfflineActivityType.None);
             ToggleSavingGame(false);
             ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);

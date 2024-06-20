@@ -18,9 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Offline\EventData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Offline\OfflineRaidData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Offline\OfflineSpyData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Offline\OfflineVisitData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Offline\OfflineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Online\OnlineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Online\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\CreationOrder.cs" />

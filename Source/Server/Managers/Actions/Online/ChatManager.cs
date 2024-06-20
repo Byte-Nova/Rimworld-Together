@@ -166,7 +166,7 @@ namespace GameServer
 
         private static void ChatStopOnlineActivityCommandAction()
         {
-            OnlineManager.SendVisitStop(targetClient);
+            OnlineActivityManager.SendVisitStop(targetClient);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace GameClient
             if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
             //Don't execute patch if is different than the online one
-            if (OnlineManager.onlineMap != map) return true;
+            if (OnlineActivityManager.onlineMap != map) return true;
             else
             {
                 if (ClientValues.isRealTimeHost)
@@ -42,7 +42,7 @@ namespace GameClient
                 {
                     //IF COMING FROM HOST
 
-                    if (OnlineManager.queuedThing == __instance)
+                    if (OnlineActivityManager.queuedThing == __instance)
                     {
                         OnlineManagerHelper.ClearThingQueue();
                         OnlineManagerHelper.AddThingToMap(__instance);
@@ -69,9 +69,9 @@ namespace GameClient
 
             //Don't execute patch if map doesn't contain the thing already
             bool shouldPatch = false;
-            if (OnlineManager.factionPawns.Contains(__instance)) shouldPatch = true;
-            else if (OnlineManager.nonFactionPawns.Contains(__instance)) shouldPatch = true;
-            else if (OnlineManager.mapThings.Contains(__instance)) shouldPatch = true;
+            if (OnlineActivityManager.factionPawns.Contains(__instance)) shouldPatch = true;
+            else if (OnlineActivityManager.nonFactionPawns.Contains(__instance)) shouldPatch = true;
+            else if (OnlineActivityManager.mapThings.Contains(__instance)) shouldPatch = true;
 
             if (!shouldPatch) return true;
             else
@@ -94,7 +94,7 @@ namespace GameClient
                 {
                     //IF COMING FROM HOST
 
-                    if (OnlineManager.queuedThing == __instance)
+                    if (OnlineActivityManager.queuedThing == __instance)
                     {
                         OnlineManagerHelper.ClearThingQueue();
                         OnlineManagerHelper.RemoveThingFromMap(__instance);
@@ -120,13 +120,13 @@ namespace GameClient
 
             //Don't execute patch if map doesn't contain the pawn
             bool shouldPatch = false;
-            if (OnlineManager.factionPawns.Contains(___pawn)) shouldPatch = true;
-            else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
+            if (OnlineActivityManager.factionPawns.Contains(___pawn)) shouldPatch = true;
+            else if (OnlineActivityManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
 
             if (!shouldPatch) return true;
             else
             {
-                if (OnlineManager.factionPawns.Contains(___pawn))
+                if (OnlineActivityManager.factionPawns.Contains(___pawn))
                 {
                     OnlineActivityData data = new OnlineActivityData();
                     data.activityStepMode = OnlineActivityStepMode.Action;
@@ -141,7 +141,7 @@ namespace GameClient
                 {
                     //IF COMING FROM HOST
 
-                    if (OnlineManager.queuedThing == ___pawn)
+                    if (OnlineActivityManager.queuedThing == ___pawn)
                     {
                         OnlineManagerHelper.ClearThingQueue();
                         return true;
@@ -164,7 +164,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (!OnlineManager.mapThings.Contains(__instance)) return true;
+            if (!OnlineActivityManager.mapThings.Contains(__instance)) return true;
             else
             {
                 if (ClientValues.isRealTimeHost)
@@ -182,7 +182,7 @@ namespace GameClient
                 {
                     //IF COMING FROM HOST
 
-                    if (OnlineManager.queuedThing == __instance)
+                    if (OnlineActivityManager.queuedThing == __instance)
                     {
                         OnlineManagerHelper.ClearThingQueue();
                         return true;
@@ -212,8 +212,8 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             bool shouldPatch = false;
-            if (OnlineManager.factionPawns.Contains(___pawn)) shouldPatch = true;
-            else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
+            if (OnlineActivityManager.factionPawns.Contains(___pawn)) shouldPatch = true;
+            else if (OnlineActivityManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
 
             if (!shouldPatch) return true;
             else
@@ -233,7 +233,7 @@ namespace GameClient
                 {
                     //IF COMING FROM HOST
 
-                    if (OnlineManager.queuedThing == ___pawn)
+                    if (OnlineActivityManager.queuedThing == ___pawn)
                     {
                         OnlineManagerHelper.ClearThingQueue();
                         return true;
@@ -257,8 +257,8 @@ namespace GameClient
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             bool shouldPatch = false;
-            if (OnlineManager.factionPawns.Contains(___pawn)) shouldPatch = true;
-            else if (OnlineManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
+            if (OnlineActivityManager.factionPawns.Contains(___pawn)) shouldPatch = true;
+            else if (OnlineActivityManager.nonFactionPawns.Contains(___pawn)) shouldPatch = true;
 
             if (!shouldPatch) return true;
             else
@@ -278,7 +278,7 @@ namespace GameClient
                 {
                     //IF COMING FROM HOST
 
-                    if (OnlineManager.queuedThing == ___pawn)
+                    if (OnlineActivityManager.queuedThing == ___pawn)
                     {
                         OnlineManagerHelper.ClearThingQueue();
                         return true;
@@ -317,7 +317,7 @@ namespace GameClient
             {
                 //IF COMING FROM HOST
 
-                if (OnlineManager.queuedGameCondition == cond)
+                if (OnlineActivityManager.queuedGameCondition == cond)
                 {
                     Logger.Warning($"Game condition > {cond}");
                     OnlineManagerHelper.ClearGameConditionQueue();
@@ -356,7 +356,7 @@ namespace GameClient
             {
                 //IF COMING FROM HOST
 
-                if (OnlineManager.queuedGameCondition == __instance)
+                if (OnlineActivityManager.queuedGameCondition == __instance)
                 {
                     Logger.Warning($"Remove game condition > {__instance}");
                     OnlineManagerHelper.ClearGameConditionQueue();
@@ -381,11 +381,11 @@ namespace GameClient
 
             if (ClientValues.isRealTimeHost)
             {
-                if (__instance.CurTimeSpeed > OnlineManager.maximumAllowedTimeSpeed) __instance.CurTimeSpeed = OnlineManager.maximumAllowedTimeSpeed;
+                if (__instance.CurTimeSpeed > OnlineActivityManager.maximumAllowedTimeSpeed) __instance.CurTimeSpeed = OnlineActivityManager.maximumAllowedTimeSpeed;
 
-                if (OnlineManager.queuedTimeSpeed != (int)__instance.CurTimeSpeed)
+                if (OnlineActivityManager.queuedTimeSpeed != (int)__instance.CurTimeSpeed)
                 {
-                    OnlineManager.queuedTimeSpeed = (int)__instance.CurTimeSpeed;
+                    OnlineActivityManager.queuedTimeSpeed = (int)__instance.CurTimeSpeed;
 
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
                     onlineActivityData.activityStepMode = OnlineActivityStepMode.TimeSpeed;
@@ -400,9 +400,9 @@ namespace GameClient
             {
                 //Always change the CurTimeSpeed to whatever last update we got from host
 
-                if (__instance.CurTimeSpeed != (TimeSpeed)OnlineManager.queuedTimeSpeed)
+                if (__instance.CurTimeSpeed != (TimeSpeed)OnlineActivityManager.queuedTimeSpeed)
                 {
-                    __instance.CurTimeSpeed = (TimeSpeed)OnlineManager.queuedTimeSpeed;
+                    __instance.CurTimeSpeed = (TimeSpeed)OnlineActivityManager.queuedTimeSpeed;
                 }
             }
 
@@ -418,7 +418,7 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
-            if (__instance.map != OnlineManager.onlineMap) return true;
+            if (__instance.map != OnlineActivityManager.onlineMap) return true;
 
             if (ClientValues.isRealTimeHost)
             {
@@ -438,7 +438,7 @@ namespace GameClient
             {
                 //IF COMING FROM HOST
 
-                if (OnlineManager.queuedWeather == newWeather)
+                if (OnlineActivityManager.queuedWeather == newWeather)
                 {
                     Logger.Warning($"Weather '{newWeather.defName}'");
                     OnlineManagerHelper.ClearWeatherQueue();
@@ -468,7 +468,7 @@ namespace GameClient
             {
                 //IF COMING FROM HOST
 
-                if (OnlineManager.queuedThing == __instance) return true;
+                if (OnlineActivityManager.queuedThing == __instance) return true;
 
                 //IF PLAYER ASKING FOR
 
@@ -491,7 +491,7 @@ namespace GameClient
             {
                 //IF COMING FROM HOST
 
-                if (OnlineManager.queuedThing == __instance) return true;
+                if (OnlineActivityManager.queuedThing == __instance) return true;
 
                 //IF PLAYER ASKING FOR
 
@@ -514,7 +514,7 @@ namespace GameClient
             {
                 //IF COMING FROM HOST
 
-                if (OnlineManager.queuedThing == __instance) return true;
+                if (OnlineActivityManager.queuedThing == __instance) return true;
 
                 //IF PLAYER ASKING FOR
 
@@ -534,7 +534,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            OnlineManager.RequestStopOnlineActivity();
+            OnlineActivityManager.RequestStopOnlineActivity();
         }
     }
 
@@ -547,7 +547,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            OnlineManager.RequestStopOnlineActivity();
+            OnlineActivityManager.RequestStopOnlineActivity();
         }
     }
 
@@ -560,7 +560,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            OnlineManager.RequestStopOnlineActivity();
+            OnlineActivityManager.RequestStopOnlineActivity();
         }
     }
 }

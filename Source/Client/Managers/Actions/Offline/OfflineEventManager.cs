@@ -244,7 +244,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
+            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent!", 
                 LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();
@@ -257,8 +257,6 @@ namespace GameClient
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
             silverToReturn.stackCount = eventCosts[DialogManager.selectedScrollButton];
             TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
         }

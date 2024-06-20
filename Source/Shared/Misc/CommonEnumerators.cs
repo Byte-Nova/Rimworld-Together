@@ -47,6 +47,8 @@
 
         public enum OnlineActivityType { None, Visit, Raid, Misc }
 
+        public enum OfflineActivityType { None, Visit, Raid, Spy }
+
         public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
 
         public enum CreationType { Human, Animal, Thing }

@@ -14,7 +14,7 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient
 {
-    public static class OnlineManager
+    public static class OnlineActivityManager
     {
         public static List<Pawn> factionPawns = new List<Pawn>();
         public static List<Pawn> nonFactionPawns = new List<Pawn>();
@@ -27,7 +27,7 @@ namespace GameClient
         public static GameCondition queuedGameCondition;
         public static TimeSpeed maximumAllowedTimeSpeed = TimeSpeed.Fast;
 
-        public static void ParseOnlinePacket(Packet packet)
+        public static void ParseOnlineActivityPacket(Packet packet)
         {
             OnlineActivityData data = (OnlineActivityData)Serializer.ConvertBytesToObject(packet.contents);
 
@@ -112,10 +112,10 @@ namespace GameClient
 
         public static void RequestStopOnlineActivity()
         {
-            OnlineActivityData visitData = new OnlineActivityData();
-            visitData.activityStepMode = OnlineActivityStepMode.Stop;
+            OnlineActivityData data = new OnlineActivityData();
+            data.activityStepMode = OnlineActivityStepMode.Stop;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -142,51 +142,51 @@ namespace GameClient
             //OnlineManagerHelper.ReceiveGameConditionOrder(activityData);
         }
 
-        private static void SendRequestedMap(OnlineActivityData visitData)
+        private static void SendRequestedMap(OnlineActivityData data)
         {
-            visitData.activityStepMode = OnlineActivityStepMode.Accept;
-            visitData.mapHumans = OnlineManagerHelper.GetActivityHumanBytes();
-            visitData.mapAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
-            visitData.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
+            data.activityStepMode = OnlineActivityStepMode.Accept;
+            data.mapHumans = OnlineManagerHelper.GetActivityHumanBytes();
+            data.mapAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
+            data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
             //visitData.weatherOrder = OnlineManagerHelper.CreateWeatherOrder();
             //visitData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder();
 
             MapData mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
-            visitData.mapDetails = Serializer.ConvertObjectToBytes(mapData);
+            data.mapDetails = Serializer.ConvertObjectToBytes(mapData);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
-        private static void OnActivityRequest(OnlineActivityData activityData)
+        private static void OnActivityRequest(OnlineActivityData data)
         {
             Action r1 = delegate
             {
                 OnlineManagerHelper.ClearAllQueues();
                 ClientValues.ToggleRealTimeHost(true);
 
-                onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == activityData.targetTile).Map;
+                onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == data.targetTile).Map;
                 factionPawns = OnlineManagerHelper.GetMapPawns().ToList();
                 mapThings = RimworldManager.GetThingsInMap(onlineMap).OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToList();
 
-                SendRequestedMap(activityData);
-                OnlineManagerHelper.SpawnMapPawns(activityData);
+                SendRequestedMap(data);
+                OnlineManagerHelper.SpawnMapPawns(data);
 
                 //ALWAYS LAST TO MAKE SURE WE DON'T SEND NON-NEEDED DETAILS BEFORE EVERYTHING IS READY
-                ClientValues.ToggleOnlineFunction(activityData.activityType);
+                ClientValues.ToggleOnlineFunction(data.activityType);
             };
 
             Action r2 = delegate
             {
-                activityData.activityStepMode = OnlineActivityStepMode.Reject;
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), activityData);
+                data.activityStepMode = OnlineActivityStepMode.Reject;
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                 Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo promptDialog = null;
-            if (activityData.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo($"Visited by {activityData.otherPlayerName}, accept?", r1, r2);
-            else if (activityData.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo($"Raided by {activityData.otherPlayerName}, accept?", r1, r2);
-            else if (activityData.activityType == OnlineActivityType.Misc) promptDialog = new RT_Dialog_YesNo($"Misc by {activityData.otherPlayerName}, accept?", r1, r2);
+            if (data.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo($"Visited by {data.otherPlayerName}, accept?", r1, r2);
+            else if (data.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo($"Raided by {data.otherPlayerName}, accept?", r1, r2);
+            else if (data.activityType == OnlineActivityType.Misc) promptDialog = new RT_Dialog_YesNo($"Misc by {data.otherPlayerName}, accept?", r1, r2);
 
             DialogManager.PushNewDialog(promptDialog);
         }
@@ -247,7 +247,7 @@ namespace GameClient
             //CAPTURE COUNT OF CERTAIN JOBS
 
             PawnOrder pawnOrder = new PawnOrder();
-            pawnOrder.pawnIndex = OnlineManager.factionPawns.IndexOf(pawn);
+            pawnOrder.pawnIndex = OnlineActivityManager.factionPawns.IndexOf(pawn);
 
             pawnOrder.defName = newJob.def.defName;
             pawnOrder.targets = GetActionTargets(newJob);
@@ -297,7 +297,7 @@ namespace GameClient
         public static DestructionOrder CreateDestructionOrder(Thing thing)
         {
             DestructionOrder destructionOrder = new DestructionOrder();
-            destructionOrder.indexToDestroy = OnlineManager.mapThings.IndexOf(thing);
+            destructionOrder.indexToDestroy = OnlineActivityManager.mapThings.IndexOf(thing);
 
             return destructionOrder;
         }
@@ -309,7 +309,7 @@ namespace GameClient
             damageOrder.damageAmount = damageInfo.Amount;
             damageOrder.ignoreArmor = damageInfo.IgnoreArmor;
             damageOrder.armorPenetration = damageInfo.ArmorPenetrationInt;
-            damageOrder.targetIndex = OnlineManager.mapThings.IndexOf(afectedThing);
+            damageOrder.targetIndex = OnlineActivityManager.mapThings.IndexOf(afectedThing);
             if (damageInfo.Weapon != null) damageOrder.weaponDefName = damageInfo.Weapon.defName;
             if (damageInfo.HitPart != null) damageOrder.hitPartDefName = damageInfo.HitPart.def.defName;
 
@@ -323,16 +323,16 @@ namespace GameClient
 
             //Invert the enum because it needs to be mirrored for the non-host
 
-            if (OnlineManager.factionPawns.Contains(pawn))
+            if (OnlineActivityManager.factionPawns.Contains(pawn))
             {
                 hediffOrder.pawnFaction = OnlineActivityTargetFaction.NonFaction;
-                hediffOrder.hediffTargetIndex = OnlineManager.factionPawns.IndexOf(pawn);
+                hediffOrder.hediffTargetIndex = OnlineActivityManager.factionPawns.IndexOf(pawn);
             }
 
             else
             {
                 hediffOrder.pawnFaction = OnlineActivityTargetFaction.Faction;
-                hediffOrder.hediffTargetIndex = OnlineManager.nonFactionPawns.IndexOf(pawn);
+                hediffOrder.hediffTargetIndex = OnlineActivityManager.nonFactionPawns.IndexOf(pawn);
             }
 
             hediffOrder.hediffDefName = hediff.def.defName;
@@ -346,7 +346,7 @@ namespace GameClient
         public static TimeSpeedOrder CreateTimeSpeedOrder()
         {
             TimeSpeedOrder timeSpeedOrder = new TimeSpeedOrder();
-            timeSpeedOrder.targetTimeSpeed = OnlineManager.queuedTimeSpeed;
+            timeSpeedOrder.targetTimeSpeed = OnlineActivityManager.queuedTimeSpeed;
             timeSpeedOrder.targetMapTicks = RimworldManager.GetGameTicks();
 
             return timeSpeedOrder;
@@ -378,7 +378,7 @@ namespace GameClient
 
             try
             {
-                Pawn pawn = OnlineManager.nonFactionPawns[data.pawnOrder.pawnIndex];
+                Pawn pawn = OnlineActivityManager.nonFactionPawns[data.pawnOrder.pawnIndex];
                 IntVec3 jobPositionStart = ValueParser.ArrayToIntVec3(data.pawnOrder.updatedPosition);
                 Rot4 jobRotationStart = ValueParser.IntToRot4(data.pawnOrder.updatedRotation);
                 ChangePawnTransform(pawn, jobPositionStart, jobRotationStart);
@@ -436,7 +436,7 @@ namespace GameClient
             if (!ClientValues.isRealTimeHost)
             {
                 EnqueueThing(toSpawn);
-                RimworldManager.PlaceThingInMap(toSpawn, OnlineManager.onlineMap);
+                RimworldManager.PlaceThingInMap(toSpawn, OnlineActivityManager.onlineMap);
             }
         }
 
@@ -444,7 +444,7 @@ namespace GameClient
         {
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            Thing toDestroy = OnlineManager.mapThings[data.destructionOrder.indexToDestroy];
+            Thing toDestroy = OnlineActivityManager.mapThings[data.destructionOrder.indexToDestroy];
 
             //Request
             if (ClientValues.isRealTimeHost) toDestroy.Destroy(DestroyMode.Deconstruct);
@@ -473,7 +473,7 @@ namespace GameClient
                 //Request
                 if (!ClientValues.isRealTimeHost)
                 {
-                    Thing toApplyTo = OnlineManager.mapThings[data.damageOrder.targetIndex];
+                    Thing toApplyTo = OnlineActivityManager.mapThings[data.damageOrder.targetIndex];
 
                     EnqueueThing(toApplyTo);
                     toApplyTo.TakeDamage(damageInfo);
@@ -489,8 +489,8 @@ namespace GameClient
             try
             {
                 Pawn toTarget = null;
-                if (data.hediffOrder.pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineManager.factionPawns[data.hediffOrder.hediffTargetIndex];
-                else toTarget = OnlineManager.nonFactionPawns[data.hediffOrder.hediffTargetIndex];
+                if (data.hediffOrder.pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineActivityManager.factionPawns[data.hediffOrder.hediffTargetIndex];
+                else toTarget = OnlineActivityManager.nonFactionPawns[data.hediffOrder.hediffTargetIndex];
 
                 if (!ClientValues.isRealTimeHost)
                 {
@@ -578,7 +578,7 @@ namespace GameClient
                 WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == data.weatherOrder.weatherDefName);
 
                 EnqueueWeather(weatherDef);
-                OnlineManager.onlineMap.weatherManager.TransitionTo(weatherDef);
+                OnlineActivityManager.onlineMap.weatherManager.TransitionTo(weatherDef);
             }
             catch (Exception e) { Logger.Warning($"Couldn't apply weather order. Reason: {e}"); }
         }
@@ -591,17 +591,17 @@ namespace GameClient
         {
             if (DeepScribeHelper.CheckIfThingIsHuman(thing) || DeepScribeHelper.CheckIfThingIsAnimal(thing))
             {
-                if (ClientValues.isRealTimeHost) OnlineManager.factionPawns.Add((Pawn)thing);
-                else OnlineManager.nonFactionPawns.Add((Pawn)thing);
+                if (ClientValues.isRealTimeHost) OnlineActivityManager.factionPawns.Add((Pawn)thing);
+                else OnlineActivityManager.nonFactionPawns.Add((Pawn)thing);
             }
-            else OnlineManager.mapThings.Add(thing);
+            else OnlineActivityManager.mapThings.Add(thing);
         }
 
         public static void RemoveThingFromMap(Thing thing)
         {
-            if (OnlineManager.factionPawns.Contains(thing)) OnlineManager.factionPawns.Remove((Pawn)thing);
-            else if (OnlineManager.nonFactionPawns.Contains(thing)) OnlineManager.nonFactionPawns.Remove((Pawn)thing);
-            else OnlineManager.mapThings.Remove(thing);
+            if (OnlineActivityManager.factionPawns.Contains(thing)) OnlineActivityManager.factionPawns.Remove((Pawn)thing);
+            else if (OnlineActivityManager.nonFactionPawns.Contains(thing)) OnlineActivityManager.nonFactionPawns.Remove((Pawn)thing);
+            else OnlineActivityManager.mapThings.Remove(thing);
         }
 
         public static void ClearAllQueues()
@@ -612,21 +612,21 @@ namespace GameClient
             ClearGameConditionQueue();
         }
 
-        public static void EnqueueThing(Thing thing) { OnlineManager.queuedThing = thing; }
+        public static void EnqueueThing(Thing thing) { OnlineActivityManager.queuedThing = thing; }
 
-        public static void EnqueueTimeSpeed(int timeSpeed) { OnlineManager.queuedTimeSpeed = timeSpeed; }
+        public static void EnqueueTimeSpeed(int timeSpeed) { OnlineActivityManager.queuedTimeSpeed = timeSpeed; }
 
-        public static void EnqueueWeather(WeatherDef weatherDef) { OnlineManager.queuedWeather = weatherDef; }
+        public static void EnqueueWeather(WeatherDef weatherDef) { OnlineActivityManager.queuedWeather = weatherDef; }
 
-        public static void EnqueueGameCondition(GameCondition gameCondition) { OnlineManager.queuedGameCondition = gameCondition; }
+        public static void EnqueueGameCondition(GameCondition gameCondition) { OnlineActivityManager.queuedGameCondition = gameCondition; }
 
-        public static void ClearThingQueue() { OnlineManager.queuedThing = null; }
+        public static void ClearThingQueue() { OnlineActivityManager.queuedThing = null; }
 
-        public static void ClearTimeSpeedQueue() { OnlineManager.queuedTimeSpeed = 0; }
+        public static void ClearTimeSpeedQueue() { OnlineActivityManager.queuedTimeSpeed = 0; }
 
-        public static void ClearWeatherQueue() { OnlineManager.queuedWeather = null; }
+        public static void ClearWeatherQueue() { OnlineActivityManager.queuedWeather = null; }
 
-        public static void ClearGameConditionQueue() { OnlineManager.queuedGameCondition = null; }
+        public static void ClearGameConditionQueue() { OnlineActivityManager.queuedGameCondition = null; }
 
         public static string[] GetActionTargets(Job job)
         {
@@ -691,28 +691,28 @@ namespace GameClient
                 switch (pawnOrder.targetTypes[index])
                 {
                     case ActionTargetType.Thing:
-                        toGet = new LocalTargetInfo(OnlineManager.mapThings[pawnOrder.targetIndexes[index]]);
+                        toGet = new LocalTargetInfo(OnlineActivityManager.mapThings[pawnOrder.targetIndexes[index]]);
                         break;
 
                     case ActionTargetType.Human:
                         if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.Faction)
                         {
-                            toGet = new LocalTargetInfo(OnlineManager.factionPawns[pawnOrder.targetIndexes[index]]);
+                            toGet = new LocalTargetInfo(OnlineActivityManager.factionPawns[pawnOrder.targetIndexes[index]]);
                         }
                         else if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.NonFaction)
                         {
-                            toGet = new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.targetIndexes[index]]);
+                            toGet = new LocalTargetInfo(OnlineActivityManager.nonFactionPawns[pawnOrder.targetIndexes[index]]);
                         }
                         break;
 
                     case ActionTargetType.Animal:
                         if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.Faction)
                         {
-                            toGet = new LocalTargetInfo(OnlineManager.factionPawns[pawnOrder.targetIndexes[index]]);
+                            toGet = new LocalTargetInfo(OnlineActivityManager.factionPawns[pawnOrder.targetIndexes[index]]);
                         }
                         else if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.NonFaction)
                         {
-                            toGet = new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.targetIndexes[index]]);
+                            toGet = new LocalTargetInfo(OnlineActivityManager.nonFactionPawns[pawnOrder.targetIndexes[index]]);
                         }
                         break;
 
@@ -755,28 +755,28 @@ namespace GameClient
                     switch (actionTargetTypes[index])
                     {
                         case ActionTargetType.Thing:
-                            toGet.Add(new LocalTargetInfo(OnlineManager.mapThings[actionTargetIndexes[i]]));
+                            toGet.Add(new LocalTargetInfo(OnlineActivityManager.mapThings[actionTargetIndexes[i]]));
                             break;
 
                         case ActionTargetType.Human:
                             if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.Faction)
                             {
-                                toGet.Add(new LocalTargetInfo(OnlineManager.factionPawns[pawnOrder.targetIndexes[index]]));
+                                toGet.Add(new LocalTargetInfo(OnlineActivityManager.factionPawns[pawnOrder.targetIndexes[index]]));
                             }
                             else if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.NonFaction)
                             {
-                                toGet.Add(new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.targetIndexes[index]]));
+                                toGet.Add(new LocalTargetInfo(OnlineActivityManager.nonFactionPawns[pawnOrder.targetIndexes[index]]));
                             }
                             break;
 
                         case ActionTargetType.Animal:
                             if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.Faction)
                             {
-                                toGet.Add(new LocalTargetInfo(OnlineManager.factionPawns[pawnOrder.targetIndexes[index]]));
+                                toGet.Add(new LocalTargetInfo(OnlineActivityManager.factionPawns[pawnOrder.targetIndexes[index]]));
                             }
                             else if (pawnOrder.targetFactions[index] == OnlineActivityTargetFaction.NonFaction)
                             {
-                                toGet.Add(new LocalTargetInfo(OnlineManager.nonFactionPawns[pawnOrder.targetIndexes[index]]));
+                                toGet.Add(new LocalTargetInfo(OnlineActivityManager.nonFactionPawns[pawnOrder.targetIndexes[index]]));
                             }
                             break;
 
@@ -809,9 +809,9 @@ namespace GameClient
                     {
                         //Faction and non-faction pawns get inverted in here to send into the other side
 
-                        if (OnlineManager.factionPawns.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.NonFaction);
-                        else if (OnlineManager.nonFactionPawns.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.Faction);
-                        else if (OnlineManager.mapThings.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.None);
+                        if (OnlineActivityManager.factionPawns.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.NonFaction);
+                        else if (OnlineActivityManager.nonFactionPawns.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.Faction);
+                        else if (OnlineActivityManager.mapThings.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.None);
                     }
                 }
                 catch { Logger.Error($"failed to parse {target}"); }
@@ -838,9 +838,9 @@ namespace GameClient
                     {
                         //Faction and non-faction pawns get inverted in here to send into the other side
 
-                        if (OnlineManager.factionPawns.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.NonFaction);
-                        else if (OnlineManager.nonFactionPawns.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.Faction);
-                        else if (OnlineManager.mapThings.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.None);
+                        if (OnlineActivityManager.factionPawns.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.NonFaction);
+                        else if (OnlineActivityManager.nonFactionPawns.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.Faction);
+                        else if (OnlineActivityManager.mapThings.Contains(selectedQueue[i].Thing)) targetFactions.Add(OnlineActivityTargetFaction.None);
                     }
                 }
                 catch { Logger.Error($"failed to parse {selectedQueue[i]}"); }
@@ -865,9 +865,9 @@ namespace GameClient
                     if (target.Thing == null) targetIndexList.Add(0);
                     else
                     {
-                        if (OnlineManager.factionPawns.Contains(target.Thing)) targetIndexList.Add(OnlineManager.factionPawns.IndexOf((Pawn)target.Thing));
-                        else if (OnlineManager.nonFactionPawns.Contains(target.Thing)) targetIndexList.Add(OnlineManager.nonFactionPawns.IndexOf((Pawn)target.Thing));
-                        else if (OnlineManager.mapThings.Contains(target.Thing)) targetIndexList.Add(OnlineManager.mapThings.IndexOf(target.Thing));
+                        if (OnlineActivityManager.factionPawns.Contains(target.Thing)) targetIndexList.Add(OnlineActivityManager.factionPawns.IndexOf((Pawn)target.Thing));
+                        else if (OnlineActivityManager.nonFactionPawns.Contains(target.Thing)) targetIndexList.Add(OnlineActivityManager.nonFactionPawns.IndexOf((Pawn)target.Thing));
+                        else if (OnlineActivityManager.mapThings.Contains(target.Thing)) targetIndexList.Add(OnlineActivityManager.mapThings.IndexOf(target.Thing));
                     }
                 }
                 catch { Logger.Error($"failed to parse {target}"); }
@@ -892,9 +892,9 @@ namespace GameClient
                     if (selectedQueue[i].Thing == null) targetIndexList.Add(0);
                     else
                     {
-                        if (OnlineManager.factionPawns.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineManager.factionPawns.IndexOf((Pawn)selectedQueue[i].Thing));
-                        else if (OnlineManager.nonFactionPawns.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineManager.nonFactionPawns.IndexOf((Pawn)selectedQueue[i].Thing));
-                        else if (OnlineManager.mapThings.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineManager.mapThings.IndexOf(selectedQueue[i].Thing));
+                        if (OnlineActivityManager.factionPawns.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineActivityManager.factionPawns.IndexOf((Pawn)selectedQueue[i].Thing));
+                        else if (OnlineActivityManager.nonFactionPawns.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineActivityManager.nonFactionPawns.IndexOf((Pawn)selectedQueue[i].Thing));
+                        else if (OnlineActivityManager.mapThings.Contains(selectedQueue[i].Thing)) targetIndexList.Add(OnlineActivityManager.mapThings.IndexOf(selectedQueue[i].Thing));
                     }
                 }
                 catch { Logger.Error($"failed to parse {selectedQueue[i]}"); }
@@ -1005,25 +1005,25 @@ namespace GameClient
         {
             if (ClientValues.isRealTimeHost)
             {
-                OnlineManager.nonFactionPawns = GetCaravanPawns(activityData).ToList();
-                foreach (Pawn pawn in OnlineManager.nonFactionPawns)
+                OnlineActivityManager.nonFactionPawns = GetCaravanPawns(activityData).ToList();
+                foreach (Pawn pawn in OnlineActivityManager.nonFactionPawns)
                 {
                     pawn.SetFaction(FactionValues.allyPlayer);
 
                     //Initial position and rotation left to default since caravan doesn't have it stored
-                    GenSpawn.Spawn(pawn, OnlineManager.onlineMap.Center, OnlineManager.onlineMap, Rot4.Random);
+                    GenSpawn.Spawn(pawn, OnlineActivityManager.onlineMap.Center, OnlineActivityManager.onlineMap, Rot4.Random);
                 }
             }
 
             else
             {
-                OnlineManager.nonFactionPawns = GetMapPawns(activityData).ToList();
-                foreach (Pawn pawn in OnlineManager.nonFactionPawns)
+                OnlineActivityManager.nonFactionPawns = GetMapPawns(activityData).ToList();
+                foreach (Pawn pawn in OnlineActivityManager.nonFactionPawns)
                 {
                     pawn.SetFaction(FactionValues.allyPlayer);
 
                     //Initial position and rotation grabbed from online details
-                    GenSpawn.Spawn(pawn, pawn.Position, OnlineManager.onlineMap, pawn.Rotation);
+                    GenSpawn.Spawn(pawn, pawn.Position, OnlineActivityManager.onlineMap, pawn.Rotation);
                 }
             }
         }
@@ -1032,12 +1032,12 @@ namespace GameClient
         {
             if (ClientValues.isRealTimeHost)
             {
-                List<Pawn> mapHumans = OnlineManager.onlineMap.mapPawns.AllPawns
+                List<Pawn> mapHumans = OnlineActivityManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<Pawn> mapAnimals = OnlineManager.onlineMap.mapPawns.AllPawns
+                List<Pawn> mapAnimals = OnlineActivityManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -1118,7 +1118,7 @@ namespace GameClient
         {
             if (ClientValues.isRealTimeHost)
             {
-                List<Pawn> mapHumans = OnlineManager.onlineMap.mapPawns.AllPawns
+                List<Pawn> mapHumans = OnlineActivityManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -1155,7 +1155,7 @@ namespace GameClient
         {
             if (ClientValues.isRealTimeHost)
             {
-                List<Pawn> mapAnimals = OnlineManager.onlineMap.mapPawns.AllPawns
+                List<Pawn> mapAnimals = OnlineActivityManager.onlineMap.mapPawns.AllPawns
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();

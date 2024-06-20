@@ -4,9 +4,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer
 {
-    public static class OnlineManager
+    public static class OnlineActivityManager
     {
-        public static void ParseVisitPacket(ServerClient client, Packet packet)
+        public static void ParseOnlineActivityPacket(ServerClient client, Packet packet)
         {
             OnlineActivityData visitData = (OnlineActivityData)Serializer.ConvertBytesToObject(packet.contents);
 
@@ -95,9 +95,9 @@ namespace GameServer
             }
         }
 
-        private static void AcceptVisitRequest(ServerClient client, OnlineActivityData visitData)
+        private static void AcceptVisitRequest(ServerClient client, OnlineActivityData data)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitData.fromTile);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.fromTile);
             if (settlementFile == null) return;
             else
             {
@@ -108,15 +108,15 @@ namespace GameServer
                     client.inVisitWith = toGet;
                     toGet.inVisitWith = client;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
         }
 
-        private static void RejectVisitRequest(ServerClient client, OnlineActivityData visitData)
+        private static void RejectVisitRequest(ServerClient client, OnlineActivityData data)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(visitData.fromTile);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.fromTile);
             if (settlementFile == null) return;
             else
             {
@@ -124,24 +124,24 @@ namespace GameServer
                 if (toGet == null) return;
                 else
                 {
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
         }
 
-        private static void SendVisitActions(ServerClient client, OnlineActivityData visitData)
+        private static void SendVisitActions(ServerClient client, OnlineActivityData data)
         {
             if (client.inVisitWith == null)
             {
-                visitData.activityStepMode = OnlineActivityStepMode.Stop;
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+                data.activityStepMode = OnlineActivityStepMode.Stop;
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                 client.listener.EnqueuePacket(packet);
             }
 
             else
             {
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                 client.inVisitWith.listener.EnqueuePacket(packet);
             }
         }

@@ -29,7 +29,7 @@ namespace GameClient
             if (Network.state != NetworkState.Connected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
-            if (OnlineManager.nonFactionPawns.Contains(___pawn))
+            if (OnlineActivityManager.nonFactionPawns.Contains(___pawn))
             {
                 if (newJob.exitMapOnArrival) return false;
             }

@@ -69,12 +69,12 @@ namespace GameServer
 
         public static void OnlineActivityPacket(ServerClient client, Packet packet)
         {
-            OnlineManager.ParseVisitPacket(client, packet);
+            OnlineActivityManager.ParseOnlineActivityPacket(client, packet);
         }
 
-        public static void OfflineVisitPacket(ServerClient client, Packet packet)
+        public static void OfflineActivityPacket(ServerClient client, Packet packet)
         {
-            OfflineVisitManager.ParseOfflineVisitPacket(client, packet);
+            OfflineActivityManager.ParseOfflineActivityPacket(client, packet);
         }
 
         public static void ChatPacket(ServerClient client, Packet packet)
@@ -90,16 +90,6 @@ namespace GameServer
         public static void MapPacket(ServerClient client, Packet packet)
         {
             MapManager.SaveUserMap(client, packet);
-        }
-
-        public static void RaidPacket(ServerClient client, Packet packet)
-        {
-            OfflineRaidManager.ParseRaidPacket(client, packet);
-        }
-
-        public static void SpyPacket(ServerClient client, Packet packet)
-        {
-            OfflineSpyManager.ParseSpyPacket(client, packet);
         }
 
         public static void SettlementPacket(ServerClient client, Packet packet)
