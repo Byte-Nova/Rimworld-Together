@@ -207,7 +207,7 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        OfflineSpyManager.RequestSpy();
+                        OfflineActivityManager.RequestOfflineActivity(OfflineActivityType.Spy);
                     }
                 };
 
@@ -221,7 +221,13 @@ namespace GameClient
                         ClientValues.chosenSettlement = __instance;
                         ClientValues.chosenCaravan = caravan;
 
-                        OfflineRaidManager.RequestRaid();
+                        RT_Dialog_2Button d1 = new RT_Dialog_2Button("Raid Mode", "Please choose your raid mode",
+                            "[BETA] Online", "Offline",
+                            delegate { OnlineActivityManager.RequestOnlineActivity(OnlineActivityType.Raid); },
+                            delegate { OfflineActivityManager.RequestOfflineActivity(OfflineActivityType.Raid); },
+                            null);
+
+                        DialogManager.PushNewDialog(d1);
                     }
                 };
 
@@ -236,9 +242,9 @@ namespace GameClient
                         ClientValues.chosenCaravan = caravan;
 
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
-                            "Online", "Offline",
-                            delegate { OnlineVisitManager.RequestVisit(); },
-                            delegate { OfflineVisitManager.RequestOfflineVisit(); },
+                            "[BETA] Online", "Offline",
+                            delegate { OnlineActivityManager.RequestOnlineActivity(OnlineActivityType.Visit); },
+                            delegate { OfflineActivityManager.RequestOfflineActivity(OfflineActivityType.Visit); },
                             null);
 
                         DialogManager.PushNewDialog(d1);
@@ -274,7 +280,7 @@ namespace GameClient
                         ClientValues.chosenCaravan = caravan;
 
                         RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
-                            EventManager.eventNames, EventManager.ShowSendEventDialog, null);
+                            OfflineEventManager.eventNames, OfflineEventManager.ShowSendEventDialog, null);
 
                         DialogManager.PushNewDialog(d1);
                     }

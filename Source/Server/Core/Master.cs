@@ -147,9 +147,6 @@ namespace GameServer
             CustomDifficultyManager.LoadCustomDifficulty();
             OnlineMarketManager.LoadMarketStock();
 
-            //Keep this function in here until next release, after that it can safely be removed
-            ExecuteBackwardsCompatiblePatch();
-
             Logger.Title($"----------------------------------------");
         }
 
@@ -256,43 +253,6 @@ namespace GameServer
             {
                 Serializer.SerializeToFile(path, serverConfig);
             }
-        }
-
-        //Keep this function in here until next release, after that it can safely be removed
-
-        public static void ExecuteBackwardsCompatiblePatch()
-        {
-            foreach (string file in Directory.GetFiles(usersPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", UserManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            foreach (string file in Directory.GetFiles(sitesPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", SiteManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            foreach (string file in Directory.GetFiles(settlementsPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", SettlementManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            foreach (string file in Directory.GetFiles(mapsPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", MapManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            foreach (string file in Directory.GetFiles(factionsPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", OnlineFactionManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            Logger.Warning($"Converted old server data");
         }
     }
 }

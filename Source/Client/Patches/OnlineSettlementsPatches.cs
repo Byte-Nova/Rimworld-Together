@@ -3,6 +3,7 @@ using RimWorld.Planet;
 using System.Linq;
 using Verse;
 using Verse.AI;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -15,29 +16,7 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
 
             if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
-
             else return true;
-        }
-    }
-
-    [HarmonyPatch(typeof(Pawn_JobTracker), "StartJob")]
-    public static class PatchJobInformation
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(Job newJob, Pawn ___pawn)
-        {
-            if (Network.state == NetworkState.Connected)
-            {
-                if (ClientValues.isInVisit)
-                {
-                    if (OnlineVisitManager.nonFactionPawns.Contains(___pawn))
-                    {
-                        if (newJob.exitMapOnArrival) return false;
-                    }
-                }
-            }
-
-            return true;
         }
     }
 }

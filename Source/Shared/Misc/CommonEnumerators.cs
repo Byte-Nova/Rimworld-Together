@@ -4,8 +4,6 @@
     {
         public enum LogMode { Message, Warning, Error, Title }
 
-        public enum FetchMode { Host, Player }
-
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
         public enum EventStepMode { Send, Receive, Recover }
@@ -39,17 +37,23 @@
 
         public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod, Market }
 
-        public enum OfflineVisitStepMode { Request, Deny, Unavailable }
+        public enum OfflineActivityStepMode { Request, Deny, Unavailable }
 
-        public enum OfflineRaidStepMode { Request, Deny, Unavailable }
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, Kill, TimeSpeed, GameCondition, Weather, Stop }
 
-        public enum OfflineSpyStepMode { Request, Deny, Unavailable }
+        public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 
-        public enum VisitStepMode { Request, Accept, Reject, Unavailable, Action, Stop }
+        public enum OnlineActivityApplyMode { Add, Remove }
+
+        public enum OnlineActivityType { None, Visit, Raid }
+
+        public enum OfflineActivityType { None, Visit, Raid, Spy }
+
+        public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
+
+        public enum CreationType { Human, Animal, Thing }
 
         public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward, WorkerError }
-
-        public enum ActionTargetType { Thing, Human, Animal, Cell }
 
         public enum SettlementStepMode { Add, Remove }
 

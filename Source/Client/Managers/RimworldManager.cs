@@ -3,6 +3,7 @@ using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
 using Verse;
+using Verse.AI;
 
 namespace GameClient
 {
@@ -93,6 +94,114 @@ namespace GameClient
             Find.LetterStack.ReceiveLetter(title,
                 description,
                 letterType);
+        }
+
+        public static int GetGameTicks() { return Find.TickManager.TicksSinceSettle; }
+
+        public static void SetGameTicks(int newGameTicks) { Find.TickManager.DebugSetTicksGame(newGameTicks); }
+
+        public static JobDef GetJobFromDef(string defToFind) { return DefDatabase<JobDef>.AllDefs.ToList().Find(fetch => fetch.defName == defToFind); }
+
+        public static Job SetJobFromDef(JobDef jobDef, LocalTargetInfo targetA, LocalTargetInfo targetB, LocalTargetInfo targetC)
+        {
+            return JobMaker.MakeJob(jobDef, targetA, targetB, targetC);
+        }
+
+        public static Thing[] GetThingsInMap(Map map)
+        {
+            return map.listerThings.AllThings.Where(fetch =>
+                !DeepScribeHelper.CheckIfThingIsHuman(fetch) &&
+                !DeepScribeHelper.CheckIfThingIsAnimal(fetch))
+                .ToArray();
+        }
+
+        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct)
+        {
+            if (thing is Pawn) GenSpawn.Spawn(thing, thing.Position, map, thing.Rotation);
+            else GenPlace.TryPlaceThing(thing, thing.Position, map, placeMode, rot: thing.Rotation);
+        }
+
+        public static void PlaceThingIntoCaravan(Thing thing, Caravan caravan)
+        {
+            if (thing is Pawn)
+            {
+                Pawn pawn = thing as Pawn;
+
+                if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.PassToWorld(pawn);
+                pawn.SetFactionDirect(Faction.OfPlayer);
+                caravan.AddPawn(pawn, false);
+            }
+
+            else
+            {
+                if (thing.stackCount == 0) return;
+
+                caravan.AddPawnOrItem(thing, false);
+            }
+        }
+
+        public static void RemoveThingFromCaravan(ThingDef thingDef, int requiredQuantity)
+        {
+            if (requiredQuantity == 0) return;
+
+            List<Thing> caravanQuantity = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan)
+                .FindAll(x => x.def == thingDef);
+
+            int takenQuantity = 0;
+            foreach (Thing thing in caravanQuantity)
+            {
+                if (takenQuantity + thing.stackCount >= requiredQuantity)
+                {
+                    thing.holdingOwner.Take(thing, requiredQuantity - takenQuantity);
+                    break;
+                }
+
+                else if (takenQuantity + thing.stackCount < requiredQuantity)
+                {
+                    thing.holdingOwner.Take(thing, thing.stackCount);
+                    takenQuantity += thing.stackCount;
+                }
+            }
+        }
+
+        public static void RemoveThingFromSettlement(Map map, ThingDef thingDef, int requiredQuantity)
+        {
+            if (requiredQuantity == 0) return;
+
+            List<Thing> thingInMap = new List<Thing>();
+            foreach (Zone zone in map.zoneManager.AllZones)
+            {
+                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                {
+                    if (thing.def == thingDef && !thing.Position.Fogged(map))
+                    {
+                        thingInMap.Add(thing);
+                    }
+                }
+            }
+
+            int takenQuantity = 0;
+            foreach (Thing thing in thingInMap)
+            {
+                if (takenQuantity + thing.stackCount >= requiredQuantity)
+                {
+                    thing.stackCount -= requiredQuantity - takenQuantity;
+                    if (thing.stackCount <= 0) thing.Destroy();
+                    break;
+                }
+
+                else if (takenQuantity + thing.stackCount < requiredQuantity)
+                {
+                    thing.Destroy();
+                    takenQuantity += thing.stackCount;
+                }
+            }
+        }
+
+        public static void RemovePawnFromGame(Pawn pawn)
+        {
+            if (pawn.Spawned) pawn.DeSpawn();
+            if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.RemovePawn(pawn);
         }
     }
 }

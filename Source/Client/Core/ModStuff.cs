@@ -32,11 +32,7 @@ namespace GameClient
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.rejectSiteRewardsBool, "Automatically site rewards");
             listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref modConfigs.muteChatSoundBool, "Mute chat messages");
-            if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s"))
-            {
-                ShowAutosaveFloatMenu();
-            }
-
+            if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s")) ShowAutosaveFloatMenu();
 
             listingStandard.GapLine();
             listingStandard.Label("Compatibility");
@@ -46,7 +42,8 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("Experimental");
-            listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info on the logs");
+            listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info into the logs");
+            listingStandard.CheckboxLabeled("Use extreme verbose logs", ref modConfigs.extremeVerboseBool, "Output ALL available info into the logs");
 
             listingStandard.GapLine();
             listingStandard.Label("External Sources");

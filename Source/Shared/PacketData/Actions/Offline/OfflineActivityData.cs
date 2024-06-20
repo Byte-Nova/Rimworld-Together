@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
-    public class RaidData
+    public class OfflineActivityData
     {
-        public OfflineRaidStepMode raidStepMode;
-
+        public OfflineActivityStepMode activityStepMode;
         public int targetTile;
-
         public byte[] mapData;
     }
 }

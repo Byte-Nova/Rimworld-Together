@@ -31,22 +31,22 @@ namespace GameClient
                 switch (intentionalDisconnectReason)
                 {
                     case DCReason.None:
-                        reason = "No reason given.";
+                        reason = "No reason given";
                         DisconnectToMenu();
                         break;
 
                     case DCReason.QuitToMenu:
-                        reason = "Quit to menu.";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Returning to main menu.", delegate { DisconnectToMenu(); }));
+                        reason = "Quit to menu";
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Returning to main menu", delegate { DisconnectToMenu(); }));
                         break;
 
                     case DCReason.SaveQuitToMenu:
-                        reason = "Save and Quit to Menu.";
+                        reason = "Save and Quit to Menu";
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { DisconnectToMenu(); }));
                         break;
 
                     case DCReason.SaveQuitToOS:
-                        reason = "Save and Quit to OS.";
+                        reason = "Save and Quit to OS";
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { QuitGame(); }));
                         break;
 

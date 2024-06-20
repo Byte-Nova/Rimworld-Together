@@ -182,7 +182,7 @@ namespace GameClient
                 Pawn pawnToRetrieve = HumanScribeManager.StringToHuman((HumanData)Serializer.
                     ConvertBytesToObject(siteData.workerData));
 
-                TransferManagerHelper.TransferPawnIntoCaravan(pawnToRetrieve);
+                RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, ClientValues.chosenCaravan);
 
                 SaveManager.ForceSave();
             };
@@ -340,7 +340,7 @@ namespace GameClient
 
             else
             {
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;
@@ -395,7 +395,7 @@ namespace GameClient
 
             else
             {
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;

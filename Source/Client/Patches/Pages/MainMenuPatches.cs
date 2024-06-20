@@ -40,10 +40,8 @@ namespace GameClient
                         if (string.IsNullOrWhiteSpace(Network.port)) isInvalid = true;
                         if (string.IsNullOrWhiteSpace(ClientValues.username)) isInvalid = true;
 
-                        if (isInvalid) 
-                            DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
-                        else 
-                            ShowQuickConnectFloatMenu();
+                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
+                        else ShowQuickConnectFloatMenu();
                     }
                 }
 

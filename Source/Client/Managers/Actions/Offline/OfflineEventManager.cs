@@ -6,7 +6,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    public static class EventManager
+    public static class OfflineEventManager
     {
         public static string[] eventNames = new string[]
         {
@@ -78,7 +78,7 @@ namespace GameClient
 
             else
             {
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
                 EventData eventData = new EventData();
                 eventData.eventStepMode = EventStepMode.Send;
@@ -244,7 +244,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
+            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent!", 
                 LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();
@@ -256,9 +256,7 @@ namespace GameClient
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
             silverToReturn.stackCount = eventCosts[DialogManager.selectedScrollButton];
-            TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
+            RimworldManager.PlaceThingIntoCaravan(silverToReturn, ClientValues.chosenCaravan);
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
         }

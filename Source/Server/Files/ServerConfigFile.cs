@@ -13,6 +13,8 @@
 
         public bool VerboseLogs = false;
 
+        public bool ExtremeVerboseLogs = false;
+
         public bool DisplayChatInConsole = false;
 
         public bool UseUPnP = false;

@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace GameClient
@@ -8,11 +9,19 @@ namespace GameClient
 
     public static class PacketHandler
     {
+        //Packet headers in this array won't output into the logs by default
+
+        private static readonly string[] ignoreLogPackets =
+        {
+            nameof(OnlineActivityPacket)
+        };
+
         //Function that opens handles the action that the packet should do, then sends it to the correct one below
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool) Logger.Message($"[H] > {packet.header}");
+            if (ClientValues.verboseBool && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}");
+            else if (ClientValues.extremeVerboseBool) Logger.Message($"[N] > {packet.header}");
 
             Action toDo = delegate
             {
@@ -55,29 +64,19 @@ namespace GameClient
             OnlineFactionManager.ParseFactionPacket(packet);
         }
 
-        public static void VisitPacket(Packet packet)
+        public static void OnlineActivityPacket(Packet packet)
         {
-            OnlineVisitManager.ParseVisitPacket(packet);
+            OnlineActivityManager.ParseOnlineActivityPacket(packet);
         }
 
-        public static void OfflineVisitPacket(Packet packet)
+        public static void OfflineActivityPacket(Packet packet)
         {
-            OfflineVisitManager.ParseOfflineVisitPacket(packet);
-        }
-
-        public static void RaidPacket(Packet packet)
-        {
-            OfflineRaidManager.ParseRaidPacket(packet);
+            OfflineActivityManager.ParseOfflineActivityPacket(packet);
         }
 
         public static void SettlementPacket(Packet packet)
         {
             PlanetManager.ParseSettlementPacket(packet);
-        }
-
-        public static void SpyPacket(Packet packet)
-        {
-            OfflineSpyManager.ParseSpyPacket(packet);
         }
 
         public static void SitePacket(Packet packet)
@@ -118,7 +117,7 @@ namespace GameClient
 
         public static void EventPacket(Packet packet)
         {
-            EventManager.ParseEventPacket(packet);
+            OfflineEventManager.ParseEventPacket(packet);
         }
 
         public static void IllegalActionPacket(Packet packet)
@@ -139,9 +138,9 @@ namespace GameClient
             ServerValues.SetServerParameters(serverGlobalData);
             ServerValues.SetAccountData(serverGlobalData);
             PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
-            EventManager.SetEventPrices(serverGlobalData);
+            OfflineEventManager.SetEventPrices(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
-            OfflineSpyManager.SetSpyCost(serverGlobalData);
+            OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
         }
 

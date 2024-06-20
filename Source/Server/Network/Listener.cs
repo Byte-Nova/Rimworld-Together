@@ -60,8 +60,6 @@ namespace GameServer
                     if (dataQueue.Count() > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
-                        if (packet == null) continue;
-
                         streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
                         streamWriter.Flush();
                     }
@@ -144,7 +142,7 @@ namespace GameServer
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
-            if (targetClient.inVisitWith != null) OnlineVisitManager.SendVisitStop(targetClient);
+            if (targetClient.inVisitWith != null) OnlineActivityManager.SendVisitStop(targetClient);
         }
     }
 }
