@@ -80,6 +80,14 @@ namespace GameClient
 
         private static void OnOfflineActivityDeny()
         {
+            if (ClientValues.latestOfflineActivity == OfflineActivityType.Spy)
+            {
+                Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
+                silverToReturn.stackCount = spyCost;
+
+                TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
+            }
+
             DialogManager.PopWaitDialog();
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
