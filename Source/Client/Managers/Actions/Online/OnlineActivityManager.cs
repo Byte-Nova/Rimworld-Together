@@ -332,6 +332,7 @@ namespace GameClient
 
             hediffOrder.hediffDefName = hediff.def.defName;
             if (hediff.Part != null) hediffOrder.hediffPartDefName = hediff.Part.def.defName;
+            if (hediff.sourceDef != null) hediffOrder.hediffWeaponDefName = hediff.sourceDef.defName;
             hediffOrder.hediffSeverity = hediff.Severity;
             hediffOrder.hediffPermanent = hediff.IsPermanent();
 
@@ -512,7 +513,16 @@ namespace GameClient
                 {
                     HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.First(fetch => fetch.defName == data.hediffOrder.hediffDefName);
                     Hediff toMake = HediffMaker.MakeHediff(hediffDef, toTarget, bodyPartRecord);
+                    
+                    if (data.hediffOrder.hediffWeaponDefName != null)
+                    {
+                        ThingDef source = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == data.hediffOrder.hediffWeaponDefName);
+                        toMake.sourceDef = source;
+                        toMake.sourceLabel = source.label;
+                    }
+
                     toMake.Severity = data.hediffOrder.hediffSeverity;
+
                     if (data.hediffOrder.hediffPermanent)
                     {
                         HediffComp_GetsPermanent hediffComp = toMake.TryGetComp<HediffComp_GetsPermanent>();

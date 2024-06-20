@@ -19,22 +19,4 @@ namespace GameClient
             else return true;
         }
     }
-
-    [HarmonyPatch(typeof(Pawn_JobTracker), "StartJob")]
-    public static class PatchJobInformation
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(Job newJob, Pawn ___pawn)
-        {
-            if (Network.state != NetworkState.Connected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
-
-            if (OnlineActivityManager.nonFactionPawns.Contains(___pawn))
-            {
-                if (newJob.exitMapOnArrival) return false;
-            }
-
-            return true;
-        }
-    }
 }

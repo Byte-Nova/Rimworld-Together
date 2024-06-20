@@ -12,6 +12,7 @@ namespace Shared
 
         public string hediffDefName;
         public string hediffPartDefName;
+        public string hediffWeaponDefName;
         public float hediffSeverity;
         public bool hediffPermanent;
     }
