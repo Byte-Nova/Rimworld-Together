@@ -22,15 +22,15 @@ namespace GameClient
 
             switch (offlineVisitData.offlineVisitStepMode)
             {
-                case OfflineVisitStepMode.Request:
+                case OfflineActivityStepMode.Request:
                     OnRequestAccepted(offlineVisitData);
                     break;
 
-                case OfflineVisitStepMode.Deny:
+                case OfflineActivityStepMode.Deny:
                     OnOfflineVisitDeny();
                     break;
 
-                case OfflineVisitStepMode.Unavailable:
+                case OfflineActivityStepMode.Unavailable:
                     OnOfflineVisitUnavailable();
                     break;
             }
@@ -43,7 +43,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             OfflineVisitData offlineVisitData = new OfflineVisitData();
-            offlineVisitData.offlineVisitStepMode = OfflineVisitStepMode.Request;
+            offlineVisitData.offlineVisitStepMode = OfflineActivityStepMode.Request;
             offlineVisitData.targetTile = ClientValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);

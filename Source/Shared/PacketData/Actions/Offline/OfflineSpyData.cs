@@ -6,7 +6,7 @@ namespace Shared
     [Serializable]
     public class OfflineSpyData
     {
-        public OfflineSpyStepMode spyStepMode;
+        public OfflineActivityStepMode spyStepMode;
 
         public int targetTile;
 

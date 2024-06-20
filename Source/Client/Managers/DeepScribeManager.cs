@@ -1140,6 +1140,8 @@ namespace GameClient
 
             GetMapAnimals(mapData, map, factionAnimals, nonFactionAnimals);
 
+            GetMapWeather(mapData, map);
+
             return mapData;
         }
 
@@ -1155,9 +1157,11 @@ namespace GameClient
 
             if (factionAnimals || nonFactionAnimals) SetMapAnimals(mapData, map, factionAnimals, nonFactionAnimals);
 
-            UnfogMap(map);
+            SetMapData(mapData, map);
 
-            ResetMapRoofs(map);
+            SetMapFog(map);
+
+            SetMapRoofs(map);
 
             return map;
         }
@@ -1176,31 +1180,42 @@ namespace GameClient
 
         private static void GetMapTerrain(MapData mapData, Map map)
         {
+            List<string> tempTileDefNames = new List<string>();
+            List<string> tempTileRoofDefNames = new List<string>();
+            List<bool> tempTilePollutions = new List<bool>();
+
             for (int z = 0; z < map.Size.z; ++z)
             {
                 for (int x = 0; x < map.Size.x; ++x)
                 {
                     IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
-                    mapData.tileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
-                    mapData.tilePollutions.Add(map.pollutionGrid.IsPolluted(vectorToCheck));
+                    tempTileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
+                    tempTilePollutions.Add(map.pollutionGrid.IsPolluted(vectorToCheck));
 
-                    if (map.roofGrid.RoofAt(vectorToCheck) == null) mapData.roofDefNames.Add("null");
-                    else mapData.roofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
+                    if (map.roofGrid.RoofAt(vectorToCheck) == null) tempTileRoofDefNames.Add("null");
+                    else tempTileRoofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
                 }
             }
+
+            mapData.tileDefNames = tempTileDefNames.ToArray();
+            mapData.tileRoofDefNames = tempTileRoofDefNames.ToArray();
+            mapData.tilePollutions = tempTilePollutions.ToArray();
         }
 
         private static void GetMapThings(MapData mapData, Map map, bool factionThings, bool nonFactionThings)
         {
+            List<ItemData> tempFactionThings = new List<ItemData>();
+            List<ItemData> tempNonFactionThings = new List<ItemData>();
+
             foreach (Thing thing in map.listerThings.AllThings)
             {
                 if (!DeepScribeHelper.CheckIfThingIsHuman(thing) && !DeepScribeHelper.CheckIfThingIsAnimal(thing))
                 {
                     ItemData itemData = ThingScribeManager.ItemToString(thing, thing.stackCount);
 
-                    if (thing.def.alwaysHaulable && factionThings) mapData.factionThings.Add(itemData);
-                    else if (!thing.def.alwaysHaulable && nonFactionThings) mapData.nonFactionThings.Add(itemData);
+                    if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(itemData);
+                    else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(itemData);
 
                     if (DeepScribeHelper.CheckIfThingCanGrow(thing))
                     {
@@ -1213,34 +1228,54 @@ namespace GameClient
                     }
                 }
             }
+
+            mapData.factionThings = tempFactionThings.ToArray();
+            mapData.nonFactionThings = tempNonFactionThings.ToArray();
         }
 
         private static void GetMapHumans(MapData mapData, Map map, bool factionHumans, bool nonFactionHumans)
         {
+            List<HumanData> tempFactionHumans = new List<HumanData>();
+            List<HumanData> tempNonFactionHumans = new List<HumanData>();
+
             foreach (Thing thing in map.listerThings.AllThings)
             {
                 if (DeepScribeHelper.CheckIfThingIsHuman(thing))
                 {
                     HumanData humanData = HumanScribeManager.HumanToString(thing as Pawn);
 
-                    if (thing.Faction == Faction.OfPlayer && factionHumans) mapData.factionHumans.Add(humanData);
-                    else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) mapData.nonFactionHumans.Add(humanData);
+                    if (thing.Faction == Faction.OfPlayer && factionHumans) tempFactionHumans.Add(humanData);
+                    else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) tempNonFactionHumans.Add(humanData);
                 }
             }
+
+            mapData.factionHumans = tempFactionHumans.ToArray();
+            mapData.nonFactionHumans = tempNonFactionHumans.ToArray();
         }
 
         private static void GetMapAnimals(MapData mapData, Map map, bool factionAnimals, bool nonFactionAnimals)
         {
+            List<AnimalData> tempFactionAnimals = new List<AnimalData>();
+            List<AnimalData> tempNonFactionAnimals = new List<AnimalData>();
+
             foreach (Thing thing in map.listerThings.AllThings)
             {
                 if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
                 {
                     AnimalData animalData = AnimalScribeManager.AnimalToString(thing as Pawn);
 
-                    if (thing.Faction == Faction.OfPlayer && factionAnimals) mapData.factionAnimals.Add(animalData);
-                    else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) mapData.nonFactionAnimals.Add(animalData);
+                    if (thing.Faction == Faction.OfPlayer && factionAnimals) tempFactionAnimals.Add(animalData);
+                    else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) tempNonFactionAnimals.Add(animalData);
                 }
             }
+
+            mapData.factionAnimals = tempFactionAnimals.ToArray();
+            mapData.nonFactionAnimals = tempNonFactionAnimals.ToArray();
+        }
+
+        private static void GetMapWeather(MapData mapData, Map map)
+        {
+            mapData.curWeatherDefName = map.weatherManager.curWeather.defName;
         }
 
         //Setters
@@ -1280,7 +1315,7 @@ namespace GameClient
                     try
                     {
                         RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
-                                    mapData.roofDefNames[index]);
+                                    mapData.tileRoofDefNames[index]);
 
                         map.roofGrid.SetRoof(vectorToCheck, roofToUse);
                     }
@@ -1410,14 +1445,20 @@ namespace GameClient
             }
         }
 
+        private static void SetMapData(MapData mapData, Map map)
+        {
+            WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == mapData.curWeatherDefName);
+            map.weatherManager.TransitionTo(weatherDef);
+        }
+
         //Misc
 
-        private static void UnfogMap(Map map)
+        private static void SetMapFog(Map map)
         {
             FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
         }
 
-        private static void ResetMapRoofs(Map map)
+        private static void SetMapRoofs(Map map)
         {
             map.roofCollapseBuffer.Clear();
             map.roofGrid.Drawer.SetDirty();

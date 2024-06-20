@@ -21,15 +21,15 @@ namespace GameClient
 
             switch (raidData.raidStepMode)
             {
-                case OfflineRaidStepMode.Request:
+                case OfflineActivityStepMode.Request:
                     OnOfflineRaidAccept(raidData);
                     break;
 
-                case OfflineRaidStepMode.Deny:
+                case OfflineActivityStepMode.Deny:
                     OnOfflineRaidDeny();
                     break;
 
-                case OfflineRaidStepMode.Unavailable:
+                case OfflineActivityStepMode.Unavailable:
                     OnOfflineRaidUnavailable();
                     break;
             }
@@ -42,7 +42,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             OfflineRaidData raidData = new OfflineRaidData();
-            raidData.raidStepMode = OfflineRaidStepMode.Request;
+            raidData.raidStepMode = OfflineActivityStepMode.Request;
             raidData.targetTile = ClientValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);

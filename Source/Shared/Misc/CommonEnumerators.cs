@@ -37,11 +37,7 @@
 
         public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod, Market }
 
-        public enum OfflineVisitStepMode { Request, Deny, Unavailable }
-
-        public enum OfflineRaidStepMode { Request, Deny, Unavailable }
-
-        public enum OfflineSpyStepMode { Request, Deny, Unavailable }
+        public enum OfflineActivityStepMode { Request, Deny, Unavailable }
 
         public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, TimeSpeed, GameCondition, Weather, Stop }
 

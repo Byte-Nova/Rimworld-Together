@@ -11,11 +11,11 @@ namespace GameServer
 
             switch (spyData.spyStepMode)
             {
-                case OfflineSpyStepMode.Request:
+                case OfflineActivityStepMode.Request:
                     SendRequestedMap(client, spyData);
                     break;
 
-                case OfflineSpyStepMode.Deny:
+                case OfflineActivityStepMode.Deny:
                     //Nothing goes here
                     break;
             }
@@ -25,7 +25,7 @@ namespace GameServer
         {
             if (!MapManager.CheckIfMapExists(spyData.targetTile))
             {
-                spyData.spyStepMode = OfflineSpyStepMode.Unavailable;
+                spyData.spyStepMode = OfflineActivityStepMode.Unavailable;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                 client.listener.EnqueuePacket(packet);
             }
@@ -36,7 +36,7 @@ namespace GameServer
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    spyData.spyStepMode = OfflineSpyStepMode.Deny;
+                    spyData.spyStepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);
                     client.listener.EnqueuePacket(packet);
                 }

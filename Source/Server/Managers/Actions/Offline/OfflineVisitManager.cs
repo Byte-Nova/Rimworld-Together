@@ -11,11 +11,11 @@ namespace GameServer
 
             switch (offlineVisitData.offlineVisitStepMode)
             {
-                case OfflineVisitStepMode.Request:
+                case OfflineActivityStepMode.Request:
                     SendRequestedMap(client, offlineVisitData);
                     break;
 
-                case OfflineVisitStepMode.Deny:
+                case OfflineActivityStepMode.Deny:
                     //Nothing goes here
                     break;
             }
@@ -25,7 +25,7 @@ namespace GameServer
         {
             if (!MapManager.CheckIfMapExists(offlineVisitData.targetTile))
             {
-                offlineVisitData.offlineVisitStepMode = OfflineVisitStepMode.Unavailable;
+                offlineVisitData.offlineVisitStepMode = OfflineActivityStepMode.Unavailable;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
                 client.listener.EnqueuePacket(packet);
             }
@@ -36,7 +36,7 @@ namespace GameServer
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    offlineVisitData.offlineVisitStepMode = OfflineVisitStepMode.Deny;
+                    offlineVisitData.offlineVisitStepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineVisitPacket), offlineVisitData);
                     client.listener.EnqueuePacket(packet);
                 }

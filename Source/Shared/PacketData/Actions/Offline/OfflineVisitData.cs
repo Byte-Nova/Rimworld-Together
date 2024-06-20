@@ -6,7 +6,7 @@ namespace Shared
     [Serializable]
     public class OfflineVisitData
     {
-        public OfflineVisitStepMode offlineVisitStepMode;
+        public OfflineActivityStepMode offlineVisitStepMode;
 
         public int targetTile;
 

@@ -11,11 +11,11 @@ namespace GameServer
 
             switch (raidData.raidStepMode)
             {
-                case OfflineRaidStepMode.Request:
+                case OfflineActivityStepMode.Request:
                     SendRequestedMap(client, raidData);
                     break;
 
-                case OfflineRaidStepMode.Deny:
+                case OfflineActivityStepMode.Deny:
                     //Do nothing
                     break;
             }
@@ -25,7 +25,7 @@ namespace GameServer
         {
             if (!MapManager.CheckIfMapExists(raidData.targetTile))
             {
-                raidData.raidStepMode = OfflineRaidStepMode.Unavailable;
+                raidData.raidStepMode = OfflineActivityStepMode.Unavailable;
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
                 client.listener.EnqueuePacket(packet);
             }
@@ -36,7 +36,7 @@ namespace GameServer
 
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    raidData.raidStepMode = OfflineRaidStepMode.Deny;
+                    raidData.raidStepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RaidPacket), raidData);
                     client.listener.EnqueuePacket(packet);
                 }

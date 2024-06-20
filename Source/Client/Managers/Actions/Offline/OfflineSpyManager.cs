@@ -24,15 +24,15 @@ namespace GameClient
 
             switch(spyData.spyStepMode)
             {
-                case OfflineSpyStepMode.Request:
+                case OfflineActivityStepMode.Request:
                     OnOfflineSpyAccept(spyData);
                     break;
 
-                case OfflineSpyStepMode.Deny:
+                case OfflineActivityStepMode.Deny:
                     OnOfflineSpyDeny();
                     break;
 
-                case OfflineSpyStepMode.Unavailable:
+                case OfflineActivityStepMode.Unavailable:
                     OnOfflineSpyUnavailable();
                     break;
             }
@@ -69,7 +69,7 @@ namespace GameClient
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
                     OfflineSpyData spyData = new OfflineSpyData();
-                    spyData.spyStepMode = OfflineSpyStepMode.Request;
+                    spyData.spyStepMode = OfflineActivityStepMode.Request;
                     spyData.targetTile = ClientValues.chosenSettlement.Tile;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SpyPacket), spyData);

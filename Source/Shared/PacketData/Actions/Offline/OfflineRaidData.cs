@@ -6,7 +6,7 @@ namespace Shared
     [Serializable]
     public class OfflineRaidData
     {
-        public OfflineRaidStepMode raidStepMode;
+        public OfflineActivityStepMode raidStepMode;
 
         public int targetTile;
 
