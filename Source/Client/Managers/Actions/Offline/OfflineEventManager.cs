@@ -78,7 +78,7 @@ namespace GameClient
 
             else
             {
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
                 EventData eventData = new EventData();
                 eventData.eventStepMode = EventStepMode.Send;
@@ -256,7 +256,7 @@ namespace GameClient
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
             silverToReturn.stackCount = eventCosts[DialogManager.selectedScrollButton];
-            TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
+            RimworldManager.PlaceThingIntoCaravan(silverToReturn, ClientValues.chosenCaravan);
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
         }

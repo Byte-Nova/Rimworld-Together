@@ -200,7 +200,7 @@ namespace GameClient
                 {
                     thing.Position = location;
                     thing.SetFactionDirect(Faction.OfPlayer);
-                    RimworldManager.PlaceThingInMap(thing, map, ThingPlaceMode.Near);
+                    RimworldManager.PlaceThingIntoMap(thing, map, ThingPlaceMode.Near);
                 }
 
                 FinishTransfer(success);
@@ -220,20 +220,7 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                foreach (Thing thing in things)
-                {
-                    if (DeepScribeHelper.CheckIfThingIsHuman(thing))
-                    {
-                        TransferManagerHelper.TransferPawnIntoCaravan(thing as Pawn);
-                    }
-
-                    else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
-                    {
-                        TransferManagerHelper.TransferPawnIntoCaravan(thing as Pawn);
-                    }
-
-                    else TransferManagerHelper.TransferItemIntoCaravan(thing);
-                }
+                foreach (Thing thing in things) RimworldManager.PlaceThingIntoCaravan(thing, ClientValues.chosenCaravan);
 
                 FinishTransfer(success);
             };
@@ -401,9 +388,7 @@ namespace GameClient
                 ClientValues.outgoingManifest.humanDatas.Add(Serializer.ConvertObjectToBytes
                     (HumanScribeManager.HumanToString(pawn, false)));
 
-                if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.RemovePawn(pawn);
-
-                pawn.Destroy();
+                RimworldManager.RemovePawnFromGame(pawn);
             }
 
             else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
@@ -413,9 +398,7 @@ namespace GameClient
                 ClientValues.outgoingManifest.animalDatas.Add(Serializer.ConvertObjectToBytes
                     (AnimalScribeManager.AnimalToString(pawn)));
 
-                if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.RemovePawn(pawn);
-
-                pawn.Destroy();
+                RimworldManager.RemovePawnFromGame(pawn);
             }
 
             else
@@ -456,87 +439,6 @@ namespace GameClient
             foreach (Thing thing in ThingScribeManager.GetItemsFromString(transferData)) allTransferedItems.Add(thing);
 
             return allTransferedItems.ToArray();
-        }
-
-        //Transfers a pawn into the caravan
-
-        public static void TransferPawnIntoCaravan(Pawn pawnToTransfer)
-        {
-            if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawnToTransfer)) Find.WorldPawns.PassToWorld(pawnToTransfer);
-            pawnToTransfer.SetFactionDirect(Faction.OfPlayer);
-            ClientValues.chosenCaravan.AddPawn(pawnToTransfer, false);
-        }
-
-        //Transfers an item into the caravan
-
-        public static void TransferItemIntoCaravan(Thing thingToTransfer)
-        {
-            if (thingToTransfer.stackCount == 0) return;
-
-            ClientValues.chosenCaravan.AddPawnOrItem(thingToTransfer, false);
-        }
-
-        //Removes an item from the caravan
-
-        public static void RemoveThingFromCaravan(ThingDef thingDef, int requiredQuantity)
-        {
-            if (requiredQuantity == 0) return;
-
-            List<Thing> caravanQuantity = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan)
-                .FindAll(x => x.def == thingDef);
-
-            int takenQuantity = 0;
-            foreach (Thing thing in caravanQuantity)
-            {
-                if (takenQuantity + thing.stackCount >= requiredQuantity)
-                {
-                    thing.holdingOwner.Take(thing, requiredQuantity - takenQuantity);
-                    break;
-                }
-
-                else if (takenQuantity + thing.stackCount < requiredQuantity)
-                {
-                    thing.holdingOwner.Take(thing, thing.stackCount);
-                    takenQuantity += thing.stackCount;
-                }
-            }
-        }
-
-
-        //Removes an item from the settlement
-
-        public static void RemoveThingFromSettlement(Map map, ThingDef thingDef, int requiredQuantity)
-        {
-            if (requiredQuantity == 0) return;
-
-            List<Thing> thingInMap = new List<Thing>();
-            foreach (Zone zone in map.zoneManager.AllZones)
-            {
-                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
-                {
-                    if (thing.def == thingDef && !thing.Position.Fogged(map))
-                    {
-                        thingInMap.Add(thing);
-                    }
-                }
-            }
-
-            int takenQuantity = 0;
-            foreach (Thing thing in thingInMap)
-            {
-                if (takenQuantity + thing.stackCount >= requiredQuantity)
-                {
-                    thing.stackCount -= requiredQuantity - takenQuantity;
-                    if (thing.stackCount <= 0) thing.Destroy();
-                    break;
-                }
-
-                else if (takenQuantity + thing.stackCount < requiredQuantity)
-                {
-                    thing.Destroy();
-                    takenQuantity += thing.stackCount;
-                }
-            }
         }
     }
 }

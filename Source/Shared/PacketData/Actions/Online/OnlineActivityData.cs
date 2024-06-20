@@ -34,5 +34,6 @@ namespace Shared
         public TimeSpeedOrder timeSpeedOrder;
         public GameConditionOrder gameConditionOrder;
         public WeatherOrder weatherOrder;
+        public KillOrder killOrder;
     }
 }

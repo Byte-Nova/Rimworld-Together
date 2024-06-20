@@ -9,7 +9,9 @@ namespace Shared
     {
         public string defName;
         public int pawnIndex;
-        public int count;
+
+        public int targetCount;
+        public int[] queueTargetCounts;
 
         public string[] targets;
         public int[] targetIndexes;

@@ -39,13 +39,13 @@
 
         public enum OfflineActivityStepMode { Request, Deny, Unavailable }
 
-        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, TimeSpeed, GameCondition, Weather, Stop }
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, Kill, TimeSpeed, GameCondition, Weather, Stop }
 
         public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 
         public enum OnlineActivityApplyMode { Add, Remove }
 
-        public enum OnlineActivityType { None, Visit, Raid, Misc }
+        public enum OnlineActivityType { None, Visit, Raid }
 
         public enum OfflineActivityType { None, Visit, Raid, Spy }
 

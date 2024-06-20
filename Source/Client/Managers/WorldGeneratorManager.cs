@@ -115,27 +115,30 @@ namespace GameClient
 
         public static void SetPlanetFeatures()
         {
-            WorldFeature[] worldFeatures = Find.World.features.features.ToArray();
-            foreach (WorldFeature feature in worldFeatures) Find.World.features.features.Remove(feature);
+            WorldFeature[] worldFeatures = Find.WorldFeatures.features.ToArray();
+            foreach (WorldFeature feature in worldFeatures) Find.WorldFeatures.features.Remove(feature);
 
             PlanetFeature[] planetFeatures = cachedWorldValues.Features.ToArray();
-            foreach (PlanetFeature planetFeature in planetFeatures)
+            for (int i = 0; i < planetFeatures.Length; i++)
             {
+                PlanetFeature planetFeature = planetFeatures[i];
+
                 try
                 {
                     WorldFeature worldFeature = new WorldFeature();
                     worldFeature.def = DefDatabase<FeatureDef>.AllDefs.First(fetch => fetch.defName == planetFeature.defName);
+                    worldFeature.uniqueID = i;
                     worldFeature.name = planetFeature.featureName;
                     worldFeature.maxDrawSizeInTiles = planetFeature.maxDrawSizeInTiles;
                     worldFeature.drawCenter = new Vector3(planetFeature.drawCenter[0], planetFeature.drawCenter[1], planetFeature.drawCenter[2]);
 
-                    Find.World.features.features.Add(worldFeature);
+                    Find.WorldFeatures.features.Add(worldFeature);
                 }
                 catch (Exception e) { Logger.Error($"Failed set planet feature from def '{planetFeature.defName}'. Reason: {e}"); }
             }
 
-            Find.World.features.textsCreated = false;
-            Find.World.features.UpdateFeatures();
+            Find.WorldFeatures.textsCreated = false;
+            Find.WorldFeatures.UpdateFeatures();
         }
 
         public static void SetPlanetFactions()

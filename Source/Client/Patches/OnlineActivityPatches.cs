@@ -109,6 +109,59 @@ namespace GameClient
         }
     }
 
+    //TODO
+    //GIVE THIS PATCH SOME MORE LOVE
+
+    [HarmonyPatch(typeof(Thing), nameof(Thing.Kill))]
+    public static class PatchKillThing
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Thing __instance)
+        {
+            if (Network.state == NetworkState.Disconnected) return true;
+            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+
+            //Don't execute patch if map doesn't contain the thing already
+            bool shouldPatch = false;
+            if (OnlineActivityManager.factionPawns.Contains(__instance)) shouldPatch = true;
+            else if (OnlineActivityManager.nonFactionPawns.Contains(__instance)) shouldPatch = true;
+
+            if (!shouldPatch) return true;
+            else
+            {
+                if (ClientValues.isRealTimeHost)
+                {
+                    OnlineActivityData onlineActivityData = new OnlineActivityData();
+                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Kill;
+                    onlineActivityData.killOrder = OnlineManagerHelper.CreateKillOrder(__instance);
+
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
+                    Network.listener.EnqueuePacket(packet);
+
+                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+                    OnlineManagerHelper.RemoveThingFromMap(__instance);
+                    return true;
+                }
+
+                else
+                {
+                    //IF COMING FROM HOST
+
+                    if (OnlineActivityManager.queuedThing == __instance)
+                    {
+                        OnlineManagerHelper.ClearThingQueue();
+                        OnlineManagerHelper.RemoveThingFromMap(__instance);
+                        return true;
+                    }
+
+                    //IF PLAYER ASKING FOR
+
+                    else return false;
+                }
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.StartJob))]
     public static class PatchStartNewJob
     {
@@ -418,7 +471,7 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
-            if (__instance.map != OnlineActivityManager.onlineMap) return true;
+            if (OnlineActivityManager.onlineMap != __instance.map) return true;
 
             if (ClientValues.isRealTimeHost)
             {
@@ -458,10 +511,11 @@ namespace GameClient
     public static class PatchCreatePawn
     {
         [HarmonyPrefix]
-        public static bool DoPre(Thing __instance)
+        public static bool DoPre(Map map, Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
             else
@@ -481,10 +535,11 @@ namespace GameClient
     public static class PatchCreateBuilding
     {
         [HarmonyPrefix]
-        public static bool DoPre(Thing __instance)
+        public static bool DoPre(Map map, Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
             else
@@ -504,10 +559,11 @@ namespace GameClient
     public static class PatchCreateFilth
     {
         [HarmonyPrefix]
-        public static bool DoPre(Thing __instance)
+        public static bool DoPre(Map map, Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
             if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
             else
@@ -522,6 +578,21 @@ namespace GameClient
             }
         }
     }
+
+    //[HarmonyPatch(typeof(Corpse), nameof(Corpse.SpawnSetup))]
+    //public static class PatchCreateCorpse
+    //{
+    //    [HarmonyPrefix]
+    //    public static bool DoPre(Map map)
+    //    {
+    //        if (Network.state == NetworkState.Disconnected) return true;
+    //        if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+    //        if (OnlineActivityManager.onlineMap != map) return true;
+
+    //        if (ClientValues.isRealTimeHost) return false;
+    //        else return false;
+    //    }
+    //}
 
     //Patches to make online events finish correctly when getting out of the map
 

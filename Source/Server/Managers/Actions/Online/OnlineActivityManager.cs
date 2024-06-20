@@ -56,6 +56,10 @@ namespace GameServer
                     SendVisitActions(client, visitData);
                     break;
 
+                case OnlineActivityStepMode.Kill:
+                    SendVisitActions(client, visitData);
+                    break;
+
                 case OnlineActivityStepMode.Stop:
                     SendVisitStop(client);
                     break;

@@ -26,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DestructionOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\GameConditionOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\HediffOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\KillOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\PawnOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\Online\MarketData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />

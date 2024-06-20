@@ -1157,7 +1157,7 @@ namespace GameClient
 
             if (factionAnimals || nonFactionAnimals) SetMapAnimals(mapData, map, factionAnimals, nonFactionAnimals);
 
-            SetMapData(mapData, map);
+            SetWeatherData(mapData, map);
 
             SetMapFog(map);
 
@@ -1170,112 +1170,131 @@ namespace GameClient
 
         private static void GetMapTile(MapData mapData, Map map)
         {
-            mapData.mapTile = map.Tile;
+            try { mapData.mapTile = map.Tile; }
+            catch (Exception e) { Logger.Warning($"Failed to get map tile. Reason: {e}"); }
         }
 
         private static void GetMapSize(MapData mapData, Map map)
         {
-            mapData.mapSize = ValueParser.IntVec3ToArray(map.Size);
+            try { mapData.mapSize = ValueParser.IntVec3ToArray(map.Size); }
+            catch (Exception e) { Logger.Warning($"Failed to get map size. Reason: {e}"); }
         }
 
         private static void GetMapTerrain(MapData mapData, Map map)
         {
-            List<string> tempTileDefNames = new List<string>();
-            List<string> tempTileRoofDefNames = new List<string>();
-            List<bool> tempTilePollutions = new List<bool>();
-
-            for (int z = 0; z < map.Size.z; ++z)
+            try 
             {
-                for (int x = 0; x < map.Size.x; ++x)
+                List<string> tempTileDefNames = new List<string>();
+                List<string> tempTileRoofDefNames = new List<string>();
+                List<bool> tempTilePollutions = new List<bool>();
+
+                for (int z = 0; z < map.Size.z; ++z)
                 {
-                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
+                    for (int x = 0; x < map.Size.x; ++x)
+                    {
+                        IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
-                    tempTileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
-                    tempTilePollutions.Add(map.pollutionGrid.IsPolluted(vectorToCheck));
+                        tempTileDefNames.Add(map.terrainGrid.TerrainAt(vectorToCheck).defName.ToString());
+                        tempTilePollutions.Add(map.pollutionGrid.IsPolluted(vectorToCheck));
 
-                    if (map.roofGrid.RoofAt(vectorToCheck) == null) tempTileRoofDefNames.Add("null");
-                    else tempTileRoofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
+                        if (map.roofGrid.RoofAt(vectorToCheck) == null) tempTileRoofDefNames.Add("null");
+                        else tempTileRoofDefNames.Add(map.roofGrid.RoofAt(vectorToCheck).defName.ToString());
+                    }
                 }
-            }
 
-            mapData.tileDefNames = tempTileDefNames.ToArray();
-            mapData.tileRoofDefNames = tempTileRoofDefNames.ToArray();
-            mapData.tilePollutions = tempTilePollutions.ToArray();
+                mapData.tileDefNames = tempTileDefNames.ToArray();
+                mapData.tileRoofDefNames = tempTileRoofDefNames.ToArray();
+                mapData.tilePollutions = tempTilePollutions.ToArray();
+            }
+            catch (Exception e) { Logger.Warning($"Failed to get map terrain. Reason: {e}"); }
         }
 
         private static void GetMapThings(MapData mapData, Map map, bool factionThings, bool nonFactionThings)
         {
-            List<ItemData> tempFactionThings = new List<ItemData>();
-            List<ItemData> tempNonFactionThings = new List<ItemData>();
-
-            foreach (Thing thing in map.listerThings.AllThings)
+            try 
             {
-                if (!DeepScribeHelper.CheckIfThingIsHuman(thing) && !DeepScribeHelper.CheckIfThingIsAnimal(thing))
+                List<ItemData> tempFactionThings = new List<ItemData>();
+                List<ItemData> tempNonFactionThings = new List<ItemData>();
+
+                foreach (Thing thing in map.listerThings.AllThings)
                 {
-                    ItemData itemData = ThingScribeManager.ItemToString(thing, thing.stackCount);
-
-                    if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(itemData);
-                    else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(itemData);
-
-                    if (DeepScribeHelper.CheckIfThingCanGrow(thing))
+                    if (!DeepScribeHelper.CheckIfThingIsHuman(thing) && !DeepScribeHelper.CheckIfThingIsAnimal(thing))
                     {
-                        try
+                        ItemData itemData = ThingScribeManager.ItemToString(thing, thing.stackCount);
+
+                        if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(itemData);
+                        else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(itemData);
+
+                        if (DeepScribeHelper.CheckIfThingCanGrow(thing))
                         {
-                            Plant plant = thing as Plant;
-                            itemData.growthTicks = plant.Growth; 
+                            try
+                            {
+                                Plant plant = thing as Plant;
+                                itemData.growthTicks = plant.Growth;
+                            }
+                            catch { Logger.Warning($"Failed to parse plant {thing.def.defName}"); }
                         }
-                        catch { Logger.Warning($"Failed to parse plant {thing.def.defName}"); }
                     }
                 }
-            }
 
-            mapData.factionThings = tempFactionThings.ToArray();
-            mapData.nonFactionThings = tempNonFactionThings.ToArray();
+                mapData.factionThings = tempFactionThings.ToArray();
+                mapData.nonFactionThings = tempNonFactionThings.ToArray();
+            }
+            catch (Exception e) { Logger.Warning($"Failed to get map things. Reason: {e}"); }
         }
 
         private static void GetMapHumans(MapData mapData, Map map, bool factionHumans, bool nonFactionHumans)
         {
-            List<HumanData> tempFactionHumans = new List<HumanData>();
-            List<HumanData> tempNonFactionHumans = new List<HumanData>();
-
-            foreach (Thing thing in map.listerThings.AllThings)
+            try 
             {
-                if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+                List<HumanData> tempFactionHumans = new List<HumanData>();
+                List<HumanData> tempNonFactionHumans = new List<HumanData>();
+
+                foreach (Thing thing in map.listerThings.AllThings)
                 {
-                    HumanData humanData = HumanScribeManager.HumanToString(thing as Pawn);
+                    if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+                    {
+                        HumanData humanData = HumanScribeManager.HumanToString(thing as Pawn);
 
-                    if (thing.Faction == Faction.OfPlayer && factionHumans) tempFactionHumans.Add(humanData);
-                    else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) tempNonFactionHumans.Add(humanData);
+                        if (thing.Faction == Faction.OfPlayer && factionHumans) tempFactionHumans.Add(humanData);
+                        else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) tempNonFactionHumans.Add(humanData);
+                    }
                 }
-            }
 
-            mapData.factionHumans = tempFactionHumans.ToArray();
-            mapData.nonFactionHumans = tempNonFactionHumans.ToArray();
+                mapData.factionHumans = tempFactionHumans.ToArray();
+                mapData.nonFactionHumans = tempNonFactionHumans.ToArray();
+            }
+            catch (Exception e) { Logger.Warning($"Failed to get map humans. Reason: {e}"); }
         }
 
         private static void GetMapAnimals(MapData mapData, Map map, bool factionAnimals, bool nonFactionAnimals)
         {
-            List<AnimalData> tempFactionAnimals = new List<AnimalData>();
-            List<AnimalData> tempNonFactionAnimals = new List<AnimalData>();
-
-            foreach (Thing thing in map.listerThings.AllThings)
+            try 
             {
-                if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
+                List<AnimalData> tempFactionAnimals = new List<AnimalData>();
+                List<AnimalData> tempNonFactionAnimals = new List<AnimalData>();
+
+                foreach (Thing thing in map.listerThings.AllThings)
                 {
-                    AnimalData animalData = AnimalScribeManager.AnimalToString(thing as Pawn);
+                    if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
+                    {
+                        AnimalData animalData = AnimalScribeManager.AnimalToString(thing as Pawn);
 
-                    if (thing.Faction == Faction.OfPlayer && factionAnimals) tempFactionAnimals.Add(animalData);
-                    else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) tempNonFactionAnimals.Add(animalData);
+                        if (thing.Faction == Faction.OfPlayer && factionAnimals) tempFactionAnimals.Add(animalData);
+                        else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) tempNonFactionAnimals.Add(animalData);
+                    }
                 }
-            }
 
-            mapData.factionAnimals = tempFactionAnimals.ToArray();
-            mapData.nonFactionAnimals = tempNonFactionAnimals.ToArray();
+                mapData.factionAnimals = tempFactionAnimals.ToArray();
+                mapData.nonFactionAnimals = tempNonFactionAnimals.ToArray();
+            }
+            catch (Exception e) { Logger.Warning($"Failed to get map animals. Reason: {e}"); }
         }
 
         private static void GetMapWeather(MapData mapData, Map map)
         {
-            mapData.curWeatherDefName = map.weatherManager.curWeather.defName;
+            try { mapData.curWeatherDefName = map.weatherManager.curWeather.defName; }
+            catch (Exception e) { Logger.Warning($"Failed to get map weather. Reason: {e}"); }
         }
 
         //Setters
@@ -1293,175 +1312,198 @@ namespace GameClient
 
         private static void SetMapTerrain(MapData mapData, Map map)
         {
-            int index = 0;
-
-            for (int z = 0; z < map.Size.z; ++z)
+            try
             {
-                for (int x = 0; x < map.Size.x; ++x)
+                int index = 0;
+
+                for (int z = 0; z < map.Size.z; ++z)
                 {
-                    IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
-
-                    try
+                    for (int x = 0; x < map.Size.x; ++x)
                     {
-                        TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
-                            mapData.tileDefNames[index]);
+                        IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
-                        map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
-                        map.pollutionGrid.SetPolluted(vectorToCheck, mapData.tilePollutions[index]);
+                        try
+                        {
+                            TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
+                                mapData.tileDefNames[index]);
 
+                            map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
+                            map.pollutionGrid.SetPolluted(vectorToCheck, mapData.tilePollutions[index]);
+
+                        }
+                        catch { Logger.Warning($"Failed to set terrain at {vectorToCheck}"); }
+
+                        try
+                        {
+                            RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
+                                        mapData.tileRoofDefNames[index]);
+
+                            map.roofGrid.SetRoof(vectorToCheck, roofToUse);
+                        }
+                        catch { Logger.Warning($"Failed to set roof at {vectorToCheck}"); }
+
+                        index++;
                     }
-                    catch { Logger.Warning($"Failed to set terrain at {vectorToCheck}"); }
-
-                    try
-                    {
-                        RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
-                                    mapData.tileRoofDefNames[index]);
-
-                        map.roofGrid.SetRoof(vectorToCheck, roofToUse);
-                    }
-                    catch { Logger.Warning($"Failed to set roof at {vectorToCheck}"); }
-
-                    index++;
                 }
             }
+            catch (Exception e) { Logger.Warning($"Failed to set map terrain. Reason: {e}"); }
         }
 
         private static void SetMapThings(MapData mapData, Map map, bool factionThings, bool nonFactionThings, bool lessLoot)
         {
-            List<Thing> thingsToGetInThisTile = new List<Thing>();
-
-            if (factionThings)
+            try
             {
-                Random rnd = new Random();
+                List<Thing> thingsToGetInThisTile = new List<Thing>();
 
-                foreach (ItemData item in mapData.factionThings)
+                if (factionThings)
                 {
-                    try
+                    Random rnd = new Random();
+
+                    foreach (ItemData item in mapData.factionThings)
                     {
-                        Thing toGet = ThingScribeManager.StringToItem(item);
-
-                        if (lessLoot)
+                        try
                         {
-                            if (rnd.Next(1, 100) > 70) thingsToGetInThisTile.Add(toGet);
-                            else continue;
-                        }
-                        else thingsToGetInThisTile.Add(toGet);
+                            Thing toGet = ThingScribeManager.StringToItem(item);
 
-                        if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
-                        {
-                            Plant plant = toGet as Plant;
-                            plant.Growth = item.growthTicks;
+                            if (lessLoot)
+                            {
+                                if (rnd.Next(1, 100) > 70) thingsToGetInThisTile.Add(toGet);
+                                else continue;
+                            }
+                            else thingsToGetInThisTile.Add(toGet);
+
+                            if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
+                            {
+                                Plant plant = toGet as Plant;
+                                plant.Growth = item.growthTicks;
+                            }
                         }
+                        catch { Logger.Warning($"Failed to parse thing {item.defName}"); }
                     }
-                    catch { Logger.Warning($"Failed to parse thing {item.defName}"); }
+                }
+
+                if (nonFactionThings)
+                {
+                    foreach (ItemData item in mapData.nonFactionThings)
+                    {
+                        try
+                        {
+                            Thing toGet = ThingScribeManager.StringToItem(item);
+                            thingsToGetInThisTile.Add(toGet);
+
+                            if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
+                            {
+                                Plant plant = toGet as Plant;
+                                plant.Growth = item.growthTicks;
+                            }
+                        }
+                        catch { Logger.Warning($"Failed to parse thing {item.defName}"); }
+                    }
+                }
+
+                foreach (Thing thing in thingsToGetInThisTile)
+                {
+                    try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation); }
+                    catch { Logger.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
                 }
             }
-
-            if (nonFactionThings)
-            {
-                foreach (ItemData item in mapData.nonFactionThings)
-                {
-                    try
-                    {
-                        Thing toGet = ThingScribeManager.StringToItem(item);
-                        thingsToGetInThisTile.Add(toGet);
-
-                        if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
-                        {
-                            Plant plant = toGet as Plant;
-                            plant.Growth = item.growthTicks;
-                        }
-                    }
-                    catch { Logger.Warning($"Failed to parse thing {item.defName}"); }
-                }
-            }
-
-            foreach (Thing thing in thingsToGetInThisTile)
-            {
-                try { GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation); }
-                catch { Logger.Warning($"Failed to place thing {thing.def.defName} at {thing.Position}"); }
-            }
+            catch (Exception e) { Logger.Warning($"Failed to set map things. Reason: {e}"); }
         }
 
         private static void SetMapHumans(MapData mapData, Map map, bool factionHumans, bool nonFactionHumans)
         {
-            if (factionHumans)
+            try
             {
-                foreach (HumanData pawn in mapData.factionHumans)
+                if (factionHumans)
                 {
-                    try
+                    foreach (HumanData pawn in mapData.factionHumans)
                     {
-                        Pawn human = HumanScribeManager.StringToHuman(pawn);
-                        human.SetFaction(FactionValues.neutralPlayer);
+                        try
+                        {
+                            Pawn human = HumanScribeManager.StringToHuman(pawn);
+                            human.SetFaction(FactionValues.neutralPlayer);
 
-                        GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                            GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                        }
+                        catch { Logger.Warning($"Failed to spawn human {pawn.name}"); }
                     }
-                    catch { Logger.Warning($"Failed to spawn human {pawn.name}"); }
+                }
+
+                if (nonFactionHumans)
+                {
+                    foreach (HumanData pawn in mapData.nonFactionHumans)
+                    {
+                        try
+                        {
+                            Pawn human = HumanScribeManager.StringToHuman(pawn);
+                            GenSpawn.Spawn(human, human.Position, map, human.Rotation);
+                        }
+                        catch { Logger.Warning($"Failed to spawn human {pawn.name}"); }
+                    }
                 }
             }
-
-            if (nonFactionHumans)
-            {
-                foreach (HumanData pawn in mapData.nonFactionHumans)
-                {
-                    try
-                    {
-                        Pawn human = HumanScribeManager.StringToHuman(pawn);
-                        GenSpawn.Spawn(human, human.Position, map, human.Rotation);
-                    }
-                    catch { Logger.Warning($"Failed to spawn human {pawn.name}"); }
-                }
-            }
+            catch (Exception e) { Logger.Warning($"Failed to set map humans. Reason: {e}"); }
         }
 
         private static void SetMapAnimals(MapData mapData, Map map, bool factionAnimals, bool nonFactionAnimals)
         {
-            if (factionAnimals)
+            try
             {
-                foreach (AnimalData pawn in mapData.factionAnimals)
+                if (factionAnimals)
                 {
-                    try
+                    foreach (AnimalData pawn in mapData.factionAnimals)
                     {
-                        Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
-                        animal.SetFaction(FactionValues.neutralPlayer);
+                        try
+                        {
+                            Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
+                            animal.SetFaction(FactionValues.neutralPlayer);
 
-                        GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                            GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                        }
+                        catch { Logger.Warning($"Failed to spawn animal {pawn.name}"); }
                     }
-                    catch { Logger.Warning($"Failed to spawn animal {pawn.name}"); }
+                }
+
+                if (nonFactionAnimals)
+                {
+                    foreach (AnimalData pawn in mapData.nonFactionAnimals)
+                    {
+                        try
+                        {
+                            Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
+                            GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
+                        }
+                        catch { Logger.Warning($"Failed to spawn animal {pawn.name}"); }
+                    }
                 }
             }
-
-            if (nonFactionAnimals)
-            {
-                foreach (AnimalData pawn in mapData.nonFactionAnimals)
-                {
-                    try
-                    {
-                        Pawn animal = AnimalScribeManager.StringToAnimal(pawn);
-                        GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
-                    }
-                    catch { Logger.Warning($"Failed to spawn animal {pawn.name}"); }
-                }
-            }
+            catch (Exception e) { Logger.Warning($"Failed to set map animals. Reason: {e}"); }
         }
 
-        private static void SetMapData(MapData mapData, Map map)
+        private static void SetWeatherData(MapData mapData, Map map)
         {
-            WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == mapData.curWeatherDefName);
-            map.weatherManager.TransitionTo(weatherDef);
+            try
+            {
+                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == mapData.curWeatherDefName);
+                map.weatherManager.TransitionTo(weatherDef);
+            }
+            catch (Exception e) { Logger.Warning($"Failed to set map weather. Reason: {e}"); }
         }
-
-        //Misc
 
         private static void SetMapFog(Map map)
         {
-            FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
+            try { FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map); }
+            catch (Exception e) { Logger.Warning($"Failed to set map fog. Reason: {e}"); }
         }
 
         private static void SetMapRoofs(Map map)
         {
-            map.roofCollapseBuffer.Clear();
-            map.roofGrid.Drawer.SetDirty();
+            try
+            {
+                map.roofCollapseBuffer.Clear();
+                map.roofGrid.Drawer.SetDirty();
+            }
+            catch (Exception e) { Logger.Warning($"Failed to set map roofs. Reason: {e}"); }            
         }
     }
 

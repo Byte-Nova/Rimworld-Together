@@ -53,7 +53,7 @@ namespace GameClient
 
                     else
                     {
-                        TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost);
+                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost);
                         SendRequest();
                     }
                 };
@@ -85,7 +85,7 @@ namespace GameClient
                 Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
                 silverToReturn.stackCount = spyCost;
 
-                TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
+                RimworldManager.PlaceThingIntoCaravan(silverToReturn, ClientValues.chosenCaravan);
             }
 
             DialogManager.PopWaitDialog();
@@ -102,7 +102,7 @@ namespace GameClient
                 Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
                 silverToReturn.stackCount = spyCost;
 
-                TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
+                RimworldManager.PlaceThingIntoCaravan(silverToReturn, ClientValues.chosenCaravan);
             }
 
             DialogManager.PopWaitDialog();
