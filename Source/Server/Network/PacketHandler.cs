@@ -62,6 +62,11 @@ namespace GameServer
             OnlineMarketManager.ParseMarketPacket(client, packet);
         }
 
+        public static void AidPacket(ServerClient client, Packet packet)
+        {
+            AidManager.ParsePacket(client, packet);
+        }
+
         public static void SitePacket(ServerClient client, Packet packet)
         {
             SiteManager.ParseSitePacket(client, packet);

@@ -161,6 +161,9 @@ namespace GameClient
 
             Site[] sites = Find.WorldObjects.Sites.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction)).ToArray();
             foreach (Site site in sites) Find.WorldObjects.Remove(site);
+
+            sites = Find.WorldObjects.Sites.Where(fetch => fetch.Faction == Faction.OfPlayer).ToArray();
+            foreach (Site site in sites) Find.WorldObjects.Remove(site);
         }
 
         //Spawns a player settlement from a request

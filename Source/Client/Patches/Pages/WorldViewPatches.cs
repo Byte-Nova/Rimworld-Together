@@ -128,12 +128,24 @@ namespace GameClient
                     }
                 };
 
-                if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
-                if (__instance.Map != null && __instance.Map.mapPawns.AllPawns.ToList().Find(fetch => fetch.Faction == Faction.OfPlayer) != null)
+                Command_Action command_Aid = new Command_Action
                 {
-                    gizmoList.Add(command_Caravan);
-                }
+                    defaultLabel = "Aid",
+                    defaultDesc = "Send aid to this settlement",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Aid"),
+                    action = delegate
+                    {
+                        ClientValues.chosenSettlement = __instance;
+
+                        //TODO
+                        //KEEP WORKING FROM HERE
+                    }
+                };
+
+                if (__instance.Map == null && __instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
+                if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
+                if (__instance.Map != null) gizmoList.Add(command_Caravan);
+                gizmoList.Add(command_Aid);
                 __result = gizmoList;
             }
 

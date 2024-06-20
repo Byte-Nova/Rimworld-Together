@@ -10,6 +10,8 @@
 
         public enum MarketStepMode { Add, Request, Reload }
 
+        public enum AidStepMode { }
+
         public enum FactionManifestMode
         {
             Create,
