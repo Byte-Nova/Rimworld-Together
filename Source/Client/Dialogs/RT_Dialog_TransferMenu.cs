@@ -223,7 +223,7 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.World)
             {
-                playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+                playerNegotiator = ClientValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
         }
 
@@ -404,7 +404,7 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.World)
             {
-                Map map = Find.AnyPlayerHomeMap;
+                Map map = ClientValues.chosenSettlement.Map;
 
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);

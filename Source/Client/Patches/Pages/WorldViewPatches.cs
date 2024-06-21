@@ -137,8 +137,9 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        //TODO
-                        //KEEP WORKING FROM HERE
+                        List<string> pawnNames = new List<string>();
+                        foreach (Pawn pawn in RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
+                        DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("a", "b", pawnNames.ToArray(), AidManager.SendAidRequest));
                     }
                 };
 

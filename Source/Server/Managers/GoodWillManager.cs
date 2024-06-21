@@ -75,10 +75,7 @@ namespace GameServer
             }
             factionGoodwillData.siteGoodwills = tempList.ToArray();
 
-            UserFile userFile = UserManager.GetUserFile(client);
-            userFile.enemyPlayers = client.enemyPlayers;
-            userFile.allyPlayers = client.allyPlayers;
-            UserManager.SaveUserFile(client, userFile);
+            client.SaveToUserFile();
 
             Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             client.listener.EnqueuePacket(rPacket);

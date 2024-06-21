@@ -17,7 +17,11 @@
 
         public bool isBanned;
 
-        public string SavedIP;
+        public string savedIP;
+
+        public double eventProtectionTime;
+
+        public double aidProtectionTime;
 
         public List<string> allyPlayers = new List<string>();
 

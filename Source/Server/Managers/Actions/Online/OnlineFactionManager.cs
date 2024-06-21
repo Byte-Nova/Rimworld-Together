@@ -151,13 +151,7 @@ namespace GameServer
                 factionFile.factionMemberRanks.Add(((int)FactionRanks.Admin).ToString());
                 SaveFactionFile(factionFile);
 
-                client.hasFaction = true;
-                client.factionName = factionFile.factionName;
-
-                UserFile userFile = UserManager.GetUserFile(client);
-                userFile.hasFaction = true;
-                userFile.factionName = factionFile.factionName;
-                UserManager.SaveUserFile(client, userFile);
+                client.UpdateFaction(factionFile.factionName);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                 client.listener.EnqueuePacket(packet);
@@ -224,29 +218,20 @@ namespace GameServer
             ServerClient toAdd = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
             if (factionFile == null) return;
+            if (toAdd == null) return;
+
+            if (GetMemberRank(factionFile, client.username) == FactionRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
             else
             {
-                if (GetMemberRank(factionFile, client.username) == FactionRanks.Member)
-                {
-                    ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
-                }
-
+                if (toAdd.hasFaction) return;
                 else
                 {
-                    if (toAdd == null) return;
+                    if (factionFile.factionMembers.Contains(toAdd.username)) return;
                     else
                     {
-                        if (toAdd.hasFaction) return;
-                        else
-                        {
-                            if (factionFile.factionMembers.Contains(toAdd.username)) return;
-                            else
-                            {
-                                factionManifest.manifestDataString = factionFile.factionName;
-                                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-                                toAdd.listener.EnqueuePacket(packet);
-                            }
-                        }
+                        factionManifest.manifestDataString = factionFile.factionName;
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
+                        toAdd.listener.EnqueuePacket(packet);
                     }
                 }
             }
@@ -265,13 +250,7 @@ namespace GameServer
                     factionFile.factionMemberRanks.Add(((int)FactionRanks.Member).ToString());
                     SaveFactionFile(factionFile);
 
-                    client.hasFaction = true;
-                    client.factionName = factionFile.factionName;
-
-                    UserFile userFile = UserManager.GetUserFile(client);
-                    userFile.hasFaction = true;
-                    userFile.factionName = factionFile.factionName;
-                    UserManager.SaveUserFile(client, userFile);
+                    client.UpdateFaction(factionFile.factionName);
 
                     GoodwillManager.ClearAllFactionMemberGoodwills(factionFile);
 

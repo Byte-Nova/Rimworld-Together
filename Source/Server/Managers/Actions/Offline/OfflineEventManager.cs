@@ -41,7 +41,8 @@ namespace GameServer
                 else
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
-                    if (target.inSafeZone)
+
+                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.eventProtectionTime, 3600000))
                     {
                         eventData.eventStepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
@@ -50,7 +51,7 @@ namespace GameServer
 
                     else
                     {
-                        target.inSafeZone = true;
+                        target.UpdateEventTime();
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);

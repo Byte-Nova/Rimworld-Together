@@ -271,7 +271,7 @@ namespace GameServer
             Logger.Title("----------------------------------------");
             foreach (UserFile user in userFiles)
             {
-                Logger.Warning($"{user.username} - {user.SavedIP}");
+                Logger.Warning($"{user.username} - {user.savedIP}");
             }
             Logger.Title("----------------------------------------");
         }
@@ -286,11 +286,7 @@ namespace GameServer
                 if (CheckIfIsAlready(toFind)) return;
                 else
                 {
-                    toFind.isAdmin = true;
-
-                    UserFile userFile = UserManager.GetUserFile(toFind);
-                    userFile.isAdmin = true;
-                    UserManager.SaveUserFile(toFind, userFile);
+                    toFind.UpdateAdmin(true);
 
                     CommandManager.SendOpCommand(toFind);
 
@@ -320,11 +316,7 @@ namespace GameServer
                 if (CheckIfIsAlready(toFind)) return;
                 else
                 {
-                    toFind.isAdmin = false;
-
-                    UserFile userFile = UserManager.GetUserFile(toFind);
-                    userFile.isAdmin = false;
-                    UserManager.SaveUserFile(toFind, userFile);
+                    toFind.UpdateAdmin(false);
 
                     CommandManager.SendDeOpCommand(toFind);
 
@@ -382,9 +374,7 @@ namespace GameServer
             {
                 toFind.listener.disconnectFlag = true;
 
-                UserFile userFile = UserManager.GetUserFile(toFind);
-                userFile.isBanned = true;
-                UserManager.SaveUserFile(toFind, userFile);
+                toFind.UpdateBan(true);
 
                 Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
             }
@@ -410,7 +400,7 @@ namespace GameServer
             Logger.Title("----------------------------------------");
             foreach (UserFile user in userFiles)
             {
-                Logger.Warning($"{user.username} - {user.SavedIP}");
+                Logger.Warning($"{user.username} - {user.savedIP}");
             }
             Logger.Title("----------------------------------------");
         }

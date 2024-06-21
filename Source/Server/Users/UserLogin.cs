@@ -19,8 +19,8 @@ namespace GameServer
 
             client.username = loginData.username;
             client.password = loginData.password;
-
-            UserManager.LoadDataFromFile(client);
+            client.LoadFromUserFile();
+            Logger.Message($"[Handshake] > {client.username} | {client.SavedIP}");
 
             if (UserManager.CheckIfUserBanned(client)) return;
 
@@ -35,8 +35,6 @@ namespace GameServer
 
         private static void PostLogin(ServerClient client)
         {
-            UserManager.SaveUserIP(client);
-
             UserManager.SendPlayerRecount();
 
             ServerGlobalDataManager.SendServerGlobalData(client);

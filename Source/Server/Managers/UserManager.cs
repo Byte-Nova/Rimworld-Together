@@ -9,22 +9,6 @@ namespace GameServer
 
         public readonly static string fileExtension = ".mpuser";
 
-        public static void LoadDataFromFile(ServerClient client)
-        {
-            UserFile file = GetUserFile(client);
-            client.uid = file.uid;
-            client.username = file.username;
-            client.password = file.password;
-            client.factionName = file.factionName;
-            client.hasFaction = file.hasFaction;
-            client.isAdmin = file.isAdmin;
-            client.isBanned = file.isBanned;
-            client.enemyPlayers = file.enemyPlayers;
-            client.allyPlayers = file.allyPlayers;
-
-            Logger.Message($"[Handshake] > {client.username} | {client.SavedIP}");
-        }
-
         public static UserFile GetUserFile(ServerClient client)
         {
             string[] userFiles = Directory.GetFiles(Master.usersPath);
@@ -66,12 +50,6 @@ namespace GameServer
                 userFiles.Add(Serializer.SerializeFromFile<UserFile>(user)); 
             }
             return userFiles.ToArray();
-        }
-
-        public static void SaveUserFile(ServerClient client, UserFile userFile)
-        {
-            string savePath = Path.Combine(Master.usersPath, client.username + fileExtension);
-            Serializer.SerializeToFile(savePath, userFile);
         }
 
         public static void SaveUserFileFromName(string username, UserFile userFile)
@@ -152,13 +130,6 @@ namespace GameServer
                 SendLoginResponse(client, LoginResponse.BannedLogin);
                 return true;
             }
-        }
-
-        public static void SaveUserIP(ServerClient client)
-        {
-            UserFile userFile = GetUserFile(client);
-            userFile.SavedIP = client.SavedIP;
-            SaveUserFile(client, userFile);
         }
 
         public static int[] GetUserStructuresTilesFromUsername(string username)
