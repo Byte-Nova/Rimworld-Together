@@ -90,7 +90,7 @@ namespace GameClient
 
             DialogManager.PopWaitDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must not be connected!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("This user is currently unavailable!"));
         }
 
         //Executes after the action is unavailable

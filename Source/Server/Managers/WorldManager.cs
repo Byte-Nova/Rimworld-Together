@@ -31,7 +31,7 @@ namespace GameServer
         {
             Master.worldValues = worldData.worldValuesFile;
             Serializer.SerializeToFile(worldFilePath, Master.worldValues);
-            Logger.Title($"[Save world] > {client.username}");
+            Logger.Title($"[Save world] > {client.userFile.Username}");
         }
 
         public static void RequireWorldFile(ServerClient client)

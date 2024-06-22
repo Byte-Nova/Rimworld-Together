@@ -258,7 +258,7 @@ namespace GameServer
             Logger.Title("----------------------------------------");
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
-                Logger.Warning($"{client.username} - {client.SavedIP}");
+                Logger.Warning($"{client.userFile.Username} - {client.userFile.SavedIP}");
             }
             Logger.Title("----------------------------------------");
         }
@@ -271,14 +271,14 @@ namespace GameServer
             Logger.Title("----------------------------------------");
             foreach (UserFile user in userFiles)
             {
-                Logger.Warning($"{user.username} - {user.SavedIP}");
+                Logger.Warning($"{user.Username} - {user.SavedIP}");
             }
             Logger.Title("----------------------------------------");
         }
 
         private static void OpCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
             if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
@@ -286,11 +286,7 @@ namespace GameServer
                 if (CheckIfIsAlready(toFind)) return;
                 else
                 {
-                    toFind.isAdmin = true;
-
-                    UserFile userFile = UserManager.GetUserFile(toFind);
-                    userFile.isAdmin = true;
-                    UserManager.SaveUserFile(toFind, userFile);
+                    toFind.userFile.UpdateAdmin(true);
 
                     CommandManager.SendOpCommand(toFind);
 
@@ -300,9 +296,9 @@ namespace GameServer
 
             bool CheckIfIsAlready(ServerClient client)
             {
-                if (client.isAdmin)
+                if (client.userFile.IsAdmin)
                 {
-                    Logger.Warning($"User '{client.username}' was already an admin");
+                    Logger.Warning($"User '{client.userFile.Username}' was already an admin");
                     return true;
                 }
 
@@ -312,7 +308,7 @@ namespace GameServer
 
         private static void DeopCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
             if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
@@ -320,23 +316,19 @@ namespace GameServer
                 if (CheckIfIsAlready(toFind)) return;
                 else
                 {
-                    toFind.isAdmin = false;
-
-                    UserFile userFile = UserManager.GetUserFile(toFind);
-                    userFile.isAdmin = false;
-                    UserManager.SaveUserFile(toFind, userFile);
+                    toFind.userFile.UpdateAdmin(false);
 
                     CommandManager.SendDeOpCommand(toFind);
 
-                    Logger.Warning($"User '{toFind.username}' is no longer an admin");
+                    Logger.Warning($"User '{toFind.userFile.Username}' is no longer an admin");
                 }
             }
 
             bool CheckIfIsAlready(ServerClient client)
             {
-                if (!client.isAdmin)
+                if (!client.userFile.IsAdmin)
                 {
-                    Logger.Warning($"User '{client.username}' was not an admin");
+                    Logger.Warning($"User '{client.userFile.Username}' was not an admin");
                     return true;
                 }
 
@@ -346,7 +338,7 @@ namespace GameServer
 
         private static void KickCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
             if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
@@ -359,7 +351,7 @@ namespace GameServer
 
         private static void BanCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
             if (toFind == null)
             {
                 UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
@@ -370,8 +362,8 @@ namespace GameServer
                     if (CheckIfIsAlready(userFile)) return;
                     else
                     {
-                        userFile.isBanned = true;
-                        UserManager.SaveUserFileFromName(userFile.username, userFile);
+                        userFile.IsBanned = true;
+                        userFile.SaveUserFile();
 
                         Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
                     }
@@ -382,16 +374,14 @@ namespace GameServer
             {
                 toFind.listener.disconnectFlag = true;
 
-                UserFile userFile = UserManager.GetUserFile(toFind);
-                userFile.isBanned = true;
-                UserManager.SaveUserFile(toFind, userFile);
+                toFind.userFile.UpdateBan(true);
 
                 Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
             }
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (userFile.isBanned)
+                if (userFile.IsBanned)
                 {
                     Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was already banned from the server");
@@ -404,13 +394,13 @@ namespace GameServer
 
         private static void BanListCommandAction()
         {
-            List<UserFile> userFiles = UserManager.GetAllUserFiles().ToList().FindAll(x => x.isBanned);
+            List<UserFile> userFiles = UserManager.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
 
             Logger.Title($"Banned players: [{userFiles.Count()}]");
             Logger.Title("----------------------------------------");
             foreach (UserFile user in userFiles)
             {
-                Logger.Warning($"{user.username} - {user.SavedIP}");
+                Logger.Warning($"{user.Username} - {user.SavedIP}");
             }
             Logger.Title("----------------------------------------");
         }
@@ -425,8 +415,7 @@ namespace GameServer
                 if (CheckIfIsAlready(userFile)) return;
                 else
                 {
-                    userFile.isBanned = false;
-                    UserManager.SaveUserFileFromName(userFile.username, userFile);
+                    userFile.UpdateBan(false);
 
                     Logger.Warning($"User '{commandParameters[0]}' is no longer banned from the server");
                 }
@@ -434,7 +423,7 @@ namespace GameServer
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (!userFile.isBanned)
+                if (!userFile.IsBanned)
                 {
                     Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was not banned from the server");
@@ -485,7 +474,7 @@ namespace GameServer
 
         private static void EventCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
             if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
@@ -496,7 +485,7 @@ namespace GameServer
                     {
                         CommandManager.SendEventCommand(toFind, i);
 
-                        Logger.Warning($"Sent event '{commandParameters[1]}' to {toFind.username}");
+                        Logger.Warning($"Sent event '{commandParameters[1]}' to {toFind.userFile.Username}");
 
                         return;
                     }
@@ -589,7 +578,7 @@ namespace GameServer
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (Master.whitelist.WhitelistedUsers.Contains(userFile.username))
+                if (Master.whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
                     Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was already whitelisted");
@@ -614,7 +603,7 @@ namespace GameServer
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (!Master.whitelist.WhitelistedUsers.Contains(userFile.username))
+                if (!Master.whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
                     Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was not whitelisted");
@@ -633,7 +622,7 @@ namespace GameServer
 
         private static void ForceSaveCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.username == commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
             if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
@@ -649,7 +638,7 @@ namespace GameServer
             UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
             if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
-            else SaveManager.DeletePlayerData(userFile.username);
+            else SaveManager.DeletePlayerData(userFile.Username);
         }
 
         private static void EnableDifficultyCommandAction()

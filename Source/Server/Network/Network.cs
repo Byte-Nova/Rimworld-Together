@@ -63,7 +63,7 @@ namespace GameServer
 
                     Master.ChangeTitle();
 
-                    Logger.Message($"[Connect] > {newServerClient.username} | {newServerClient.SavedIP}");
+                    Logger.Message($"[Connect] > {newServerClient.userFile.Username} | {newServerClient.userFile.SavedIP}");
                 }
             }
         }
@@ -79,9 +79,9 @@ namespace GameServer
 
                 Master.ChangeTitle();
                 UserManager.SendPlayerRecount();
-                Logger.Message($"[Disconnect] > {client.username} | {client.SavedIP}");
+                Logger.Message($"[Disconnect] > {client.userFile.Username} | {client.userFile.SavedIP}");
             }
-            catch { Logger.Warning($"Error disconnecting user {client.username}, this will cause memory overhead"); }
+            catch { Logger.Warning($"Error disconnecting user {client.userFile.Username}, this will cause memory overhead"); }
         }
     }
 }

@@ -5,6 +5,8 @@ namespace GameServer
 {
     public static class OfflineEventManager
     {
+        private static readonly double baseEventTimer = 3600000;
+
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
             EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
@@ -27,7 +29,7 @@ namespace GameServer
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send an event to settlement at tile {eventData.toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an event to settlement at tile {eventData.toTile}, but it has no settlement");
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
@@ -41,7 +43,8 @@ namespace GameServer
                 else
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
-                    if (target.inSafeZone)
+
+                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, baseEventTimer))
                     {
                         eventData.eventStepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
@@ -50,14 +53,19 @@ namespace GameServer
 
                     else
                     {
-                        target.inSafeZone = true;
+                        //Back to player
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
 
+                        //To the person that should receive it
+
                         eventData.eventStepMode = EventStepMode.Receive;
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
-                        target.listener.EnqueuePacket(rPacket);
+
+                        target.userFile.UpdateEventTime();
+
+                        packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                        target.listener.EnqueuePacket(packet);
                     }
                 }
             }

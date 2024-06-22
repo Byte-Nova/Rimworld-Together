@@ -20,5 +20,11 @@
         public bool UseUPnP = false;
 
         public bool SyncLocalSave = true;
+
+        public bool TemporalActivityProtection = true;
+
+        public bool TemporalEventProtection = true;
+
+        public bool TemporalAidProtection = false;
     }
 }

@@ -115,10 +115,14 @@ namespace GameClient
                 .ToArray();
         }
 
-        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct)
+        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false)
         {
-            if (thing is Pawn) GenSpawn.Spawn(thing, thing.Position, map, thing.Rotation);
-            else GenPlace.TryPlaceThing(thing, thing.Position, map, placeMode, rot: thing.Rotation);
+            IntVec3 positionToPlaceAt = IntVec3.Zero;
+            if (useSpot) positionToPlaceAt = TransferManagerHelper.GetTransferLocationInMap(map);
+            else positionToPlaceAt = thing.Position;
+
+            if (thing is Pawn) GenSpawn.Spawn(thing, positionToPlaceAt, map, thing.Rotation);
+            else GenPlace.TryPlaceThing(thing, positionToPlaceAt, map, placeMode, rot: thing.Rotation);
         }
 
         public static void PlaceThingIntoCaravan(Thing thing, Caravan caravan)
@@ -202,6 +206,25 @@ namespace GameClient
         {
             if (pawn.Spawned) pawn.DeSpawn();
             if (Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.RemovePawn(pawn);
+        }
+
+        public static Pawn[] GetAllSettlementPawns(Faction faction, bool includeAnimals)
+        {
+            Settlement[] settlements = Find.World.worldObjects.Settlements.Where(fetch => fetch.Faction == faction).ToArray();
+
+            List<Pawn> allPawns = new List<Pawn>();
+            foreach(Settlement settlement in settlements)
+            {
+                allPawns.AddRange(GetPawnsFromMap(settlement.Map, faction, includeAnimals));
+            }
+
+            return allPawns.ToArray();
+        }
+
+        public static Pawn[] GetPawnsFromMap(Map map, Faction faction, bool includeAnimals)
+        {
+            if (includeAnimals) return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction).ToArray();
+            else return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction && !DeepScribeHelper.CheckIfThingIsAnimal(fetch)).ToArray();
         }
     }
 }

@@ -79,8 +79,6 @@ namespace GameServer
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    if (string.IsNullOrEmpty(data)) continue;
-
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
                     PacketHandler.HandlePacket(targetClient, receivedPacket);
                 }
@@ -142,7 +140,7 @@ namespace GameServer
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
-            if (targetClient.inVisitWith != null) OnlineActivityManager.SendVisitStop(targetClient);
+            if (targetClient.InVisitWith != null) OnlineActivityManager.SendVisitStop(targetClient);
         }
     }
 }

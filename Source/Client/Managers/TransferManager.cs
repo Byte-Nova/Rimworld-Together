@@ -195,12 +195,10 @@ namespace GameClient
                 if (customMap) map = Find.Maps.Find(x => x.Tile == ClientValues.incomingManifest.toTile);
                 else map = Find.AnyPlayerHomeMap;
 
-                IntVec3 location = TransferManagerHelper.GetTransferLocationInMap(map);
                 foreach (Thing thing in things)
                 {
-                    thing.Position = location;
                     thing.SetFactionDirect(Faction.OfPlayer);
-                    RimworldManager.PlaceThingIntoMap(thing, map, ThingPlaceMode.Near);
+                    RimworldManager.PlaceThingIntoMap(thing, map, ThingPlaceMode.Near, true);
                 }
 
                 FinishTransfer(success);

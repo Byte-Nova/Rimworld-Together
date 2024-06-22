@@ -71,7 +71,7 @@ namespace GameServer
                 if (!faction.EndsWith(fileExtension)) continue;
 
                 FactionFile factionFile = Serializer.SerializeFromFile<FactionFile>(faction);
-                if (factionFile.factionName == client.factionName) return factionFile;
+                if (factionFile.factionName == client.userFile.FactionName) return factionFile;
             }
 
             return null;
@@ -147,33 +147,27 @@ namespace GameServer
 
                 FactionFile factionFile = new FactionFile();
                 factionFile.factionName = factionManifest.manifestDataString;
-                factionFile.factionMembers.Add(client.username);
+                factionFile.factionMembers.Add(client.userFile.Username);
                 factionFile.factionMemberRanks.Add(((int)FactionRanks.Admin).ToString());
                 SaveFactionFile(factionFile);
 
-                client.hasFaction = true;
-                client.factionName = factionFile.factionName;
-
-                UserFile userFile = UserManager.GetUserFile(client);
-                userFile.hasFaction = true;
-                userFile.factionName = factionFile.factionName;
-                UserManager.SaveUserFile(client, userFile);
+                client.userFile.UpdateFaction(factionFile.factionName);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                 client.listener.EnqueuePacket(packet);
 
-                Logger.Warning($"[Created faction] > {client.username} > {factionFile.factionName}");
+                Logger.Warning($"[Created faction] > {client.userFile.Username} > {factionFile.factionName}");
             }
         }
 
         private static void DeleteFaction(ServerClient client, PlayerFactionData factionManifest)
         {
-            if (!CheckIfFactionExistsByName(client.factionName)) return;
+            if (!CheckIfFactionExistsByName(client.userFile.FactionName)) return;
             else
             {
                 FactionFile factionFile = GetFactionFromClient(client);
 
-                if (GetMemberRank(factionFile, client.username) != FactionRanks.Admin)
+                if (GetMemberRank(factionFile, client.userFile.Username) != FactionRanks.Admin)
                 {
                     ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
                 }
@@ -185,25 +179,17 @@ namespace GameServer
                     UserFile[] userFiles = UserManager.GetAllUserFiles();
                     foreach (UserFile userFile in userFiles)
                     {
-                        if (userFile.factionName == client.factionName)
-                        {
-                            userFile.hasFaction = false;
-                            userFile.factionName = "";
-
-                            UserManager.SaveUserFileFromName(userFile.username, userFile);
-                        }
+                        if (userFile.FactionName == client.userFile.FactionName) userFile.UpdateFaction(null);
                     }
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                     foreach (string str in factionFile.factionMembers)
                     {
-                        ServerClient cClient = Network.connectedClients.ToList().Find(x => x.username == str);
+                        ServerClient cClient = Network.connectedClients.ToList().Find(x => x.userFile.Username == str);
                         if (cClient != null)
                         {
-                            cClient.hasFaction = false;
-                            cClient.factionName = "";
+                            cClient.userFile.UpdateFaction(null);
                             cClient.listener.EnqueuePacket(packet);
-
                             GoodwillManager.UpdateClientGoodwills(cClient);
                         }
                     }
@@ -212,7 +198,7 @@ namespace GameServer
                     foreach(SiteFile site in factionSites) SiteManager.DestroySiteFromFile(site);
 
                     File.Delete(Path.Combine(Master.factionsPath, factionFile.factionName + fileExtension));
-                    Logger.Warning($"[Deleted Faction] > {client.username} > {factionFile.factionName}");
+                    Logger.Warning($"[Deleted Faction] > {client.userFile.Username} > {factionFile.factionName}");
                 }
             }
         }
@@ -224,29 +210,20 @@ namespace GameServer
             ServerClient toAdd = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
             if (factionFile == null) return;
+            if (toAdd == null) return;
+
+            if (GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
             else
             {
-                if (GetMemberRank(factionFile, client.username) == FactionRanks.Member)
-                {
-                    ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
-                }
-
+                if (toAdd.userFile.HasFaction) return;
                 else
                 {
-                    if (toAdd == null) return;
+                    if (factionFile.factionMembers.Contains(toAdd.userFile.Username)) return;
                     else
                     {
-                        if (toAdd.hasFaction) return;
-                        else
-                        {
-                            if (factionFile.factionMembers.Contains(toAdd.username)) return;
-                            else
-                            {
-                                factionManifest.manifestDataString = factionFile.factionName;
-                                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
-                                toAdd.listener.EnqueuePacket(packet);
-                            }
-                        }
+                        factionManifest.manifestDataString = factionFile.factionName;
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
+                        toAdd.listener.EnqueuePacket(packet);
                     }
                 }
             }
@@ -259,19 +236,13 @@ namespace GameServer
             if (factionFile == null) return;
             else
             {
-                if (!factionFile.factionMembers.Contains(client.username))
+                if (!factionFile.factionMembers.Contains(client.userFile.Username))
                 {
-                    factionFile.factionMembers.Add(client.username);
+                    factionFile.factionMembers.Add(client.userFile.Username);
                     factionFile.factionMemberRanks.Add(((int)FactionRanks.Member).ToString());
                     SaveFactionFile(factionFile);
 
-                    client.hasFaction = true;
-                    client.factionName = factionFile.factionName;
-
-                    UserFile userFile = UserManager.GetUserFile(client);
-                    userFile.hasFaction = true;
-                    userFile.factionName = factionFile.factionName;
-                    UserManager.SaveUserFile(client, userFile);
+                    client.userFile.UpdateFaction(factionFile.factionName);
 
                     GoodwillManager.ClearAllFactionMemberGoodwills(factionFile);
 
@@ -288,15 +259,15 @@ namespace GameServer
             UserFile toRemoveLocal = UserManager.GetUserFileFromName(settlementFile.owner);
             ServerClient toRemove = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
-            if (GetMemberRank(factionFile, client.username) == FactionRanks.Member)
+            if (GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member)
             {
-                if (settlementFile.owner == client.username) RemoveFromFaction();
+                if (settlementFile.owner == client.userFile.Username) RemoveFromFaction();
                 else ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
             }
 
-            else if (GetMemberRank(factionFile, client.username) == FactionRanks.Moderator)
+            else if (GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Moderator)
             {
-                if (settlementFile.owner == client.username) RemoveFromFaction();
+                if (settlementFile.owner == client.userFile.Username) RemoveFromFaction();
                 else
                 {
                     if (GetMemberRank(factionFile, settlementFile.owner) != FactionRanks.Member)
@@ -306,9 +277,9 @@ namespace GameServer
                 }
             }
 
-            else if (GetMemberRank(factionFile, client.username) == FactionRanks.Admin)
+            else if (GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Admin)
             {
-                if (settlementFile.owner == client.username)
+                if (settlementFile.owner == client.userFile.Username)
                 {
                     factionManifest.manifestMode = FactionManifestMode.AdminProtection;
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
@@ -324,25 +295,21 @@ namespace GameServer
                 {
                     if (toRemove != null)
                     {
-                        toRemove.hasFaction = false;
-                        toRemove.factionName = "";
+                        toRemove.userFile.UpdateFaction(null);
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                         toRemove.listener.EnqueuePacket(packet);
-
                         GoodwillManager.UpdateClientGoodwills(toRemove);
                     }
 
                     if (toRemoveLocal == null) return;
                     else
                     {
-                        toRemoveLocal.hasFaction = false;
-                        toRemoveLocal.factionName = "";
-                        UserManager.SaveUserFileFromName(toRemoveLocal.username, toRemoveLocal);
+                        toRemoveLocal.UpdateFaction(null);
 
                         for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                         {
-                            if (factionFile.factionMembers[i] == toRemoveLocal.username)
+                            if (factionFile.factionMembers[i] == toRemoveLocal.Username)
                             {
                                 factionFile.factionMembers.RemoveAt(i);
                                 factionFile.factionMemberRanks.RemoveAt(i);
@@ -364,14 +331,14 @@ namespace GameServer
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
-            if (GetMemberRank(factionFile, client.username) == FactionRanks.Member)
+            if (GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member)
             {
                 ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
             }
 
             else
             {
-                if (!factionFile.factionMembers.Contains(userFile.username)) return;
+                if (!factionFile.factionMembers.Contains(userFile.Username)) return;
                 else
                 {
                     if (GetMemberRank(factionFile, settlementFile.owner) == FactionRanks.Admin)
@@ -383,7 +350,7 @@ namespace GameServer
                     {
                         for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                         {
-                            if (factionFile.factionMembers[i] == userFile.username)
+                            if (factionFile.factionMembers[i] == userFile.Username)
                             {
                                 factionFile.factionMemberRanks[i] = "1";
                                 SaveFactionFile(factionFile);
@@ -401,19 +368,19 @@ namespace GameServer
             UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
-            if (GetMemberRank(factionFile, client.username) != FactionRanks.Admin)
+            if (GetMemberRank(factionFile, client.userFile.Username) != FactionRanks.Admin)
             {
                 ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
             }
 
             else
             {
-                if (!factionFile.factionMembers.Contains(userFile.username)) return;
+                if (!factionFile.factionMembers.Contains(userFile.Username)) return;
                 else
                 {
                     for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                     {
-                        if (factionFile.factionMembers[i] == userFile.username)
+                        if (factionFile.factionMembers[i] == userFile.Username)
                         {
                             factionFile.factionMemberRanks[i] = "0";
                             SaveFactionFile(factionFile);
@@ -444,7 +411,7 @@ namespace GameServer
             List<ServerClient> connectedFactionMembers = new List<ServerClient>();
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
-                if (factionFile.factionMembers.Contains(client.username))
+                if (factionFile.factionMembers.Contains(client.userFile.Username))
                 {
                     connectedFactionMembers.Add(client);
                 }

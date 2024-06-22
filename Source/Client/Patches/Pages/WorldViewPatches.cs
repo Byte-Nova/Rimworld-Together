@@ -128,12 +128,26 @@ namespace GameClient
                     }
                 };
 
-                if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
-                if (__instance.Map != null && __instance.Map.mapPawns.AllPawns.ToList().Find(fetch => fetch.Faction == Faction.OfPlayer) != null)
+                Command_Action command_Aid = new Command_Action
                 {
-                    gizmoList.Add(command_Caravan);
-                }
+                    defaultLabel = "Aid",
+                    defaultDesc = "Send aid to this settlement",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Aid"),
+                    action = delegate
+                    {
+                        ClientValues.chosenSettlement = __instance;
+
+                        List<string> pawnNames = new List<string>();
+                        foreach (Pawn pawn in RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
+                        DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Aid menu", "Select the pawn you want to send for aid", 
+                            pawnNames.ToArray(), AidManager.SendAidRequest));
+                    }
+                };
+
+                if (__instance.Map == null && __instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
+                if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
+                if (__instance.Map != null) gizmoList.Add(command_Caravan);
+                gizmoList.Add(command_Aid);
                 __result = gizmoList;
             }
 

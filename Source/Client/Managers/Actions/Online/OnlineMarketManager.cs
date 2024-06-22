@@ -90,7 +90,7 @@ namespace GameClient
             TransferManager.GetTransferedItemsToSettlement(new Thing[] { toReceive }, customMap: false);
 
             int silverToPay = (int)(toReceive.MarketValue * toReceive.stackCount);
-            RimworldManager.RemoveThingFromSettlement(Find.AnyPlayerHomeMap, ThingDefOf.Silver, silverToPay);
+            RimworldManager.RemoveThingFromSettlement(ClientValues.chosenSettlement.Map, ThingDefOf.Silver, silverToPay);
 
             SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
         }
