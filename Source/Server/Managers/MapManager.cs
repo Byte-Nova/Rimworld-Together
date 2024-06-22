@@ -11,12 +11,12 @@ namespace GameServer
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
             MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(packet.contents);
-            mapFileData.mapOwner = client.Username;
+            mapFileData.mapOwner = client.userFile.Username;
 
             byte[] compressedMapBytes = Serializer.ConvertObjectToBytes(mapFileData);
             File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + fileExtension), compressedMapBytes);
 
-            Logger.Message($"[Save map] > {client.Username} > {mapFileData.mapTile}");
+            Logger.Message($"[Save map] > {client.userFile.Username} > {mapFileData.mapTile}");
         }
 
         public static void DeleteMap(MapFileData mapFile)

@@ -29,7 +29,7 @@ namespace GameServer
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.Username} attempted to send an event to settlement at tile {eventData.toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an event to settlement at tile {eventData.toTile}, but it has no settlement");
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
@@ -44,7 +44,7 @@ namespace GameServer
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
 
-                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.EventProtectionTime, baseEventTimer))
+                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, baseEventTimer))
                     {
                         eventData.eventStepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
@@ -62,7 +62,7 @@ namespace GameServer
 
                         eventData.eventStepMode = EventStepMode.Receive;
 
-                        target.UpdateEventTime();
+                        target.userFile.UpdateEventTime();
 
                         packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         target.listener.EnqueuePacket(packet);

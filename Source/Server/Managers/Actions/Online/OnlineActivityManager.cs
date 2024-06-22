@@ -69,7 +69,7 @@ namespace GameServer
         private static void SendVisitRequest(ServerClient client, OnlineActivityData data)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.targetTile);
-            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.Username} tried to visit a settlement at tile {data.targetTile}, but no settlement could be found");
+            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to visit a settlement at tile {data.targetTile}, but no settlement could be found");
             else
             {
                 ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
@@ -91,7 +91,7 @@ namespace GameServer
 
                     else
                     {
-                        data.otherPlayerName = client.Username;
+                        data.otherPlayerName = client.userFile.Username;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                         toGet.listener.EnqueuePacket(packet);
                     }

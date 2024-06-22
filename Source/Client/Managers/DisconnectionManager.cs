@@ -70,11 +70,10 @@ namespace GameClient
 
                 if (Current.ProgramState != ProgramState.Entry)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?", 
+                    DialogManager.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?",
                         delegate { SaveManager.ForceSave(); DisconnectToMenu(); }, delegate { DisconnectToMenu(); }));
                 }
-
-                DialogManager.PopWaitDialog();
+                else DisconnectToMenu();
             }
         }
 
@@ -82,9 +81,9 @@ namespace GameClient
 
         public static void DisconnectToMenu()
         {
-            OnlineChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
+            OnlineChatManager.CleanChat();
 
             DialogManager.PopWaitDialog();
 

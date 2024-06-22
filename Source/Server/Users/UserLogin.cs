@@ -17,10 +17,11 @@ namespace GameServer
 
             if (!UserManager.CheckIfUserAuthCorrect(client, loginData)) return;
 
-            client.Username = loginData.username;
-            client.Password = loginData.password;
+            client.userFile.SetLoginDetails(loginData);
+
             client.LoadFromUserFile();
-            Logger.Message($"[Handshake] > {client.Username} | {client.SavedIP}");
+
+            Logger.Message($"[Handshake] > {client.userFile.SavedIP} | {client.userFile.Username}");
 
             if (UserManager.CheckIfUserBanned(client)) return;
 
@@ -56,7 +57,7 @@ namespace GameServer
                 if (cClient == client) continue;
                 else
                 {
-                    if (cClient.Username == client.Username)
+                    if (cClient.userFile.Username == client.userFile.Username)
                     {
                         UserManager.SendLoginResponse(cClient, LoginResponse.ExtraLogin);
                     }

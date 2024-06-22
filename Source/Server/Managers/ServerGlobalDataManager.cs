@@ -39,9 +39,9 @@ namespace GameServer
 
         private static ServerGlobalData GetClientValues(ServerClient client, ServerGlobalData globalData)
         {
-            globalData.isClientAdmin = client.IsAdmin;
+            globalData.isClientAdmin = client.userFile.IsAdmin;
 
-            globalData.isClientFactionMember = client.HasFaction;
+            globalData.isClientFactionMember = client.userFile.HasFaction;
 
             return globalData;
         }
@@ -72,7 +72,7 @@ namespace GameServer
             {
                 OnlineSettlementFile file = new OnlineSettlementFile();
 
-                if (settlement.owner == client.Username) continue;
+                if (settlement.owner == client.userFile.Username) continue;
                 else
                 {
                     file.tile = settlement.tile;

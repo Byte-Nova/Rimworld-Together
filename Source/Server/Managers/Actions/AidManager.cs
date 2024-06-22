@@ -38,7 +38,7 @@ namespace GameServer
 
         private static void SendAidRequest(ServerClient client, AidData data) 
         {
-            if (!SettlementManager.CheckIfTileIsInUse(data.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.Username} attempted to send an aid packet to settlement at tile {data.toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(data.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data.toTile}, but it has no settlement");
             else
             {
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.toTile);
@@ -46,7 +46,7 @@ namespace GameServer
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
-                    if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.AidProtectionTime, baseAidTimer))
+                    if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, baseAidTimer))
                     {
                         data.stepMode = CommonEnumerators.AidStepMode.Reject;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
@@ -55,10 +55,8 @@ namespace GameServer
 
                     else
                     {
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
-
                         data.stepMode = CommonEnumerators.AidStepMode.Receive;
-                        packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
                         target.listener.EnqueuePacket(packet);
                     }
                 }
@@ -74,13 +72,13 @@ namespace GameServer
 
         private static void SendAidAccept(ServerClient client, AidData data)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(data.fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.Username} attempted to send an aid packet to settlement at tile {data.fromTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(data.fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data.fromTile}, but it has no settlement");
             else
             {
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.fromTile);
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
-                    client.UpdateAidTime();
+                    client.userFile.UpdateAidTime();
 
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
@@ -100,7 +98,7 @@ namespace GameServer
 
         private static void SendAidReject(ServerClient client, AidData data) 
         {
-            if (!SettlementManager.CheckIfTileIsInUse(data.fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.Username} attempted to send an aid packet to settlement at tile {data.fromTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(data.fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data.fromTile}, but it has no settlement");
             else
             {
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.fromTile);

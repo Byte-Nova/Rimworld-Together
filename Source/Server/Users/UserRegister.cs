@@ -15,24 +15,17 @@ namespace GameServer
 
             if (UserManager.CheckIfUserExists(client, loginData, LoginMode.Register)) return;
 
-            client.Uid = GetNewUIDForUser(client);
-            client.Username = loginData.username;
-            client.Password = loginData.password;
-
             try
             {
-                client.SaveToUserFile();
+                client.userFile.SetLoginDetails(loginData);
+
+                client.userFile.SaveUserFile();
 
                 UserLogin.TryLoginUser(client, packet);
 
-                Logger.Message($"[Registered] > {client.Username}");
+                Logger.Message($"[Registered] > {client.userFile.Username}");
             }
             catch { UserManager.SendLoginResponse(client, LoginResponse.RegisterError); }
-        }
-
-        private static string GetNewUIDForUser(ServerClient client)
-        {
-            return Hasher.GetHashFromString(client.Username);
         }
     }
 }

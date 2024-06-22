@@ -61,7 +61,7 @@ namespace GameServer
 
                     else
                     {
-                        userFile.UpdateActivity();
+                        userFile.UpdateActivityTime();
 
                         MapFileData mapData = MapManager.GetUserMapFromTile(data.targetTile);
                         data.mapData = Serializer.ConvertObjectToBytes(mapData);

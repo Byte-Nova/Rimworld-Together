@@ -109,22 +109,22 @@ namespace GameServer
 
             if (conflictingMods.Count == 0)
             {
-                client.UpdateMods(loginData.runningMods);
+                client.userFile.UpdateMods(loginData.runningMods);
                 return false;
             }
 
             else
             {
-                if (client.IsAdmin)
+                if (client.userFile.IsAdmin)
                 {
-                    Logger.Warning($"[Mod bypass] > {client.Username}");
-                    client.UpdateMods(loginData.runningMods);
+                    Logger.Warning($"[Mod bypass] > {client.userFile.Username}");
+                    client.userFile.UpdateMods(loginData.runningMods);
                     return false;
                 }
 
                 else
                 {
-                    Logger.Warning($"[Mod Mismatch] > {client.Username}");
+                    Logger.Warning($"[Mod Mismatch] > {client.userFile.Username}");
                     UserManager.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }

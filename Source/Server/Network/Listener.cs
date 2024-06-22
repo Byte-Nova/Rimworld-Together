@@ -79,8 +79,6 @@ namespace GameServer
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    if (string.IsNullOrEmpty(data)) continue;
-
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
                     PacketHandler.HandlePacket(targetClient, receivedPacket);
                 }
