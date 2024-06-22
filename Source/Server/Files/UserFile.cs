@@ -1,30 +1,63 @@
-﻿namespace GameServer
+﻿using Shared;
+
+namespace GameServer
 {
     [Serializable]
     public class UserFile
     {
-        public string uid;
+        public string Uid;
 
-        public string username;
+        public string Username;
 
-        public string password;
+        public string Password;
 
-        public string factionName;
+        public string FactionName;
 
-        public bool hasFaction;
+        public bool HasFaction;
 
-        public bool isAdmin;
+        public bool IsAdmin;
 
-        public bool isBanned;
+        public bool IsBanned;
 
-        public string savedIP;
+        public string SavedIP;
 
-        public double eventProtectionTime;
+        public double ActivityProtectionTime;
 
-        public double aidProtectionTime;
+        public double EventProtectionTime;
 
-        public List<string> allyPlayers = new List<string>();
+        public double AidProtectionTime;
 
-        public List<string> enemyPlayers = new List<string>();
+        public List<string> AllyPlayers = new List<string>();
+
+        public List<string> EnemyPlayers = new List<string>();
+
+        public void UpdateFaction(string updatedFactionName)
+        {
+            if (string.IsNullOrWhiteSpace(updatedFactionName))
+            {
+                HasFaction = false;
+                FactionName = null;
+            }
+
+            else
+            {
+                HasFaction = true;
+                FactionName = updatedFactionName;
+            }
+
+            SaveUserFile();
+        }
+
+        public void UpdateActivity()
+        {
+            ActivityProtectionTime = TimeConverter.CurrentTimeToEpoch();
+            SaveUserFile();
+        }
+
+        public void SaveUserFile()
+        {
+            string savePath = Path.Combine(Master.usersPath, Username + UserManager.fileExtension);
+            Serializer.SerializeToFile(savePath, this);
+        }
     }
 }

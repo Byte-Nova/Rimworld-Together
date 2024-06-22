@@ -10,7 +10,7 @@
 
         public enum MarketStepMode { Add, Request, Reload }
 
-        public enum AidStepMode { Send, Receive, Recover }
+        public enum AidStepMode { Send, Receive, Accept, Reject }
 
         public enum FactionManifestMode
         {

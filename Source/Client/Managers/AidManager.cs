@@ -18,17 +18,29 @@ namespace GameClient
             switch (data.stepMode)
             {
                 case CommonEnumerators.AidStepMode.Send:
-                    //Do nothing
+                    //Empty
                     break;
 
                 case CommonEnumerators.AidStepMode.Receive:
                     ReceiveAidRequest(data);
                     break;
 
-                case CommonEnumerators.AidStepMode.Recover:
-                    RecoverAidRequest(data);
+                case CommonEnumerators.AidStepMode.Accept:
+                    OnAidAccept();
+                    break;
+
+                case CommonEnumerators.AidStepMode.Reject:
+                    OnAidReject(data);
                     break;
             }
+        }
+
+        private static void ReceiveAidRequest(AidData data)
+        {
+            Action toDoYes = delegate { AcceptAid(data); };
+            Action toDoNo = delegate { RejectAid(data); };
+
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("You are receiving aid, accept?", toDoYes, toDoNo));
         }
 
         public static void SendAidRequest()
@@ -40,20 +52,54 @@ namespace GameClient
 
             Pawn toGet = RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResult];
             aidData.humanData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(toGet));
+            RimworldManager.RemovePawnFromGame(toGet);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), aidData);
             Network.listener.EnqueuePacket(packet);
-            Logger.Warning("Sent");
+
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
 
-        private static void ReceiveAidRequest(AidData data)
+        private static void OnAidAccept()
         {
-            Logger.Warning("Received");
+            DialogManager.PopWaitDialog();
+
+            RimworldManager.GenerateLetter("Sent aid",
+                "You have sent aid towards a settlement! The owner will receive the news soon",
+                LetterDefOf.PositiveEvent);
         }
 
-        private static void RecoverAidRequest(AidData data)
+        private static void OnAidReject(AidData data)
         {
-            Logger.Warning("Recovered");
+            DialogManager.PopWaitDialog();
+
+            Map map = Find.World.worldObjects.SettlementAt(data.fromTile).Map;
+
+            HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.humanData);
+            Pawn pawn = HumanScribeManager.StringToHuman(humanData);
+            RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
+
+            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+        }
+
+        private static void AcceptAid(AidData data)
+        {
+            Map map = Find.World.worldObjects.SettlementAt(data.toTile).Map;
+
+            HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.humanData);
+            Pawn pawn = HumanScribeManager.StringToHuman(humanData);
+            RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
+
+            data.stepMode = CommonEnumerators.AidStepMode.Accept;
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+            Network.listener.EnqueuePacket(packet);
+        }
+
+        private static void RejectAid(AidData data)
+        {
+            data.stepMode = CommonEnumerators.AidStepMode.Reject;
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+            Network.listener.EnqueuePacket(packet);
         }
     }
 }

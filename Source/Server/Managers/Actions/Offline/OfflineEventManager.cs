@@ -5,6 +5,8 @@ namespace GameServer
 {
     public static class OfflineEventManager
     {
+        private static readonly double baseEventTimer = 3600000;
+
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
             EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
@@ -42,7 +44,7 @@ namespace GameServer
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
 
-                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.eventProtectionTime, 3600000))
+                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.eventProtectionTime, baseEventTimer))
                     {
                         eventData.eventStepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
@@ -51,14 +53,19 @@ namespace GameServer
 
                     else
                     {
-                        target.UpdateEventTime();
+                        //Back to player
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
 
+                        //To the person that should receive it
+
                         eventData.eventStepMode = EventStepMode.Receive;
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
-                        target.listener.EnqueuePacket(rPacket);
+
+                        target.UpdateEventTime();
+
+                        packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                        target.listener.EnqueuePacket(packet);
                     }
                 }
             }

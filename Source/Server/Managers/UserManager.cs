@@ -18,7 +18,7 @@ namespace GameServer
                 if (!userFile.EndsWith(fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.username == client.username) return file;
+                if (file.Username == client.username) return file;
             }
 
             return null;
@@ -33,7 +33,7 @@ namespace GameServer
                 if (!userFile.EndsWith(fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.username == username) return file;
+                if (file.Username == username) return file;
             }
 
             return null;
@@ -50,12 +50,6 @@ namespace GameServer
                 userFiles.Add(Serializer.SerializeFromFile<UserFile>(user)); 
             }
             return userFiles.ToArray();
-        }
-
-        public static void SaveUserFileFromName(string username, UserFile userFile)
-        {
-            string savePath = Path.Combine(Master.usersPath, username + fileExtension);
-            Serializer.SerializeToFile(savePath, userFile);
         }
 
         public static void SendPlayerRecount()
@@ -92,7 +86,7 @@ namespace GameServer
                 if (!user.EndsWith(fileExtension)) continue;
 
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.username.ToLower() == data.username.ToLower())
+                if (existingUser.Username.ToLower() == data.username.ToLower())
                 {
                     if (mode == LoginMode.Register) SendLoginResponse(client, LoginResponse.RegisterInUse);
                     return true;
@@ -111,9 +105,9 @@ namespace GameServer
             {
                 if (!user.EndsWith(fileExtension)) continue;
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.username == data.username)
+                if (existingUser.Username == data.username)
                 {
-                    if (existingUser.password == data.password) return true;
+                    if (existingUser.Password == data.password) return true;
                     else break;
                 }
             }

@@ -115,10 +115,14 @@ namespace GameClient
                 .ToArray();
         }
 
-        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct)
+        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false)
         {
-            if (thing is Pawn) GenSpawn.Spawn(thing, thing.Position, map, thing.Rotation);
-            else GenPlace.TryPlaceThing(thing, thing.Position, map, placeMode, rot: thing.Rotation);
+            IntVec3 positionToPlaceAt = IntVec3.Zero;
+            if (useSpot) positionToPlaceAt = TransferManagerHelper.GetTransferLocationInMap(map);
+            else positionToPlaceAt = thing.Position;
+
+            if (thing is Pawn) GenSpawn.Spawn(thing, positionToPlaceAt, map, thing.Rotation);
+            else GenPlace.TryPlaceThing(thing, positionToPlaceAt, map, placeMode, rot: thing.Rotation);
         }
 
         public static void PlaceThingIntoCaravan(Thing thing, Caravan caravan)

@@ -10,6 +10,8 @@ namespace GameServer
 {
     public static class AidManager
     {
+        private static readonly double baseAidTimer = 3600000;
+
         public static void ParsePacket(ServerClient client, Packet packet)
         {
             AidData data = (AidData)Serializer.ConvertBytesToObject(packet.contents);
@@ -21,48 +23,98 @@ namespace GameServer
                     break;
 
                 case CommonEnumerators.AidStepMode.Receive:
-                    //Do nothing
+                    //Empty
                     break;
 
-                case CommonEnumerators.AidStepMode.Recover:
-                    RecoverAidRequest(client, data);
+                case CommonEnumerators.AidStepMode.Accept:
+                    SendAidAccept(client, data);
+                    break;
+
+                case CommonEnumerators.AidStepMode.Reject:
+                    SendAidReject(client, data);
                     break;
             }
         }
 
-        private static void SendAidRequest(ServerClient client, AidData data) { CheckIfPossible(client, data, data.toTile); }
-
-        private static void RecoverAidRequest(ServerClient client, AidData data) { CheckIfPossible(client, data, data.fromTile); }
-
-        private static void CheckIfPossible(ServerClient client, AidData data, int targetTile)
+        private static void SendAidRequest(ServerClient client, AidData data) 
         {
-            if (!SettlementManager.CheckIfTileIsInUse(targetTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send an aid to settlement at tile {targetTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(data.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send an aid packet to settlement at tile {data.toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(targetTile);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.toTile);
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
 
-                    if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.aidProtectionTime, 3600000))
+                    if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.aidProtectionTime, baseAidTimer))
                     {
-                        data.stepMode = CommonEnumerators.AidStepMode.Recover;
+                        data.stepMode = CommonEnumerators.AidStepMode.Reject;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
 
                     else
                     {
-                        target.UpdateAidTime();
-
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+
+                        data.stepMode = CommonEnumerators.AidStepMode.Receive;
+                        packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
                         target.listener.EnqueuePacket(packet);
                     }
                 }
 
                 else
                 {
-                    data.stepMode = CommonEnumerators.AidStepMode.Recover;
+                    data.stepMode = CommonEnumerators.AidStepMode.Reject;
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    client.listener.EnqueuePacket(packet);
+                }
+            }
+        }
+
+        private static void SendAidAccept(ServerClient client, AidData data)
+        {
+            if (!SettlementManager.CheckIfTileIsInUse(data.fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send an aid packet to settlement at tile {data.fromTile}, but it has no settlement");
+            else
+            {
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.fromTile);
+                if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
+                {
+                    client.UpdateAidTime();
+
+                    ServerClient target = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    target.listener.EnqueuePacket(packet);
+                }
+
+                //Back to client sending the request
+
+                else
+                {
+                    data.stepMode = CommonEnumerators.AidStepMode.Reject;
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    client.listener.EnqueuePacket(packet);
+                }
+            }
+        }
+
+        private static void SendAidReject(ServerClient client, AidData data) 
+        {
+            if (!SettlementManager.CheckIfTileIsInUse(data.fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send an aid packet to settlement at tile {data.fromTile}, but it has no settlement");
+            else
+            {
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.fromTile);
+                if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
+                {
+                    ServerClient target = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    target.listener.EnqueuePacket(packet);
+                }
+
+                //Back to client sending the request
+
+                else
+                {
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }

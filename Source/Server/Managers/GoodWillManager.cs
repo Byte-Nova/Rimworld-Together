@@ -57,7 +57,7 @@ namespace GameServer
             {
                 if (site.isFromFaction)
                 {
-                    if (site.factionName == UserManager.GetUserFileFromName(factionGoodwillData.owner).factionName)
+                    if (site.factionName == UserManager.GetUserFileFromName(factionGoodwillData.owner).FactionName)
                     {
                         factionGoodwillData.siteTiles.Add(site.tile);
                         tempList.Add(GetSiteGoodwill(client, site));
@@ -186,25 +186,25 @@ namespace GameServer
 
             foreach (UserFile file in userFiles)
             {
-                if (factionFile.factionMembers.Contains(file.username)) usersToGet.Add(file);
+                if (factionFile.factionMembers.Contains(file.Username)) usersToGet.Add(file);
             }
 
             foreach (UserFile file in usersToGet)
             {
                 for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                 {
-                    if (file.enemyPlayers.Contains(factionFile.factionMembers[i]))
+                    if (file.EnemyPlayers.Contains(factionFile.factionMembers[i]))
                     {
-                        file.enemyPlayers.Remove(factionFile.factionMembers[i]);
+                        file.EnemyPlayers.Remove(factionFile.factionMembers[i]);
                     }
 
-                    else if (file.allyPlayers.Contains(factionFile.factionMembers[i]))
+                    else if (file.AllyPlayers.Contains(factionFile.factionMembers[i]))
                     {
-                        file.allyPlayers.Remove(factionFile.factionMembers[i]);
+                        file.AllyPlayers.Remove(factionFile.factionMembers[i]);
                     }
                 }
 
-                UserManager.SaveUserFileFromName(file.username, file);
+                file.SaveUserFile();
             }
         }
 

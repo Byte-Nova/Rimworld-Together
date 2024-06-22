@@ -271,7 +271,7 @@ namespace GameServer
             Logger.Title("----------------------------------------");
             foreach (UserFile user in userFiles)
             {
-                Logger.Warning($"{user.username} - {user.savedIP}");
+                Logger.Warning($"{user.Username} - {user.SavedIP}");
             }
             Logger.Title("----------------------------------------");
         }
@@ -362,8 +362,8 @@ namespace GameServer
                     if (CheckIfIsAlready(userFile)) return;
                     else
                     {
-                        userFile.isBanned = true;
-                        UserManager.SaveUserFileFromName(userFile.username, userFile);
+                        userFile.IsBanned = true;
+                        userFile.SaveUserFile();
 
                         Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
                     }
@@ -381,7 +381,7 @@ namespace GameServer
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (userFile.isBanned)
+                if (userFile.IsBanned)
                 {
                     Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was already banned from the server");
@@ -394,13 +394,13 @@ namespace GameServer
 
         private static void BanListCommandAction()
         {
-            List<UserFile> userFiles = UserManager.GetAllUserFiles().ToList().FindAll(x => x.isBanned);
+            List<UserFile> userFiles = UserManager.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
 
             Logger.Title($"Banned players: [{userFiles.Count()}]");
             Logger.Title("----------------------------------------");
             foreach (UserFile user in userFiles)
             {
-                Logger.Warning($"{user.username} - {user.savedIP}");
+                Logger.Warning($"{user.Username} - {user.SavedIP}");
             }
             Logger.Title("----------------------------------------");
         }
@@ -415,8 +415,8 @@ namespace GameServer
                 if (CheckIfIsAlready(userFile)) return;
                 else
                 {
-                    userFile.isBanned = false;
-                    UserManager.SaveUserFileFromName(userFile.username, userFile);
+                    userFile.IsBanned = false;
+                    userFile.SaveUserFile();
 
                     Logger.Warning($"User '{commandParameters[0]}' is no longer banned from the server");
                 }
@@ -424,7 +424,7 @@ namespace GameServer
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (!userFile.isBanned)
+                if (!userFile.IsBanned)
                 {
                     Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was not banned from the server");
@@ -579,7 +579,7 @@ namespace GameServer
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (Master.whitelist.WhitelistedUsers.Contains(userFile.username))
+                if (Master.whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
                     Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was already whitelisted");
@@ -604,7 +604,7 @@ namespace GameServer
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (!Master.whitelist.WhitelistedUsers.Contains(userFile.username))
+                if (!Master.whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
                     Logger.Warning($"User '{commandParameters[0]}' " +
                         $"was not whitelisted");
@@ -639,7 +639,7 @@ namespace GameServer
             UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
             if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
-            else SaveManager.DeletePlayerData(userFile.username);
+            else SaveManager.DeletePlayerData(userFile.Username);
         }
 
         private static void EnableDifficultyCommandAction()

@@ -25,6 +25,8 @@ namespace GameServer
 
         public bool isBanned;
 
+        public double activityProtectionTime;
+
         public double eventProtectionTime;
 
         public double aidProtectionTime;
@@ -45,7 +47,7 @@ namespace GameServer
             else SavedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
         }
 
-        public void UpdateEventTime() 
+        public void UpdateEventTime()
         { 
             eventProtectionTime = TimeConverter.CurrentTimeToEpoch();
             SaveToUserFile();
@@ -89,37 +91,51 @@ namespace GameServer
         public void SaveToUserFile()
         {
             UserFile userFile = UserManager.GetUserFileFromName(username);
-            userFile.uid = uid;
-            userFile.username = username;
-            userFile.password = password;
-            userFile.factionName = factionName;
-            userFile.hasFaction = hasFaction;
-            userFile.isAdmin = isAdmin;
-            userFile.isBanned = isBanned;
-            userFile.enemyPlayers = enemyPlayers;
-            userFile.allyPlayers = allyPlayers;
-            userFile.savedIP = SavedIP;
-            userFile.eventProtectionTime = eventProtectionTime;
-            userFile.aidProtectionTime = aidProtectionTime;
+            userFile.Uid = uid;
+            userFile.Username = username;
+            userFile.Password = password;
+            userFile.FactionName = factionName;
+            userFile.HasFaction = hasFaction;
+            userFile.IsAdmin = isAdmin;
+            userFile.IsBanned = isBanned;
+            userFile.EnemyPlayers = enemyPlayers;
+            userFile.AllyPlayers = allyPlayers;
+            userFile.SavedIP = SavedIP;
+            userFile.ActivityProtectionTime = activityProtectionTime;
+            userFile.EventProtectionTime = eventProtectionTime;
+            userFile.AidProtectionTime = aidProtectionTime;
 
-            string savePath = Path.Combine(Master.usersPath, username + UserManager.fileExtension);
-            Serializer.SerializeToFile(savePath, userFile);
+            userFile.SaveUserFile();
         }
 
         public void LoadFromUserFile()
         {
             UserFile file = UserManager.GetUserFile(this);
-            uid = file.uid;
-            username = file.username;
-            password = file.password;
-            factionName = file.factionName;
-            hasFaction = file.hasFaction;
-            isAdmin = file.isAdmin;
-            isBanned = file.isBanned;
-            enemyPlayers = file.enemyPlayers;
-            allyPlayers = file.allyPlayers;
-            eventProtectionTime = file.eventProtectionTime;
-            aidProtectionTime = file.aidProtectionTime;
+            uid = file.Uid;
+            username = file.Username;
+            password = file.Password;
+            factionName = file.FactionName;
+            hasFaction = file.HasFaction;
+            isAdmin = file.IsAdmin;
+            isBanned = file.IsBanned;
+            enemyPlayers = file.EnemyPlayers;
+            allyPlayers = file.AllyPlayers;
+            activityProtectionTime = file.ActivityProtectionTime;
+            eventProtectionTime = file.EventProtectionTime;
+            aidProtectionTime = file.AidProtectionTime;
+
+            Logger.Warning(uid);
+            Logger.Warning(username);
+            Logger.Warning(password);
+            Logger.Warning(factionName);
+            Logger.Warning(hasFaction.ToString());
+            Logger.Warning(isAdmin.ToString());
+            Logger.Warning(isBanned.ToString());
+            Logger.Warning(enemyPlayers.ToString());
+            Logger.Warning(allyPlayers.ToString());
+            Logger.Warning(activityProtectionTime.ToString());
+            Logger.Warning(eventProtectionTime.ToString());
+            Logger.Warning(aidProtectionTime.ToString());
         }
     }
 }

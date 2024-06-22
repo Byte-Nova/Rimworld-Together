@@ -179,13 +179,7 @@ namespace GameServer
                     UserFile[] userFiles = UserManager.GetAllUserFiles();
                     foreach (UserFile userFile in userFiles)
                     {
-                        if (userFile.factionName == client.factionName)
-                        {
-                            userFile.hasFaction = false;
-                            userFile.factionName = "";
-
-                            UserManager.SaveUserFileFromName(userFile.username, userFile);
-                        }
+                        if (userFile.FactionName == client.factionName) userFile.UpdateFaction(null);
                     }
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
@@ -194,10 +188,8 @@ namespace GameServer
                         ServerClient cClient = Network.connectedClients.ToList().Find(x => x.username == str);
                         if (cClient != null)
                         {
-                            cClient.hasFaction = false;
-                            cClient.factionName = "";
+                            cClient.UpdateFaction(null);
                             cClient.listener.EnqueuePacket(packet);
-
                             GoodwillManager.UpdateClientGoodwills(cClient);
                         }
                     }
@@ -303,25 +295,21 @@ namespace GameServer
                 {
                     if (toRemove != null)
                     {
-                        toRemove.hasFaction = false;
-                        toRemove.factionName = "";
+                        toRemove.UpdateFaction(null);
 
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
                         toRemove.listener.EnqueuePacket(packet);
-
                         GoodwillManager.UpdateClientGoodwills(toRemove);
                     }
 
                     if (toRemoveLocal == null) return;
                     else
                     {
-                        toRemoveLocal.hasFaction = false;
-                        toRemoveLocal.factionName = "";
-                        UserManager.SaveUserFileFromName(toRemoveLocal.username, toRemoveLocal);
+                        toRemoveLocal.UpdateFaction(null);
 
                         for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                         {
-                            if (factionFile.factionMembers[i] == toRemoveLocal.username)
+                            if (factionFile.factionMembers[i] == toRemoveLocal.Username)
                             {
                                 factionFile.factionMembers.RemoveAt(i);
                                 factionFile.factionMemberRanks.RemoveAt(i);
@@ -350,7 +338,7 @@ namespace GameServer
 
             else
             {
-                if (!factionFile.factionMembers.Contains(userFile.username)) return;
+                if (!factionFile.factionMembers.Contains(userFile.Username)) return;
                 else
                 {
                     if (GetMemberRank(factionFile, settlementFile.owner) == FactionRanks.Admin)
@@ -362,7 +350,7 @@ namespace GameServer
                     {
                         for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                         {
-                            if (factionFile.factionMembers[i] == userFile.username)
+                            if (factionFile.factionMembers[i] == userFile.Username)
                             {
                                 factionFile.factionMemberRanks[i] = "1";
                                 SaveFactionFile(factionFile);
@@ -387,12 +375,12 @@ namespace GameServer
 
             else
             {
-                if (!factionFile.factionMembers.Contains(userFile.username)) return;
+                if (!factionFile.factionMembers.Contains(userFile.Username)) return;
                 else
                 {
                     for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                     {
-                        if (factionFile.factionMembers[i] == userFile.username)
+                        if (factionFile.factionMembers[i] == userFile.Username)
                         {
                             factionFile.factionMemberRanks[i] = "0";
                             SaveFactionFile(factionFile);
