@@ -76,7 +76,7 @@ namespace GameClient
 
         public static void ToggleOfflineFunction(OfflineActivityType type) { latestOfflineActivity = type; }
 
-        public static void ToggleChatScroll(bool mode) { OnlineChatManager.shouldScrollChat = mode; }
+        public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
 
         public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
 

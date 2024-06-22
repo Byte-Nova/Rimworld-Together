@@ -59,7 +59,7 @@ namespace GameServer
 
         public static void MarketPacket(ServerClient client, Packet packet)
         {
-            OnlineMarketManager.ParseMarketPacket(client, packet);
+            MarketManager.ParseMarketPacket(client, packet);
         }
 
         public static void AidPacket(ServerClient client, Packet packet)
@@ -89,7 +89,7 @@ namespace GameServer
 
         public static void FactionPacket(ServerClient client, Packet packet)
         {
-            OnlineFactionManager.ParseFactionPacket(client, packet);
+            FactionManager.ParseFactionPacket(client, packet);
         }
 
         public static void MapPacket(ServerClient client, Packet packet)
@@ -104,7 +104,7 @@ namespace GameServer
 
         public static void EventPacket(ServerClient client, Packet packet)
         {
-            OfflineEventManager.ParseEventPacket(client, packet);
+            EventManager.ParseEventPacket(client, packet);
         }
 
         public static void WorldPacket(ServerClient client, Packet packet)

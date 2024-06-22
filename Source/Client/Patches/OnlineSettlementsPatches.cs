@@ -8,7 +8,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    [HarmonyPatch(typeof(SettlementDefeatUtility), "CheckDefeated")]
+    [HarmonyPatch(typeof(SettlementDefeatUtility), nameof(SettlementDefeatUtility.CheckDefeated))]
     public static class PatchSettlementJoin
     {
         [HarmonyPrefix]
@@ -21,7 +21,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(CaravanEnterMapUtility), "Enter", new[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) })]
+    [HarmonyPatch(typeof(CaravanEnterMapUtility), nameof(CaravanEnterMapUtility.Enter), new[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) })]
     public static class PatchCaravanEnterMapUtility1
     {
         [HarmonyPostfix]
@@ -34,7 +34,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(CaravanEnterMapUtility), "Enter", new[] { typeof(Caravan), typeof(Map), typeof(CaravanEnterMode), typeof(CaravanDropInventoryMode), typeof(bool), typeof(Predicate<IntVec3>) })]
+    [HarmonyPatch(typeof(CaravanEnterMapUtility), nameof(CaravanEnterMapUtility.Enter), new[] { typeof(Caravan), typeof(Map), typeof(CaravanEnterMode), typeof(CaravanDropInventoryMode), typeof(bool), typeof(Predicate<IntVec3>) })]
     public static class PatchCaravanEnterMapUtility2
     {
         [HarmonyPostfix]

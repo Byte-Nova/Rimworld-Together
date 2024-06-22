@@ -109,8 +109,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) OnlineFactionManager.OnFactionOpenOnMember();
-                        else OnlineFactionManager.OnFactionOpenOnNonMember();
+                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
+                        else FactionManager.OnFactionOpenOnNonMember();
                     }
                 };
 
@@ -164,8 +164,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ServerValues.hasFaction) OnlineFactionManager.OnFactionOpen();
-                        else OnlineFactionManager.OnNoFactionOpen();
+                        if (ServerValues.hasFaction) FactionManager.OnFactionOpen();
+                        else FactionManager.OnNoFactionOpen();
                     }
                 };
 
@@ -178,7 +178,7 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
 
-                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(ClientValues.chosenSettlement.Map)) OnlineMarketManager.RequestReloadStock();
+                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(ClientValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
                     }
                 };
@@ -294,7 +294,7 @@ namespace GameClient
                         ClientValues.chosenCaravan = caravan;
 
                         RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
-                            OfflineEventManager.eventNames, OfflineEventManager.ShowSendEventDialog, null);
+                            EventManager.eventNames, EventManager.ShowSendEventDialog, null);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -340,8 +340,8 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) OnlineFactionManager.OnFactionOpenOnMember();
-                        else OnlineFactionManager.OnFactionOpenOnNonMember();
+                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
+                        else FactionManager.OnFactionOpenOnNonMember();
                     }
                 };
 

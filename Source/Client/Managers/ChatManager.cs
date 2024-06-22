@@ -14,7 +14,7 @@ using static Shared.CommonEnumerators;
 namespace GameClient
 {
     [StaticConstructorOnStartup]
-    public static class OnlineChatManager
+    public static class ChatManager
     {
         public static Dictionary<UserColor, string> userColorDictionary = new Dictionary<UserColor, string>()
         {
@@ -150,10 +150,10 @@ namespace GameClient
     {
         static ChatIcons()
         {
-            OnlineChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
-            OnlineChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOn"));
-            OnlineChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconMid"));
-            OnlineChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOn"));
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconMid"));
+            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
         }
     }
 

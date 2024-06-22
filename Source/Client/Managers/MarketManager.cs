@@ -10,7 +10,7 @@ namespace GameClient
 {
     //Class that is in charge of the online market functions for the mod
 
-    public static class OnlineMarketManager
+    public static class MarketManager
     {
         //Parses received market packets into something usable
 

@@ -3,7 +3,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
-    public static class OfflineEventManager
+    public static class EventManager
     {
         private static readonly double baseEventTimer = 3600000;
 

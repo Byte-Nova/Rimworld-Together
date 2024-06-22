@@ -3,7 +3,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
-    public static class OnlineFactionManager
+    public static class FactionManager
     {
         //Variables
 

@@ -83,7 +83,7 @@ namespace GameClient
         {
             ClientValues.CleanValues();
             ServerValues.CleanValues();
-            OnlineChatManager.CleanChat();
+            ChatManager.CleanChat();
 
             DialogManager.PopWaitDialog();
 
