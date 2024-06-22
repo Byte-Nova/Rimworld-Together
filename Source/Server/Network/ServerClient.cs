@@ -1,6 +1,8 @@
 ﻿using Shared;
+using System.Data;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 
 namespace GameServer
 {
@@ -11,35 +13,37 @@ namespace GameServer
         //Reference to the listener instance of this client
         [NonSerialized] public Listener listener;
 
-        public string username = "Unknown";
+        [NonSerialized] public UserFile userFile;
 
-        public string uid;
+        [NonSerialized] public ServerClient InVisitWith;
 
-        public string password;
+        public string Uid;
 
-        public string factionName;
+        public string Username = "Unknown";
 
-        public bool hasFaction;
+        public string Password;
 
-        public bool isAdmin;
+        public string FactionName;
 
-        public bool isBanned;
+        public bool HasFaction;
 
-        public double activityProtectionTime;
+        public bool IsAdmin;
 
-        public double eventProtectionTime;
+        public bool IsBanned;
 
-        public double aidProtectionTime;
+        public string SavedIP;
 
-        [NonSerialized] public ServerClient inVisitWith;
+        public double ActivityProtectionTime;
 
-        [NonSerialized] public List<string> runningMods = new List<string>();
+        public double EventProtectionTime;
 
-        [NonSerialized] public List<string> allyPlayers = new List<string>();
+        public double AidProtectionTime;
 
-        [NonSerialized] public List<string> enemyPlayers = new List<string>();
+        public List<string> RunningMods = new List<string>();
 
-        public string SavedIP { get; set; }
+        public List<string> AllyPlayers = new List<string>();
+
+        public List<string> EnemyPlayers = new List<string>();
 
         public ServerClient(TcpClient tcp)
         {
@@ -49,25 +53,31 @@ namespace GameServer
 
         public void UpdateEventTime()
         { 
-            eventProtectionTime = TimeConverter.CurrentTimeToEpoch();
+            EventProtectionTime = TimeConverter.CurrentTimeToEpoch();
             SaveToUserFile();
         }
 
         public void UpdateAidTime() 
         { 
-            aidProtectionTime = TimeConverter.CurrentTimeToEpoch();
+            AidProtectionTime = TimeConverter.CurrentTimeToEpoch();
             SaveToUserFile();
         }
 
         public void UpdateAdmin(bool mode)
         {
-            isAdmin = mode;
+            IsAdmin = mode;
             SaveToUserFile();
         }
 
         public void UpdateBan(bool mode)
         {
-            isBanned = mode;
+            IsBanned = mode;
+            SaveToUserFile();
+        }
+
+        public void UpdateMods(List<string> mods)
+        {
+            RunningMods = mods;
             SaveToUserFile();
         }
 
@@ -75,67 +85,59 @@ namespace GameServer
         {
             if (string.IsNullOrWhiteSpace(updatedFactionName))
             {
-                hasFaction = false;
-                factionName = null;
+                HasFaction = false;
+                FactionName = null;
             }
 
             else
             {
-                hasFaction = true;
-                factionName = updatedFactionName;
+                HasFaction = true;
+                FactionName = updatedFactionName;
             }
 
             SaveToUserFile();
         }
 
+        //TODO
+        //MAKE SURE THIS WORKS AS EXPECTED
+
         public void SaveToUserFile()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(username);
-            userFile.Uid = uid;
-            userFile.Username = username;
-            userFile.Password = password;
-            userFile.FactionName = factionName;
-            userFile.HasFaction = hasFaction;
-            userFile.IsAdmin = isAdmin;
-            userFile.IsBanned = isBanned;
-            userFile.EnemyPlayers = enemyPlayers;
-            userFile.AllyPlayers = allyPlayers;
-            userFile.SavedIP = SavedIP;
-            userFile.ActivityProtectionTime = activityProtectionTime;
-            userFile.EventProtectionTime = eventProtectionTime;
-            userFile.AidProtectionTime = aidProtectionTime;
+            UserFile userFile = UserManager.GetUserFileFromName(Username);
+
+            foreach (FieldInfo clientField in typeof(ServerClient).GetFields())
+            {
+                foreach (FieldInfo fileField in typeof(UserFile).GetFields())
+                {
+                    if (fileField.Name == clientField.Name)
+                    {
+                        fileField.SetValue(userFile, clientField.GetValue(this));
+                        Logger.Warning($"Saving > {fileField.GetValue(userFile)}");
+                    }
+                }
+            }
 
             userFile.SaveUserFile();
         }
 
+        //TODO
+        //MAKE SURE THIS WORKS AS EXPECTED
+
         public void LoadFromUserFile()
         {
             UserFile file = UserManager.GetUserFile(this);
-            uid = file.Uid;
-            username = file.Username;
-            password = file.Password;
-            factionName = file.FactionName;
-            hasFaction = file.HasFaction;
-            isAdmin = file.IsAdmin;
-            isBanned = file.IsBanned;
-            enemyPlayers = file.EnemyPlayers;
-            allyPlayers = file.AllyPlayers;
-            activityProtectionTime = file.ActivityProtectionTime;
-            eventProtectionTime = file.EventProtectionTime;
-            aidProtectionTime = file.AidProtectionTime;
 
-            Logger.Warning(uid);
-            Logger.Warning(username);
-            Logger.Warning(password);
-            Logger.Warning(factionName);
-            Logger.Warning(hasFaction.ToString());
-            Logger.Warning(isAdmin.ToString());
-            Logger.Warning(isBanned.ToString());
-            Logger.Warning(enemyPlayers.ToString());
-            Logger.Warning(allyPlayers.ToString());
-            Logger.Warning(activityProtectionTime.ToString());
-            Logger.Warning(eventProtectionTime.ToString());
-            Logger.Warning(aidProtectionTime.ToString());
+            foreach (FieldInfo fileField in typeof(UserFile).GetFields())
+            {
+                foreach (FieldInfo clientField in typeof(ServerClient).GetFields())
+                {
+                    if (clientField.Name == fileField.Name)
+                    {
+                        clientField.SetValue(this, fileField.GetValue(file));
+                        Logger.Warning($"Loading > {clientField.GetValue(this)}");
+                    }
+                }
+            }
         }
     }
 }

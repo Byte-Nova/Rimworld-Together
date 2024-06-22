@@ -27,6 +27,8 @@ namespace GameServer
 
         public double AidProtectionTime;
 
+        public List<string> RunningMods = new List<string>();
+
         public List<string> AllyPlayers = new List<string>();
 
         public List<string> EnemyPlayers = new List<string>();

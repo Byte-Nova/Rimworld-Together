@@ -27,14 +27,14 @@ namespace GameServer
 
         public static void AddSettlement(ServerClient client, SettlementData settlementData)
         {
-            if (CheckIfTileIsInUse(settlementData.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to add a settlement at tile {settlementData.tile}, but that tile already has a settlement");
+            if (CheckIfTileIsInUse(settlementData.tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.Username} attempted to add a settlement at tile {settlementData.tile}, but that tile already has a settlement");
             else
             {
-                settlementData.owner = client.username;
+                settlementData.owner = client.Username;
 
                 SettlementFile settlementFile = new SettlementFile();
                 settlementFile.tile = settlementData.tile;
-                settlementFile.owner = client.username;
+                settlementFile.owner = client.Username;
                 Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension), settlementFile);
 
                 settlementData.settlementStepMode = SettlementStepMode.Add;
@@ -50,7 +50,7 @@ namespace GameServer
                     }
                 }
 
-                Logger.Warning($"[Added settlement] > {settlementFile.tile} > {client.username}");
+                Logger.Warning($"[Added settlement] > {settlementFile.tile} > {client.Username}");
             }
         }
 
@@ -62,7 +62,7 @@ namespace GameServer
 
             if (sendRemoval)
             {
-                if (settlementFile.owner != client.username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.tile} attempted to be removed by {client.username}, but {settlementFile.owner} owns the settlement");
+                if (settlementFile.owner != client.Username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.tile} attempted to be removed by {client.Username}, but {settlementFile.owner} owns the settlement");
                 else
                 {
                     File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension));
@@ -75,7 +75,7 @@ namespace GameServer
                         else cClient.listener.EnqueuePacket(rPacket);
                     }
 
-                    Logger.Warning($"[Remove settlement] > {settlementData.tile} > {client.username}");
+                    Logger.Warning($"[Remove settlement] > {settlementData.tile} > {client.Username}");
                 }
             }
 

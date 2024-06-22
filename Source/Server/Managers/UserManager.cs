@@ -18,7 +18,7 @@ namespace GameServer
                 if (!userFile.EndsWith(fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.Username == client.username) return file;
+                if (file.Username == client.Username) return file;
             }
 
             return null;
@@ -56,7 +56,7 @@ namespace GameServer
         {
             PlayerRecountData playerRecountData = new PlayerRecountData();
             playerRecountData.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
-            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountData.currentPlayerNames.Add(client.username);
+            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountData.currentPlayerNames.Add(client.Username);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
@@ -66,7 +66,7 @@ namespace GameServer
         {
             List<ServerClient> connectedClients = Network.connectedClients.ToList();
 
-            ServerClient toGet = connectedClients.Find(x => x.username == username);
+            ServerClient toGet = connectedClients.Find(x => x.Username == username);
             if (toGet != null) return true;
             else return false;
         }
@@ -74,7 +74,7 @@ namespace GameServer
         public static ServerClient GetConnectedClientFromUsername(string username)
         {
             List<ServerClient> connectedClients = Network.connectedClients.ToList();
-            return connectedClients.Find(x => x.username == username);
+            return connectedClients.Find(x => x.Username == username);
         }
 
         public static bool CheckIfUserExists(ServerClient client, LoginData data, LoginMode mode)
@@ -118,7 +118,7 @@ namespace GameServer
 
         public static bool CheckIfUserBanned(ServerClient client)
         {
-            if (!client.isBanned) return false;
+            if (!client.IsBanned) return false;
             else
             {
                 SendLoginResponse(client, LoginResponse.BannedLogin);
@@ -176,7 +176,7 @@ namespace GameServer
             {
                 foreach (string str in Master.whitelist.WhitelistedUsers)
                 {
-                    if (str == client.username) return true;
+                    if (str == client.Username) return true;
                 }
             }
 
@@ -189,7 +189,7 @@ namespace GameServer
             if (loginData.clientVersion == CommonValues.executableVersion) return true;
             else
             {
-                Logger.Warning($"[Version Mismatch] > {client.username}");
+                Logger.Warning($"[Version Mismatch] > {client.Username}");
                 SendLoginResponse(client, LoginResponse.WrongVersion);
                 return false;
             }

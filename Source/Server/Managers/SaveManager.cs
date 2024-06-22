@@ -12,8 +12,8 @@ namespace GameServer
 
         public static void ReceiveSavePartFromClient(ServerClient client, Packet packet)
         {
-            string baseClientSavePath = Path.Combine(Master.savesPath, client.username + fileExtension);
-            string tempClientSavePath = Path.Combine(Master.savesPath, client.username + tempFileExtension);
+            string baseClientSavePath = Path.Combine(Master.savesPath, client.Username + fileExtension);
+            string tempClientSavePath = Path.Combine(Master.savesPath, client.Username + tempFileExtension);
 
             FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
 
@@ -48,13 +48,13 @@ namespace GameServer
 
         public static void SendSavePartToClient(ServerClient client)
         {
-            string baseClientSavePath = Path.Combine(Master.savesPath, client.username + fileExtension);
-            string tempClientSavePath = Path.Combine(Master.savesPath, client.username + tempFileExtension);
+            string baseClientSavePath = Path.Combine(Master.savesPath, client.Username + fileExtension);
+            string tempClientSavePath = Path.Combine(Master.savesPath, client.Username + tempFileExtension);
 
             //if this is the first packet
             if (client.listener.uploadManager == null)
             {
-                Logger.Message($"[Load save] > {client.username} | {client.SavedIP}");
+                Logger.Message($"[Load save] > {client.Username} | {client.SavedIP}");
 
                 client.listener.uploadManager = new UploadManager();
                 client.listener.uploadManager.PrepareUpload(baseClientSavePath);
@@ -80,9 +80,9 @@ namespace GameServer
             if (fileTransferData.instructions == (int)SaveMode.Disconnect)
             {
                 client.listener.disconnectFlag = true;
-                Logger.Message($"[Save game] > {client.username} > Disconnect");
+                Logger.Message($"[Save game] > {client.Username} > Disconnect");
             }
-            else Logger.Message($"[Save game] > {client.username} > Autosave");
+            else Logger.Message($"[Save game] > {client.Username} > Autosave");
         }
 
         public static bool CheckIfUserHasSave(ServerClient client)
@@ -91,7 +91,7 @@ namespace GameServer
             foreach(string save in saves)
             {
                 if (!save.EndsWith(fileExtension)) continue;
-                if (Path.GetFileNameWithoutExtension(save) == client.username) return true;
+                if (Path.GetFileNameWithoutExtension(save) == client.Username) return true;
             }
 
             return false;
@@ -113,13 +113,13 @@ namespace GameServer
         {
             if (!CheckIfUserHasSave(client))
             {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username}'s save was attempted to be reset while the player doesn't have a save");
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.Username}'s save was attempted to be reset while the player doesn't have a save");
                 return;
             }
             client.listener.disconnectFlag = true;
 
             //Locate and make sure there's no other backup save in the server
-            string playerArchivedSavePath = Path.Combine(Master.backupUsersPath, client.username);
+            string playerArchivedSavePath = Path.Combine(Master.backupUsersPath, client.Username);
             if (Directory.Exists(playerArchivedSavePath)) Directory.Delete(playerArchivedSavePath,true);
             Directory.CreateDirectory(playerArchivedSavePath);
 
@@ -136,11 +136,11 @@ namespace GameServer
             Directory.CreateDirectory(settlementsArchivePath);
 
             //Copy save file to archive
-            try { File.Copy(Path.Combine(Master.savesPath, client.username + fileExtension), Path.Combine(savesArchivePath , client.username + fileExtension)); }
-            catch { Logger.Warning($"Failed to find {client.username}'s save"); }
+            try { File.Copy(Path.Combine(Master.savesPath, client.Username + fileExtension), Path.Combine(savesArchivePath , client.Username + fileExtension)); }
+            catch { Logger.Warning($"Failed to find {client.Username}'s save"); }
 
             //Copy map files to archive
-            MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.username);
+            MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.Username);
             foreach (MapFileData map in userMaps)
             {
                 File.Copy(Path.Combine(Master.mapsPath, map.mapTile + MapManager.fileExtension), 
@@ -148,7 +148,7 @@ namespace GameServer
             }
 
             //Copy site files to archive
-            SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.username);
+            SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.Username);
             foreach (SiteFile site in playerSites)
             {
                 File.Copy(Path.Combine(Master.sitesPath, site.tile + SiteManager.fileExtension), 
@@ -156,14 +156,14 @@ namespace GameServer
             }
 
             //Copy settlement files to archive
-            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.username);
+            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.Username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
                 File.Copy(Path.Combine(Master.settlementsPath, settlementFile.tile + SettlementManager.fileExtension), 
                     Path.Combine(settlementsArchivePath, settlementFile.tile + SettlementManager.fileExtension));
             }
 
-            DeletePlayerData(client.username, client);
+            DeletePlayerData(client.Username, client);
         }
 
         public static void DeletePlayerData(string username, ServerClient extraClientDetails = null)

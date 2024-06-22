@@ -57,7 +57,7 @@ namespace GameServer
                 toFind.commandAction.Invoke();
             }
 
-            Logger.Message($"[Chat command] > {client.username} > {command}");
+            Logger.Message($"[Chat command] > {client.Username} > {command}");
 
             commandSemaphore.Release();
         }
@@ -65,10 +65,10 @@ namespace GameServer
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
             ChatData chatData = new ChatData();
-            chatData.usernames.Add(client.username);
+            chatData.usernames.Add(client.Username);
             chatData.messages.Add(message);
 
-            if (client.isAdmin)
+            if (client.IsAdmin)
             {
                 chatData.userColors.Add(((int)MessageColor.Admin).ToString());
                 chatData.messageColors.Add(((int)MessageColor.Admin).ToString());
@@ -83,8 +83,8 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
 
-            WriteToLogs(client.username, message);
-            if (Master.serverConfig.DisplayChatInConsole) Logger.Message($"[Chat] > {client.username} > {message}");
+            WriteToLogs(client.Username, message);
+            if (Master.serverConfig.DisplayChatInConsole) Logger.Message($"[Chat] > {client.Username} > {message}");
         }
 
         public static void BroadcastServerMessage(string messageToSend)
