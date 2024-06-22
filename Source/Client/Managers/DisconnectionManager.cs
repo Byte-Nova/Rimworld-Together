@@ -37,7 +37,7 @@ namespace GameClient
 
                     case DCReason.QuitToMenu:
                         reason = "Quit to menu";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Returning to main menu", delegate { DisconnectToMenu(); }));
+                        DisconnectToMenu();
                         break;
 
                     case DCReason.SaveQuitToMenu:
@@ -52,7 +52,7 @@ namespace GameClient
 
                     case DCReason.ConnectionLost:
                         reason = "Connection to server lost";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { DisconnectToMenu(); }));
+                        DisconnectToMenu();
                         break;
 
                     default:

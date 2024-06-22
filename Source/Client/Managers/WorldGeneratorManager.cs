@@ -100,7 +100,6 @@ namespace GameClient
             }
 
             Find.WindowStack.Add(newSelectStartingSite);
-            DialogShortcuts.ShowWorldGenerationDialogs();
         }
 
         public static void SendWorldToServer()
