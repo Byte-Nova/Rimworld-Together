@@ -59,14 +59,13 @@ namespace GameClient
 
                         Action r1 = delegate
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for request completion"));
+                            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
 
                             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ResetSavePacket));
                             Network.listener.EnqueuePacket(packet);
                         };
 
-                        Action d2 = delegate { DialogManager.PushNewDialog(new RT_Dialog_OK("A backup will be made of your save", r1)); };
-                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to delete your save?", d2, null);
+                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to delete your save?", r1, null);
                         DialogManager.PushNewDialog(d1);
                     }
                 }

@@ -43,7 +43,7 @@
             DialogManager.PopWaitDialog();
             RT_Dialog_Error d1 = new RT_Dialog_Error("The server did not respond in time");
             DialogManager.PushNewDialog(d1);
-            state = NetworkState.Disconnected;
+            DisconnectFromServer();
         }
 
         //Tries to connect into the specified server

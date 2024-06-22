@@ -117,10 +117,9 @@ namespace GameClient
             WorldFeature[] worldFeatures = Find.WorldFeatures.features.ToArray();
             foreach (WorldFeature feature in worldFeatures) Find.WorldFeatures.features.Remove(feature);
 
-            PlanetFeature[] planetFeatures = cachedWorldValues.Features.ToArray();
-            for (int i = 0; i < planetFeatures.Length; i++)
+            for (int i = 0; i < cachedWorldValues.Features.Length; i++)
             {
-                PlanetFeature planetFeature = planetFeatures[i];
+                PlanetFeature planetFeature = cachedWorldValues.Features[i];
 
                 try
                 {
@@ -143,11 +142,14 @@ namespace GameClient
         public static void SetPlanetFactions()
         {
             Faction[] planetFactions = Find.World.factionManager.AllFactions.ToArray();
-            foreach (PlanetNPCFaction faction in cachedWorldValues.NPCFactions)
+
+            for (int i = 0; i < cachedWorldValues.NPCFactions.Length; i++)
             {
+                PlanetNPCFaction faction = cachedWorldValues.NPCFactions[i];
+
                 try
                 {
-                    Faction toModify = Find.World.factionManager.AllFactions.First(fetch => fetch.def.defName == faction.factionDefName);
+                    Faction toModify = planetFactions[i];
 
                     toModify.Name = faction.factionName;
 
@@ -224,11 +226,16 @@ namespace GameClient
             return planetFactions.ToArray();
         }
 
-        private static PlanetNPCSettlement[] GetPlanetNPCSettlements()
+        public static PlanetNPCSettlement[] GetPlanetNPCSettlements()
         {
-            FactionDef[] worldFactionDefs = GetFactionDefsFromNPCFaction(WorldGeneratorManager.cachedWorldValues.NPCFactions);
+            Faction[] worldNPCFactions = Find.FactionManager.AllFactions.Where(fetch => !FactionValues.playerFactions.Contains(fetch) &&
+                fetch != Faction.OfPlayer).ToArray();
+
+            List<FactionDef> worldNPCFactionDefs = new List<FactionDef>();
+            foreach (Faction faction in worldNPCFactions) worldNPCFactionDefs.Add(faction.def);
+
             List<PlanetNPCSettlement> npcSettlements = new List<PlanetNPCSettlement>();
-            foreach (Settlement settlement in Find.World.worldObjects.Settlements.Where(fetch => worldFactionDefs.Contains(fetch.Faction.def)))
+            foreach (Settlement settlement in Find.World.worldObjects.Settlements.Where(fetch => worldNPCFactionDefs.Contains(fetch.Faction.def)))
             {
                 try
                 {
@@ -244,7 +251,7 @@ namespace GameClient
             return npcSettlements.ToArray();
         }
 
-        private static PlanetFeature[] GetPlanetFeatures()
+        public static PlanetFeature[] GetPlanetFeatures()
         {
             List<PlanetFeature> planetFeatures = new List<PlanetFeature>();
             WorldFeature[] worldFeatures = Find.World.features.features.ToArray();
