@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using System;
 using System.Linq;
@@ -44,6 +45,21 @@ namespace GameClient
             if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
+        }
+    }
+
+    [HarmonyPatch(typeof(SitePartWorker_Outpost), "GetEnemiesCount")]
+    public static class PatchSiteEnemyCount
+    {
+        [HarmonyPrefix]
+        public static bool DoPost(Site site, ref int __result)
+        {
+            if (FactionValues.playerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
+            {
+                __result = 25;
+            }
+
+            return false;
         }
     }
 }
