@@ -32,6 +32,7 @@ namespace GameServer
         private static ServerGlobalData GetServerConfigs(ServerGlobalData globalData)
         {
             ServerConfigFile scf = Master.serverConfig;
+
             globalData.AllowCustomScenarios = scf.AllowCustomScenarios;
 
             return globalData;
