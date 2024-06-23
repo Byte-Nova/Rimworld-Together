@@ -362,8 +362,7 @@ namespace GameServer
                     if (CheckIfIsAlready(userFile)) return;
                     else
                     {
-                        userFile.IsBanned = true;
-                        userFile.SaveUserFile();
+                        toFind.userFile.UpdateBan(true);
 
                         Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
                     }
