@@ -45,11 +45,6 @@ namespace GameClient
             WorldGeneratorManager.SetValuesFromServer(worldData);
 
             DialogManager.PushNewDialog(new Page_SelectScenario());
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are joining an existing server for the first time!",
-                "Configure your playstyle to your liking", "Some settings might be disabled by the server" });
-
-            DialogManager.PushNewDialog(d1);
         }
     }
 }

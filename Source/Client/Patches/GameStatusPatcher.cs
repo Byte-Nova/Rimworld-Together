@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
@@ -8,7 +9,7 @@ namespace GameClient
 {
     public class GameStatusPatcher
     {
-        [HarmonyPatch(typeof(Game), "InitNewGame")]
+        [HarmonyPatch(typeof(Game), nameof(Game.InitNewGame))]
         public static class InitModePatch
         {
             [HarmonyPostfix]
@@ -37,7 +38,7 @@ namespace GameClient
             }
         }
 
-        [HarmonyPatch(typeof(Game), "LoadGame")]
+        [HarmonyPatch(typeof(Game), nameof(Game.LoadGame))]
         public static class LoadModePatch
         {
             [HarmonyPostfix]
@@ -55,7 +56,7 @@ namespace GameClient
             }
         }
 
-        [HarmonyPatch(typeof(SettleInEmptyTileUtility), "Settle")]
+        [HarmonyPatch(typeof(SettleInEmptyTileUtility), nameof(SettleInEmptyTileUtility.Settle))]
         public static class SettlePatch
         {
             [HarmonyPostfix]
@@ -75,7 +76,7 @@ namespace GameClient
             }
         }
 
-        [HarmonyPatch(typeof(SettleInExistingMapUtility), "Settle")]
+        [HarmonyPatch(typeof(SettleInExistingMapUtility), nameof(SettleInExistingMapUtility.Settle))]
         public static class SettleInMapPatch
         {
             [HarmonyPostfix]
@@ -112,6 +113,28 @@ namespace GameClient
 
                     SaveManager.ForceSave();
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(Dialog_Options), nameof(Dialog_Options.DoWindowContents))]
+        public static class PatchDevMode
+        {
+            [HarmonyPostfix]
+            public static void DoPost()
+            {
+                if (Network.state == NetworkState.Connected) ClientValues.ManageDevOptions();
+                else return;
+            }
+        }
+
+        [HarmonyPatch(typeof(Page_SelectStorytellerInGame), nameof(Page_SelectStorytellerInGame.DoWindowContents))]
+        public static class PatchCustomDifficulty
+        {
+            [HarmonyPostfix]
+            public static void DoPost()
+            {
+                if (Network.state == NetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
+                else return;
             }
         }
     }

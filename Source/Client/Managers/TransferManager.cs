@@ -415,7 +415,7 @@ namespace GameClient
             else
             {
                 RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are missing a transfer spot!",
-                    "Received items will appear in the center of the map",
+                    "Received things will appear in the center of the map",
                     "Build a trading spot to change the drop location!"});
 
                 DialogManager.PushNewDialog(d1);

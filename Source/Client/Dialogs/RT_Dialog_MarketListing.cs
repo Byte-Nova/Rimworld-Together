@@ -81,7 +81,7 @@ namespace GameClient
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Error("There's no one in the server to trade with!"));
                 }
-                else { OnlineMarketManager.RequestAddStock(); }
+                else { MarketManager.RequestAddStock(); }
 
                 DialogManager.dialogMarketListing = null;
                 Close();
@@ -89,7 +89,7 @@ namespace GameClient
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload"))
             {
-                OnlineMarketManager.RequestReloadStock();
+                MarketManager.RequestReloadStock();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close")) 

@@ -71,6 +71,10 @@ namespace GameClient
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                     settlement.Tile = PlanetNPCSettlement.tile;
                     settlement.Name = PlanetNPCSettlement.name;
+
+                    //TODO
+                    //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
+                    //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
                     settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(PlanetNPCSettlement.factionDefName));
 
                     Find.WorldObjects.Add(settlement);

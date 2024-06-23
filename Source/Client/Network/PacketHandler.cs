@@ -41,7 +41,7 @@ namespace GameClient
 
         public static void ChatPacket(Packet packet)
         {
-            OnlineChatManager.ReceiveMessages(packet);
+            ChatManager.ReceiveMessages(packet);
         }
 
         public static void CommandPacket(Packet packet)
@@ -56,7 +56,7 @@ namespace GameClient
 
         public static void MarketPacket(Packet packet)
         {
-            OnlineMarketManager.ParseMarketPacket(packet);
+            MarketManager.ParseMarketPacket(packet);
         }
 
         public static void AidPacket(Packet packet)
@@ -66,7 +66,7 @@ namespace GameClient
 
         public static void FactionPacket(Packet packet)
         {
-            OnlineFactionManager.ParseFactionPacket(packet);
+            FactionManager.ParseFactionPacket(packet);
         }
 
         public static void OnlineActivityPacket(Packet packet)
@@ -122,7 +122,7 @@ namespace GameClient
 
         public static void EventPacket(Packet packet)
         {
-            OfflineEventManager.ParseEventPacket(packet);
+            EventManager.ParseEventPacket(packet);
         }
 
         public static void IllegalActionPacket(Packet packet)
@@ -143,7 +143,7 @@ namespace GameClient
             ServerValues.SetServerParameters(serverGlobalData);
             ServerValues.SetAccountData(serverGlobalData);
             PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
-            OfflineEventManager.SetEventPrices(serverGlobalData);
+            EventManager.SetEventPrices(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
             OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);

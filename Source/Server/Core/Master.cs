@@ -145,7 +145,7 @@ namespace GameServer
             WorldManager.LoadWorldFile();
             WhitelistManager.LoadServerWhitelist();
             CustomDifficultyManager.LoadCustomDifficulty();
-            OnlineMarketManager.LoadMarketStock();
+            MarketManager.LoadMarketStock();
 
             Logger.Title($"----------------------------------------");
         }

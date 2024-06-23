@@ -14,7 +14,7 @@ namespace GameServer
             if (settlementFile != null) factionGoodwillData.owner = settlementFile.owner;
             else factionGoodwillData.owner = siteFile.owner;
 
-            if (client.userFile.HasFaction && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(factionGoodwillData.owner))
+            if (client.userFile.HasFaction && FactionManager.GetFactionFromClient(client).factionMembers.Contains(factionGoodwillData.owner))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
@@ -90,7 +90,7 @@ namespace GameServer
             if (settlementFile != null) usernameToCheck = settlementFile.owner;
             else usernameToCheck = siteFile.owner;
 
-            if (client.userFile.HasFaction && OnlineFactionManager.GetFactionFromFactionName(client.userFile.FactionName).factionMembers.Contains(usernameToCheck))
+            if (client.userFile.HasFaction && FactionManager.GetFactionFromFactionName(client.userFile.FactionName).factionMembers.Contains(usernameToCheck))
             {
                 if (usernameToCheck == client.userFile.Username) return Goodwill.Personal;
                 else return Goodwill.Faction;
@@ -103,7 +103,7 @@ namespace GameServer
 
         public static Goodwill GetSettlementGoodwill(ServerClient client, SettlementFile settlement)
         {
-            if (client.userFile.HasFaction && OnlineFactionManager.GetFactionFromFactionName(client.userFile.FactionName).factionMembers.Contains(settlement.owner))
+            if (client.userFile.HasFaction && FactionManager.GetFactionFromFactionName(client.userFile.FactionName).factionMembers.Contains(settlement.owner))
             {
                 if (settlement.owner == client.userFile.Username) return Goodwill.Personal;
                 else return Goodwill.Faction;
@@ -125,11 +125,11 @@ namespace GameServer
 
                 else if (client.userFile.AllyPlayers.Contains(site.owner)) return Goodwill.Ally;
 
-                FactionFile factionFile = OnlineFactionManager.GetFactionFromFactionName(site.factionName);
+                FactionFile factionFile = FactionManager.GetFactionFromFactionName(site.factionName);
 
                 foreach(string str in client.userFile.EnemyPlayers)
                 {
-                    if (OnlineFactionManager.CheckIfUserIsInFaction(factionFile, str))
+                    if (FactionManager.CheckIfUserIsInFaction(factionFile, str))
                     {
                         return Goodwill.Enemy;
                     }
@@ -137,7 +137,7 @@ namespace GameServer
 
                 foreach (string str in client.userFile.AllyPlayers)
                 {
-                    if (OnlineFactionManager.CheckIfUserIsInFaction(factionFile, str))
+                    if (FactionManager.CheckIfUserIsInFaction(factionFile, str))
                     {
                         return Goodwill.Ally;
                     }

@@ -5,7 +5,7 @@ namespace GameServer
 {
     //Class that is in charge of the online market functions for the mod
 
-    public static class OnlineMarketManager
+    public static class MarketManager
     {
         //Variables
 

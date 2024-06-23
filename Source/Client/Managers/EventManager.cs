@@ -6,7 +6,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    public static class OfflineEventManager
+    public static class EventManager
     {
         public static string[] eventNames = new string[]
         {
@@ -71,7 +71,11 @@ namespace GameClient
         {
             DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, eventCosts[DialogManager.selectedScrollButton]))
+            //TODO
+            //MAKE IT SO ALL MAPS ARE ACCOUNTED FOR SILVER TAKING
+            Map toGetSilverFrom = Find.AnyPlayerHomeMap;
+
+            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, eventCosts[DialogManager.selectedScrollButton]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
@@ -82,7 +86,7 @@ namespace GameClient
 
                 EventData eventData = new EventData();
                 eventData.eventStepMode = EventStepMode.Send;
-                eventData.fromTile = Find.AnyPlayerHomeMap.Tile;
+                eventData.fromTile = toGetSilverFrom.Tile;
                 eventData.toTile = ClientValues.chosenSettlement.Tile;
                 eventData.eventID = DialogManager.selectedScrollButton;
 
