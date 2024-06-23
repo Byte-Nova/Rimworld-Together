@@ -144,9 +144,26 @@ namespace GameClient
                     }
                 };
 
+                Command_Action command_Event = new Command_Action
+                {
+                    defaultLabel = "Send Event",
+                    defaultDesc = "Send an event to this settlement",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Event"),
+                    action = delegate
+                    {
+                        ClientValues.chosenSettlement = __instance;
+
+                        RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
+                            EventManager.eventNames, EventManager.ShowSendEventDialog, null);
+
+                        DialogManager.PushNewDialog(d1);
+                    }
+                };
+
                 if (__instance.Map == null && __instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
                 if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
                 if (__instance.Map != null) gizmoList.Add(command_Caravan);
+                gizmoList.Add(command_Event);
                 gizmoList.Add(command_Aid);
                 __result = gizmoList;
             }
@@ -283,82 +300,18 @@ namespace GameClient
                     }
                 };
 
-                Command_Action command_Event = new Command_Action
-                {
-                    defaultLabel = "Send Event",
-                    defaultDesc = "Send an event to this settlement",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Event"),
-                    action = delegate
-                    {
-                        ClientValues.chosenSettlement = __instance;
-                        ClientValues.chosenCaravan = caravan;
-
-                        RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
-                            EventManager.eventNames, EventManager.ShowSendEventDialog, null);
-
-                        DialogManager.PushNewDialog(d1);
-                    }
-                };
-
-                Command_Action command_Goodwill = new Command_Action
-                {
-                    defaultLabel = "Change Goodwill",
-                    defaultDesc = "Change the goodwill of this settlement",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
-                    action = delegate
-                    {
-                        ClientValues.chosenSettlement = __instance;
-
-                        Action r1 = delegate {
-                            GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
-                            GoodwillTarget.Settlement);
-                        };
-
-                        Action r2 = delegate {
-                            GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
-                            GoodwillTarget.Settlement);
-                        };
-
-                        Action r3 = delegate {
-                            GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
-                            GoodwillTarget.Settlement);
-                        };
-
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
-
-                        DialogManager.PushNewDialog(d1);
-                    }
-                };
-
-                Command_Action command_FactionMenu = new Command_Action
-                {
-                    defaultLabel = "Faction Menu",
-                    defaultDesc = "Access your faction menu",
-                    icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
-                    action = delegate
-                    {
-                        ClientValues.chosenSettlement = __instance;
-
-                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
-                        else FactionManager.OnFactionOpenOnNonMember();
-                    }
-                };
-
                 if (RimworldManager.CheckIfPlayerHasMap())
                 {
                     gizmoList.Add(command_Transfer);
                     gizmoList.Add(command_Visit);
                 }
 
-                if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
                 if (__instance.Faction != FactionValues.yourOnlineFaction)
                 {
-                    gizmoList.Add(command_Goodwill);
                     gizmoList.Add(command_Spy);
                     gizmoList.Add(command_Raid);
                 }
-                gizmoList.Add(command_Event);
+
                 __result = gizmoList;
             }
         }
@@ -510,37 +463,6 @@ namespace GameClient
 
                 else if (presentSite != null)
                 {
-                    Command_Action command_Goodwill = new Command_Action
-                    {
-                        defaultLabel = "Change Goodwill",
-                        defaultDesc = "Change the goodwill of this site",
-                        icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
-                        action = delegate
-                        {
-                            ClientValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
-
-                            Action r1 = delegate {
-                                GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
-                                    GoodwillTarget.Site);
-                            };
-
-                            Action r2 = delegate {
-                                GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
-                                    GoodwillTarget.Site);
-                            };
-
-                            Action r3 = delegate {
-                                GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
-                                    GoodwillTarget.Site);
-                            };
-
-                            RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
-                                "Enemy", "Neutral", "Ally", r1, r2, r3, null);
-
-                            DialogManager.PushNewDialog(d1);
-                        }
-                    };
-
                     Command_Action command_AccessPersonalSite = new Command_Action
                     {
                         defaultLabel = "Access Personal Site",
@@ -579,8 +501,6 @@ namespace GameClient
                     {
                         gizmoList.Add(command_DestroySite);
                     }
-
-                    else gizmoList.Add(command_Goodwill);
                 }
 
                 __result = gizmoList;

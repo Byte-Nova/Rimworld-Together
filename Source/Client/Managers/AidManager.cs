@@ -67,6 +67,8 @@ namespace GameClient
             RimworldManager.GenerateLetter("Sent aid",
                 "You have sent aid towards a settlement! The owner will receive the news soon",
                 LetterDefOf.PositiveEvent);
+
+            SaveManager.ForceSave();
         }
 
         private static void OnAidReject(AidData data)
@@ -93,6 +95,8 @@ namespace GameClient
             data.stepMode = CommonEnumerators.AidStepMode.Accept;
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
+
+            SaveManager.ForceSave();
         }
 
         private static void RejectAid(AidData data)
