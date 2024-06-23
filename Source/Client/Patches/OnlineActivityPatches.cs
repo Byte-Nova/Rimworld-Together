@@ -362,7 +362,6 @@ namespace GameClient
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                 Network.listener.EnqueuePacket(packet);
-                Logger.Warning($"Game condition > {cond}");
                 return true;
             }
 
@@ -372,7 +371,6 @@ namespace GameClient
 
                 if (OnlineActivityManager.queuedGameCondition == cond)
                 {
-                    Logger.Warning($"Game condition > {cond}");
                     OnlineManagerHelper.ClearGameConditionQueue();
                     return true;
                 }
@@ -401,7 +399,6 @@ namespace GameClient
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                 Network.listener.EnqueuePacket(packet);
-                Logger.Warning($"Remove game condition > {__instance}");
                 return true;
             }
 
@@ -411,7 +408,6 @@ namespace GameClient
 
                 if (OnlineActivityManager.queuedGameCondition == __instance)
                 {
-                    Logger.Warning($"Remove game condition > {__instance}");
                     OnlineManagerHelper.ClearGameConditionQueue();
                     return true;
                 }
@@ -483,7 +479,6 @@ namespace GameClient
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                 Network.listener.EnqueuePacket(packet);
-                Logger.Warning($"Weather '{newWeather.defName}'");
                 return true;
             }
 
@@ -493,7 +488,6 @@ namespace GameClient
 
                 if (OnlineActivityManager.queuedWeather == newWeather)
                 {
-                    Logger.Warning($"Weather '{newWeather.defName}'");
                     OnlineManagerHelper.ClearWeatherQueue();
                     return true;
                 }

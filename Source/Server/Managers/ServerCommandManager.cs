@@ -675,9 +675,9 @@ namespace GameServer
 
         private static void ToggleCustomScenariosCommandAction()
         {
-            Master.serverValues.AllowCustomScenarios = !Master.serverValues.AllowCustomScenarios;
-            Logger.Warning($"Custom scenarios are now {(Master.serverValues.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}");
-            Master.SaveServerValues(Master.serverValues);
+            Master.serverConfig.AllowCustomScenarios = !Master.serverConfig.AllowCustomScenarios;
+            Logger.Warning($"Custom scenarios are now {(Master.serverConfig.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}");
+            Master.SaveServerConfig();
         }
 
         private static void ToggleUPnPCommandAction()
@@ -685,7 +685,7 @@ namespace GameServer
             Master.serverConfig.UseUPnP = !Master.serverConfig.UseUPnP;
             Logger.Warning($"UPnP port mapping is now {(Master.serverConfig.UseUPnP ? ("Enabled") : ("Disabled"))}");
 
-            Master.SaveServerConfig(Master.serverConfig);
+            Master.SaveServerConfig();
 
             if (Master.serverConfig.UseUPnP)
             {

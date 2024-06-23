@@ -21,6 +21,8 @@
 
         public bool SyncLocalSave = true;
 
+        public bool AllowCustomScenarios = false;
+
         public bool TemporalActivityProtection = true;
 
         public bool TemporalEventProtection = true;

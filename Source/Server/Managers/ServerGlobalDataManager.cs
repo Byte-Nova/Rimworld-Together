@@ -9,7 +9,7 @@ namespace GameServer
         {
             ServerGlobalData globalData = new ServerGlobalData();
 
-            globalData = GetServerValues(globalData);
+            globalData = GetServerConfigs(globalData);
 
             globalData = GetClientValues(client, globalData);
 
@@ -29,10 +29,10 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
         }
 
-        private static ServerGlobalData GetServerValues(ServerGlobalData globalData)
+        private static ServerGlobalData GetServerConfigs(ServerGlobalData globalData)
         {
-            ServerValuesFile svf = Master.serverValues;
-            globalData.AllowCustomScenarios = svf.AllowCustomScenarios;
+            ServerConfigFile scf = Master.serverConfig;
+            globalData.AllowCustomScenarios = scf.AllowCustomScenarios;
 
             return globalData;
         }

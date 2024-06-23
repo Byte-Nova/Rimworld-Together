@@ -44,7 +44,6 @@ namespace GameServer
         public static WorldValuesFile worldValues;
         public static EventValuesFile eventValues;
         public static ServerConfigFile serverConfig;
-        public static ServerValuesFile serverValues;
         public static ActionValuesFile actionValues;
         public static DifficultyValuesFile difficultyValues;
 
@@ -139,7 +138,6 @@ namespace GameServer
             LoadSiteValues();
             LoadEventValues();
             LoadServerConfig();
-            LoadServerValues();
             LoadActionValues();
             ModManager.LoadMods();
             WorldManager.LoadWorldFile();
@@ -164,37 +162,13 @@ namespace GameServer
             Logger.Warning("Loaded server configs");
         }
 
-        public static void SaveServerConfig(ServerConfigFile serverConfig)
+        public static void SaveServerConfig()
         {
             string path = Path.Combine(corePath, "ServerConfig.json");
 
             Serializer.SerializeToFile(path, serverConfig);
 
             Logger.Warning("Saved server Config");
-
-        }
-
-        private static void LoadServerValues()
-        {
-            string path = Path.Combine(corePath, "ServerValues.json");
-
-            if (File.Exists(path)) serverValues = Serializer.SerializeFromFile<ServerValuesFile>(path);
-            else
-            {
-                serverValues = new ServerValuesFile();
-                Serializer.SerializeToFile(path, serverValues);
-            }
-
-            Logger.Warning("Loaded server values");
-        }
-
-        public static void SaveServerValues(ServerValuesFile serverValues)
-        {
-            string path = Path.Combine(corePath, "ServerValues.json");
-
-            Serializer.SerializeToFile(path, serverValues);
-
-            Logger.Warning("Saved server values");
         }
 
         private static void LoadEventValues()
@@ -243,16 +217,6 @@ namespace GameServer
         {
             Console.Title = $"Rimworld Together {CommonValues.executableVersion} - " +
                 $"Players [{Network.connectedClients.Count}/{serverConfig.MaxPlayers}]";
-        }
-
-        public static void SaveServerConfig()
-        {
-            string path = Path.Combine(corePath, "ServerConfig.json");
-
-            if (serverConfig != null)
-            {
-                Serializer.SerializeToFile(path, serverConfig);
-            }
         }
     }
 }
