@@ -22,7 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OnlineActivityData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)packetdata\actions\RoadData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RoadData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\CreationOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DamageOrder.cs" />
