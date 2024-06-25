@@ -163,13 +163,12 @@ namespace GameServer
                     Path.Combine(settlementsArchivePath, settlementFile.tile + SettlementManager.fileExtension));
             }
 
-            DeletePlayerData(client.userFile.Username, client);
+            DeletePlayerData(client, client.userFile.Username);
         }
 
-        public static void DeletePlayerData(string username, ServerClient extraClientDetails = null)
+        public static void DeletePlayerData(ServerClient client, string username)
         {
-            ServerClient connectedUser = UserManager.GetConnectedClientFromUsername(username);
-            if (connectedUser != null) connectedUser.listener.disconnectFlag = true;
+            if (client != null) client.listener.disconnectFlag = true;
 
             //Delete save file
             try { File.Delete(Path.Combine(Master.savesPath, username + fileExtension)); }
@@ -191,7 +190,7 @@ namespace GameServer
                 settlementData.tile = settlementFile.tile;
                 settlementData.owner = settlementFile.owner;
 
-                SettlementManager.RemoveSettlement(extraClientDetails, settlementData);
+                SettlementManager.RemoveSettlement(client, settlementData);
             }
 
             Logger.Warning($"[Deleted player data] > {username}");
