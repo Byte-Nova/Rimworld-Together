@@ -62,28 +62,41 @@ namespace GameServer
 
             if (sendRemoval)
             {
-                if (settlementFile.owner != client.userFile.Username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.tile} attempted to be removed by {client.userFile.Username}, but {settlementFile.owner} owns the settlement");
+                if (client != null)
+                {
+                    if (settlementFile.owner != client.userFile.Username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.tile} attempted to be removed by {client.userFile.Username}, but {settlementFile.owner} owns the settlement");
+                    else
+                    {
+                        Delete();
+                        SendRemovalSignal();
+                        client.listener.disconnectFlag = true;
+                    }
+                }
+
                 else
                 {
-                    File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension));
-
-                    settlementData.settlementStepMode = SettlementStepMode.Remove;
-                    Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
-                    foreach (ServerClient cClient in Network.connectedClients.ToArray())
-                    {
-                        if (cClient == client) continue;
-                        else cClient.listener.EnqueuePacket(rPacket);
-                    }
-
-                    Logger.Warning($"[Remove settlement] > {settlementData.tile} > {client.userFile.Username}");
+                    Delete();
+                    SendRemovalSignal();
                 }
             }
+            else Delete();
 
-            else
+            void Delete()
             {
                 File.Delete(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension));
 
                 Logger.Warning($"[Remove settlement] > {settlementFile.tile}");
+            }
+
+            void SendRemovalSignal()
+            {
+                settlementData.settlementStepMode = SettlementStepMode.Remove;
+                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                foreach (ServerClient cClient in Network.connectedClients.ToArray())
+                {
+                    if (cClient == client) continue;
+                    else cClient.listener.EnqueuePacket(rPacket);
+                }
             }
         }
 

@@ -191,7 +191,7 @@ namespace GameServer
                 settlementData.tile = settlementFile.tile;
                 settlementData.owner = settlementFile.owner;
 
-                SettlementManager.RemoveSettlement(extraClientDetails, settlementData, true);
+                SettlementManager.RemoveSettlement(extraClientDetails, settlementData);
             }
 
             Logger.Warning($"[Deleted player data] > {username}");
