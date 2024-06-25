@@ -109,7 +109,8 @@ namespace GameClient
             Widgets.Label(fixedRect, $"{element}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
             {
-                DialogManager.dialogButtonListingResult = index;
+                DialogManager.dialgButtonListingResultInt = index;
+                DialogManager.dialogButtonListingResultString = element;
                 if (actionClick != null) actionClick.Invoke();
                 Close();
             }

@@ -214,7 +214,7 @@ namespace GameClient
                 if (DeepScribeHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
             }
 
-            Pawn pawnToSend = caravanHumans[DialogManager.dialogButtonListingResult];
+            Pawn pawnToSend = caravanHumans[DialogManager.dialgButtonListingResultInt];
             ClientValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteData siteData = new SiteData();

@@ -457,7 +457,27 @@ namespace GameClient
                         }
                     };
 
+                    Command_Action Command_BuildRoad = new Command_Action
+                    {
+                        defaultLabel = "Build Road",
+                        defaultDesc = "Build a road for everyone to use",
+                        icon = ContentFinder<Texture2D>.Get("Commands/Road"),
+                        action = delegate
+                        {
+                            ClientValues.chosenCaravan = __instance;
+
+                            List<int> neighbors = new List<int>();
+                            Find.WorldGrid.GetTileNeighbors(ClientValues.chosenCaravan.Tile, neighbors);
+
+                            List<string> tileIDS = new List<string>();
+                            foreach (int tileID in neighbors) tileIDS.Add(tileID.ToString());
+                            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road builder", "Select a tile to connect with", 
+                                tileIDS.ToArray(), delegate { RoadManager.SendRoadRequest(); }));
+                        }
+                    };
+
                     gizmoList.Add(Command_BuildSite);
+                    gizmoList.Add(Command_BuildRoad);
                     if (ServerValues.hasFaction) gizmoList.Add(Command_BuildFactionSite);
                 }
 
