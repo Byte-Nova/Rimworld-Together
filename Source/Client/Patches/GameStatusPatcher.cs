@@ -1,13 +1,15 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
     public class GameStatusPatcher
     {
-        [HarmonyPatch(typeof(Game), "InitNewGame")]
+        [HarmonyPatch(typeof(Game), nameof(Game.InitNewGame))]
         public static class InitModePatch
         {
             [HarmonyPostfix]
@@ -19,8 +21,8 @@ namespace GameClient
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = __instance.CurrentMap.Tile.ToString();
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    settlementData.tile = __instance.CurrentMap.Tile;
+                    settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -36,7 +38,7 @@ namespace GameClient
             }
         }
 
-        [HarmonyPatch(typeof(Game), "LoadGame")]
+        [HarmonyPatch(typeof(Game), nameof(Game.LoadGame))]
         public static class LoadModePatch
         {
             [HarmonyPostfix]
@@ -54,7 +56,7 @@ namespace GameClient
             }
         }
 
-        [HarmonyPatch(typeof(SettleInEmptyTileUtility), "Settle")]
+        [HarmonyPatch(typeof(SettleInEmptyTileUtility), nameof(SettleInEmptyTileUtility.Settle))]
         public static class SettlePatch
         {
             [HarmonyPostfix]
@@ -63,8 +65,8 @@ namespace GameClient
                 if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = caravan.Tile.ToString();
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    settlementData.tile = caravan.Tile;
+                    settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -74,7 +76,7 @@ namespace GameClient
             }
         }
 
-        [HarmonyPatch(typeof(SettleInExistingMapUtility), "Settle")]
+        [HarmonyPatch(typeof(SettleInExistingMapUtility), nameof(SettleInExistingMapUtility.Settle))]
         public static class SettleInMapPatch
         {
             [HarmonyPostfix]
@@ -83,8 +85,8 @@ namespace GameClient
                 if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = map.Tile.ToString();
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Add).ToString();
+                    settlementData.tile = map.Tile;
+                    settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -103,14 +105,36 @@ namespace GameClient
                 if (Network.state == NetworkState.Connected)
                 {
                     SettlementData settlementData = new SettlementData();
-                    settlementData.tile = settlement.Tile.ToString();
-                    settlementData.settlementStepMode = ((int)CommonEnumerators.SettlementStepMode.Remove).ToString();
+                    settlementData.tile = settlement.Tile;
+                    settlementData.settlementStepMode = SettlementStepMode.Remove;
 
                     Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(Dialog_Options), nameof(Dialog_Options.DoWindowContents))]
+        public static class PatchDevMode
+        {
+            [HarmonyPostfix]
+            public static void DoPost()
+            {
+                if (Network.state == NetworkState.Connected) ClientValues.ManageDevOptions();
+                else return;
+            }
+        }
+
+        [HarmonyPatch(typeof(Page_SelectStorytellerInGame), nameof(Page_SelectStorytellerInGame.DoWindowContents))]
+        public static class PatchCustomDifficulty
+        {
+            [HarmonyPostfix]
+            public static void DoPost()
+            {
+                if (Network.state == NetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
+                else return;
             }
         }
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Shared
@@ -10,33 +9,32 @@ namespace Shared
     {
         //Misc
 
+        public int mapTile;
+        public int[] mapSize;
         public string mapOwner;
-        public string mapTile;
-        public string mapSize;
-
-        //Mods
-
-        public List<string> mapMods = new List<string>();
+        public string[] mapMods;
+        public string curWeatherDefName;
 
         //Tiles
 
-        public List<string> tileDefNames = new List<string>();
-        public List<string> roofDefNames = new List<string>();
-        public List<bool> tilePollutions = new List<bool>();
+        public string[] tileDefNames;
+        public string[] tileRoofDefNames;
+        public bool[] tilePollutions;
 
         //Things
 
-        public List<ItemData> factionThings = new List<ItemData>();
-        public List<ItemData> nonFactionThings = new List<ItemData>();
+        public ItemData[] factionThings;
+        public ItemData[] nonFactionThings;
 
         //Humans
 
-        public List<HumanData> factionHumans = new List<HumanData>();
-        public List<HumanData> nonFactionHumans = new List<HumanData>();
+        public HumanData[] factionHumans;
+        public HumanData[] nonFactionHumans;
 
         //Animals
 
-        public List<AnimalData> factionAnimals = new List<AnimalData>();
-        public List<AnimalData> nonFactionAnimals = new List<AnimalData>();
+        public AnimalData[] factionAnimals;
+        public AnimalData[] nonFactionAnimals;
+        
     }
 }

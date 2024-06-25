@@ -49,54 +49,18 @@ namespace GameClient
             DialogManager.PushNewDialog(d1);
         }
 
-        public static void ShowWorldGenerationDialogs()
-        {
-            RT_Dialog_OK d3 = new RT_Dialog_OK("This feature is not implemented yet!",
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
-
-            RT_Dialog_2Button d2 = new RT_Dialog_2Button("Game Mode", "Choose the way you want to play",
-                "Separate colony", "Together with other players (TBA)", null, delegate { DialogManager.PushNewDialog(d3); },
-                delegate
-                {
-                    SceneManager.LoadScene(0);
-                    Network.listener.disconnectFlag = true;
-                });
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "Welcome to the world view!",
-                        "Please choose the way you would like to play", "This mode can't be changed upon choosing!" },
-                delegate { DialogManager.PushNewDialog(d2); });
-
-            DialogManager.PushNewDialog(d1);
-        }
-
         public static void ShowConnectDialogs()
         {
-            RT_Dialog_ListingWithButton a1 = new RT_Dialog_ListingWithButton("Server Browser", "List of reachable servers",
-                ClientValues.serverBrowserContainer,
-                delegate { ParseConnectionDetails(true); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+            RT_Dialog_2Input dialog = new RT_Dialog_2Input(
+            "Connection Details", "IP", "Port",
+            delegate { ParseConnectionDetails(false); },
+            null);
 
-            RT_Dialog_2Input a2 = new RT_Dialog_2Input(
-                "Connection Details",
-                "IP",
-                "Port",
-                delegate { ParseConnectionDetails(false); },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+            string[] details = PreferenceManager.LoadConnectionData();
+            DialogManager.dialog2Input.inputOneResult = details[0];
+            DialogManager.dialog2Input.inputTwoResult = details[1];
 
-            RT_Dialog_2Button newDialog = new RT_Dialog_2Button(
-                "Play Online",
-                "Choose the connection type",
-                "Server Browser",
-                "Direct Connect",
-                delegate { DialogManager.PushNewDialog(a1); },
-                delegate {
-                    DialogManager.PushNewDialog(a2);
-                    string[] details = PreferenceManager.LoadConnectionData();
-                    DialogManager.dialog2Input.inputOneResult = details[0];
-                    DialogManager.dialog2Input.inputTwoResult = details[1];
-                }, null);
-
-            DialogManager.PushNewDialog(newDialog);
+            DialogManager.PushNewDialog(dialog);
         }
 
         public static void ParseConnectionDetails(bool throughBrowser)

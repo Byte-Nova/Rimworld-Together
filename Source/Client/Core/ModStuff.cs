@@ -32,23 +32,19 @@ namespace GameClient
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.rejectSiteRewardsBool, "Automatically site rewards");
             listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref modConfigs.muteChatSoundBool, "Mute chat messages");
-            if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s"))
-            {
-                ShowAutosaveFloatMenu();
-            }
-
+            if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s")) ShowAutosaveFloatMenu();
 
             listingStandard.GapLine();
             listingStandard.Label("Compatibility");
             if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertFloatMenu(); }
             if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
-            if (listingStandard.ButtonTextLabeled("[When Playing] Get server world file", "Get")) { GenerateWorldFile(); }
+            if (listingStandard.ButtonTextLabeled("[When Playing] Convert world for server use", "Convert")) { ConvertWorldForServer(); }
             if (listingStandard.ButtonTextLabeled("Open server worlds folder", "Open")) StartProcess(Master.worldSavesFolderPath);
 
             listingStandard.GapLine();
             listingStandard.Label("Experimental");
-            listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info on the logs");
-            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.mainPath);
+            listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info into the logs");
+            listingStandard.CheckboxLabeled("Use extreme verbose logs", ref modConfigs.extremeVerboseBool, "Output ALL available info into the logs");
 
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
@@ -116,29 +112,25 @@ namespace GameClient
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private void GenerateWorldFile()
+        private void ConvertWorldForServer()
         {
-            if (Network.state == NetworkState.Connected)
+            if (Network.state != NetworkState.Connected) DialogManager.PushNewDialog(new RT_Dialog_Error("You must be inside a server to use this!"));
+            else
             {
-                WorldValuesFile worldValuesFile = new WorldValuesFile();
+                WorldValuesFile file = new WorldValuesFile();
+                file.PersistentRandomValue = Find.World.info.persistentRandomValue;
+                file.SeedString = Find.World.info.seedString;
+                file.PlanetCoverage = Find.World.info.planetCoverage;
+                file.Rainfall = (int)Find.World.info.overallRainfall;
+                file.Temperature = (int)Find.World.info.overallTemperature;
+                file.Population = (int)Find.World.info.overallPopulation;
+                file.Pollution = Find.World.info.pollution;
+                file.Features = WorldGeneratorHelper.GetPlanetFeatures();
+                file.NPCFactions = WorldGeneratorHelper.GetPlanetNPCFactions();
+                file.NPCSettlements = WorldGeneratorHelper.GetPlanetNPCSettlements();
 
-                worldValuesFile.seedString = Find.World.info.seedString;
-                worldValuesFile.persistentRandomValue = Find.World.info.persistentRandomValue;
-                worldValuesFile.planetCoverage = Find.World.info.planetCoverage.ToString();
-                worldValuesFile.rainfall = ((int)Find.World.info.overallRainfall).ToString();
-                worldValuesFile.temperature = ((int)Find.World.info.overallTemperature).ToString(); ;
-                worldValuesFile.population = ((int)Find.World.info.overallPopulation).ToString();
-                worldValuesFile.pollution = Find.World.info.pollution.ToString();
-
-                foreach (Faction faction in Find.World.factionManager.AllFactions)
-                {
-                    if (faction.def == Faction.OfPlayer.def) continue;
-                    else worldValuesFile.factions.Add(faction.def.defName);
-                }
-
-                Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), worldValuesFile);
-
-                DialogManager.PushNewDialog(new RT_Dialog_OK("World file was saved correctly!"));
+                Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), file);
+                DialogManager.PushNewDialog(new RT_Dialog_OK("World has been converted successfully!"));
             }
         }
 

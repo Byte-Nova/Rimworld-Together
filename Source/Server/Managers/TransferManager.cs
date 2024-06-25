@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -10,27 +11,27 @@ namespace GameServer
 
             switch (transferData.transferStepMode)
             {
-                case CommonEnumerators.TransferStepMode.TradeRequest:
+                case TransferStepMode.TradeRequest:
                     TransferThings(client, transferData);
                     break;
 
-                case CommonEnumerators.TransferStepMode.TradeAccept:
+                case TransferStepMode.TradeAccept:
                     //Nothing goes here
                     break;
 
-                case CommonEnumerators.TransferStepMode.TradeReject:
+                case TransferStepMode.TradeReject:
                     RejectTransfer(client, packet);
                     break;
 
-                case CommonEnumerators.TransferStepMode.TradeReRequest:
+                case TransferStepMode.TradeReRequest:
                     TransferThingsRebound(client, packet);
                     break;
 
-                case CommonEnumerators.TransferStepMode.TradeReAccept:
+                case TransferStepMode.TradeReAccept:
                     AcceptReboundTransfer(client, packet);
                     break;
 
-                case CommonEnumerators.TransferStepMode.TradeReReject:
+                case TransferStepMode.TradeReReject:
                     RejectReboundTransfer(client, packet);
                     break;
             }
@@ -38,17 +39,17 @@ namespace GameServer
 
         public static void TransferThings(ServerClient client, TransferData transferData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(transferData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to send items to a settlement at tile {transferData.toTile}, but no settlement could be found");
+            if (!SettlementManager.CheckIfTileIsInUse(transferData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send items to a settlement at tile {transferData.toTile}, but no settlement could be found");
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.toTile);
 
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
-                    if (transferData.transferMode == CommonEnumerators.TransferMode.Pod) ResponseShortcutManager.SendUnavailablePacket(client);
+                    if (transferData.transferMode == TransferMode.Pod) ResponseShortcutManager.SendUnavailablePacket(client);
                     else
                     {
-                        transferData.transferStepMode = CommonEnumerators.TransferStepMode.Recover;
+                        transferData.transferStepMode = TransferStepMode.Recover;
                         Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
@@ -56,21 +57,21 @@ namespace GameServer
 
                 else
                 {
-                    if (transferData.transferMode == CommonEnumerators.TransferMode.Gift)
+                    if (transferData.transferMode == TransferMode.Gift)
                     {
-                        transferData.transferStepMode = CommonEnumerators.TransferStepMode.TradeAccept;
+                        transferData.transferStepMode = TransferStepMode.TradeAccept;
                         Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
 
-                    else if (transferData.transferMode == CommonEnumerators.TransferMode.Pod)
+                    else if (transferData.transferMode == TransferMode.Pod)
                     {
-                        transferData.transferStepMode = CommonEnumerators.TransferStepMode.TradeAccept;
+                        transferData.transferStepMode = TransferStepMode.TradeAccept;
                         Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
 
-                    transferData.transferStepMode = CommonEnumerators.TransferStepMode.TradeRequest;
+                    transferData.transferStepMode = TransferStepMode.TradeRequest;
                     string[] contents2 = new string[] { Serializer.SerializeToString(transferData) };
                     Packet rPacket2 = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                     UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket2);
@@ -85,14 +86,14 @@ namespace GameServer
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                transferData.transferStepMode = CommonEnumerators.TransferStepMode.Recover;
+                transferData.transferStepMode = TransferStepMode.Recover;
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
-                transferData.transferStepMode = CommonEnumerators.TransferStepMode.TradeReject;
+                transferData.transferStepMode = TransferStepMode.TradeReject;
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }
@@ -105,14 +106,14 @@ namespace GameServer
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.toTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                transferData.transferStepMode = CommonEnumerators.TransferStepMode.TradeReReject;
+                transferData.transferStepMode = TransferStepMode.TradeReReject;
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
-                transferData.transferStepMode = CommonEnumerators.TransferStepMode.TradeReRequest;
+                transferData.transferStepMode = TransferStepMode.TradeReRequest;
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }
@@ -125,14 +126,14 @@ namespace GameServer
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                transferData.transferStepMode = CommonEnumerators.TransferStepMode.Recover;
+                transferData.transferStepMode = TransferStepMode.Recover;
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
-                transferData.transferStepMode = CommonEnumerators.TransferStepMode.TradeReAccept;
+                transferData.transferStepMode = TransferStepMode.TradeReAccept;
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }
@@ -145,14 +146,14 @@ namespace GameServer
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.fromTile);
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
-                transferData.transferStepMode = CommonEnumerators.TransferStepMode.Recover;
+                transferData.transferStepMode = TransferStepMode.Recover;
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
-                transferData.transferStepMode = CommonEnumerators.TransferStepMode.TradeReReject;
+                transferData.transferStepMode = TransferStepMode.TradeReReject;
                 Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }

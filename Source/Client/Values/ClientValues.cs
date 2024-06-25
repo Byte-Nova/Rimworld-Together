@@ -3,6 +3,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -20,7 +21,11 @@ namespace GameClient
 
         public static bool isInTransfer;
 
-        public static bool isInVisit;
+        public static bool isRealTimeHost;
+
+        public static OnlineActivityType currentRealTimeEvent;
+
+        public static OfflineActivityType latestOfflineActivity;
 
         public static Settlement chosenSettlement;
         public static Caravan chosenCaravan;
@@ -38,6 +43,7 @@ namespace GameClient
         //ModStuff values go below. Do not change manually
 
         public static bool verboseBool;
+        public static bool extremeVerboseBool;
         public static bool muteSoundBool;
         public static bool rejectTransferBool;
         public static bool rejectSiteRewardsBool;
@@ -66,9 +72,11 @@ namespace GameClient
 
         public static void ToggleTransfer(bool mode) { isInTransfer = mode; }
 
-        public static void ToggleVisit(bool mode) { isInVisit = mode; }
+        public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }
 
-        public static void ToggleChatScroll(bool mode) { OnlineChatManager.shouldScrollChat = mode; }
+        public static void ToggleOfflineFunction(OfflineActivityType type) { latestOfflineActivity = type; }
+
+        public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
 
         public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
 
@@ -76,16 +84,20 @@ namespace GameClient
 
         public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
 
+        public static void ToggleRealTimeHost(bool mode) { isRealTimeHost = mode; }
+
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
             SetIntentionalDisconnect(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
-            ToggleVisit(false);
+            ToggleOnlineFunction(OnlineActivityType.None);
+            ToggleOfflineFunction(OfflineActivityType.None);
             ToggleSavingGame(false);
             ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);
+            ToggleRealTimeHost(false);
 
             chosenSettlement = null;
             chosenCaravan = null;

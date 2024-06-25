@@ -13,13 +13,13 @@ namespace GameServer
         {
             WorldData worldData = (WorldData)Serializer.ConvertBytesToObject(packet.contents);
 
-            switch (int.Parse(worldData.worldStepMode))
+            switch (worldData.worldStepMode)
             {
-                case (int)CommonEnumerators.WorldStepMode.Required:
+                case WorldStepMode.Required:
                     SaveWorldPrefab(client, worldData);
                     break;
 
-                case (int)CommonEnumerators.WorldStepMode.Existing:
+                case WorldStepMode.Existing:
                     //Do nothing
                     break;
             }
@@ -29,25 +29,15 @@ namespace GameServer
 
         public static void SaveWorldPrefab(ServerClient client, WorldData worldData)
         {
-            WorldValuesFile worldValues = new WorldValuesFile();
-            worldValues.seedString = worldData.seedString;
-            worldValues.persistentRandomValue = worldData.persistentRandomValue;
-            worldValues.planetCoverage = worldData.planetCoverage;
-            worldValues.rainfall = worldData.rainfall;
-            worldValues.temperature = worldData.temperature;
-            worldValues.population = worldData.population;
-            worldValues.pollution = worldData.pollution;
-            worldValues.factions = worldData.factions;
-
-            Master.worldValues = worldValues;
-            Serializer.SerializeToFile(worldFilePath, worldValues);
-            Logger.Title($"[Save world] > {client.username}");
+            Master.worldValues = worldData.worldValuesFile;
+            Serializer.SerializeToFile(worldFilePath, Master.worldValues);
+            Logger.Title($"[Save world] > {client.userFile.Username}");
         }
 
         public static void RequireWorldFile(ServerClient client)
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
+            worldData.worldStepMode = WorldStepMode.Required;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
@@ -55,19 +45,9 @@ namespace GameServer
 
         public static void SendWorldFile(ServerClient client)
         {
-            WorldValuesFile worldValues = Master.worldValues;
-
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
-
-            worldData.seedString = worldValues.seedString;
-            worldData.persistentRandomValue = worldValues.persistentRandomValue;
-            worldData.planetCoverage = worldValues.planetCoverage;
-            worldData.rainfall = worldValues.rainfall;
-            worldData.temperature = worldValues.temperature;
-            worldData.population = worldValues.population;
-            worldData.pollution = worldValues.pollution;
-            worldData.factions = worldValues.factions;
+            worldData.worldStepMode = WorldStepMode.Existing;
+            worldData.worldValuesFile = Master.worldValues;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
@@ -82,7 +62,7 @@ namespace GameServer
                 Logger.Warning("Loaded world values");
             }
 
-            else Logger.Warning("[Warning] > World is missing. Join server to create it");   
+            else Logger.Warning("World is missing. Join server to create it");   
         }
     }
 }

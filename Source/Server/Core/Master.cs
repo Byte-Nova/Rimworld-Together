@@ -1,6 +1,5 @@
 ﻿using Shared;
 using System.Globalization;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -21,8 +20,10 @@ namespace GameServer
         public static string sitesPath;
         public static string factionsPath;
         public static string settlementsPath;
-        public static string archivedWorldPath;
-        public static string archivedSavesPath;
+
+        public static string backupsPath;
+        public static string backupWorldPath;
+        public static string backupUsersPath;
 
         public static string modsPath;
         public static string requiredModsPath;
@@ -43,7 +44,6 @@ namespace GameServer
         public static WorldValuesFile worldValues;
         public static EventValuesFile eventValues;
         public static ServerConfigFile serverConfig;
-        public static ServerValuesFile serverValues;
         public static ActionValuesFile actionValues;
         public static DifficultyValuesFile difficultyValues;
 
@@ -90,8 +90,10 @@ namespace GameServer
             sitesPath = Path.Combine(mainPath, "Sites");
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
-            archivedSavesPath = Path.Combine(mainPath, "ArchivedSaves");
-            archivedWorldPath = Path.Combine(mainPath, "ArchivedWorlds");
+
+            backupsPath = Path.Combine(mainPath, "Backups");
+            backupUsersPath = Path.Combine(backupsPath, "Users");
+            backupWorldPath = Path.Combine(backupsPath, "Worlds");
 
             modsPath = Path.Combine(mainPath, "Mods");
             requiredModsPath = Path.Combine(modsPath, "Required");
@@ -108,8 +110,8 @@ namespace GameServer
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
-            if (!Directory.Exists(archivedSavesPath)) Directory.CreateDirectory(archivedSavesPath);
-            if (!Directory.Exists(archivedWorldPath)) Directory.CreateDirectory(archivedWorldPath);
+            if (!Directory.Exists(backupUsersPath)) Directory.CreateDirectory(backupUsersPath);
+            if (!Directory.Exists(backupWorldPath)) Directory.CreateDirectory(backupWorldPath);
 
             if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
             if (!Directory.Exists(requiredModsPath)) Directory.CreateDirectory(requiredModsPath);
@@ -136,16 +138,12 @@ namespace GameServer
             LoadSiteValues();
             LoadEventValues();
             LoadServerConfig();
-            LoadServerValues();
             LoadActionValues();
             ModManager.LoadMods();
             WorldManager.LoadWorldFile();
             WhitelistManager.LoadServerWhitelist();
             CustomDifficultyManager.LoadCustomDifficulty();
-            OnlineMarketManager.LoadMarketStock();
-
-            //Keep this function in here until next release, after that it can safely be removed
-            ExecuteBackwardsCompatiblePatch();
+            MarketManager.LoadMarketStock();
 
             Logger.Title($"----------------------------------------");
         }
@@ -164,37 +162,13 @@ namespace GameServer
             Logger.Warning("Loaded server configs");
         }
 
-        public static void SaveServerConfig(ServerConfigFile serverConfig)
+        public static void SaveServerConfig()
         {
             string path = Path.Combine(corePath, "ServerConfig.json");
 
             Serializer.SerializeToFile(path, serverConfig);
 
             Logger.Warning("Saved server Config");
-
-        }
-
-        private static void LoadServerValues()
-        {
-            string path = Path.Combine(corePath, "ServerValues.json");
-
-            if (File.Exists(path)) serverValues = Serializer.SerializeFromFile<ServerValuesFile>(path);
-            else
-            {
-                serverValues = new ServerValuesFile();
-                Serializer.SerializeToFile(path, serverValues);
-            }
-
-            Logger.Warning("Loaded server values");
-        }
-
-        public static void SaveServerValues(ServerValuesFile serverValues)
-        {
-            string path = Path.Combine(corePath, "ServerValues.json");
-
-            Serializer.SerializeToFile(path, serverValues);
-
-            Logger.Warning("Saved server values");
         }
 
         private static void LoadEventValues()
@@ -243,53 +217,6 @@ namespace GameServer
         {
             Console.Title = $"Rimworld Together {CommonValues.executableVersion} - " +
                 $"Players [{Network.connectedClients.Count}/{serverConfig.MaxPlayers}]";
-        }
-
-        public static void SaveServerConfig()
-        {
-            string path = Path.Combine(corePath, "ServerConfig.json");
-
-            if (serverConfig != null)
-            {
-                Serializer.SerializeToFile(path, serverConfig);
-            }
-        }
-
-        //Keep this function in here until next release, after that it can safely be removed
-
-        public static void ExecuteBackwardsCompatiblePatch()
-        {
-            foreach (string file in Directory.GetFiles(usersPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", UserManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            foreach (string file in Directory.GetFiles(sitesPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", SiteManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            foreach (string file in Directory.GetFiles(settlementsPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", SettlementManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            foreach (string file in Directory.GetFiles(mapsPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", MapManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            foreach (string file in Directory.GetFiles(factionsPath))
-            {
-                try { if (file.EndsWith(".json")) File.Move(file, file.Replace(".json", OnlineFactionManager.fileExtension)); }
-                catch { Logger.Error($"Failed to convert file '{file}' to new version"); }
-            }
-
-            Logger.Warning($"Converted old server data");
         }
     }
 }

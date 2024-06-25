@@ -7,11 +7,19 @@ namespace GameServer
 
     public static class PacketHandler
     {
+        //Packet headers in this array won't output into the logs by default
+
+        private static readonly string[] ignoreLogPackets =
+        {
+            nameof(OnlineActivityPacket)
+        };
+
         //Function that opens handles the action that the packet should do, then sends it to the correct one below
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs) Logger.Message($"[Header] > {packet.header}");
+            if (Master.serverConfig.VerboseLogs && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[H] > {packet.header}");
+            else if (Master.serverConfig.ExtremeVerboseLogs) Logger.Message($"[H] > {packet.header}");
 
             client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);
@@ -51,7 +59,12 @@ namespace GameServer
 
         public static void MarketPacket(ServerClient client, Packet packet)
         {
-            OnlineMarketManager.ParseMarketPacket(client, packet);
+            MarketManager.ParseMarketPacket(client, packet);
+        }
+
+        public static void AidPacket(ServerClient client, Packet packet)
+        {
+            AidManager.ParsePacket(client, packet);
         }
 
         public static void SitePacket(ServerClient client, Packet packet)
@@ -59,14 +72,14 @@ namespace GameServer
             SiteManager.ParseSitePacket(client, packet);
         }
 
-        public static void VisitPacket(ServerClient client, Packet packet)
+        public static void OnlineActivityPacket(ServerClient client, Packet packet)
         {
-            OnlineVisitManager.ParseVisitPacket(client, packet);
+            OnlineActivityManager.ParseOnlineActivityPacket(client, packet);
         }
 
-        public static void OfflineVisitPacket(ServerClient client, Packet packet)
+        public static void OfflineActivityPacket(ServerClient client, Packet packet)
         {
-            OfflineVisitManager.ParseOfflineVisitPacket(client, packet);
+            OfflineActivityManager.ParseOfflineActivityPacket(client, packet);
         }
 
         public static void ChatPacket(ServerClient client, Packet packet)
@@ -76,22 +89,12 @@ namespace GameServer
 
         public static void FactionPacket(ServerClient client, Packet packet)
         {
-            OnlineFactionManager.ParseFactionPacket(client, packet);
+            FactionManager.ParseFactionPacket(client, packet);
         }
 
         public static void MapPacket(ServerClient client, Packet packet)
         {
             MapManager.SaveUserMap(client, packet);
-        }
-
-        public static void RaidPacket(ServerClient client, Packet packet)
-        {
-            OfflineRaidManager.ParseRaidPacket(client, packet);
-        }
-
-        public static void SpyPacket(ServerClient client, Packet packet)
-        {
-            OfflineSpyManager.ParseSpyPacket(client, packet);
         }
 
         public static void SettlementPacket(ServerClient client, Packet packet)

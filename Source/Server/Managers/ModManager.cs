@@ -19,7 +19,7 @@ namespace GameServer
                         if (!Master.loadedRequiredMods.Contains(str.ToLower())) Master.loadedRequiredMods.Add(str.ToLower());
                     }
                 }
-                catch { Logger.Error($"[Error] > Failed to load About.xml of mod at '{modPath}'"); }
+                catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
             }
 
             Logger.Warning($"Loaded required mods [{Master.loadedRequiredMods.Count()}]");
@@ -39,7 +39,7 @@ namespace GameServer
                         }
                     }
                 }
-                catch { Logger.Error($"[Error] > Failed to load About.xml of mod at '{modPath}'"); }
+                catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
             }
 
             Logger.Warning($"Loaded optional mods [{Master.loadedOptionalMods.Count()}]");
@@ -59,7 +59,7 @@ namespace GameServer
                         }
                     }
                 }
-                catch { Logger.Error($"[Error] > Failed to load About.xml of mod at '{modPath}'"); }
+                catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
             }
 
             Logger.Warning($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]");
@@ -109,23 +109,23 @@ namespace GameServer
 
             if (conflictingMods.Count == 0)
             {
-                client.runningMods = loginData.runningMods;
+                client.userFile.UpdateMods(loginData.runningMods);
                 return false;
             }
 
             else
             {
-                if (client.isAdmin)
+                if (client.userFile.IsAdmin)
                 {
-                    Logger.Warning($"[Mod bypass] > {client.username}");
-                    client.runningMods = loginData.runningMods;
+                    Logger.Warning($"[Mod bypass] > {client.userFile.Username}");
+                    client.userFile.UpdateMods(loginData.runningMods);
                     return false;
                 }
 
                 else
                 {
-                    Logger.Warning($"[Mod Mismatch] > {client.username}");
-                    UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.WrongMods, conflictingMods);
+                    Logger.Warning($"[Mod Mismatch] > {client.userFile.Username}");
+                    UserManager.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }
             }

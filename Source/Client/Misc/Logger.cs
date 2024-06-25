@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -20,7 +14,7 @@ namespace GameClient
 
         private static void WriteToConsole(string text, LogMode mode = LogMode.Message)
         {
-            string toWrite = $"[Rimworld Together] > {text}";
+            string toWrite = $"[RT] > {text}";
 
             switch(mode)
             {
@@ -37,7 +31,7 @@ namespace GameClient
                     break;
 
                 default:
-                    throw new Exception($"[Rimworld Together] > Logger was passed invalid arguments");
+                    throw new Exception($"[RT] > Logger was passed invalid arguments");
             }
         }
     }

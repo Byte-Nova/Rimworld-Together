@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -10,16 +11,17 @@ namespace GameServer
 
             if (!UserManager.CheckIfUserUpdated(client, loginData)) return;
 
-            if (!UserManager.CheckLoginData(client, loginData, CommonEnumerators.LoginMode.Login)) return;
+            if (!UserManager.CheckLoginData(client, loginData, LoginMode.Login)) return;
 
-            if (!UserManager.CheckIfUserExists(client, loginData, CommonEnumerators.LoginMode.Login)) return;
+            if (!UserManager.CheckIfUserExists(client, loginData, LoginMode.Login)) return;
 
             if (!UserManager.CheckIfUserAuthCorrect(client, loginData)) return;
 
-            client.username = loginData.username;
-            client.password = loginData.password;
+            client.userFile.SetLoginDetails(loginData);
 
-            UserManager.LoadDataFromFile(client);
+            client.LoadFromUserFile();
+
+            Logger.Message($"[Handshake] > {client.userFile.SavedIP} | {client.userFile.Username}");
 
             if (UserManager.CheckIfUserBanned(client)) return;
 
@@ -34,11 +36,9 @@ namespace GameServer
 
         private static void PostLogin(ServerClient client)
         {
-            UserManager.SaveUserIP(client);
-
             UserManager.SendPlayerRecount();
 
-            ServerOverallManager.SendServerOveralls(client);
+            ServerGlobalDataManager.SendServerGlobalData(client);
 
             ChatManager.BroadcastSystemMessage(client, ChatManager.defaultJoinMessages);
 
@@ -57,9 +57,9 @@ namespace GameServer
                 if (cClient == client) continue;
                 else
                 {
-                    if (cClient.username == client.username)
+                    if (cClient.userFile.Username == client.userFile.Username)
                     {
-                        UserManager.SendLoginResponse(cClient, CommonEnumerators.LoginResponse.ExtraLogin);
+                        UserManager.SendLoginResponse(cClient, LoginResponse.ExtraLogin);
                     }
                 }
             }

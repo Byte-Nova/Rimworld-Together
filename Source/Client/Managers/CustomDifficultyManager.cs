@@ -7,91 +7,91 @@ namespace GameClient
     {
         public static void SetCustomDifficulty(ServerGlobalData serverGlobalData)
         {
-            DifficultyValues.UseCustomDifficulty = serverGlobalData.UsingCustomDifficulty;
+            DifficultyValues.UseCustomDifficulty = serverGlobalData.difficultyValues.UseCustomDifficulty;
 
-            DifficultyValues.ThreatScale = serverGlobalData.ThreatScale;
+            DifficultyValues.ThreatScale = serverGlobalData.difficultyValues.ThreatScale;
 
-            DifficultyValues.AllowBigThreats = serverGlobalData.AllowBigThreats;
+            DifficultyValues.AllowBigThreats = serverGlobalData.difficultyValues.AllowBigThreats;
 
-            DifficultyValues.AllowViolentQuests = serverGlobalData.AllowViolentQuests;
+            DifficultyValues.AllowViolentQuests = serverGlobalData.difficultyValues.AllowViolentQuests;
 
-            DifficultyValues.AllowIntroThreats = serverGlobalData.AllowIntroThreats;
+            DifficultyValues.AllowIntroThreats = serverGlobalData.difficultyValues.AllowIntroThreats;
 
-            DifficultyValues.PredatorsHuntHumanlikes = serverGlobalData.PredatorsHuntHumanlikes;
+            DifficultyValues.PredatorsHuntHumanlikes = serverGlobalData.difficultyValues.PredatorsHuntHumanlikes;
 
-            DifficultyValues.AllowExtremeWeatherIncidents = serverGlobalData.AllowExtremeWeatherIncidents;
+            DifficultyValues.AllowExtremeWeatherIncidents = serverGlobalData.difficultyValues.AllowExtremeWeatherIncidents;
 
-            DifficultyValues.CropYieldFactor = serverGlobalData.CropYieldFactor;
+            DifficultyValues.CropYieldFactor = serverGlobalData.difficultyValues.CropYieldFactor;
 
-            DifficultyValues.MineYieldFactor = serverGlobalData.MineYieldFactor;
+            DifficultyValues.MineYieldFactor = serverGlobalData.difficultyValues.MineYieldFactor;
 
-            DifficultyValues.ButcherYieldFactor = serverGlobalData.ButcherYieldFactor;
+            DifficultyValues.ButcherYieldFactor = serverGlobalData.difficultyValues.ButcherYieldFactor;
 
-            DifficultyValues.ResearchSpeedFactor = serverGlobalData.ResearchSpeedFactor;
+            DifficultyValues.ResearchSpeedFactor = serverGlobalData.difficultyValues.ResearchSpeedFactor;
 
-            DifficultyValues.QuestRewardValueFactor = serverGlobalData.QuestRewardValueFactor;
+            DifficultyValues.QuestRewardValueFactor = serverGlobalData.difficultyValues.QuestRewardValueFactor;
 
-            DifficultyValues.RaidLootPointsFactor = serverGlobalData.RaidLootPointsFactor;
+            DifficultyValues.RaidLootPointsFactor = serverGlobalData.difficultyValues.RaidLootPointsFactor;
 
-            DifficultyValues.TradePriceFactorLoss = serverGlobalData.TradePriceFactorLoss;
+            DifficultyValues.TradePriceFactorLoss = serverGlobalData.difficultyValues.TradePriceFactorLoss;
 
-            DifficultyValues.MaintenanceCostFactor = serverGlobalData.MaintenanceCostFactor;
+            DifficultyValues.MaintenanceCostFactor = serverGlobalData.difficultyValues.MaintenanceCostFactor;
 
-            DifficultyValues.ScariaRotChance = serverGlobalData.ScariaRotChance;
+            DifficultyValues.ScariaRotChance = serverGlobalData.difficultyValues.ScariaRotChance;
 
-            DifficultyValues.EnemyDeathOnDownedChanceFactor = serverGlobalData.EnemyDeathOnDownedChanceFactor;
+            DifficultyValues.EnemyDeathOnDownedChanceFactor = serverGlobalData.difficultyValues.EnemyDeathOnDownedChanceFactor;
 
-            DifficultyValues.ColonistMoodOffset = serverGlobalData.ColonistMoodOffset;
+            DifficultyValues.ColonistMoodOffset = serverGlobalData.difficultyValues.ColonistMoodOffset;
 
-            DifficultyValues.FoodPoisonChanceFactor = serverGlobalData.FoodPoisonChanceFactor;
+            DifficultyValues.FoodPoisonChanceFactor = serverGlobalData.difficultyValues.FoodPoisonChanceFactor;
 
-            DifficultyValues.ManhunterChanceOnDamageFactor = serverGlobalData.ManhunterChanceOnDamageFactor;
+            DifficultyValues.ManhunterChanceOnDamageFactor = serverGlobalData.difficultyValues.ManhunterChanceOnDamageFactor;
 
-            DifficultyValues.PlayerPawnInfectionChanceFactor = serverGlobalData.PlayerPawnInfectionChanceFactor;
+            DifficultyValues.PlayerPawnInfectionChanceFactor = serverGlobalData.difficultyValues.PlayerPawnInfectionChanceFactor;
 
-            DifficultyValues.DiseaseIntervalFactor = serverGlobalData.DiseaseIntervalFactor;
+            DifficultyValues.DiseaseIntervalFactor = serverGlobalData.difficultyValues.DiseaseIntervalFactor;
 
-            DifficultyValues.EnemyReproductionRateFactor = serverGlobalData.EnemyReproductionRateFactor;
+            DifficultyValues.EnemyReproductionRateFactor = serverGlobalData.difficultyValues.EnemyReproductionRateFactor;
 
-            DifficultyValues.DeepDrillInfestationChanceFactor = serverGlobalData.DeepDrillInfestationChanceFactor;
+            DifficultyValues.DeepDrillInfestationChanceFactor = serverGlobalData.difficultyValues.DeepDrillInfestationChanceFactor;
 
-            DifficultyValues.FriendlyFireChanceFactor = serverGlobalData.FriendlyFireChanceFactor;
+            DifficultyValues.FriendlyFireChanceFactor = serverGlobalData.difficultyValues.FriendlyFireChanceFactor;
 
-            DifficultyValues.AllowInstantKillChance = serverGlobalData.AllowInstantKillChance;
+            DifficultyValues.AllowInstantKillChance = serverGlobalData.difficultyValues.AllowInstantKillChance;
 
-            DifficultyValues.PeacefulTemples = serverGlobalData.PeacefulTemples;
+            DifficultyValues.PeacefulTemples = serverGlobalData.difficultyValues.PeacefulTemples;
 
-            DifficultyValues.AllowCaveHives = serverGlobalData.AllowCaveHives;
+            DifficultyValues.AllowCaveHives = serverGlobalData.difficultyValues.AllowCaveHives;
 
-            DifficultyValues.UnwaveringPrisoners = serverGlobalData.UnwaveringPrisoners;
+            DifficultyValues.UnwaveringPrisoners = serverGlobalData.difficultyValues.UnwaveringPrisoners;
 
-            DifficultyValues.AllowTraps = serverGlobalData.AllowTraps;
+            DifficultyValues.AllowTraps = serverGlobalData.difficultyValues.AllowTraps;
 
-            DifficultyValues.AllowTurrets = serverGlobalData.AllowTurrets;
+            DifficultyValues.AllowTurrets = serverGlobalData.difficultyValues.AllowTurrets;
 
-            DifficultyValues.AllowMortars = serverGlobalData.AllowMortars;
+            DifficultyValues.AllowMortars = serverGlobalData.difficultyValues.AllowMortars;
 
-            DifficultyValues.ClassicMortars = serverGlobalData.ClassicMortars;
+            DifficultyValues.ClassicMortars = serverGlobalData.difficultyValues.ClassicMortars;
 
-            DifficultyValues.AdaptationEffectFactor = serverGlobalData.AdaptationEffectFactor;
+            DifficultyValues.AdaptationEffectFactor = serverGlobalData.difficultyValues.AdaptationEffectFactor;
 
-            DifficultyValues.AdaptationGrowthRateFactorOverZero = serverGlobalData.AdaptationGrowthRateFactorOverZero;
+            DifficultyValues.AdaptationGrowthRateFactorOverZero = serverGlobalData.difficultyValues.AdaptationGrowthRateFactorOverZero;
 
-            DifficultyValues.FixedWealthMode = serverGlobalData.FixedWealthMode;
+            DifficultyValues.FixedWealthMode = serverGlobalData.difficultyValues.FixedWealthMode;
 
-            DifficultyValues.LowPopConversionBoost = serverGlobalData.LowPopConversionBoost;
+            DifficultyValues.LowPopConversionBoost = serverGlobalData.difficultyValues.LowPopConversionBoost;
 
-            DifficultyValues.NoBabiesOrChildren = serverGlobalData.NoBabiesOrChildren;
+            DifficultyValues.NoBabiesOrChildren = serverGlobalData.difficultyValues.NoBabiesOrChildren;
 
-            DifficultyValues.BabiesAreHealthy = serverGlobalData.BabiesAreHealthy;
+            DifficultyValues.BabiesAreHealthy = serverGlobalData.difficultyValues.BabiesAreHealthy;
 
-            DifficultyValues.ChildRaidersAllowed = serverGlobalData.ChildRaidersAllowed;
+            DifficultyValues.ChildRaidersAllowed = serverGlobalData.difficultyValues.ChildRaidersAllowed;
 
-            DifficultyValues.ChildAgingRate = serverGlobalData.ChildAgingRate;
+            DifficultyValues.ChildAgingRate = serverGlobalData.difficultyValues.ChildAgingRate;
 
-            DifficultyValues.AdultAgingRate = serverGlobalData.AdultAgingRate;
+            DifficultyValues.AdultAgingRate = serverGlobalData.difficultyValues.AdultAgingRate;
 
-            DifficultyValues.WastepackInfestationChanceFactor = serverGlobalData.WastepackInfestationChanceFactor;
+            DifficultyValues.WastepackInfestationChanceFactor = serverGlobalData.difficultyValues.WastepackInfestationChanceFactor;
         }
 
         public static void SendCustomDifficulty()

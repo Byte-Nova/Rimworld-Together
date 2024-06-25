@@ -1,10 +1,7 @@
 ﻿using System;
 using HarmonyLib;
 using RimWorld;
-using UnityEngine;
 using Verse;
-using Shared;
-using System.IO;
 
 namespace GameClient
 {
@@ -26,7 +23,6 @@ namespace GameClient
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
 
-                Logger.Message($"Creating local save at {filePath}");
                 try
                 {
                     SafeSaver.Save(filePath, "savegame", delegate

@@ -60,8 +60,6 @@ namespace GameClient
                     if (dataQueue.Count() > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
-                        if (packet == null) continue;
-
                         streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
                         streamWriter.Flush();
                     }
@@ -81,8 +79,6 @@ namespace GameClient
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    if (string.IsNullOrEmpty(data)) continue;
-
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
                     PacketHandler.HandlePacket(receivedPacket);
                 }

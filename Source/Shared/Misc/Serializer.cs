@@ -1,11 +1,10 @@
-using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 
 namespace Shared
 {
-#pragma warning disable SYSLIB0011
+    #pragma warning disable SYSLIB0011
 
     //Class that handles all of the mod's serialization functions
 

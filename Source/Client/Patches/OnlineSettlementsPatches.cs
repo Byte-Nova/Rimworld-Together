@@ -1,12 +1,15 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
+using System;
 using System.Linq;
 using Verse;
 using Verse.AI;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    [HarmonyPatch(typeof(SettlementDefeatUtility), "CheckDefeated")]
+    [HarmonyPatch(typeof(SettlementDefeatUtility), nameof(SettlementDefeatUtility.CheckDefeated))]
     public static class PatchSettlementJoin
     {
         [HarmonyPrefix]
@@ -15,29 +18,48 @@ namespace GameClient
             if (Network.state == NetworkState.Disconnected) return true;
 
             if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
-
             else return true;
         }
     }
 
-    [HarmonyPatch(typeof(Pawn_JobTracker), "StartJob")]
-    public static class PatchJobInformation
+    [HarmonyPatch(typeof(CaravanEnterMapUtility), nameof(CaravanEnterMapUtility.Enter), new[] { typeof(Caravan), typeof(Map), typeof(Func<Pawn, IntVec3>), typeof(CaravanDropInventoryMode), typeof(bool) })]
+    public static class PatchCaravanEnterMapUtility1
+    {
+        [HarmonyPostfix]
+        public static void DoPost(Map map)
+        {
+            if (Network.state == NetworkState.Disconnected) return;
+            if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
+
+            FloodFillerFog.DebugRefogMap(map);
+        }
+    }
+
+    [HarmonyPatch(typeof(CaravanEnterMapUtility), nameof(CaravanEnterMapUtility.Enter), new[] { typeof(Caravan), typeof(Map), typeof(CaravanEnterMode), typeof(CaravanDropInventoryMode), typeof(bool), typeof(Predicate<IntVec3>) })]
+    public static class PatchCaravanEnterMapUtility2
+    {
+        [HarmonyPostfix]
+        public static void DoPost(Map map)
+        {
+            if (Network.state == NetworkState.Disconnected) return;
+            if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
+
+            FloodFillerFog.DebugRefogMap(map);
+        }
+    }
+
+    [HarmonyPatch(typeof(SitePartWorker_Outpost), "GetEnemiesCount")]
+    public static class PatchSiteEnemyCount
     {
         [HarmonyPrefix]
-        public static bool DoPre(Job newJob, Pawn ___pawn)
+        public static bool DoPost(Site site, ref int __result)
         {
-            if (Network.state == NetworkState.Connected)
+            if (FactionValues.playerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
             {
-                if (ClientValues.isInVisit)
-                {
-                    if (OnlineVisitManager.nonFactionPawns.Contains(___pawn))
-                    {
-                        if (newJob.exitMapOnArrival) return false;
-                    }
-                }
+                __result = 25;
             }
 
-            return true;
+            return false;
         }
     }
 }

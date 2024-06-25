@@ -1,5 +1,4 @@
 ﻿using Shared;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -13,7 +12,7 @@ namespace GameServer
 
         public static void SetCustomDifficulty(ServerClient client, DifficultyData difficultyData)
         {
-            if (!client.isAdmin) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to set the custom difficulty while not being an admin");
+            if (!client.userFile.IsAdmin) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to set the custom difficulty while not being an admin");
             else
             {
                 DifficultyValuesFile newDifficultyValues = new DifficultyValuesFile();
@@ -104,7 +103,7 @@ namespace GameServer
 
                 newDifficultyValues.WastepackInfestationChanceFactor = difficultyData.WastepackInfestationChanceFactor;
 
-                Logger.Warning($"[Set difficulty] > {client.username}");
+                Logger.Warning($"[Set difficulty] > {client.userFile.Username}");
 
                 SaveCustomDifficulty(newDifficultyValues);
             }

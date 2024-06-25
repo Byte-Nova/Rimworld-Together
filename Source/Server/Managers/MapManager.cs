@@ -1,5 +1,4 @@
 ﻿using Shared;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -12,12 +11,12 @@ namespace GameServer
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
             MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(packet.contents);
-            mapFileData.mapOwner = client.username;
+            mapFileData.mapOwner = client.userFile.Username;
 
             byte[] compressedMapBytes = Serializer.ConvertObjectToBytes(mapFileData);
             File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + fileExtension), compressedMapBytes);
 
-            Logger.Message($"[Save map] > {client.username} > {mapFileData.mapTile}");
+            Logger.Message($"[Save map] > {client.userFile.Username} > {mapFileData.mapTile}");
         }
 
         public static void DeleteMap(MapFileData mapFile)
@@ -46,7 +45,7 @@ namespace GameServer
             return mapDatas.ToArray();
         }
 
-        public static bool CheckIfMapExists(string mapTileToCheck)
+        public static bool CheckIfMapExists(int mapTileToCheck)
         {
             MapFileData[] maps = GetAllMapFiles();
             foreach (MapFileData map in maps)
@@ -74,7 +73,7 @@ namespace GameServer
             return userMaps.ToArray();
         }
 
-        public static MapFileData GetUserMapFromTile(string mapTileToGet)
+        public static MapFileData GetUserMapFromTile(int mapTileToGet)
         {
             MapFileData[] mapFiles = GetAllMapFiles();
 

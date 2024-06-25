@@ -1,6 +1,5 @@
 ﻿using Shared;
 using System.Net.Sockets;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -61,8 +60,6 @@ namespace GameServer
                     if (dataQueue.Count() > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
-                        if (packet == null) continue;
-
                         streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
                         streamWriter.Flush();
                     }
@@ -82,8 +79,6 @@ namespace GameServer
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    if (string.IsNullOrEmpty(data)) continue;
-
                     Packet receivedPacket = Serializer.SerializeStringToPacket(data);
                     PacketHandler.HandlePacket(targetClient, receivedPacket);
                 }
@@ -145,7 +140,7 @@ namespace GameServer
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
-            if (targetClient.inVisitWith != null) OnlineVisitManager.SendVisitStop(targetClient);
+            if (targetClient.InVisitWith != null) OnlineActivityManager.SendVisitStop(targetClient);
         }
     }
 }

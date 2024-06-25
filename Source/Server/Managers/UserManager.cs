@@ -1,5 +1,4 @@
 ﻿using Shared;
-using System.Security.Policy;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -10,22 +9,6 @@ namespace GameServer
 
         public readonly static string fileExtension = ".mpuser";
 
-        public static void LoadDataFromFile(ServerClient client)
-        {
-            UserFile file = GetUserFile(client);
-            client.uid = file.uid;
-            client.username = file.username;
-            client.password = file.password;
-            client.factionName = file.factionName;
-            client.hasFaction = file.hasFaction;
-            client.isAdmin = file.isAdmin;
-            client.isBanned = file.isBanned;
-            client.enemyPlayers = file.enemyPlayers;
-            client.allyPlayers = file.allyPlayers;
-
-            Logger.Message($"[Handshake] > {client.username} | {client.SavedIP}");
-        }
-
         public static UserFile GetUserFile(ServerClient client)
         {
             string[] userFiles = Directory.GetFiles(Master.usersPath);
@@ -35,7 +18,7 @@ namespace GameServer
                 if (!userFile.EndsWith(fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.username == client.username) return file;
+                if (file.Username == client.userFile.Username) return file;
             }
 
             return null;
@@ -50,7 +33,7 @@ namespace GameServer
                 if (!userFile.EndsWith(fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.username == username) return file;
+                if (file.Username == username) return file;
             }
 
             return null;
@@ -69,23 +52,11 @@ namespace GameServer
             return userFiles.ToArray();
         }
 
-        public static void SaveUserFile(ServerClient client, UserFile userFile)
-        {
-            string savePath = Path.Combine(Master.usersPath, client.username + fileExtension);
-            Serializer.SerializeToFile(savePath, userFile);
-        }
-
-        public static void SaveUserFileFromName(string username, UserFile userFile)
-        {
-            string savePath = Path.Combine(Master.usersPath, username + fileExtension);
-            Serializer.SerializeToFile(savePath, userFile);
-        }
-
         public static void SendPlayerRecount()
         {
             PlayerRecountData playerRecountData = new PlayerRecountData();
             playerRecountData.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
-            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountData.currentPlayerNames.Add(client.username);
+            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountData.currentPlayerNames.Add(client.userFile.Username);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
@@ -95,7 +66,7 @@ namespace GameServer
         {
             List<ServerClient> connectedClients = Network.connectedClients.ToList();
 
-            ServerClient toGet = connectedClients.Find(x => x.username == username);
+            ServerClient toGet = connectedClients.Find(x => x.userFile.Username == username);
             if (toGet != null) return true;
             else return false;
         }
@@ -103,7 +74,7 @@ namespace GameServer
         public static ServerClient GetConnectedClientFromUsername(string username)
         {
             List<ServerClient> connectedClients = Network.connectedClients.ToList();
-            return connectedClients.Find(x => x.username == username);
+            return connectedClients.Find(x => x.userFile.Username == username);
         }
 
         public static bool CheckIfUserExists(ServerClient client, LoginData data, LoginMode mode)
@@ -115,7 +86,7 @@ namespace GameServer
                 if (!user.EndsWith(fileExtension)) continue;
 
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.username.ToLower() == data.username.ToLower())
+                if (existingUser.Username.ToLower() == data.username.ToLower())
                 {
                     if (mode == LoginMode.Register) SendLoginResponse(client, LoginResponse.RegisterInUse);
                     return true;
@@ -134,9 +105,9 @@ namespace GameServer
             {
                 if (!user.EndsWith(fileExtension)) continue;
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.username == data.username)
+                if (existingUser.Username == data.username)
                 {
-                    if (existingUser.password == data.password) return true;
+                    if (existingUser.Password == data.password) return true;
                     else break;
                 }
             }
@@ -147,7 +118,7 @@ namespace GameServer
 
         public static bool CheckIfUserBanned(ServerClient client)
         {
-            if (!client.isBanned) return false;
+            if (!client.userFile.IsBanned) return false;
             else
             {
                 SendLoginResponse(client, LoginResponse.BannedLogin);
@@ -155,19 +126,12 @@ namespace GameServer
             }
         }
 
-        public static void SaveUserIP(ServerClient client)
-        {
-            UserFile userFile = GetUserFile(client);
-            userFile.SavedIP = client.SavedIP;
-            SaveUserFile(client, userFile);
-        }
-
-        public static string[] GetUserStructuresTilesFromUsername(string username)
+        public static int[] GetUserStructuresTilesFromUsername(string username)
         {
             SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.owner == username).ToArray();
             SiteFile[] sites = SiteManager.GetAllSites().ToList().FindAll(x => x.owner == username).ToArray();
 
-            List<string> tilesToExclude = new List<string>();
+            List<int> tilesToExclude = new List<int>();
             foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.tile);
             foreach (SiteFile site in sites) tilesToExclude.Add(site.tile);
 
@@ -195,7 +159,7 @@ namespace GameServer
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
             LoginData loginData = new LoginData();
-            loginData.tryResponse = ((int)response).ToString();
+            loginData.tryResponse = response;
 
             if (response == LoginResponse.WrongMods) loginData.extraDetails = (List<string>)extraDetails;
             else if (response == LoginResponse.WrongVersion) loginData.extraDetails = new List<string>() { CommonValues.executableVersion };
@@ -212,7 +176,7 @@ namespace GameServer
             {
                 foreach (string str in Master.whitelist.WhitelistedUsers)
                 {
-                    if (str == client.username) return true;
+                    if (str == client.userFile.Username) return true;
                 }
             }
 
@@ -225,7 +189,7 @@ namespace GameServer
             if (loginData.clientVersion == CommonValues.executableVersion) return true;
             else
             {
-                Logger.Warning($"[Version Mismatch] > {client.username}");
+                Logger.Warning($"[Version Mismatch] > {client.userFile.Username}");
                 SendLoginResponse(client, LoginResponse.WrongVersion);
                 return false;
             }

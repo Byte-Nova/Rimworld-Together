@@ -31,28 +31,28 @@ namespace GameClient
                 switch (intentionalDisconnectReason)
                 {
                     case DCReason.None:
-                        reason = "No reason given.";
+                        reason = "No reason given";
                         DisconnectToMenu();
                         break;
 
                     case DCReason.QuitToMenu:
-                        reason = "Quit to menu.";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Returning to main menu.", delegate { DisconnectToMenu(); }));
+                        reason = "Quit to menu";
+                        DisconnectToMenu();
                         break;
 
                     case DCReason.SaveQuitToMenu:
-                        reason = "Save and Quit to Menu.";
+                        reason = "Save and Quit to Menu";
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { DisconnectToMenu(); }));
                         break;
 
                     case DCReason.SaveQuitToOS:
-                        reason = "Save and Quit to OS.";
+                        reason = "Save and Quit to OS";
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { QuitGame(); }));
                         break;
 
                     case DCReason.ConnectionLost:
                         reason = "Connection to server lost";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { DisconnectToMenu(); }));
+                        DisconnectToMenu();
                         break;
 
                     default:
@@ -70,11 +70,10 @@ namespace GameClient
 
                 if (Current.ProgramState != ProgramState.Entry)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?", 
+                    DialogManager.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?",
                         delegate { SaveManager.ForceSave(); DisconnectToMenu(); }, delegate { DisconnectToMenu(); }));
                 }
-
-                DialogManager.PopWaitDialog();
+                else DisconnectToMenu();
             }
         }
 
@@ -82,9 +81,9 @@ namespace GameClient
 
         public static void DisconnectToMenu()
         {
-            OnlineChatManager.CleanChat();
             ClientValues.CleanValues();
             ServerValues.CleanValues();
+            ChatManager.CleanChat();
 
             DialogManager.PopWaitDialog();
 
