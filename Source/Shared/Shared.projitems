@@ -42,7 +42,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapFileData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\TimeSpeedOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\WeatherOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Packetdata\Misc\Roads\RoadDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Roads\RoadDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCFaction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
