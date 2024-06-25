@@ -635,9 +635,10 @@ namespace GameServer
         private static void DeletePlayerCommandAction()
         {
             UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
-            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            ServerClient toFind = UserManager.GetConnectedClientFromUsername(userFile.Username);
 
-            else SaveManager.DeletePlayerData(userFile.Username);
+            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            else SaveManager.DeletePlayerData(toFind, userFile.Username);
         }
 
         private static void EnableDifficultyCommandAction()
