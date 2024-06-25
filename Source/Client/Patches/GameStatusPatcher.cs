@@ -50,7 +50,6 @@ namespace GameClient
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
                     PlanetManager.BuildPlanet();
-
                     ClientValues.ToggleReadyToPlay(true);
                 }
             }

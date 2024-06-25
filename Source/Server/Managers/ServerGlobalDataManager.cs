@@ -23,6 +23,8 @@ namespace GameServer
 
             globalData = GetServerSites(client, globalData);
 
+            globalData = GetServerRoads(globalData);
+
             globalData = GetActionsCost(globalData);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), globalData);
@@ -110,6 +112,15 @@ namespace GameServer
             globalData.playerSites = tempList.ToArray();
 
             return globalData;
+        }
+
+        private static ServerGlobalData GetServerRoads(ServerGlobalData data)
+        {
+            data.roads = RoadManager.GetAllRoads();
+
+            Logger.Warning(data.roads.Count().ToString());
+
+            return data;
         }
 
         private static ServerGlobalData GetActionsCost(ServerGlobalData globalData)

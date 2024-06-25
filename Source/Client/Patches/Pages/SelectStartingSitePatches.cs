@@ -80,6 +80,7 @@ namespace GameClient
                 if (!ClientValues.needsToGenerateWorld) WorldGeneratorManager.SetPlanetFeatures();
                 if (!ClientValues.needsToGenerateWorld) WorldGeneratorManager.SetPlanetFactions();
                 PlanetManager.BuildPlanet();
+
                 ClientValues.ToggleReadyToPlay(true);
             }
         }

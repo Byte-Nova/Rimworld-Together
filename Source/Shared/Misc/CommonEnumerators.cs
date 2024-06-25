@@ -12,6 +12,8 @@
 
         public enum AidStepMode { Send, Receive, Accept, Reject }
 
+        public enum RoadStepMode { Add, Remove }
+
         public enum FactionManifestMode
         {
             Create,

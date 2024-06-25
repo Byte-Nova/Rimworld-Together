@@ -54,6 +54,8 @@ namespace GameClient
 
             SpawnPlayerSettlements();
             SpawnPlayerSites();
+
+            RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails);
         }
 
         //Spawns player settlements

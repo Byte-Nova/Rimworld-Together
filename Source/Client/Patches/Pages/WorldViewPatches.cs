@@ -466,13 +466,18 @@ namespace GameClient
                         {
                             ClientValues.chosenCaravan = __instance;
 
-                            List<int> neighbors = new List<int>();
-                            Find.WorldGrid.GetTileNeighbors(ClientValues.chosenCaravan.Tile, neighbors);
+                            List<int> neighborTiles = new List<int>();
+                            Find.WorldGrid.GetTileNeighbors(ClientValues.chosenCaravan.Tile, neighborTiles);
 
                             List<string> tileIDS = new List<string>();
-                            foreach (int tileID in neighbors) tileIDS.Add(tileID.ToString());
+                            foreach (int tileID in neighborTiles)
+                            {
+                                if (!RoadManagerHelper.CheckIfCanBuildRoadOnTile(tileID)) continue;
+                                else if (RoadManagerHelper.CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID)) continue;
+                                else tileIDS.Add(tileID.ToString());
+                            }
                             DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road builder", "Select a tile to connect with", 
-                                tileIDS.ToArray(), delegate { RoadManager.SendRoadRequest(); }));
+                                tileIDS.ToArray(), delegate { RoadManager.SendRoadAddRequest(); }));
                         }
                     };
 
