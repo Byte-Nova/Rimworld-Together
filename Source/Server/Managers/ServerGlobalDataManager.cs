@@ -13,19 +13,13 @@ namespace GameServer
 
             globalData = GetClientValues(client, globalData);
 
-            globalData = GetEventCosts(globalData);
-
-            globalData = GetSiteData(globalData);
-
-            globalData = GetServerDifficulty(globalData);
+            globalData = GetServerValues(globalData);
 
             globalData = GetServerSettlements(client, globalData);
 
             globalData = GetServerSites(client, globalData);
 
             globalData = GetServerRoads(globalData);
-
-            globalData = GetActionsCost(globalData);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), globalData);
             client.listener.EnqueuePacket(packet);
@@ -49,21 +43,13 @@ namespace GameServer
             return globalData;
         }
 
-        private static ServerGlobalData GetEventCosts(ServerGlobalData globalData)
+        private static ServerGlobalData GetServerValues(ServerGlobalData globalData)
         {
             globalData.eventValues = Master.eventValues;
-            return globalData;
-        }
-
-        private static ServerGlobalData GetSiteData(ServerGlobalData globalData)
-        {
             globalData.siteValues = Master.siteValues;
-            return globalData;
-        }
-
-        private static ServerGlobalData GetServerDifficulty(ServerGlobalData globalData)
-        {
             globalData.difficultyValues = Master.difficultyValues;
+            globalData.actionValues = Master.actionValues;
+            globalData.roadValues = Master.roadValues;
             return globalData;
         }
 
@@ -117,16 +103,7 @@ namespace GameServer
         private static ServerGlobalData GetServerRoads(ServerGlobalData data)
         {
             data.roads = RoadManager.GetAllRoads();
-
-            Logger.Warning(data.roads.Count().ToString());
-
             return data;
-        }
-
-        private static ServerGlobalData GetActionsCost(ServerGlobalData globalData)
-        {
-            globalData.actionValues = Master.actionValues;
-            return globalData;
         }
     }
 }

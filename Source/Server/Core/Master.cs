@@ -1,5 +1,8 @@
 ﻿using Shared;
+using System;
 using System.Globalization;
+using System.IO;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -47,6 +50,7 @@ namespace GameServer
         public static ServerConfigFile serverConfig;
         public static ActionValuesFile actionValues;
         public static DifficultyValuesFile difficultyValues;
+        public static RoadValuesFile roadValues;
 
         //Booleans
 
@@ -140,10 +144,11 @@ namespace GameServer
             Logger.Title($"Loading all necessary resources");
             Logger.Title($"----------------------------------------");
 
-            LoadSiteValues();
-            LoadEventValues();
-            LoadServerConfig();
-            LoadActionValues();
+            LoadValueFile(ServerLoadMode.Configs);
+            LoadValueFile(ServerLoadMode.Actions);
+            LoadValueFile(ServerLoadMode.Sites);
+            LoadValueFile(ServerLoadMode.Events);
+            LoadValueFile(ServerLoadMode.Roads);
             ModManager.LoadMods();
             WorldManager.LoadWorldFile();
             WhitelistManager.LoadServerWhitelist();
@@ -151,20 +156,6 @@ namespace GameServer
             MarketManager.LoadMarketStock();
 
             Logger.Title($"----------------------------------------");
-        }
-
-        private static void LoadServerConfig()
-        {
-            string path = Path.Combine(corePath, "ServerConfig.json");
-
-            if (File.Exists(path)) serverConfig = Serializer.SerializeFromFile<ServerConfigFile>(path);
-            else
-            {
-                serverConfig = new ServerConfigFile();
-                Serializer.SerializeToFile(path, serverConfig);
-            }
-
-            Logger.Warning("Loaded server configs");
         }
 
         public static void SaveServerConfig()
@@ -176,46 +167,64 @@ namespace GameServer
             Logger.Warning("Saved server Config");
         }
 
-        private static void LoadEventValues()
+        private static void LoadValueFile(ServerLoadMode loadMode)
         {
-            string path = Path.Combine(corePath, "EventValues.json");
+            string pathToLoad = "";
 
-            if (File.Exists(path)) eventValues = Serializer.SerializeFromFile<EventValuesFile>(path);
-            else
+            switch(loadMode)
             {
-                eventValues = new EventValuesFile();
-                Serializer.SerializeToFile(path, eventValues);
+                case ServerLoadMode.Configs:
+                    pathToLoad = Path.Combine(corePath, "ServerConfig.json");
+                    if (File.Exists(pathToLoad)) serverConfig = Serializer.SerializeFromFile<ServerConfigFile>(pathToLoad);
+                    else
+                    {
+                        serverConfig = new ServerConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, serverConfig);
+                    }
+                    break;
+
+                case ServerLoadMode.Actions:
+                    pathToLoad = Path.Combine(corePath, "ActionValues.json");
+                    if (File.Exists(pathToLoad)) actionValues = Serializer.SerializeFromFile<ActionValuesFile>(pathToLoad);
+                    else
+                    {
+                        actionValues = new ActionValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, actionValues);
+                    }
+                    break;
+
+                case ServerLoadMode.Sites:
+                    pathToLoad = Path.Combine(corePath, "SiteValues.json");
+                    if (File.Exists(pathToLoad)) siteValues = Serializer.SerializeFromFile<SiteValuesFile>(pathToLoad);
+                    else
+                    {
+                        siteValues = new SiteValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, siteValues);
+                    }
+                    break;
+
+                case ServerLoadMode.Events:
+                    pathToLoad = Path.Combine(corePath, "EventValues.json");
+                    if (File.Exists(pathToLoad)) eventValues = Serializer.SerializeFromFile<EventValuesFile>(pathToLoad);
+                    else
+                    {
+                        eventValues = new EventValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, eventValues);
+                    }
+                    break;
+
+                case ServerLoadMode.Roads:
+                    pathToLoad = Path.Combine(corePath, "RoadValues.json");
+                    if (File.Exists(pathToLoad)) roadValues = Serializer.SerializeFromFile<RoadValuesFile>(pathToLoad);
+                    else
+                    {
+                        roadValues = new RoadValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, roadValues);
+                    }
+                    break;
             }
 
-            Logger.Warning("Loaded event values");
-        }
-
-        private static void LoadSiteValues()
-        {
-            string path = Path.Combine(corePath, "SiteValues.json");
-
-            if (File.Exists(path)) siteValues = Serializer.SerializeFromFile<SiteValuesFile>(path);
-            else
-            {
-                siteValues = new SiteValuesFile();
-                Serializer.SerializeToFile(path, siteValues);
-            }
-
-            Logger.Warning("Loaded site values");
-        }
-
-        private static void LoadActionValues()
-        {
-            string path = Path.Combine(corePath, "ActionValues.json");
-
-            if (File.Exists(path)) actionValues = Serializer.SerializeFromFile<ActionValuesFile>(path);
-            else
-            {
-                actionValues = new ActionValuesFile();
-                Serializer.SerializeToFile(path, actionValues);
-            }
-
-            Logger.Warning("Loaded action values");
+            Logger.Warning($"Loaded '{pathToLoad}'");
         }
 
         public static void ChangeTitle()

@@ -150,7 +150,7 @@ namespace GameClient
             PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
             EventManager.SetEventPrices(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
-            RoadManagerHelper.SetTempRoadValues(serverGlobalData);
+            RoadManagerHelper.SetRoadValues(serverGlobalData);
             OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
         }
