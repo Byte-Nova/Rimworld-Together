@@ -340,7 +340,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;
@@ -395,7 +395,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;

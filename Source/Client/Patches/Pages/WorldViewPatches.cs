@@ -457,20 +457,7 @@ namespace GameClient
                         }
                     };
 
-                    Command_Action Command_BuildRoad = new Command_Action
-                    {
-                        defaultLabel = "Build Road",
-                        defaultDesc = "Build a road for everyone to use",
-                        icon = ContentFinder<Texture2D>.Get("Commands/Road"),
-                        action = delegate
-                        {
-                            ClientValues.chosenCaravan = __instance;
-                            RoadManagerHelper.DoRoadDialogs();
-                        }
-                    };
-
                     gizmoList.Add(Command_BuildSite);
-                    gizmoList.Add(Command_BuildRoad);
                     if (ServerValues.hasFaction) gizmoList.Add(Command_BuildFactionSite);
                 }
 
@@ -509,12 +496,27 @@ namespace GameClient
                         gizmoList.Add(command_AccessPersonalSite);
                         gizmoList.Add(command_DestroySite);
                     }
-
                     else if (presentSite.Faction == FactionValues.yourOnlineFaction)
                     {
                         gizmoList.Add(command_DestroySite);
                     }
                 }
+
+                Command_Action Command_BuildRoad = new Command_Action
+                {
+                    defaultLabel = "Road Builder",
+                    defaultDesc = "Build and destroy roads",
+                    icon = ContentFinder<Texture2D>.Get("Commands/Road"),
+                    action = delegate
+                    {
+                        ClientValues.chosenCaravan = __instance;
+                        List<int> neighborTiles = new List<int>();
+                        Find.WorldGrid.GetTileNeighbors(ClientValues.chosenCaravan.Tile, neighborTiles);
+                        RoadManagerHelper.ChooseRoadDialogs(neighborTiles.ToArray(), Find.WorldGrid[__instance.Tile].Roads != null);
+                    }
+                };
+
+                gizmoList.Add(Command_BuildRoad);
 
                 __result = gizmoList;
             }

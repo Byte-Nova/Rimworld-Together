@@ -29,7 +29,7 @@ namespace GameClient
 
                     SaveManager.ForceSave();
 
-                    if (ClientValues.needsToGenerateWorld)
+                    if (ClientValues.isGeneratingFreshWorld)
                     {
                         WorldGeneratorManager.SendWorldToServer();
                         ClientValues.ToggleGenerateWorld(false);

@@ -102,7 +102,7 @@ namespace GameServer
 
         private static ServerGlobalData GetServerRoads(ServerGlobalData data)
         {
-            data.roads = RoadManager.GetAllRoads();
+            if (Master.worldValues != null) data.roads = Master.worldValues.Roads;
             return data;
         }
     }

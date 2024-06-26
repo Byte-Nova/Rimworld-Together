@@ -23,7 +23,6 @@ namespace GameServer
         public static string sitesPath;
         public static string factionsPath;
         public static string settlementsPath;
-        public static string roadsPath;
 
         public static string backupsPath;
         public static string backupWorldPath;
@@ -95,7 +94,6 @@ namespace GameServer
             sitesPath = Path.Combine(mainPath, "Sites");
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
-            roadsPath = Path.Combine(mainPath, "Roads");
 
             backupsPath = Path.Combine(mainPath, "Backups");
             backupUsersPath = Path.Combine(backupsPath, "Users");
@@ -116,7 +114,6 @@ namespace GameServer
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
-            if (!Directory.Exists(roadsPath)) Directory.CreateDirectory(roadsPath);
 
             if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
             if (!Directory.Exists(backupUsersPath)) Directory.CreateDirectory(backupUsersPath);

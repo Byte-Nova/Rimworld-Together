@@ -23,12 +23,10 @@ namespace Shared
 
         public PlanetFeature[] Features;
 
-        //NPC factions
-
         public PlanetNPCFaction[] NPCFactions;
 
-        //NPC settlements
-
         public PlanetNPCSettlement[] NPCSettlements;
+
+        public RoadDetails[] Roads;
     }
 }

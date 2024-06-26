@@ -77,8 +77,8 @@ namespace GameClient
             {
                 if (Network.state == NetworkState.Disconnected) return;
 
-                if (!ClientValues.needsToGenerateWorld) WorldGeneratorManager.SetPlanetFeatures();
-                if (!ClientValues.needsToGenerateWorld) WorldGeneratorManager.SetPlanetFactions();
+                if (!ClientValues.isGeneratingFreshWorld) WorldGeneratorManager.SetPlanetFeatures();
+                if (!ClientValues.isGeneratingFreshWorld) WorldGeneratorManager.SetPlanetFactions();
                 PlanetManager.BuildPlanet();
 
                 ClientValues.ToggleReadyToPlay(true);

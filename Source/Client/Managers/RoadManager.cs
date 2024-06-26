@@ -7,14 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
+using Verse.AI;
 using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient
 {
     public static class RoadManager
     {
-        private static RoadDef baseRoadDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "DirtRoad");
-
         public static void ParsePacket(Packet packet)
         {
             RoadData data = (RoadData)Serializer.ConvertBytesToObject(packet.contents);
@@ -22,58 +21,67 @@ namespace GameClient
             switch (data.stepMode)
             {
                 case CommonEnumerators.RoadStepMode.Add:
-                    AddRoadSimple(data.details);
+                    AddRoadSimple(data.details.tileA, data.details.tileB, RoadManagerHelper.GetRoadDefFromDefName(data.details.roadDefName), true);
                     break;
 
                 case CommonEnumerators.RoadStepMode.Remove:
-                    RemoveRoad(data.details);
+                    RemoveRoadSimple(data.details.tileA, data.details.tileB, true);
                     break;
             }
         }
 
-        public static void SendRoadAddRequest(string selectedTile, int selectedIndex)
+        public static void SendRoadAddRequest(int tileAID, int tileBID, RoadDef roadDef)
         {
             RoadData data = new RoadData();
             data.stepMode = CommonEnumerators.RoadStepMode.Add;
 
             data.details = new RoadDetails();
-            data.details.tileA = ClientValues.chosenCaravan.Tile;
-            data.details.tileB = int.Parse(selectedTile);
-            data.details.roadDefName = RoadManagerHelper.GetAvailableRoadDefNames()[selectedIndex];
+            data.details.tileA = tileAID;
+            data.details.tileB = tileBID;
+            data.details.roadDefName = roadDef.defName;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RoadPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
-        public static void AddRoads(RoadDetails[] roads, bool forceRefresh = true)
+        public static void SendRoadRemoveRequest(int tileAID, int tileBID)
         {
-            foreach (RoadDef def in DefDatabase<RoadDef>.AllDefs.ToArray()) Logger.Warning(def.defName);
+            RoadData data = new RoadData();
+            data.stepMode = CommonEnumerators.RoadStepMode.Remove;
 
-            foreach (RoadDetails details in roads) AddRoadSimple(details, forceRefresh);
+            data.details = new RoadDetails();
+            data.details.tileA = tileAID;
+            data.details.tileB = tileBID;
+
+            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RoadPacket), data);
+            Network.listener.EnqueuePacket(packet);
+        }
+
+        public static void AddRoads(RoadDetails[] roads, bool forceRefresh)
+        {
+            foreach (RoadDetails details in roads)
+            {
+                AddRoadSimple(details.tileA, details.tileB, RoadManagerHelper.GetRoadDefFromDefName(details.roadDefName), forceRefresh);
+            }
 
             //If we don't want to force refresh we wait for all the roads and then refresh the layer
 
             if (!forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
         }
 
-        public static void AddRoadSimple(RoadDetails details, bool forceRefresh = true)
+        public static void AddRoadSimple(int tileAID, int tileBID, RoadDef roadDef, bool forceRefresh)
         {
-            if (!RoadManagerHelper.CheckIfCanBuildRoadOnTile(details.tileB))
+            if (!RoadManagerHelper.CheckIfCanBuildRoadOnTile(tileBID))
             {
-                Logger.Warning($"Tried building a road at '{details.tileB}' when it's not possible");
+                Logger.Warning($"Tried building a road at '{tileBID}' when it's not possible");
                 return;
             }
 
-            Tile sourceTile = Find.WorldGrid[details.tileA];
-            Tile targetTile = Find.WorldGrid[details.tileB];
+            Tile tileA = Find.WorldGrid[tileAID];
+            Tile tileB = Find.WorldGrid[tileBID];
 
-            RoadDef roadDef = DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == details.roadDefName);
-
-            AddRoadLink(sourceTile, details.tileB, roadDef);
-            AddRoadLink(targetTile, details.tileA, roadDef);
-
-            RecalculateRoads(details.tileA, roadDef);
-            RecalculateRoads(details.tileB, roadDef);
+            AddRoadLink(tileA, tileBID, roadDef);
+            AddRoadLink(tileB, tileAID, roadDef);
 
             if (forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
         }
@@ -98,43 +106,37 @@ namespace GameClient
             toAddTo.potentialRoads.Add(linkToAdd);
         }
 
-        private static void RecalculateRoads(int toCalculateID, RoadDef replacementDef)
+        public static void ClearAllRoads()
         {
-            Tile toCalculateTile = Find.WorldGrid[toCalculateID];
-
-            List<int> neighbors = new List<int>();
-            Find.WorldGrid.GetTileNeighbors(toCalculateID, neighbors);
-            foreach (int neighborID in neighbors)
+            foreach (Tile tile in Find.WorldGrid.tiles)
             {
-                Tile neighborTile = Find.WorldGrid[neighborID];
-
-                if (neighborTile.Roads == null) continue;
-                else
-                {
-                    AddRoadLink(toCalculateTile, neighborID, replacementDef);
-                    AddRoadLink(neighborTile, toCalculateID, replacementDef);
-                }
+                tile.Roads?.Clear();
+                tile.potentialRoads = null;
             }
+
+            RoadManagerHelper.ForceRoadLayerRefresh();
         }
 
-        private static void RemoveRoad(RoadDetails details, bool forceRefresh = true)
+        private static void RemoveRoadSimple(int tileAID, int tileBID, bool forceRefresh)
         {
-            Tile tileA = Find.WorldGrid[details.tileA];
-            Tile tileB = Find.WorldGrid[details.tileB];
+            Tile tileA = Find.WorldGrid[tileAID];
+            Tile tileB = Find.WorldGrid[tileBID];
 
             foreach (Tile.RoadLink roadLink in tileA.Roads.ToList())
             {
-                if (roadLink.neighbor == details.tileB)
+                if (roadLink.neighbor == tileBID)
                 {
                     tileA.Roads.Remove(roadLink);
+                    tileA.potentialRoads.Remove(roadLink);
                 }
             }
 
             foreach (Tile.RoadLink roadLink in tileB.Roads.ToList())
             {
-                if (roadLink.neighbor == details.tileA)
+                if (roadLink.neighbor == tileAID)
                 {
                     tileB.Roads.Remove(roadLink);
+                    tileB.potentialRoads.Remove(roadLink);
                 }
             }
 
@@ -145,8 +147,8 @@ namespace GameClient
     public static class RoadManagerHelper
     {
         public static RoadDetails[] tempRoadDetails;
-        public static RoadValuesFile roadValues;
         public static RoadDef[] allowedRoadDefs;
+        public static int[] allowedRoadCosts;
 
         public static RoadDef DirtPathDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "DirtPath");
         public static RoadDef DirtRoadDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "DirtRoad");
@@ -157,15 +159,22 @@ namespace GameClient
         public static void SetRoadValues(ServerGlobalData serverGlobalData) 
         {
             tempRoadDetails = serverGlobalData.roads;
-            roadValues = serverGlobalData.roadValues;
 
             List<RoadDef> allowedRoads = new List<RoadDef>();
-            if (roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
-            if (roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
-            if (roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
-            if (roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
-            if (roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
+            if (serverGlobalData.roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
+            if (serverGlobalData.roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
+            if (serverGlobalData.roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
+            if (serverGlobalData.roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
+            if (serverGlobalData.roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
             allowedRoadDefs = allowedRoads.ToArray();
+
+            List<int> allowedCosts = new List<int>();
+            if (serverGlobalData.roadValues.AllowDirtPath) allowedCosts.Add(serverGlobalData.roadValues.DirtPathCost);
+            if (serverGlobalData.roadValues.AllowDirtRoad) allowedCosts.Add(serverGlobalData.roadValues.DirtRoadCost);
+            if (serverGlobalData.roadValues.AllowStoneRoad) allowedCosts.Add(serverGlobalData.roadValues.StoneRoadCost);
+            if (serverGlobalData.roadValues.AllowAsphaltPath) allowedCosts.Add(serverGlobalData.roadValues.AsphaltPathCost);
+            if (serverGlobalData.roadValues.AllowAsphaltHighway) allowedCosts.Add(serverGlobalData.roadValues.AsphaltHighwayCost);
+            allowedRoadCosts = allowedCosts.ToArray();
         }
 
         public static bool CheckIfTwoTilesAreConnected(int tileAID, int tileBID)
@@ -192,37 +201,45 @@ namespace GameClient
             else return true;
         }
 
-        public static string[] GetAvailableRoadNames()
+        public static string[] GetAvailableRoadLabels(bool includePrices)
         {
-            List<string> allowedRoadNames = new List<string>();
-            foreach(RoadDef def in allowedRoadDefs) allowedRoadNames.Add(def.LabelCap);
-            return allowedRoadNames.ToArray();
+            List<string> roadLabels = new List<string>();
+            for(int i = 0; i < allowedRoadDefs.Length; i++)
+            {
+                RoadDef def = allowedRoadDefs[i];
+
+                if (includePrices) roadLabels.Add($"{def.LabelCap} > {allowedRoadCosts[i]}$/u");
+                else roadLabels.Add(def.LabelCap);
+            }
+
+            return roadLabels.ToArray();
         }
 
-        public static string[] GetAvailableRoadDefNames()
+        public static RoadDef GetRoadDefFromDefName(string defName)
         {
-            List<string> allowedRoadDefNames = new List<string>();
-            foreach (RoadDef def in allowedRoadDefs) allowedRoadDefNames.Add(def.defName);
-            return allowedRoadDefNames.ToArray();
+            return DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == defName);
         }
 
-        public static void ForceRoadLayerRefresh()
+        public static void ChooseRoadDialogs(int[] neighborTiles, bool hasRoadOnTile)
         {
-            Find.World.renderer.SetDirty<WorldLayer_Roads>();
-            Find.World.renderer.RegenerateLayersIfDirtyInLongEvent();
+            if (hasRoadOnTile)
+            {
+                RT_Dialog_2Button d1 = new RT_Dialog_2Button("Road manager", "Select the action you want to do",
+                    "Build", "Destroy", delegate { ShowRoadBuildDialog(neighborTiles); }, delegate { ShowRoadDestroyDialog(neighborTiles); }, null);
+
+                DialogManager.PushNewDialog(d1);
+            }
+            else ShowRoadBuildDialog(neighborTiles);
         }
 
-        public static void DoRoadDialogs()
+        public static void ShowRoadBuildDialog(int[] neighborTiles)
         {
-            List<int> neighborTiles = new List<int>();
-            Find.WorldGrid.GetTileNeighbors(ClientValues.chosenCaravan.Tile, neighborTiles);
-
-            List<string> tileIDS = new List<string>();
+            List<string> selectableTiles = new List<string>();
             foreach (int tileID in neighborTiles)
             {
                 if (!CheckIfCanBuildRoadOnTile(tileID)) continue;
                 else if (CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID)) continue;
-                else tileIDS.Add(tileID.ToString());
+                else selectableTiles.Add(tileID.ToString());
             }
 
             Action r1 = delegate
@@ -230,18 +247,52 @@ namespace GameClient
                 string selectedTile = DialogManager.dialogButtonListingResultString;
 
                 RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Road builder", "Select road type to use",
-                    GetAvailableRoadNames(),
+                    GetAvailableRoadLabels(true),
                     delegate
                     {
                         int selectedIndex = DialogManager.dialgButtonListingResultInt;
-                        RoadManager.SendRoadAddRequest(selectedTile, selectedIndex);
+
+                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, allowedRoadCosts[selectedIndex]))
+                        {
+                            RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, allowedRoadCosts[selectedIndex], ClientValues.chosenCaravan);
+                            RoadManager.SendRoadAddRequest(ClientValues.chosenCaravan.Tile, int.Parse(selectedTile), allowedRoadDefs[selectedIndex]);
+                            SaveManager.ForceSave();
+                        }
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
                     });
 
                 DialogManager.PushNewDialog(d1);
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road builder", "Select a tile to connect with",
-                tileIDS.ToArray(), r1));
+                selectableTiles.ToArray(), r1));
+        }
+
+        public static void ShowRoadDestroyDialog(int[] neighborTiles)
+        {
+            List<string> selectableTiles = new List<string>();
+            foreach (int tileID in neighborTiles)
+            {
+                if (CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID))
+                {
+                    selectableTiles.Add(tileID.ToString());
+                }
+            }
+
+            Action r1 = delegate
+            {
+                string selectedTile = DialogManager.dialogButtonListingResultString;
+                RoadManager.SendRoadRemoveRequest(ClientValues.chosenCaravan.Tile, int.Parse(selectedTile));
+            };
+
+            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road destroyer", "Select a tile to disconnect from",
+                selectableTiles.ToArray(), r1));
+        }
+
+        public static void ForceRoadLayerRefresh()
+        {
+            Find.World.renderer.SetDirty<WorldLayer_Roads>();
+            Find.World.renderer.RegenerateLayersIfDirtyInLongEvent();
         }
     }
 }

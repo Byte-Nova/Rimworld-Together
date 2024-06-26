@@ -9,7 +9,7 @@ namespace GameClient
 {
     public static class ClientValues
     {
-        public static bool needsToGenerateWorld;
+        public static bool isGeneratingFreshWorld;
 
         public static bool isReadyToPlay;
 
@@ -60,7 +60,7 @@ namespace GameClient
             else Prefs.DevMode = false;
         }
 
-        public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
+        public static void ToggleGenerateWorld(bool mode) { isGeneratingFreshWorld = mode; }
     
         public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None) 
         { 
