@@ -65,7 +65,7 @@ namespace GameClient
                 AddRoadSimple(details.tileA, details.tileB, RoadManagerHelper.GetRoadDefFromDefName(details.roadDefName), forceRefresh);
             }
 
-            //If we don't want to force refresh we wait for all the roads and then refresh the layer
+            //If we don't want to force refresh we wait for all and then refresh the layer
 
             if (!forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
         }
@@ -308,6 +308,38 @@ namespace GameClient
 
             DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road destroyer", "Select a tile to disconnect from",
                 selectableTilesLabels.ToArray(), r1));
+        }
+
+        public static RoadDetails[] GetPlanetRoads()
+        {
+            List<RoadDetails> toGet = new List<RoadDetails>();
+            foreach (Tile tile in Find.WorldGrid.tiles)
+            {
+                if (tile.Roads != null)
+                {
+                    foreach (Tile.RoadLink link in tile.Roads)
+                    {
+                        RoadDetails details = new RoadDetails();
+                        details.tileA = Find.WorldGrid.tiles.IndexOf(tile);
+                        details.tileB = link.neighbor;
+                        details.roadDefName = link.road.defName;
+
+                        if (!CheckIfExists(details.tileA, details.tileB)) toGet.Add(details);
+                    }
+                }
+            }
+            return toGet.ToArray();
+
+            bool CheckIfExists(int tileA, int tileB)
+            {
+                foreach (RoadDetails details in toGet)
+                {
+                    if (details.tileA == tileA && details.tileB == tileB) return true;
+                    else if (details.tileA == tileB && details.tileB == tileA) return true;
+                }
+
+                return false;
+            }
         }
 
         public static void ForceRoadLayerRefresh()
