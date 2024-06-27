@@ -68,7 +68,18 @@ namespace GameClient
             Current.CreatingWorld.info.pollution = cachedWorldValues.Pollution;
 
             WorldGenStepDef[] worldGenSteps = GenStepsInOrder.ToArray();
-            for (int i = 0; i < worldGenSteps.Count(); i++) worldGenSteps[i].worldGenStep.GenerateFresh(cachedWorldValues.SeedString);
+            for (int i = 0; i < worldGenSteps.Count(); i++)
+            {
+                WorldGenStep toGenerate = worldGenSteps[i].worldGenStep;
+                if (toGenerate is WorldGenStep_Roads || toGenerate is WorldGenStep_AncientRoads)
+                {
+                    //If not creating a world, we skip road generation
+
+                    if (!ClientValues.isGeneratingFreshWorld) continue;
+                    else toGenerate.GenerateFresh(cachedWorldValues.SeedString);
+                }
+                else toGenerate.GenerateFresh(cachedWorldValues.SeedString);
+            }
 
             Current.CreatingWorld.grid.StandardizeTileData();
             Current.CreatingWorld.FinalizeInit();
@@ -170,6 +181,7 @@ namespace GameClient
             WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
             WorldGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
             WorldGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
+            WorldGeneratorManager.cachedWorldValues.Roads = GetPlanetRoads();
             return WorldGeneratorManager.cachedWorldValues;
         }
 
@@ -271,6 +283,38 @@ namespace GameClient
             }
 
             return planetFeatures.ToArray();
+        }
+
+        public static RoadDetails[] GetPlanetRoads()
+        {
+            List<RoadDetails> toGet = new List<RoadDetails>();
+            foreach(Tile tile in Find.WorldGrid.tiles)
+            {
+                if (tile.Roads != null)
+                {
+                    foreach(Tile.RoadLink link in tile.Roads)
+                    {
+                        RoadDetails details = new RoadDetails();
+                        details.tileA = Find.WorldGrid.tiles.IndexOf(tile);
+                        details.tileB = link.neighbor;
+                        details.roadDefName = link.road.defName;
+
+                        if (!CheckIfExists(details.tileA, details.tileB)) toGet.Add(details);
+                    }
+                }
+            }
+            return toGet.ToArray();
+
+            bool CheckIfExists(int tileA, int tileB)
+            {
+                foreach(RoadDetails details in toGet)
+                {
+                    if (details.tileA == tileA && details.tileB == tileB) return true;
+                    else if (details.tileA == tileB && details.tileB == tileA) return true;
+                }
+
+                return false;
+            }
         }
     }
 }

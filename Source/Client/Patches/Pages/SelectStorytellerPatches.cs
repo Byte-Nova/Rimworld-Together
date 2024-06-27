@@ -34,7 +34,7 @@ namespace GameClient
         public static void DoPost(Rect rect)
         {
             if (Network.state == NetworkState.Disconnected) return;
-            if (ClientValues.needsToGenerateWorld) return;
+            if (ClientValues.isGeneratingFreshWorld) return;
 
             Text.Font = GameFont.Small;
             Vector2 buttonSize = new Vector2(150f, 38f);

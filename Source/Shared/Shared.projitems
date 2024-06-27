@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\EventValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\OnlineSiteFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\OnlineSettlementFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
@@ -22,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OnlineActivityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RoadData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\CreationOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DamageOrder.cs" />
@@ -41,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapFileData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\TimeSpeedOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\WeatherOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Roads\RoadDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCFaction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />

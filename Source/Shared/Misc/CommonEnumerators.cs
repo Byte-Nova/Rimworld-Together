@@ -2,6 +2,8 @@
 {
     public class CommonEnumerators
     {
+        public enum ServerLoadMode { Configs, Actions, Sites, Events, Roads }
+
         public enum LogMode { Message, Warning, Error, Title }
 
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
@@ -11,6 +13,8 @@
         public enum MarketStepMode { Add, Request, Reload }
 
         public enum AidStepMode { Send, Receive, Accept, Reject }
+
+        public enum RoadStepMode { Add, Remove }
 
         public enum FactionManifestMode
         {

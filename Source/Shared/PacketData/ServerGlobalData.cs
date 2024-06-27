@@ -14,9 +14,12 @@ namespace Shared
         public SiteValuesFile siteValues;
         public EventValuesFile eventValues;
         public ActionValuesFile actionValues;
+        public RoadValuesFile roadValues;
         public DifficultyValuesFile difficultyValues;
+
         public PlanetNPCSettlement[] npcSettlements;
         public OnlineSettlementFile[] playerSettlements;
         public OnlineSiteFile[] playerSites;
+        public RoadDetails[] roads;
     }
 }

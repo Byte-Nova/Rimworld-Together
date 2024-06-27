@@ -820,8 +820,8 @@ namespace GameServer
                 if (Directory.Exists(Master.usersPath)) Directory.Move(Master.usersPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Users");
 
                 Master.SetPaths();
-
                 Logger.Warning("World has been successfully reset and archived");
+                foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.disconnectFlag = true;
         }
 
         private static void QuitCommandAction()

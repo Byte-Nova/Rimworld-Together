@@ -16,7 +16,7 @@ namespace GameServer
             switch (worldData.worldStepMode)
             {
                 case WorldStepMode.Required:
-                    SaveWorldPrefab(client, worldData);
+                    SaveWorldValues(worldData.worldValuesFile);
                     break;
 
                 case WorldStepMode.Existing:
@@ -27,11 +27,11 @@ namespace GameServer
 
         public static bool CheckIfWorldExists() { return File.Exists(worldFilePath); }
 
-        public static void SaveWorldPrefab(ServerClient client, WorldData worldData)
+        public static void SaveWorldValues(WorldValuesFile values)
         {
-            Master.worldValues = worldData.worldValuesFile;
+            Master.worldValues = values;
+
             Serializer.SerializeToFile(worldFilePath, Master.worldValues);
-            Logger.Title($"[Save world] > {client.userFile.Username}");
         }
 
         public static void RequireWorldFile(ServerClient client)

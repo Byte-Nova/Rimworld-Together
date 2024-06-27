@@ -23,7 +23,6 @@ namespace GameClient
         public static string loginDataPath;
         public static string clientPreferencesPath;
         public static string savesFolderPath;
-        public static string worldSavesFolderPath;
 
         public static void PrepareCulture()
         {
@@ -38,14 +37,12 @@ namespace GameClient
             mainPath = GenFilePaths.SaveDataFolderPath;
             modFolderPath = Path.Combine(mainPath, "Rimworld Together");
 
-            worldSavesFolderPath = Path.Combine(modFolderPath, "Saved Server Worlds");
             connectionDataPath = Path.Combine(modFolderPath, "ConnectionData.json");
             clientPreferencesPath = Path.Combine(modFolderPath, "Preferences.json");
             loginDataPath = Path.Combine(modFolderPath, "LoginData.json");
             savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
             if (!Directory.Exists(modFolderPath)) Directory.CreateDirectory(modFolderPath);
-            if (!Directory.Exists(worldSavesFolderPath)) Directory.CreateDirectory(worldSavesFolderPath);
         }
 
         public static void CreateUnityDispatcher()

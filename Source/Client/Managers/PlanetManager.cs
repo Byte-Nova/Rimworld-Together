@@ -43,17 +43,21 @@ namespace GameClient
             PlanetManagerHelper.GetMapGenerators();
 
             //This step gets skiped if it's the first time building the planet
-            if (!ClientValues.needsToGenerateWorld)
+            if (ClientValues.isGeneratingFreshWorld) return;
+            else
             {
                 RemoveNPCSettlements();
                 SpawnNPCSettlements();
+
+                RemoveOldSettlements();
+                SpawnPlayerSettlements();
+
+                RemoveOldSites();
+                SpawnPlayerSites();
+
+                RoadManager.ClearAllRoads();
+                RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails, false);
             }
-
-            RemoveOldSettlements();
-            RemoveOldSites();
-
-            SpawnPlayerSettlements();
-            SpawnPlayerSites();
         }
 
         //Spawns player settlements

@@ -13,17 +13,13 @@ namespace GameServer
 
             globalData = GetClientValues(client, globalData);
 
-            globalData = GetEventCosts(globalData);
-
-            globalData = GetSiteData(globalData);
-
-            globalData = GetServerDifficulty(globalData);
+            globalData = GetServerValues(globalData);
 
             globalData = GetServerSettlements(client, globalData);
 
             globalData = GetServerSites(client, globalData);
 
-            globalData = GetActionsCost(globalData);
+            globalData = GetServerRoads(globalData);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), globalData);
             client.listener.EnqueuePacket(packet);
@@ -47,21 +43,13 @@ namespace GameServer
             return globalData;
         }
 
-        private static ServerGlobalData GetEventCosts(ServerGlobalData globalData)
+        private static ServerGlobalData GetServerValues(ServerGlobalData globalData)
         {
             globalData.eventValues = Master.eventValues;
-            return globalData;
-        }
-
-        private static ServerGlobalData GetSiteData(ServerGlobalData globalData)
-        {
             globalData.siteValues = Master.siteValues;
-            return globalData;
-        }
-
-        private static ServerGlobalData GetServerDifficulty(ServerGlobalData globalData)
-        {
             globalData.difficultyValues = Master.difficultyValues;
+            globalData.actionValues = Master.actionValues;
+            globalData.roadValues = Master.roadValues;
             return globalData;
         }
 
@@ -112,10 +100,10 @@ namespace GameServer
             return globalData;
         }
 
-        private static ServerGlobalData GetActionsCost(ServerGlobalData globalData)
+        private static ServerGlobalData GetServerRoads(ServerGlobalData data)
         {
-            globalData.actionValues = Master.actionValues;
-            return globalData;
+            if (Master.worldValues != null) data.roads = Master.worldValues.Roads;
+            return data;
         }
     }
 }
