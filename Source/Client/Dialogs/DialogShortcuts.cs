@@ -70,7 +70,7 @@ namespace GameClient
             string[] answerSplit = null;
             if (throughBrowser)
             {
-                answerSplit = ClientValues.serverBrowserContainer[DialogManager.dialgButtonListingResultInt].Split('|');
+                answerSplit = ClientValues.serverBrowserContainer[DialogManager.dialogButtonListingResultInt].Split('|');
 
                 if (string.IsNullOrWhiteSpace(answerSplit[0])) isInvalid = true;
                 if (string.IsNullOrWhiteSpace(answerSplit[1])) isInvalid = true;

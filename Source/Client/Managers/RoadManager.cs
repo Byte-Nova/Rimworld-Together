@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 using static UnityEngine.GraphicsBuffer;
@@ -128,6 +129,9 @@ namespace GameClient
                 {
                     tileA.Roads.Remove(roadLink);
                     tileA.potentialRoads.Remove(roadLink);
+
+                    //We need this to let the game know it shouldn't try to draw anything in here if there's no roads
+                    if (tileA.potentialRoads.Count() == 0) tileA.potentialRoads = null;
                 }
             }
 
@@ -137,6 +141,9 @@ namespace GameClient
                 {
                     tileB.Roads.Remove(roadLink);
                     tileB.potentialRoads.Remove(roadLink);
+
+                    //We need this to let the game know it shouldn't try to draw anything in here if there's no roads
+                    if (tileB.potentialRoads.Count() == 0) tileB.potentialRoads = null;
                 }
             }
 
@@ -234,28 +241,36 @@ namespace GameClient
 
         public static void ShowRoadBuildDialog(int[] neighborTiles)
         {
-            List<string> selectableTiles = new List<string>();
+            List<string> selectableTileLabels = new List<string>();
+            List<int> selectableTiles = new List<int>();
+
             foreach (int tileID in neighborTiles)
             {
                 if (!CheckIfCanBuildRoadOnTile(tileID)) continue;
                 else if (CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID)) continue;
-                else selectableTiles.Add(tileID.ToString());
+                else
+                {
+                    Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
+                    string toDisplay = $"Tile at {vector.y.ToStringLatitude()} - {vector.x.ToStringLongitude()}";
+                    selectableTileLabels.Add(toDisplay);
+                    selectableTiles.Add(tileID);
+                }
             }
 
             Action r1 = delegate
             {
-                string selectedTile = DialogManager.dialogButtonListingResultString;
+                int selectedTile = selectableTiles[DialogManager.dialogButtonListingResultInt];
 
                 RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Road builder", "Select road type to use",
                     GetAvailableRoadLabels(true),
                     delegate
                     {
-                        int selectedIndex = DialogManager.dialgButtonListingResultInt;
+                        int selectedIndex = DialogManager.dialogButtonListingResultInt;
 
                         if (RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, allowedRoadCosts[selectedIndex]))
                         {
                             RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, allowedRoadCosts[selectedIndex], ClientValues.chosenCaravan);
-                            RoadManager.SendRoadAddRequest(ClientValues.chosenCaravan.Tile, int.Parse(selectedTile), allowedRoadDefs[selectedIndex]);
+                            RoadManager.SendRoadAddRequest(ClientValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             SaveManager.ForceSave();
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
@@ -265,28 +280,34 @@ namespace GameClient
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road builder", "Select a tile to connect with",
-                selectableTiles.ToArray(), r1));
+                selectableTileLabels.ToArray(), r1));
         }
 
         public static void ShowRoadDestroyDialog(int[] neighborTiles)
         {
-            List<string> selectableTiles = new List<string>();
+            List<string> selectableTilesLabels = new List<string>();
+            List<int> selectableTiles = new List<int>();
+
             foreach (int tileID in neighborTiles)
             {
                 if (CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID))
                 {
-                    selectableTiles.Add(tileID.ToString());
+                    Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
+                    string toDisplay = $"Tile at {vector.y.ToStringLatitude()} - {vector.x.ToStringLongitude()}";
+                    selectableTilesLabels.Add(toDisplay);
+                    selectableTiles.Add(tileID);
                 }
             }
 
             Action r1 = delegate
             {
-                string selectedTile = DialogManager.dialogButtonListingResultString;
-                RoadManager.SendRoadRemoveRequest(ClientValues.chosenCaravan.Tile, int.Parse(selectedTile));
+                int selectedTile = selectableTiles[DialogManager.dialogButtonListingResultInt];
+
+                RoadManager.SendRoadRemoveRequest(ClientValues.chosenCaravan.Tile, selectedTile);
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road destroyer", "Select a tile to disconnect from",
-                selectableTiles.ToArray(), r1));
+                selectableTilesLabels.ToArray(), r1));
         }
 
         public static void ForceRoadLayerRefresh()

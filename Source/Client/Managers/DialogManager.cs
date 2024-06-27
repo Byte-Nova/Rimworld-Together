@@ -35,7 +35,7 @@ namespace GameClient
         public static RT_Dialog_Listing dialogListing;
 
         public static RT_Dialog_ListingWithButton dialogButtonListing;
-        public static int dialgButtonListingResultInt;
+        public static int dialogButtonListingResultInt;
         public static string dialogButtonListingResultString;
 
         public static RT_Dialog_MarketListing dialogMarketListing;
