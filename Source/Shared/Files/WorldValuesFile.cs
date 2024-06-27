@@ -28,5 +28,7 @@ namespace Shared
         public PlanetNPCSettlement[] NPCSettlements;
 
         public RoadDetails[] Roads;
+
+        public RiverDetails[] Rivers;
     }
 }

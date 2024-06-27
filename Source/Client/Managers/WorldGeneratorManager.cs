@@ -21,6 +21,13 @@ namespace GameClient
                                                                       orderby x.order, x.index
                                                                       select x;
 
+        private static readonly List<Type> stepsToIgnoreIfNotFresh = new List<Type>()
+        {
+            typeof(WorldGenStep_Roads),
+            typeof(WorldGenStep_AncientRoads),
+            typeof(WorldGenStep_Rivers),
+        };
+
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
             cachedWorldValues = new WorldValuesFile();
@@ -71,9 +78,9 @@ namespace GameClient
             for (int i = 0; i < worldGenSteps.Count(); i++)
             {
                 WorldGenStep toGenerate = worldGenSteps[i].worldGenStep;
-                if (toGenerate is WorldGenStep_Roads || toGenerate is WorldGenStep_AncientRoads)
+                if (stepsToIgnoreIfNotFresh.Contains(toGenerate.GetType()))
                 {
-                    //If not creating a world, we skip road generation
+                    //If not creating a world, we skip gen step
 
                     if (!ClientValues.isGeneratingFreshWorld) continue;
                     else toGenerate.GenerateFresh(cachedWorldValues.SeedString);
@@ -181,7 +188,8 @@ namespace GameClient
             WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
             WorldGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
             WorldGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
-            WorldGeneratorManager.cachedWorldValues.Roads = GetPlanetRoads();
+            WorldGeneratorManager.cachedWorldValues.Roads = RoadManagerHelper.GetPlanetRoads();
+            WorldGeneratorManager.cachedWorldValues.Rivers = RiverManagerHelper.GetPlanetRivers();
             return WorldGeneratorManager.cachedWorldValues;
         }
 
@@ -283,38 +291,6 @@ namespace GameClient
             }
 
             return planetFeatures.ToArray();
-        }
-
-        public static RoadDetails[] GetPlanetRoads()
-        {
-            List<RoadDetails> toGet = new List<RoadDetails>();
-            foreach(Tile tile in Find.WorldGrid.tiles)
-            {
-                if (tile.Roads != null)
-                {
-                    foreach(Tile.RoadLink link in tile.Roads)
-                    {
-                        RoadDetails details = new RoadDetails();
-                        details.tileA = Find.WorldGrid.tiles.IndexOf(tile);
-                        details.tileB = link.neighbor;
-                        details.roadDefName = link.road.defName;
-
-                        if (!CheckIfExists(details.tileA, details.tileB)) toGet.Add(details);
-                    }
-                }
-            }
-            return toGet.ToArray();
-
-            bool CheckIfExists(int tileA, int tileB)
-            {
-                foreach(RoadDetails details in toGet)
-                {
-                    if (details.tileA == tileA && details.tileB == tileB) return true;
-                    else if (details.tileA == tileB && details.tileB == tileA) return true;
-                }
-
-                return false;
-            }
         }
     }
 }

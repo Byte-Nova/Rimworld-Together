@@ -79,6 +79,7 @@ namespace GameClient
 
                 if (!ClientValues.isGeneratingFreshWorld) WorldGeneratorManager.SetPlanetFeatures();
                 if (!ClientValues.isGeneratingFreshWorld) WorldGeneratorManager.SetPlanetFactions();
+                if (!ClientValues.isGeneratingFreshWorld) RiverManager.SetPlanetRivers();
                 PlanetManager.BuildPlanet();
 
                 ClientValues.ToggleReadyToPlay(true);
