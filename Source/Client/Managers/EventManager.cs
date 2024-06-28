@@ -25,7 +25,7 @@ namespace GameClient
 
         public static void ParseEventPacket(Packet packet)
         {
-            EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
+            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
             switch (eventData.eventStepMode)
             {

@@ -1,10 +1,4 @@
 ﻿using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer
 {
@@ -14,7 +8,7 @@ namespace GameServer
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            AidData data = (AidData)Serializer.ConvertBytesToObject(packet.contents);
+            AidData data = Serializer.ConvertBytesToObject<AidData>(packet.contents);
 
             switch (data.stepMode)
             {

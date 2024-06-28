@@ -15,7 +15,7 @@ namespace GameServer
             string baseClientSavePath = Path.Combine(Master.savesPath, client.userFile.Username + fileExtension);
             string tempClientSavePath = Path.Combine(Master.savesPath, client.userFile.Username + tempFileExtension);
 
-            FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
+            FileTransferData fileTransferData = Serializer.ConvertBytesToObject<FileTransferData>(packet.contents);
 
             //if this is the first packet
             if (client.listener.downloadManager == null)

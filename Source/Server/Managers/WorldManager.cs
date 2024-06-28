@@ -11,7 +11,7 @@ namespace GameServer
 
         public static void ParseWorldPacket(ServerClient client, Packet packet)
         {
-            WorldData worldData = (WorldData)Serializer.ConvertBytesToObject(packet.contents);
+            WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 
             switch (worldData.worldStepMode)
             {

@@ -11,7 +11,7 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            LoginData loginData = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
 
             switch(loginData.tryResponse)
             {

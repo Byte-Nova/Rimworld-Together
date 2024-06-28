@@ -19,7 +19,7 @@ namespace GameClient
 
         public static void ParseTransferPacket(Packet packet)
         {
-            TransferData transferData = (TransferData)Serializer.ConvertBytesToObject(packet.contents);
+            TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
             switch (transferData.transferStepMode)
             {
@@ -144,7 +144,7 @@ namespace GameClient
             {
                 MarketData marketData = new MarketData();
                 marketData.marketStepMode = MarketStepMode.Add;
-                marketData.transferThingBytes = ClientValues.outgoingManifest.itemDatas;
+                marketData.transferThings = ClientValues.outgoingManifest.itemDatas;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
                 Network.listener.EnqueuePacket(packet);
@@ -383,8 +383,7 @@ namespace GameClient
             {
                 Pawn pawn = thing as Pawn;
 
-                ClientValues.outgoingManifest.humanDatas.Add(Serializer.ConvertObjectToBytes
-                    (HumanScribeManager.HumanToString(pawn, false)));
+                ClientValues.outgoingManifest.humanDatas.Add(HumanScribeManager.HumanToString(pawn, false));
 
                 RimworldManager.RemovePawnFromGame(pawn);
             }
@@ -393,17 +392,12 @@ namespace GameClient
             {
                 Pawn pawn = thing as Pawn;
 
-                ClientValues.outgoingManifest.animalDatas.Add(Serializer.ConvertObjectToBytes
-                    (AnimalScribeManager.AnimalToString(pawn)));
+                ClientValues.outgoingManifest.animalDatas.Add(AnimalScribeManager.AnimalToString(pawn));
 
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
-            else
-            {
-                ClientValues.outgoingManifest.itemDatas.Add(Serializer.ConvertObjectToBytes
-                    (ThingScribeManager.ItemToString(thing, thingCount)));
-            }
+            else ClientValues.outgoingManifest.itemDatas.Add(ThingScribeManager.ItemToString(thing, thingCount));
         }
 
         //Gets the transfer location in the desired map

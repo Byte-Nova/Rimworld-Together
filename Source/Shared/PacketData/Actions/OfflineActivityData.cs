@@ -8,6 +8,6 @@ namespace Shared
     {
         public OfflineActivityStepMode activityStepMode;
         public int targetTile;
-        public byte[] mapData;
+        public MapData mapData;
     }
 }

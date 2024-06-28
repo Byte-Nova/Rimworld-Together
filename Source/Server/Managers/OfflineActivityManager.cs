@@ -1,9 +1,4 @@
 ﻿using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -14,7 +9,7 @@ namespace GameServer
 
         public static void ParseOfflineActivityPacket(ServerClient client, Packet packet)
         {
-            OfflineActivityData data = (OfflineActivityData)Serializer.ConvertBytesToObject(packet.contents);
+            OfflineActivityData data = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
             switch (data.activityStepMode)
             {
@@ -63,9 +58,7 @@ namespace GameServer
                     {
                         userFile.UpdateActivityTime();
 
-                        MapFileData mapData = MapManager.GetUserMapFromTile(data.targetTile);
-                        data.mapData = Serializer.ConvertObjectToBytes(mapData);
-
+                        data.mapData = MapManager.GetUserMapFromTile(data.targetTile).mapData;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineActivityPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }

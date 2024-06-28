@@ -2,11 +2,7 @@
 using RimWorld;
 using RimWorld.Planet;
 using System;
-using System.Linq;
 using Verse;
-using Verse.AI;
-using Verse.Noise;
-using static Shared.CommonEnumerators;
 
 namespace GameClient
 {

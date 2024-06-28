@@ -6,7 +6,7 @@ namespace GameServer
     {
         public static void ParseDifficultyPacket(ServerClient client, Packet packet)
         {
-            DifficultyData difficultyData = (DifficultyData)Serializer.ConvertBytesToObject(packet.contents);
+            DifficultyData difficultyData = Serializer.ConvertBytesToObject<DifficultyData>(packet.contents);
             SetCustomDifficulty(client, difficultyData);
         }
 

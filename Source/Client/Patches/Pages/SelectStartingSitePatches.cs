@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Verse;

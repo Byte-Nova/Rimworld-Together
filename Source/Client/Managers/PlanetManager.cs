@@ -21,7 +21,7 @@ namespace GameClient
 
         public static void ParseSettlementPacket(Packet packet)
         {
-            SettlementData settlementData = (SettlementData)Serializer.ConvertBytesToObject(packet.contents);
+            SettlementData settlementData = Serializer.ConvertBytesToObject<SettlementData>(packet.contents);
 
             switch (settlementData.settlementStepMode)
             {

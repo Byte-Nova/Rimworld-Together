@@ -10,7 +10,7 @@ namespace GameServer
 
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
-            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(packet.contents);
+            MapFileData mapFileData = Serializer.ConvertBytesToObject<MapFileData>(packet.contents);
             mapFileData.mapOwner = client.userFile.Username;
 
             byte[] compressedMapBytes = Serializer.ConvertObjectToBytes(mapFileData);
@@ -38,7 +38,7 @@ namespace GameServer
                 if (!map.EndsWith(fileExtension)) continue;
                 byte[] decompressedBytes = File.ReadAllBytes(map);
 
-                MapFileData newMap = (MapFileData)Serializer.ConvertBytesToObject(decompressedBytes);
+                MapFileData newMap = Serializer.ConvertBytesToObject<MapFileData>(decompressedBytes);
                 mapDatas.Add(newMap);
             }
 

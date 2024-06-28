@@ -1,10 +1,6 @@
 ﻿using RimWorld;
 using Shared;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace GameClient
@@ -13,7 +9,7 @@ namespace GameClient
     {
         public static void ParsePacket(Packet packet)
         {
-            AidData data = (AidData)Serializer.ConvertBytesToObject(packet.contents);
+            AidData data = Serializer.ConvertBytesToObject<AidData>(packet.contents);
 
             switch (data.stepMode)
             {
@@ -51,7 +47,7 @@ namespace GameClient
             aidData.toTile = ClientValues.chosenSettlement.Tile;
 
             Pawn toGet = RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResultInt];
-            aidData.humanData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(toGet));
+            aidData.humanData = HumanScribeManager.HumanToString(toGet);
             RimworldManager.RemovePawnFromGame(toGet);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), aidData);
@@ -76,9 +72,7 @@ namespace GameClient
             DialogManager.PopWaitDialog();
 
             Map map = Find.World.worldObjects.SettlementAt(data.fromTile).Map;
-
-            HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.humanData);
-            Pawn pawn = HumanScribeManager.StringToHuman(humanData);
+            Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
@@ -87,9 +81,7 @@ namespace GameClient
         private static void AcceptAid(AidData data)
         {
             Map map = Find.World.worldObjects.SettlementAt(data.toTile).Map;
-
-            HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.humanData);
-            Pawn pawn = HumanScribeManager.StringToHuman(humanData);
+            Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
             data.stepMode = CommonEnumerators.AidStepMode.Accept;
