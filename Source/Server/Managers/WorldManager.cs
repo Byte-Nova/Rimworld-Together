@@ -59,7 +59,7 @@ namespace GameServer
             {
                 Master.worldValues = Serializer.SerializeFromFile<WorldValuesFile>(worldFilePath);
 
-                Logger.Warning("Loaded world values");
+                Logger.Warning($"Loaded > '{worldFilePath}'");
             }
 
             else Logger.Warning("World is missing. Join server to create it");   

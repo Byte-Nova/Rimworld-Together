@@ -129,7 +129,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, Master.difficultyValues);
             }
 
-            Logger.Warning("Loaded difficulty values");
+            Logger.Warning($"Loaded > '{path}'");
         }
     }
 }

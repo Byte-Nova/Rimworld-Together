@@ -35,15 +35,15 @@ namespace GameServer
 
         public static void LoadMarketStock()
         {
-            string marketFilePath = Path.Combine(Master.corePath, marketFileName);
-            if (File.Exists(marketFilePath)) Master.marketFile = Serializer.SerializeFromFile<MarketFile>(marketFilePath);
+            string path = Path.Combine(Master.corePath, marketFileName);
+            if (File.Exists(path)) Master.marketFile = Serializer.SerializeFromFile<MarketFile>(path);
             else
             {
                 Master.marketFile = new MarketFile();
                 SaveMarketStock();
             }
 
-            Logger.Warning("Loaded market stock");
+            Logger.Warning($"Loaded > '{path}'");
         }
 
         private static void AddToMarket(ServerClient client, MarketData marketData)

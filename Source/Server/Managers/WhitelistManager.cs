@@ -49,7 +49,7 @@ namespace GameServer
                 Serializer.SerializeToFile(path, Master.whitelist);
             }
 
-            Logger.Warning("Loaded server whitelist");
+            Logger.Warning($"Loaded > '{path}'");
         }
     }
 }

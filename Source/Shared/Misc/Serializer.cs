@@ -1,6 +1,6 @@
-using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
+using System.IO;
 
 namespace Shared
 {
@@ -8,9 +8,9 @@ namespace Shared
 
     public static class Serializer
     {
-        private static JsonSerializerSettings defaultSettings => new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.None };
+        private static JsonSerializerSettings DefaultSettings => new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.None };
 
-        private static JsonSerializerSettings indentedSettings => new JsonSerializerSettings() 
+        private static JsonSerializerSettings IndentedSettings => new JsonSerializerSettings() 
         { 
             TypeNameHandling = TypeNameHandling.None,
             Formatting = Formatting.Indented
@@ -20,7 +20,7 @@ namespace Shared
 
         public static byte[] ConvertObjectToBytes(object toConvert)
         {
-            JsonSerializer serializer = JsonSerializer.Create(defaultSettings);
+            JsonSerializer serializer = JsonSerializer.Create(DefaultSettings);
             MemoryStream memoryStream = new MemoryStream();
 
             using (BsonWriter writer = new BsonWriter(memoryStream)) 
@@ -35,7 +35,7 @@ namespace Shared
         {
             bytes = GZip.Decompress(bytes);
 
-            JsonSerializer serializer = JsonSerializer.Create(defaultSettings);
+            JsonSerializer serializer = JsonSerializer.Create(DefaultSettings);
             MemoryStream memoryStream = new MemoryStream(bytes);
 
             using (BsonReader reader = new BsonReader(memoryStream)) 
@@ -44,14 +44,14 @@ namespace Shared
             }
         }
 
-        public static string SerializeToString(object serializable) { return JsonConvert.SerializeObject(serializable, defaultSettings); }
+        public static string SerializeToString(object serializable) { return JsonConvert.SerializeObject(serializable, DefaultSettings); }
 
-        public static T SerializeFromString<T>(string serializable) { return JsonConvert.DeserializeObject<T>(serializable, defaultSettings); }
+        public static T SerializeFromString<T>(string serializable) { return JsonConvert.DeserializeObject<T>(serializable, DefaultSettings); }
 
         //Serialize from and to files
 
-        public static void SerializeToFile(string path, object serializable) { File.WriteAllText(path, JsonConvert.SerializeObject(serializable, indentedSettings)); }
+        public static void SerializeToFile(string path, object serializable) { File.WriteAllText(path, JsonConvert.SerializeObject(serializable, IndentedSettings)); }
 
-        public static T SerializeFromFile<T>(string path) { return JsonConvert.DeserializeObject<T>(File.ReadAllText(path), defaultSettings); }
+        public static T SerializeFromFile<T>(string path) { return JsonConvert.DeserializeObject<T>(File.ReadAllText(path), DefaultSettings); }
     }
 }

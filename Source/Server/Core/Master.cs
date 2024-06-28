@@ -130,12 +130,12 @@ namespace GameServer
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
 
-            Logger.Title($"Loading server culture > [{CultureInfo.CurrentCulture}]");
+            Logger.Title($"Server culture > [{CultureInfo.CurrentCulture}]");
         }
 
         public static void LoadResources()
         {
-            Logger.Title($"Loading version {CommonValues.executableVersion}");
+            Logger.Title($"Server version {CommonValues.executableVersion}");
             Logger.Title($"Loading all necessary resources");
             Logger.Title($"----------------------------------------");
 
@@ -144,11 +144,11 @@ namespace GameServer
             LoadValueFile(ServerLoadMode.Sites);
             LoadValueFile(ServerLoadMode.Events);
             LoadValueFile(ServerLoadMode.Roads);
-            ModManager.LoadMods();
             WorldManager.LoadWorldFile();
             WhitelistManager.LoadServerWhitelist();
             CustomDifficultyManager.LoadCustomDifficulty();
             MarketManager.LoadMarketStock();
+            ModManager.LoadMods();
 
             Logger.Title($"----------------------------------------");
         }
@@ -159,7 +159,7 @@ namespace GameServer
 
             Serializer.SerializeToFile(path, serverConfig);
 
-            Logger.Warning("Saved server Config");
+            Logger.Warning($"Saved > {path}");
         }
 
         private static void LoadValueFile(ServerLoadMode loadMode)
@@ -219,7 +219,7 @@ namespace GameServer
                     break;
             }
 
-            Logger.Warning($"Loaded '{pathToLoad}'");
+            Logger.Warning($"Loaded > '{pathToLoad}'");
         }
 
         public static void ChangeTitle()
