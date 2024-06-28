@@ -18,12 +18,7 @@ namespace GameClient
         {
             List<Pawn> humans = new List<Pawn>();
 
-            for (int i = 0; i < transferData.humanDatas.Count(); i++)
-            {
-                HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(transferData.humanDatas[i]);
-
-                humans.Add(StringToHuman(humanData));
-            }
+            for (int i = 0; i < transferData.humanDatas.Count(); i++) humans.Add(StringToHuman(transferData.humanDatas[i]));
 
             return humans.ToArray();
         }
@@ -662,12 +657,7 @@ namespace GameClient
         {
             List<Pawn> animals = new List<Pawn>();
 
-            for (int i = 0; i < transferData.animalDatas.Count(); i++)
-            {
-                AnimalData animalData = Serializer.ConvertBytesToObject<AnimalData>(transferData.animalDatas[i]);
-
-                animals.Add(StringToAnimal(animalData));
-            }
+            for (int i = 0; i < transferData.animalDatas.Count(); i++) animals.Add(StringToAnimal(transferData.animalDatas[i]));
 
             return animals.ToArray();
         }
@@ -927,9 +917,7 @@ namespace GameClient
 
             for (int i = 0; i < transferData.itemDatas.Count(); i++)
             {
-                ItemData itemData = Serializer.ConvertBytesToObject<ItemData>(transferData.itemDatas[i]);
-
-                Thing thingToAdd = StringToItem(itemData);
+                Thing thingToAdd = StringToItem(transferData.itemDatas[i]);
                 if (thingToAdd != null) things.Add(thingToAdd);
             }
 

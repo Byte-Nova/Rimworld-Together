@@ -15,10 +15,9 @@ namespace Shared
 
         public int toTile;
 
-        public List<byte[]> humanDatas = new List<byte[]>();
-
-        public List<byte[]> animalDatas = new List<byte[]>();
-
-        public List<byte[]> itemDatas = new List<byte[]>();
+        //Due to computation expense, it's more detrimental to have them as arrays rather than lists
+        public List<HumanData> humanDatas = new List<HumanData>();
+        public List<AnimalData> animalDatas = new List<AnimalData>();
+        public List<ItemData> itemDatas = new List<ItemData>();
     }
 }

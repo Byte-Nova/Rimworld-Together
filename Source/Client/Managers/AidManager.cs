@@ -47,7 +47,7 @@ namespace GameClient
             aidData.toTile = ClientValues.chosenSettlement.Tile;
 
             Pawn toGet = RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResultInt];
-            aidData.humanData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(toGet));
+            aidData.humanData = HumanScribeManager.HumanToString(toGet);
             RimworldManager.RemovePawnFromGame(toGet);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), aidData);
@@ -72,9 +72,7 @@ namespace GameClient
             DialogManager.PopWaitDialog();
 
             Map map = Find.World.worldObjects.SettlementAt(data.fromTile).Map;
-
-            HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(data.humanData);
-            Pawn pawn = HumanScribeManager.StringToHuman(humanData);
+            Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
@@ -83,9 +81,7 @@ namespace GameClient
         private static void AcceptAid(AidData data)
         {
             Map map = Find.World.worldObjects.SettlementAt(data.toTile).Map;
-
-            HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(data.humanData);
-            Pawn pawn = HumanScribeManager.StringToHuman(humanData);
+            Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
             data.stepMode = CommonEnumerators.AidStepMode.Accept;

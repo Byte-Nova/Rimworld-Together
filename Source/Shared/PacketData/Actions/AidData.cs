@@ -11,6 +11,6 @@ namespace Shared
         public int fromTile;
         public int toTile;
 
-        public byte[] humanData;
+        public HumanData humanData;
     }
 }
