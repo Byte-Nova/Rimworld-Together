@@ -28,7 +28,7 @@ namespace GameClient
 
             MapFileData mapFileData = new MapFileData();
             mapFileData.mapTile = mapData.mapTile;
-            mapFileData.mapData = Serializer.ConvertObjectToBytes(mapData);
+            mapFileData.mapData = mapData;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileData);
             Network.listener.EnqueuePacket(packet);

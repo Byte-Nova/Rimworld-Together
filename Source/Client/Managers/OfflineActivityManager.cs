@@ -113,8 +113,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapFileData mapFileData = Serializer.ConvertBytesToObject<MapFileData>(offlineVisitData.mapData);
-            MapData mapData = Serializer.ConvertBytesToObject<MapData>(mapFileData.mapData);
+            MapData mapData = offlineVisitData.mapData;
 
             Action r1 = delegate 
             {
