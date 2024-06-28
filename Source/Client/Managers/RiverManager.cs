@@ -9,10 +9,16 @@ namespace GameClient
 {
     public static class RiverManager
     {
-        public static void SetPlanetRivers() { AddRivers(WorldGeneratorManager.cachedWorldValues.Rivers, false); }
+        public static void SetPlanetRivers() 
+        {
+            if (WorldGeneratorManager.cachedWorldValues.Rivers == null) return;
+            else AddRivers(WorldGeneratorManager.cachedWorldValues.Rivers, false);
+        }
 
         public static void AddRivers(RiverDetails[] rivers, bool forceRefresh)
         {
+            if (rivers == null) return;
+
             foreach (RiverDetails details in rivers)
             {
                 RiverDef riverDef = DefDatabase<RiverDef>.AllDefs.First(fetch => fetch.defName == details.riverDefName);

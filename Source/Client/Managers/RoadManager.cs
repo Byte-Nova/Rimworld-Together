@@ -56,6 +56,8 @@ namespace GameClient
 
         public static void AddRoads(RoadDetails[] roads, bool forceRefresh)
         {
+            if (roads == null) return;
+
             foreach (RoadDetails details in roads)
             {
                 AddRoadSimple(details.tileA, details.tileB, RoadManagerHelper.GetRoadDefFromDefName(details.roadDefName), forceRefresh);
