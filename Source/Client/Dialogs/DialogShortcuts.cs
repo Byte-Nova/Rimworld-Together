@@ -2,7 +2,6 @@
 using System;
 using Shared;
 using Verse;
-using UnityEngine.SceneManagement;
 
 namespace GameClient
 {

@@ -19,7 +19,7 @@ namespace GameClient
 
         public static void ParseTransferPacket(Packet packet)
         {
-            TransferData transferData = (TransferData)Serializer.ConvertBytesToObject(packet.contents);
+            TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
             switch (transferData.transferStepMode)
             {

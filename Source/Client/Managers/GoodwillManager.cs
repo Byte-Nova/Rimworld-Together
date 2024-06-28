@@ -75,7 +75,7 @@ namespace GameClient
 
         public static void ChangeStructureGoodwill(Packet packet)
         {
-            FactionGoodwillData factionGoodwillData = (FactionGoodwillData)Serializer.ConvertBytesToObject(packet.contents);
+            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
             ChangeSettlementGoodwills(factionGoodwillData);
             ChangeSiteGoodwills(factionGoodwillData);
         }

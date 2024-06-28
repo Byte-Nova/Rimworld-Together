@@ -1,10 +1,6 @@
 ﻿using RimWorld;
 using Shared;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace GameClient
@@ -13,7 +9,7 @@ namespace GameClient
     {
         public static void ParsePacket(Packet packet)
         {
-            AidData data = (AidData)Serializer.ConvertBytesToObject(packet.contents);
+            AidData data = Serializer.ConvertBytesToObject<AidData>(packet.contents);
 
             switch (data.stepMode)
             {
@@ -77,7 +73,7 @@ namespace GameClient
 
             Map map = Find.World.worldObjects.SettlementAt(data.fromTile).Map;
 
-            HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.humanData);
+            HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(data.humanData);
             Pawn pawn = HumanScribeManager.StringToHuman(humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
@@ -88,7 +84,7 @@ namespace GameClient
         {
             Map map = Find.World.worldObjects.SettlementAt(data.toTile).Map;
 
-            HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.humanData);
+            HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(data.humanData);
             Pawn pawn = HumanScribeManager.StringToHuman(humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 

@@ -16,7 +16,7 @@ namespace GameClient
 
         public static void ParseMarketPacket(Packet packet)
         {
-            MarketData marketData = (MarketData)Serializer.ConvertBytesToObject(packet.contents);
+            MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
             switch (marketData.marketStepMode)
             {
@@ -86,7 +86,7 @@ namespace GameClient
             DialogManager.PopWaitDialog();
             DialogManager.dialogMarketListing = null;
 
-            Thing toReceive = ThingScribeManager.StringToItem((ItemData)Serializer.ConvertBytesToObject(marketData.transferThingBytes[0]));
+            Thing toReceive = ThingScribeManager.StringToItem(Serializer.ConvertBytesToObject<ItemData>(marketData.transferThingBytes[0]));
             TransferManager.GetTransferedItemsToSettlement(new Thing[] { toReceive }, customMap: false);
 
             int silverToPay = (int)(toReceive.MarketValue * toReceive.stackCount);
@@ -116,7 +116,7 @@ namespace GameClient
                 DialogManager.PopWaitDialog();
 
                 List<ItemData> allItems = new List<ItemData>();
-                foreach (byte[] itemBytes in marketData.currentStockBytes) allItems.Add((ItemData)Serializer.ConvertBytesToObject(itemBytes));
+                foreach (byte[] itemBytes in marketData.currentStockBytes) allItems.Add(Serializer.ConvertBytesToObject<ItemData>(itemBytes));
 
                 Action toDo = delegate { RequestGetStock(DialogManager.dialogMarketListingResult, int.Parse(DialogManager.dialog1ResultOne)); };
                 RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(allItems.ToArray(), ClientValues.chosenSettlement.Map, toDo, null);

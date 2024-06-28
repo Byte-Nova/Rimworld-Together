@@ -12,7 +12,7 @@ namespace GameClient
 
         public static void ParseCommand(Packet packet)
         {
-            CommandData commandData = (CommandData)Serializer.ConvertBytesToObject(packet.contents);
+            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
 
             switch(commandData.commandMode)
             {

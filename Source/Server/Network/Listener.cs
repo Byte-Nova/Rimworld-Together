@@ -60,7 +60,7 @@ namespace GameServer
                     if (dataQueue.Count() > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
-                        streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
+                        streamWriter.WriteLine(Serializer.SerializeToString(packet));
                         streamWriter.Flush();
                     }
                 }
@@ -79,7 +79,7 @@ namespace GameServer
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    Packet receivedPacket = Serializer.SerializeStringToPacket(data);
+                    Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
                     PacketHandler.HandlePacket(targetClient, receivedPacket);
                 }
             }

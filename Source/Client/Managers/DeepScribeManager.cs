@@ -20,7 +20,7 @@ namespace GameClient
 
             for (int i = 0; i < transferData.humanDatas.Count(); i++)
             {
-                HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(transferData.humanDatas[i]);
+                HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(transferData.humanDatas[i]);
 
                 humans.Add(StringToHuman(humanData));
             }
@@ -664,7 +664,7 @@ namespace GameClient
 
             for (int i = 0; i < transferData.animalDatas.Count(); i++)
             {
-                AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(transferData.animalDatas[i]);
+                AnimalData animalData = Serializer.ConvertBytesToObject<AnimalData>(transferData.animalDatas[i]);
 
                 animals.Add(StringToAnimal(animalData));
             }
@@ -927,7 +927,7 @@ namespace GameClient
 
             for (int i = 0; i < transferData.itemDatas.Count(); i++)
             {
-                ItemData itemData = (ItemData)Serializer.ConvertBytesToObject(transferData.itemDatas[i]);
+                ItemData itemData = Serializer.ConvertBytesToObject<ItemData>(transferData.itemDatas[i]);
 
                 Thing thingToAdd = StringToItem(itemData);
                 if (thingToAdd != null) things.Add(thingToAdd);

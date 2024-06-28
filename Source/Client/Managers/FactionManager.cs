@@ -10,7 +10,7 @@ namespace GameClient
     {
         public static void ParseFactionPacket(Packet packet)
         {
-            PlayerFactionData factionManifest = (PlayerFactionData)Serializer.ConvertBytesToObject(packet.contents);
+            PlayerFactionData factionManifest = Serializer.ConvertBytesToObject<PlayerFactionData>(packet.contents);
 
             switch (factionManifest.manifestMode)
             {

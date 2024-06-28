@@ -8,7 +8,7 @@ namespace GameClient
     {
         public static void ParseWorldPacket(Packet packet)
         {
-            WorldData worldData = (WorldData)Serializer.ConvertBytesToObject(packet.contents);
+            WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 
             switch (worldData.worldStepMode)
             {

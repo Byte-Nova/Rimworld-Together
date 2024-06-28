@@ -84,7 +84,7 @@ namespace GameClient
 
         public static void ParseSitePacket(Packet packet)
         {
-            SiteData siteData = (SiteData)Serializer.ConvertBytesToObject(packet.contents);
+            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
 
             switch(siteData.siteStepMode)
             {
@@ -179,8 +179,7 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman((HumanData)Serializer.
-                    ConvertBytesToObject(siteData.workerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanData>(siteData.workerData));
 
                 RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, ClientValues.chosenCaravan);
 

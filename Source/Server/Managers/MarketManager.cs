@@ -15,7 +15,7 @@ namespace GameServer
 
         public static void ParseMarketPacket(ServerClient client, Packet packet)
         {
-            MarketData marketData = (MarketData)Serializer.ConvertBytesToObject(packet.contents);
+            MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
             switch (marketData.marketStepMode)
             {
@@ -49,7 +49,7 @@ namespace GameServer
         private static void AddToMarket(ServerClient client, MarketData marketData)
         {
             List<ItemData> itemsToAdd = new List<ItemData>();
-            foreach (byte[] bytes in marketData.transferThingBytes) itemsToAdd.Add((ItemData)Serializer.ConvertBytesToObject(bytes));
+            foreach (byte[] bytes in marketData.transferThingBytes) itemsToAdd.Add(Serializer.ConvertBytesToObject<ItemData>(bytes));
             foreach (ItemData item in itemsToAdd) TryCombineStackIfAvailable(client, item);
 
             SaveMarketStock();

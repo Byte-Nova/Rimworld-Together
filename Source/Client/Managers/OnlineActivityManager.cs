@@ -3,14 +3,11 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 using Verse.AI;
 using Shared;
 using static Shared.CommonEnumerators;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient
 {
@@ -29,7 +26,7 @@ namespace GameClient
 
         public static void ParseOnlineActivityPacket(Packet packet)
         {
-            OnlineActivityData data = (OnlineActivityData)Serializer.ConvertBytesToObject(packet.contents);
+            OnlineActivityData data = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 
             switch (data.activityStepMode)
             {
@@ -189,7 +186,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapData mapData = (MapData)Serializer.ConvertBytesToObject(visitData.mapDetails);
+            MapData mapData = Serializer.ConvertBytesToObject<MapData>(visitData.mapDetails);
 
             Action r1 = delegate { JoinMap(mapData, visitData); };
             Action r2 = delegate { RequestStopOnlineActivity(); };
@@ -431,21 +428,21 @@ namespace GameClient
             Thing toSpawn;
             if (data.creationOrder.creationType == CreationType.Human)
             {
-                HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(data.creationOrder.dataToCreate);
                 toSpawn = HumanScribeManager.StringToHuman(humanData);
                 toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else if (data.creationOrder.creationType == CreationType.Animal)
             {
-                AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                AnimalData animalData = Serializer.ConvertBytesToObject<AnimalData>(data.creationOrder.dataToCreate);
                 toSpawn = AnimalScribeManager.StringToAnimal(animalData);
                 toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else
             {
-                ItemData thingData = (ItemData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                ItemData thingData = Serializer.ConvertBytesToObject<ItemData>(data.creationOrder.dataToCreate);
                 toSpawn = ThingScribeManager.StringToItem(thingData);
             }
 
@@ -1096,14 +1093,14 @@ namespace GameClient
 
                 foreach (byte[] compressedHuman in activityData.mapHumans)
                 {
-                    HumanData humanDetailsJSON = (HumanData)Serializer.ConvertBytesToObject(compressedHuman);
+                    HumanData humanDetailsJSON = Serializer.ConvertBytesToObject<HumanData>(compressedHuman);
                     Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
                     pawnList.Add(human);
                 }
 
                 foreach (byte[] compressedAnimal in activityData.mapAnimals)
                 {
-                    AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
+                    AnimalData animalData = Serializer.ConvertBytesToObject<AnimalData>(compressedAnimal);
                     Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
                     pawnList.Add(animal);
                 }
@@ -1120,14 +1117,14 @@ namespace GameClient
 
                 foreach (byte[] compressedHuman in activityData.caravanHumans)
                 {
-                    HumanData humanDetailsJSON = (HumanData)Serializer.ConvertBytesToObject(compressedHuman);
+                    HumanData humanDetailsJSON = Serializer.ConvertBytesToObject<HumanData>(compressedHuman);
                     Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
                     pawnList.Add(human);
                 }
 
                 foreach (byte[] compressedAnimal in activityData.caravanAnimals)
                 {
-                    AnimalData animalDetailsJSON = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
+                    AnimalData animalDetailsJSON = Serializer.ConvertBytesToObject<AnimalData>(compressedAnimal);
                     Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
                     pawnList.Add(animal);
                 }
