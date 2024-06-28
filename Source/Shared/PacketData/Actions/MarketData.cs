@@ -8,12 +8,9 @@ namespace Shared
     public class MarketData
     {
         public MarketStepMode marketStepMode;
-
-        public int indexToManage;
         public int quantityToManage;
+        public int indexToManage;
 
-        public List<byte[]> currentStockBytes;
-
-        public List<byte[]> transferThingBytes;
+        public List<ItemData> transferThings;
     }
 }

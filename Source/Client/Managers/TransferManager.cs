@@ -144,10 +144,7 @@ namespace GameClient
             {
                 MarketData marketData = new MarketData();
                 marketData.marketStepMode = MarketStepMode.Add;
-
-                //TODO
-                //DONT FORGET THIS
-                //marketData.transferThingBytes = ClientValues.outgoingManifest.itemDatas;
+                marketData.transferThings = ClientValues.outgoingManifest.itemDatas;
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
                 Network.listener.EnqueuePacket(packet);

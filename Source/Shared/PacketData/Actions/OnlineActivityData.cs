@@ -12,11 +12,11 @@ namespace Shared
 
         //Map
 
-        public byte[] mapDetails;
-        public List<byte[]> mapHumans = new List<byte[]>();
-        public List<byte[]> mapAnimals = new List<byte[]>();
-        public List<byte[]> caravanHumans = new List<byte[]>();
-        public List<byte[]> caravanAnimals = new List<byte[]>();
+        public MapData mapData;
+        public List<HumanData> mapHumans = new List<HumanData>();
+        public List<AnimalData> mapAnimals = new List<AnimalData>();
+        public List<HumanData> caravanHumans = new List<HumanData>();
+        public List<AnimalData> caravanAnimals = new List<AnimalData>();
 
         //Misc
 

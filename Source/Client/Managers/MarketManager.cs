@@ -86,7 +86,7 @@ namespace GameClient
             DialogManager.PopWaitDialog();
             DialogManager.dialogMarketListing = null;
 
-            Thing toReceive = ThingScribeManager.StringToItem(Serializer.ConvertBytesToObject<ItemData>(marketData.transferThingBytes[0]));
+            Thing toReceive = ThingScribeManager.StringToItem(marketData.transferThings[0]);
             TransferManager.GetTransferedItemsToSettlement(new Thing[] { toReceive }, customMap: false);
 
             int silverToPay = (int)(toReceive.MarketValue * toReceive.stackCount);
@@ -115,11 +115,8 @@ namespace GameClient
             {
                 DialogManager.PopWaitDialog();
 
-                List<ItemData> allItems = new List<ItemData>();
-                foreach (byte[] itemBytes in marketData.currentStockBytes) allItems.Add(Serializer.ConvertBytesToObject<ItemData>(itemBytes));
-
                 Action toDo = delegate { RequestGetStock(DialogManager.dialogMarketListingResult, int.Parse(DialogManager.dialog1ResultOne)); };
-                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(allItems.ToArray(), ClientValues.chosenSettlement.Map, toDo, null);
+                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(marketData.transferThings.ToArray(), ClientValues.chosenSettlement.Map, toDo, null);
                 DialogManager.PushNewDialog(dialog);
             }
         }
