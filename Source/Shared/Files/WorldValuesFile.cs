@@ -22,12 +22,12 @@ namespace Shared
 
         public PlanetFeature[] Features;
 
-        public PlanetNPCFaction[] NPCFactions;
-
-        public PlanetNPCSettlement[] NPCSettlements;
-
         public RoadDetails[] Roads;
 
         public RiverDetails[] Rivers;
+
+        public PlanetNPCFaction[] NPCFactions;
+
+        public PlanetNPCSettlement[] NPCSettlements;
     }
 }

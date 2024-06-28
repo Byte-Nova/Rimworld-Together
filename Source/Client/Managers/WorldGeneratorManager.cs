@@ -183,11 +183,11 @@ namespace GameClient
     {
         public static WorldValuesFile PopulateWorldValues()
         {
-            WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
-            WorldGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
             WorldGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
             WorldGeneratorManager.cachedWorldValues.Roads = RoadManagerHelper.GetPlanetRoads();
             WorldGeneratorManager.cachedWorldValues.Rivers = RiverManagerHelper.GetPlanetRivers();
+            WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
+            WorldGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
             return WorldGeneratorManager.cachedWorldValues;
         }
 
