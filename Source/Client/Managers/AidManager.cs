@@ -88,7 +88,7 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
 
-            RimworldManager.GenerateLetter("Reveived aid",
+            RimworldManager.GenerateLetter("Received aid",
                 "You have received aid from a player! The pawn should come to help soon",
                 LetterDefOf.PositiveEvent);
 
