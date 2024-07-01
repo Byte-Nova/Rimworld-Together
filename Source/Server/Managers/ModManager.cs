@@ -16,13 +16,15 @@ namespace GameServer
                     string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
                     foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower())) Master.loadedRequiredMods.Add(str.ToLower());
+                        if (!Master.loadedRequiredMods.Contains(str.ToLower()))
+                        {
+                            Logger.Warning($"Loaded > '{modPath}'");
+                            Master.loadedRequiredMods.Add(str.ToLower());
+                        }
                     }
                 }
                 catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
             }
-
-            Logger.Warning($"Loaded required mods [{Master.loadedRequiredMods.Count()}]");
 
             Master.loadedOptionalMods.Clear();
             string[] optionalModsToLoad = Directory.GetDirectories(Master.optionalModsPath);
@@ -35,14 +37,16 @@ namespace GameServer
                     {
                         if (!Master.loadedRequiredMods.Contains(str.ToLower()))
                         {
-                            if (!Master.loadedOptionalMods.Contains(str.ToLower())) Master.loadedOptionalMods.Add(str.ToLower());
+                            if (!Master.loadedOptionalMods.Contains(str.ToLower()))
+                            {
+                                Logger.Warning($"Loaded > '{modPath}'");
+                                Master.loadedOptionalMods.Add(str.ToLower());
+                            }
                         }
                     }
                 }
                 catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
             }
-
-            Logger.Warning($"Loaded optional mods [{Master.loadedOptionalMods.Count()}]");
 
             Master.loadedForbiddenMods.Clear();
             string[] forbiddenModsToLoad = Directory.GetDirectories(Master.forbiddenModsPath);
@@ -55,14 +59,16 @@ namespace GameServer
                     {
                         if (!Master.loadedRequiredMods.Contains(str.ToLower()) && !Master.loadedOptionalMods.Contains(str.ToLower()))
                         {
-                            if (!Master.loadedForbiddenMods.Contains(str.ToLower())) Master.loadedForbiddenMods.Add(str.ToLower());
+                            if (!Master.loadedForbiddenMods.Contains(str.ToLower()))
+                            {
+                                Logger.Warning($"Loaded > '{modPath}'");
+                                Master.loadedForbiddenMods.Add(str.ToLower());
+                            }
                         }
                     }
                 }
                 catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
             }
-
-            Logger.Warning($"Loaded forbidden mods [{Master.loadedForbiddenMods.Count()}]");
         }
 
         public static bool CheckIfModConflict(ServerClient client, LoginData loginData)

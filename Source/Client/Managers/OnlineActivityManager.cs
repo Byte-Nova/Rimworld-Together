@@ -3,14 +3,11 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 using Verse.AI;
 using Shared;
 using static Shared.CommonEnumerators;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient
 {
@@ -29,7 +26,7 @@ namespace GameClient
 
         public static void ParseOnlineActivityPacket(Packet packet)
         {
-            OnlineActivityData data = (OnlineActivityData)Serializer.ConvertBytesToObject(packet.contents);
+            OnlineActivityData data = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 
             switch (data.activityStepMode)
             {
@@ -106,8 +103,8 @@ namespace GameClient
                 data.activityType = toRequest;
                 data.fromTile = Find.AnyPlayerHomeMap.Tile;
                 data.targetTile = ClientValues.chosenSettlement.Tile;
-                data.caravanHumans = OnlineManagerHelper.GetActivityHumanBytes();
-                data.caravanAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
+                data.caravanHumans = OnlineManagerHelper.GetActivityHumans();
+                data.caravanAnimals = OnlineManagerHelper.GetActivityAnimals();
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
                 Network.listener.EnqueuePacket(packet);
@@ -141,12 +138,10 @@ namespace GameClient
         private static void SendRequestedMap(OnlineActivityData data)
         {
             data.activityStepMode = OnlineActivityStepMode.Accept;
-            data.mapHumans = OnlineManagerHelper.GetActivityHumanBytes();
-            data.mapAnimals = OnlineManagerHelper.GetActivityAnimalBytes();
+            data.mapHumans = OnlineManagerHelper.GetActivityHumans();
+            data.mapAnimals = OnlineManagerHelper.GetActivityAnimals();
             data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
-
-            MapData mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
-            data.mapDetails = Serializer.ConvertObjectToBytes(mapData);
+            data.mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -189,11 +184,9 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapData mapData = (MapData)Serializer.ConvertBytesToObject(visitData.mapDetails);
-
-            Action r1 = delegate { JoinMap(mapData, visitData); };
+            Action r1 = delegate { JoinMap(visitData.mapData, visitData); };
             Action r2 = delegate { RequestStopOnlineActivity(); };
-            if (!ModManager.CheckIfMapHasConflictingMods(mapData)) r1.Invoke();
+            if (!ModManager.CheckIfMapHasConflictingMods(visitData.mapData)) r1.Invoke();
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, r2));
         }
 
@@ -431,21 +424,21 @@ namespace GameClient
             Thing toSpawn;
             if (data.creationOrder.creationType == CreationType.Human)
             {
-                HumanData humanData = (HumanData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(data.creationOrder.dataToCreate);
                 toSpawn = HumanScribeManager.StringToHuman(humanData);
                 toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else if (data.creationOrder.creationType == CreationType.Animal)
             {
-                AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                AnimalData animalData = Serializer.ConvertBytesToObject<AnimalData>(data.creationOrder.dataToCreate);
                 toSpawn = AnimalScribeManager.StringToAnimal(animalData);
                 toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else
             {
-                ItemData thingData = (ItemData)Serializer.ConvertBytesToObject(data.creationOrder.dataToCreate);
+                ItemData thingData = Serializer.ConvertBytesToObject<ItemData>(data.creationOrder.dataToCreate);
                 toSpawn = ThingScribeManager.StringToItem(thingData);
             }
 
@@ -1094,16 +1087,14 @@ namespace GameClient
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
-                foreach (byte[] compressedHuman in activityData.mapHumans)
+                foreach (HumanData humanData in activityData.mapHumans)
                 {
-                    HumanData humanDetailsJSON = (HumanData)Serializer.ConvertBytesToObject(compressedHuman);
-                    Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
+                    Pawn human = HumanScribeManager.StringToHuman(humanData);
                     pawnList.Add(human);
                 }
 
-                foreach (byte[] compressedAnimal in activityData.mapAnimals)
+                foreach (AnimalData animalData in activityData.mapAnimals)
                 {
-                    AnimalData animalData = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
                     Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
                     pawnList.Add(animal);
                 }
@@ -1118,17 +1109,15 @@ namespace GameClient
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
-                foreach (byte[] compressedHuman in activityData.caravanHumans)
+                foreach (HumanData humanData in activityData.caravanHumans)
                 {
-                    HumanData humanDetailsJSON = (HumanData)Serializer.ConvertBytesToObject(compressedHuman);
-                    Pawn human = HumanScribeManager.StringToHuman(humanDetailsJSON);
+                    Pawn human = HumanScribeManager.StringToHuman(humanData);
                     pawnList.Add(human);
                 }
 
-                foreach (byte[] compressedAnimal in activityData.caravanAnimals)
+                foreach (AnimalData animalData in activityData.caravanAnimals)
                 {
-                    AnimalData animalDetailsJSON = (AnimalData)Serializer.ConvertBytesToObject(compressedAnimal);
-                    Pawn animal = AnimalScribeManager.StringToAnimal(animalDetailsJSON);
+                    Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
                     pawnList.Add(animal);
                 }
 
@@ -1155,7 +1144,7 @@ namespace GameClient
             }
         }
 
-        public static List<byte[]> GetActivityHumanBytes()
+        public static List<HumanData> GetActivityHumans()
         {
             if (ClientValues.isRealTimeHost)
             {
@@ -1164,11 +1153,11 @@ namespace GameClient
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<byte[]> convertedList = new List<byte[]>();
+                List<HumanData> convertedList = new List<HumanData>();
                 foreach (Pawn human in mapHumans)
                 {
                     HumanData data = HumanScribeManager.HumanToString(human);
-                    convertedList.Add(Serializer.ConvertObjectToBytes(data));
+                    convertedList.Add(data);
                 }
 
                 return convertedList;
@@ -1181,18 +1170,18 @@ namespace GameClient
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<byte[]> convertedList = new List<byte[]>();
+                List<HumanData> convertedList = new List<HumanData>();
                 foreach (Pawn human in caravanHumans)
                 {
                     HumanData data = HumanScribeManager.HumanToString(human);
-                    convertedList.Add(Serializer.ConvertObjectToBytes(data));
+                    convertedList.Add(data);
                 }
 
                 return convertedList;
             }
         }
 
-        public static List<byte[]> GetActivityAnimalBytes()
+        public static List<AnimalData> GetActivityAnimals()
         {
             if (ClientValues.isRealTimeHost)
             {
@@ -1201,11 +1190,11 @@ namespace GameClient
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<byte[]> convertedList = new List<byte[]>();
+                List<AnimalData> convertedList = new List<AnimalData>();
                 foreach (Pawn animal in mapAnimals)
                 {
                     AnimalData data = AnimalScribeManager.AnimalToString(animal);
-                    convertedList.Add(Serializer.ConvertObjectToBytes(data));
+                    convertedList.Add(data);
                 }
 
                 return convertedList;
@@ -1218,11 +1207,11 @@ namespace GameClient
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<byte[]> convertedList = new List<byte[]>();
+                List<AnimalData> convertedList = new List<AnimalData>();
                 foreach (Pawn animal in caravanAnimals)
                 {
                     AnimalData data = AnimalScribeManager.AnimalToString(animal);
-                    convertedList.Add(Serializer.ConvertObjectToBytes(data));
+                    convertedList.Add(data);
                 }
 
                 return convertedList;

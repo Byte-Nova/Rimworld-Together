@@ -25,7 +25,7 @@ namespace GameClient
 
         public static void ParseEventPacket(Packet packet)
         {
-            EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
+            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
             switch (eventData.eventStepMode)
             {
@@ -77,12 +77,12 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, eventCosts[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
 
                 EventData eventData = new EventData();
                 eventData.eventStepMode = EventStepMode.Send;

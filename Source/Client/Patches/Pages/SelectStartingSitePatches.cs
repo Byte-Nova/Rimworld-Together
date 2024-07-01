@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Verse;
@@ -77,9 +75,11 @@ namespace GameClient
             {
                 if (Network.state == NetworkState.Disconnected) return;
 
-                if (!ClientValues.needsToGenerateWorld) WorldGeneratorManager.SetPlanetFeatures();
-                if (!ClientValues.needsToGenerateWorld) WorldGeneratorManager.SetPlanetFactions();
+                if (!ClientValues.isGeneratingFreshWorld) WorldGeneratorManager.SetPlanetFeatures();
+                if (!ClientValues.isGeneratingFreshWorld) WorldGeneratorManager.SetPlanetFactions();
+                if (!ClientValues.isGeneratingFreshWorld) RiverManager.SetPlanetRivers();
                 PlanetManager.BuildPlanet();
+
                 ClientValues.ToggleReadyToPlay(true);
             }
         }

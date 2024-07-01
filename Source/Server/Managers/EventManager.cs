@@ -9,7 +9,7 @@ namespace GameServer
 
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
-            EventData eventData = (EventData)Serializer.ConvertBytesToObject(packet.contents);
+            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
             switch (eventData.eventStepMode)
             {

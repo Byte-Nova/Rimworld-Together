@@ -1,6 +1,5 @@
 ﻿using Shared;
 using static Shared.CommonEnumerators;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer
 {
@@ -8,7 +7,7 @@ namespace GameServer
     {
         public static void ParseOnlineActivityPacket(ServerClient client, Packet packet)
         {
-            OnlineActivityData visitData = (OnlineActivityData)Serializer.ConvertBytesToObject(packet.contents);
+            OnlineActivityData visitData = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 
             switch (visitData.activityStepMode)
             {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -9,7 +8,6 @@ using UnityEngine;
 using Verse;
 using Verse.Profile;
 using static Shared.CommonEnumerators;
-using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient
 {
@@ -20,6 +18,13 @@ namespace GameClient
         private static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
                                                                       orderby x.order, x.index
                                                                       select x;
+
+        private static readonly List<Type> stepsToIgnoreIfNotFresh = new List<Type>()
+        {
+            typeof(WorldGenStep_Roads),
+            typeof(WorldGenStep_AncientRoads),
+            typeof(WorldGenStep_Rivers),
+        };
 
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
@@ -68,7 +73,18 @@ namespace GameClient
             Current.CreatingWorld.info.pollution = cachedWorldValues.Pollution;
 
             WorldGenStepDef[] worldGenSteps = GenStepsInOrder.ToArray();
-            for (int i = 0; i < worldGenSteps.Count(); i++) worldGenSteps[i].worldGenStep.GenerateFresh(cachedWorldValues.SeedString);
+            for (int i = 0; i < worldGenSteps.Count(); i++)
+            {
+                WorldGenStep toGenerate = worldGenSteps[i].worldGenStep;
+                if (stepsToIgnoreIfNotFresh.Contains(toGenerate.GetType()))
+                {
+                    //If not creating a world, we skip gen step
+
+                    if (!ClientValues.isGeneratingFreshWorld) continue;
+                    else toGenerate.GenerateFresh(cachedWorldValues.SeedString);
+                }
+                else toGenerate.GenerateFresh(cachedWorldValues.SeedString);
+            }
 
             Current.CreatingWorld.grid.StandardizeTileData();
             Current.CreatingWorld.FinalizeInit();
@@ -167,9 +183,11 @@ namespace GameClient
     {
         public static WorldValuesFile PopulateWorldValues()
         {
+            WorldGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
+            WorldGeneratorManager.cachedWorldValues.Roads = RoadManagerHelper.GetPlanetRoads();
+            WorldGeneratorManager.cachedWorldValues.Rivers = RiverManagerHelper.GetPlanetRivers();
             WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
             WorldGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
-            WorldGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
             return WorldGeneratorManager.cachedWorldValues;
         }
 

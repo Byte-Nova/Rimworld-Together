@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Shared
 {
@@ -23,11 +22,11 @@ namespace Shared
 
         public PlanetFeature[] Features;
 
-        //NPC factions
+        public RoadDetails[] Roads;
+
+        public RiverDetails[] Rivers;
 
         public PlanetNPCFaction[] NPCFactions;
-
-        //NPC settlements
 
         public PlanetNPCSettlement[] NPCSettlements;
     }

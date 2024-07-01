@@ -1,5 +1,4 @@
-﻿using RimWorld;
-using Shared;
+﻿using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,8 +37,6 @@ namespace GameClient
             listingStandard.Label("Compatibility");
             if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertFloatMenu(); }
             if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
-            if (listingStandard.ButtonTextLabeled("[When Playing] Convert world for server use", "Convert")) { ConvertWorldForServer(); }
-            if (listingStandard.ButtonTextLabeled("Open server worlds folder", "Open")) StartProcess(Master.worldSavesFolderPath);
 
             listingStandard.GapLine();
             listingStandard.Label("Experimental");
@@ -110,28 +107,6 @@ namespace GameClient
             }
 
             Find.WindowStack.Add(new FloatMenu(list));
-        }
-
-        private void ConvertWorldForServer()
-        {
-            if (Network.state != NetworkState.Connected) DialogManager.PushNewDialog(new RT_Dialog_Error("You must be inside a server to use this!"));
-            else
-            {
-                WorldValuesFile file = new WorldValuesFile();
-                file.PersistentRandomValue = Find.World.info.persistentRandomValue;
-                file.SeedString = Find.World.info.seedString;
-                file.PlanetCoverage = Find.World.info.planetCoverage;
-                file.Rainfall = (int)Find.World.info.overallRainfall;
-                file.Temperature = (int)Find.World.info.overallTemperature;
-                file.Population = (int)Find.World.info.overallPopulation;
-                file.Pollution = Find.World.info.pollution;
-                file.Features = WorldGeneratorHelper.GetPlanetFeatures();
-                file.NPCFactions = WorldGeneratorHelper.GetPlanetNPCFactions();
-                file.NPCSettlements = WorldGeneratorHelper.GetPlanetNPCSettlements();
-
-                Serializer.SerializeToFile(Path.Combine(Master.worldSavesFolderPath, "WorldValues.json"), file);
-                DialogManager.PushNewDialog(new RT_Dialog_OK("World has been converted successfully!"));
-            }
         }
 
         private void StartProcess(string processPath)

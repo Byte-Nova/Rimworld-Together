@@ -1,5 +1,4 @@
 using System;
-using static Shared.CommonEnumerators;
 
 namespace Shared
 {

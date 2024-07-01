@@ -7,7 +7,7 @@ namespace GameServer
     {
         public static void ChangeUserGoodwills(ServerClient client, Packet packet)
         {
-            FactionGoodwillData factionGoodwillData = (FactionGoodwillData)Serializer.ConvertBytesToObject(packet.contents);
+            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionGoodwillData.tile);
             SiteFile siteFile = SiteManager.GetSiteFileFromTile(factionGoodwillData.tile);
 

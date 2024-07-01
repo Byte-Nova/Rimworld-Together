@@ -2,10 +2,7 @@
 using RimWorld;
 using RimWorld.Planet;
 using System;
-using System.Linq;
 using Verse;
-using Verse.AI;
-using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -52,14 +49,16 @@ namespace GameClient
     public static class PatchSiteEnemyCount
     {
         [HarmonyPrefix]
-        public static bool DoPost(Site site, ref int __result)
+        public static bool DoPre(Site site, ref int __result)
         {
+            if (Network.state == NetworkState.Disconnected) return true;
+
             if (FactionValues.playerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
             {
                 __result = 25;
+                return false;
             }
-
-            return false;
+            else return true;
         }
     }
 }

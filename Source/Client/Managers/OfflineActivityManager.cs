@@ -2,10 +2,7 @@
 using RimWorld;
 using Shared;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse.AI.Group;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -18,7 +15,7 @@ namespace GameClient
 
         public static void ParseOfflineActivityPacket(Packet packet)
         {
-            OfflineActivityData offlineVisitData = (OfflineActivityData)Serializer.ConvertBytesToObject(packet.contents);
+            OfflineActivityData offlineVisitData = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
             switch (offlineVisitData.activityStepMode)
             {
@@ -53,7 +50,7 @@ namespace GameClient
 
                     else
                     {
-                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost);
+                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost, ClientValues.chosenCaravan);
                         SendRequest();
                     }
                 };
@@ -116,8 +113,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(offlineVisitData.mapData);
-            MapData mapData = (MapData)Serializer.ConvertBytesToObject(mapFileData.mapData);
+            MapData mapData = offlineVisitData.mapData;
 
             Action r1 = delegate 
             {

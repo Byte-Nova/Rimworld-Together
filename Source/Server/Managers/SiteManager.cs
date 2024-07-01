@@ -11,7 +11,7 @@ namespace GameServer
 
         public static void ParseSitePacket(ServerClient client, Packet packet)
         {
-            SiteData siteData = (SiteData)Serializer.ConvertBytesToObject(packet.contents);
+            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
 
             switch(siteData.siteStepMode)
             {

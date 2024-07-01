@@ -66,7 +66,7 @@ namespace GameClient
     
         public static void ReceiveMessages(Packet packet)
         {
-            ChatData chatData = (ChatData)Serializer.ConvertBytesToObject(packet.contents);
+            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
 
             for (int i = 0; i < chatData.usernames.Count(); i++) 
             {

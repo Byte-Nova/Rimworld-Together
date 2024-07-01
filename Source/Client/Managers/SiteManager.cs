@@ -84,7 +84,7 @@ namespace GameClient
 
         public static void ParseSitePacket(Packet packet)
         {
-            SiteData siteData = (SiteData)Serializer.ConvertBytesToObject(packet.contents);
+            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
 
             switch(siteData.siteStepMode)
             {
@@ -179,8 +179,7 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman((HumanData)Serializer.
-                    ConvertBytesToObject(siteData.workerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanData>(siteData.workerData));
 
                 RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, ClientValues.chosenCaravan);
 
@@ -214,7 +213,7 @@ namespace GameClient
                 if (DeepScribeHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
             }
 
-            Pawn pawnToSend = caravanHumans[DialogManager.dialogButtonListingResult];
+            Pawn pawnToSend = caravanHumans[DialogManager.dialogButtonListingResultInt];
             ClientValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteData siteData = new SiteData();
@@ -340,7 +339,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;
@@ -395,7 +394,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;

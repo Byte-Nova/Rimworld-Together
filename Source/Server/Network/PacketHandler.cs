@@ -72,6 +72,11 @@ namespace GameServer
             SiteManager.ParseSitePacket(client, packet);
         }
 
+        public static void RoadPacket(ServerClient client, Packet packet)
+        {
+            RoadManager.ParsePacket(client, packet);
+        }
+
         public static void OnlineActivityPacket(ServerClient client, Packet packet)
         {
             OnlineActivityManager.ParseOnlineActivityPacket(client, packet);

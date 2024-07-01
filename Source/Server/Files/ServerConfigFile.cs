@@ -9,7 +9,7 @@
 
         public string MaxPlayers = "100";
 
-        public string MaxTimeoutInMS = "5000";
+        public string MaxTimeoutInMS = "30000";
 
         public bool VerboseLogs = false;
 
@@ -21,7 +21,7 @@
 
         public bool SyncLocalSave = true;
 
-        public bool AllowCustomScenarios = false;
+        public bool AllowCustomScenarios = true;
 
         public bool TemporalActivityProtection = true;
 

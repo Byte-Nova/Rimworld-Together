@@ -30,7 +30,7 @@ namespace GameClient
 
         public static void ReceiveSavePartFromServer(Packet packet)
         {
-            FileTransferData fileTransferData = (FileTransferData)Serializer.ConvertBytesToObject(packet.contents);
+            FileTransferData fileTransferData = Serializer.ConvertBytesToObject<FileTransferData>(packet.contents);
 
             //If this is the first packet
             if (Network.listener.downloadManager == null)

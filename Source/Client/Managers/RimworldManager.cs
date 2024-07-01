@@ -144,11 +144,11 @@ namespace GameClient
             }
         }
 
-        public static void RemoveThingFromCaravan(ThingDef thingDef, int requiredQuantity)
+        public static void RemoveThingFromCaravan(ThingDef thingDef, int requiredQuantity, Caravan caravan)
         {
             if (requiredQuantity == 0) return;
 
-            List<Thing> caravanQuantity = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan)
+            List<Thing> caravanQuantity = CaravanInventoryUtility.AllInventoryItems(caravan)
                 .FindAll(x => x.def == thingDef);
 
             int takenQuantity = 0;

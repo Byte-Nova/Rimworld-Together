@@ -89,6 +89,11 @@ namespace GameClient
             SiteManager.ParseSitePacket(packet);
         }
 
+        public static void RoadPacket(Packet packet)
+        {
+            RoadManager.ParsePacket(packet);
+        }
+
         public static void WorldPacket(Packet packet)
         {
             WorldManager.ParseWorldPacket(packet);
@@ -139,12 +144,13 @@ namespace GameClient
 
         public static void ServerValuesPacket(Packet packet)
         {
-            ServerGlobalData serverGlobalData = (ServerGlobalData)Serializer.ConvertBytesToObject(packet.contents);
+            ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);
             ServerValues.SetServerParameters(serverGlobalData);
             ServerValues.SetAccountData(serverGlobalData);
             PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
             EventManager.SetEventPrices(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
+            RoadManagerHelper.SetRoadValues(serverGlobalData);
             OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
         }
