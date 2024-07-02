@@ -94,6 +94,11 @@ namespace GameClient
             RoadManager.ParsePacket(packet);
         }
 
+        public static void CaravanPacket(Packet packet)
+        {
+            CaravanManager.ParsePacket(packet);
+        }
+
         public static void WorldPacket(Packet packet)
         {
             WorldManager.ParseWorldPacket(packet);

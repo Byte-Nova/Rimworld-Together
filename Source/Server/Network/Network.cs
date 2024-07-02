@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Shared;
+using System.Net;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
 
@@ -82,6 +83,23 @@ namespace GameServer
                 Logger.Message($"[Disconnect] > {client.userFile.Username} | {client.userFile.SavedIP}");
             }
             catch { Logger.Warning($"Error disconnecting user {client.userFile.Username}, this will cause memory overhead"); }
+        }
+    }
+
+    public static class NetworkHelper
+    {
+        public static ServerClient[] GetConnectedClientsSafe()
+        {
+            return Network.connectedClients.ToArray();
+        }
+
+        public static void SendPacketToAllClients(Packet packet, ServerClient toExclude = null)
+        {
+            foreach(ServerClient client in GetConnectedClientsSafe())
+            {
+                if (toExclude != null && client == toExclude) continue;
+                else client.listener.EnqueuePacket(packet);
+            }
         }
     }
 }

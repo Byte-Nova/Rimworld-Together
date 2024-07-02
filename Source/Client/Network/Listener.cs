@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
-using Verse;
 
 namespace GameClient
 {
@@ -26,7 +24,7 @@ namespace GameClient
         public DownloadManager downloadManager;
 
         //Data queue used to hold packets that are to be sent through the connection
-        public Queue<Packet> dataQueue = new Queue<Packet>();
+        private readonly Queue<Packet> dataQueue = new Queue<Packet>();
 
         //Useful variables to handle connection status
         public bool disconnectFlag;
@@ -57,7 +55,7 @@ namespace GameClient
                 {
                     Thread.Sleep(1);
 
-                    if (dataQueue.Count() > 0)
+                    if (dataQueue.Count > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
                         streamWriter.WriteLine(Serializer.SerializeToString(packet));

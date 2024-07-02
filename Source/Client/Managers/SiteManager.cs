@@ -283,13 +283,13 @@ namespace GameClient
                 {
                     if (site.MainSitePartDef == siteDefs[i])
                     {
-                        ItemData itemData = new ItemData();
-                        itemData.defName = siteRewardDefNames[i].defName;
-                        itemData.quantity = siteRewardCount[i];
-                        itemData.quality = "null";
-                        itemData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
+                        ThingData thingData = new ThingData();
+                        thingData.defName = siteRewardDefNames[i].defName;
+                        thingData.quantity = siteRewardCount[i];
+                        thingData.quality = "null";
+                        thingData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
 
-                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(itemData));
+                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(thingData));
 
                         break;
                     }

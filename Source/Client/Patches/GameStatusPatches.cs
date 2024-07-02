@@ -7,7 +7,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    public class GameStatusPatcher
+    public class GameStatusPatches
     {
         [HarmonyPatch(typeof(Game), nameof(Game.InitNewGame))]
         public static class InitModePatch
