@@ -1,14 +1,18 @@
 ﻿using RimWorld;
 using UnityEngine;
 using Verse;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.UIElements;
 
 namespace GameClient
 {
     public class ChatTab : MainTabWindow
     {
-        public override Vector2 RequestedTabSize => new Vector2(350f, 400f);
+        public override Vector2 RequestedTabSize => new Vector2(800f, 600f);
 
-        private Vector2 scrollPosition = Vector2.zero;
+        private Vector2 scrollPositionPlayers = Vector2.zero;
+        private Vector2 scrollPositionChat = Vector2.zero;
 
         private int startAcceptingInputAtFrame;
             
@@ -63,12 +67,14 @@ namespace GameClient
             ChatManager.chatBoxPosition.y = windowRect.y;
 
             DrawPlayerCount(rect);
+            DrawPlayerList(new(rect.x, rect.y + 25f, 160f, rect.height - 50f));
 
             DrawPinCheckbox(rect);
 
             Widgets.DrawLineHorizontal(rect.x, rect.y + 25f, rect.width);
+            Widgets.DrawLineVertical(rect.x + 160f, rect.y + 25f, rect.height - 50f);
 
-            GenerateList(new Rect(new Vector2(rect.x, rect.y + 32f), new Vector2(rect.width, 300f)));
+            GenerateList(new(rect.x, rect.y + 32f, rect.width, rect.height - 60f));
 
             DrawInput(rect);
 
@@ -79,39 +85,67 @@ namespace GameClient
 
         private void DrawPlayerCount(Rect rect)
         {
-            string message = $"Online Players: [{ServerValues.currentPlayers}]";
+            string message = $"{ServerValues.currentPlayers} Online Players";
 
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(rect.x, rect.y, Text.CalcSize(message).x, Text.CalcSize(message).y), message);
         }
 
-        private void GenerateList(Rect rect)
+        private void DrawPlayerList(Rect mainRect)
+        {
+            List<string> orderedList = ServerValues.currentPlayerNames;
+
+            orderedList.Sort();
+
+            float height = 6f + (float)orderedList.Count() * 25f;
+            Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
+
+            Widgets.BeginScrollView(mainRect, ref scrollPositionPlayers, viewRect);
+
+            float num = 0;
+            float num2 = scrollPositionPlayers.y - 25f;
+            float num3 = scrollPositionPlayers.y + mainRect.height;
+            int num4 = 0;
+
+            foreach (string str in orderedList)
+            {
+                if (num > num2 && num < num3)
+                {
+                    Rect rect = new Rect(0f, mainRect.y + num, viewRect.width, 25f);
+                    DrawCustomRow(rect, str, num4);
+                }
+
+                num += 25f;
+                num4++;
+            }
+
+            Widgets.EndScrollView();
+        }
+
+        private void GenerateList(Rect mainRect)
         {
             float height = 6f;
 
-            foreach (string str in ChatManager.chatMessageCache.ToArray()) height += Text.CalcHeight(str, rect.width);
+            foreach (string str in ChatManager.chatMessageCache.ToArray()) height += Text.CalcHeight(str, mainRect.width);
 
-            Rect viewRect = new Rect(rect.x, rect.y, rect.width - 16f, height);
+            Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
 
-            Widgets.BeginScrollView(rect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref scrollPositionChat, viewRect);
 
             float num = 0;
-            float num2 = scrollPosition.y - 30f;
-            float num3 = scrollPosition.y + rect.height;
-            int num4 = 0;
+            float num2 = scrollPositionChat.y - 30f;
+            float num3 = scrollPositionChat.y + mainRect.height;
 
-            int index = 0;
             foreach (string str in ChatManager.chatMessageCache.ToArray())
             {
                 if (num > num2 && num < num3)
                 {
-                    Rect rect2 = new Rect(0f, rect.y + num, viewRect.width, Text.CalcHeight(str, rect.width));
+                    float offset = 160f;
+                    Rect rect2 = new Rect(offset , mainRect.y + num, viewRect.width - offset, Text.CalcHeight(str, mainRect.width));
                     DrawCustomRow(rect2, str);
                 }
 
-                num += Text.CalcHeight(str, rect.width) + 0f;
-                num4++;
-                index++;
+                num += Text.CalcHeight(str, mainRect.width) + 0f;
             }
 
             Widgets.EndScrollView();
@@ -120,7 +154,7 @@ namespace GameClient
         private void DrawInput(Rect rect)
         {
             Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new Rect(rect.xMin, rect.yMax - 25f, rect.width, 25f), ChatManager.currentChatInput);
+            string inputOne = Widgets.TextField(new Rect(rect.xMin + 160f, rect.yMax - 25f, rect.width - 160f, 25f), ChatManager.currentChatInput);
             if (AcceptsInput && inputOne.Length <= 512) ChatManager.currentChatInput = inputOne;
         }
 
@@ -147,15 +181,27 @@ namespace GameClient
 
         private void ScrollToLastMessage()
         {
-            scrollPosition.Set(scrollPosition.x, scrollPosition.y + Mathf.Infinity);
+            scrollPositionChat.Set(scrollPositionChat.x, scrollPositionChat.y + Mathf.Infinity);
             ClientValues.ToggleChatScroll(false);
         }
 
         private void DrawCustomRow(Rect rect, string message)
         {
             Text.Font = GameFont.Small;
-            Rect fixedRect = new Rect(new Vector2(rect.x + 10f, rect.y + 5f), new Vector2(rect.width - 36f, rect.height));
+            Rect fixedRect = new Rect(rect.x + 10f, rect.y + 5f, rect.width - 36f, rect.height);
             Widgets.Label(fixedRect, message);
+        }
+
+        private void DrawCustomRow(Rect rect, string str, int index)
+        {
+            Text.Font = GameFont.Small;
+            //if (index % 2 == 0) Widgets.DrawLightHighlight(rect);
+
+            Rect fixedRect = new Rect(rect.x + 10f, rect.y + 5f, rect.width - 10f, rect.height);
+            Widgets.Label(fixedRect, str);
+
+            if (Widgets.ButtonInvisible(fixedRect, false)) ChatManager.currentChatInput += $"@{str}";
+            Widgets.DrawHighlightIfMouseover(fixedRect);
         }
     }
 }
