@@ -66,26 +66,23 @@ namespace GameClient
             ChatManager.chatBoxPosition.x = windowRect.x;
             ChatManager.chatBoxPosition.y = windowRect.y;
 
-            DrawPlayerCount(rect);
-            DrawPlayerList(new(rect.x, rect.y + 25f, 160f, rect.height - 50f));
-
-            DrawPinCheckbox(rect);
-
             Widgets.DrawLineHorizontal(rect.x, rect.y + 25f, rect.width);
             Widgets.DrawLineVertical(rect.x + 160f, rect.y + 25f, rect.height - 50f);
 
-            GenerateList(new(rect.x, rect.y + 32f, rect.width, rect.height - 60f));
+            DrawPlayerCount(rect);
+            DrawPlayerList(new(rect.x, rect.y + 25f, 160f, rect.height - 50f));
+            DrawMessageList(new(rect.x, rect.y + 32f, rect.width, rect.height - 60f));
 
+            DrawPinCheckbox(rect);
             DrawInput(rect);
 
             CheckForEnterKey();
-
-            if (ChatManager.shouldScrollChat) ScrollToLastMessage();
+            ScrollToLastMessage();
         }
 
         private void DrawPlayerCount(Rect rect)
         {
-            string message = $"{ServerValues.currentPlayers} Online Players";
+            string message = ServerValues.currentPlayers > 1 ? $"{ServerValues.currentPlayers} Players Online" : $"{ServerValues.currentPlayers} Player Online" ;
 
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(rect.x, rect.y, Text.CalcSize(message).x, Text.CalcSize(message).y), message);
@@ -94,7 +91,6 @@ namespace GameClient
         private void DrawPlayerList(Rect mainRect)
         {
             List<string> orderedList = ServerValues.currentPlayerNames;
-
             orderedList.Sort();
 
             float height = 6f + (float)orderedList.Count() * 25f;
@@ -105,24 +101,22 @@ namespace GameClient
             float num = 0;
             float num2 = scrollPositionPlayers.y - 25f;
             float num3 = scrollPositionPlayers.y + mainRect.height;
-            int num4 = 0;
 
             foreach (string str in orderedList)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, mainRect.y + num, viewRect.width, 25f);
-                    DrawCustomRow(rect, str, num4);
+                    DrawCustomRowPlayerList(rect, str);
                 }
 
                 num += 25f;
-                num4++;
             }
 
             Widgets.EndScrollView();
         }
 
-        private void GenerateList(Rect mainRect)
+        private void DrawMessageList(Rect mainRect)
         {
             float height = 6f;
 
@@ -140,8 +134,7 @@ namespace GameClient
             {
                 if (num > num2 && num < num3)
                 {
-                    float offset = 160f;
-                    Rect rect2 = new Rect(offset , mainRect.y + num, viewRect.width - offset, Text.CalcHeight(str, mainRect.width));
+                    Rect rect2 = new Rect(160f , mainRect.y + num, viewRect.width - 160f, Text.CalcHeight(str, mainRect.width - 160f));
                     DrawCustomRow(rect2, str);
                 }
 
@@ -154,17 +147,17 @@ namespace GameClient
         private void DrawInput(Rect rect)
         {
             Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new Rect(rect.xMin + 160f, rect.yMax - 25f, rect.width - 160f, 25f), ChatManager.currentChatInput);
+            string inputOne = Widgets.TextField(new Rect(rect.xMin + 165f, rect.yMax - 25f, rect.width - 165f, 25f), ChatManager.currentChatInput);
             if (AcceptsInput && inputOne.Length <= 512) ChatManager.currentChatInput = inputOne;
         }
 
         private void DrawPinCheckbox(Rect rect)
         {
-            string message = "Auto Scroll";
+            string message = "Mute Pings";
 
             Text.Font = GameFont.Small;
             Widgets.CheckboxLabeled(new Rect(rect.xMax - Text.CalcSize(message).x * 1.5f, rect.y, Text.CalcSize(message).x * 2, 
-                Text.CalcSize(message).y), message, ref ChatManager.chatAutoscroll, placeCheckboxNearText:true);
+                Text.CalcSize(message).y), message, ref ClientValues.muteSoundBool, placeCheckboxNearText:true);
         }
 
         private void CheckForEnterKey()
@@ -192,10 +185,9 @@ namespace GameClient
             Widgets.Label(fixedRect, message);
         }
 
-        private void DrawCustomRow(Rect rect, string str, int index)
+        private void DrawCustomRowPlayerList(Rect rect, string str)
         {
             Text.Font = GameFont.Small;
-            //if (index % 2 == 0) Widgets.DrawLightHighlight(rect);
 
             Rect fixedRect = new Rect(rect.x + 10f, rect.y + 5f, rect.width - 10f, rect.height);
             Widgets.Label(fixedRect, str);

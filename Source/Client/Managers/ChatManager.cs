@@ -95,7 +95,6 @@ namespace GameClient
             if (ClientValues.muteSoundBool) return;
 
             if (hasBeenTagged) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
-            //if (!isChatTabOpen) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
