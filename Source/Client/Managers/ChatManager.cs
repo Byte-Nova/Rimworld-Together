@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HarmonyLib;
 using RimWorld;
-using RimWorld.Planet;
 using Shared;
 using UnityEngine;
 using Verse;
@@ -101,7 +100,7 @@ namespace GameClient
             if (chatMessageCache.Count() > 100) chatMessageCache.RemoveAt(0);
 
             chatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{userColorDictionary[userColor]}{username}</color>: " +
-                $"{messageColorDictionary[messageColor]}{message}</color>");
+                $"{messageColorDictionary[messageColor]}{ParseMessage(message)}</color>");
 
             ClientValues.ToggleChatScroll(true);
         }
@@ -154,6 +153,61 @@ namespace GameClient
             Master.threadDispatcher.Enqueue(TurnOffChatIcon);
 
             chatClockTask = null;
+        }
+
+        private static string ParseMessage(string msg)
+        {
+            string parsedMessage = msg;
+            string verification = "";
+            bool verifying = false;
+            Stack<string> codeType = new();
+
+            Regex colorRegex = new(@"\[[a-fA-F0-9]{6}\]");
+
+            foreach(char c in msg) 
+            {
+                if (c == '[') verifying = true;
+
+                if (verifying)
+                {
+                    verification += c;
+                    if (c == ']') verifying = false;
+                }
+                
+                if (verification != "" && !verifying)
+                {
+                    switch(verification)
+                    {
+                        case "[/]":
+                            if (codeType.Count > 0) parsedMessage = parsedMessage.ReplaceFirst(verification, $"</{codeType.Pop()}>");
+                            verification = "";
+                            break;
+                        case "[b]":
+                            parsedMessage = parsedMessage.Replace(verification, "<b>");
+                            codeType.Push("b");
+                            verification = "";
+                            break;
+                        case "[i]":
+                            parsedMessage = parsedMessage.Replace(verification, "<i>");
+                            codeType.Push("i");
+                            verification = "";
+                            break;
+                        default:
+                            if (colorRegex.IsMatch(verification))
+                            {
+                                string verificationReplacement = verification.Replace("[", "<color=#").Replace("]", ">");
+                                parsedMessage = parsedMessage.Replace(verification, verificationReplacement);
+                                codeType.Push("color");
+                                verification = "";
+                            }
+                            break;
+                    }
+                }
+            }
+
+            while(codeType.Count > 0) parsedMessage += $"</{codeType.Pop()}>";
+
+            return parsedMessage;
         }
     }
 
