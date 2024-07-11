@@ -42,8 +42,7 @@ namespace GameClient
 
         //Booleans
         public static bool isChatTabOpen;
-        public static bool chatAutoscroll;
-        public static bool shouldScrollChat;
+        public static bool shouldScrollChat = true;
         public static bool isChatIconActive;
 
         //Chat clock
@@ -104,7 +103,7 @@ namespace GameClient
             chatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{userColorDictionary[userColor]}{username}</color>: " +
                 $"{messageColorDictionary[messageColor]}{message}</color>");
 
-            if (chatAutoscroll) ClientValues.ToggleChatScroll(true);
+            ClientValues.ToggleChatScroll(true);
         }
 
         public static void CleanChat()

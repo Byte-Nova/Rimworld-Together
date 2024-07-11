@@ -3,7 +3,6 @@ using UnityEngine;
 using Verse;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.UIElements;
 
 namespace GameClient
 {
@@ -32,7 +31,6 @@ namespace GameClient
             drawInScreenshotMode = false;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
 
             closeOnAccept = false;
             closeOnCancel = true;
@@ -71,13 +69,13 @@ namespace GameClient
 
             DrawPlayerCount(rect);
             DrawPlayerList(new(rect.x, rect.y + 25f, 160f, rect.height - 50f));
-            DrawMessageList(new(rect.x, rect.y + 32f, rect.width, rect.height - 60f));
+            DrawMessageList(new(rect.x + 160f, rect.y + 32f, rect.width - 160f, rect.height - 60f));
 
             DrawPinCheckbox(rect);
             DrawInput(rect);
 
             CheckForEnterKey();
-            ScrollToLastMessage();
+            if (ChatManager.shouldScrollChat) ScrollToLastMessage();
         }
 
         private void DrawPlayerCount(Rect rect)
@@ -85,7 +83,7 @@ namespace GameClient
             string message = ServerValues.currentPlayers > 1 ? $"{ServerValues.currentPlayers} Players Online" : $"{ServerValues.currentPlayers} Player Online" ;
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(rect.x, rect.y, Text.CalcSize(message).x, Text.CalcSize(message).y), message);
+            Widgets.Label(new(rect.x, rect.y, Text.CalcSize(message).x, Text.CalcSize(message).y), $"<color=grey>{message}</color>");
         }
 
         private void DrawPlayerList(Rect mainRect)
@@ -93,8 +91,8 @@ namespace GameClient
             List<string> orderedList = ServerValues.currentPlayerNames;
             orderedList.Sort();
 
-            float height = 6f + (float)orderedList.Count() * 25f;
-            Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
+            float height = 6f + orderedList.Count() * 25f;
+            Rect viewRect = new(mainRect.x, mainRect.y, mainRect.width - 16f, height);
 
             Widgets.BeginScrollView(mainRect, ref scrollPositionPlayers, viewRect);
 
@@ -106,7 +104,7 @@ namespace GameClient
             {
                 if (num > num2 && num < num3)
                 {
-                    Rect rect = new Rect(0f, mainRect.y + num, viewRect.width, 25f);
+                    Rect rect = new(0f, mainRect.y + num, viewRect.width, 25f);
                     DrawCustomRowPlayerList(rect, str);
                 }
 
@@ -119,26 +117,28 @@ namespace GameClient
         private void DrawMessageList(Rect mainRect)
         {
             float height = 6f;
+            float heightCalcWidthOffset = 160f;
+            float chatScrollbarSafezone = 30f;
 
-            foreach (string str in ChatManager.chatMessageCache.ToArray()) height += Text.CalcHeight(str, mainRect.width);
+            foreach (string str in ChatManager.chatMessageCache.ToArray()) height += Text.CalcHeight(str, mainRect.width - chatScrollbarSafezone);
 
-            Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
+            Rect viewRect = new(mainRect.x, mainRect.y, mainRect.width - chatScrollbarSafezone, height);
 
             Widgets.BeginScrollView(mainRect, ref scrollPositionChat, viewRect);
 
             float num = 0;
-            float num2 = scrollPositionChat.y - 30f;
+            float num2 = scrollPositionChat.y - chatScrollbarSafezone;
             float num3 = scrollPositionChat.y + mainRect.height;
 
             foreach (string str in ChatManager.chatMessageCache.ToArray())
             {
                 if (num > num2 && num < num3)
                 {
-                    Rect rect2 = new Rect(160f , mainRect.y + num, viewRect.width - 160f, Text.CalcHeight(str, mainRect.width - 160f));
+                    Rect rect2 = new(160f , mainRect.y + num, viewRect.width, Text.CalcHeight(str, mainRect.width - heightCalcWidthOffset - chatScrollbarSafezone));
                     DrawCustomRow(rect2, str);
                 }
 
-                num += Text.CalcHeight(str, mainRect.width) + 0f;
+                num += Text.CalcHeight(str, mainRect.width - chatScrollbarSafezone);
             }
 
             Widgets.EndScrollView();
@@ -147,7 +147,7 @@ namespace GameClient
         private void DrawInput(Rect rect)
         {
             Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new Rect(rect.xMin + 165f, rect.yMax - 25f, rect.width - 165f, 25f), ChatManager.currentChatInput);
+            string inputOne = Widgets.TextField(new(rect.xMin + 165f, rect.yMax - 25f, rect.width - 165f, 25f), ChatManager.currentChatInput);
             if (AcceptsInput && inputOne.Length <= 512) ChatManager.currentChatInput = inputOne;
         }
 
@@ -156,7 +156,7 @@ namespace GameClient
             string message = "Mute Pings";
 
             Text.Font = GameFont.Small;
-            Widgets.CheckboxLabeled(new Rect(rect.xMax - Text.CalcSize(message).x * 1.5f, rect.y, Text.CalcSize(message).x * 2, 
+            Widgets.CheckboxLabeled(new(rect.xMax - Text.CalcSize(message).x * 1.5f, rect.y, Text.CalcSize(message).x * 2, 
                 Text.CalcSize(message).y), message, ref ClientValues.muteSoundBool, placeCheckboxNearText:true);
         }
 
@@ -181,7 +181,7 @@ namespace GameClient
         private void DrawCustomRow(Rect rect, string message)
         {
             Text.Font = GameFont.Small;
-            Rect fixedRect = new Rect(rect.x + 10f, rect.y + 5f, rect.width - 36f, rect.height);
+            Rect fixedRect = new(rect.x + 10f, rect.y + 5f, rect.width, rect.height);
             Widgets.Label(fixedRect, message);
         }
 
@@ -189,7 +189,7 @@ namespace GameClient
         {
             Text.Font = GameFont.Small;
 
-            Rect fixedRect = new Rect(rect.x + 10f, rect.y + 5f, rect.width - 10f, rect.height);
+            Rect fixedRect = new(rect.x + 10f, rect.y + 5f, rect.width - 10f, rect.height);
             Widgets.Label(fixedRect, str);
 
             if (Widgets.ButtonInvisible(fixedRect, false)) ChatManager.currentChatInput += $"@{str}";
