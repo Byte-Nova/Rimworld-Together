@@ -158,11 +158,57 @@ namespace GameClient
         private static string ParseMessage(string msg)
         {
             string parsedMessage = msg;
+            string verification = "";
+            bool verifying = false;
+            Stack<string> codeType = new();
 
-            parsedMessage = Regex.Replace(parsedMessage, @"\*\*\*(.+?)\*\*\*", "<b><i>$1</i></b>");
-            parsedMessage = Regex.Replace(parsedMessage, @"\*\*(.+?)\*\*", "<b>$1</b>");
-            parsedMessage = Regex.Replace(parsedMessage, @"\*(.+?)\*", "<i>$1</i>");
-            parsedMessage = Regex.Replace(parsedMessage, @"\&([a-fA-F0-9]{6})(.+?)\&\&", "<color=#$1>$2</color>");
+            parsedMessage = Regex.Replace(parsedMessage, @"\*\*\*(.+?)\*\*\*", "[b][i]$1[/][/]");
+            parsedMessage = Regex.Replace(parsedMessage, @"\*\*(.+?)\*\*", "[b]$1[/]");
+            parsedMessage = Regex.Replace(parsedMessage, @"\*(.+?)\*", "[i]$1[/]");
+            parsedMessage = Regex.Replace(parsedMessage, @"\&([a-fA-F0-9]{6})(.+?)\&\&", "[$1]$2[/]");
+
+            foreach(char c in msg) 
+            {
+                if (c == '[') verifying = true;
+
+                if (verifying)
+                {
+                    verification += c;
+                    if (c == ']') verifying = false;
+                }
+
+                if (verification != "" && !verifying)
+                {
+                    switch(verification)
+                    {
+                        case "[/]":
+                            if (codeType.Count > 0) parsedMessage = parsedMessage.ReplaceFirst(verification, $"</{codeType.Pop()}>");
+                            verification = "";
+                            break;
+                        case "[b]":
+                            parsedMessage = parsedMessage.Replace(verification, "<b>");
+                            codeType.Push("b");
+                            verification = "";
+                            break;
+                        case "[i]":
+                            parsedMessage = parsedMessage.Replace(verification, "<i>");
+                            codeType.Push("i");
+                            verification = "";
+                            break;
+                        default:
+                            if (Regex.IsMatch(verification, @"\[[a-fA-F0-9]{6}\]"))
+                            {
+                                string verificationReplacement = verification.Replace("[", "<color=#").Replace("]", ">");
+                                parsedMessage = parsedMessage.Replace(verification, verificationReplacement);
+                                codeType.Push("color");
+                                verification = "";
+                            }
+                            break;
+                    }
+                }
+            }
+
+            while(codeType.Count > 0) parsedMessage += $"</{codeType.Pop()}>";
 
             return parsedMessage;
         }
