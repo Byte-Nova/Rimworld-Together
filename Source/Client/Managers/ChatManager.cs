@@ -167,7 +167,7 @@ namespace GameClient
             parsedMessage = Regex.Replace(parsedMessage, @"\*(.+?)\*", "[i]$1[/]");
             parsedMessage = Regex.Replace(parsedMessage, @"\&([a-fA-F0-9]{6})(.+?)\&\&", "[$1]$2[/]");
 
-            foreach(char c in msg) 
+            foreach(char c in parsedMessage) 
             {
                 if (c == '[') verifying = true;
 
