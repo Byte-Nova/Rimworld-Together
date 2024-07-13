@@ -157,6 +157,7 @@ namespace GameClient
             SiteManager.SetSiteData(serverGlobalData);
             CaravanManagerHelper.SetCaravanValues(serverGlobalData);
             RoadManagerHelper.SetRoadValues(serverGlobalData);
+            PollutionManagerHelper.SetPollutionValues(serverGlobalData);
             OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
         }

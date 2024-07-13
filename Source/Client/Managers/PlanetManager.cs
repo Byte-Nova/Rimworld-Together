@@ -58,6 +58,9 @@ namespace GameClient
                 RoadManager.ClearAllRoads();
                 RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails, false);
 
+                PollutionManager.ClearAllPollution();
+                PollutionManager.AddPollutedTiles(PollutionManagerHelper.tempPollutionDetails, false);
+
                 CaravanManager.ClearAllCaravans();
                 CaravanManager.AddCaravans(CaravanManagerHelper.tempCaravanDetails);
             }
