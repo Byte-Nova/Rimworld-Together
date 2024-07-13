@@ -14,7 +14,7 @@
 
         public enum AidStepMode { Send, Receive, Accept, Reject }
 
-        public enum CaravanStepMode { Add, Remove }
+        public enum CaravanStepMode { Add, Remove, Move }
 
         public enum RoadStepMode { Add, Remove }
 

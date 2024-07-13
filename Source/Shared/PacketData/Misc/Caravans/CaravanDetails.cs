@@ -5,8 +5,8 @@ namespace Shared
     [Serializable]
     public class CaravanDetails
     {
-        public int serverID;
-        public int localID;
+        public int ID;
         public int tile;
+        public string owner;
     }
 }

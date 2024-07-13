@@ -18,6 +18,8 @@ namespace GameServer
 
             globalData = GetServerSites(client, globalData);
 
+            globalData = GetServerCaravans(client, globalData);
+
             globalData = GetServerRoads(globalData);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), globalData);
@@ -96,6 +98,12 @@ namespace GameServer
 
             globalData.playerSites = tempList.ToArray();
 
+            return globalData;
+        }
+
+        private static ServerGlobalData GetServerCaravans(ServerClient client, ServerGlobalData globalData)
+        {
+            globalData.playerCaravans = CaravanManager.GetActiveCaravans();
             return globalData;
         }
 

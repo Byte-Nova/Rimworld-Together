@@ -22,7 +22,7 @@ namespace GameClient
                 Master.CreateUnityDispatcher();
 
                 FactionValues.SetPlayerFactionDefs();
-
+                CaravanManagerHelper.SetCaravanDefs();
                 PreferenceManager.LoadClientPreferences();
             }
         }

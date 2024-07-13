@@ -57,6 +57,9 @@ namespace GameClient
 
                 RoadManager.ClearAllRoads();
                 RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails, false);
+
+                CaravanManager.ClearAllCaravans();
+                CaravanManager.AddCaravans(CaravanManagerHelper.tempCaravanDetails);
             }
         }
 
