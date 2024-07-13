@@ -64,7 +64,6 @@ namespace GameClient
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
-
             if (!forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
         }
 

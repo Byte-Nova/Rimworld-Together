@@ -19,5 +19,6 @@ namespace Shared
         public OnlineSettlementFile[] playerSettlements;
         public OnlineSiteFile[] playerSites;
         public RoadDetails[] roads;
+        public PollutionDetails[] pollutedTiles;
     }
 }
