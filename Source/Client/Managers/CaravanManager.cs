@@ -40,7 +40,9 @@ namespace GameClient
 
         public static void AddCaravans(CaravanDetails[] details)
         {
-            foreach(CaravanDetails caravan in details)
+            if (details == null) return;
+
+            foreach (CaravanDetails caravan in details)
             {
                 AddCaravan(caravan);
             }
