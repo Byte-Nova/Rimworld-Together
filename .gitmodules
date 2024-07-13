@@ -1,6 +1,3 @@
 [submodule "Guide"]
 	path = Guide
 	url = https://github.com/RimworldTogether/Guide.git
-[submodule "Deployments"]
-	path = Deployments
-	url = https://github.com/RimworldTogether/Deployments.git
