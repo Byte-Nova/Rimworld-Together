@@ -57,6 +57,9 @@ namespace GameClient
 
                 RoadManager.ClearAllRoads();
                 RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails, false);
+
+                PollutionManager.ClearAllPollution();
+                PollutionManager.AddPollutedTiles(PollutionManagerHelper.tempPollutionDetails, false);
             }
         }
 

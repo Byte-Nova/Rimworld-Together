@@ -24,6 +24,7 @@ namespace GameClient
             typeof(WorldGenStep_Roads),
             typeof(WorldGenStep_AncientRoads),
             typeof(WorldGenStep_Rivers),
+            typeof(WorldGenStep_Pollution)
         };
 
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
@@ -186,6 +187,7 @@ namespace GameClient
             WorldGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
             WorldGeneratorManager.cachedWorldValues.Roads = RoadManagerHelper.GetPlanetRoads();
             WorldGeneratorManager.cachedWorldValues.Rivers = RiverManagerHelper.GetPlanetRivers();
+            WorldGeneratorManager.cachedWorldValues.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
             WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
             WorldGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
             return WorldGeneratorManager.cachedWorldValues;

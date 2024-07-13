@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer
 {
@@ -19,6 +20,8 @@ namespace GameServer
             globalData = GetServerSites(client, globalData);
 
             globalData = GetServerRoads(globalData);
+
+            globalData = GetServerPolution(globalData);
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), globalData);
             client.listener.EnqueuePacket(packet);
@@ -102,6 +105,12 @@ namespace GameServer
         private static ServerGlobalData GetServerRoads(ServerGlobalData data)
         {
             if (Master.worldValues != null) data.roads = Master.worldValues.Roads;
+            return data;
+        }
+
+        private static ServerGlobalData GetServerPolution(ServerGlobalData data)
+        {
+            if (Master.worldValues != null) data.pollutedTiles = Master.worldValues.PollutedTiles;
             return data;
         }
     }
