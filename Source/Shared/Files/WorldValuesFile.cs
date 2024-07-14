@@ -26,6 +26,8 @@ namespace Shared
 
         public RiverDetails[] Rivers;
 
+        public PollutionDetails[] PollutedTiles;
+
         public PlanetNPCFaction[] NPCFactions;
 
         public PlanetNPCSettlement[] NPCSettlements;
