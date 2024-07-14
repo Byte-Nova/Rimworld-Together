@@ -61,8 +61,10 @@ namespace GameClient
 
         public override void DoWindowContents(Rect rect)
         {
-            ChatManager.chatBoxPosition.x = windowRect.x;
-            ChatManager.chatBoxPosition.y = windowRect.y;
+            // Check TabDraw for future "social" window
+
+            ChatManager.chatBoxPosition.x = rect.x;
+            ChatManager.chatBoxPosition.y = rect.y;
 
             Widgets.DrawLineHorizontal(rect.x, rect.y + 25f, rect.width);
             Widgets.DrawLineVertical(rect.x + 160f, rect.y + 25f, rect.height - 50f);
