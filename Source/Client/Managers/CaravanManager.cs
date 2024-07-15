@@ -55,7 +55,8 @@ namespace GameClient
 
             if (details.owner == ClientValues.username)
             {
-                Caravan toAdd = Find.WorldObjects.Caravans.FirstOrDefault(fetch => !activePlayerCaravans.ContainsKey(fetch));
+                Caravan toAdd = Find.WorldObjects.Caravans.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer && 
+                    !activePlayerCaravans.ContainsKey(fetch));
 
                 if (toAdd == null) return;
                 else activePlayerCaravans.Add(toAdd, details.ID);
