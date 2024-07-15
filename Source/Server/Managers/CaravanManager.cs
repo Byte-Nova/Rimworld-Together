@@ -10,7 +10,7 @@ namespace GameServer
 
         private static readonly string fileExtension = ".mpcaravan";
 
-        private static readonly double baseMaxTimer = 3600000;
+        private static readonly double baseMaxTimer = 172800000;
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {
@@ -39,6 +39,8 @@ namespace GameServer
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
             NetworkHelper.SendPacketToAllClients(packet);
+
+            Logger.Message($"[Add Caravan] > {data.details.ID} > {client.userFile.Username}");
         }
 
         private static void RemoveCaravan(ServerClient client, CaravanData data)
@@ -51,6 +53,8 @@ namespace GameServer
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
                 NetworkHelper.SendPacketToAllClients(packet);
+
+                Logger.Message($"[Remove Caravan] > {data.details.ID} > {client.userFile.Username}");
             }
         }
 
@@ -64,7 +68,7 @@ namespace GameServer
                 RefreshCaravanTimer(data.details);
 
                 Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
-                NetworkHelper.SendPacketToAllClients(packet);
+                NetworkHelper.SendPacketToAllClients(packet, client);
             }
         }
 

@@ -148,8 +148,6 @@ namespace GameClient
         {
             activePlayerCaravans.TryGetValue(caravan, out int caravanID);
 
-            Logger.Warning(caravanID.ToString());
-
             CaravanDetails details = CaravanManagerHelper.GetCaravanDetailsFromID(caravanID);
             if (details == null) return;
             else
@@ -186,7 +184,6 @@ namespace GameClient
                 if (details.ID == caravanID)
                 {
                     details.tile = updatedTile;
-                    Logger.Warning($"Caravan moved to {details.tile}");
                     break;
                 }
             }
