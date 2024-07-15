@@ -94,6 +94,11 @@ namespace GameClient
             RoadManager.ParsePacket(packet);
         }
 
+        public static void CaravanPacket(Packet packet)
+        {
+            CaravanManager.ParsePacket(packet);
+        }
+
         public static void WorldPacket(Packet packet)
         {
             WorldManager.ParseWorldPacket(packet);
@@ -150,6 +155,7 @@ namespace GameClient
             PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
             EventManager.SetEventPrices(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
+            CaravanManagerHelper.SetCaravanValues(serverGlobalData);
             RoadManagerHelper.SetRoadValues(serverGlobalData);
             PollutionManagerHelper.SetPollutionValues(serverGlobalData);
             OfflineActivityManager.SetSpyCost(serverGlobalData);

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Shared;
+using System.Net;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
 
@@ -25,6 +26,7 @@ namespace GameServer
             connection.Start();
 
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
+            Threader.GenerateServerThread(Threader.ServerMode.Caravans);
 
             Logger.Warning("Type 'help' to get a list of available commands");
             Logger.Warning($"Listening for users at {localAddress}:{port}");
@@ -82,6 +84,23 @@ namespace GameServer
                 Logger.Message($"[Disconnect] > {client.userFile.Username} | {client.userFile.SavedIP}");
             }
             catch { Logger.Warning($"Error disconnecting user {client.userFile.Username}, this will cause memory overhead"); }
+        }
+    }
+
+    public static class NetworkHelper
+    {
+        public static ServerClient[] GetConnectedClientsSafe()
+        {
+            return Network.connectedClients.ToArray();
+        }
+
+        public static void SendPacketToAllClients(Packet packet, ServerClient toExclude = null)
+        {
+            foreach(ServerClient client in GetConnectedClientsSafe())
+            {
+                if (toExclude != null && client == toExclude) continue;
+                else client.listener.EnqueuePacket(packet);
+            }
         }
     }
 }

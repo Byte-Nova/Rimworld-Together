@@ -13,6 +13,8 @@ namespace GameClient
     {
         public static void AddPollutedTiles(PollutionDetails[] details, bool forceRefresh)
         {
+            if (details == null) return;
+
             foreach(PollutionDetails detail in details)
             {
                 AddPollutedTileSimple(detail, forceRefresh);

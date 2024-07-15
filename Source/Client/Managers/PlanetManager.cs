@@ -60,6 +60,9 @@ namespace GameClient
 
                 PollutionManager.ClearAllPollution();
                 PollutionManager.AddPollutedTiles(PollutionManagerHelper.tempPollutionDetails, false);
+
+                CaravanManager.ClearAllCaravans();
+                CaravanManager.AddCaravans(CaravanManagerHelper.tempCaravanDetails);
             }
         }
 

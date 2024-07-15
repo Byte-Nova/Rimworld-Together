@@ -273,8 +273,8 @@ namespace GameClient
                 {
                     try
                     {
-                        ItemData itemData = ThingScribeManager.ItemToString(ap, 1);
-                        humanData.equippedApparel.Add(itemData);
+                        ThingData thingData = ThingScribeManager.ItemToString(ap, 1);
+                        humanData.equippedApparel.Add(thingData);
                         humanData.apparelWornByCorpse.Add(ap.WornByCorpse);
                     }
                     catch { Logger.Warning($"Failed to get apparel {ap} from human {pawn.Label}"); }
@@ -289,8 +289,8 @@ namespace GameClient
                 try
                 {
                     ThingWithComps weapon = pawn.equipment.Primary;
-                    ItemData itemData = ThingScribeManager.ItemToString(weapon, weapon.stackCount);
-                    humanData.equippedWeapon = itemData;
+                    ThingData thingData = ThingScribeManager.ItemToString(weapon, weapon.stackCount);
+                    humanData.equippedWeapon = thingData;
                 }
                 catch { Logger.Warning($"Failed to get weapon from human {pawn.Label}"); }
             }
@@ -304,8 +304,8 @@ namespace GameClient
                 {
                     try
                     {
-                        ItemData itemData = ThingScribeManager.ItemToString(thing, thing.stackCount);
-                        humanData.inventoryItems.Add(itemData);
+                        ThingData thingData = ThingScribeManager.ItemToString(thing, thing.stackCount);
+                        humanData.inventoryItems.Add(thingData);
                     }
                     catch { Logger.Warning($"Failed to get item from human {pawn.Label}"); }
                 }
@@ -615,7 +615,7 @@ namespace GameClient
         {
             if (humanData.inventoryItems.Count() > 0)
             {
-                foreach (ItemData item in humanData.inventoryItems)
+                foreach (ThingData item in humanData.inventoryItems)
                 {
                     try
                     {
@@ -924,108 +924,108 @@ namespace GameClient
             return things.ToArray();
         }
 
-        public static ItemData ItemToString(Thing thing, int thingCount)
+        public static ThingData ItemToString(Thing thing, int thingCount)
         {
-            ItemData itemData = new ItemData();
+            ThingData thingData = new ThingData();
 
             Thing toUse = null;
-            if (GetItemMinified(thing, itemData)) toUse = thing.GetInnerIfMinified();
+            if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
-            GetItemName(toUse, itemData);
+            GetItemName(toUse, thingData);
 
-            GetItemMaterial(toUse, itemData);
+            GetItemMaterial(toUse, thingData);
 
-            GetItemQuantity(toUse, itemData, thingCount);
+            GetItemQuantity(toUse, thingData, thingCount);
 
-            GetItemQuality(toUse, itemData);
+            GetItemQuality(toUse, thingData);
 
-            GetItemHitpoints(toUse, itemData);
+            GetItemHitpoints(toUse, thingData);
 
-            GetItemPosition(toUse, itemData);
+            GetItemPosition(toUse, thingData);
 
-            GetItemRotation(toUse, itemData);
+            GetItemRotation(toUse, thingData);
 
-            return itemData;
+            return thingData;
         }
 
-        public static Thing StringToItem(ItemData itemData)
+        public static Thing StringToItem(ThingData thingData)
         {
-            Thing thing = SetItem(itemData);
+            Thing thing = SetItem(thingData);
 
-            SetItemQuantity(thing, itemData);
+            SetItemQuantity(thing, thingData);
 
-            SetItemQuality(thing, itemData);
+            SetItemQuality(thing, thingData);
 
-            SetItemHitpoints(thing, itemData);
+            SetItemHitpoints(thing, thingData);
 
-            SetItemPosition(thing, itemData);
+            SetItemPosition(thing, thingData);
 
-            SetItemRotation(thing, itemData);
+            SetItemRotation(thing, thingData);
 
-            SetItemMinified(thing, itemData);
+            SetItemMinified(thing, thingData);
 
             return thing;
         }
 
         //Getters
 
-        private static void GetItemName(Thing thing, ItemData itemData)
+        private static void GetItemName(Thing thing, ThingData thingData)
         {
-            try { itemData.defName = thing.def.defName; }
+            try { thingData.defName = thing.def.defName; }
             catch { Logger.Warning($"Failed to get name of thing {thing.def.defName}"); }
         }
 
-        private static void GetItemMaterial(Thing thing, ItemData itemData)
+        private static void GetItemMaterial(Thing thing, ThingData thingData)
         {
             try 
             {
-                if (DeepScribeHelper.CheckIfThingHasMaterial(thing)) itemData.materialDefName = thing.Stuff.defName;
-                else itemData.materialDefName = null;
+                if (DeepScribeHelper.CheckIfThingHasMaterial(thing)) thingData.materialDefName = thing.Stuff.defName;
+                else thingData.materialDefName = null;
             }
             catch { Logger.Warning($"Failed to get material of thing {thing.def.defName}"); }
         }
 
-        private static void GetItemQuantity(Thing thing, ItemData itemData, int thingCount)
+        private static void GetItemQuantity(Thing thing, ThingData thingData, int thingCount)
         {
-            try { itemData.quantity = thingCount; }
+            try { thingData.quantity = thingCount; }
             catch { Logger.Warning($"Failed to get quantity of thing {thing.def.defName}"); }
         }
 
-        private static void GetItemQuality(Thing thing, ItemData itemData)
+        private static void GetItemQuality(Thing thing, ThingData thingData)
         {
-            try { itemData.quality = DeepScribeHelper.GetThingQuality(thing); }
+            try { thingData.quality = DeepScribeHelper.GetThingQuality(thing); }
             catch { Logger.Warning($"Failed to get quality of thing {thing.def.defName}"); }
         }
 
-        private static void GetItemHitpoints(Thing thing, ItemData itemData)
+        private static void GetItemHitpoints(Thing thing, ThingData thingData)
         {
-            try { itemData.hitpoints = thing.HitPoints; }
+            try { thingData.hitpoints = thing.HitPoints; }
             catch { Logger.Warning($"Failed to get hitpoints of thing {thing.def.defName}"); }
         }
 
-        private static void GetItemPosition(Thing thing, ItemData itemData)
+        private static void GetItemPosition(Thing thing, ThingData thingData)
         {
             try
             {
-                itemData.position = new string[] { thing.Position.x.ToString(),
+                thingData.position = new string[] { thing.Position.x.ToString(),
                     thing.Position.y.ToString(), thing.Position.z.ToString() };
             }
             catch { Logger.Warning($"Failed to get position of thing {thing.def.defName}"); }
         }
 
-        private static void GetItemRotation(Thing thing, ItemData itemData)
+        private static void GetItemRotation(Thing thing, ThingData thingData)
         {
-            try { itemData.rotation = thing.Rotation.AsInt; }
+            try { thingData.rotation = thing.Rotation.AsInt; }
             catch { Logger.Warning($"Failed to get rotation of thing {thing.def.defName}"); }
         }
 
-        private static bool GetItemMinified(Thing thing, ItemData itemData)
+        private static bool GetItemMinified(Thing thing, ThingData thingData)
         {
             try 
             {
-                itemData.isMinified = DeepScribeHelper.CheckIfThingIsMinified(thing);
-                return itemData.isMinified;
+                thingData.isMinified = DeepScribeHelper.CheckIfThingIsMinified(thing);
+                return thingData.isMinified;
             }
             catch { Logger.Warning($"Failed to get minified of thing {thing.def.defName}"); }
 
@@ -1034,70 +1034,70 @@ namespace GameClient
 
         //Setters
 
-        private static Thing SetItem(ItemData itemData)
+        private static Thing SetItem(ThingData thingData)
         {
             try
             {
-                ThingDef thingDef = DefDatabase<ThingDef>.AllDefs.ToList().Find(x => x.defName == itemData.defName);
-                ThingDef defMaterial = DefDatabase<ThingDef>.AllDefs.ToList().Find(x => x.defName == itemData.materialDefName);
+                ThingDef thingDef = DefDatabase<ThingDef>.AllDefs.ToList().Find(x => x.defName == thingData.defName);
+                ThingDef defMaterial = DefDatabase<ThingDef>.AllDefs.ToList().Find(x => x.defName == thingData.materialDefName);
                 return ThingMaker.MakeThing(thingDef, defMaterial);
             }
-            catch { Logger.Warning($"Failed to set item for {itemData.defName}"); }
+            catch { Logger.Warning($"Failed to set item for {thingData.defName}"); }
 
             return null;
         }
 
-        private static void SetItemQuantity(Thing thing, ItemData itemData)
+        private static void SetItemQuantity(Thing thing, ThingData thingData)
         {
-            try { thing.stackCount = itemData.quantity; }
-            catch { Logger.Warning($"Failed to set item quantity for {itemData.defName}"); }
+            try { thing.stackCount = thingData.quantity; }
+            catch { Logger.Warning($"Failed to set item quantity for {thingData.defName}"); }
         }
 
-        private static void SetItemQuality(Thing thing, ItemData itemData)
+        private static void SetItemQuality(Thing thing, ThingData thingData)
         {
-            if (itemData.quality != "null")
+            if (thingData.quality != "null")
             {
                 try
                 {
                     CompQuality compQuality = thing.TryGetComp<CompQuality>();
                     if (compQuality != null)
                     {
-                        QualityCategory iCategory = (QualityCategory)int.Parse(itemData.quality);
+                        QualityCategory iCategory = (QualityCategory)int.Parse(thingData.quality);
                         compQuality.SetQuality(iCategory, ArtGenerationContext.Outsider);
                     }
                 }
-                catch { Logger.Warning($"Failed to set item quality for {itemData.defName}"); }
+                catch { Logger.Warning($"Failed to set item quality for {thingData.defName}"); }
             }
         }
 
-        private static void SetItemHitpoints(Thing thing, ItemData itemData)
+        private static void SetItemHitpoints(Thing thing, ThingData thingData)
         {
-            try { thing.HitPoints = itemData.hitpoints; }
-            catch { Logger.Warning($"Failed to set item hitpoints for {itemData.defName}"); }
+            try { thing.HitPoints = thingData.hitpoints; }
+            catch { Logger.Warning($"Failed to set item hitpoints for {thingData.defName}"); }
         }
 
-        private static void SetItemPosition(Thing thing, ItemData itemData)
+        private static void SetItemPosition(Thing thing, ThingData thingData)
         {
-            if (itemData.position != null)
+            if (thingData.position != null)
             {
                 try
                 {
-                    thing.Position = new IntVec3(int.Parse(itemData.position[0]), int.Parse(itemData.position[1]),
-                        int.Parse(itemData.position[2]));
+                    thing.Position = new IntVec3(int.Parse(thingData.position[0]), int.Parse(thingData.position[1]),
+                        int.Parse(thingData.position[2]));
                 }
-                catch { Logger.Warning($"Failed to set position for item {itemData.defName}"); }
+                catch { Logger.Warning($"Failed to set position for item {thingData.defName}"); }
             }
         }
 
-        private static void SetItemRotation(Thing thing, ItemData itemData)
+        private static void SetItemRotation(Thing thing, ThingData thingData)
         {
-            try { thing.Rotation = new Rot4(itemData.rotation); }
-            catch { Logger.Warning($"Failed to set rotation for item {itemData.defName}"); }
+            try { thing.Rotation = new Rot4(thingData.rotation); }
+            catch { Logger.Warning($"Failed to set rotation for item {thingData.defName}"); }
         }
 
-        private static void SetItemMinified(Thing thing, ItemData itemData)
+        private static void SetItemMinified(Thing thing, ThingData thingData)
         {
-            if (itemData.isMinified)
+            if (thingData.isMinified)
             {
                 //INFO
                 //This function is where you should transform the item back into a minified.
@@ -1201,24 +1201,24 @@ namespace GameClient
         {
             try 
             {
-                List<ItemData> tempFactionThings = new List<ItemData>();
-                List<ItemData> tempNonFactionThings = new List<ItemData>();
+                List<ThingData> tempFactionThings = new List<ThingData>();
+                List<ThingData> tempNonFactionThings = new List<ThingData>();
 
                 foreach (Thing thing in map.listerThings.AllThings)
                 {
                     if (!DeepScribeHelper.CheckIfThingIsHuman(thing) && !DeepScribeHelper.CheckIfThingIsAnimal(thing))
                     {
-                        ItemData itemData = ThingScribeManager.ItemToString(thing, thing.stackCount);
+                        ThingData thingData = ThingScribeManager.ItemToString(thing, thing.stackCount);
 
-                        if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(itemData);
-                        else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(itemData);
+                        if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(thingData);
+                        else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(thingData);
 
                         if (DeepScribeHelper.CheckIfThingCanGrow(thing))
                         {
                             try
                             {
                                 Plant plant = thing as Plant;
-                                itemData.growthTicks = plant.Growth;
+                                thingData.growthTicks = plant.Growth;
                             }
                             catch { Logger.Warning($"Failed to parse plant {thing.def.defName}"); }
                         }
@@ -1347,7 +1347,7 @@ namespace GameClient
                 {
                     Random rnd = new Random();
 
-                    foreach (ItemData item in mapData.factionThings)
+                    foreach (ThingData item in mapData.factionThings)
                     {
                         try
                         {
@@ -1372,7 +1372,7 @@ namespace GameClient
 
                 if (nonFactionThings)
                 {
-                    foreach (ItemData item in mapData.nonFactionThings)
+                    foreach (ThingData item in mapData.nonFactionThings)
                     {
                         try
                         {
