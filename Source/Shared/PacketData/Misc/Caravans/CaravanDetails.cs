@@ -8,5 +8,6 @@ namespace Shared
         public int ID;
         public int tile;
         public string owner;
+        public double timeSinceRefresh;
     }
 }

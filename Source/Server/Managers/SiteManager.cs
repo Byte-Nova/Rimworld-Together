@@ -271,7 +271,8 @@ namespace GameServer
             {
                 Thread.Sleep(1800000);
 
-                SiteRewardTick();
+                try { SiteRewardTick(); }
+                catch (Exception e) { Logger.Error($"Site tick failed, this should never happen. Exception > {e}"); }
             }
         }
 

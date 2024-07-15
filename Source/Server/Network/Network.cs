@@ -26,6 +26,7 @@ namespace GameServer
             connection.Start();
 
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
+            Threader.GenerateServerThread(Threader.ServerMode.Caravans);
 
             Logger.Warning("Type 'help' to get a list of available commands");
             Logger.Warning($"Listening for users at {localAddress}:{port}");
