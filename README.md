@@ -8,8 +8,6 @@ Welcome to the Github repository for "Rimworld Together"! In here you will find 
 > Workshop: https://steamcommunity.com/sharedfiles/filedetails/?id=3005289691
 >
 > Wiki: https://rimworldtogether.github.io/Guide/
->
-> Trello: https://trello.com/b/Y5J3IeSX/rimworld-together
 > 
 > Discord: https://discord.gg/NCsArSaqBW
 >
