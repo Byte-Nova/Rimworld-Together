@@ -11,6 +11,6 @@ namespace Shared
         public int quantityToManage;
         public int indexToManage;
 
-        public List<ItemData> transferThings;
+        public List<ThingData> transferThings;
     }
 }

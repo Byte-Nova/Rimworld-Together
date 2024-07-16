@@ -61,13 +61,13 @@ namespace Shared
 
         //Apparel
 
-        public List<ItemData> equippedApparel = new List<ItemData>();
+        public List<ThingData> equippedApparel = new List<ThingData>();
         public List<bool> apparelWornByCorpse = new List<bool>();
 
         //Equipment
 
-        public ItemData equippedWeapon;
-        public List<ItemData> inventoryItems = new List<ItemData>();
+        public ThingData equippedWeapon;
+        public List<ThingData> inventoryItems = new List<ThingData>();
 
         //Transform
 

@@ -438,7 +438,7 @@ namespace GameClient
 
             else
             {
-                ItemData thingData = Serializer.ConvertBytesToObject<ItemData>(data.creationOrder.dataToCreate);
+                ThingData thingData = Serializer.ConvertBytesToObject<ThingData>(data.creationOrder.dataToCreate);
                 toSpawn = ThingScribeManager.StringToItem(thingData);
             }
 

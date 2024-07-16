@@ -5,7 +5,7 @@ namespace GameServer
 {
     public static class EventManager
     {
-        private static readonly double baseEventTimer = 3600000;
+        private static readonly double baseMaxTimer = 3600000;
 
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
@@ -44,7 +44,7 @@ namespace GameServer
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
 
-                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, baseEventTimer))
+                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, baseMaxTimer))
                     {
                         eventData.eventStepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);

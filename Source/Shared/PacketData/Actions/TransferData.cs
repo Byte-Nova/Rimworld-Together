@@ -19,6 +19,6 @@ namespace Shared
 
         public List<AnimalData> animalDatas = new List<AnimalData>();
 
-        public List<ItemData> itemDatas = new List<ItemData>();
+        public List<ThingData> itemDatas = new List<ThingData>();
     }
 }

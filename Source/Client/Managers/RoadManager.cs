@@ -54,13 +54,13 @@ namespace GameClient
             Network.listener.EnqueuePacket(packet);
         }
 
-        public static void AddRoads(RoadDetails[] roads, bool forceRefresh)
+        public static void AddRoads(RoadDetails[] details, bool forceRefresh)
         {
-            if (roads == null) return;
+            if (details == null) return;
 
-            foreach (RoadDetails details in roads)
+            foreach (RoadDetails detail in details)
             {
-                AddRoadSimple(details.tileA, details.tileB, RoadManagerHelper.GetRoadDefFromDefName(details.roadDefName), forceRefresh);
+                AddRoadSimple(detail.tileA, detail.tileB, RoadManagerHelper.GetRoadDefFromDefName(detail.roadDefName), forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
