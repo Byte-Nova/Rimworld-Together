@@ -13,7 +13,7 @@ namespace GameServer
         {
             "Welcome to the global chat!",
             "Please be considerate with others and have fun!",
-            "Use '/help' to check available commands"
+            "Use '/help' to check all the available commands."
         };
 
         private static void WriteToLogs(string username, string message)
@@ -34,15 +34,12 @@ namespace GameServer
             logSemaphore.Release();
         }
     
-        public static void ParseClientMessages(ServerClient client, Packet packet)
+        public static void ParseClientMessage(ServerClient client, Packet packet)
         {
             ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
-            
-            for(int i = 0; i < chatData.messages.Count(); i++)
-            {
-                if (chatData.messages[i].StartsWith("/")) ExecuteChatCommand(client, chatData.messages[i]);
-                else BroadcastChatMessage(client, chatData.messages[i]);
-            }
+
+            if (chatData.message.StartsWith("/")) ExecuteChatCommand(client, chatData.message);
+            else BroadcastChatMessage(client, chatData.message);
         }
 
         private static void ExecuteChatCommand(ServerClient client, string command)
@@ -50,7 +47,7 @@ namespace GameServer
             commandSemaphore.WaitOne();
 
             ChatCommand toFind = ChatCommandManager.chatCommands.ToList().Find(x => x.prefix == command);
-            if (toFind == null) BroadcastSystemMessage(client, new string[] { "Command was not found" });
+            if (toFind == null) BroadcastSystemMessages(client, new string[] { "Command was not found" });
             else
             {
                 ChatCommandManager.targetClient = client;
@@ -65,19 +62,19 @@ namespace GameServer
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
             ChatData chatData = new ChatData();
-            chatData.usernames.Add(client.userFile.Username);
-            chatData.messages.Add(message);
+            chatData.username = client.userFile.Username;
+            chatData.message = message;
 
             if (client.userFile.IsAdmin)
             {
-                chatData.userColors.Add(((int)MessageColor.Admin).ToString());
-                chatData.messageColors.Add(((int)MessageColor.Admin).ToString());
+                chatData.userColor = UserColor.Admin;
+                chatData.messageColor = MessageColor.Admin;
             }
 
             else
             {
-                chatData.userColors.Add(((int)MessageColor.Normal).ToString());
-                chatData.messageColors.Add(((int)MessageColor.Normal).ToString());
+                chatData.userColor = UserColor.Normal;
+                chatData.messageColor = MessageColor.Normal;
             }
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
@@ -90,10 +87,10 @@ namespace GameServer
         public static void BroadcastServerMessage(string messageToSend)
         {
             ChatData chatData = new ChatData();
-            chatData.usernames.Add("CONSOLE");
-            chatData.messages.Add(messageToSend);
-            chatData.userColors.Add(((int)MessageColor.Console).ToString());
-            chatData.messageColors.Add(((int)MessageColor.Console).ToString());
+            chatData.username = "CONSOLE";
+            chatData.message = messageToSend;
+            chatData.userColor = UserColor.Console;
+            chatData.messageColor = MessageColor.Console;
 
             Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
@@ -102,19 +99,19 @@ namespace GameServer
             if (Master.serverConfig.DisplayChatInConsole) Logger.Message($"[Chat] > CONSOLE > {messageToSend}");
         }
 
-        public static void BroadcastSystemMessage(ServerClient client, string[] messagesToSend)
+        public static void BroadcastSystemMessages(ServerClient client, string[] messagesToSend)
         {
             ChatData chatData = new ChatData();
-            for(int i = 0; i < messagesToSend.Count(); i++)
+            for (int i = 0; i < messagesToSend.Length; i++)
             {
-                chatData.usernames.Add("CONSOLE");
-                chatData.messages.Add(messagesToSend[i]);
-                chatData.userColors.Add(((int)MessageColor.Console).ToString());
-                chatData.messageColors.Add(((int)MessageColor.Console).ToString());
-            }
+                chatData.username = "CONSOLE";
+                chatData.message = messagesToSend[i];
+                chatData.userColor = UserColor.Console;
+                chatData.messageColor = MessageColor.Console;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
-            client.listener.EnqueuePacket(packet);
+                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
+                client.listener.EnqueuePacket(packet);
+            }
         }
     }
 
@@ -122,41 +119,59 @@ namespace GameServer
     {
         public static ServerClient targetClient;
 
-        private static ChatCommand helpCommand = new ChatCommand("/help", 0,
+        private static readonly ChatCommand helpCommand = new ChatCommand("/help", 0,
             "Shows a list of all available commands",
             ChatHelpCommandAction);
 
-        private static ChatCommand pingCommand = new ChatCommand("/ping", 0,
+        private static readonly ChatCommand toolsCommand = new ChatCommand("/tools", 0,
+            "Shows a list of all available chat tools",
+            ChatToolsCommandAction);
+
+        private static readonly ChatCommand pingCommand = new ChatCommand("/ping", 0,
             "Checks if the connection to the server is working",
             ChatPingCommandAction);
 
-        private static ChatCommand disconnectCommand = new ChatCommand("/dc", 0,
+        private static readonly ChatCommand disconnectCommand = new ChatCommand("/dc", 0,
             "Forcefully disconnects you from the server",
             ChatDisconnectCommandAction);
 
-        private static ChatCommand StopOnlineActivityCommand = new ChatCommand("/sv", 0,
+        private static readonly ChatCommand stopOnlineActivityCommand = new ChatCommand("/sv", 0,
             "Forcefully disconnects you from a visit",
             ChatStopOnlineActivityCommandAction);
 
-        public static ChatCommand[] chatCommands = new ChatCommand[]
+        public static readonly ChatCommand[] chatCommands = new ChatCommand[]
         {
             helpCommand,
+            toolsCommand,
             pingCommand,
             disconnectCommand,
-            StopOnlineActivityCommand
+            stopOnlineActivityCommand
         };
 
         private static void ChatHelpCommandAction()
         {
             List<string> messagesToSend = new List<string> { "List of available commands:" };
             foreach (ChatCommand command in chatCommands) messagesToSend.Add($"{command.prefix} - {command.description}");
-            ChatManager.BroadcastSystemMessage(targetClient, messagesToSend.ToArray());
+            ChatManager.BroadcastSystemMessages(targetClient, messagesToSend.ToArray());
+        }
+
+        private static void ChatToolsCommandAction()
+        {
+            List<string> messagesToSend = new List<string>
+            {
+                "List of available text tools:",
+                "'b' inside brackets - Followed by the text you want to turn [b]bold",
+                "'i' inside brackets - Followed by the text you want to turn [i]cursive",
+                "HTML color inside brackets - Followed by the text you want to [ff0000]change color"
+            };
+
+            ChatManager.BroadcastSystemMessages(targetClient, messagesToSend.ToArray());
         }
 
         private static void ChatPingCommandAction()
         {
             List<string> messagesToSend = new List<string> { "Pong!" };
-            ChatManager.BroadcastSystemMessage(targetClient, messagesToSend.ToArray());
+            ChatManager.BroadcastSystemMessages(targetClient, messagesToSend.ToArray());
         }
 
         private static void ChatDisconnectCommandAction()

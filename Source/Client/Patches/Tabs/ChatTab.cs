@@ -67,7 +67,7 @@ namespace GameClient
             ChatManager.chatBoxPosition.y = rect.y;
 
             Widgets.DrawLineHorizontal(rect.x, rect.y + 25f, rect.width);
-            Widgets.DrawLineVertical(rect.x + 160f, rect.y + 25f, rect.height - 50f);
+            Widgets.DrawLineVertical(rect.x + 160f, rect.y + 25f, rect.height);
 
             DrawPlayerCount(rect);
             DrawPlayerList(new(rect.x, rect.y + 25f, 160f, rect.height - 50f));
@@ -82,10 +82,10 @@ namespace GameClient
 
         private void DrawPlayerCount(Rect rect)
         {
-            string message = ServerValues.currentPlayers > 1 ? $"{ServerValues.currentPlayers} Players Online" : $"{ServerValues.currentPlayers} Player Online" ;
+            string toShow = ServerValues.currentPlayers > 1 ? $"{ServerValues.currentPlayers} Players Online" : $"{ServerValues.currentPlayers} Player Online" ;
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new(rect.x, rect.y, Text.CalcSize(message).x, Text.CalcSize(message).y), $"<color=grey>{message}</color>");
+            Widgets.Label(new(rect.x, rect.y, Text.CalcSize(toShow).x, Text.CalcSize(toShow).y), $"<color=grey>{toShow}</color>");
         }
 
         private void DrawPlayerList(Rect mainRect)
@@ -155,11 +155,11 @@ namespace GameClient
 
         private void DrawPinCheckbox(Rect rect)
         {
-            string message = "Mute Pings";
+            string pinText = "Auto Scroll";
 
             Text.Font = GameFont.Small;
-            Widgets.CheckboxLabeled(new(rect.xMax - Text.CalcSize(message).x * 1.5f, rect.y, Text.CalcSize(message).x * 2, 
-                Text.CalcSize(message).y), message, ref ClientValues.muteSoundBool, placeCheckboxNearText:true);
+            Widgets.CheckboxLabeled(new Rect(rect.xMax - Text.CalcSize(pinText).x * 1.5f, rect.y, Text.CalcSize(pinText).x * 2,
+                Text.CalcSize(pinText).y), pinText, ref ChatManager.chatAutoscroll, placeCheckboxNearText: true);
         }
 
         private void CheckForEnterKey()
