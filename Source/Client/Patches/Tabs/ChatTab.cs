@@ -40,8 +40,8 @@ namespace GameClient
         {
             base.PreOpen();
 
-            windowRect.y = ChatManager.chatBoxPosition.y;
             windowRect.x = ChatManager.chatBoxPosition.x;
+            windowRect.y = ChatManager.chatBoxPosition.y;
         }
 
         public override void PostOpen()
@@ -61,10 +61,8 @@ namespace GameClient
 
         public override void DoWindowContents(Rect rect)
         {
-            // Check TabDraw for future "social" window
-
-            ChatManager.chatBoxPosition.x = rect.x;
-            ChatManager.chatBoxPosition.y = rect.y;
+            ChatManager.chatBoxPosition.x = windowRect.x;
+            ChatManager.chatBoxPosition.y = windowRect.y;
 
             Widgets.DrawLineHorizontal(rect.x, rect.y + 25f, rect.width);
             Widgets.DrawLineVertical(rect.x + 160f, rect.y + 25f, rect.height);

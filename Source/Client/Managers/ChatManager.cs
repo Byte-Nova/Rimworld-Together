@@ -17,7 +17,7 @@ namespace GameClient
     [StaticConstructorOnStartup]
     public static class ChatManager
     {
-        public static Vector2 chatBoxPosition = new Vector2(UI.screenWidth - 800f, UI.screenHeight - 35 - 600f);
+        public static Vector2 chatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
         private static readonly MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
 
         //Data
