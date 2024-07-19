@@ -50,11 +50,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Roads\RoadDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCFaction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetFeature.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\NPCSettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\NPCSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerRecountData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ServerGlobalData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\SettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\SettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionGoodwillData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\AnimalData.cs" />
