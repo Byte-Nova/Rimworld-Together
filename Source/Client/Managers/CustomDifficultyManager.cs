@@ -182,7 +182,7 @@ namespace GameClient
 
             difficultyData.WastepackInfestationChanceFactor = Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CustomDifficultyPacket), difficultyData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CustomDifficultyPacket), difficultyData);
             Network.listener.EnqueuePacket(packet);
         }
 

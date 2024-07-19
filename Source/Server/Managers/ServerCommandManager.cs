@@ -1,4 +1,5 @@
 ﻿using static GameServer.ServerCommandManager;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -651,7 +652,7 @@ namespace GameServer
             else
             {
                 Master.difficultyValues.UseCustomDifficulty = true;
-                CustomDifficultyManager.SaveCustomDifficulty(Master.difficultyValues);
+                Master.SaveValueFile(ServerValueMode.Difficulty);
 
                 Logger.Warning($"Custom difficulty is now enabled");
             }
@@ -667,7 +668,7 @@ namespace GameServer
             else
             {
                 Master.difficultyValues.UseCustomDifficulty = false;
-                CustomDifficultyManager.SaveCustomDifficulty(Master.difficultyValues);
+                Master.SaveValueFile(ServerValueMode.Difficulty);
 
                 Logger.Warning($"Custom difficulty is now disabled");
             }

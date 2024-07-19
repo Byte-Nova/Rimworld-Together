@@ -77,7 +77,7 @@ namespace GameServer
                 chatData.messageColor = MessageColor.Normal;
             }
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
 
             WriteToLogs(client.userFile.Username, message);
@@ -92,7 +92,7 @@ namespace GameServer
             chatData.userColor = UserColor.Console;
             chatData.messageColor = MessageColor.Console;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             WriteToLogs("CONSOLE", messageToSend);
@@ -109,7 +109,7 @@ namespace GameServer
                 chatData.userColor = UserColor.Console;
                 chatData.messageColor = MessageColor.Console;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
                 client.listener.EnqueuePacket(packet);
             }
         }

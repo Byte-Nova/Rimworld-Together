@@ -1,12 +1,9 @@
 ﻿using GameClient;
 using RimWorld;
 using RimWorld.Planet;
-using RimWorld.QuestGen;
 using Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Tilemaps;
 using Verse;
 
 namespace GameClient
@@ -124,7 +121,7 @@ namespace GameClient
             data.details.tile = caravan.Tile;
             data.details.owner = ClientValues.username;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -140,7 +137,7 @@ namespace GameClient
                 data.stepMode = CommonEnumerators.CaravanStepMode.Remove;
                 data.details = details;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -157,7 +154,7 @@ namespace GameClient
                 data.stepMode = CommonEnumerators.CaravanStepMode.Move;
                 data.details = details;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -198,7 +195,7 @@ public static class CaravanManagerHelper
 
     public static CaravanDetails[] tempCaravanDetails;
 
-    public static void SetCaravanValues(ServerGlobalData serverGlobalData)
+    public static void SetValues(ServerGlobalData serverGlobalData)
     {
         tempCaravanDetails = serverGlobalData.playerCaravans;
     }

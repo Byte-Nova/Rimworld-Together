@@ -1,10 +1,6 @@
 ﻿using RimWorld.Planet;
 using Shared;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace GameClient
@@ -47,7 +43,7 @@ namespace GameClient
     {
         public static PollutionDetails[] tempPollutionDetails;
 
-        public static void SetPollutionValues(ServerGlobalData serverGlobalData)
+        public static void SetValues(ServerGlobalData serverGlobalData)
         {
             tempPollutionDetails = serverGlobalData.pollutedTiles;
         }

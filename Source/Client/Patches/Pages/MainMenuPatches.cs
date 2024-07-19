@@ -105,7 +105,7 @@ namespace GameClient
                             loginData.clientVersion = CommonValues.executableVersion;
                             loginData.runningMods = ModManager.GetRunningModList().ToList();
 
-                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginData);
+                            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), loginData);
                             Network.listener.EnqueuePacket(packet);
                         }
                     });

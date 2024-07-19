@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -8,7 +9,7 @@ namespace GameServer
         {
             Master.whitelist.WhitelistedUsers.Add(username);
 
-            SaveWhitelistFile();
+            Master.SaveValueFile(ServerValueMode.Whitelist);
 
             Logger.Warning($"User '{ServerCommandManager.commandParameters[0]}' has been whitelisted");
         }
@@ -17,7 +18,7 @@ namespace GameServer
         {
             Master.whitelist.WhitelistedUsers.Remove(username);
 
-            SaveWhitelistFile();
+            Master.SaveValueFile(ServerValueMode.Whitelist);
 
             Logger.Warning($"User '{ServerCommandManager.commandParameters[0]}' is no longer whitelisted");
         }
@@ -26,30 +27,10 @@ namespace GameServer
         {
             Master.whitelist.UseWhitelist = !Master.whitelist.UseWhitelist;
 
-            SaveWhitelistFile();
+            Master.SaveValueFile(ServerValueMode.Whitelist);
 
             if (Master.whitelist.UseWhitelist) Logger.Warning("Whitelist is now ON");
             else Logger.Warning("Whitelist is now OFF");
-        }
-
-        private static void SaveWhitelistFile()
-        {
-            Serializer.SerializeToFile(Path.Combine(Master.corePath, "Whitelist.json"), 
-                Master.whitelist);
-        }
-
-        public static void LoadServerWhitelist()
-        {
-            string path = Path.Combine(Master.corePath, "Whitelist.json");
-
-            if (File.Exists(path)) Master.whitelist = Serializer.SerializeFromFile<WhitelistFile>(path);
-            else
-            {
-                Master.whitelist = new WhitelistFile();
-                Serializer.SerializeToFile(path, Master.whitelist);
-            }
-
-            Logger.Warning($"Loaded > '{path}'");
         }
     }
 }

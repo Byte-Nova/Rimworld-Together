@@ -30,7 +30,7 @@ namespace GameClient
             mapFileData.mapTile = mapData.mapTile;
             mapFileData.mapData = mapData;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MapPacket), mapFileData);
             Network.listener.EnqueuePacket(packet);
         }
 

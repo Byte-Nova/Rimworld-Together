@@ -76,7 +76,7 @@ namespace GameClient
             data.indexToManage = marketIndex;
             data.quantityToManage = quantity;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -104,7 +104,7 @@ namespace GameClient
             MarketData marketData = new MarketData();
             marketData.marketStepMode = MarketStepMode.Reload;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             Network.listener.EnqueuePacket(packet);
         }
 

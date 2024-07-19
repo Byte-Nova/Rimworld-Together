@@ -16,12 +16,12 @@ namespace Shared
             this.requiresMainThread = requiresMainThread;
         }
 
-        public static Packet CreatePacketFromJSON(string header, object jsonToUse = null, bool requiresMainThread = true)
+        public static Packet CreatePacketFromObject(string header, object objectToUse = null, bool requiresMainThread = true)
         {
-            if (jsonToUse == null) return new Packet(header, null, requiresMainThread);
+            if (objectToUse == null) return new Packet(header, null, requiresMainThread);
             else
             {
-                byte[] contents = Serializer.ConvertObjectToBytes(jsonToUse);
+                byte[] contents = Serializer.ConvertObjectToBytes(objectToUse);
                 return new Packet(header, contents, requiresMainThread);
             }
         }

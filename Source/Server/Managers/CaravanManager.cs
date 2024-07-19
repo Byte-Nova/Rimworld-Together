@@ -1,6 +1,5 @@
 ﻿using Shared;
 using static Shared.CommonEnumerators;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer
 {
@@ -37,7 +36,7 @@ namespace GameServer
             data.details.ID = GetNewCaravanID();
             RefreshCaravanTimer(data.details);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
             NetworkHelper.SendPacketToAllClients(packet);
 
             Logger.Message($"[Add Caravan] > {data.details.ID} > {client.userFile.Username}");
@@ -51,7 +50,7 @@ namespace GameServer
             {
                 DeleteCaravan(data.details);
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 NetworkHelper.SendPacketToAllClients(packet);
 
                 Logger.Message($"[Remove Caravan] > {data.details.ID} > {client.userFile.Username}");
@@ -67,7 +66,7 @@ namespace GameServer
                 UpdateCaravan(toMove, data.details);
                 RefreshCaravanTimer(data.details);
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 NetworkHelper.SendPacketToAllClients(packet, client);
             }
         }
@@ -117,7 +116,7 @@ namespace GameServer
                     data.stepMode = CaravanStepMode.Remove;
                     data.details = caravans;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                     NetworkHelper.SendPacketToAllClients(packet);
                 }
             }

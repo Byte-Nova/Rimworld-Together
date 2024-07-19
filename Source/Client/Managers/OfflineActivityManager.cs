@@ -69,7 +69,7 @@ namespace GameClient
             data.activityStepMode = OfflineActivityStepMode.Request;
             data.targetTile = ClientValues.chosenSettlement.Tile;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineActivityPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 

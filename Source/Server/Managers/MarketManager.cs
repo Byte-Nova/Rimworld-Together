@@ -33,31 +33,18 @@ namespace GameServer
             }
         }
 
-        public static void LoadMarketStock()
-        {
-            string path = Path.Combine(Master.corePath, marketFileName);
-            if (File.Exists(path)) Master.marketFile = Serializer.SerializeFromFile<MarketFile>(path);
-            else
-            {
-                Master.marketFile = new MarketFile();
-                SaveMarketStock();
-            }
-
-            Logger.Warning($"Loaded > '{path}'");
-        }
-
         private static void AddToMarket(ServerClient client, MarketData marketData)
         {
             foreach (ThingData item in marketData.transferThings) TryCombineStackIfAvailable(client, item);
 
-            SaveMarketStock();
+            Master.SaveValueFile(ServerValueMode.Market);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
 
             marketData.marketStepMode = MarketStepMode.Reload;
-            marketData.transferThings = Master.marketFile.MarketStock;
-            packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            marketData.transferThings = Master.market.MarketStock;
+            packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             foreach (ServerClient sc in Network.connectedClients.ToArray())
             {
                 if (sc == client) continue;
@@ -67,46 +54,40 @@ namespace GameServer
 
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
         {
-            ThingData toGet = Master.marketFile.MarketStock[marketData.indexToManage];
+            ThingData toGet = Master.market.MarketStock[marketData.indexToManage];
             int reservedQuantity = toGet.quantity;
             toGet.quantity = marketData.quantityToManage;
             marketData.transferThings = new List<ThingData>() { toGet };
 
-            ThingData thingData = Master.marketFile.MarketStock[marketData.indexToManage];
+            ThingData thingData = Master.market.MarketStock[marketData.indexToManage];
             thingData.quantity = reservedQuantity;
 
             if (marketData.quantityToManage == 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
             else if (thingData.quantity > marketData.quantityToManage) thingData.quantity -= marketData.quantityToManage;
-            else if (thingData.quantity == marketData.quantityToManage) Master.marketFile.MarketStock.RemoveAt(marketData.indexToManage);
+            else if (thingData.quantity == marketData.quantityToManage) Master.market.MarketStock.RemoveAt(marketData.indexToManage);
             else ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
 
             marketData.marketStepMode = MarketStepMode.Reload;
-            marketData.transferThings = Master.marketFile.MarketStock;
-            packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            marketData.transferThings = Master.market.MarketStock;
+            packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             foreach (ServerClient sc in Network.connectedClients.ToArray())
             {
                 if (sc == client) continue;
                 else sc.listener.EnqueuePacket(packet);
             }
 
-            SaveMarketStock();
+            Master.SaveValueFile(ServerValueMode.Market);
         }
 
         private static void SendMarketStock(ServerClient client, MarketData marketData)
         {
-            marketData.transferThings = Master.marketFile.MarketStock;
+            marketData.transferThings = Master.market.MarketStock;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
-        }
-
-        private static void SaveMarketStock()
-        {
-            string stockPath = Path.Combine(Master.corePath, marketFileName);
-            Serializer.SerializeToFile(stockPath, Master.marketFile);
         }
 
         private static void TryCombineStackIfAvailable(ServerClient client, ThingData thingData)
@@ -117,7 +98,7 @@ namespace GameServer
                 return;
             }
 
-            foreach (ThingData stockedItem in Master.marketFile.MarketStock.ToArray())
+            foreach (ThingData stockedItem in Master.market.MarketStock.ToArray())
             {
                 if (stockedItem.defName == thingData.defName && stockedItem.materialDefName == thingData.materialDefName)
                 {
@@ -126,7 +107,7 @@ namespace GameServer
                 }
             }
 
-            Master.marketFile.MarketStock.Add(thingData);
+            Master.market.MarketStock.Add(thingData);
         }
     }
 }

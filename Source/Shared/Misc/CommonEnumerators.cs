@@ -2,7 +2,7 @@
 {
     public class CommonEnumerators
     {
-        public enum ServerLoadMode { Configs, Actions, Sites, Events, Roads }
+        public enum ServerValueMode { Configs, Actions, Sites, Events, Roads, World, Whitelist, Difficulty, Market }
 
         public enum LogMode { Message, Warning, Error, Title }
 

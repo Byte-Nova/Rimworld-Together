@@ -43,14 +43,14 @@ namespace GameServer
                     if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, baseAidTimer))
                     {
                         data.stepMode = CommonEnumerators.AidStepMode.Reject;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
 
                     else
                     {
                         data.stepMode = CommonEnumerators.AidStepMode.Receive;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                         target.listener.EnqueuePacket(packet);
                     }
                 }
@@ -58,7 +58,7 @@ namespace GameServer
                 else
                 {
                     data.stepMode = CommonEnumerators.AidStepMode.Reject;
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }
             }
@@ -75,7 +75,7 @@ namespace GameServer
                     client.userFile.UpdateAidTime();
 
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     target.listener.EnqueuePacket(packet);
                 }
 
@@ -84,7 +84,7 @@ namespace GameServer
                 else
                 {
                     data.stepMode = CommonEnumerators.AidStepMode.Reject;
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }
             }
@@ -99,7 +99,7 @@ namespace GameServer
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     target.listener.EnqueuePacket(packet);
                 }
 
@@ -107,7 +107,7 @@ namespace GameServer
 
                 else
                 {
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }
             }
