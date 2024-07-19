@@ -9,7 +9,7 @@ namespace GameServer
 
         private static readonly string fileExtension = ".mpcaravan";
 
-        private static readonly double baseMaxTimer = 172800000;
+        private static readonly double baseMaxTimer = 86400000;
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {

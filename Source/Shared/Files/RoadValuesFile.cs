@@ -11,10 +11,10 @@ namespace Shared
         public bool AllowAsphaltPath = true;
         public bool AllowAsphaltHighway = true;
 
-        public int DirtPathCost;
-        public int DirtRoadCost;
-        public int StoneRoadCost;
-        public int AsphaltPathCost;
-        public int AsphaltHighwayCost;
+        public int DirtPathCost = 10;
+        public int DirtRoadCost = 20;
+        public int StoneRoadCost = 25;
+        public int AsphaltPathCost = 30;
+        public int AsphaltHighwayCost = 50;
     }
 }
