@@ -82,25 +82,34 @@ namespace GameClient
 
         public static void RemoveSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
         {
-            if (settlement != null) Find.WorldObjects.Remove(settlement);
+            if (settlement != null)
+            {
+                NPCSettlementManagerHelper.latestRemovedSettlement = settlement;
+                Find.WorldObjects.Remove(settlement);
+            }
             else if (destroyedSettlement != null) Find.WorldObjects.Remove(destroyedSettlement);
         }
 
         public static void RequestSettlementRemoval(Settlement settlement)
         {
-            NPCSettlementData data = new NPCSettlementData();
-            data.stepMode = SettlementStepMode.Remove;
-            data.details = new PlanetNPCSettlement();
-            data.details.tile = settlement.Tile;
+            if (NPCSettlementManagerHelper.latestRemovedSettlement == settlement) return;
+            else
+            {
+                NPCSettlementData data = new NPCSettlementData();
+                data.stepMode = SettlementStepMode.Remove;
+                data.details = new PlanetNPCSettlement();
+                data.details.tile = settlement.Tile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
-            Network.listener.EnqueuePacket(packet);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
+                Network.listener.EnqueuePacket(packet);
+            }
         }
     }
 
     public static class NPCSettlementManagerHelper
     {
         public static PlanetNPCSettlement[] tempNPCSettlements;
+        public static Settlement latestRemovedSettlement;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
