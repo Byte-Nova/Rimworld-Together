@@ -11,11 +11,11 @@ namespace GameServer
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.SettlementStepMode.Add:
+                case SettlementStepMode.Add:
                     ResponseShortcutManager.SendIllegalPacket(client, "Tried to execute unimplemented action");
                     break;
 
-                case CommonEnumerators.SettlementStepMode.Remove:
+                case SettlementStepMode.Remove:
                     RemoveNPCSettlement(client, data.details);
                     break;
             }
@@ -26,7 +26,8 @@ namespace GameServer
             if (!Master.serverConfig.AllowNPCDestruction) return;
             else
             {
-                if (CheckIfSettlementFromTileExists(settlement.tile))
+                if (!CheckIfSettlementFromTileExists(settlement.tile)) ResponseShortcutManager.SendIllegalPacket(client, "Tried removing a non-existing NPC settlement");
+                else
                 {
                     DeleteSettlement(settlement);
 
@@ -43,7 +44,7 @@ namespace GameServer
             finalSettlements.Remove(GetSettlementFromTile(settlement.tile));
             Master.worldValues.NPCSettlements = finalSettlements.ToArray();
 
-            Master.SaveValueFile(ServerValueMode.World);
+            Master.SaveValueFile(ServerFileMode.World);
         }
 
         private static void BroadcastSettlementDeletion(PlanetNPCSettlement settlement)

@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -12,19 +13,19 @@ namespace GameServer
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.AidStepMode.Send:
+                case AidStepMode.Send:
                     SendAidRequest(client, data);
                     break;
 
-                case CommonEnumerators.AidStepMode.Receive:
+                case AidStepMode.Receive:
                     //Empty
                     break;
 
-                case CommonEnumerators.AidStepMode.Accept:
+                case AidStepMode.Accept:
                     SendAidAccept(client, data);
                     break;
 
-                case CommonEnumerators.AidStepMode.Reject:
+                case AidStepMode.Reject:
                     SendAidReject(client, data);
                     break;
             }
@@ -42,14 +43,14 @@ namespace GameServer
 
                     if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, baseAidTimer))
                     {
-                        data.stepMode = CommonEnumerators.AidStepMode.Reject;
+                        data.stepMode = AidStepMode.Reject;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
 
                     else
                     {
-                        data.stepMode = CommonEnumerators.AidStepMode.Receive;
+                        data.stepMode = AidStepMode.Receive;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                         target.listener.EnqueuePacket(packet);
                     }
@@ -57,7 +58,7 @@ namespace GameServer
 
                 else
                 {
-                    data.stepMode = CommonEnumerators.AidStepMode.Reject;
+                    data.stepMode = AidStepMode.Reject;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }
@@ -83,7 +84,7 @@ namespace GameServer
 
                 else
                 {
-                    data.stepMode = CommonEnumerators.AidStepMode.Reject;
+                    data.stepMode = AidStepMode.Reject;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }

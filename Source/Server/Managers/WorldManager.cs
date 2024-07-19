@@ -17,7 +17,7 @@ namespace GameServer
             {
                 case WorldStepMode.Required:
                     Master.worldValues = worldData.worldValuesFile;
-                    Master.SaveValueFile(ServerValueMode.World);
+                    Master.SaveValueFile(ServerFileMode.World);
                     break;
 
                 case WorldStepMode.Existing:

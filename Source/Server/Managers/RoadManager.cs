@@ -13,11 +13,11 @@ namespace GameServer
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.RoadStepMode.Add:
+                case RoadStepMode.Add:
                     AddRoad(client, data);
                     break;
 
-                case CommonEnumerators.RoadStepMode.Remove:
+                case RoadStepMode.Remove:
                     RemoveRoad(client, data);
                     break;
             }
@@ -83,7 +83,7 @@ namespace GameServer
             currentRoads.Add(details);
 
             Master.worldValues.Roads = currentRoads.ToArray();
-            Master.SaveValueFile(ServerValueMode.World);
+            Master.SaveValueFile(ServerFileMode.World);
 
             if (client != null) Logger.Warning($"[Added road from tiles '{details.tileA}' to '{details.tileB}'] > {client.userFile.Username}");
             else Logger.Warning($"[Added road from tiles '{details.tileA}' to '{details.tileB}']");
@@ -95,7 +95,7 @@ namespace GameServer
             currentRoads.Remove(details);
 
             Master.worldValues.Roads = currentRoads.ToArray();
-            Master.SaveValueFile(ServerValueMode.World);
+            Master.SaveValueFile(ServerFileMode.World);
 
             if (client != null) Logger.Warning($"[Removed road from tiles '{details.tileA}' to '{details.tileB}'] > {client.userFile.Username}");
             else Logger.Warning($"[Removed road from tiles '{details.tileA}' to '{details.tileB}']");

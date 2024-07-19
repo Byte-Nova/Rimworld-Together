@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -17,11 +18,11 @@ namespace GameClient
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.RoadStepMode.Add:
+                case RoadStepMode.Add:
                     AddRoadSimple(data.details.tileA, data.details.tileB, RoadManagerHelper.GetRoadDefFromDefName(data.details.roadDefName), true);
                     break;
 
-                case CommonEnumerators.RoadStepMode.Remove:
+                case RoadStepMode.Remove:
                     RemoveRoadSimple(data.details.tileA, data.details.tileB, true);
                     break;
             }
@@ -30,7 +31,7 @@ namespace GameClient
         public static void SendRoadAddRequest(int tileAID, int tileBID, RoadDef roadDef)
         {
             RoadData data = new RoadData();
-            data.stepMode = CommonEnumerators.RoadStepMode.Add;
+            data.stepMode = RoadStepMode.Add;
 
             data.details = new RoadDetails();
             data.details.tileA = tileAID;
@@ -44,7 +45,7 @@ namespace GameClient
         public static void SendRoadRemoveRequest(int tileAID, int tileBID)
         {
             RoadData data = new RoadData();
-            data.stepMode = CommonEnumerators.RoadStepMode.Remove;
+            data.stepMode = RoadStepMode.Remove;
 
             data.details = new RoadDetails();
             data.details.tileA = tileAID;

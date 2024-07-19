@@ -160,13 +160,9 @@ namespace GameServer
             "Deletes all data of a player",
             DeletePlayerCommandAction);
 
-        private static readonly ServerCommand enableDifficultyCommand = new ServerCommand("enabledifficulty", 0,
+        private static readonly ServerCommand toggleDifficultyCommand = new ServerCommand("toggledifficulty", 0,
             "Enables custom difficulty in the server",
-            EnableDifficultyCommandAction);
-
-        private static readonly ServerCommand disableDifficultyCommand = new ServerCommand("disabledifficulty", 0,
-            "Disables custom difficulty in the server",
-            DisableDifficultyCommandAction);
+            ToggleDifficultyCommandAction);
 
         private static readonly ServerCommand toggleCustomScenariosCommand = new ServerCommand("togglecustomscenarios", 0,
             "enables/disables custom scenarios on the server",
@@ -229,8 +225,7 @@ namespace GameServer
             whitelistToggleCommand,
             forceSaveCommand,
             deletePlayerCommand,
-            enableDifficultyCommand,
-            disableDifficultyCommand,
+            toggleDifficultyCommand,
             toggleCustomScenariosCommand,
             toggleUPnPCommand,
             portforwardCommand,
@@ -434,10 +429,7 @@ namespace GameServer
             }
         }
 
-        private static void ReloadCommandAction()
-        {
-            Master.LoadResources();
-        }
+        private static void ReloadCommandAction() { Master.LoadResources(); }
 
         private static void ModListCommandAction()
         {
@@ -642,51 +634,25 @@ namespace GameServer
             else SaveManager.DeletePlayerData(toFind, userFile.Username);
         }
 
-        private static void EnableDifficultyCommandAction()
+        private static void ToggleDifficultyCommandAction()
         {
-            if (Master.difficultyValues.UseCustomDifficulty == true)
-            {
-                Logger.Warning($"Custom difficulty was already enabled");
-            }
-
-            else
-            {
-                Master.difficultyValues.UseCustomDifficulty = true;
-                Master.SaveValueFile(ServerValueMode.Difficulty);
-
-                Logger.Warning($"Custom difficulty is now enabled");
-            }
-        }
-
-        private static void DisableDifficultyCommandAction()
-        {
-            if (Master.difficultyValues.UseCustomDifficulty == false)
-            {
-                Logger.Warning($"Custom difficulty was already disabled");
-            }
-
-            else
-            {
-                Master.difficultyValues.UseCustomDifficulty = false;
-                Master.SaveValueFile(ServerValueMode.Difficulty);
-
-                Logger.Warning($"Custom difficulty is now disabled");
-            }
+            Master.difficultyValues.UseCustomDifficulty = !Master.difficultyValues.UseCustomDifficulty;
+            Logger.Warning($"Custom difficulty is now {(Master.difficultyValues.UseCustomDifficulty ? ("Enabled") : ("Disabled"))}");
+            Master.SaveValueFile(ServerFileMode.Difficulty);
         }
 
         private static void ToggleCustomScenariosCommandAction()
         {
             Master.serverConfig.AllowCustomScenarios = !Master.serverConfig.AllowCustomScenarios;
             Logger.Warning($"Custom scenarios are now {(Master.serverConfig.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}");
-            Master.SaveServerConfig();
+            Master.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ToggleUPnPCommandAction()
         {
             Master.serverConfig.UseUPnP = !Master.serverConfig.UseUPnP;
             Logger.Warning($"UPnP port mapping is now {(Master.serverConfig.UseUPnP ? ("Enabled") : ("Disabled"))}");
-
-            Master.SaveServerConfig();
+            Master.SaveValueFile(ServerFileMode.Configs);
 
             if (Master.serverConfig.UseUPnP)
             {
@@ -729,14 +695,14 @@ namespace GameServer
         {
             Master.serverConfig.VerboseLogs = !Master.serverConfig.VerboseLogs;
             Logger.Warning($"Verbose Logs set to {Master.serverConfig.VerboseLogs}");
-            Master.SaveServerConfig();
+            Master.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ToggleSyncLocalSaveCommandAction()
         {
             Master.serverConfig.SyncLocalSave = !Master.serverConfig.SyncLocalSave;
             Logger.Warning($"Sync Local Save set to {Master.serverConfig.SyncLocalSave}");
-            Master.SaveServerConfig();
+            Master.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ResetWorldCommandAction()

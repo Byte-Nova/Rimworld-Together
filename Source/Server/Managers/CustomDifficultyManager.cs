@@ -106,7 +106,7 @@ namespace GameServer
 
                 Logger.Warning($"[Set difficulty] > {client.userFile.Username}");
 
-                Master.SaveValueFile(ServerValueMode.Difficulty);
+                Master.SaveValueFile(ServerFileMode.Difficulty);
             }
         }
     }

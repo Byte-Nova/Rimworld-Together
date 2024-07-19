@@ -2,6 +2,7 @@
 using Shared;
 using System;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -13,19 +14,19 @@ namespace GameClient
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.AidStepMode.Send:
+                case AidStepMode.Send:
                     //Empty
                     break;
 
-                case CommonEnumerators.AidStepMode.Receive:
+                case AidStepMode.Receive:
                     ReceiveAidRequest(data);
                     break;
 
-                case CommonEnumerators.AidStepMode.Accept:
+                case AidStepMode.Accept:
                     OnAidAccept();
                     break;
 
-                case CommonEnumerators.AidStepMode.Reject:
+                case AidStepMode.Reject:
                     OnAidReject(data);
                     break;
             }
@@ -42,7 +43,7 @@ namespace GameClient
         public static void SendAidRequest()
         {
             AidData aidData = new AidData();
-            aidData.stepMode = CommonEnumerators.AidStepMode.Send;
+            aidData.stepMode = AidStepMode.Send;
             aidData.fromTile = Find.AnyPlayerHomeMap.Tile;
             aidData.toTile = ClientValues.chosenSettlement.Tile;
 
@@ -84,7 +85,7 @@ namespace GameClient
             Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
-            data.stepMode = CommonEnumerators.AidStepMode.Accept;
+            data.stepMode = AidStepMode.Accept;
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
 
@@ -97,7 +98,7 @@ namespace GameClient
 
         private static void RejectAid(AidData data)
         {
-            data.stepMode = CommonEnumerators.AidStepMode.Reject;
+            data.stepMode = AidStepMode.Reject;
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
         }

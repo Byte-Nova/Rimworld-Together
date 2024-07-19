@@ -37,7 +37,7 @@ namespace GameServer
         {
             foreach (ThingData item in marketData.transferThings) TryCombineStackIfAvailable(client, item);
 
-            Master.SaveValueFile(ServerValueMode.Market);
+            Master.SaveValueFile(ServerFileMode.Market);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
@@ -79,7 +79,7 @@ namespace GameServer
                 else sc.listener.EnqueuePacket(packet);
             }
 
-            Master.SaveValueFile(ServerValueMode.Market);
+            Master.SaveValueFile(ServerFileMode.Market);
         }
 
         private static void SendMarketStock(ServerClient client, MarketData marketData)

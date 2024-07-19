@@ -5,6 +5,7 @@ using Shared;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -22,15 +23,15 @@ namespace GameClient
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.CaravanStepMode.Add:
+                case CaravanStepMode.Add:
                     AddCaravan(data.details);
                     break;
 
-                case CommonEnumerators.CaravanStepMode.Remove:
+                case CaravanStepMode.Remove:
                     RemoveCaravan(data.details);
                     break;
 
-                case CommonEnumerators.CaravanStepMode.Move:
+                case CaravanStepMode.Move:
                     MoveCaravan(data.details);
                     break;
             }
@@ -116,7 +117,7 @@ namespace GameClient
         public static void RequestCaravanAdd(Caravan caravan)
         {
             CaravanData data = new CaravanData();
-            data.stepMode = CommonEnumerators.CaravanStepMode.Add;
+            data.stepMode = CaravanStepMode.Add;
             data.details = new CaravanDetails();
             data.details.tile = caravan.Tile;
             data.details.owner = ClientValues.username;
@@ -134,7 +135,7 @@ namespace GameClient
             else
             {
                 CaravanData data = new CaravanData();
-                data.stepMode = CommonEnumerators.CaravanStepMode.Remove;
+                data.stepMode = CaravanStepMode.Remove;
                 data.details = details;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
@@ -151,7 +152,7 @@ namespace GameClient
             else
             {
                 CaravanData data = new CaravanData();
-                data.stepMode = CommonEnumerators.CaravanStepMode.Move;
+                data.stepMode = CaravanStepMode.Move;
                 data.details = details;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);

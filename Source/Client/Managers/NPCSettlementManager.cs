@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using Verse;
 using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -15,10 +16,10 @@ namespace GameClient
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.SettlementStepMode.Add:                    
+                case SettlementStepMode.Add:                    
                     break;
 
-                case CommonEnumerators.SettlementStepMode.Remove:
+                case SettlementStepMode.Remove:
                     RemoveNPCSettlementFromPacket(data.details);
                     break;
             }
@@ -88,7 +89,7 @@ namespace GameClient
         public static void RequestSettlementRemoval(Settlement settlement)
         {
             NPCSettlementData data = new NPCSettlementData();
-            data.stepMode = CommonEnumerators.SettlementStepMode.Remove;
+            data.stepMode = SettlementStepMode.Remove;
             data.details = new PlanetNPCSettlement();
             data.details.tile = settlement.Tile;
 
