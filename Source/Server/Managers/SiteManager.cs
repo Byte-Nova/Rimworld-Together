@@ -65,13 +65,13 @@ namespace GameServer
             foreach (ServerClient cClient in Network.connectedClients.ToArray())
             {
                 siteData.goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
 
                 cClient.listener.EnqueuePacket(packet);
             }
 
             siteData.siteStepMode = SiteStepMode.Accept;
-            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(rPacket);
 
             Logger.Warning($"[Created site] > {client.userFile.Username}");
@@ -200,7 +200,7 @@ namespace GameServer
             siteData.siteStepMode = SiteStepMode.Destroy;
             siteData.tile = siteFile.tile;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + fileExtension));
@@ -215,7 +215,7 @@ namespace GameServer
             siteData.workerData = siteFile.workerData;
             siteData.isFromFaction = siteFile.isFromFaction;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -260,7 +260,7 @@ namespace GameServer
                 siteFile.workerData = null;
                 SaveSite(siteFile);
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 client.listener.EnqueuePacket(packet);
             }
         }
@@ -307,7 +307,7 @@ namespace GameServer
 
                 if (siteData.sitesWithRewards.Count() > 0)
                 {
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                     client.listener.EnqueuePacket(packet);
                 }
             }

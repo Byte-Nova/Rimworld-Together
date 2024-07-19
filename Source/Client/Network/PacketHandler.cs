@@ -81,7 +81,12 @@ namespace GameClient
 
         public static void SettlementPacket(Packet packet)
         {
-            PlanetManager.ParseSettlementPacket(packet);
+            PlayerSettlementManager.ParsePacket(packet);
+        }
+
+        public static void NPCSettlementPacket(Packet packet)
+        {
+            NPCSettlementManager.ParsePacket(packet);
         }
 
         public static void SitePacket(Packet packet)
@@ -152,14 +157,16 @@ namespace GameClient
             ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);
             ServerValues.SetServerParameters(serverGlobalData);
             ServerValues.SetAccountData(serverGlobalData);
-            PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
             EventManager.SetEventPrices(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
-            CaravanManagerHelper.SetCaravanValues(serverGlobalData);
-            RoadManagerHelper.SetRoadValues(serverGlobalData);
-            PollutionManagerHelper.SetPollutionValues(serverGlobalData);
             OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
+            PlayerSettlementManagerHelper.SetValues(serverGlobalData);
+            NPCSettlementManagerHelper.SetValues(serverGlobalData);
+            PlayerSiteManagerHelper.SetValues(serverGlobalData);
+            CaravanManagerHelper.SetValues(serverGlobalData);
+            RoadManagerHelper.SetValues(serverGlobalData);
+            PollutionManagerHelper.SetValues(serverGlobalData);
         }
 
         //Empty functions

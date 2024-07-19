@@ -112,6 +112,11 @@ namespace GameServer
             SettlementManager.ParseSettlementPacket(client, packet);
         }
 
+        public static void NPCSettlementPacket(ServerClient client, Packet packet)
+        {
+            NPCSettlementManager.ParsePacket(client, packet);
+        }
+
         public static void EventPacket(ServerClient client, Packet packet)
         {
             EventManager.ParseEventPacket(client, packet);
