@@ -23,12 +23,12 @@
 
         public bool AllowCustomScenarios = true;
 
+        public bool AllowNPCDestruction = false;
+
         public bool TemporalActivityProtection = true;
 
         public bool TemporalEventProtection = true;
 
         public bool TemporalAidProtection = false;
-
-        public bool AllowNPCDestruction = false;
     }
 }
