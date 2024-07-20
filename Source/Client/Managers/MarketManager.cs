@@ -1,7 +1,6 @@
 ﻿using RimWorld;
 using Shared;
 using System;
-using System.Collections.Generic;
 using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
@@ -77,7 +76,7 @@ namespace GameClient
             data.indexToManage = marketIndex;
             data.quantityToManage = quantity;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -99,13 +98,13 @@ namespace GameClient
 
         public static void RequestReloadStock()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ItemData[] { }, ClientValues.chosenSettlement.Map, null, null));
+            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingData[] { }, ClientValues.chosenSettlement.Map, null, null));
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData marketData = new MarketData();
             marketData.marketStepMode = MarketStepMode.Reload;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             Network.listener.EnqueuePacket(packet);
         }
 

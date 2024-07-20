@@ -18,9 +18,13 @@ namespace GameServer
 
             globalData = GetServerSites(client, globalData);
 
+            globalData = GetServerCaravans(client, globalData);
+
             globalData = GetServerRoads(globalData);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), globalData);
+            globalData = GetServerPolution(globalData);
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ServerValuesPacket), globalData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -99,9 +103,21 @@ namespace GameServer
             return globalData;
         }
 
+        private static ServerGlobalData GetServerCaravans(ServerClient client, ServerGlobalData globalData)
+        {
+            globalData.playerCaravans = CaravanManager.GetActiveCaravans();
+            return globalData;
+        }
+
         private static ServerGlobalData GetServerRoads(ServerGlobalData data)
         {
             if (Master.worldValues != null) data.roads = Master.worldValues.Roads;
+            return data;
+        }
+
+        private static ServerGlobalData GetServerPolution(ServerGlobalData data)
+        {
+            if (Master.worldValues != null) data.pollutedTiles = Master.worldValues.PollutedTiles;
             return data;
         }
     }

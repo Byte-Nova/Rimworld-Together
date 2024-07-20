@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -17,11 +18,11 @@ namespace GameClient
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.RoadStepMode.Add:
+                case RoadStepMode.Add:
                     AddRoadSimple(data.details.tileA, data.details.tileB, RoadManagerHelper.GetRoadDefFromDefName(data.details.roadDefName), true);
                     break;
 
-                case CommonEnumerators.RoadStepMode.Remove:
+                case RoadStepMode.Remove:
                     RemoveRoadSimple(data.details.tileA, data.details.tileB, true);
                     break;
             }
@@ -30,41 +31,40 @@ namespace GameClient
         public static void SendRoadAddRequest(int tileAID, int tileBID, RoadDef roadDef)
         {
             RoadData data = new RoadData();
-            data.stepMode = CommonEnumerators.RoadStepMode.Add;
+            data.stepMode = RoadStepMode.Add;
 
             data.details = new RoadDetails();
             data.details.tileA = tileAID;
             data.details.tileB = tileBID;
             data.details.roadDefName = roadDef.defName;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RoadPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
         public static void SendRoadRemoveRequest(int tileAID, int tileBID)
         {
             RoadData data = new RoadData();
-            data.stepMode = CommonEnumerators.RoadStepMode.Remove;
+            data.stepMode = RoadStepMode.Remove;
 
             data.details = new RoadDetails();
             data.details.tileA = tileAID;
             data.details.tileB = tileBID;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RoadPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
-        public static void AddRoads(RoadDetails[] roads, bool forceRefresh)
+        public static void AddRoads(RoadDetails[] details, bool forceRefresh)
         {
-            if (roads == null) return;
+            if (details == null) return;
 
-            foreach (RoadDetails details in roads)
+            foreach (RoadDetails detail in details)
             {
-                AddRoadSimple(details.tileA, details.tileB, RoadManagerHelper.GetRoadDefFromDefName(details.roadDefName), forceRefresh);
+                AddRoadSimple(detail.tileA, detail.tileB, RoadManagerHelper.GetRoadDefFromDefName(detail.roadDefName), forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
-
             if (!forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
         }
 
@@ -161,7 +161,7 @@ namespace GameClient
         public static RoadDef AncientAsphaltRoadDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "AncientAsphaltRoad");
         public static RoadDef AncientAsphaltHighwayDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "AncientAsphaltHighway");
 
-        public static void SetRoadValues(ServerGlobalData serverGlobalData) 
+        public static void SetValues(ServerGlobalData serverGlobalData) 
         {
             tempRoadDetails = serverGlobalData.roads;
 

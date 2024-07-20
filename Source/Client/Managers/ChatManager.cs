@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HarmonyLib;
@@ -16,36 +17,21 @@ namespace GameClient
     [StaticConstructorOnStartup]
     public static class ChatManager
     {
-        public static Dictionary<UserColor, string> userColorDictionary = new Dictionary<UserColor, string>()
-        {
-            { UserColor.Normal, "<color=grey>" },
-            { UserColor.Admin, "<color=red>" },
-            { UserColor.Console, "<color=yellow>" }
-        };
-
-        public static Dictionary<MessageColor, string> messageColorDictionary = new Dictionary<MessageColor, string>()
-        {
-            { MessageColor.Normal, "<color=white>" },
-            { MessageColor.Admin, "<color=white>" },
-            { MessageColor.Console, "<color=yellow>" }
-        };
-
-        public static Vector2 chatBoxPosition = new Vector2(UI.screenWidth - 350f, UI.screenHeight - 35 - 400f);
-
-        private static MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
+        public static Vector2 chatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
+        private static readonly MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
 
         //Data
-        public static string currentChatInput;
+        public static string currentChatInput = "";
         public static List<string> chatMessageCache = new List<string>();
 
         //Booleans
         public static bool isChatTabOpen;
-        public static bool chatAutoscroll;
-        public static bool shouldScrollChat;
         public static bool isChatIconActive;
+        public static bool shouldScrollChat;
+        public static bool chatAutoscroll = true;
 
         //Chat clock
-        private static Task chatClockTask;
+        private static Task? chatClockTask;
         private static readonly Semaphore semaphore = new Semaphore(1, 1);
 
         //Icons
@@ -57,23 +43,26 @@ namespace GameClient
             ChatSounds.OwnChatDing.PlayOneShotOnCamera();
     
             ChatData chatData = new ChatData();
-            chatData.usernames.Add(ClientValues.username);
-            chatData.messages.Add(messageToSend);
-    
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ChatPacket), chatData);
-            Network.listener.EnqueuePacket(packet);
+            chatData.username = ClientValues.username;
+            chatData.message = messageToSend;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            Network.listener?.EnqueuePacket(packet);
         }
     
-        public static void ReceiveMessages(Packet packet)
+        public static void ReceiveMessage(Packet packet)
         {
+            bool hasBeenTagged = false;
+
             ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
 
-            for (int i = 0; i < chatData.usernames.Count(); i++) 
+            if (ChatManagerHelper.GetMessageWords(chatData.message).Contains($"@{ClientValues.username}"))
             {
-                AddMessageToChat(chatData.usernames[i], chatData.messages[i], 
-                    (UserColor)int.Parse(chatData.userColors[i]), 
-                    (MessageColor)int.Parse(chatData.messageColors[i]));
+                hasBeenTagged = true;
+                chatData.message = chatData.message.Replace($"@{ClientValues.username}", $"<color=red>@{ClientValues.username}</color>");
             }
+
+            AddMessageToChat(chatData.username, chatData.message, chatData.userColor, chatData.messageColor);
 
             if (!ClientValues.isReadyToPlay) return;
 
@@ -81,15 +70,83 @@ namespace GameClient
 
             if (ClientValues.muteSoundBool) return;
 
-            if (!isChatTabOpen) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
+            if (hasBeenTagged) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
+        }
+
+        private static string ParseMessage(string message)
+        {
+            bool verifying = false;
+            string verification = "";
+            Stack<string> codeType = new Stack<string>();
+
+            message = Regex.Replace(message, @"\*\*\*(.+?)\*\*\*", "[b][i]$1[/][/]");
+            message = Regex.Replace(message, @"\*\*(.+?)\*\*", "[b]$1[/]");
+            message = Regex.Replace(message, @"\*(.+?)\*", "[i]$1[/]");
+            message = Regex.Replace(message, @"\&([a-fA-F0-9]{6})(.+?)\&\&", "[$1]$2[/]");
+
+            foreach (char c in message)
+            {
+                if (c == '[') verifying = true;
+
+                if (verifying)
+                {
+                    verification += c;
+                    if (c == ']') verifying = false;
+                }
+
+                if (verification != "" && !verifying)
+                {
+                    switch (verification.ToLower())
+                    {
+                        //Check for TAG CLOSING
+
+                        case "[/]":
+                            if (codeType.Count > 0) message = message.ReplaceFirst(verification, $"</{codeType.Pop()}>");
+                            verification = "";
+                            break;
+
+                        //Check for BOLD
+
+                        case "[b]":
+                            message = message.Replace(verification, "<b>");
+                            codeType.Push("b");
+                            verification = "";
+                            break;
+
+                        //Check for CURSIVE
+
+                        case "[i]":
+                            message = message.Replace(verification, "<i>");
+                            codeType.Push("i");
+                            verification = "";
+                            break;
+
+                        //Check for CUSTOM COLOR
+
+                        default:
+                            if (Regex.IsMatch(verification, @"\[[a-fA-F0-9]{6}\]"))
+                            {
+                                string verificationReplacement = verification.Replace("[", "<color=#").Replace("]", ">");
+                                message = message.Replace(verification, verificationReplacement);
+                                codeType.Push("color");
+                                verification = "";
+                            }
+                            break;
+                    }
+                }
+            }
+
+            while (codeType.Count > 0) message += $"</{codeType.Pop()}>";
+
+            return message;
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
         {
             if (chatMessageCache.Count() > 100) chatMessageCache.RemoveAt(0);
 
-            chatMessageCache.Add($"[{DateTime.Now.ToString("hh:mm tt")}] " + $"[{userColorDictionary[userColor]}{username}</color>]: " +
-                $"{messageColorDictionary[messageColor]}{message}</color>");
+            chatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerHelper.userColorDictionary[userColor]}{username}</color>: " +
+                $"{ChatManagerHelper.messageColorDictionary[messageColor]}{ParseMessage(message)}</color>");
 
             if (chatAutoscroll) ClientValues.ToggleChatScroll(true);
         }
@@ -101,6 +158,7 @@ namespace GameClient
 
             isChatTabOpen = false;
             isChatIconActive = false;
+            chatAutoscroll = true;
         }
 
         public static void ToggleChatIcon(bool mode)
@@ -113,7 +171,7 @@ namespace GameClient
             {
                 semaphore.WaitOne();
 
-                if (chatClockTask == null) chatClockTask = Threader.GenerateThread(Threader.Mode.Chat);
+                chatClockTask ??= Threader.GenerateThread(Threader.Mode.Chat);
 
                 semaphore.Release();
             }
@@ -145,6 +203,28 @@ namespace GameClient
         }
     }
 
+    public static class ChatManagerHelper
+    {
+        public static Dictionary<UserColor, string> userColorDictionary = new Dictionary<UserColor, string>()
+        {
+            { UserColor.Normal, "<color=white>" },
+            { UserColor.Admin, "<color=red>" },
+            { UserColor.Console, "<color=yellow>" }
+        };
+
+        public static Dictionary<MessageColor, string> messageColorDictionary = new Dictionary<MessageColor, string>()
+        {
+            { MessageColor.Normal, "<color=white>" },
+            { MessageColor.Admin, "<color=white>" },
+            { MessageColor.Console, "<color=yellow>" }
+        };
+
+        public static string[] GetMessageWords(string message)
+        {
+            return message.Split(' ');
+        }
+    }
+
     [StaticConstructorOnStartup]
     public static class ChatIcons
     {
@@ -163,10 +243,10 @@ namespace GameClient
     [DefOf]
     public static class ChatSounds
     {
-        public static SoundDef OwnChatDing;
-        public static SoundDef AllyChatDing;
-        public static SoundDef NeutralChatDing;
-        public static SoundDef HostileChatDing;
-        public static SoundDef SystemChatDing;
+        public static SoundDef? OwnChatDing;
+        public static SoundDef? AllyChatDing;
+        public static SoundDef? NeutralChatDing;
+        public static SoundDef? HostileChatDing;
+        public static SoundDef? SystemChatDing;
     }
 }

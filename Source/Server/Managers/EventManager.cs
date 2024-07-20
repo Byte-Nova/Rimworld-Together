@@ -5,7 +5,7 @@ namespace GameServer
 {
     public static class EventManager
     {
-        private static readonly double baseEventTimer = 3600000;
+        private static readonly double baseMaxTimer = 3600000;
 
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
@@ -36,7 +36,7 @@ namespace GameServer
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
                     eventData.eventStepMode = EventStepMode.Recover;
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -44,10 +44,10 @@ namespace GameServer
                 {
                     ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
 
-                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, baseEventTimer))
+                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, baseMaxTimer))
                     {
                         eventData.eventStepMode = EventStepMode.Recover;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
 
@@ -55,7 +55,7 @@ namespace GameServer
                     {
                         //Back to player
 
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
 
                         //To the person that should receive it
@@ -64,7 +64,7 @@ namespace GameServer
 
                         target.userFile.UpdateEventTime();
 
-                        packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                        packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         target.listener.EnqueuePacket(packet);
                     }
                 }

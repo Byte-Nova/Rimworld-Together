@@ -40,7 +40,7 @@ namespace GameServer
 
             ServerGlobalDataManager.SendServerGlobalData(client);
 
-            ChatManager.BroadcastSystemMessage(client, ChatManager.defaultJoinMessages);
+            ChatManager.BroadcastSystemMessages(client, ChatManager.defaultJoinMessages);
 
             if (WorldManager.CheckIfWorldExists())
             {

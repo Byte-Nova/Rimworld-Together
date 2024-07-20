@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -12,11 +13,11 @@ namespace GameServer
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.RoadStepMode.Add:
+                case RoadStepMode.Add:
                     AddRoad(client, data);
                     break;
 
-                case CommonEnumerators.RoadStepMode.Remove:
+                case RoadStepMode.Remove:
                     RemoveRoad(client, data);
                     break;
             }
@@ -32,7 +33,7 @@ namespace GameServer
 
             SaveRoad(data.details, client);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RoadPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             foreach(ServerClient cClient in Network.connectedClients.ToArray())
             {
                 cClient.listener.EnqueuePacket(packet);
@@ -68,7 +69,7 @@ namespace GameServer
 
             void BroadcastDeletion(RoadDetails toRemove)
             {
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RoadPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
                 foreach (ServerClient cClient in Network.connectedClients.ToArray())
                 {
                     cClient.listener.EnqueuePacket(packet);
@@ -82,7 +83,7 @@ namespace GameServer
             currentRoads.Add(details);
 
             Master.worldValues.Roads = currentRoads.ToArray();
-            WorldManager.SaveWorldValues(Master.worldValues);
+            Master.SaveValueFile(ServerFileMode.World);
 
             if (client != null) Logger.Warning($"[Added road from tiles '{details.tileA}' to '{details.tileB}'] > {client.userFile.Username}");
             else Logger.Warning($"[Added road from tiles '{details.tileA}' to '{details.tileB}']");
@@ -94,7 +95,7 @@ namespace GameServer
             currentRoads.Remove(details);
 
             Master.worldValues.Roads = currentRoads.ToArray();
-            WorldManager.SaveWorldValues(Master.worldValues);
+            Master.SaveValueFile(ServerFileMode.World);
 
             if (client != null) Logger.Warning($"[Removed road from tiles '{details.tileA}' to '{details.tileB}'] > {client.userFile.Username}");
             else Logger.Warning($"[Removed road from tiles '{details.tileA}' to '{details.tileB}']");

@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -105,31 +106,8 @@ namespace GameServer
 
                 Logger.Warning($"[Set difficulty] > {client.userFile.Username}");
 
-                SaveCustomDifficulty(newDifficultyValues);
+                Master.SaveValueFile(ServerFileMode.Difficulty);
             }
-        }
-
-        public static void SaveCustomDifficulty(DifficultyValuesFile newDifficultyValues)
-        {
-            string path = Path.Combine(Master.corePath, "DifficultyValues.json");
-
-            Serializer.SerializeToFile(path, newDifficultyValues);
-
-            LoadCustomDifficulty();
-        }
-
-        public static void LoadCustomDifficulty()
-        {
-            string path = Path.Combine(Master.corePath, "DifficultyValues.json");
-
-            if (File.Exists(path)) Master.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
-            else
-            {
-                Master.difficultyValues = new DifficultyValuesFile();
-                Serializer.SerializeToFile(path, Master.difficultyValues);
-            }
-
-            Logger.Warning($"Loaded > '{path}'");
         }
     }
 }

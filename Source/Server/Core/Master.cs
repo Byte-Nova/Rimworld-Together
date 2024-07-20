@@ -21,6 +21,7 @@ namespace GameServer
         public static string sitesPath;
         public static string factionsPath;
         public static string settlementsPath;
+        public static string caravansPath;
 
         public static string backupsPath;
         public static string backupWorldPath;
@@ -39,7 +40,7 @@ namespace GameServer
 
         //References
 
-        public static MarketFile marketFile;
+        public static MarketFile market;
         public static WhitelistFile whitelist;
         public static SiteValuesFile siteValues;
         public static WorldValuesFile worldValues;
@@ -92,6 +93,7 @@ namespace GameServer
             sitesPath = Path.Combine(mainPath, "Sites");
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
+            caravansPath = Path.Combine(mainPath, "Caravans");
 
             backupsPath = Path.Combine(mainPath, "Backups");
             backupUsersPath = Path.Combine(backupsPath, "Users");
@@ -112,6 +114,7 @@ namespace GameServer
             if (!Directory.Exists(sitesPath)) Directory.CreateDirectory(sitesPath);
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
+            if (!Directory.Exists(caravansPath)) Directory.CreateDirectory(caravansPath);
 
             if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
             if (!Directory.Exists(backupUsersPath)) Directory.CreateDirectory(backupUsersPath);
@@ -139,36 +142,99 @@ namespace GameServer
             Logger.Title($"Loading all necessary resources");
             Logger.Title($"----------------------------------------");
 
-            LoadValueFile(ServerLoadMode.Configs);
-            LoadValueFile(ServerLoadMode.Actions);
-            LoadValueFile(ServerLoadMode.Sites);
-            LoadValueFile(ServerLoadMode.Events);
-            LoadValueFile(ServerLoadMode.Roads);
-            WorldManager.LoadWorldFile();
-            WhitelistManager.LoadServerWhitelist();
-            CustomDifficultyManager.LoadCustomDifficulty();
-            MarketManager.LoadMarketStock();
+            LoadValueFile(ServerFileMode.Configs);
+            SaveValueFile(ServerFileMode.Configs, false);
+
+            LoadValueFile(ServerFileMode.Actions);
+            SaveValueFile(ServerFileMode.Actions, false);
+
+            LoadValueFile(ServerFileMode.Sites);
+            SaveValueFile(ServerFileMode.Sites, false);
+
+            LoadValueFile(ServerFileMode.Events);
+            SaveValueFile(ServerFileMode.Events, false);
+
+            LoadValueFile(ServerFileMode.Roads);
+            SaveValueFile(ServerFileMode.Roads, false);
+
+            LoadValueFile(ServerFileMode.Whitelist);
+            SaveValueFile(ServerFileMode.Whitelist, false);
+
+            LoadValueFile(ServerFileMode.Difficulty);
+            SaveValueFile(ServerFileMode.Difficulty, false);
+
+            LoadValueFile(ServerFileMode.Market);
+            SaveValueFile(ServerFileMode.Market, false);
+
+            LoadValueFile(ServerFileMode.World);
+
             ModManager.LoadMods();
 
             Logger.Title($"----------------------------------------");
         }
 
-        public static void SaveServerConfig()
+        public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)
         {
-            string path = Path.Combine(corePath, "ServerConfig.json");
+            string pathToSave = "";
 
-            Serializer.SerializeToFile(path, serverConfig);
+            switch (mode)
+            {
+                case ServerFileMode.Configs:
+                    pathToSave = Path.Combine(corePath, "ServerConfig.json");
+                    Serializer.SerializeToFile(pathToSave, serverConfig);
+                    break;
 
-            Logger.Warning($"Saved > {path}");
+                case ServerFileMode.Actions:
+                    pathToSave = Path.Combine(corePath, "ActionValues.json");
+                    Serializer.SerializeToFile(pathToSave, actionValues);
+                    break;
+
+                case ServerFileMode.Sites:
+                    pathToSave = Path.Combine(corePath, "SiteValues.json");
+                    Serializer.SerializeToFile(pathToSave, siteValues);
+                    break;
+
+                case ServerFileMode.Events:
+                    pathToSave = Path.Combine(corePath, "EventValues.json");
+                    Serializer.SerializeToFile(pathToSave, eventValues);
+                    break;
+
+                case ServerFileMode.Roads:
+                    pathToSave = Path.Combine(corePath, "RoadValues.json");
+                    Serializer.SerializeToFile(pathToSave, roadValues);
+                    break;
+
+                case ServerFileMode.World:
+                    pathToSave = Path.Combine(corePath, "WorldValues.json");
+                    Serializer.SerializeToFile(pathToSave, worldValues);
+                    break;
+
+                case ServerFileMode.Whitelist:
+                    pathToSave = Path.Combine(corePath, "Whitelist.json");
+                    Serializer.SerializeToFile(pathToSave, whitelist);
+                    break;
+
+                case ServerFileMode.Difficulty:
+                    pathToSave = Path.Combine(corePath, "DifficultyValues.json");
+                    Serializer.SerializeToFile(pathToSave, difficultyValues);
+                    break;
+
+                case ServerFileMode.Market:
+                    pathToSave = Path.Combine(corePath, "Market.json");
+                    Serializer.SerializeToFile(pathToSave, market);
+                    break;
+            }
+
+            if (broadcast) Logger.Warning($"Saved > '{pathToSave}'");
         }
 
-        private static void LoadValueFile(ServerLoadMode loadMode)
+        public static void LoadValueFile(ServerFileMode mode, bool broadcast = true)
         {
             string pathToLoad = "";
 
-            switch(loadMode)
+            switch(mode)
             {
-                case ServerLoadMode.Configs:
+                case ServerFileMode.Configs:
                     pathToLoad = Path.Combine(corePath, "ServerConfig.json");
                     if (File.Exists(pathToLoad)) serverConfig = Serializer.SerializeFromFile<ServerConfigFile>(pathToLoad);
                     else
@@ -178,7 +244,7 @@ namespace GameServer
                     }
                     break;
 
-                case ServerLoadMode.Actions:
+                case ServerFileMode.Actions:
                     pathToLoad = Path.Combine(corePath, "ActionValues.json");
                     if (File.Exists(pathToLoad)) actionValues = Serializer.SerializeFromFile<ActionValuesFile>(pathToLoad);
                     else
@@ -188,7 +254,7 @@ namespace GameServer
                     }
                     break;
 
-                case ServerLoadMode.Sites:
+                case ServerFileMode.Sites:
                     pathToLoad = Path.Combine(corePath, "SiteValues.json");
                     if (File.Exists(pathToLoad)) siteValues = Serializer.SerializeFromFile<SiteValuesFile>(pathToLoad);
                     else
@@ -198,7 +264,7 @@ namespace GameServer
                     }
                     break;
 
-                case ServerLoadMode.Events:
+                case ServerFileMode.Events:
                     pathToLoad = Path.Combine(corePath, "EventValues.json");
                     if (File.Exists(pathToLoad)) eventValues = Serializer.SerializeFromFile<EventValuesFile>(pathToLoad);
                     else
@@ -208,7 +274,7 @@ namespace GameServer
                     }
                     break;
 
-                case ServerLoadMode.Roads:
+                case ServerFileMode.Roads:
                     pathToLoad = Path.Combine(corePath, "RoadValues.json");
                     if (File.Exists(pathToLoad)) roadValues = Serializer.SerializeFromFile<RoadValuesFile>(pathToLoad);
                     else
@@ -217,9 +283,45 @@ namespace GameServer
                         Serializer.SerializeToFile(pathToLoad, roadValues);
                     }
                     break;
+
+                case ServerFileMode.World:
+                    pathToLoad = Path.Combine(corePath, "WorldValues.json");
+                    if (File.Exists(pathToLoad)) worldValues = Serializer.SerializeFromFile<WorldValuesFile>(pathToLoad);
+                    else Logger.Warning("World is missing. Join server to create it");
+                    break;
+
+                case ServerFileMode.Whitelist:
+                    pathToLoad = Path.Combine(corePath, "Whitelist.json");
+                    if (File.Exists(pathToLoad)) whitelist = Serializer.SerializeFromFile<WhitelistFile>(pathToLoad);
+                    else
+                    {
+                        whitelist = new WhitelistFile();
+                        Serializer.SerializeToFile(pathToLoad, whitelist);
+                    }
+                    break;
+
+                case ServerFileMode.Difficulty:
+                    pathToLoad = Path.Combine(corePath, "DifficultyValues.json");
+                    if (File.Exists(pathToLoad)) difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(pathToLoad);
+                    else
+                    {
+                        difficultyValues = new DifficultyValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, difficultyValues);
+                    }
+                    break;
+
+                case ServerFileMode.Market:
+                    pathToLoad = Path.Combine(corePath, "Market.json");
+                    if (File.Exists(pathToLoad)) market = Serializer.SerializeFromFile<MarketFile>(pathToLoad);
+                    else
+                    {
+                        market = new MarketFile();
+                        Serializer.SerializeToFile(pathToLoad, market);
+                    }
+                    break;
             }
 
-            Logger.Warning($"Loaded > '{pathToLoad}'");
+            if (broadcast) Logger.Warning($"Loaded > '{pathToLoad}'");
         }
 
         public static void ChangeTitle()

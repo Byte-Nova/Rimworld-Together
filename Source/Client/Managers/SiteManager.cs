@@ -93,11 +93,11 @@ namespace GameClient
                     break;
 
                 case SiteStepMode.Build:
-                    PlanetManager.SpawnSingleSite(siteData);
+                    PlayerSiteManager.SpawnSingleSite(siteData);
                     break;
 
                 case SiteStepMode.Destroy:
-                    PlanetManager.RemoveSingleSite(siteData);
+                    PlayerSiteManager.RemoveSingleSite(siteData);
                     break;
 
                 case SiteStepMode.Info:
@@ -138,7 +138,7 @@ namespace GameClient
             siteData.tile = ClientValues.chosenSite.Tile;
             siteData.siteStepMode = SiteStepMode.Info;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -169,7 +169,7 @@ namespace GameClient
 
             siteData.siteStepMode = SiteStepMode.Retrieve;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -221,7 +221,7 @@ namespace GameClient
             siteData.siteStepMode = SiteStepMode.Deposit;
             siteData.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
 
             if (caravanHumans.Count == 1) ClientValues.chosenCaravan.Destroy();
@@ -237,7 +237,7 @@ namespace GameClient
                 siteData.tile = ClientValues.chosenSite.Tile;
                 siteData.siteStepMode = SiteStepMode.Destroy;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -283,13 +283,13 @@ namespace GameClient
                 {
                     if (site.MainSitePartDef == siteDefs[i])
                     {
-                        ItemData itemData = new ItemData();
-                        itemData.defName = siteRewardDefNames[i].defName;
-                        itemData.quantity = siteRewardCount[i];
-                        itemData.quality = "null";
-                        itemData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
+                        ThingData thingData = new ThingData();
+                        thingData.defName = siteRewardDefNames[i].defName;
+                        thingData.quantity = siteRewardCount[i];
+                        thingData.quality = "null";
+                        thingData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
 
-                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(itemData));
+                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(thingData));
 
                         break;
                     }
@@ -347,7 +347,7 @@ namespace GameClient
                 siteData.type = DialogManager.selectedScrollButton;
                 siteData.isFromFaction = false;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
@@ -402,7 +402,7 @@ namespace GameClient
                 siteData.type = DialogManager.selectedScrollButton;
                 siteData.isFromFaction = true;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));

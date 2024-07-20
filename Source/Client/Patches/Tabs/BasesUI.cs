@@ -26,7 +26,7 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Connected)
             {
-                tabTitle = $"Player Bases [{PlanetManager.playerSettlements.Count()}]";
+                tabTitle = $"Player Bases [{PlayerSettlementManager.playerSettlements.Count()}]";
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -42,7 +42,7 @@ namespace GameClient
 
         private void GenerateList(Rect mainRect)
         {
-            var orderedDictionary = PlanetManager.playerSettlements.OrderBy(x => x.Name);
+            var orderedDictionary = PlayerSettlementManager.playerSettlements.OrderBy(x => x.Name);
 
             float height = 6f + (float)orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);

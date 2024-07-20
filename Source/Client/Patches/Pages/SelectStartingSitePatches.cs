@@ -75,11 +75,15 @@ namespace GameClient
             {
                 if (Network.state == NetworkState.Disconnected) return;
 
-                if (!ClientValues.isGeneratingFreshWorld) WorldGeneratorManager.SetPlanetFeatures();
-                if (!ClientValues.isGeneratingFreshWorld) WorldGeneratorManager.SetPlanetFactions();
-                if (!ClientValues.isGeneratingFreshWorld) RiverManager.SetPlanetRivers();
-                PlanetManager.BuildPlanet();
+                //Only done once per save
+                if (!ClientValues.isGeneratingFreshWorld)
+                {
+                    WorldGeneratorManager.SetPlanetFeatures();
+                    WorldGeneratorManager.SetPlanetFactions();
+                    RiverManager.SetPlanetRivers();
+                }
 
+                PlanetManager.BuildPlanet();
                 ClientValues.ToggleReadyToPlay(true);
             }
         }

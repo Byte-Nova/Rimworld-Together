@@ -82,7 +82,7 @@ namespace GameClient
 
             else
             {
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.RequestSavePartPacket));
                 Network.listener.EnqueuePacket(rPacket);
             }
         }
@@ -131,7 +131,7 @@ namespace GameClient
             }
             else fileTransferData.instructions = (int)SaveMode.Autosave;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             Network.listener.EnqueuePacket(packet);
 
             //if this is the last packet

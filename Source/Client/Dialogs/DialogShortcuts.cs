@@ -130,7 +130,7 @@ namespace GameClient
                 ClientValues.username = loginData.username;
                 PreferenceManager.SaveLoginData(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginClientPacket), loginData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), loginData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
@@ -165,7 +165,7 @@ namespace GameClient
                 ClientValues.username = loginData.username;
                 PreferenceManager.SaveLoginData(DialogManager.dialog3ResultOne, DialogManager.dialog3ResultTwo);
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.RegisterClientPacket), loginData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RegisterClientPacket), loginData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));

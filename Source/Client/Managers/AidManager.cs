@@ -2,6 +2,7 @@
 using Shared;
 using System;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -13,19 +14,19 @@ namespace GameClient
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.AidStepMode.Send:
+                case AidStepMode.Send:
                     //Empty
                     break;
 
-                case CommonEnumerators.AidStepMode.Receive:
+                case AidStepMode.Receive:
                     ReceiveAidRequest(data);
                     break;
 
-                case CommonEnumerators.AidStepMode.Accept:
+                case AidStepMode.Accept:
                     OnAidAccept();
                     break;
 
-                case CommonEnumerators.AidStepMode.Reject:
+                case AidStepMode.Reject:
                     OnAidReject(data);
                     break;
             }
@@ -42,7 +43,7 @@ namespace GameClient
         public static void SendAidRequest()
         {
             AidData aidData = new AidData();
-            aidData.stepMode = CommonEnumerators.AidStepMode.Send;
+            aidData.stepMode = AidStepMode.Send;
             aidData.fromTile = Find.AnyPlayerHomeMap.Tile;
             aidData.toTile = ClientValues.chosenSettlement.Tile;
 
@@ -50,7 +51,7 @@ namespace GameClient
             aidData.humanData = HumanScribeManager.HumanToString(toGet);
             RimworldManager.RemovePawnFromGame(toGet);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), aidData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), aidData);
             Network.listener.EnqueuePacket(packet);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
@@ -84,11 +85,11 @@ namespace GameClient
             Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
-            data.stepMode = CommonEnumerators.AidStepMode.Accept;
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+            data.stepMode = AidStepMode.Accept;
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
 
-            RimworldManager.GenerateLetter("Reveived aid",
+            RimworldManager.GenerateLetter("Received aid",
                 "You have received aid from a player! The pawn should come to help soon",
                 LetterDefOf.PositiveEvent);
 
@@ -97,8 +98,8 @@ namespace GameClient
 
         private static void RejectAid(AidData data)
         {
-            data.stepMode = CommonEnumerators.AidStepMode.Reject;
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.AidPacket), data);
+            data.stepMode = AidStepMode.Reject;
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
     }

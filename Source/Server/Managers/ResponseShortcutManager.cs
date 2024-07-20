@@ -7,7 +7,7 @@ namespace GameServer
     {
         public static void SendIllegalPacket(ServerClient client, string message, bool shouldBroadcast = true)
         {
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.IllegalActionPacket));
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.IllegalActionPacket));
             client.listener.EnqueuePacket(packet);
             client.listener.disconnectFlag = true;
 
@@ -20,13 +20,13 @@ namespace GameServer
 
         public static void SendUnavailablePacket(ServerClient client)
         {
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.UserUnavailablePacket));
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.UserUnavailablePacket));
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendBreakPacket(ServerClient client)
         {
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.BreakPacket));
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.BreakPacket));
             client.listener.EnqueuePacket(packet);
         }
 
@@ -34,7 +34,7 @@ namespace GameServer
         {
             factionManifest.manifestMode = FactionManifestMode.NoPower;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -43,7 +43,7 @@ namespace GameServer
             SiteData siteData = new SiteData();
             siteData.siteStepMode = SiteStepMode.WorkerError;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(packet);
         }
     }

@@ -57,7 +57,7 @@ namespace GameClient
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.manifestMode = FactionManifestMode.MemberList;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -67,7 +67,7 @@ namespace GameClient
                 playerFactionData.manifestMode = FactionManifestMode.RemoveMember;
                 playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -78,7 +78,7 @@ namespace GameClient
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.manifestMode = FactionManifestMode.Delete;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -113,7 +113,7 @@ namespace GameClient
                     playerFactionData.manifestMode = FactionManifestMode.Create;
                     playerFactionData.manifestDataString = DialogManager.dialog1ResultOne;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), playerFactionData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                     Network.listener.EnqueuePacket(packet);
                 }
             };
@@ -133,7 +133,7 @@ namespace GameClient
                 playerFactionData.manifestMode = FactionManifestMode.Promote;
                 playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -143,7 +143,7 @@ namespace GameClient
                 playerFactionData.manifestMode = FactionManifestMode.Demote;
                 playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -153,7 +153,7 @@ namespace GameClient
                 playerFactionData.manifestMode = FactionManifestMode.RemoveMember;
                 playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -192,7 +192,7 @@ namespace GameClient
                 playerFactionData.manifestMode = FactionManifestMode.AddMember;
                 playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -243,7 +243,7 @@ namespace GameClient
 
                 factionManifest.manifestMode = FactionManifestMode.AcceptInvite;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
                 Network.listener.EnqueuePacket(packet);
             };
 

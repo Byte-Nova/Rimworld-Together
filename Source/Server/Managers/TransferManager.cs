@@ -50,7 +50,7 @@ namespace GameServer
                     else
                     {
                         transferData.transferStepMode = TransferStepMode.Recover;
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
                 }
@@ -60,20 +60,20 @@ namespace GameServer
                     if (transferData.transferMode == TransferMode.Gift)
                     {
                         transferData.transferStepMode = TransferStepMode.TradeAccept;
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
 
                     else if (transferData.transferMode == TransferMode.Pod)
                     {
                         transferData.transferStepMode = TransferStepMode.TradeAccept;
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
 
                     transferData.transferStepMode = TransferStepMode.TradeRequest;
                     string[] contents2 = new string[] { Serializer.SerializeToString(transferData) };
-                    Packet rPacket2 = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                    Packet rPacket2 = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                     UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket2);
                 }
             }
@@ -87,14 +87,14 @@ namespace GameServer
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferData.transferStepMode = TransferStepMode.Recover;
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
                 transferData.transferStepMode = TransferStepMode.TradeReject;
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }
         }
@@ -107,14 +107,14 @@ namespace GameServer
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferData.transferStepMode = TransferStepMode.TradeReReject;
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
                 transferData.transferStepMode = TransferStepMode.TradeReRequest;
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }
         }
@@ -127,14 +127,14 @@ namespace GameServer
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferData.transferStepMode = TransferStepMode.Recover;
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
                 transferData.transferStepMode = TransferStepMode.TradeReAccept;
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }
         }
@@ -147,14 +147,14 @@ namespace GameServer
             if (!UserManager.CheckIfUserIsConnected(settlement.owner))
             {
                 transferData.transferStepMode = TransferStepMode.Recover;
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
                 transferData.transferStepMode = TransferStepMode.TradeReReject;
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), transferData);
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 UserManager.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
             }
         }

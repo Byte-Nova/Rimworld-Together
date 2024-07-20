@@ -18,6 +18,8 @@ namespace Shared
         public PlanetNPCSettlement[] npcSettlements;
         public OnlineSettlementFile[] playerSettlements;
         public OnlineSiteFile[] playerSites;
+        public CaravanDetails[] playerCaravans;
         public RoadDetails[] roads;
+        public PollutionDetails[] pollutedTiles;
     }
 }

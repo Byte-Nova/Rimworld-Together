@@ -58,7 +58,7 @@ namespace GameServer
             playerRecountData.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
             foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountData.currentPlayerNames.Add(client.userFile.Username);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
         }
 
@@ -164,7 +164,7 @@ namespace GameServer
             if (response == LoginResponse.WrongMods) loginData.extraDetails = (List<string>)extraDetails;
             else if (response == LoginResponse.WrongVersion) loginData.extraDetails = new List<string>() { CommonValues.executableVersion };
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.LoginResponsePacket), loginData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginResponsePacket), loginData);
             client.listener.EnqueuePacket(packet);
             client.listener.disconnectFlag = true;
         }

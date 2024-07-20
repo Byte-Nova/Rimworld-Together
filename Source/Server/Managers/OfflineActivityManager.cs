@@ -28,7 +28,7 @@ namespace GameServer
             if (!MapManager.CheckIfMapExists(data.targetTile))
             {
                 data.activityStepMode = OfflineActivityStepMode.Unavailable;
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                 client.listener.EnqueuePacket(packet);
             }
 
@@ -39,7 +39,7 @@ namespace GameServer
                 if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     data.activityStepMode = OfflineActivityStepMode.Deny;
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineActivityPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -50,7 +50,7 @@ namespace GameServer
                     if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
                     {
                         data.activityStepMode = OfflineActivityStepMode.Deny;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineActivityPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
 
@@ -59,7 +59,7 @@ namespace GameServer
                         userFile.UpdateActivityTime();
 
                         data.mapData = MapManager.GetUserMapFromTile(data.targetTile).mapData;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OfflineActivityPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
                 }

@@ -77,6 +77,11 @@ namespace GameServer
             RoadManager.ParsePacket(client, packet);
         }
 
+        public static void CaravanPacket(ServerClient client, Packet packet)
+        {
+            CaravanManager.ParsePacket(client, packet);
+        }
+
         public static void OnlineActivityPacket(ServerClient client, Packet packet)
         {
             OnlineActivityManager.ParseOnlineActivityPacket(client, packet);
@@ -89,7 +94,7 @@ namespace GameServer
 
         public static void ChatPacket(ServerClient client, Packet packet)
         {
-            ChatManager.ParseClientMessages(client, packet);
+            ChatManager.ParseClientMessage(client, packet);
         }
 
         public static void FactionPacket(ServerClient client, Packet packet)
@@ -105,6 +110,11 @@ namespace GameServer
         public static void SettlementPacket(ServerClient client, Packet packet)
         {
             SettlementManager.ParseSettlementPacket(client, packet);
+        }
+
+        public static void NPCSettlementPacket(ServerClient client, Packet packet)
+        {
+            NPCSettlementManager.ParsePacket(client, packet);
         }
 
         public static void EventPacket(ServerClient client, Packet packet)

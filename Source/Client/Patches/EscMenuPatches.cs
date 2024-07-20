@@ -61,7 +61,7 @@ namespace GameClient
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
 
-                            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ResetSavePacket));
+                            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ResetSavePacket));
                             Network.listener.EnqueuePacket(packet);
                         };
 

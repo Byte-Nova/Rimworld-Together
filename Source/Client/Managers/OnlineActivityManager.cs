@@ -106,7 +106,7 @@ namespace GameClient
                 data.caravanHumans = OnlineManagerHelper.GetActivityHumans();
                 data.caravanAnimals = OnlineManagerHelper.GetActivityAnimals();
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -116,7 +116,7 @@ namespace GameClient
             OnlineActivityData data = new OnlineActivityData();
             data.activityStepMode = OnlineActivityStepMode.Stop;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -143,7 +143,7 @@ namespace GameClient
             data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
             data.mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -169,7 +169,7 @@ namespace GameClient
             Action r2 = delegate
             {
                 data.activityStepMode = OnlineActivityStepMode.Reject;
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -438,7 +438,7 @@ namespace GameClient
 
             else
             {
-                ItemData thingData = Serializer.ConvertBytesToObject<ItemData>(data.creationOrder.dataToCreate);
+                ThingData thingData = Serializer.ConvertBytesToObject<ThingData>(data.creationOrder.dataToCreate);
                 toSpawn = ThingScribeManager.StringToItem(thingData);
             }
 

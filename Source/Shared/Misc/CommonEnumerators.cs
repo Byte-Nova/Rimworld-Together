@@ -2,7 +2,7 @@
 {
     public class CommonEnumerators
     {
-        public enum ServerLoadMode { Configs, Actions, Sites, Events, Roads }
+        public enum ServerFileMode { Configs, Actions, Sites, Events, Roads, World, Whitelist, Difficulty, Market }
 
         public enum LogMode { Message, Warning, Error, Title }
 
@@ -13,6 +13,8 @@
         public enum MarketStepMode { Add, Request, Reload }
 
         public enum AidStepMode { Send, Receive, Accept, Reject }
+
+        public enum CaravanStepMode { Add, Remove, Move }
 
         public enum RoadStepMode { Add, Remove }
 

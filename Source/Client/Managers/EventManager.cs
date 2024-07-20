@@ -82,7 +82,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
+                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
                 EventData eventData = new EventData();
                 eventData.eventStepMode = EventStepMode.Send;
@@ -90,7 +90,7 @@ namespace GameClient
                 eventData.toTile = ClientValues.chosenSettlement.Tile;
                 eventData.eventID = DialogManager.selectedScrollButton;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));

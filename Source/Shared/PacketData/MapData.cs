@@ -22,8 +22,8 @@ namespace Shared
 
         //Things
 
-        public ItemData[] factionThings;
-        public ItemData[] nonFactionThings;
+        public ThingData[] factionThings;
+        public ThingData[] nonFactionThings;
 
         //Humans
 
