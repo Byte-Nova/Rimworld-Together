@@ -16,7 +16,7 @@ We need to make sure everyone follows a certain set of contribution steps, so ev
 - While the nature of open sourced projects usually makes code change constantly, please make sure not to completely remove already existing features. If it's needed for any specific reason, please contact a person in charge before going forward with it.
 
 > [!NOTE]
-> TLDR: Make small changes, and check it's not already being worked on by someone else!
+> TLDR: Make small changes, and don't remove already existing features!
 
 ## While developing the implementation:
 ### Refrain from using code practices that might be difficult to read by other fellow developers.
