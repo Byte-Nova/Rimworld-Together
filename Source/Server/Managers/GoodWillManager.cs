@@ -77,7 +77,7 @@ namespace GameServer
 
             client.userFile.SaveUserFile();
 
-            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
+            Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             client.listener.EnqueuePacket(rPacket);
         }
 
@@ -232,7 +232,7 @@ namespace GameServer
             }
             factionGoodwillData.siteGoodwills = tempList.ToArray();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             client.listener.EnqueuePacket(packet);
         }
     }

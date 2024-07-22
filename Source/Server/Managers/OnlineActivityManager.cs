@@ -75,7 +75,7 @@ namespace GameServer
                 if (toGet == null)
                 {
                     data.activityStepMode = OnlineActivityStepMode.Unavailable;
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -84,14 +84,14 @@ namespace GameServer
                     if (toGet.InVisitWith != null)
                     {
                         data.activityStepMode = OnlineActivityStepMode.Unavailable;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
 
                     else
                     {
                         data.otherPlayerName = client.userFile.Username;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                         toGet.listener.EnqueuePacket(packet);
                     }
                 }
@@ -111,7 +111,7 @@ namespace GameServer
                     client.InVisitWith = toGet;
                     toGet.InVisitWith = client;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
@@ -127,7 +127,7 @@ namespace GameServer
                 if (toGet == null) return;
                 else
                 {
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
@@ -138,13 +138,13 @@ namespace GameServer
             if (client.InVisitWith == null)
             {
                 data.activityStepMode = OnlineActivityStepMode.Stop;
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                 client.listener.EnqueuePacket(packet);
             }
 
             else
             {
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                 client.InVisitWith.listener.EnqueuePacket(packet);
             }
         }
@@ -154,7 +154,7 @@ namespace GameServer
             OnlineActivityData visitData = new OnlineActivityData();
             visitData.activityStepMode = OnlineActivityStepMode.Stop;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.OnlineActivityPacket), visitData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), visitData);
             client.listener.EnqueuePacket(packet);
 
             ServerClient otherPlayer = client.InVisitWith;

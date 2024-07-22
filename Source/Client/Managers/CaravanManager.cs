@@ -1,13 +1,11 @@
 ﻿using GameClient;
 using RimWorld;
 using RimWorld.Planet;
-using RimWorld.QuestGen;
 using Shared;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Tilemaps;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -25,15 +23,15 @@ namespace GameClient
 
             switch (data.stepMode)
             {
-                case CommonEnumerators.CaravanStepMode.Add:
+                case CaravanStepMode.Add:
                     AddCaravan(data.details);
                     break;
 
-                case CommonEnumerators.CaravanStepMode.Remove:
+                case CaravanStepMode.Remove:
                     RemoveCaravan(data.details);
                     break;
 
-                case CommonEnumerators.CaravanStepMode.Move:
+                case CaravanStepMode.Move:
                     MoveCaravan(data.details);
                     break;
             }
@@ -119,12 +117,12 @@ namespace GameClient
         public static void RequestCaravanAdd(Caravan caravan)
         {
             CaravanData data = new CaravanData();
-            data.stepMode = CommonEnumerators.CaravanStepMode.Add;
+            data.stepMode = CaravanStepMode.Add;
             data.details = new CaravanDetails();
             data.details.tile = caravan.Tile;
             data.details.owner = ClientValues.username;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -137,10 +135,10 @@ namespace GameClient
             else
             {
                 CaravanData data = new CaravanData();
-                data.stepMode = CommonEnumerators.CaravanStepMode.Remove;
+                data.stepMode = CaravanStepMode.Remove;
                 data.details = details;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -154,10 +152,10 @@ namespace GameClient
             else
             {
                 CaravanData data = new CaravanData();
-                data.stepMode = CommonEnumerators.CaravanStepMode.Move;
+                data.stepMode = CaravanStepMode.Move;
                 data.details = details;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -198,7 +196,7 @@ public static class CaravanManagerHelper
 
     public static CaravanDetails[] tempCaravanDetails;
 
-    public static void SetCaravanValues(ServerGlobalData serverGlobalData)
+    public static void SetValues(ServerGlobalData serverGlobalData)
     {
         tempCaravanDetails = serverGlobalData.playerCaravans;
     }

@@ -30,7 +30,7 @@ namespace GameServer
             CommandData commandData = new CommandData();
             commandData.commandMode = CommandMode.Op;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -39,7 +39,7 @@ namespace GameServer
             CommandData commandData = new CommandData();
             commandData.commandMode = CommandMode.Deop;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
 
         }
@@ -50,7 +50,7 @@ namespace GameServer
             eventData.eventStepMode = EventStepMode.Receive;
             eventData.eventID = eventID;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -60,7 +60,7 @@ namespace GameServer
             commandData.commandMode = CommandMode.Broadcast;
             commandData.commandDetails = str;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
                 client.listener.EnqueuePacket(packet);
@@ -72,7 +72,7 @@ namespace GameServer
             CommandData commandData = new CommandData();
             commandData.commandMode = CommandMode.ForceSave;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
         }
     }

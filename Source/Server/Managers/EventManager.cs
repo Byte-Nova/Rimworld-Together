@@ -36,7 +36,7 @@ namespace GameServer
                 if (!UserManager.CheckIfUserIsConnected(settlement.owner))
                 {
                     eventData.eventStepMode = EventStepMode.Recover;
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -47,7 +47,7 @@ namespace GameServer
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, baseMaxTimer))
                     {
                         eventData.eventStepMode = EventStepMode.Recover;
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
 
@@ -55,7 +55,7 @@ namespace GameServer
                     {
                         //Back to player
 
-                        Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
 
                         //To the person that should receive it
@@ -64,7 +64,7 @@ namespace GameServer
 
                         target.userFile.UpdateEventTime();
 
-                        packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventData);
+                        packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         target.listener.EnqueuePacket(packet);
                     }
                 }

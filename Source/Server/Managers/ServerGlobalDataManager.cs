@@ -1,5 +1,4 @@
 ﻿using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer
 {
@@ -25,7 +24,7 @@ namespace GameServer
 
             globalData = GetServerPolution(globalData);
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ServerValuesPacket), globalData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ServerValuesPacket), globalData);
             client.listener.EnqueuePacket(packet);
         }
 

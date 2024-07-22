@@ -45,7 +45,7 @@ namespace GameServer
                     {
                         settlementData.goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
 
-                        Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                         cClient.listener.EnqueuePacket(rPacket);
                     }
                 }
@@ -86,7 +86,7 @@ namespace GameServer
             void SendRemovalSignal()
             {
                 settlementData.settlementStepMode = SettlementStepMode.Remove;
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                 foreach (ServerClient cClient in Network.connectedClients.ToArray())
                 {
                     if (cClient == client) continue;

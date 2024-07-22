@@ -120,7 +120,7 @@ namespace GameClient
             {
                 ClientValues.outgoingManifest.transferStepMode = TransferStepMode.TradeRequest;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -128,7 +128,7 @@ namespace GameClient
             {
                 ClientValues.outgoingManifest.transferStepMode = TransferStepMode.TradeReRequest;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -136,7 +136,7 @@ namespace GameClient
             {
                 ClientValues.outgoingManifest.transferStepMode = TransferStepMode.TradeRequest;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), ClientValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -146,7 +146,7 @@ namespace GameClient
                 marketData.marketStepMode = MarketStepMode.Add;
                 marketData.transferThings = ClientValues.outgoingManifest.itemDatas;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MarketPacket), marketData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -340,7 +340,7 @@ namespace GameClient
             {
                 ClientValues.incomingManifest.transferStepMode = TransferStepMode.TradeReject;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -353,7 +353,7 @@ namespace GameClient
             {
                 ClientValues.incomingManifest.transferStepMode = TransferStepMode.TradeReReject;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
 
                 RecoverTradeItems(TransferLocation.Caravan);

@@ -41,7 +41,7 @@ namespace GameServer
 
             else
             {
-                Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.RequestSavePartPacket));
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.RequestSavePartPacket));
                 client.listener.EnqueuePacket(rPacket);
             }
         }
@@ -67,7 +67,7 @@ namespace GameServer
             fileTransferData.isLastPart = client.listener.uploadManager.isLastPart;
             if(!Master.serverConfig.SyncLocalSave) fileTransferData.instructions = (int)SaveMode.Strict;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             client.listener.EnqueuePacket(packet);
 
             //if this is the last packet

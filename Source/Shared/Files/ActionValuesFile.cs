@@ -5,6 +5,6 @@ namespace Shared
     [Serializable]
     public class ActionValuesFile
     {
-        public int SpyCost;
+        public int SpyCost = 100;
     }
 }

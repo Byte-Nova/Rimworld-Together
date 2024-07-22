@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
-using Shared;
 
 namespace GameClient
 {

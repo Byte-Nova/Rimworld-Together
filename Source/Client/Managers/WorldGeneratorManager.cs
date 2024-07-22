@@ -125,7 +125,7 @@ namespace GameClient
             worldData.worldStepMode = WorldStepMode.Required;
             worldData.worldValuesFile = WorldGeneratorHelper.PopulateWorldValues();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);
         }
 

@@ -64,7 +64,7 @@ namespace GameClient
             factionGoodwillData.tile = structureTile;
             factionGoodwillData.goodwill = goodwill;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             Network.listener.EnqueuePacket(packet);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
@@ -92,7 +92,7 @@ namespace GameClient
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                PlanetManager.playerSettlements.Remove(toChange[i]);
+                PlayerSettlementManager.playerSettlements.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
@@ -100,7 +100,7 @@ namespace GameClient
                 newSettlement.Name = toChange[i].Name;
                 newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData.settlementGoodwills[i]));
 
-                PlanetManager.playerSettlements.Add(newSettlement);
+                PlayerSettlementManager.playerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
             }
         }
@@ -114,7 +114,7 @@ namespace GameClient
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                PlanetManager.playerSites.Remove(toChange[i]);
+                PlayerSiteManager.playerSites.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
@@ -122,7 +122,7 @@ namespace GameClient
                             threatPoints: 1000,
                             faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData.siteGoodwills[i]));
 
-                PlanetManager.playerSites.Add(newSite);
+                PlayerSiteManager.playerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);
             }
         }

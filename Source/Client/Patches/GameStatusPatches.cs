@@ -24,7 +24,7 @@ namespace GameClient
                     settlementData.tile = __instance.CurrentMap.Tile;
                     settlementData.settlementStepMode = SettlementStepMode.Add;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -67,7 +67,7 @@ namespace GameClient
                     settlementData.tile = caravan.Tile;
                     settlementData.settlementStepMode = SettlementStepMode.Add;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -87,7 +87,7 @@ namespace GameClient
                     settlementData.tile = map.Tile;
                     settlementData.settlementStepMode = SettlementStepMode.Add;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -107,10 +107,27 @@ namespace GameClient
                     settlementData.tile = settlement.Tile;
                     settlementData.settlementStepMode = SettlementStepMode.Remove;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SettlementPacket), settlementData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Settlement), nameof(Settlement.PostRemove))]
+        public static class DestroyNPCSettlementPatch
+        {
+            [HarmonyPostfix]
+            public static void ModifyPost(Settlement __instance)
+            {
+                if (Network.state == NetworkState.Connected)
+                {
+                    if (!ClientValues.isReadyToPlay) return;
+
+                    if (__instance.Faction == Faction.OfPlayer) return;
+                    else if (FactionValues.playerFactions.Contains(__instance.Faction)) return;
+                    else NPCSettlementManager.RequestSettlementRemoval(__instance);
                 }
             }
         }

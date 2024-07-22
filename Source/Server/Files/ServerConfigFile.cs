@@ -23,6 +23,8 @@
 
         public bool AllowCustomScenarios = true;
 
+        public bool AllowNPCDestruction = false;
+
         public bool TemporalActivityProtection = true;
 
         public bool TemporalEventProtection = true;

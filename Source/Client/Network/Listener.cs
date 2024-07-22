@@ -121,7 +121,7 @@ namespace GameClient
                     Thread.Sleep(1000);
 
                     KeepAliveData keepAliveData = new KeepAliveData();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.KeepAlivePacket), keepAliveData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.KeepAlivePacket), keepAliveData);
                     EnqueuePacket(packet);
                 }
             }
