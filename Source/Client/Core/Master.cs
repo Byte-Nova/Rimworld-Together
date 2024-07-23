@@ -35,7 +35,7 @@ namespace GameClient
         public static void PreparePaths()
         {
             mainPath = GenFilePaths.SaveDataFolderPath;
-            modFolderPath = Path.Combine(mainPath, "Rimworld Together");
+            modFolderPath = Path.Combine(mainPath, "RimWorld Together");
 
             connectionDataPath = Path.Combine(modFolderPath, "ConnectionData.json");
             clientPreferencesPath = Path.Combine(modFolderPath, "Preferences.json");

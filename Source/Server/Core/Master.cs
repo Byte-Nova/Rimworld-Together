@@ -326,7 +326,7 @@ namespace GameServer
 
         public static void ChangeTitle()
         {
-            Console.Title = $"Rimworld Together {CommonValues.executableVersion} - " +
+            Console.Title = $"RimWorld Together {CommonValues.executableVersion} - " +
                 $"Players [{Network.connectedClients.Count}/{serverConfig.MaxPlayers}]";
         }
     }
