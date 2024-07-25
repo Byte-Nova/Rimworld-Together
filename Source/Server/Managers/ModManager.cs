@@ -14,12 +14,12 @@ namespace GameServer
                 try
                 {
                     string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile.ToLower(), "packageid", "modmetadata"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()))
+                        if (!Master.loadedRequiredMods.Contains(str))
                         {
                             Logger.Warning($"Loaded > '{modPath}'");
-                            Master.loadedRequiredMods.Add(str.ToLower());
+                            Master.loadedRequiredMods.Add(str);
                         }
                     }
                 }
@@ -33,14 +33,14 @@ namespace GameServer
                 try
                 {
                     string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile.ToLower(), "packageid", "modmetadata"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()))
+                        if (!Master.loadedRequiredMods.Contains(str))
                         {
-                            if (!Master.loadedOptionalMods.Contains(str.ToLower()))
+                            if (!Master.loadedOptionalMods.Contains(str))
                             {
                                 Logger.Warning($"Loaded > '{modPath}'");
-                                Master.loadedOptionalMods.Add(str.ToLower());
+                                Master.loadedOptionalMods.Add(str);
                             }
                         }
                     }
@@ -55,14 +55,14 @@ namespace GameServer
                 try
                 {
                     string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile.ToLower(), "packageid", "modmetadata"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()) && !Master.loadedOptionalMods.Contains(str.ToLower()))
+                        if (!Master.loadedRequiredMods.Contains(str) && !Master.loadedOptionalMods.Contains(str))
                         {
-                            if (!Master.loadedForbiddenMods.Contains(str.ToLower()))
+                            if (!Master.loadedForbiddenMods.Contains(str))
                             {
                                 Logger.Warning($"Loaded > '{modPath}'");
-                                Master.loadedForbiddenMods.Add(str.ToLower());
+                                Master.loadedForbiddenMods.Add(str);
                             }
                         }
                     }
