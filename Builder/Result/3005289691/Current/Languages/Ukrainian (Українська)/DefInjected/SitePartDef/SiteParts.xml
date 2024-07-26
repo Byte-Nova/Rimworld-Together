@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<RTFarmland.label>Сільськогосподарські угіддя</RTFarmland.label>
+	<RTFarmland.description>Онлайн ділянка</RTFarmland.description>
+  
+	<RTQuarry.label>Кар'єр</RTQuarry.label>
+	<RTQuarry.description>Онлайн ділянка</RTQuarry.description>
+  
+	<RTSawmill.label>Лісопильня</RTSawmill.label>
+	<RTSawmill.description>Онлайн ділянка</RTSawmill.description>
+  
+	<RTBank.label>Банк</RTBank.label>
+	<RTBank.description>Онлайн ділянка</RTBank.description>
+  
+	<RTLaboratory.label>Лабораторія</RTLaboratory.label>
+	<RTLaboratory.description>Онлайн ділянка</RTLaboratory.description>
+  
+	<RTRefinery.label>Паливний завод</RTRefinery.label>
+	<RTRefinery.description>Онлайн ділянка</RTRefinery.description>
+  
+	<RTHerbalWorkshop.label>Плантація лікарських рослин</RTHerbalWorkshop.label>
+	<RTHerbalWorkshop.description>Онлайн ділянка</RTHerbalWorkshop.description>
+  
+	<RTTextileFactory.label>Текстильна фабрика</RTTextileFactory.label>
+	<RTTextileFactory.description>Онлайн ділянка</RTTextileFactory.description>
+  
+	<RTFoodProcessor.label>Харчовий комбінат</RTFoodProcessor.label>
+	<RTFoodProcessor.description>Онлайн ділянка</RTFoodProcessor.description>
+</LanguageData>
