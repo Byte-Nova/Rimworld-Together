@@ -17,7 +17,7 @@ namespace GameClient
             modConfigs = GetSettings<ModConfigs>();
         }
 
-        public override string SettingsCategory() { return "Rimworld Together"; }
+        public override string SettingsCategory() { return "RimWorld Together"; }
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
@@ -45,9 +45,10 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
-            if (listingStandard.ButtonTextLabeled("Check the mod's wiki!", "Open")) StartProcess("https://rimworldtogether.github.io/Guide");
-            if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/NCsArSaqBW");
+            if (listingStandard.ButtonTextLabeled("Check out the mod's wiki!", "Open")) StartProcess("https://rimworldtogether.github.io/Guide");
             if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/RimworldTogether/Rimworld-Together");
+            if (listingStandard.ButtonTextLabeled("Check out the mod's incompatibility list!", "Open")) StartProcess("https://github.com/RimworldTogether/Rimworld-Together/blob/development/IncompatibilityList.md");
+            if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/NCsArSaqBW");
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
