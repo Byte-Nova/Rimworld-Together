@@ -209,14 +209,16 @@ namespace GameClient
         {
             { UserColor.Normal, "<color=white>" },
             { UserColor.Admin, "<color=red>" },
-            { UserColor.Console, "<color=yellow>" }
+            { UserColor.Console, "<color=yellow>" },
+            { UserColor.Private, "<color=#2eb3b0>" }
         };
 
         public static Dictionary<MessageColor, string> messageColorDictionary = new Dictionary<MessageColor, string>()
         {
             { MessageColor.Normal, "<color=white>" },
             { MessageColor.Admin, "<color=white>" },
-            { MessageColor.Console, "<color=yellow>" }
+            { MessageColor.Console, "<color=yellow>" },
+            { MessageColor.Private, "<color=#2eb3b0>" }
         };
 
         public static string[] GetMessageWords(string message)
