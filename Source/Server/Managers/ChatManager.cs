@@ -55,7 +55,10 @@ namespace GameServer
                 toFind.commandAction.Invoke();
             }
 
-            Logger.Message($"[Chat command] > {client.userFile.Username} > {command}");
+            string logCommand = "";
+            for(int i=0; i<command.Length; i++) logCommand += command[i] + "";
+
+            Logger.Message($"[Chat command] > {client.userFile.Username} > {logCommand}");
 
             commandSemaphore.Release();
         }
@@ -211,7 +214,7 @@ namespace GameServer
             // Can't send a message to yourself
             if (messageTarget == targetClient.userFile.Username) return;
 
-            for(int i=2; i<command.Length-2; i++) message += command[i] + " ";
+            for(int i=2; i<command.Length; i++) message += command[i] + " ";
 
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
@@ -219,13 +222,10 @@ namespace GameServer
                 {
                     ChatData chatData = new()
                     {
-                        username = $"<color=#2eb3b0>{targetClient.userFile.Username} -> {messageTarget}</color>",
-                        message = $"<color=#2eb3b0>{message}</color>",
-                        userColor = UserColor.Normal,
-                        messageColor = MessageColor.Normal
-                        // TODO: Remove the two lines on top and uncomment the two under, this is for testing without users having the update
-                        //userColor = UserColor.Private,
-                        //messageColor = MessageColor.Private
+                        username = $"{targetClient.userFile.Username} -> {messageTarget}",
+                        message = message,
+                        userColor = UserColor.Private,
+                        messageColor = MessageColor.Private
                     };
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
@@ -233,9 +233,13 @@ namespace GameServer
                     client.listener.EnqueuePacket(packet);
                     targetClient.listener.EnqueuePacket(packet);
 
+                    if (Master.serverConfig.DisplayChatInConsole) Logger.Message($"[Private Chat] > {targetClient.userFile.Username}->{messageTarget} > {message}");
+
                     return;
                 }
             }
+
+            ChatManager.BroadcastSystemMessage(targetClient, new string[] { "User not found" });
         }
     }
 }
