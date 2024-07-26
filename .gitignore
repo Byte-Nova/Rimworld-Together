@@ -409,3 +409,8 @@ Source/Client/HugsLib.dll
 
 # Container run volume
 Data
+
+# Custom local scripts
+Source/buildClient.sh
+Source/buildServer.sh
+Source/publishServer.sh
