@@ -94,7 +94,7 @@ namespace GameServer
 
         public static void ChatPacket(ServerClient client, Packet packet)
         {
-            ChatManager.ParseClientMessage(client, packet);
+            ChatManager.ParsePacket(client, packet);
         }
 
         public static void FactionPacket(ServerClient client, Packet packet)

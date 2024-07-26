@@ -38,24 +38,11 @@ namespace GameClient
         public static int chatIconIndex;
         public static List<Texture2D> chatIcons = new List<Texture2D>();
 
-        public static void SendMessage(string messageToSend)
+        public static void ParsePacket(Packet packet)
         {
-            ChatSounds.OwnChatDing.PlayOneShotOnCamera();
-    
-            ChatData chatData = new ChatData();
-            chatData.username = ClientValues.username;
-            chatData.message = messageToSend;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
-            Network.listener?.EnqueuePacket(packet);
-        }
-    
-        public static void ReceiveMessage(Packet packet)
-        {
-            bool hasBeenTagged = false;
-
             ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
 
+            bool hasBeenTagged = false;
             if (ChatManagerHelper.GetMessageWords(chatData.message).Contains($"@{ClientValues.username}"))
             {
                 hasBeenTagged = true;
@@ -71,6 +58,18 @@ namespace GameClient
             if (ClientValues.muteSoundBool) return;
 
             if (hasBeenTagged) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
+        }
+
+        public static void SendMessage(string messageToSend)
+        {
+            ChatSounds.OwnChatDing.PlayOneShotOnCamera();
+    
+            ChatData chatData = new ChatData();
+            chatData.username = ClientValues.username;
+            chatData.message = messageToSend;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            Network.listener?.EnqueuePacket(packet);
         }
 
         private static string ParseMessage(string message)
@@ -209,14 +208,16 @@ namespace GameClient
         {
             { UserColor.Normal, "<color=white>" },
             { UserColor.Admin, "<color=red>" },
-            { UserColor.Console, "<color=yellow>" }
+            { UserColor.Console, "<color=yellow>" },
+            { UserColor.Private, "<color=#3ae0dd>" }
         };
 
         public static Dictionary<MessageColor, string> messageColorDictionary = new Dictionary<MessageColor, string>()
         {
             { MessageColor.Normal, "<color=white>" },
             { MessageColor.Admin, "<color=white>" },
-            { MessageColor.Console, "<color=yellow>" }
+            { MessageColor.Console, "<color=yellow>" },
+            { MessageColor.Private, "<color=#3ae0dd>" }
         };
 
         public static string[] GetMessageWords(string message)

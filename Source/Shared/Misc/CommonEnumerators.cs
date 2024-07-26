@@ -1,4 +1,4 @@
-﻿namespace Shared
+namespace Shared
 {
     public class CommonEnumerators
     {
@@ -67,9 +67,9 @@
 
         public enum SaveMode { Disconnect, Autosave, Strict }
 
-        public enum UserColor { Normal, Admin, Console }
+        public enum UserColor { Normal, Admin, Console, Private }
 
-        public enum MessageColor { Normal, Admin, Console }
+        public enum MessageColor { Normal, Admin, Console, Private }
 
         public enum LoginMode { Login, Register }
 
@@ -90,3 +90,4 @@
         public enum WorldStepMode { Required, Existing }
     }
 }
+
