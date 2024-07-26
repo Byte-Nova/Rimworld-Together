@@ -41,7 +41,7 @@ namespace GameClient
 
         public static void ChatPacket(Packet packet)
         {
-            ChatManager.ReceiveMessage(packet);
+            ChatManager.ParsePacket(packet);
         }
 
         public static void CommandPacket(Packet packet)
