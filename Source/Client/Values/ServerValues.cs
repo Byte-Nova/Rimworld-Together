@@ -29,7 +29,7 @@ namespace GameClient
 
         public static void SetServerPlayers(Packet packet)
         {
-            PlayerRecountData playerRecountData = (PlayerRecountData)Serializer.ConvertBytesToObject(packet.contents);
+            PlayerRecountData playerRecountData = Serializer.ConvertBytesToObject<PlayerRecountData>(packet.contents);
             currentPlayers = int.Parse(playerRecountData.currentPlayers);
             currentPlayerNames = playerRecountData.currentPlayerNames;
         }

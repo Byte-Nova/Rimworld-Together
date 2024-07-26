@@ -4,24 +4,28 @@ namespace GameServer
 {
     public static class MapManager
     {
+        //Variables
+
+        public readonly static string fileExtension = ".mpmap";
+
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
-            MapFileData mapFileData = (MapFileData)Serializer.ConvertBytesToObject(packet.contents);
-            mapFileData.mapOwner = client.username;
+            MapFileData mapFileData = Serializer.ConvertBytesToObject<MapFileData>(packet.contents);
+            mapFileData.mapOwner = client.userFile.Username;
 
-            byte[] compressedMapBytes = GZip.Compress(Serializer.ConvertObjectToBytes(mapFileData));
-            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + ".mpmap"), compressedMapBytes);
+            byte[] compressedMapBytes = Serializer.ConvertObjectToBytes(mapFileData);
+            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapFileData.mapTile + fileExtension), compressedMapBytes);
 
-            Logger.WriteToConsole($"[Save map] > {client.username} > {mapFileData.mapTile}");
+            Logger.Message($"[Save map] > {client.userFile.Username} > {mapFileData.mapTile}");
         }
 
         public static void DeleteMap(MapFileData mapFile)
         {
             if (mapFile == null) return;
 
-            File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + ".json"));
+            File.Delete(Path.Combine(Master.mapsPath, mapFile.mapTile + fileExtension));
 
-            Logger.WriteToConsole($"[Remove map] > {mapFile.mapTile}", Logger.LogMode.Warning);
+            Logger.Warning($"[Remove map] > {mapFile.mapTile}");
         }
 
         public static MapFileData[] GetAllMapFiles()
@@ -29,18 +33,19 @@ namespace GameServer
             List<MapFileData> mapDatas = new List<MapFileData>();
 
             string[] maps = Directory.GetFiles(Master.mapsPath);
-            foreach (string str in maps)
+            foreach (string map in maps)
             {
-                byte[] decompressedBytes = GZip.Decompress(File.ReadAllBytes(str));
+                if (!map.EndsWith(fileExtension)) continue;
+                byte[] decompressedBytes = File.ReadAllBytes(map);
 
-                MapFileData newMap = (MapFileData)Serializer.ConvertBytesToObject(decompressedBytes);
+                MapFileData newMap = Serializer.ConvertBytesToObject<MapFileData>(decompressedBytes);
                 mapDatas.Add(newMap);
             }
 
             return mapDatas.ToArray();
         }
 
-        public static bool CheckIfMapExists(string mapTileToCheck)
+        public static bool CheckIfMapExists(int mapTileToCheck)
         {
             MapFileData[] maps = GetAllMapFiles();
             foreach (MapFileData map in maps)
@@ -68,7 +73,7 @@ namespace GameServer
             return userMaps.ToArray();
         }
 
-        public static MapFileData GetUserMapFromTile(string mapTileToGet)
+        public static MapFileData GetUserMapFromTile(int mapTileToGet)
         {
             MapFileData[] mapFiles = GetAllMapFiles();
 

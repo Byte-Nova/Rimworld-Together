@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -10,15 +11,16 @@ namespace GameServer
 
         public static void ParseWorldPacket(ServerClient client, Packet packet)
         {
-            WorldData worldData = (WorldData)Serializer.ConvertBytesToObject(packet.contents);
+            WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 
-            switch (int.Parse(worldData.worldStepMode))
+            switch (worldData.worldStepMode)
             {
-                case (int)CommonEnumerators.WorldStepMode.Required:
-                    SaveWorldPrefab(client, worldData);
+                case WorldStepMode.Required:
+                    Master.worldValues = worldData.worldValuesFile;
+                    Master.SaveValueFile(ServerFileMode.World);
                     break;
 
-                case (int)CommonEnumerators.WorldStepMode.Existing:
+                case WorldStepMode.Existing:
                     //Do nothing
                     break;
             }
@@ -26,62 +28,23 @@ namespace GameServer
 
         public static bool CheckIfWorldExists() { return File.Exists(worldFilePath); }
 
-        public static void SaveWorldPrefab(ServerClient client, WorldData worldData)
-        {
-            WorldValuesFile worldValues = new WorldValuesFile();
-            worldValues.seedString = worldData.seedString;
-            worldValues.persistentRandomValue = worldData.persistentRandomValue;
-            worldValues.planetCoverage = worldData.planetCoverage;
-            worldValues.rainfall = worldData.rainfall;
-            worldValues.temperature = worldData.temperature;
-            worldValues.population = worldData.population;
-            worldValues.pollution = worldData.pollution;
-            worldValues.factions = worldData.factions;
-
-            Master.worldValues = worldValues;
-            Serializer.SerializeToFile(worldFilePath, worldValues);
-            Logger.WriteToConsole($"[Save world] > {client.username}", Logger.LogMode.Title);
-        }
-
         public static void RequireWorldFile(ServerClient client)
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Required).ToString();
+            worldData.worldStepMode = WorldStepMode.Required;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendWorldFile(ServerClient client)
         {
-            WorldValuesFile worldValues = Master.worldValues;
-
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = ((int)CommonEnumerators.WorldStepMode.Existing).ToString();
+            worldData.worldStepMode = WorldStepMode.Existing;
+            worldData.worldValuesFile = Master.worldValues;
 
-            worldData.seedString = worldValues.seedString;
-            worldData.persistentRandomValue = worldValues.persistentRandomValue;
-            worldData.planetCoverage = worldValues.planetCoverage;
-            worldData.rainfall = worldValues.rainfall;
-            worldData.temperature = worldValues.temperature;
-            worldData.population = worldValues.population;
-            worldData.pollution = worldValues.pollution;
-            worldData.factions = worldValues.factions;
-
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.WorldPacket), worldData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
-        }
-
-        public static void LoadWorldFile()
-        {
-            if (File.Exists(worldFilePath))
-            {
-                Master.worldValues = Serializer.SerializeFromFile<WorldValuesFile>(worldFilePath);
-
-                Logger.WriteToConsole("Loaded world values", Logger.LogMode.Warning);
-            }
-
-            else Logger.WriteToConsole("[Warning] > World is missing. Join server to create it", Logger.LogMode.Warning);   
         }
     }
 }

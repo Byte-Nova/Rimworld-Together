@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -6,57 +7,60 @@ namespace GameServer
     {
         public static void ChangeUserGoodwills(ServerClient client, Packet packet)
         {
-            FactionGoodwillData factionGoodwillData = (FactionGoodwillData)Serializer.ConvertBytesToObject(packet.contents);
+            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionGoodwillData.tile);
             SiteFile siteFile = SiteManager.GetSiteFileFromTile(factionGoodwillData.tile);
 
             if (settlementFile != null) factionGoodwillData.owner = settlementFile.owner;
             else factionGoodwillData.owner = siteFile.owner;
 
-            if (client.hasFaction && OnlineFactionManager.GetFactionFromClient(client).factionMembers.Contains(factionGoodwillData.owner))
+            if (client.userFile.HasFaction && FactionManager.GetFactionFromClient(client).factionMembers.Contains(factionGoodwillData.owner))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
             }
 
-            client.enemyPlayers.Remove(factionGoodwillData.owner);
-            client.allyPlayers.Remove(factionGoodwillData.owner);
+            client.userFile.EnemyPlayers.Remove(factionGoodwillData.owner);
+            client.userFile.AllyPlayers.Remove(factionGoodwillData.owner);
 
-            if (factionGoodwillData.goodwill == ((int)CommonEnumerators.Goodwills.Enemy).ToString())
+            if (factionGoodwillData.goodwill == Goodwill.Enemy)
             {
-                if (!client.enemyPlayers.Contains(factionGoodwillData.owner))
+                if (!client.userFile.EnemyPlayers.Contains(factionGoodwillData.owner))
                 {
-                    client.enemyPlayers.Add(factionGoodwillData.owner);
+                    client.userFile.EnemyPlayers.Add(factionGoodwillData.owner);
                 }
             }
 
-            else if (factionGoodwillData.goodwill == ((int)CommonEnumerators.Goodwills.Ally).ToString())
+            else if (factionGoodwillData.goodwill == Goodwill.Ally)
             {
-                if (!client.allyPlayers.Contains(factionGoodwillData.owner))
+                if (!client.userFile.AllyPlayers.Contains(factionGoodwillData.owner))
                 {
-                    client.allyPlayers.Add(factionGoodwillData.owner);
+                    client.userFile.AllyPlayers.Add(factionGoodwillData.owner);
                 }
             }
 
+            List<Goodwill> tempList = new List<Goodwill>();
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
             {
                 if (settlement.owner == factionGoodwillData.owner)
                 {
                     factionGoodwillData.settlementTiles.Add(settlement.tile);
-                    factionGoodwillData.settlementGoodwills.Add(GetSettlementGoodwill(client, settlement).ToString());
+                    tempList.Add(GetSettlementGoodwill(client, settlement));
                 }
             }
+            factionGoodwillData.settlementGoodwills = tempList.ToArray();
 
+            tempList = new List<Goodwill>();
             SiteFile[] sites = SiteManager.GetAllSites();
             foreach (SiteFile site in sites)
             {
                 if (site.isFromFaction)
                 {
-                    if (site.factionName == UserManager.GetUserFileFromName(factionGoodwillData.owner).factionName)
+                    if (site.factionName == UserManager.GetUserFileFromName(factionGoodwillData.owner).FactionName)
                     {
                         factionGoodwillData.siteTiles.Add(site.tile);
-                        factionGoodwillData.siteGoodwills.Add(GetSiteGoodwill(client, site).ToString());
+                        tempList.Add(GetSiteGoodwill(client, site));
                     }
                 }
 
@@ -65,21 +69,19 @@ namespace GameServer
                     if (site.owner == factionGoodwillData.owner)
                     {
                         factionGoodwillData.siteTiles.Add(site.tile);
-                        factionGoodwillData.siteGoodwills.Add(GetSiteGoodwill(client, site).ToString());
+                        tempList.Add(GetSiteGoodwill(client, site));
                     }
                 }
             }
+            factionGoodwillData.siteGoodwills = tempList.ToArray();
 
-            UserFile userFile = UserManager.GetUserFile(client);
-            userFile.enemyPlayers = client.enemyPlayers;
-            userFile.allyPlayers = client.allyPlayers;
-            UserManager.SaveUserFile(client, userFile);
+            client.userFile.SaveUserFile();
 
-            Packet rPacket = Packet.CreatePacketFromJSON(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
+            Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             client.listener.EnqueuePacket(rPacket);
         }
 
-        public static int GetGoodwillFromTile(ServerClient client, string tileToCheck)
+        public static Goodwill GetGoodwillFromTile(ServerClient client, int tileToCheck)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(tileToCheck);
             SiteFile siteFile = SiteManager.GetSiteFileFromTile(tileToCheck);
@@ -88,68 +90,68 @@ namespace GameServer
             if (settlementFile != null) usernameToCheck = settlementFile.owner;
             else usernameToCheck = siteFile.owner;
 
-            if (client.hasFaction && OnlineFactionManager.GetFactionFromFactionName(client.factionName).factionMembers.Contains(usernameToCheck))
+            if (client.userFile.HasFaction && FactionManager.GetFactionFromFactionName(client.userFile.FactionName).factionMembers.Contains(usernameToCheck))
             {
-                if (usernameToCheck == client.username) return (int)CommonEnumerators.Goodwills.Personal;
-                else return (int)CommonEnumerators.Goodwills.Faction;
+                if (usernameToCheck == client.userFile.Username) return Goodwill.Personal;
+                else return Goodwill.Faction;
             }
 
-            else if (client.enemyPlayers.Contains(usernameToCheck)) return (int)CommonEnumerators.Goodwills.Enemy;
-            else if (client.allyPlayers.Contains(usernameToCheck)) return (int)CommonEnumerators.Goodwills.Ally;
-            else return (int)CommonEnumerators.Goodwills.Neutral;
+            else if (client.userFile.EnemyPlayers.Contains(usernameToCheck)) return Goodwill.Enemy;
+            else if (client.userFile.AllyPlayers.Contains(usernameToCheck)) return Goodwill.Ally;
+            else return Goodwill.Neutral;
         }
 
-        public static int GetSettlementGoodwill(ServerClient client, SettlementFile settlement)
+        public static Goodwill GetSettlementGoodwill(ServerClient client, SettlementFile settlement)
         {
-            if (client.hasFaction && OnlineFactionManager.GetFactionFromFactionName(client.factionName).factionMembers.Contains(settlement.owner))
+            if (client.userFile.HasFaction && FactionManager.GetFactionFromFactionName(client.userFile.FactionName).factionMembers.Contains(settlement.owner))
             {
-                if (settlement.owner == client.username) return (int)CommonEnumerators.Goodwills.Personal;
-                else return (int)CommonEnumerators.Goodwills.Faction;
+                if (settlement.owner == client.userFile.Username) return Goodwill.Personal;
+                else return Goodwill.Faction;
             }
 
-            else if (client.enemyPlayers.Contains(settlement.owner)) return (int)CommonEnumerators.Goodwills.Enemy;
-            else if (client.allyPlayers.Contains(settlement.owner)) return (int)CommonEnumerators.Goodwills.Ally;
-            else if (settlement.owner == client.username) return (int)CommonEnumerators.Goodwills.Personal;
-            else return (int)CommonEnumerators.Goodwills.Neutral;
+            else if (client.userFile.EnemyPlayers.Contains(settlement.owner)) return Goodwill.Enemy;
+            else if (client.userFile.AllyPlayers.Contains(settlement.owner)) return Goodwill.Ally;
+            else if (settlement.owner == client.userFile.Username) return Goodwill.Personal;
+            else return Goodwill.Neutral;
         }
 
-        public static int GetSiteGoodwill(ServerClient client, SiteFile site)
+        public static Goodwill GetSiteGoodwill(ServerClient client, SiteFile site)
         {
             if (site.isFromFaction)
             {
-                if (client.hasFaction && client.factionName == site.factionName) return (int)CommonEnumerators.Goodwills.Faction;
+                if (client.userFile.HasFaction && client.userFile.FactionName == site.factionName) return Goodwill.Faction;
 
-                else if (client.enemyPlayers.Contains(site.owner)) return (int)CommonEnumerators.Goodwills.Enemy;
+                else if (client.userFile.EnemyPlayers.Contains(site.owner)) return Goodwill.Enemy;
 
-                else if (client.allyPlayers.Contains(site.owner)) return (int)CommonEnumerators.Goodwills.Ally;
+                else if (client.userFile.AllyPlayers.Contains(site.owner)) return Goodwill.Ally;
 
-                FactionFile factionFile = OnlineFactionManager.GetFactionFromFactionName(site.factionName);
+                FactionFile factionFile = FactionManager.GetFactionFromFactionName(site.factionName);
 
-                foreach(string str in client.enemyPlayers)
+                foreach(string str in client.userFile.EnemyPlayers)
                 {
-                    if (OnlineFactionManager.CheckIfUserIsInFaction(factionFile, str))
+                    if (FactionManager.CheckIfUserIsInFaction(factionFile, str))
                     {
-                        return (int)CommonEnumerators.Goodwills.Enemy;
+                        return Goodwill.Enemy;
                     }
                 }
 
-                foreach (string str in client.allyPlayers)
+                foreach (string str in client.userFile.AllyPlayers)
                 {
-                    if (OnlineFactionManager.CheckIfUserIsInFaction(factionFile, str))
+                    if (FactionManager.CheckIfUserIsInFaction(factionFile, str))
                     {
-                        return (int)CommonEnumerators.Goodwills.Ally;
+                        return Goodwill.Ally;
                     }
                 }
 
-                return (int)CommonEnumerators.Goodwills.Neutral;
+                return Goodwill.Neutral;
             }
 
             else
             {
-                if (site.owner == client.username) return (int)CommonEnumerators.Goodwills.Personal;
-                else if (client.enemyPlayers.Contains(site.owner)) return (int)CommonEnumerators.Goodwills.Enemy;
-                else if (client.allyPlayers.Contains(site.owner)) return (int)CommonEnumerators.Goodwills.Ally;
-                else return (int)CommonEnumerators.Goodwills.Neutral;
+                if (site.owner == client.userFile.Username) return Goodwill.Personal;
+                else if (client.userFile.EnemyPlayers.Contains(site.owner)) return Goodwill.Enemy;
+                else if (client.userFile.AllyPlayers.Contains(site.owner)) return Goodwill.Ally;
+                else return Goodwill.Neutral;
             }
         }
 
@@ -160,21 +162,21 @@ namespace GameServer
 
             foreach (ServerClient client in clients)
             {
-                if (factionFile.factionMembers.Contains(client.username)) clientsToGet.Add(client);
+                if (factionFile.factionMembers.Contains(client.userFile.Username)) clientsToGet.Add(client);
             }
 
             foreach (ServerClient client in clientsToGet)
             {
                 for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                 {
-                    if (client.enemyPlayers.Contains(factionFile.factionMembers[i]))
+                    if (client.userFile.EnemyPlayers.Contains(factionFile.factionMembers[i]))
                     {
-                        client.enemyPlayers.Remove(factionFile.factionMembers[i]);
+                        client.userFile.EnemyPlayers.Remove(factionFile.factionMembers[i]);
                     }
 
-                    else if (client.allyPlayers.Contains(factionFile.factionMembers[i]))
+                    else if (client.userFile.AllyPlayers.Contains(factionFile.factionMembers[i]))
                     {
-                        client.allyPlayers.Remove(factionFile.factionMembers[i]);
+                        client.userFile.AllyPlayers.Remove(factionFile.factionMembers[i]);
                     }
                 }
             }
@@ -184,50 +186,53 @@ namespace GameServer
 
             foreach (UserFile file in userFiles)
             {
-                if (factionFile.factionMembers.Contains(file.username)) usersToGet.Add(file);
+                if (factionFile.factionMembers.Contains(file.Username)) usersToGet.Add(file);
             }
 
             foreach (UserFile file in usersToGet)
             {
                 for (int i = 0; i < factionFile.factionMembers.Count(); i++)
                 {
-                    if (file.enemyPlayers.Contains(factionFile.factionMembers[i]))
+                    if (file.EnemyPlayers.Contains(factionFile.factionMembers[i]))
                     {
-                        file.enemyPlayers.Remove(factionFile.factionMembers[i]);
+                        file.EnemyPlayers.Remove(factionFile.factionMembers[i]);
                     }
 
-                    else if (file.allyPlayers.Contains(factionFile.factionMembers[i]))
+                    else if (file.AllyPlayers.Contains(factionFile.factionMembers[i]))
                     {
-                        file.allyPlayers.Remove(factionFile.factionMembers[i]);
+                        file.AllyPlayers.Remove(factionFile.factionMembers[i]);
                     }
                 }
 
-                UserManager.SaveUserFileFromName(file.username, file);
+                file.SaveUserFile();
             }
         }
 
         public static void UpdateClientGoodwills(ServerClient client)
         {
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
+            FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
             SiteFile[] sites = SiteManager.GetAllSites();
 
-            FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
-
+            List<Goodwill> tempList = new List<Goodwill>();
             foreach (SettlementFile settlement in settlements)
             {
-                if (settlement.owner == client.username) continue;
+                if (settlement.owner == client.userFile.Username) continue;
 
                 factionGoodwillData.settlementTiles.Add(settlement.tile);
-                factionGoodwillData.settlementGoodwills.Add(GetSettlementGoodwill(client, settlement).ToString());
+                tempList.Add(GetSettlementGoodwill(client, settlement));
             }
+            factionGoodwillData.settlementGoodwills = tempList.ToArray();
 
+            tempList = new List<Goodwill>();
             foreach (SiteFile site in sites)
             {
                 factionGoodwillData.siteTiles.Add(site.tile);
-                factionGoodwillData.siteGoodwills.Add(GetSiteGoodwill(client, site).ToString());
+                tempList.Add(GetSiteGoodwill(client, site));
             }
+            factionGoodwillData.siteGoodwills = tempList.ToArray();
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             client.listener.EnqueuePacket(packet);
         }
     }

@@ -1,5 +1,4 @@
 ﻿using Shared;
-using System.Linq;
 using Verse;
 
 namespace GameClient
@@ -29,19 +28,19 @@ namespace GameClient
 
             MapFileData mapFileData = new MapFileData();
             mapFileData.mapTile = mapData.mapTile;
-            mapFileData.mapData = Serializer.ConvertObjectToBytes(mapData);
+            mapFileData.mapData = mapData;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.MapPacket), mapFileData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MapPacket), mapFileData);
             Network.listener.EnqueuePacket(packet);
         }
 
         //Parses a desired map into an usable mod class
 
-        public static MapData ParseMap(Map map, bool includeItems, bool includeHumans, bool includeAnimals, bool includeMods)
+        public static MapData ParseMap(Map map, bool includeThings, bool includeHumans, bool includeAnimals, bool includeMods)
         {
-            MapData mapData = MapScribeManager.MapToString(map, includeItems, includeHumans, includeAnimals);
+            MapData mapData = MapScribeManager.MapToString(map, includeThings, includeThings, includeHumans, includeHumans, includeAnimals, includeAnimals);
 
-            if (includeMods) mapData.mapMods = ModManager.GetRunningModList().ToList();
+            if (includeMods) mapData.mapMods = ModManager.GetRunningModList();
 
             return mapData;
         }

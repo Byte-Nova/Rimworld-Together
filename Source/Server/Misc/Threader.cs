@@ -2,7 +2,7 @@
 {
     public static class Threader
     {
-        public enum ServerMode { Start, Sites, Console }
+        public enum ServerMode { Start, Sites, Caravans, Console }
 
         public static Task GenerateServerThread(ServerMode mode)
         {
@@ -10,6 +10,7 @@
             {
                 ServerMode.Start => Task.Run(Network.ReadyServer),
                 ServerMode.Sites => Task.Run(SiteManager.StartSiteTicker),
+                ServerMode.Caravans => Task.Run(CaravanManager.StartCaravanTicker),
                 ServerMode.Console => Task.Run(ServerCommandManager.ListenForServerCommands),
                 _ => throw new NotImplementedException(),
             };

@@ -7,8 +7,8 @@ namespace Shared
     {
         public string mapOwner;
 
-        public string mapTile;
+        public int mapTile;
 
-        public byte[] mapData;
+        public MapData mapData;
     }
 }

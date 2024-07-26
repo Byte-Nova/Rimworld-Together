@@ -4,6 +4,7 @@ using RimWorld;
 using Shared;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -25,9 +26,9 @@ namespace GameClient
 
         private Thing[] listedThings;
 
-        private CommonEnumerators.TransferMode transferMode;
+        private TransferMode transferMode;
 
-        public RT_Dialog_ItemListing(Thing[] listedThings, CommonEnumerators.TransferMode transferMode)
+        public RT_Dialog_ItemListing(Thing[] listedThings, TransferMode transferMode)
         {
             DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
@@ -39,7 +40,7 @@ namespace GameClient
             absorbInputAroundWindow = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            //soundClose = SoundDefOf.CommsWindow_Close;
+            
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -101,12 +102,12 @@ namespace GameClient
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (TransferManagerHelper.CheckIfThingIsHuman(thing))
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
             {
                 Widgets.Label(fixedRect, $"[H] {itemName}");
             }
 
-            else if (TransferManagerHelper.CheckIfThingIsAnimal(thing))
+            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
             {
                 Widgets.Label(fixedRect, $"[A] {itemName}");
             }
@@ -121,16 +122,16 @@ namespace GameClient
         {
             Action r1 = delegate
             {
-                if (transferMode == CommonEnumerators.TransferMode.Gift)
+                if (transferMode == TransferMode.Gift)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
-                else if (transferMode == CommonEnumerators.TransferMode.Trade)
+                else if (transferMode == TransferMode.Trade)
                 {
-                    if (RimworldManager.CheckForAnySocialPawn(CommonEnumerators.SearchLocation.Settlement))
+                    if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(CommonEnumerators.TransferLocation.Settlement, true, true, true));
+                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Settlement, true, true, true));
                     }
 
                     else
@@ -140,16 +141,16 @@ namespace GameClient
                     }
                 }
 
-                else if (transferMode == CommonEnumerators.TransferMode.Pod)
+                else if (transferMode == TransferMode.Pod)
                 {
                     TransferManager.GetTransferedItemsToSettlement(listedThings);
                 }
 
-                else if (transferMode == CommonEnumerators.TransferMode.Rebound)
+                else if (transferMode == TransferMode.Rebound)
                 {
-                    ClientValues.incomingManifest.transferStepMode = ((int)CommonEnumerators.TransferStepMode.TradeReAccept).ToString();
+                    ClientValues.incomingManifest.transferStepMode = TransferStepMode.TradeReAccept;
 
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);

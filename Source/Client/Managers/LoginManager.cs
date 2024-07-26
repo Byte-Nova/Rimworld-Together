@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -10,47 +11,47 @@ namespace GameClient
 
         public static void ReceiveLoginResponse(Packet packet)
         {
-            LoginData loginData = (LoginData)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
 
-            switch(int.Parse(loginData.tryResponse))
+            switch(loginData.tryResponse)
             {
-                case (int)CommonEnumerators.LoginResponse.InvalidLogin:
+                case LoginResponse.InvalidLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Login details are invalid! Please try again!"));
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.BannedLogin:
+                case LoginResponse.BannedLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("You are banned from this server!"));
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.RegisterInUse:
+                case LoginResponse.RegisterInUse:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("That username is already in use! Please try again!"));
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.RegisterError:
+                case LoginResponse.RegisterError:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("There was an error registering! Please try again!"));
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.ExtraLogin:
+                case LoginResponse.ExtraLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("You connected from another place!"));
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.WrongMods:
+                case LoginResponse.WrongMods:
                     ModManager.GetConflictingMods(packet);
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.ServerFull:
+                case LoginResponse.ServerFull:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Server is full!"));
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.Whitelist:
+                case LoginResponse.Whitelist:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Server is whitelisted!"));
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.WrongVersion:
+                case LoginResponse.WrongVersion:
                     DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginData.extraDetails[0]}"));
                     break;
 
-                case (int)CommonEnumerators.LoginResponse.NoWorld:
+                case LoginResponse.NoWorld:
                     DialogManager.PushNewDialog(new RT_Dialog_Error($"Server is currently being set up! Join again later!"));
                     break;
             }

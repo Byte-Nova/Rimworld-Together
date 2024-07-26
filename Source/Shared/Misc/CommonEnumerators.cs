@@ -1,20 +1,22 @@
-﻿namespace Shared
+namespace Shared
 {
     public class CommonEnumerators
     {
-        public enum FetchMode { Host, Player }
+        public enum ServerFileMode { Configs, Actions, Sites, Events, Roads, World, Whitelist, Difficulty, Market }
 
-        public enum SearchLocation { Caravan, Settlement }
+        public enum LogMode { Message, Warning, Error, Title }
 
-        //Commands
-
-        public enum CommandType { Op, Deop, Broadcast, ForceSave }
-
-        //Events
+        public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
         public enum EventStepMode { Send, Receive, Recover }
 
-        //Factions
+        public enum MarketStepMode { Add, Request, Reload }
+
+        public enum AidStepMode { Send, Receive, Accept, Reject }
+
+        public enum CaravanStepMode { Add, Remove, Move }
+
+        public enum RoadStepMode { Add, Remove }
 
         public enum FactionManifestMode
         {
@@ -33,57 +35,41 @@
 
         public enum FactionRanks { Member, Moderator, Admin }
 
-        //Goodwills
-
-        public enum Goodwills { Enemy, Neutral, Ally, Faction, Personal }
+        public enum Goodwill { Enemy, Neutral, Ally, Faction, Personal }
 
         public enum GoodwillTarget { Settlement, Site }
 
-        //Transfers
+        public enum TransferMode { Gift, Trade, Rebound, Pod, Market }
 
-        public enum TransferMode { Gift, Trade, Rebound, Pod }
+        public enum TransferLocation { Caravan, Settlement, Pod, World }
 
-        public enum TransferLocation { Caravan, Settlement, Pod }
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod, Market }
 
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
+        public enum OfflineActivityStepMode { Request, Deny, Unavailable }
 
-        //Offline visit
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, Kill, TimeSpeed, GameCondition, Weather, Stop }
 
-        public enum OfflineVisitStepMode { Request, Deny }
+        public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 
-        //Raids
+        public enum OnlineActivityApplyMode { Add, Remove }
 
-        public enum RaidStepMode { Request, Deny }
+        public enum OnlineActivityType { None, Visit, Raid }
 
-        //Sites
+        public enum OfflineActivityType { None, Visit, Raid, Spy }
+
+        public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
+
+        public enum CreationType { Human, Animal, Thing }
 
         public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward, WorkerError }
 
-        //Spying
-
-        public enum SpyStepMode { Request, Deny }
-
-        //Visits
-
-        public enum VisitStepMode { Request, Accept, Reject, Unavailable, Action, Stop }
-
-        public enum ActionTargetType { Thing, Human, Animal, Cell }
-
-        //Settlements
-
         public enum SettlementStepMode { Add, Remove }
 
-        //Saving
+        public enum SaveMode { Disconnect, Autosave, Strict }
 
-        public enum SaveMode { Disconnect, Autosave }
+        public enum UserColor { Normal, Admin, Console, Private }
 
-        //Chat
-
-        public enum UserColor { Normal, Admin, Console }
-
-        public enum MessageColor { Normal, Admin, Console }
-
-        //Login
+        public enum MessageColor { Normal, Admin, Console, Private }
 
         public enum LoginMode { Login, Register }
 
@@ -101,8 +87,7 @@
             NoWorld
         }
 
-        //World generation
-
         public enum WorldStepMode { Required, Existing }
     }
 }
+

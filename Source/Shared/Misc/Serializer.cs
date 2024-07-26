@@ -1,90 +1,57 @@
-using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Bson;
+using System.IO;
 
 namespace Shared
 {
-#pragma warning disable SYSLIB0011
-
     //Class that handles all of the mod's serialization functions
 
     public static class Serializer
     {
-        //Overrider of the binary formatter settings to make it compatible with both framework versions
+        private static JsonSerializerSettings DefaultSettings => new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.None };
 
-        private static BindOverrider bindOverrider = new BindOverrider();
+        private static JsonSerializerSettings IndentedSettings => new JsonSerializerSettings() 
+        { 
+            TypeNameHandling = TypeNameHandling.None,
+            Formatting = Formatting.Indented
+        };
 
         //Serialize from and to byte array
 
         public static byte[] ConvertObjectToBytes(object toConvert)
         {
-            if (toConvert == null) return null;
-
+            JsonSerializer serializer = JsonSerializer.Create(DefaultSettings);
             MemoryStream memoryStream = new MemoryStream();
 
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            binaryFormatter.Binder = bindOverrider;
+            using (BsonWriter writer = new BsonWriter(memoryStream)) 
+            { 
+                serializer.Serialize(writer, toConvert); 
+            }
 
-            binaryFormatter.Serialize(memoryStream, toConvert);
-            return memoryStream.ToArray();
+            return GZip.Compress(memoryStream.ToArray());
         }
 
-        public static object ConvertBytesToObject(byte[] bytes)
+        public static T ConvertBytesToObject<T>(byte[] bytes)
         {
-            MemoryStream memoryStream = new MemoryStream();
+            bytes = GZip.Decompress(bytes);
 
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            binaryFormatter.Binder = bindOverrider;
+            JsonSerializer serializer = JsonSerializer.Create(DefaultSettings);
+            MemoryStream memoryStream = new MemoryStream(bytes);
 
-            memoryStream.Write(bytes, 0, bytes.Length);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            return binaryFormatter.Deserialize(memoryStream);
+            using (BsonReader reader = new BsonReader(memoryStream)) 
+            { 
+                return serializer.Deserialize<T>(reader); 
+            }
         }
 
-        //Serialize from and to packets
+        public static string SerializeToString(object serializable) { return JsonConvert.SerializeObject(serializable, DefaultSettings); }
 
-        public static string SerializePacketToString(Packet packet)
-        {
-            byte[] packetBytes = ConvertObjectToBytes(packet);
-            packetBytes = GZip.Compress(packetBytes);
-
-            return Convert.ToBase64String(packetBytes);
-        }
-
-        public static Packet SerializeStringToPacket(string serializable)
-        {
-            byte[] packetBytes = Convert.FromBase64String(serializable);
-            packetBytes = GZip.Decompress(packetBytes);
-
-            return (Packet)ConvertBytesToObject(packetBytes);
-        }
-
-        //Serialize from and to strings
-
-        public static string SerializeToString(object serializable)
-        {
-            return JsonConvert.SerializeObject(serializable);
-        }
-
-        public static T SerializeFromString<T>(string serializable)
-        {
-            return JsonConvert.DeserializeObject<T>(serializable);
-        }
+        public static T SerializeFromString<T>(string serializable) { return JsonConvert.DeserializeObject<T>(serializable, DefaultSettings); }
 
         //Serialize from and to files
 
-        public static void SerializeToFile(string path, object serializable)
-        {
-            File.WriteAllText(path, JsonConvert.SerializeObject(serializable, new JsonSerializerSettings
-            {
-                Formatting = Formatting.Indented
-            }));
-        }
+        public static void SerializeToFile(string path, object serializable) { File.WriteAllText(path, JsonConvert.SerializeObject(serializable, IndentedSettings)); }
 
-        public static T SerializeFromFile<T>(string path)
-        {
-            return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
-        }
+        public static T SerializeFromFile<T>(string path) { return JsonConvert.DeserializeObject<T>(File.ReadAllText(path), DefaultSettings); }
     }
 }

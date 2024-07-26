@@ -1,22 +1,41 @@
 ﻿using System.Text;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
     public static class Logger
     {
-        public static Semaphore semaphore = new Semaphore(1, 1);
+        //Variables
 
-        public enum LogMode { Normal, Warning, Error, Title }
+        public static Semaphore semaphore = new Semaphore(1, 1);
 
         public static Dictionary<LogMode, ConsoleColor> colorDictionary = new Dictionary<LogMode, ConsoleColor>
         {
-            { LogMode.Normal, ConsoleColor.White },
+            { LogMode.Message, ConsoleColor.White },
             { LogMode.Warning, ConsoleColor.Yellow },
             { LogMode.Error, ConsoleColor.Red },
             { LogMode.Title, ConsoleColor.Green }
         };
 
-        public static void WriteToConsole(string text, LogMode mode = LogMode.Normal, bool writeToLogs = true)
+        //Wrapper to write log in white color
+
+        public static void Message(string message) { WriteToConsole(message, LogMode.Message); }
+
+        //Wrapper to write log in yellow color
+
+        public static void Warning(string message) { WriteToConsole(message, LogMode.Warning); }
+
+        //Wrapper to write log in red color
+
+        public static void Error(string message) { WriteToConsole(message, LogMode.Error); }
+
+        //Wrapper to write log in green color
+
+        public static void Title(string message) { WriteToConsole(message, LogMode.Title); }
+
+        //Actual function that writes to the console
+
+        private static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true)
         {
             semaphore.WaitOne();
 
@@ -29,6 +48,8 @@ namespace GameServer
             semaphore.Release();
         }
 
+        //Function that writes contents to log file
+
         private static void WriteToLogs(string toLog)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -36,7 +57,7 @@ namespace GameServer
             stringBuilder.Append(Environment.NewLine);
 
             DateTime dateTime = DateTime.Now.Date;
-            string nowFileName = (dateTime.Year + "-" + dateTime.Month.ToString("D2") + "-" + dateTime.Day.ToString("D2")).ToString();
+            string nowFileName = ($"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}");
             string nowFullPath = Master.systemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());

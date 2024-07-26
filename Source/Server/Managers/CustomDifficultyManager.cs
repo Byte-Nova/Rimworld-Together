@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -6,128 +7,103 @@ namespace GameServer
     {
         public static void ParseDifficultyPacket(ServerClient client, Packet packet)
         {
-            DifficultyData difficultyData = (DifficultyData)Serializer.ConvertBytesToObject(packet.contents);
+            DifficultyData difficultyData = Serializer.ConvertBytesToObject<DifficultyData>(packet.contents);
             SetCustomDifficulty(client, difficultyData);
         }
 
         public static void SetCustomDifficulty(ServerClient client, DifficultyData difficultyData)
         {
-            if (!client.isAdmin) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.username} attempted to set the custom difficulty while not being an admin");
+            if (!client.userFile.IsAdmin) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to set the custom difficulty while not being an admin");
             else
             {
-                DifficultyValuesFile newDifficultyValues = new DifficultyValuesFile();
+                Master.difficultyValues.ThreatScale = difficultyData.ThreatScale;
 
-                newDifficultyValues.ThreatScale = difficultyData.ThreatScale;
+                Master.difficultyValues.AllowBigThreats = difficultyData.AllowBigThreats;
 
-                newDifficultyValues.AllowBigThreats = difficultyData.AllowBigThreats;
+                Master.difficultyValues.AllowViolentQuests = difficultyData.AllowViolentQuests;
 
-                newDifficultyValues.AllowViolentQuests = difficultyData.AllowViolentQuests;
+                Master.difficultyValues.AllowIntroThreats = difficultyData.AllowIntroThreats;
 
-                newDifficultyValues.AllowIntroThreats = difficultyData.AllowIntroThreats;
+                Master.difficultyValues.PredatorsHuntHumanlikes = difficultyData.PredatorsHuntHumanlikes;
 
-                newDifficultyValues.PredatorsHuntHumanlikes = difficultyData.PredatorsHuntHumanlikes;
+                Master.difficultyValues.AllowExtremeWeatherIncidents = difficultyData.AllowExtremeWeatherIncidents;
 
-                newDifficultyValues.AllowExtremeWeatherIncidents = difficultyData.AllowExtremeWeatherIncidents;
+                Master.difficultyValues.CropYieldFactor = difficultyData.CropYieldFactor;
 
-                newDifficultyValues.CropYieldFactor = difficultyData.CropYieldFactor;
+                Master.difficultyValues.MineYieldFactor = difficultyData.MineYieldFactor;
 
-                newDifficultyValues.MineYieldFactor = difficultyData.MineYieldFactor;
+                Master.difficultyValues.ButcherYieldFactor = difficultyData.ButcherYieldFactor;
 
-                newDifficultyValues.ButcherYieldFactor = difficultyData.ButcherYieldFactor;
+                Master.difficultyValues.ResearchSpeedFactor = difficultyData.ResearchSpeedFactor;
 
-                newDifficultyValues.ResearchSpeedFactor = difficultyData.ResearchSpeedFactor;
+                Master.difficultyValues.QuestRewardValueFactor = difficultyData.QuestRewardValueFactor;
 
-                newDifficultyValues.QuestRewardValueFactor = difficultyData.QuestRewardValueFactor;
+                Master.difficultyValues.RaidLootPointsFactor = difficultyData.RaidLootPointsFactor;
 
-                newDifficultyValues.RaidLootPointsFactor = difficultyData.RaidLootPointsFactor;
+                Master.difficultyValues.TradePriceFactorLoss = difficultyData.TradePriceFactorLoss;
 
-                newDifficultyValues.TradePriceFactorLoss = difficultyData.TradePriceFactorLoss;
+                Master.difficultyValues.MaintenanceCostFactor = difficultyData.MaintenanceCostFactor;
 
-                newDifficultyValues.MaintenanceCostFactor = difficultyData.MaintenanceCostFactor;
+                Master.difficultyValues.ScariaRotChance = difficultyData.ScariaRotChance;
 
-                newDifficultyValues.ScariaRotChance = difficultyData.ScariaRotChance;
+                Master.difficultyValues.EnemyDeathOnDownedChanceFactor = difficultyData.EnemyDeathOnDownedChanceFactor;
 
-                newDifficultyValues.EnemyDeathOnDownedChanceFactor = difficultyData.EnemyDeathOnDownedChanceFactor;
+                Master.difficultyValues.ColonistMoodOffset = difficultyData.ColonistMoodOffset;
 
-                newDifficultyValues.ColonistMoodOffset = difficultyData.ColonistMoodOffset;
+                Master.difficultyValues.FoodPoisonChanceFactor = difficultyData.FoodPoisonChanceFactor;
 
-                newDifficultyValues.FoodPoisonChanceFactor = difficultyData.FoodPoisonChanceFactor;
+                Master.difficultyValues.ManhunterChanceOnDamageFactor = difficultyData.ManhunterChanceOnDamageFactor;
 
-                newDifficultyValues.ManhunterChanceOnDamageFactor = difficultyData.ManhunterChanceOnDamageFactor;
+                Master.difficultyValues.PlayerPawnInfectionChanceFactor = difficultyData.PlayerPawnInfectionChanceFactor;
 
-                newDifficultyValues.PlayerPawnInfectionChanceFactor = difficultyData.PlayerPawnInfectionChanceFactor;
+                Master.difficultyValues.DiseaseIntervalFactor = difficultyData.DiseaseIntervalFactor;
 
-                newDifficultyValues.DiseaseIntervalFactor = difficultyData.DiseaseIntervalFactor;
+                Master.difficultyValues.EnemyReproductionRateFactor = difficultyData.EnemyReproductionRateFactor;
 
-                newDifficultyValues.EnemyReproductionRateFactor = difficultyData.EnemyReproductionRateFactor;
+                Master.difficultyValues.DeepDrillInfestationChanceFactor = difficultyData.DeepDrillInfestationChanceFactor;
 
-                newDifficultyValues.DeepDrillInfestationChanceFactor = difficultyData.DeepDrillInfestationChanceFactor;
+                Master.difficultyValues.FriendlyFireChanceFactor = difficultyData.FriendlyFireChanceFactor;
 
-                newDifficultyValues.FriendlyFireChanceFactor = difficultyData.FriendlyFireChanceFactor;
+                Master.difficultyValues.AllowInstantKillChance = difficultyData.AllowInstantKillChance;
 
-                newDifficultyValues.AllowInstantKillChance = difficultyData.AllowInstantKillChance;
+                Master.difficultyValues.PeacefulTemples = difficultyData.PeacefulTemples;
 
-                newDifficultyValues.PeacefulTemples = difficultyData.PeacefulTemples;
+                Master.difficultyValues.AllowCaveHives = difficultyData.AllowCaveHives;
 
-                newDifficultyValues.AllowCaveHives = difficultyData.AllowCaveHives;
+                Master.difficultyValues.UnwaveringPrisoners = difficultyData.UnwaveringPrisoners;
 
-                newDifficultyValues.UnwaveringPrisoners = difficultyData.UnwaveringPrisoners;
+                Master.difficultyValues.AllowTraps = difficultyData.AllowTraps;
 
-                newDifficultyValues.AllowTraps = difficultyData.AllowTraps;
+                Master.difficultyValues.AllowTurrets = difficultyData.AllowTurrets;
 
-                newDifficultyValues.AllowTurrets = difficultyData.AllowTurrets;
+                Master.difficultyValues.AllowMortars = difficultyData.AllowMortars;
 
-                newDifficultyValues.AllowMortars = difficultyData.AllowMortars;
+                Master.difficultyValues.ClassicMortars = difficultyData.ClassicMortars;
 
-                newDifficultyValues.ClassicMortars = difficultyData.ClassicMortars;
+                Master.difficultyValues.AdaptationEffectFactor = difficultyData.AdaptationEffectFactor;
 
-                newDifficultyValues.AdaptationEffectFactor = difficultyData.AdaptationEffectFactor;
+                Master.difficultyValues.AdaptationGrowthRateFactorOverZero = difficultyData.AdaptationGrowthRateFactorOverZero;
 
-                newDifficultyValues.AdaptationGrowthRateFactorOverZero = difficultyData.AdaptationGrowthRateFactorOverZero;
+                Master.difficultyValues.FixedWealthMode = difficultyData.FixedWealthMode;
 
-                newDifficultyValues.FixedWealthMode = difficultyData.FixedWealthMode;
+                Master.difficultyValues.LowPopConversionBoost = difficultyData.LowPopConversionBoost;
 
-                newDifficultyValues.LowPopConversionBoost = difficultyData.LowPopConversionBoost;
+                Master.difficultyValues.NoBabiesOrChildren = difficultyData.NoBabiesOrChildren;
 
-                newDifficultyValues.NoBabiesOrChildren = difficultyData.NoBabiesOrChildren;
+                Master.difficultyValues.BabiesAreHealthy = difficultyData.BabiesAreHealthy;
 
-                newDifficultyValues.BabiesAreHealthy = difficultyData.BabiesAreHealthy;
+                Master.difficultyValues.ChildRaidersAllowed = difficultyData.ChildRaidersAllowed;
 
-                newDifficultyValues.ChildRaidersAllowed = difficultyData.ChildRaidersAllowed;
+                Master.difficultyValues.ChildAgingRate = difficultyData.ChildAgingRate;
 
-                newDifficultyValues.ChildAgingRate = difficultyData.ChildAgingRate;
+                Master.difficultyValues.AdultAgingRate = difficultyData.AdultAgingRate;
 
-                newDifficultyValues.AdultAgingRate = difficultyData.AdultAgingRate;
+                Master.difficultyValues.WastepackInfestationChanceFactor = difficultyData.WastepackInfestationChanceFactor;
 
-                newDifficultyValues.WastepackInfestationChanceFactor = difficultyData.WastepackInfestationChanceFactor;
+                Logger.Warning($"[Set difficulty] > {client.userFile.Username}");
 
-                Logger.WriteToConsole($"[Set difficulty] > {client.username}", Logger.LogMode.Warning);
-
-                SaveCustomDifficulty(newDifficultyValues);
+                Master.SaveValueFile(ServerFileMode.Difficulty);
             }
-        }
-
-        public static void SaveCustomDifficulty(DifficultyValuesFile newDifficultyValues)
-        {
-            string path = Path.Combine(Master.corePath, "DifficultyValues.json");
-
-            Serializer.SerializeToFile(path, newDifficultyValues);
-
-            LoadCustomDifficulty();
-        }
-
-        public static void LoadCustomDifficulty()
-        {
-            string path = Path.Combine(Master.corePath, "DifficultyValues.json");
-
-            if (File.Exists(path)) Master.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(path);
-            else
-            {
-                Master.difficultyValues = new DifficultyValuesFile();
-                Serializer.SerializeToFile(path, Master.difficultyValues);
-            }
-
-            Logger.WriteToConsole("Loaded difficulty values", Logger.LogMode.Warning);
         }
     }
 }

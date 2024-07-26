@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class FactionGoodwillData
     {
-        public string tile;
-
+        public int tile;
         public string owner;
+        public Goodwill goodwill;
 
-        public string goodwill;
+        public List<int> settlementTiles = new List<int>();
+        public Goodwill[] settlementGoodwills;
 
-        public List<string> settlementTiles = new List<string>();
-        public List<string> settlementGoodwills = new List<string>();
-
-        public List<string> siteTiles = new List<string>();
-        public List<string> siteGoodwills = new List<string>();
+        public List<int> siteTiles = new List<int>();
+        public Goodwill[] siteGoodwills;
     }
 }

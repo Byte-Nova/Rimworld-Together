@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class TransferData
     {
-        public string transferStepMode;
+        public TransferStepMode transferStepMode;
 
-        public string transferMode;
+        public TransferMode transferMode;
 
-        public string fromTile;
+        public int fromTile;
 
-        public string toTile;
+        public int toTile;
 
-        public List<byte[]> humanDatas = new List<byte[]>();
+        public List<HumanData> humanDatas = new List<HumanData>();
 
-        public List<byte[]> animalDatas = new List<byte[]>();
+        public List<AnimalData> animalDatas = new List<AnimalData>();
 
-        public List<byte[]> itemDatas = new List<byte[]>();
+        public List<ThingData> itemDatas = new List<ThingData>();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Shared;
 using System;
+using System.Linq;
 using System.Reflection;
-using Verse;
 
 namespace GameClient
 {
@@ -9,11 +9,19 @@ namespace GameClient
 
     public static class PacketHandler
     {
+        //Packet headers in this array won't output into the logs by default
+
+        private static readonly string[] ignoreLogPackets =
+        {
+            nameof(OnlineActivityPacket)
+        };
+
         //Function that opens handles the action that the packet should do, then sends it to the correct one below
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool) Log.Message($"[Header] > {packet.header}");
+            if (ClientValues.verboseBool && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}");
+            else if (ClientValues.extremeVerboseBool) Logger.Message($"[N] > {packet.header}");
 
             Action toDo = delegate
             {
@@ -33,7 +41,7 @@ namespace GameClient
 
         public static void ChatPacket(Packet packet)
         {
-            ChatManager.ReceiveMessages(packet);
+            ChatManager.ParsePacket(packet);
         }
 
         public static void CommandPacket(Packet packet)
@@ -46,39 +54,54 @@ namespace GameClient
             TransferManager.ParseTransferPacket(packet);
         }
 
+        public static void MarketPacket(Packet packet)
+        {
+            MarketManager.ParseMarketPacket(packet);
+        }
+
+        public static void AidPacket(Packet packet)
+        {
+            AidManager.ParsePacket(packet);
+        }
+
         public static void FactionPacket(Packet packet)
         {
-            OnlineFactionManager.ParseFactionPacket(packet);
+            FactionManager.ParseFactionPacket(packet);
         }
 
-        public static void VisitPacket(Packet packet)
+        public static void OnlineActivityPacket(Packet packet)
         {
-            OnlineVisitManager.ParseVisitPacket(packet);
+            OnlineActivityManager.ParseOnlineActivityPacket(packet);
         }
 
-        public static void OfflineVisitPacket(Packet packet)
+        public static void OfflineActivityPacket(Packet packet)
         {
-            OfflineVisitManager.ParseOfflineVisitPacket(packet);
-        }
-
-        public static void RaidPacket(Packet packet)
-        {
-            OfflineRaidManager.ParseRaidPacket(packet);
+            OfflineActivityManager.ParseOfflineActivityPacket(packet);
         }
 
         public static void SettlementPacket(Packet packet)
         {
-            PlanetManager.ParseSettlementPacket(packet);
+            PlayerSettlementManager.ParsePacket(packet);
         }
 
-        public static void SpyPacket(Packet packet)
+        public static void NPCSettlementPacket(Packet packet)
         {
-            OfflineSpyManager.ParseSpyPacket(packet);
+            NPCSettlementManager.ParsePacket(packet);
         }
 
         public static void SitePacket(Packet packet)
         {
             SiteManager.ParseSitePacket(packet);
+        }
+
+        public static void RoadPacket(Packet packet)
+        {
+            RoadManager.ParsePacket(packet);
+        }
+
+        public static void CaravanPacket(Packet packet)
+        {
+            CaravanManager.ParsePacket(packet);
         }
 
         public static void WorldPacket(Packet packet)
@@ -131,14 +154,19 @@ namespace GameClient
 
         public static void ServerValuesPacket(Packet packet)
         {
-            ServerGlobalData serverGlobalData = (ServerGlobalData)Serializer.ConvertBytesToObject(packet.contents);
+            ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);
             ServerValues.SetServerParameters(serverGlobalData);
             ServerValues.SetAccountData(serverGlobalData);
-            PlanetManagerHelper.SetWorldFeatures(serverGlobalData);
             EventManager.SetEventPrices(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
-            OfflineSpyManager.SetSpyCost(serverGlobalData);
+            OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
+            PlayerSettlementManagerHelper.SetValues(serverGlobalData);
+            NPCSettlementManagerHelper.SetValues(serverGlobalData);
+            PlayerSiteManagerHelper.SetValues(serverGlobalData);
+            CaravanManagerHelper.SetValues(serverGlobalData);
+            RoadManagerHelper.SetValues(serverGlobalData);
+            PollutionManagerHelper.SetValues(serverGlobalData);
         }
 
         //Empty functions

@@ -23,7 +23,6 @@ namespace GameClient
         public static string loginDataPath;
         public static string clientPreferencesPath;
         public static string savesFolderPath;
-        public static string worldSavesFolderPath;
 
         public static void PrepareCulture()
         {
@@ -36,16 +35,14 @@ namespace GameClient
         public static void PreparePaths()
         {
             mainPath = GenFilePaths.SaveDataFolderPath;
-            modFolderPath = Path.Combine(mainPath, "Rimworld Together");
+            modFolderPath = Path.Combine(mainPath, "RimWorld Together");
 
-            worldSavesFolderPath = Path.Combine(modFolderPath, "Saved Server Worlds");
             connectionDataPath = Path.Combine(modFolderPath, "ConnectionData.json");
             clientPreferencesPath = Path.Combine(modFolderPath, "Preferences.json");
             loginDataPath = Path.Combine(modFolderPath, "LoginData.json");
             savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
             if (!Directory.Exists(modFolderPath)) Directory.CreateDirectory(modFolderPath);
-            if (!Directory.Exists(worldSavesFolderPath)) Directory.CreateDirectory(worldSavesFolderPath);
         }
 
         public static void CreateUnityDispatcher()
@@ -56,7 +53,7 @@ namespace GameClient
                 threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
                 Object.Instantiate(go);
 
-                Log.Message($"[Rimworld Together] > Created dispatcher for version {CommonValues.executableVersion}");
+                Logger.Message($"Created dispatcher for version {CommonValues.executableVersion}");
             }
         }
     }

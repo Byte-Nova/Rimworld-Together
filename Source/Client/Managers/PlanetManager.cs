@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using RimWorld;
-using RimWorld.Planet;
-using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -12,28 +9,6 @@ namespace GameClient
 
     public static class PlanetManager
     {
-        public static List<Settlement> playerSettlements = new List<Settlement>();
-
-        public static List<Site> playerSites = new List<Site>();
-
-        //Parses the required packet into a useful order
-
-        public static void ParseSettlementPacket(Packet packet)
-        {
-            SettlementData settlementData = (SettlementData)Serializer.ConvertBytesToObject(packet.contents);
-
-            switch (int.Parse(settlementData.settlementStepMode))
-            {
-                case (int)CommonEnumerators.SettlementStepMode.Add:
-                    SpawnSingleSettlement(settlementData);
-                    break;
-
-                case (int)CommonEnumerators.SettlementStepMode.Remove:
-                    RemoveSingleSettlement(settlementData);
-                    break;
-            }
-        }
-
         //Regenerates the planet of player objects
 
         public static void BuildPlanet()
@@ -41,221 +16,27 @@ namespace GameClient
             FactionValues.FindPlayerFactionsInWorld();
             PlanetManagerHelper.GetMapGenerators();
 
-            RemoveOldSettlements();
-            RemoveOldSites();
-
-            SpawnPlayerSettlements();
-            SpawnPlayerSites();
-        }
-
-        //Removes old player settlements
-
-        private static void RemoveOldSettlements()
-        {
-            playerSettlements.Clear();
-
-            DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.ToArray();
-            foreach (DestroyedSettlement destroyedSettlement in destroyedSettlements)
+            //This step gets skiped if it's the first time building the planet
+            if (ClientValues.isGeneratingFreshWorld) return;
+            else
             {
-                Find.WorldObjects.Remove(destroyedSettlement);
-            }
+                PlayerSettlementManager.ClearAllSettlements();
+                PlayerSettlementManager.AddSettlements(PlayerSettlementManagerHelper.tempSettlements);
 
-            Settlement[] settlements = Find.WorldObjects.Settlements.ToArray();
-            foreach (Settlement settlement in settlements)
-            {
-                if (settlement.Faction == FactionValues.allyPlayer)
-                {
-                    Find.WorldObjects.Remove(settlement);
-                    continue;
-                }
+                PlayerSiteManager.ClearAllSites();
+                PlayerSiteManager.AddSites(PlayerSiteManagerHelper.tempSites);
 
-                if (settlement.Faction == FactionValues.neutralPlayer)
-                {
-                    Find.WorldObjects.Remove(settlement);
-                    continue;
-                }
+                NPCSettlementManager.ClearAllSettlements();
+                NPCSettlementManager.AddSettlements(NPCSettlementManagerHelper.tempNPCSettlements);
 
-                if (settlement.Faction == FactionValues.enemyPlayer)
-                {
-                    Find.WorldObjects.Remove(settlement);
-                    continue;
-                }
+                RoadManager.ClearAllRoads();
+                RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails, false);
 
-                if (settlement.Faction == FactionValues.yourOnlineFaction)
-                {
-                    Find.WorldObjects.Remove(settlement);
-                    continue;
-                }
-            }
-        }
+                PollutionManager.ClearAllPollution();
+                PollutionManager.AddPollutedTiles(PollutionManagerHelper.tempPollutionDetails, false);
 
-        //Spawns player settlements
-
-        private static void SpawnPlayerSettlements()
-        {
-            for (int i = 0; i < PlanetManagerHelper.tempSettlementTiles.Count(); i++)
-            {
-                try
-                {
-                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = int.Parse(PlanetManagerHelper.tempSettlementTiles[i]);
-                    settlement.Name = $"{PlanetManagerHelper.tempSettlementOwners[i]}'s settlement";
-                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSettlementGoodwills[i])));
-
-                    playerSettlements.Add(settlement);
-                    Find.WorldObjects.Add(settlement);
-                }
-
-                catch (Exception e)
-                {
-                    Log.Error($"Failed to build settlement at {PlanetManagerHelper.tempSettlementTiles[i]}. " +
-                        $"Reason: {e}");
-                }
-            }
-        }
-
-        //Removes old player sites
-
-        private static void RemoveOldSites()
-        {
-            playerSites.Clear();
-
-            Site[] sites = Find.WorldObjects.Sites.ToArray();
-            foreach (Site site in sites)
-            {
-                if (site.Faction == FactionValues.enemyPlayer)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
-
-                if (site.Faction == FactionValues.neutralPlayer)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
-
-                if (site.Faction == FactionValues.allyPlayer)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
-
-                if (site.Faction == FactionValues.yourOnlineFaction)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
-
-                if (site.Faction == Faction.OfPlayer)
-                {
-                    Find.WorldObjects.Remove(site);
-                    continue;
-                }
-            }
-        }
-
-        //Spawns player sites
-
-        private static void SpawnPlayerSites()
-        {
-            for (int i = 0; i < PlanetManagerHelper.tempSiteTiles.Count(); i++)
-            {
-                try
-                {
-                    SitePartDef siteDef = SiteManager.GetDefForNewSite(int.Parse(PlanetManagerHelper.tempSiteTypes[i]),
-                        PlanetManagerHelper.tempSiteIsFromFactions[i]);
-
-                    Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: int.Parse(PlanetManagerHelper.tempSiteTiles[i]),
-                        threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(PlanetManagerHelper.tempSiteGoodwills[i])));
-
-                    playerSites.Add(site);
-                    Find.WorldObjects.Add(site);
-                }
-
-                catch (Exception e)
-                {
-                    Log.Error($"Failed to spawn site at {PlanetManagerHelper.tempSiteTiles[i]}. Reason: {e}");
-                };
-            }
-        }
-
-        //Spawns a player settlement from a request
-
-        public static void SpawnSingleSettlement(SettlementData newSettlementJSON)
-        {
-            if (ClientValues.isReadyToPlay)
-            {
-                try
-                {
-                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = int.Parse(newSettlementJSON.tile);
-                    settlement.Name = $"{newSettlementJSON.owner}'s settlement";
-                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFaction(int.Parse(newSettlementJSON.value)));
-
-                    playerSettlements.Add(settlement);
-                    Find.WorldObjects.Add(settlement);
-                }
-                catch (Exception e) { Log.Error($"Failed to spawn settlement at {newSettlementJSON.tile}. Reason: {e}"); }
-            }
-        }
-
-        //Removes a player settlement from a request
-
-        public static void RemoveSingleSettlement(SettlementData newSettlementJSON)
-        {
-            if (ClientValues.isReadyToPlay)
-            {
-                try
-                {
-                    Settlement toGet = playerSettlements.Find(x => x.Tile.ToString() == newSettlementJSON.tile);
-
-                    playerSettlements.Remove(toGet);
-                    Find.WorldObjects.Remove(toGet);
-                }
-                catch (Exception e) { Log.Error($"Failed to remove settlement at {newSettlementJSON.tile}. Reason: {e}"); }
-            }
-        }
-
-        //Spawns a player site from a request
-
-        public static void SpawnSingleSite(SiteData siteData)
-        {
-            if (ClientValues.isReadyToPlay)
-            {
-                try
-                {
-                    SitePartDef siteDef = SiteManager.GetDefForNewSite(int.Parse(siteData.type),
-                        siteData.isFromFaction);
-
-                    Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: int.Parse(siteData.tile),
-                        threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFaction(int.Parse(siteData.goodwill)));
-
-                    playerSites.Add(site);
-                    Find.WorldObjects.Add(site);
-                }
-                catch (Exception e) { Log.Error($"Failed to spawn site at {siteData.tile}. Reason: {e}"); }
-            }
-        }
-
-        //Removes a player site from a request
-
-        public static void RemoveSingleSite(SiteData siteData)
-        {
-            if (ClientValues.isReadyToPlay)
-            {
-                try
-                {
-                    Site toGet = playerSites.Find(x => x.Tile.ToString() == siteData.tile);
-
-                    playerSites.Remove(toGet);
-                    Find.WorldObjects.Remove(toGet);
-                }
-                catch (Exception e) { Log.Message($"Failed to remove site at {siteData.tile}. Reason: {e}"); }
+                CaravanManager.ClearAllCaravans();
+                CaravanManager.AddCaravans(CaravanManagerHelper.tempCaravanDetails);
             }
         }
     }
@@ -264,69 +45,47 @@ namespace GameClient
 
     public static class PlanetManagerHelper
     {
-        public static string[] tempSettlementTiles;
-
-        public static string[] tempSettlementOwners;
-
-        public static string[] tempSettlementGoodwills;
-
-        public static string[] tempSiteTiles;
-
-        public static string[] tempSiteOwners;
-
-        public static string[] tempSiteGoodwills;
-
-        public static string[] tempSiteTypes;
-
-        public static bool[] tempSiteIsFromFactions;
-
         public static MapGeneratorDef emptyGenerator;
         public static MapGeneratorDef defaultSettlementGenerator;
         public static MapGeneratorDef defaultSiteGenerator;
 
-        public static void SetWorldFeatures(ServerGlobalData serverGlobalData)
-        {
-            tempSettlementTiles = serverGlobalData.settlementTiles.ToArray();
-            tempSettlementOwners = serverGlobalData.settlementOwners.ToArray();
-            tempSettlementGoodwills = serverGlobalData.settlementGoodwills.ToArray();
-
-            tempSiteTiles = serverGlobalData.siteTiles.ToArray();
-            tempSiteOwners = serverGlobalData.siteOwners.ToArray();
-            tempSiteGoodwills = serverGlobalData.siteGoodwills.ToArray();
-            tempSiteTypes = serverGlobalData.siteTypes.ToArray();
-            tempSiteIsFromFactions = serverGlobalData.isFromFactions.ToArray();
-        }
-
         //Returns an online faction depending on the value
 
-        public static Faction GetPlayerFaction(int value)
+        public static Faction GetPlayerFactionFromGoodwill(Goodwill goodwill)
         {
             Faction factionToUse = null;
 
-            switch (value)
+            switch (goodwill)
             {
-                case (int)CommonEnumerators.Goodwills.Enemy:
+                case Goodwill.Enemy:
                     factionToUse = FactionValues.enemyPlayer;
                     break;
 
-                case (int)CommonEnumerators.Goodwills.Neutral:
+                case Goodwill.Neutral:
                     factionToUse = FactionValues.neutralPlayer;
                     break;
 
-                case (int)CommonEnumerators.Goodwills.Ally:
+                case Goodwill.Ally:
                     factionToUse = FactionValues.allyPlayer;
                     break;
 
-                case (int)CommonEnumerators.Goodwills.Faction:
+                case Goodwill.Faction:
                     factionToUse = FactionValues.yourOnlineFaction;
                     break;
 
-                case (int)CommonEnumerators.Goodwills.Personal:
+                case Goodwill.Personal:
                     factionToUse = Faction.OfPlayer;
                     break;
             }
 
             return factionToUse;
+        }
+
+        //Returns an npc faction depending on the value
+
+        public static Faction GetNPCFactionFromDefName(string defName)
+        {
+            return Find.World.factionManager.AllFactions.First(fetch => fetch.def.defName == defName);
         }
 
         //Gets the default generator for the map builder

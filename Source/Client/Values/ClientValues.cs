@@ -3,16 +3,13 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
     public static class ClientValues
     {
-        public static bool needsToGenerateWorld;
-
-        public static bool isDisconnecting;
-
-        public static bool isQuiting;
+        public static bool isGeneratingFreshWorld;
 
         public static bool isReadyToPlay;
 
@@ -24,7 +21,11 @@ namespace GameClient
 
         public static bool isInTransfer;
 
-        public static bool isInVisit;
+        public static bool isRealTimeHost;
+
+        public static OnlineActivityType currentRealTimeEvent;
+
+        public static OfflineActivityType latestOfflineActivity;
 
         public static Settlement chosenSettlement;
         public static Caravan chosenCaravan;
@@ -42,11 +43,12 @@ namespace GameClient
         //ModStuff values go below. Do not change manually
 
         public static bool verboseBool;
+        public static bool extremeVerboseBool;
         public static bool muteSoundBool;
         public static bool rejectTransferBool;
         public static bool rejectSiteRewardsBool;
 
-        public static int autosaveDays = 1;
+        public static float autosaveDays = 1.0f;
         public static float autosaveCurrentTicks;
         public static float autosaveInternalTicks = autosaveDays * 60000f;
 
@@ -58,17 +60,21 @@ namespace GameClient
             else Prefs.DevMode = false;
         }
 
-        public static void ToggleGenerateWorld(bool mode) { needsToGenerateWorld = mode; }
-
-        public static void ToggleDisconnecting(bool mode) { isDisconnecting = mode; }
-
-        public static void ToggleQuiting(bool mode) { isQuiting = mode; }
+        public static void ToggleGenerateWorld(bool mode) { isGeneratingFreshWorld = mode; }
+    
+        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None) 
+        { 
+            DisconnectionManager.isIntentionalDisconnect = mode;
+            DisconnectionManager.intentionalDisconnectReason = reason; 
+        }
 
         public static void ToggleReadyToPlay(bool mode) { isReadyToPlay = mode; }
 
         public static void ToggleTransfer(bool mode) { isInTransfer = mode; }
 
-        public static void ToggleVisit(bool mode) { isInVisit = mode; }
+        public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }
+
+        public static void ToggleOfflineFunction(OfflineActivityType type) { latestOfflineActivity = type; }
 
         public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
 
@@ -78,17 +84,20 @@ namespace GameClient
 
         public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
 
+        public static void ToggleRealTimeHost(bool mode) { isRealTimeHost = mode; }
+
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
-            ToggleDisconnecting(false);
-            ToggleQuiting(false);
+            SetIntentionalDisconnect(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
-            ToggleVisit(false);
+            ToggleOnlineFunction(OnlineActivityType.None);
+            ToggleOfflineFunction(OfflineActivityType.None);
             ToggleSavingGame(false);
             ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);
+            ToggleRealTimeHost(false);
 
             chosenSettlement = null;
             chosenCaravan = null;

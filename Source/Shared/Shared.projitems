@@ -9,14 +9,32 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\EventValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\OnlineSiteFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\OnlineSettlementFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\AidData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineVisitData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RaidData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\SpyData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineActivityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OnlineActivityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RoadData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\VisitData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\CaravanData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Caravans\CaravanDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\CreationOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DamageOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DestructionOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\GameConditionOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\HediffOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\KillOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\PawnOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\MarketData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\DifficultyData.cs" />
@@ -25,27 +43,32 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\LoginData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapFileData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\TimeSpeedOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\WeatherOrder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Pollution\PollutionDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Rivers\RiverDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Roads\RoadDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCFaction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\NPCSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerRecountData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ServerGlobalData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\SettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\SettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionGoodwillData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\AnimalData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\HumanData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Things\ItemData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\AnimalData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\HumanData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\ThingData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\WorldData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Overrides\BindOverrider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Overrides\" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCSettlement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />

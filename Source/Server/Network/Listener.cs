@@ -20,7 +20,7 @@ namespace GameServer
         public DownloadManager downloadManager;
 
         //Data queue used to hold packets that are to be sent through the connection
-        public Queue<Packet> dataQueue = new Queue<Packet>();
+        private readonly Queue<Packet> dataQueue = new Queue<Packet>();
 
         //Useful variables to handle connection status
         public bool disconnectFlag;
@@ -57,12 +57,10 @@ namespace GameServer
                 {
                     Thread.Sleep(1);
 
-                    if (dataQueue.Count() > 0)
+                    if (dataQueue.Count > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
-                        if (packet == null) continue;
-
-                        streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
+                        streamWriter.WriteLine(Serializer.SerializeToString(packet));
                         streamWriter.Flush();
                     }
                 }
@@ -81,16 +79,14 @@ namespace GameServer
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    if (string.IsNullOrEmpty(data)) continue;
-
-                    Packet receivedPacket = Serializer.SerializeStringToPacket(data);
+                    Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
                     PacketHandler.HandlePacket(targetClient, receivedPacket);
                 }
             }
 
             catch (Exception e)
             {
-                if (Master.serverConfig.VerboseLogs) Logger.WriteToConsole(e.ToString(), Logger.LogMode.Warning);
+                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
 
                 disconnectFlag = true;
             }
@@ -144,6 +140,7 @@ namespace GameServer
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
+            if (targetClient.InVisitWith != null) OnlineActivityManager.SendVisitStop(targetClient);
         }
     }
 }

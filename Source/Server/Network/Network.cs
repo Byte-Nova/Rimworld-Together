@@ -1,6 +1,7 @@
 ﻿using Shared;
 using System.Net;
 using System.Net.Sockets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -10,31 +11,32 @@ namespace GameServer
     {
         //IP and Port that the connection will be bound to
         private static IPAddress localAddress = IPAddress.Parse(Master.serverConfig.IP);
-        private static int port = int.Parse(Master.serverConfig.Port);
+        public static int port = int.Parse(Master.serverConfig.Port);
 
         //TCP listener that will handle the connection with the clients, and list of currently connected clients
         private static TcpListener connection;
         public static List<ServerClient> connectedClients = new List<ServerClient>();
 
         //Entry point function of the network class
-
         public static void ReadyServer()
         {
+            if (Master.serverConfig.UseUPnP) { _ = new UPnP(); }
+
             connection = new TcpListener(localAddress, port);
             connection.Start();
 
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
+            Threader.GenerateServerThread(Threader.ServerMode.Caravans);
 
-            Logger.WriteToConsole("Type 'help' to get a list of available commands", Logger.LogMode.Warning);
-            Logger.WriteToConsole($"Listening for users at {localAddress}:{port}", Logger.LogMode.Warning);
-            Logger.WriteToConsole("Server launched", Logger.LogMode.Warning);
+            Logger.Warning("Type 'help' to get a list of available commands");
+            Logger.Warning($"Listening for users at {localAddress}:{port}");
+            Logger.Warning("Server launched");
             Master.ChangeTitle();
 
             while (true) ListenForIncomingUsers();
         }
 
         //Listens for any user that might connect and executes all required tasks  with it
-
         private static void ListenForIncomingUsers()
         {
             TcpClient newTCP = connection.AcceptTcpClient();
@@ -48,13 +50,13 @@ namespace GameServer
             Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
 
             if (Master.isClosing) newServerClient.listener.disconnectFlag = true;
-            else if (Master.worldValues == null && connectedClients.Count() > 0) UserManager.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.NoWorld);
+            else if (Master.worldValues == null && connectedClients.Count() > 0) UserManager.SendLoginResponse(newServerClient, LoginResponse.NoWorld);
             else
             {
                 if (connectedClients.ToArray().Count() >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
-                    UserManager.SendLoginResponse(newServerClient, CommonEnumerators.LoginResponse.ServerFull);
-                    Logger.WriteToConsole($"[Warning] > Server Full", Logger.LogMode.Warning);
+                    UserManager.SendLoginResponse(newServerClient, LoginResponse.ServerFull);
+                    Logger.Warning($"Server Full");
                 }
 
                 else
@@ -63,7 +65,7 @@ namespace GameServer
 
                     Master.ChangeTitle();
 
-                    Logger.WriteToConsole($"[Connect] > {newServerClient.username} | {newServerClient.SavedIP}");
+                    Logger.Message($"[Connect] > {newServerClient.userFile.Username} | {newServerClient.userFile.SavedIP}");
                 }
             }
         }
@@ -77,16 +79,27 @@ namespace GameServer
                 connectedClients.Remove(client);
                 client.listener.DestroyConnection();
 
-                UserManager.SendPlayerRecount();
-
                 Master.ChangeTitle();
-
-                Logger.WriteToConsole($"[Disconnect] > {client.username} | {client.SavedIP}");
+                UserManager.SendPlayerRecount();
+                Logger.Message($"[Disconnect] > {client.userFile.Username} | {client.userFile.SavedIP}");
             }
+            catch { Logger.Warning($"Error disconnecting user {client.userFile.Username}, this will cause memory overhead"); }
+        }
+    }
 
-            catch
+    public static class NetworkHelper
+    {
+        public static ServerClient[] GetConnectedClientsSafe()
+        {
+            return Network.connectedClients.ToArray();
+        }
+
+        public static void SendPacketToAllClients(Packet packet, ServerClient toExclude = null)
+        {
+            foreach(ServerClient client in GetConnectedClientsSafe())
             {
-                Logger.WriteToConsole($"Error disconnecting user {client.username}, this will cause memory overhead", Logger.LogMode.Warning);
+                if (toExclude != null && client == toExclude) continue;
+                else client.listener.EnqueuePacket(packet);
             }
         }
     }

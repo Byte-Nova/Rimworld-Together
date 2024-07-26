@@ -1,16 +1,15 @@
 ﻿using System;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class EventData
     {
-        public string eventStepMode;
+        public EventStepMode eventStepMode;
+        public int fromTile;
+        public int toTile;
 
-        public string fromTile;
-
-        public string toTile;
-
-        public string eventID;
+        public int eventID;
     }
 }
