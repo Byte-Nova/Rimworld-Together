@@ -5,7 +5,7 @@
 > [!NOTE]
 > The mod is currently a work in progress! Please report any broken stuff you find!
 
-Welcome to the Github repository for "RimWorld Together"! In here you will find everything related to the project, great place for the tech savvies!
+Welcome to the repository for `RimWorld Together`! Here you will find everything related to the project, a great place for the tech savvies!
 
 ## Server Prerequisites:
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
