@@ -7,7 +7,7 @@
 
 Welcome to the Github repository for "RimWorld Together"! In here you will find everything related to the project, great place for the tech savvies!
 
-## Server Prequisites:
+## Server Prerequisites:
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
 
 ## Container-based Deployment:
