@@ -34,4 +34,4 @@ This will clone (or update) our [Guide](https://github.com/RimworldTogether/Guid
 Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/CONTRIBUTING.md) before contributing!
 
 ## Other Questions?
-Please don't hesitate to create and issue on Github if you have any question/issue with the server. We are here for you!
+Please don't hesitate to create an issue on Github if you have any questions/issues with the mod. We are here for you! You can also contact us via our Discord server (see top of this page).
