@@ -26,13 +26,9 @@ make run-container
 ## Deployments:
 To access our documentation and deployment examples, please run the following command:
 ```sh
-git submodules init
+git submodule update --init --recursive
 ```
-
-This will clone our [Guide](https://github.com/RimworldTogether/Guide) and Deployments project. To pull the latest, please use:
-```sh
-git submodules update
-```
+This will clone (or update) our [Guide](https://github.com/RimworldTogether/Guide) and Deployments project. You can also use the `--recurse-submodules` flag on your initial clone to automatically pull the documentation at the same time.
 
 ## Contributing
 Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/CONTRIBUTING.md) before contributing!
