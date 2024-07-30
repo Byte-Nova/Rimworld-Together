@@ -13,7 +13,7 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
                     foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
                         if (Master.loadedRequiredMods.Contains(str))
@@ -33,7 +33,7 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
                     foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
                         if (Master.loadedRequiredMods.Contains(str) || Master.loadedOptionalMods.Contains(str))
@@ -53,7 +53,7 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
                     foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
                         if (Master.loadedRequiredMods.Contains(str) || Master.loadedOptionalMods.Contains(str) || Master.loadedForbiddenMods.Contains(str))
