@@ -45,6 +45,11 @@ namespace GameServer
             Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
             Console.ForegroundColor = ConsoleColor.White;
 
+            if (Master.serverConfig != null)
+            {
+                if (Master.serverConfig.DiscordIntegration.Enabled) DiscordManager.SendMessageToConsoleChannelBuffer(text);
+            }
+
             semaphore.Release();
         }
 

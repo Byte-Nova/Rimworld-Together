@@ -67,9 +67,9 @@ namespace Shared
 
         public enum SaveMode { Disconnect, Autosave, Strict }
 
-        public enum UserColor { Normal, Admin, Console, Private }
+        public enum UserColor { Normal, Admin, Console, Private, Discord }
 
-        public enum MessageColor { Normal, Admin, Console, Private }
+        public enum MessageColor { Normal, Admin, Console, Private, Discord }
 
         public enum LoginMode { Login, Register }
 
