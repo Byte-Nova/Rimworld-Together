@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "dotnet: launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/Server/bin/Debug/net7.0/GameServer.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Server/bin/Debug/net7.0",
+            "console": "internalConsole"
+        }
+    ]
+}
