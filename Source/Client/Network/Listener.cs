@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
-using Verse;
 
 namespace GameClient
 {
@@ -26,7 +24,7 @@ namespace GameClient
         public DownloadManager downloadManager;
 
         //Data queue used to hold packets that are to be sent through the connection
-        public Queue<Packet> dataQueue = new Queue<Packet>();
+        private readonly Queue<Packet> dataQueue = new Queue<Packet>();
 
         //Useful variables to handle connection status
         public bool disconnectFlag;
@@ -57,12 +55,10 @@ namespace GameClient
                 {
                     Thread.Sleep(1);
 
-                    if (dataQueue.Count() > 0)
+                    if (dataQueue.Count > 0)
                     {
                         Packet packet = dataQueue.Dequeue();
-                        if (packet == null) continue;
-
-                        streamWriter.WriteLine(Serializer.SerializePacketToString(packet));
+                        streamWriter.WriteLine(Serializer.SerializeToString(packet));
                         streamWriter.Flush();
                     }
                 }
@@ -81,16 +77,14 @@ namespace GameClient
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    if (string.IsNullOrEmpty(data)) continue;
-
-                    Packet receivedPacket = Serializer.SerializeStringToPacket(data);
+                    Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
                     PacketHandler.HandlePacket(receivedPacket);
                 }
             }
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Log.Warning($"[Rimworld Together] > {e}");
+                if (ClientValues.verboseBool)  Logger.Warning($"{e}");
 
                 disconnectFlag = true;
             }
@@ -126,8 +120,8 @@ namespace GameClient
                 {
                     Thread.Sleep(1000);
 
-                    KeepAliveJSON keepAliveJSON = new KeepAliveJSON();
-                    Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.KeepAlivePacket), keepAliveJSON);
+                    KeepAliveData keepAliveData = new KeepAliveData();
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.KeepAlivePacket), keepAliveData);
                     EnqueuePacket(packet);
                 }
             }
@@ -138,6 +132,7 @@ namespace GameClient
 
         public void DestroyConnection()
         {
+            disconnectFlag = true;
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();

@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -11,23 +12,23 @@ namespace GameClient
 
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
 
-            switch(int.Parse(commandDetailsJSON.commandType))
+            switch(commandData.commandMode)
             {
-                case (int)CommonEnumerators.CommandType.Op:
+                case CommandMode.Op:
                     OnOpCommand();
                     break;
 
-                case (int)CommonEnumerators.CommandType.Deop:
+                case CommandMode.Deop:
                     OnDeopCommand();
                     break;
 
-                case (int)CommonEnumerators.CommandType.Broadcast:
-                    OnBroadcastCommand(commandDetailsJSON);
+                case CommandMode.Broadcast:
+                    OnBroadcastCommand(commandData);
                     break;
 
-                case (int)CommonEnumerators.CommandType.ForceSave:
+                case CommandMode.ForceSave:
                     OnForceSaveCommand();
                     break;
             }
@@ -49,9 +50,9 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_OK("You are no longer an admin!"));
         }
 
-        private static void OnBroadcastCommand(CommandDetailsJSON commandDetailsJSON)
+        private static void OnBroadcastCommand(CommandData commandData)
         {
-            RimworldManager.GenerateLetter("Server Broadcast", commandDetailsJSON.commandDetails, LetterDefOf.PositiveEvent);
+            RimworldManager.GenerateLetter("Server Broadcast", commandData.commandDetails, LetterDefOf.PositiveEvent);
         }
 
         private static void OnForceSaveCommand()
@@ -59,7 +60,7 @@ namespace GameClient
             if (!ClientValues.isReadyToPlay) DisconnectionManager.DisconnectToMenu();
             else
             {
-                ClientValues.isDisconnecting = true;
+                ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
                 SaveManager.ForceSave();
             }
         }

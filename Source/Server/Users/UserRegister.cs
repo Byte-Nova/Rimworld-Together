@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -6,36 +7,25 @@ namespace GameServer
     {
         public static void TryRegisterUser(ServerClient client, Packet packet)
         {
-            JoinDetailsJSON registerDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
 
-            if (!UserManager.CheckIfUserUpdated(client, registerDetails)) return;
+            if (!UserManager.CheckIfUserUpdated(client, loginData)) return;
 
-            if (!UserManager.CheckLoginDetails(client, registerDetails, CommonEnumerators.LoginMode.Register)) return;
+            if (!UserManager.CheckLoginData(client, loginData, LoginMode.Register)) return;
 
-            if (UserManager.CheckIfUserExists(client, registerDetails, CommonEnumerators.LoginMode.Register)) return;
-
-            client.username = registerDetails.username;
-            client.password = registerDetails.password;
+            if (UserManager.CheckIfUserExists(client, loginData, LoginMode.Register)) return;
 
             try
             {
-                UserFile userFile = new UserFile();
-                userFile.uid = GetNewUIDForUser(client);
-                userFile.username = client.username;
-                userFile.password = client.password;
+                client.userFile.SetLoginDetails(loginData);
 
-                UserManager.SaveUserFile(client, userFile);
+                client.userFile.SaveUserFile();
 
                 UserLogin.TryLoginUser(client, packet);
 
-                Logger.WriteToConsole($"[Registered] > {client.username}");
+                Logger.Message($"[Registered] > {client.userFile.Username}");
             }
-            catch { UserManager.SendLoginResponse(client, CommonEnumerators.LoginResponse.RegisterError); }
-        }
-
-        private static string GetNewUIDForUser(ServerClient client)
-        {
-            return Hasher.GetHashFromString(client.username);
+            catch { UserManager.SendLoginResponse(client, LoginResponse.RegisterError); }
         }
     }
 }

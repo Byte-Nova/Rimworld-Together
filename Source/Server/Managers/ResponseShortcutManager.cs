@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -6,43 +7,43 @@ namespace GameServer
     {
         public static void SendIllegalPacket(ServerClient client, string message, bool shouldBroadcast = true)
         {
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.IllegalActionPacket));
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.IllegalActionPacket));
             client.listener.EnqueuePacket(packet);
             client.listener.disconnectFlag = true;
 
             if (shouldBroadcast) 
             { 
-                Logger.WriteToConsole($"[Illegal action] > {client.username} > {client.SavedIP}", Logger.LogMode.Warning);
-                Logger.WriteToConsole($"[Illegal reason] > {message}", Logger.LogMode.Warning);
+                Logger.Warning($"[Illegal action] > {client.userFile.Username} > {client.userFile.SavedIP}");
+                Logger.Warning($"[Illegal reason] > {message}");
             }
         }
 
         public static void SendUnavailablePacket(ServerClient client)
         {
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.UserUnavailablePacket));
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.UserUnavailablePacket));
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendBreakPacket(ServerClient client)
         {
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.BreakPacket));
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.BreakPacket));
             client.listener.EnqueuePacket(packet);
         }
 
-        public static void SendNoPowerPacket(ServerClient client, FactionManifestJSON factionManifest)
+        public static void SendNoPowerPacket(ServerClient client, PlayerFactionData factionManifest)
         {
-            factionManifest.manifestMode = ((int)CommonEnumerators.FactionManifestMode.NoPower).ToString();
+            factionManifest.manifestMode = FactionManifestMode.NoPower;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.FactionPacket), factionManifest);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendWorkerInsidePacket(ServerClient client)
         {
-            SiteDetailsJSON siteDetails = new SiteDetailsJSON();
-            siteDetails.siteStep = ((int)CommonEnumerators.SiteStepMode.WorkerError).ToString();
+            SiteData siteData = new SiteData();
+            siteData.siteStepMode = SiteStepMode.WorkerError;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.SitePacket), siteDetails);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(packet);
         }
     }

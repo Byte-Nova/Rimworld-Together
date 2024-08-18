@@ -9,10 +9,26 @@
 
         public string MaxPlayers = "100";
 
-        public string MaxTimeoutInMS = "5000";
+        public string MaxTimeoutInMS = "30000";
 
         public bool VerboseLogs = false;
 
+        public bool ExtremeVerboseLogs = false;
+
         public bool DisplayChatInConsole = false;
+
+        public bool UseUPnP = false;
+
+        public bool SyncLocalSave = true;
+
+        public bool AllowCustomScenarios = true;
+
+        public bool AllowNPCDestruction = false;
+
+        public bool TemporalActivityProtection = true;
+
+        public bool TemporalEventProtection = true;
+
+        public bool TemporalAidProtection = false;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using RimWorld;
 using Shared;
-using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -8,16 +8,16 @@ namespace GameClient
     {
         public static void ParseWorldPacket(Packet packet)
         {
-            WorldDetailsJSON worldDetailsJSON = (WorldDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 
-            switch (int.Parse(worldDetailsJSON.worldStepMode))
+            switch (worldData.worldStepMode)
             {
-                case (int)CommonEnumerators.WorldStepMode.Required:
+                case WorldStepMode.Required:
                     OnRequireWorld();
                     break;
 
-                case (int)CommonEnumerators.WorldStepMode.Existing:
-                    OnExistingWorld(worldDetailsJSON);
+                case WorldStepMode.Existing:
+                    OnExistingWorld(worldData);
                     break;
             }
         }
@@ -38,18 +38,13 @@ namespace GameClient
             DialogManager.PushNewDialog(d1);
         }
 
-        public static void OnExistingWorld(WorldDetailsJSON worldDetailsJSON)
+        public static void OnExistingWorld(WorldData worldData)
         {
             DialogManager.PopWaitDialog();
 
-            WorldGeneratorManager.SetValuesFromServer(worldDetailsJSON);
+            WorldGeneratorManager.SetValuesFromServer(worldData);
 
             DialogManager.PushNewDialog(new Page_SelectScenario());
-
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are joining an existing server for the first time!",
-                "Configure your playstyle to your liking", "Some settings might be disabled by the server" });
-
-            DialogManager.PushNewDialog(d1);
         }
     }
 }

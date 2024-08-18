@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -6,19 +7,19 @@ namespace GameServer
     {
         public static void ParseCommand(Packet packet)
         {
-            CommandDetailsJSON commandDetailsJSON = (CommandDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
 
-            switch (int.Parse(commandDetailsJSON.commandType))
+            switch (commandData.commandMode)
             {
-                case (int)CommonEnumerators.CommandType.Op:
+                case CommandMode.Op:
                     //Do nothing
                     break;
 
-                case (int)CommonEnumerators.CommandType.Deop:
+                case CommandMode.Deop:
                     //Do nothing
                     break;
 
-                case (int)CommonEnumerators.CommandType.Broadcast:
+                case CommandMode.Broadcast:
                     //Do nothing
                     break;
             }
@@ -26,40 +27,40 @@ namespace GameServer
 
         public static void SendOpCommand(ServerClient client)
         {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Op).ToString();
+            CommandData commandData = new CommandData();
+            commandData.commandMode = CommandMode.Op;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendDeOpCommand(ServerClient client)
         {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Deop).ToString();
+            CommandData commandData = new CommandData();
+            commandData.commandMode = CommandMode.Deop;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
 
         }
 
         public static void SendEventCommand(ServerClient client, int eventID)
         {
-            EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
-            eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Receive).ToString();
-            eventDetailsJSON.eventID = eventID.ToString();
+            EventData eventData = new EventData();
+            eventData.eventStepMode = EventStepMode.Receive;
+            eventData.eventID = eventID;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendBroadcastCommand(string str)
         {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.Broadcast).ToString();
-            commandDetailsJSON.commandDetails = str;
+            CommandData commandData = new CommandData();
+            commandData.commandMode = CommandMode.Broadcast;
+            commandData.commandDetails = str;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             foreach (ServerClient client in Network.connectedClients.ToArray())
             {
                 client.listener.EnqueuePacket(packet);
@@ -68,10 +69,10 @@ namespace GameServer
 
         public static void SendForceSaveCommand(ServerClient client)
         {
-            CommandDetailsJSON commandDetailsJSON = new CommandDetailsJSON();
-            commandDetailsJSON.commandType = ((int)CommonEnumerators.CommandType.ForceSave).ToString();
+            CommandData commandData = new CommandData();
+            commandData.commandMode = CommandMode.ForceSave;
 
-            Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.CommandPacket), commandDetailsJSON);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
         }
     }

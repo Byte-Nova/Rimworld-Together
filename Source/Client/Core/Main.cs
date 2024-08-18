@@ -8,7 +8,7 @@ namespace GameClient
 
     public class Main
     {
-        private static readonly string modID = "Rimworld Together";
+        private static readonly string modID = "RimWorld Together";
 
         [StaticConstructorOnStartup]
         public static class RimworldTogether
@@ -22,7 +22,7 @@ namespace GameClient
                 Master.CreateUnityDispatcher();
 
                 FactionValues.SetPlayerFactionDefs();
-
+                CaravanManagerHelper.SetCaravanDefs();
                 PreferenceManager.LoadClientPreferences();
             }
         }

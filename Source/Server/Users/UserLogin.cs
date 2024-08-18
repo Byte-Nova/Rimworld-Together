@@ -1,4 +1,5 @@
 ﻿using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -6,26 +7,27 @@ namespace GameServer
     {
         public static void TryLoginUser(ServerClient client, Packet packet)
         {
-            JoinDetailsJSON loginDetails = (JoinDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
 
-            if (!UserManager.CheckIfUserUpdated(client, loginDetails)) return;
+            if (!UserManager.CheckIfUserUpdated(client, loginData)) return;
 
-            if (!UserManager.CheckLoginDetails(client, loginDetails, CommonEnumerators.LoginMode.Login)) return;
+            if (!UserManager.CheckLoginData(client, loginData, LoginMode.Login)) return;
 
-            if (!UserManager.CheckIfUserExists(client, loginDetails, CommonEnumerators.LoginMode.Login)) return;
+            if (!UserManager.CheckIfUserExists(client, loginData, LoginMode.Login)) return;
 
-            if (!UserManager.CheckIfUserAuthCorrect(client, loginDetails)) return;
+            if (!UserManager.CheckIfUserAuthCorrect(client, loginData)) return;
 
-            client.username = loginDetails.username;
-            client.password = loginDetails.password;
+            client.userFile.SetLoginDetails(loginData);
 
-            UserManager.LoadDataFromFile(client);
+            client.LoadFromUserFile();
+
+            Logger.Message($"[Handshake] > {client.userFile.SavedIP} | {client.userFile.Username}");
 
             if (UserManager.CheckIfUserBanned(client)) return;
 
             if (!UserManager.CheckWhitelist(client)) return;
 
-            if (ModManager.CheckIfModConflict(client, loginDetails)) return;
+            if (ModManager.CheckIfModConflict(client, loginData)) return;
 
             RemoveOldClientIfAny(client);
 
@@ -34,13 +36,11 @@ namespace GameServer
 
         private static void PostLogin(ServerClient client)
         {
-            UserManager.SaveUserIP(client);
-
             UserManager.SendPlayerRecount();
 
-            ServerOverallManager.SendServerOveralls(client);
+            ServerGlobalDataManager.SendServerGlobalData(client);
 
-            ChatManager.BroadcastSystemMessage(client, ChatManager.defaultJoinMessages);
+            foreach(string str in ChatManager.defaultJoinMessages) ChatManager.SendSystemMessage(client, str);
 
             if (WorldManager.CheckIfWorldExists())
             {
@@ -57,9 +57,9 @@ namespace GameServer
                 if (cClient == client) continue;
                 else
                 {
-                    if (cClient.username == client.username)
+                    if (cClient.userFile.Username == client.userFile.Username)
                     {
-                        UserManager.SendLoginResponse(cClient, CommonEnumerators.LoginResponse.ExtraLogin);
+                        UserManager.SendLoginResponse(cClient, LoginResponse.ExtraLogin);
                     }
                 }
             }

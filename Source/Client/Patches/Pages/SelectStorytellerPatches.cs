@@ -14,7 +14,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             if (DifficultyValues.UseCustomDifficulty)
             {
@@ -33,8 +33,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (!Network.isConnectedToServer) return;
-            if (ClientValues.needsToGenerateWorld) return;
+            if (Network.state == NetworkState.Disconnected) return;
+            if (ClientValues.isGeneratingFreshWorld) return;
 
             Text.Font = GameFont.Small;
             Vector2 buttonSize = new Vector2(150f, 38f);
@@ -49,7 +49,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStorytellerInGame __instance)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (Network.state == NetworkState.Disconnected) return true;
 
             if (DifficultyValues.UseCustomDifficulty)
             {
@@ -79,19 +79,16 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (!Network.isConnectedToServer) return;
-
+            if (Network.state == NetworkState.Disconnected) return;
             if (DifficultyValues.UseCustomDifficulty) return;
-            else
+
+            if (ServerValues.isAdmin)
             {
-                if (ServerValues.isAdmin)
-                {
-                    Text.Font = GameFont.Small;
-                    Vector2 buttonSize = new Vector2(150f, 38f);
-                    Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty")) { }
-                }
-            }
+                Text.Font = GameFont.Small;
+                Vector2 buttonSize = new Vector2(150f, 38f);
+                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
+                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty")) { }
+            }          
         }
     }
 
@@ -126,140 +123,138 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref StorytellerDef chosenStoryteller, ref DifficultyDef difficulty, ref Difficulty difficultyValues, Listing_Standard infoListing)
         {
-            if (!Network.isConnectedToServer) return true;
+            if (Network.state == NetworkState.Disconnected) return true;
             if (Current.ProgramState != ProgramState.Entry) return true;
-            else
+            
+            Widgets.BeginGroup(rect);
+            Rect outRect = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x + 16f, rect.height);
+            Widgets.BeginScrollView(viewRect: new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, (float)DefDatabase<StorytellerDef>.AllDefs.Count() * (Storyteller.PortraitSizeTiny.y + 10f)), outRect: outRect, scrollPosition: ref scrollPosition);
+            Rect rect2 = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, Storyteller.PortraitSizeTiny.y).ContractedBy(4f);
+            foreach (StorytellerDef item in DefDatabase<StorytellerDef>.AllDefs.OrderBy((StorytellerDef tel) => tel.listOrder))
             {
-                Widgets.BeginGroup(rect);
-                Rect outRect = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x + 16f, rect.height);
-                Widgets.BeginScrollView(viewRect: new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, (float)DefDatabase<StorytellerDef>.AllDefs.Count() * (Storyteller.PortraitSizeTiny.y + 10f)), outRect: outRect, scrollPosition: ref scrollPosition);
-                Rect rect2 = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, Storyteller.PortraitSizeTiny.y).ContractedBy(4f);
-                foreach (StorytellerDef item in DefDatabase<StorytellerDef>.AllDefs.OrderBy((StorytellerDef tel) => tel.listOrder))
+                if (item.listVisible)
                 {
-                    if (item.listVisible)
+                    bool flag = chosenStoryteller == item;
+                    Widgets.DrawOptionBackground(rect2, flag);
+                    if (Widgets.ButtonImage(rect2, item.portraitTinyTex, Color.white, new Color(0.72f, 0.68f, 0.59f)))
                     {
-                        bool flag = chosenStoryteller == item;
-                        Widgets.DrawOptionBackground(rect2, flag);
-                        if (Widgets.ButtonImage(rect2, item.portraitTinyTex, Color.white, new Color(0.72f, 0.68f, 0.59f)))
-                        {
-                            TutorSystem.Notify_Event("ChooseStoryteller");
-                            chosenStoryteller = item;
-                        }
-                        if (flag)
-                        {
-                            GUI.DrawTexture(rect2, StorytellerHighlightTex);
-                        }
-                        rect2.y += rect2.height + 8f;
+                        TutorSystem.Notify_Event("ChooseStoryteller");
+                        chosenStoryteller = item;
                     }
+                    if (flag)
+                    {
+                        GUI.DrawTexture(rect2, StorytellerHighlightTex);
+                    }
+                    rect2.y += rect2.height + 8f;
                 }
-                Widgets.EndScrollView();
-                Rect outRect2 = new Rect(outRect.xMax + 8f, 0f, rect.width - outRect.width - 8f, rect.height);
-                explanationInnerRect.width = outRect2.width - 16f;
-                Widgets.BeginScrollView(outRect2, ref explanationScrollPosition, explanationInnerRect);
+            }
+            Widgets.EndScrollView();
+            Rect outRect2 = new Rect(outRect.xMax + 8f, 0f, rect.width - outRect.width - 8f, rect.height);
+            explanationInnerRect.width = outRect2.width - 16f;
+            Widgets.BeginScrollView(outRect2, ref explanationScrollPosition, explanationInnerRect);
+            Text.Font = GameFont.Small;
+            Widgets.Label(new Rect(0f, 0f, 300f, 999f), "HowStorytellersWork".Translate());
+            Rect rect3 = new Rect(0f, 120f, 290f, 9999f);
+            float num = 300f;
+
+            Find.GameInitData.permadeathChosen = true;
+            Find.GameInitData.permadeath = true;
+
+            Rect position = new Rect(390f - outRect2.x, rect.height - Storyteller.PortraitSizeLarge.y - 1f, Storyteller.PortraitSizeLarge.x, Storyteller.PortraitSizeLarge.y);
+
+            if (chosenStoryteller != null && chosenStoryteller.listVisible)
+            {
+                GUI.DrawTexture(position, chosenStoryteller.portraitLargeTex);
+                Text.Anchor = TextAnchor.UpperLeft;
+                infoListing.Begin(rect3);
+                Text.Font = GameFont.Medium;
+                infoListing.Indent(15f);
+                infoListing.Label(chosenStoryteller.label);
+                infoListing.Outdent(15f);
                 Text.Font = GameFont.Small;
-                Widgets.Label(new Rect(0f, 0f, 300f, 999f), "HowStorytellersWork".Translate());
-                Rect rect3 = new Rect(0f, 120f, 290f, 9999f);
-                float num = 300f;
+                infoListing.Gap(8f);
+                infoListing.Label(chosenStoryteller.description, 160f);
+                infoListing.Gap(6f);
+            }
 
-                Find.GameInitData.permadeathChosen = true;
-                Find.GameInitData.permadeath = true;
-
-                Rect position = new Rect(390f - outRect2.x, rect.height - Storyteller.PortraitSizeLarge.y - 1f, Storyteller.PortraitSizeLarge.x, Storyteller.PortraitSizeLarge.y);
-
+            if (!DifficultyValues.UseCustomDifficulty)
+            {
                 if (chosenStoryteller != null && chosenStoryteller.listVisible)
                 {
-                    GUI.DrawTexture(position, chosenStoryteller.portraitLargeTex);
-                    Text.Anchor = TextAnchor.UpperLeft;
-                    infoListing.Begin(rect3);
-                    Text.Font = GameFont.Medium;
-                    infoListing.Indent(15f);
-                    infoListing.Label(chosenStoryteller.label);
-                    infoListing.Outdent(15f);
-                    Text.Font = GameFont.Small;
-                    infoListing.Gap(8f);
-                    infoListing.Label(chosenStoryteller.description, 160f);
-                    infoListing.Gap(6f);
-                }
-
-                if (!DifficultyValues.UseCustomDifficulty)
-                {
-                    if (chosenStoryteller != null && chosenStoryteller.listVisible)
+                    foreach (DifficultyDef allDef in DefDatabase<DifficultyDef>.AllDefs)
                     {
-                        foreach (DifficultyDef allDef in DefDatabase<DifficultyDef>.AllDefs)
+                        TaggedString labelCap = allDef.LabelCap;
+                        if (allDef.isCustom) labelCap += "...";
+                        if (infoListing.RadioButton(labelCap, difficulty == allDef, 0f, allDef.description.ResolveTags(), 0f))
                         {
-                            TaggedString labelCap = allDef.LabelCap;
-                            if (allDef.isCustom) labelCap += "...";
-                            if (infoListing.RadioButton(labelCap, difficulty == allDef, 0f, allDef.description.ResolveTags(), 0f))
+                            if (!allDef.isCustom) difficultyValues.CopyFrom(allDef);
+                            else if (allDef != difficulty)
                             {
-                                if (!allDef.isCustom) difficultyValues.CopyFrom(allDef);
-                                else if (allDef != difficulty)
-                                {
-                                    difficultyValues.CopyFrom(DifficultyDefOf.Rough);
-                                    float time = Time.time;
-                                    float num2 = 0.6f;
-                                    explanationScrollPositionAnimated = AnimationCurve.EaseInOut(time, explanationScrollPosition.y, time + num2, explanationInnerRect.height);
-                                }
-
-                                difficulty = allDef;
+                                difficultyValues.CopyFrom(DifficultyDefOf.Rough);
+                                float time = Time.time;
+                                float num2 = 0.6f;
+                                explanationScrollPositionAnimated = AnimationCurve.EaseInOut(time, explanationScrollPosition.y, time + num2, explanationInnerRect.height);
                             }
 
-                            infoListing.Gap(3f);
+                            difficulty = allDef;
                         }
+
+                        infoListing.Gap(3f);
                     }
                 }
-
-                if (Current.ProgramState == ProgramState.Entry) infoListing.Gap(28f);
-                num = rect3.y + infoListing.CurHeight;
-                infoListing.End();
-
-                if (!DifficultyValues.UseCustomDifficulty)
-                {
-                    if (difficulty != null && difficulty.isCustom)
-                    {
-                        if (explanationScrollPositionAnimated != null)
-                        {
-                            float time2 = Time.time;
-
-                            if (time2 < explanationScrollPositionAnimated.keys.Last().time)
-                            {
-                                explanationScrollPosition.y = explanationScrollPositionAnimated.Evaluate(time2);
-                            }
-                            else explanationScrollPositionAnimated = null;
-                        }
-
-                        Listing_Standard listing_Standard = new Listing_Standard();
-                        float num3 = position.xMax - explanationInnerRect.x;
-                        listing_Standard.ColumnWidth = num3 / 2f - 17f;
-                        Rect rect4 = new Rect(0f, Math.Max(position.yMax, num) - 45f, num3, 9999f);
-                        listing_Standard.Begin(rect4);
-                        Text.Font = GameFont.Medium;
-                        listing_Standard.Indent(15f);
-                        listing_Standard.Label("DifficultyCustomSectionLabel".Translate());
-                        listing_Standard.Outdent(15f);
-                        Text.Font = GameFont.Small;
-                        listing_Standard.Gap();
-                        if (listing_Standard.ButtonText("DifficultyReset".Translate()))
-                        {
-                            MakeResetDifficultyFloatMenu(difficultyValues);
-                        }
-                        float curHeight = listing_Standard.CurHeight;
-                        float gapHeight = outRect2.height / 2f;
-                        DrawCustomLeft(listing_Standard, difficultyValues);
-                        listing_Standard.Gap(gapHeight);
-                        listing_Standard.NewColumn();
-                        listing_Standard.Gap(curHeight);
-                        DrawCustomRight(listing_Standard, difficultyValues);
-                        listing_Standard.Gap(gapHeight);
-                        num = rect4.y + listing_Standard.MaxColumnHeightSeen;
-                        listing_Standard.End();
-                    }
-                }
-
-                explanationInnerRect.height = num;
-                Widgets.EndScrollView();
-                Widgets.EndGroup();
-                return false;
             }
+
+            if (Current.ProgramState == ProgramState.Entry) infoListing.Gap(28f);
+            num = rect3.y + infoListing.CurHeight;
+            infoListing.End();
+
+            if (!DifficultyValues.UseCustomDifficulty)
+            {
+                if (difficulty != null && difficulty.isCustom)
+                {
+                    if (explanationScrollPositionAnimated != null)
+                    {
+                        float time2 = Time.time;
+
+                        if (time2 < explanationScrollPositionAnimated.keys.Last().time)
+                        {
+                            explanationScrollPosition.y = explanationScrollPositionAnimated.Evaluate(time2);
+                        }
+                        else explanationScrollPositionAnimated = null;
+                    }
+
+                    Listing_Standard listing_Standard = new Listing_Standard();
+                    float num3 = position.xMax - explanationInnerRect.x;
+                    listing_Standard.ColumnWidth = num3 / 2f - 17f;
+                    Rect rect4 = new Rect(0f, Math.Max(position.yMax, num) - 45f, num3, 9999f);
+                    listing_Standard.Begin(rect4);
+                    Text.Font = GameFont.Medium;
+                    listing_Standard.Indent(15f);
+                    listing_Standard.Label("DifficultyCustomSectionLabel".Translate());
+                    listing_Standard.Outdent(15f);
+                    Text.Font = GameFont.Small;
+                    listing_Standard.Gap();
+                    if (listing_Standard.ButtonText("DifficultyReset".Translate()))
+                    {
+                        MakeResetDifficultyFloatMenu(difficultyValues);
+                    }
+                    float curHeight = listing_Standard.CurHeight;
+                    float gapHeight = outRect2.height / 2f;
+                    DrawCustomLeft(listing_Standard, difficultyValues);
+                    listing_Standard.Gap(gapHeight);
+                    listing_Standard.NewColumn();
+                    listing_Standard.Gap(curHeight);
+                    DrawCustomRight(listing_Standard, difficultyValues);
+                    listing_Standard.Gap(gapHeight);
+                    num = rect4.y + listing_Standard.MaxColumnHeightSeen;
+                    listing_Standard.End();
+                }
+            }
+
+            explanationInnerRect.height = num;
+            Widgets.EndScrollView();
+            Widgets.EndGroup();
+            return false;
         }
 
         private static Listing_Standard DrawCustomSectionStart(Listing_Standard listing, float height, string label, string tooltip = null)

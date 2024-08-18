@@ -1,14 +1,13 @@
 ﻿using RimWorld;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 
 namespace GameClient
 {
     public static class EventManager
     {
-        
-
         public static string[] eventNames = new string[]
         {
             "Raid",
@@ -26,51 +25,38 @@ namespace GameClient
 
         public static void ParseEventPacket(Packet packet)
         {
-            EventDetailsJSON eventDetailsJSON = (EventDetailsJSON)Serializer.ConvertBytesToObject(packet.contents);
+            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
-            switch (int.Parse(eventDetailsJSON.eventStepMode))
+            switch (eventData.eventStepMode)
             {
-                case (int)CommonEnumerators.EventStepMode.Send:
+                case EventStepMode.Send:
                     OnEventSent();
                     break;
 
-                case (int)CommonEnumerators.EventStepMode.Receive:
-                    OnEventReceived(eventDetailsJSON);
+                case EventStepMode.Receive:
+                    OnEventReceived(eventData);
                     break;
 
-                case (int)CommonEnumerators.EventStepMode.Recover:
+                case EventStepMode.Recover:
                     OnRecoverEventSilver();
                     break;
             }
         }
 
-        public static void SetEventPrices(ServerOverallJSON serverOverallJSON)
+        public static void SetEventPrices(ServerGlobalData serverGlobalData)
         {
-            try
+            eventCosts = new int[]
             {
-                eventCosts = new int[9]
-                {
-                    int.Parse(serverOverallJSON.RaidCost),
-                    int.Parse(serverOverallJSON.InfestationCost),
-                    int.Parse(serverOverallJSON.MechClusterCost),
-                    int.Parse(serverOverallJSON.ToxicFalloutCost),
-                    int.Parse(serverOverallJSON.ManhunterCost),
-                    int.Parse(serverOverallJSON.WandererCost),
-                    int.Parse(serverOverallJSON.FarmAnimalsCost),
-                    int.Parse(serverOverallJSON.ShipChunkCost),
-                    int.Parse(serverOverallJSON.TraderCaravanCost)
-                };
-            }
-
-            catch 
-            { 
-                Log.Warning("Server didn't have event prices set, defaulting to 0");
-
-                eventCosts = new int[9]
-                {
-                    0, 0, 0, 0, 0, 0, 0, 0, 0
-                };
-            }
+                serverGlobalData.eventValues.RaidCost,
+                serverGlobalData.eventValues.InfestationCost,
+                serverGlobalData.eventValues.MechClusterCost,
+                serverGlobalData.eventValues.ToxicFalloutCost,
+                serverGlobalData.eventValues.ManhunterCost,
+                serverGlobalData.eventValues.WandererCost,
+                serverGlobalData.eventValues.FarmAnimalsCost,
+                serverGlobalData.eventValues.ShipChunkCost,
+                serverGlobalData.eventValues.TraderCaravanCost
+            };
         }
 
         public static void ShowSendEventDialog()
@@ -85,31 +71,35 @@ namespace GameClient
         {
             DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(eventCosts[DialogManager.selectedScrollButton]))
+            //TODO
+            //MAKE IT SO ALL MAPS ARE ACCOUNTED FOR SILVER TAKING
+            Map toGetSilverFrom = Find.AnyPlayerHomeMap;
+
+            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, eventCosts[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
             }
 
             else
             {
-                TransferManagerHelper.RemoveThingFromCaravan(ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
+                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, eventCosts[DialogManager.selectedScrollButton]);
 
-                EventDetailsJSON eventDetailsJSON = new EventDetailsJSON();
-                eventDetailsJSON.eventStepMode = ((int)CommonEnumerators.EventStepMode.Send).ToString();
-                eventDetailsJSON.fromTile = Find.AnyPlayerHomeMap.Tile.ToString();
-                eventDetailsJSON.toTile = ClientValues.chosenSettlement.Tile.ToString();
-                eventDetailsJSON.eventID = DialogManager.selectedScrollButton.ToString();
+                EventData eventData = new EventData();
+                eventData.eventStepMode = EventStepMode.Send;
+                eventData.fromTile = toGetSilverFrom.Tile;
+                eventData.toTile = ClientValues.chosenSettlement.Tile;
+                eventData.eventID = DialogManager.selectedScrollButton;
 
-                Packet packet = Packet.CreatePacketFromJSON(nameof(PacketHandler.EventPacket), eventDetailsJSON);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }
         }
 
-        public static void OnEventReceived(EventDetailsJSON eventDetailsJSON)
+        public static void OnEventReceived(EventData eventData)
         {
-            if (ClientValues.isReadyToPlay) LoadEvent(int.Parse(eventDetailsJSON.eventID));
+            if (ClientValues.isReadyToPlay) LoadEvent(eventData.eventID);
         }
 
         public static void LoadEvent(int eventID)
@@ -258,7 +248,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent and received!", 
+            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent!", 
                 LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();
@@ -270,9 +260,7 @@ namespace GameClient
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
             silverToReturn.stackCount = eventCosts[DialogManager.selectedScrollButton];
-            TransferManagerHelper.TransferItemIntoCaravan(silverToReturn);
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Spent silver has been recovered"));
+            RimworldManager.PlaceThingIntoCaravan(silverToReturn, ClientValues.chosenCaravan);
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
         }
