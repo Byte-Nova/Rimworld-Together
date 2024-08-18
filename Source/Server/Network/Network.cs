@@ -28,9 +28,9 @@ namespace GameServer
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
             Threader.GenerateServerThread(Threader.ServerMode.Caravans);
 
+            Logger.Warning("Server launched");  
+            Logger.Warning($"Listening for users at {localAddress}:{port}");            
             Logger.Warning("Type 'help' to get a list of available commands");
-            Logger.Warning($"Listening for users at {localAddress}:{port}");
-            Logger.Warning("Server launched");
             Master.ChangeTitle();
 
             while (true) ListenForIncomingUsers();

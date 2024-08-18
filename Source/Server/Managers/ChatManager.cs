@@ -8,7 +8,8 @@ namespace GameServer
     {
         private static readonly Semaphore logSemaphore = new Semaphore(1, 1);
         private static readonly Semaphore commandSemaphore = new Semaphore(1, 1);
-        private static string SystemName = "CONSOLE";
+        
+        private static readonly string systemName = "CONSOLE";
 
         public static readonly string[] defaultJoinMessages = new string[]
         {
@@ -69,16 +70,11 @@ namespace GameServer
             WriteToLogs(client.userFile.Username, message);
             ChatManagerHelper.ShowChatInConsole(client.userFile.Username, message);
 
-            if (Master.serverConfig.DiscordIntegration.Enabled)
-            {
-                if (Master.serverConfig.DiscordIntegration.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
-            }
+            if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
         }
 
         public static void BroadcastDiscordMessage(string client, string message)
         {
-            if (Master.serverConfig == null) return;
-
             ChatData chatData = new ChatData();
             chatData.username = client;
             chatData.message = message;
@@ -94,10 +90,8 @@ namespace GameServer
 
         public static void BroadcastServerMessage(string message)
         {
-            if (Master.serverConfig == null) return;
-
             ChatData chatData = new ChatData();
-            chatData.username = SystemName;
+            chatData.username = systemName;
             chatData.message = message;
             chatData.userColor = UserColor.Console;
             chatData.messageColor = MessageColor.Console;
@@ -105,10 +99,7 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
 
-            if (Master.serverConfig.DiscordIntegration.Enabled)
-            {
-                if (Master.serverConfig.DiscordIntegration.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
-            }
+            if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
 
             WriteToLogs(chatData.username, message);
             ChatManagerHelper.ShowChatInConsole(chatData.username, message);
@@ -117,7 +108,7 @@ namespace GameServer
         public static void SendSystemMessage(ServerClient client, string message)
         {
             ChatData chatData = new ChatData();
-            chatData.username = SystemName;
+            chatData.username = systemName;
             chatData.message = message;
             chatData.userColor = UserColor.Console;
             chatData.messageColor = MessageColor.Console;

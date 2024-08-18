@@ -429,13 +429,8 @@ namespace GameServer
             }
         }
 
-        private static void ReloadCommandAction()
-        {
-            Master.LoadResources();
-
-            if (Master.serverConfig.DiscordIntegration.Enabled) DiscordManager.RestartDiscordClient();
-        }
-
+        private static void ReloadCommandAction() { Master.LoadResources(); }
+        
         private static void ModListCommandAction()
         {
             Logger.Title($"Required Mods: [{Master.loadedRequiredMods.Count()}]");

@@ -30,17 +30,5 @@
         public bool TemporalEventProtection = true;
 
         public bool TemporalAidProtection = false;
-
-        public Discord DiscordIntegration = new();
-    }
-
-    public class Discord
-    {
-        public bool Enabled = false;
-        public string Token = "";
-        public ulong ChatChannelId = 0;
-        public ulong ConsoleChannelId = 0;
-        public string ChatWebhook = "";
-        public bool ShowPlayerCount = true;
     }
 }

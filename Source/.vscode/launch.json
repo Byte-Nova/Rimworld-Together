@@ -9,7 +9,7 @@
             "program": "${workspaceFolder}/Server/bin/Debug/net7.0/GameServer.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Server/bin/Debug/net7.0",
-            "console": "internalConsole"
+            "console": "externalTerminal"
         }
     ]
 }
