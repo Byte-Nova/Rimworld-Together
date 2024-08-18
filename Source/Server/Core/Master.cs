@@ -66,6 +66,7 @@ namespace GameServer
 
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
+            Threader.GenerateServerThread(Threader.ServerMode.Discord);
 
             while (true) Thread.Sleep(1);
         }

@@ -8,6 +8,7 @@ namespace GameServer
     {
         private static readonly Semaphore logSemaphore = new Semaphore(1, 1);
         private static readonly Semaphore commandSemaphore = new Semaphore(1, 1);
+        private static string SystemName = "CONSOLE";
 
         public static readonly string[] defaultJoinMessages = new string[]
         {
@@ -59,24 +60,36 @@ namespace GameServer
             ChatData chatData = new ChatData();
             chatData.username = client.userFile.Username;
             chatData.message = message;
-
-            if (client.userFile.IsAdmin)
-            {
-                chatData.userColor = UserColor.Admin;
-                chatData.messageColor = MessageColor.Admin;
-            }
-
-            else
-            {
-                chatData.userColor = UserColor.Normal;
-                chatData.messageColor = MessageColor.Normal;
-            }
+            chatData.userColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
+            chatData.messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
 
             WriteToLogs(client.userFile.Username, message);
             ChatManagerHelper.ShowChatInConsole(client.userFile.Username, message);
+
+            if (Master.serverConfig.DiscordIntegration.Enabled)
+            {
+                if (Master.serverConfig.DiscordIntegration.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
+            }
+        }
+
+        public static void BroadcastDiscordMessage(string client, string message)
+        {
+            if (Master.serverConfig == null) return;
+
+            ChatData chatData = new ChatData();
+            chatData.username = client;
+            chatData.message = message;
+            chatData.userColor = UserColor.Discord;
+            chatData.messageColor = MessageColor.Discord;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
+
+            WriteToLogs(client, message);
+            ChatManagerHelper.ShowChatInConsole(client, message, true);
         }
 
         public static void BroadcastServerMessage(string message)
@@ -84,13 +97,18 @@ namespace GameServer
             if (Master.serverConfig == null) return;
 
             ChatData chatData = new ChatData();
-            chatData.username = "CONSOLE";
+            chatData.username = SystemName;
             chatData.message = message;
             chatData.userColor = UserColor.Console;
             chatData.messageColor = MessageColor.Console;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
+
+            if (Master.serverConfig.DiscordIntegration.Enabled)
+            {
+                if (Master.serverConfig.DiscordIntegration.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
+            }
 
             WriteToLogs(chatData.username, message);
             ChatManagerHelper.ShowChatInConsole(chatData.username, message);
@@ -99,7 +117,7 @@ namespace GameServer
         public static void SendSystemMessage(ServerClient client, string message)
         {
             ChatData chatData = new ChatData();
-            chatData.username = "CONSOLE";
+            chatData.username = SystemName;
             chatData.message = message;
             chatData.userColor = UserColor.Console;
             chatData.messageColor = MessageColor.Console;
@@ -224,7 +242,7 @@ namespace GameServer
                     else
                     {
                         //Don't allow players to send wispers to themselves
-                        if (toFind == targetClient) ChatManager.SendSystemMessage(targetClient, "Can't send a wisper to yourself.");
+                        if (toFind == targetClient) ChatManager.SendSystemMessage(targetClient, "Can't send a whisper to yourself.");
                         else
                         {
                             ChatData chatData = new ChatData();
@@ -267,10 +285,14 @@ namespace GameServer
             return mention.Replace("@", "");
         }
 
-        public static void ShowChatInConsole(string username, string message)
+        public static void ShowChatInConsole(string username, string message, bool fromDiscord = false)
         {
             if (!Master.serverConfig.DisplayChatInConsole) return;
-            else Logger.Message($"[Chat] > {username} > {message}");
+            else 
+            {
+                if (fromDiscord) Logger.Message($"[Discord] > {username} > {message}");
+                else Logger.Message($"[Chat] > {username} > {message}");
+            }
         }
     }
 }
