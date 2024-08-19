@@ -163,10 +163,10 @@ namespace GameServer
                     Path.Combine(settlementsArchivePath, settlementFile.tile + SettlementManager.fileExtension));
             }
 
-            DeletePlayerData(client, client.userFile.Username);
+            ResetPlayerData(client, client.userFile.Username);
         }
 
-        public static void DeletePlayerData(ServerClient client, string username)
+        public static void ResetPlayerData(ServerClient client, string username)
         {
             if (client != null) client.listener.disconnectFlag = true;
 
@@ -193,7 +193,7 @@ namespace GameServer
                 SettlementManager.RemoveSettlement(client, settlementData);
             }
 
-            Logger.Warning($"[Deleted player data] > {username}");
+            Logger.Warning($"[Reseted player data] > {username}");
         }
     }
 }
