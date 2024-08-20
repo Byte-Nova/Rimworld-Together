@@ -13,6 +13,7 @@ namespace GameClient
 
         private static readonly string[] ignoreLogPackets =
         {
+            nameof(KeepAlivePacket),
             nameof(OnlineActivityPacket)
         };
 

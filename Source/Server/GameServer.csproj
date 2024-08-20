@@ -17,6 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Discord.Net" Version="3.15.3" />
       <PackageReference Include="Mono.Nat" Version="3.0.4" />
       <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
     </ItemGroup>

@@ -156,9 +156,9 @@ namespace GameServer
             "Forces a player to sync their save",
             ForceSaveCommandAction);
 
-        private static readonly ServerCommand deletePlayerCommand = new ServerCommand("deleteplayer", 1,
-            "Deletes all data of a player",
-            DeletePlayerCommandAction);
+        private static readonly ServerCommand resetPlayerCommand = new ServerCommand("resetplayer", 1,
+            "Resets a player profile from the server",
+            ResetPlayerCommandAction);
 
         private static readonly ServerCommand toggleDifficultyCommand = new ServerCommand("toggledifficulty", 0,
             "Enables custom difficulty in the server",
@@ -167,6 +167,10 @@ namespace GameServer
         private static readonly ServerCommand toggleCustomScenariosCommand = new ServerCommand("togglecustomscenarios", 0,
             "enables/disables custom scenarios on the server",
             ToggleCustomScenariosCommandAction);
+
+        private static readonly ServerCommand toggleDiscordPresenceCommand = new ServerCommand("togglediscordpresence", 0,
+            "enables/disables Discord pressence on the server",
+            ToggleDiscordPressenceCommandAction);
 
         private static readonly ServerCommand toggleUPnPCommand = new ServerCommand("toggleupnp", 0,
             "enables/disables UPnP port mapping (auto-portforwarding)",
@@ -224,9 +228,10 @@ namespace GameServer
             whitelistRemoveCommand,
             whitelistToggleCommand,
             forceSaveCommand,
-            deletePlayerCommand,
+            resetPlayerCommand,
             toggleDifficultyCommand,
             toggleCustomScenariosCommand,
+            toggleDiscordPresenceCommand,
             toggleUPnPCommand,
             portforwardCommand,
             toggleVerboseLogsCommand,
@@ -430,7 +435,7 @@ namespace GameServer
         }
 
         private static void ReloadCommandAction() { Master.LoadResources(); }
-
+        
         private static void ModListCommandAction()
         {
             Logger.Title($"Required Mods: [{Master.loadedRequiredMods.Count()}]");
@@ -550,10 +555,7 @@ namespace GameServer
         {
             Logger.Title($"Whitelisted usernames: [{Master.whitelist.WhitelistedUsers.Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (string str in Master.whitelist.WhitelistedUsers)
-            {
-                Logger.Warning($"{str}");
-            }
+            foreach (string str in Master.whitelist.WhitelistedUsers) Logger.Warning($"{str}");
             Logger.Title("----------------------------------------");
         }
 
@@ -572,9 +574,7 @@ namespace GameServer
             {
                 if (Master.whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
-                    Logger.Warning($"User '{commandParameters[0]}' " +
-                        $"was already whitelisted");
-
+                    Logger.Warning($"User '{commandParameters[0]}' was already whitelisted");
                     return true;
                 }
 
@@ -597,9 +597,7 @@ namespace GameServer
             {
                 if (!Master.whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
-                    Logger.Warning($"User '{commandParameters[0]}' " +
-                        $"was not whitelisted");
-
+                    Logger.Warning($"User '{commandParameters[0]}' was not whitelisted");
                     return true;
                 }
 
@@ -607,10 +605,7 @@ namespace GameServer
             }
         }
 
-        private static void WhitelistToggleCommandAction()
-        {
-            WhitelistManager.ToggleWhitelist();
-        }
+        private static void WhitelistToggleCommandAction() { WhitelistManager.ToggleWhitelist(); }
 
         private static void ForceSaveCommandAction()
         {
@@ -620,18 +615,17 @@ namespace GameServer
             else
             {
                 CommandManager.SendForceSaveCommand(toFind);
-
                 Logger.Warning($"User '{commandParameters[0]}' has been forced to save");
             }
         }
 
-        private static void DeletePlayerCommandAction()
+        private static void ResetPlayerCommandAction()
         {
             UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
             ServerClient toFind = UserManager.GetConnectedClientFromUsername(userFile.Username);
 
             if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
-            else SaveManager.DeletePlayerData(toFind, userFile.Username);
+            else SaveManager.ResetPlayerData(toFind, userFile.Username);
         }
 
         private static void ToggleDifficultyCommandAction()
@@ -648,6 +642,14 @@ namespace GameServer
             Master.SaveValueFile(ServerFileMode.Configs);
         }
 
+        private static void ToggleDiscordPressenceCommandAction()
+        {
+            Master.discordConfig.Enabled = !Master.discordConfig.Enabled;
+            Logger.Warning($"Discord pressence is now {(Master.discordConfig.Enabled ? ("Enabled") : ("Disabled"))}");
+            Logger.Warning("Please restart the server to start the service");
+            Master.SaveValueFile(ServerFileMode.Discord);
+        }
+
         private static void ToggleUPnPCommandAction()
         {
             Master.serverConfig.UseUPnP = !Master.serverConfig.UseUPnP;
@@ -656,30 +658,26 @@ namespace GameServer
 
             if (Master.serverConfig.UseUPnP)
             {
-            portforwardQuestion:
-                Logger.Warning("You have enabled UPnP on the server. Would you like to portforward?");
-                Logger.Warning("Please type 'YES' or 'NO'");
+                portforwardQuestion:
+                    Logger.Warning("You have enabled UPnP on the server. Would you like to portforward?");
+                    Logger.Warning("Please type 'YES' or 'NO'");
 
-                string response = Console.ReadLine();
+                    string response = Console.ReadLine();
 
-                if (response == "YES") _ = new UPnP();
+                    if (response == "YES") _ = new UPnP();
 
-                else if (response == "NO")
-                {
-                    Logger.Warning("You can use the command 'portforward' in the future to portforward the server");
-                }
+                    else if (response == "NO")
+                    {
+                        Logger.Warning("You can use the command 'portforward' in the future to portforward the server");
+                    }
 
-                else
-                {
-                    Logger.Error("The response you have entered is not a valid option. Please make sure your response is capitalized");
-                    goto portforwardQuestion;
-                }
+                    else
+                    {
+                        Logger.Error("The response you have entered is not a valid option. Please make sure your response is capitalized");
+                        goto portforwardQuestion;
+                    }
             }
-
-            else
-            {
-                Logger.Warning("If a port has already been forwarded using UPnP, it will continute to be active until the server is restarted");
-            }
+            else Logger.Warning("If a port has already been forwarded using UPnP, it will continute to be active until the server is restarted");
         }
 
         private static void PortForwardCommandAction()
