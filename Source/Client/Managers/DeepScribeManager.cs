@@ -1001,7 +1001,6 @@ namespace GameClient
             GetItemPosition(toUse, thingData);
 
             GetItemRotation(toUse, thingData);
-            Logger.Warning(thing.def.defName);
             if(thing.def.defName == ThingDefOf.Genepack.defName) GetGenepackDetails(toUse, thingData);
 
             return thingData;
@@ -1022,7 +1021,7 @@ namespace GameClient
             SetItemRotation(thing, thingData);
 
             SetItemMinified(thing, thingData);
-            Logger.Warning(thing.def.defName);
+
             if (thing.def.defName == ThingDefOf.Genepack.defName) SetGenepackDetails(thing, thingData);
 
             return thing;
@@ -1100,15 +1099,11 @@ namespace GameClient
                 Type type = genepack.GetType();
                 FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
                 GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
-                Logger.Warning(type.ToString());
                 type = geneSet.GetType();
                 fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
-                Logger.Warning(fieldInfo.ToString());
                 List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
-                Logger.Warning(geneList.ToString());
                 foreach( GeneDef gene in geneList) 
                 {
-                    Logger.Warning(gene.ToString());
                     thingData.genepackContent.Add(gene.defName);
                 }
             }catch { Logger.Warning($"Failed to generate genepack with {thing.def.defName}"); }
@@ -1195,16 +1190,12 @@ namespace GameClient
                 Type type = genepack.GetType();
                 FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
                 GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
-                Logger.Warning(type.ToString());
                 type = geneSet.GetType();
                 fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
-                Logger.Warning(fieldInfo.ToString());
                 List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
-                Logger.Warning(geneList.ToString());
                 geneList.Clear();
                 foreach (string str in thingData.genepackContent)
                 {
-                    Logger.Warning(str);
                     GeneDef gene = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
                     geneList.Add(gene);
                 }
