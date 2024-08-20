@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Shared
 {
@@ -11,6 +12,8 @@ namespace Shared
         public int quantity;
         public string quality;
 
+        //Complex items
+        public List<string> genepackContent = new List<string>();
         public bool isMinified;
         public int hitpoints;
 
