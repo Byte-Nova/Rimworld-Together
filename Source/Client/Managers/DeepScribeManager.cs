@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -162,6 +163,33 @@ namespace GameClient
                         if (hd.Part != null) humanData.hediffPartDefName.Add(hd.Part.def.defName.ToString());
                         else humanData.hediffPartDefName.Add("null");
 
+                        if (hd.def.CompProps<HediffCompProperties_Immunizable>() != null) humanData.hediffImmunity.Add(pawn.health.immunity.GetImmunity(hd.def));
+                        else humanData.hediffImmunity.Add(-1f);
+
+                        if (hd.def.tendable)
+                        {
+                            HediffComp_TendDuration comp = (hd.TryGetComp<HediffComp_TendDuration>());
+                            if (comp.IsTended)
+                            {
+                                humanData.hediffTendQuality.Add(comp.tendQuality);
+                                humanData.hediffTendDuration.Add(comp.tendTicksLeft);
+                            } else 
+                            {
+                                humanData.hediffTendDuration.Add(-1);
+                                humanData.hediffTendQuality.Add(-1);
+                            }
+                            if (comp.TProps.disappearsAtTotalTendQuality >= 0)
+                            {
+                                Type type = comp.GetType();
+                                FieldInfo fieldInfo = type.GetField("totalTendQuality", BindingFlags.NonPublic | BindingFlags.Instance);
+                                humanData.hediffTotalTendQuality.Add((float)fieldInfo.GetValue(comp));
+                            } else humanData.hediffTotalTendQuality.Add(-1f);
+                        } else 
+                        {
+                            humanData.hediffTendDuration.Add(-1);
+                            humanData.hediffTendQuality.Add(-1);
+                            humanData.hediffTotalTendQuality.Add(-1f);
+                        }
                         humanData.hediffSeverity.Add(hd.Severity.ToString());
                         humanData.heddifPermanent.Add(hd.IsPermanent());
                     }
@@ -413,7 +441,7 @@ namespace GameClient
 
                         if (humanData.hediffPartDefName[i] != "null")
                         {
-                            bodyPart = pawn.RaceProps.body.AllParts.ToList().Find(x => 
+                            bodyPart = pawn.RaceProps.body.AllParts.ToList().Find(x =>
                                 x.def.defName == humanData.hediffPartDefName[i]);
                         }
 
@@ -427,6 +455,26 @@ namespace GameClient
                         }
 
                         pawn.health.AddHediff(hediff, bodyPart);
+                        if (humanData.hediffImmunity[i] != -1f)
+                        {
+                            pawn.health.immunity.TryAddImmunityRecord(hediffDef, hediffDef);
+                            ImmunityRecord immunityRecord = pawn.health.immunity.GetImmunityRecord(hediffDef);
+                            immunityRecord.immunity = humanData.hediffImmunity[i];
+                        }
+
+                        if (humanData.hediffTendDuration[i] != -1)
+                        {
+                            HediffComp_TendDuration comp = hediff.TryGetComp<HediffComp_TendDuration>();
+                            comp.tendQuality = humanData.hediffTendQuality[i];
+                            comp.tendTicksLeft = humanData.hediffTendDuration[i];
+                        }
+                        if (humanData.hediffTotalTendQuality[i] != -1f) 
+                        {
+                            HediffComp_TendDuration comp = hediff.TryGetComp<HediffComp_TendDuration>();
+                            Type type = comp.GetType();
+                            FieldInfo fieldInfo = type.GetField("totalTendQuality", BindingFlags.NonPublic | BindingFlags.Instance);
+                            fieldInfo.SetValue(comp,humanData.hediffTotalTendQuality[i]);
+                        }
                     }
                     catch { Logger.Warning($"Failed to set heddif in {humanData.hediffPartDefName[i]} to human {humanData.name}"); }
                 }

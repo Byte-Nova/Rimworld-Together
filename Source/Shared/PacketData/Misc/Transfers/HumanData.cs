@@ -31,6 +31,10 @@ namespace Shared
         public List<string> hediffDefNames = new List<string>();
         public List<string> hediffPartDefName = new List<string>();
         public List<string> hediffSeverity = new List<string>();
+        public List<float> hediffImmunity = new List<float>();
+        public List<float> hediffTendQuality = new List<float>();
+        public List<float> hediffTotalTendQuality = new List<float>();
+        public List<int> hediffTendDuration = new List<int>();
         public List<bool> heddifPermanent = new List<bool>();
 
         //Xenotypes
