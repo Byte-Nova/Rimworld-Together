@@ -8,9 +8,9 @@ namespace Shared
         public string title = "null";
         public string description = "null";
         public string descriptionFlavor = "null";
-        public Dictionary<string, float> researchData = new Dictionary<string, float>();
         public Dictionary<string, float> skillData = new Dictionary<string,float>();
-        public float JoyFactor = 1f;
-        public float mentalBreakChance; //Anomaly only
+        public Dictionary<string, float> researchData = new Dictionary<string, float>(); // Schematics and Tomes only
+        public float joyFactor = 1f; //Text Books only
+        public float mentalBreakChance = -1f; // Tomes only
     }
 }

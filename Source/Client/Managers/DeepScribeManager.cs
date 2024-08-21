@@ -1002,9 +1002,9 @@ namespace GameClient
 
             GetItemRotation(toUse, thingData);
 
-            if(thing.def.defName == ThingDefOf.Genepack.defName) GetGenepackDetails(toUse, thingData);
+            if (thing.def.defName == ThingDefOf.Genepack.defName) GetGenepackDetails(toUse, thingData);
 
-            if (thing.def.defName == ThingDefOf.TextBook.defName) GetBookDetails(toUse, thingData);
+            if (thing.def.defName == ThingDefOf.TextBook.defName || thing.def.defName == ThingDefOf.Schematic.defName || thing.def.defName == ThingDefOf.Tome.defName || thing.def.defName == ThingDefOf.Novel.defName) GetBookDetails(toUse, thingData);
 
             return thingData;
         }
@@ -1027,7 +1027,7 @@ namespace GameClient
 
             if (thing.def.defName == ThingDefOf.Genepack.defName) SetGenepackDetails(thing, thingData);
 
-            if (thing.def.defName == ThingDefOf.TextBook.defName) SetBookDetails(thing, thingData);
+            if (thing.def.defName == ThingDefOf.TextBook.defName || thing.def.defName == ThingDefOf.Schematic.defName || thing.def.defName == ThingDefOf.Tome.defName || thing.def.defName == ThingDefOf.Novel.defName) SetBookDetails(thing, thingData);
 
             return thing;
         }
@@ -1042,7 +1042,7 @@ namespace GameClient
 
         private static void GetItemMaterial(Thing thing, ThingData thingData)
         {
-            try 
+            try
             {
                 if (DeepScribeHelper.CheckIfThingHasMaterial(thing)) thingData.materialDefName = thing.Stuff.defName;
                 else thingData.materialDefName = null;
@@ -1086,7 +1086,7 @@ namespace GameClient
 
         private static bool GetItemMinified(Thing thing, ThingData thingData)
         {
-            try 
+            try
             {
                 thingData.isMinified = DeepScribeHelper.CheckIfThingIsMinified(thing);
                 return thingData.isMinified;
@@ -1096,47 +1096,67 @@ namespace GameClient
             return false;
         }
 
-        private static void GetGenepackDetails(Thing thing, ThingData thingData) 
+        private static void GetGenepackDetails(Thing thing, ThingData thingData)
         {
             try
             {
                 Genepack genepack = (Genepack)thing;
+
                 Type type = genepack.GetType();
                 FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
                 GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
+
                 type = geneSet.GetType();
                 fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
                 List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
-                foreach( GeneDef gene in geneList) 
+                foreach (GeneDef gene in geneList)
                 {
                     thingData.genepackContent.Add(gene.defName);
                 }
-            }catch { Logger.Warning($"Failed to generate genepack with {thing.def.defName}"); }
+            }
+            catch { Logger.Warning($"Failed to generate genepack with {thing.def.defName}"); }
         }
 
-        private static void GetBookDetails(Thing thing, ThingData thingData) 
+        private static void GetBookDetails(Thing thing, ThingData thingData)
         {
-            BookData bookData = new BookData();
-            Book book = (Book)thing;
-            bookData.title = book.Title;
-            bookData.description = book.DescriptionDetailed;
-            bookData.descriptionFlavor = book.FlavorUI;
-            book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp doerXP);
-            if(doerXP != null) 
+            try
             {
-                foreach (var v in doerXP.Values)
+                BookData bookData = new BookData();
+                Book book = (Book)thing;
+                bookData.title = book.Title;
+                bookData.description = book.DescriptionDetailed;
+                bookData.descriptionFlavor = book.FlavorUI;
+
+                Type type = book.GetType();
+                FieldInfo fieldInfo = type.GetField("mentalBreakChancePerHour", BindingFlags.NonPublic | BindingFlags.Instance);
+                bookData.mentalBreakChance = (float)fieldInfo.GetValue(book);
+
+                type = book.GetType();
+                fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
+                bookData.joyFactor = (float)fieldInfo.GetValue(book);
+
+                book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp doerXP);
+                if (doerXP != null)
                 {
-                    bookData.skillData.Add(v.Key.defName, v.Value);
+                    foreach (var v in doerXP.Values)
+                    {
+                        bookData.skillData.Add(v.Key.defName, v.Value);
+                    }
                 }
-            }
-            book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out ReadingOutcomeDoerGainResearch doerResearch);
-            if(doerResearch != null) 
-            {
-                Type type = doerResearch.GetType();
-                FieldInfo fieldInfo = type.GetField("ResearchTabDef", BindingFlags.NonPublic | BindingFlags.Instance);
-                bookData.researchData = (Dictionary<string, float>)fieldInfo.GetValue(doerResearch);
-            }
-            thingData.book = bookData;
+
+                book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out ReadingOutcomeDoerGainResearch doerResearch);
+                if (doerResearch != null)
+                {
+                    type = doerResearch.GetType();
+                    fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Dictionary<ResearchProjectDef, float> researchDict = (Dictionary<ResearchProjectDef, float>)fieldInfo.GetValue(doerResearch);
+                    foreach (ResearchProjectDef v in researchDict.Keys)
+                    {
+                        bookData.researchData.Add(v.defName, researchDict[v]);
+                    }
+                }
+                thingData.book = bookData;
+            }catch { Logger.Warning($"Error when getting book with def: {thing.def.defName}"); }
         }
 
         //Setters
@@ -1212,16 +1232,19 @@ namespace GameClient
             }
         }
 
-        private static void SetGenepackDetails(Thing thing, ThingData thingData) 
+        private static void SetGenepackDetails(Thing thing, ThingData thingData)
         {
             try
             {
                 Genepack genepack = (Genepack)thing;
+
                 Type type = genepack.GetType();
                 FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
                 GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
+
                 type = geneSet.GetType();
                 fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
+
                 List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
                 geneList.Clear();
                 foreach (string str in thingData.genepackContent)
@@ -1236,40 +1259,58 @@ namespace GameClient
 
         private static void SetBookDetails(Thing thing, ThingData thingData)
         {
-            BookData bookData = thingData.book;
-            Book book = (Book)thing;
-            Type type = book.GetType();
-            FieldInfo fieldInfo = type.GetField("title", BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo.SetValue(book, bookData.title);
-            fieldInfo = type.GetField("description", BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo.SetValue(book, bookData.description);
-            fieldInfo = type.GetField("descriptionFlavor", BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo.SetValue(book, bookData.descriptionFlavor);
-            book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp doerXP);
-            if (doerXP != null) {
-                type = doerXP.GetType();
-                fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
-                Dictionary<SkillDef, float> skilldict = new Dictionary<SkillDef, float>();
-                foreach (string str in bookData.skillData.Keys)
-                {
-                    SkillDef skillDef = DefDatabase<SkillDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
-                    skilldict.Add(skillDef, bookData.skillData[str]);
-                }
-            fieldInfo.SetValue(doerXP, skilldict);
-            }
-            book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out ReadingOutcomeDoerGainResearch doerResearch);
-            if (doerResearch != null)
+            try
             {
-                type = doerResearch.GetType();
-                fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
-                Dictionary<ResearchProjectDef, float> researchDict = new Dictionary<ResearchProjectDef, float>();
-                foreach (string str in bookData.skillData.Keys)
+                BookData bookData = thingData.book;
+                Book book = (Book)thing;
+                Type type = book.GetType();
+
+                FieldInfo fieldInfo = type.GetField("title", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, bookData.title);
+
+                fieldInfo = type.GetField("description", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, bookData.description);
+
+                fieldInfo = type.GetField("descriptionFlavor", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, bookData.descriptionFlavor);
+
+                type = book.GetType();
+                fieldInfo = type.GetField("mentalBreakChancePerHour", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, bookData.mentalBreakChance);
+
+                type = book.GetType();
+                fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, bookData.joyFactor);
+
+                book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp doerXP);
+                if (doerXP != null)
                 {
-                    ResearchProjectDef researchDef = DefDatabase<ResearchProjectDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
-                    researchDict.Add(researchDef, bookData.skillData[str]);
+                    type = doerXP.GetType();
+                    fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Dictionary<SkillDef, float> skilldict = new Dictionary<SkillDef, float>();
+                    foreach (string str in bookData.skillData.Keys)
+                    {
+                        SkillDef skillDef = DefDatabase<SkillDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                        skilldict.Add(skillDef, bookData.skillData[str]);
+                    }
+                    fieldInfo.SetValue(doerXP, skilldict);
                 }
-                fieldInfo.SetValue(doerXP, bookData.skillData);
+
+                book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out ReadingOutcomeDoerGainResearch doerResearch);
+                if (doerResearch != null)
+                {
+                    type = doerResearch.GetType();
+                    fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Dictionary<ResearchProjectDef, float> researchDict = new Dictionary<ResearchProjectDef, float>();
+                    foreach (string str in bookData.researchData.Keys)
+                    {
+                        ResearchProjectDef researchDef = DefDatabase<ResearchProjectDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                        researchDict.Add(researchDef, bookData.researchData[str]);
+                    }
+                    fieldInfo.SetValue(doerResearch, researchDict);
+                }
             }
+            catch { Logger.Warning($"Error when setting book with name: {thing.def.defName}"); }
         }
     }
 
