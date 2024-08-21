@@ -27,7 +27,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CaravanData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Caravans\CaravanDetails.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)packetdata\misc\items\Book.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\CreationOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DamageOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DestructionOrder.cs" />
