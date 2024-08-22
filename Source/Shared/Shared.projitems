@@ -61,6 +61,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\HumanData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\ThingData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\WorldData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Items\Book.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
@@ -72,5 +73,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)PacketData\Misc\Items\" />
   </ItemGroup>
 </Project>
