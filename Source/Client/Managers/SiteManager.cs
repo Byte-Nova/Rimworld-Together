@@ -275,7 +275,6 @@ namespace GameClient
 
         private static Thing[] GetSiteRewards(Site[] sites)
         {
-
             List<Thing> thingsToGet = new List<Thing>();
             foreach (Site site in sites)
             {
@@ -286,7 +285,7 @@ namespace GameClient
                         ThingData thingData = new ThingData();
                         thingData.defName = siteRewardDefNames[i].defName;
                         thingData.quantity = siteRewardCount[i];
-                        thingData.quality = "null";
+                        thingData.quality = 0;
                         thingData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
 
                         if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(thingData));

@@ -132,7 +132,7 @@ namespace GameClient
                 Pawn pawn = thing as Pawn;
 
                 if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.PassToWorld(pawn);
-                pawn.SetFactionDirect(Faction.OfPlayer);
+                if (pawn.def.CanHaveFaction) pawn.SetFactionDirect(Faction.OfPlayer);
                 caravan.AddPawn(pawn, false);
             }
 

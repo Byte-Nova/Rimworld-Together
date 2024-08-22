@@ -1002,10 +1002,8 @@ namespace GameClient
 
             GetItemRotation(toUse, thingData);
 
-            if (thing.def.defName == ThingDefOf.Genepack.defName) GetGenepackDetails(toUse, thingData);
-
-            if (thing.def.defName == ThingDefOf.TextBook.defName || thing.def.defName == ThingDefOf.Schematic.defName || thing.def.defName == ThingDefOf.Tome.defName || thing.def.defName == ThingDefOf.Novel.defName) GetBookDetails(toUse, thingData);
-
+            if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             return thingData;
         }
 
@@ -1025,10 +1023,8 @@ namespace GameClient
 
             SetItemMinified(thing, thingData);
 
-            if (thing.def.defName == ThingDefOf.Genepack.defName) SetGenepackDetails(thing, thingData);
-
-            if (thing.def.defName == ThingDefOf.TextBook.defName || thing.def.defName == ThingDefOf.Schematic.defName || thing.def.defName == ThingDefOf.Tome.defName || thing.def.defName == ThingDefOf.Novel.defName) SetBookDetails(thing, thingData);
-
+            if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
             return thing;
         }
 
@@ -1070,11 +1066,7 @@ namespace GameClient
 
         private static void GetItemPosition(Thing thing, ThingData thingData)
         {
-            try
-            {
-                thingData.position = new string[] { thing.Position.x.ToString(),
-                    thing.Position.y.ToString(), thing.Position.z.ToString() };
-            }
+            try { thingData.position = new float[] { thing.Position.x, thing.Position.y, thing.Position.z }; }
             catch { Logger.Warning($"Failed to get position of thing {thing.def.defName}"); }
         }
 
@@ -1109,10 +1101,7 @@ namespace GameClient
                 type = geneSet.GetType();
                 fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
                 List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
-                foreach (GeneDef gene in geneList)
-                {
-                    thingData.genepackContent.Add(gene.defName);
-                }
+                foreach (GeneDef gene in geneList) thingData.genepackData.genepackDefs.Add(gene.defName);
             }
             catch { Logger.Warning($"Failed to generate genepack with {thing.def.defName}"); }
         }
@@ -1135,28 +1124,27 @@ namespace GameClient
                 fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
                 bookData.joyFactor = (float)fieldInfo.GetValue(book);
 
-                book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp doerXP);
-                if (doerXP != null)
+                book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp xp);
+                if (xp != null)
                 {
-                    foreach (var v in doerXP.Values)
+                    foreach (KeyValuePair<SkillDef, float> pair in xp.Values)
                     {
-                        bookData.skillData.Add(v.Key.defName, v.Value);
+                        bookData.skillData.Add(pair.Key.defName, pair.Value);
                     }
                 }
 
-                book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out ReadingOutcomeDoerGainResearch doerResearch);
-                if (doerResearch != null)
+                book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out ReadingOutcomeDoerGainResearch research);
+                if (research != null)
                 {
-                    type = doerResearch.GetType();
+                    type = research.GetType();
                     fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
-                    Dictionary<ResearchProjectDef, float> researchDict = (Dictionary<ResearchProjectDef, float>)fieldInfo.GetValue(doerResearch);
-                    foreach (ResearchProjectDef v in researchDict.Keys)
-                    {
-                        bookData.researchData.Add(v.defName, researchDict[v]);
-                    }
+                    Dictionary<ResearchProjectDef, float> researchDict = (Dictionary<ResearchProjectDef, float>)fieldInfo.GetValue(research);
+                    foreach (ResearchProjectDef key in researchDict.Keys) bookData.researchData.Add(key.defName, researchDict[key]);
                 }
-                thingData.book = bookData;
-            }catch { Logger.Warning($"Error when getting book with def: {thing.def.defName}"); }
+
+                thingData.bookData = bookData;
+            }
+            catch { Logger.Warning($"Error when getting book with def: {thing.def.defName}"); }
         }
 
         //Setters
@@ -1182,14 +1170,14 @@ namespace GameClient
 
         private static void SetItemQuality(Thing thing, ThingData thingData)
         {
-            if (thingData.quality != "null")
+            if (thingData.quality != -1)
             {
                 try
                 {
                     CompQuality compQuality = thing.TryGetComp<CompQuality>();
                     if (compQuality != null)
                     {
-                        QualityCategory iCategory = (QualityCategory)int.Parse(thingData.quality);
+                        QualityCategory iCategory = (QualityCategory)thingData.quality;
                         compQuality.SetQuality(iCategory, ArtGenerationContext.Outsider);
                     }
                 }
@@ -1205,15 +1193,8 @@ namespace GameClient
 
         private static void SetItemPosition(Thing thing, ThingData thingData)
         {
-            if (thingData.position != null)
-            {
-                try
-                {
-                    thing.Position = new IntVec3(int.Parse(thingData.position[0]), int.Parse(thingData.position[1]),
-                        int.Parse(thingData.position[2]));
-                }
-                catch { Logger.Warning($"Failed to set position for item {thingData.defName}"); }
-            }
+            try { thing.Position = new IntVec3((int)thingData.position[0], (int)thingData.position[1], (int)thingData.position[2]); }
+            catch { Logger.Warning($"Failed to set position for item {thingData.defName}"); }
         }
 
         private static void SetItemRotation(Thing thing, ThingData thingData)
@@ -1247,7 +1228,7 @@ namespace GameClient
 
                 List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
                 geneList.Clear();
-                foreach (string str in thingData.genepackContent)
+                foreach (string str in thingData.genepackData.genepackDefs)
                 {
                     GeneDef gene = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
                     geneList.Add(gene);
@@ -1261,24 +1242,23 @@ namespace GameClient
         {
             try
             {
-                BookData bookData = thingData.book;
                 Book book = (Book)thing;
                 Type type = book.GetType();
 
                 FieldInfo fieldInfo = type.GetField("title", BindingFlags.NonPublic | BindingFlags.Instance);
-                fieldInfo.SetValue(book, bookData.title);
+                fieldInfo.SetValue(book, thingData.bookData.title);
 
                 fieldInfo = type.GetField("description", BindingFlags.NonPublic | BindingFlags.Instance);
-                fieldInfo.SetValue(book, bookData.description);
+                fieldInfo.SetValue(book, thingData.bookData.description);
 
                 fieldInfo = type.GetField("descriptionFlavor", BindingFlags.NonPublic | BindingFlags.Instance);
-                fieldInfo.SetValue(book, bookData.descriptionFlavor);
+                fieldInfo.SetValue(book, thingData.bookData.descriptionFlavor);
 
                 fieldInfo = type.GetField("mentalBreakChancePerHour", BindingFlags.NonPublic | BindingFlags.Instance);
-                fieldInfo.SetValue(book, bookData.mentalBreakChance);
+                fieldInfo.SetValue(book, thingData.bookData.mentalBreakChance);
 
                 fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
-                fieldInfo.SetValue(book, bookData.joyFactor);
+                fieldInfo.SetValue(book, thingData.bookData.joyFactor);
 
                 book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp doerXP);
                 if (doerXP != null)
@@ -1286,11 +1266,13 @@ namespace GameClient
                     type = doerXP.GetType();
                     fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
                     Dictionary<SkillDef, float> skilldict = new Dictionary<SkillDef, float>();
-                    foreach (string str in bookData.skillData.Keys)
+
+                    foreach (string str in thingData.bookData.skillData.Keys)
                     {
                         SkillDef skillDef = DefDatabase<SkillDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
-                        skilldict.Add(skillDef, bookData.skillData[str]);
+                        skilldict.Add(skillDef, thingData.bookData.skillData[str]);
                     }
+
                     fieldInfo.SetValue(doerXP, skilldict);
                 }
 
@@ -1300,11 +1282,13 @@ namespace GameClient
                     type = doerResearch.GetType();
                     fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
                     Dictionary<ResearchProjectDef, float> researchDict = new Dictionary<ResearchProjectDef, float>();
-                    foreach (string str in bookData.researchData.Keys)
+
+                    foreach (string str in thingData.bookData.researchData.Keys)
                     {
                         ResearchProjectDef researchDef = DefDatabase<ResearchProjectDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
-                        researchDict.Add(researchDef, bookData.researchData[str]);
+                        researchDict.Add(researchDef, thingData.bookData.researchData[str]);
                     }
+
                     fieldInfo.SetValue(doerResearch, researchDict);
                 }
             }
@@ -1424,7 +1408,7 @@ namespace GameClient
                             try
                             {
                                 Plant plant = thing as Plant;
-                                thingData.growthTicks = plant.Growth;
+                                thingData.plantData.growthTicks = plant.Growth;
                             }
                             catch { Logger.Warning($"Failed to parse plant {thing.def.defName}"); }
                         }
@@ -1569,7 +1553,7 @@ namespace GameClient
                             if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
                             {
                                 Plant plant = toGet as Plant;
-                                plant.Growth = item.growthTicks;
+                                plant.Growth = item.plantData.growthTicks;
                             }
                         }
                         catch { Logger.Warning($"Failed to parse thing {item.defName}"); }
@@ -1588,7 +1572,7 @@ namespace GameClient
                             if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
                             {
                                 Plant plant = toGet as Plant;
-                                plant.Growth = item.growthTicks;
+                                plant.Growth = item.plantData.growthTicks;
                             }
                         }
                         catch { Logger.Warning($"Failed to parse thing {item.defName}"); }
@@ -1745,12 +1729,12 @@ namespace GameClient
 
         //Gets the quality of a transferable thing
 
-        public static string GetThingQuality(Thing thing)
+        public static int GetThingQuality(Thing thing)
         {
             QualityCategory qc = QualityCategory.Normal;
             thing.TryGetQuality(out qc);
 
-            return ((int)qc).ToString();
+            return (int)qc;
         }
 
         //Checks if transferable thing is minified
@@ -1758,6 +1742,21 @@ namespace GameClient
         public static bool CheckIfThingIsMinified(Thing thing)
         {
             if (thing.def == ThingDefOf.MinifiedThing || thing.def == ThingDefOf.MinifiedTree) return true;
+            else return false;
+        }
+
+        public static bool CheckIfThingIsBook(Thing thing)
+        {
+            if (thing.def.defName == ThingDefOf.TextBook.defName) return true;
+            else if (thing.def.defName == ThingDefOf.Schematic.defName) return true;
+            else if (thing.def.defName == ThingDefOf.Tome.defName) return true;
+            else if (thing.def.defName == ThingDefOf.Novel.defName) return true;
+            else return false;
+        }
+
+        public static bool CheckIfThingIsGenepack(Thing thing)
+        {
+            if (thing.def.defName == ThingDefOf.Genepack.defName) return true;
             else return false;
         }
     }
