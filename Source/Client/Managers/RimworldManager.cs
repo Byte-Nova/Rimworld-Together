@@ -187,17 +187,30 @@ namespace GameClient
             int takenQuantity = 0;
             foreach (Thing thing in thingInMap)
             {
-                if (takenQuantity + thing.stackCount >= requiredQuantity)
+                if (takenQuantity == requiredQuantity) return;
+
+                else if (takenQuantity + thing.stackCount == requiredQuantity)
                 {
-                    thing.stackCount -= requiredQuantity - takenQuantity;
+                    takenQuantity = requiredQuantity;
+                    thing.Destroy();
+                    return;
+                }
+
+                else if (takenQuantity + thing.stackCount > requiredQuantity)
+                {
+                    int value = takenQuantity + thing.stackCount - requiredQuantity;
+
                     if (thing.stackCount <= 0) thing.Destroy();
-                    break;
+                    thing.stackCount -= value;
+                    takenQuantity += value;
+                    return;
                 }
 
                 else if (takenQuantity + thing.stackCount < requiredQuantity)
                 {
-                    thing.Destroy();
                     takenQuantity += thing.stackCount;
+                    thing.Destroy();
+                    continue;
                 }
             }
         }
