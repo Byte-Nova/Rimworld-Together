@@ -172,20 +172,20 @@ namespace GameClient
         {
             if (requiredQuantity == 0) return;
 
-            List<Thing> thingInMap = new List<Thing>();
+            List<Thing> thingsInMap = new List<Thing>();
             foreach (Zone zone in map.zoneManager.AllZones)
             {
                 foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
                 {
                     if (thing.def == thingDef && !thing.Position.Fogged(map))
                     {
-                        thingInMap.Add(thing);
+                        thingsInMap.Add(thing);
                     }
                 }
             }
 
             int takenQuantity = 0;
-            foreach (Thing thing in thingInMap)
+            foreach (Thing thing in thingsInMap)
             {
                 if (takenQuantity == requiredQuantity) return;
 
@@ -200,9 +200,9 @@ namespace GameClient
                 {
                     int value = takenQuantity + thing.stackCount - requiredQuantity;
 
-                    if (thing.stackCount <= 0) thing.Destroy();
-                    thing.stackCount -= value;
                     takenQuantity += value;
+                    thing.stackCount -= value;
+                    if (thing.stackCount <= 0) thing.Destroy();
                     return;
                 }
 
