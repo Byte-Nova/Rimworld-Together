@@ -193,17 +193,17 @@ namespace GameClient
                 {
                     takenQuantity = requiredQuantity;
                     thing.Destroy();
-                    return;
+                    break;
                 }
 
                 else if (takenQuantity + thing.stackCount > requiredQuantity)
                 {
-                    int value = takenQuantity + thing.stackCount - requiredQuantity;
+                    int missingQuantity = requiredQuantity - takenQuantity;
 
-                    takenQuantity += value;
-                    thing.stackCount -= value;
+                    takenQuantity += missingQuantity;
+                    thing.stackCount -= missingQuantity;
                     if (thing.stackCount <= 0) thing.Destroy();
-                    return;
+                    break;
                 }
 
                 else if (takenQuantity + thing.stackCount < requiredQuantity)
@@ -213,6 +213,8 @@ namespace GameClient
                     continue;
                 }
             }
+
+            Logger.Warning($"{requiredQuantity} > {takenQuantity}");
         }
 
         public static void RemovePawnFromGame(Pawn pawn)
