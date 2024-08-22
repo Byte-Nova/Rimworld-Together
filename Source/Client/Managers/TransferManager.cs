@@ -197,7 +197,7 @@ namespace GameClient
 
                 foreach (Thing thing in things)
                 {
-                    thing.SetFactionDirect(Faction.OfPlayer);
+                    if (thing.def.CanHaveFaction) thing.SetFactionDirect(Faction.OfPlayer);
                     RimworldManager.PlaceThingIntoMap(thing, map, ThingPlaceMode.Near, true);
                 }
 
