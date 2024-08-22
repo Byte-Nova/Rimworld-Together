@@ -1274,11 +1274,9 @@ namespace GameClient
                 fieldInfo = type.GetField("descriptionFlavor", BindingFlags.NonPublic | BindingFlags.Instance);
                 fieldInfo.SetValue(book, bookData.descriptionFlavor);
 
-                type = book.GetType();
                 fieldInfo = type.GetField("mentalBreakChancePerHour", BindingFlags.NonPublic | BindingFlags.Instance);
                 fieldInfo.SetValue(book, bookData.mentalBreakChance);
 
-                type = book.GetType();
                 fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
                 fieldInfo.SetValue(book, bookData.joyFactor);
 
