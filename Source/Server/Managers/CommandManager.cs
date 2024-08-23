@@ -41,14 +41,16 @@ namespace GameServer
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
-
         }
 
-        public static void SendEventCommand(ServerClient client, int eventID)
+        public static void SendEventCommand(ServerClient client, EventFile eventFile)
         {
             EventData eventData = new EventData();
             eventData.eventStepMode = EventStepMode.Receive;
-            eventData.eventID = eventID;
+            eventData.eventFile = eventFile;
+
+            //We set it to -1 to let the client know it will fall at any settlement
+            eventData.toTile = -1;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
             client.listener.EnqueuePacket(packet);

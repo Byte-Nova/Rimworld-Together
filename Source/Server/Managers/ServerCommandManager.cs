@@ -1,23 +1,11 @@
-﻿using static GameServer.ServerCommandManager;
+﻿using Shared;
+using static GameServer.ServerCommandManager;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
     public static class ServerCommandManager
     {
-        public static string[] eventTypes = new string[]
-        {
-            "Raid",
-            "Infestation",
-            "MechCluster",
-            "ToxicFallout",
-            "Manhunter",
-            "Wanderer",
-            "FarmAnimals",
-            "ShipChunks",
-            "TraderCaravan"
-        };
-
         public static string[] commandParameters;
 
         public static void ParseServerCommands(string parsedString)
@@ -383,8 +371,7 @@ namespace GameServer
             {
                 if (userFile.IsBanned)
                 {
-                    Logger.Warning($"User '{commandParameters[0]}' " +
-                        $"was already banned from the server");
+                    Logger.Warning($"User '{commandParameters[0]}' was already banned from the server");
                     return true;
                 }
 
@@ -425,8 +412,7 @@ namespace GameServer
             {
                 if (!userFile.IsBanned)
                 {
-                    Logger.Warning($"User '{commandParameters[0]}' " +
-                        $"was not banned from the server");
+                    Logger.Warning($"User '{commandParameters[0]}' was not banned from the server");
                     return true;
                 }
 
@@ -440,26 +426,17 @@ namespace GameServer
         {
             Logger.Title($"Required Mods: [{Master.loadedRequiredMods.Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (string str in Master.loadedRequiredMods)
-            {
-                Logger.Warning($"{str}");
-            }
+            foreach (string str in Master.loadedRequiredMods) Logger.Warning($"{str}");
             Logger.Title("----------------------------------------");
 
             Logger.Title($"Optional Mods: [{Master.loadedOptionalMods.Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (string str in Master.loadedOptionalMods)
-            {
-                Logger.Warning($"{str}");
-            }
+            foreach (string str in Master.loadedOptionalMods) Logger.Warning($"{str}");
             Logger.Title("----------------------------------------");
 
             Logger.Title($"Forbidden Mods: [{Master.loadedForbiddenMods.Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (string str in Master.loadedForbiddenMods)
-            {
-                Logger.Warning($"{str}");
-            }
+            foreach (string str in Master.loadedForbiddenMods) Logger.Warning($"{str}");
             Logger.Title("----------------------------------------");
         }
 
@@ -471,65 +448,48 @@ namespace GameServer
 
         private static void EventCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
-            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
-
+            ServerClient client = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
+            if (client == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
             else
             {
-                for (int i = 0; i < eventTypes.Count(); i++)
+                EventFile toFind = EventManagerHelper.loadedEvents.FirstOrDefault(fetch => fetch.DefName == commandParameters[1]);
+                if (toFind == null) Logger.Warning($"Event '{commandParameters[1]}' was not found");
+                else
                 {
-                    if (eventTypes[i] == commandParameters[1])
-                    {
-                        CommandManager.SendEventCommand(toFind, i);
+                    CommandManager.SendEventCommand(client, toFind);
 
-                        Logger.Warning($"Sent event '{commandParameters[1]}' to {toFind.userFile.Username}");
-
-                        return;
-                    }
+                    Logger.Title($"Sent event '{commandParameters[1]}' to '{commandParameters[0]}'");
                 }
-
-                Logger.Warning($"Event '{commandParameters[1]}' was not found");
             }
         }
 
         private static void EventAllCommandAction()
         {
-            for (int i = 0; i < eventTypes.Count(); i++)
+            EventFile toFind = EventManagerHelper.loadedEvents.FirstOrDefault(fetch => fetch.DefName == commandParameters[0]);
+            if (toFind == null) Logger.Warning($"Event '{commandParameters[0]}' was not found");
+            else
             {
-                if (eventTypes[i] == commandParameters[0])
+                foreach (ServerClient client in Network.connectedClients.ToArray())
                 {
-                    foreach (ServerClient client in Network.connectedClients.ToArray())
-                    {
-                        CommandManager.SendEventCommand(client, i);
-                    }
-
-                    Logger.Title($"Sent event '{commandParameters[0]}' to every connected player");
-
-                    return;
+                    CommandManager.SendEventCommand(client, toFind);
                 }
-            }
 
-            Logger.Warning($"Event '{commandParameters[0]}' was not found");
+                Logger.Title($"Sent event '{commandParameters[0]}' to every connected player");
+            }
         }
 
         private static void EventListCommandAction()
         {
-            Logger.Title($"Available events: [{eventTypes.Count()}]");
+            Logger.Title($"Available events: [{EventManagerHelper.loadedEvents.Length}]");
             Logger.Title("----------------------------------------");
-            foreach (string str in eventTypes)
-            {
-                Logger.Warning($"{str}");
-            }
+            foreach (EventFile eventFile in EventManagerHelper.loadedEvents) Logger.Warning($"{eventFile.DefName}");
             Logger.Title("----------------------------------------");
         }
 
         private static void BroadcastCommandAction()
         {
             string fullText = "";
-            foreach (string str in commandParameters)
-            {
-                fullText += $"{str} ";
-            }
+            foreach (string str in commandParameters) fullText += $"{str} ";
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
             CommandManager.SendBroadcastCommand(fullText);

@@ -13,12 +13,12 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\EventValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\OnlineSiteFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\OnlineSettlementFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\EventFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\AidData.cs" />
