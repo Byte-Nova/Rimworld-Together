@@ -15,14 +15,6 @@
 			"task": "build ${workspaceFolder}/Server/GameServer.csproj -o ${workspaceFolder}/Server/bin/Debug/Net7.0",
 			"group": "build",
 			"problemMatcher": [],
-		},
-
-		{
-			"label": "shell: build all",
-        	"dependsOn": 
-			[
-				"dotnet: build server"
-        	]
 		}
 	]
 }
