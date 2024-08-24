@@ -57,7 +57,7 @@ namespace GameClient.Dialogs
             Rect textRect = new Rect(new Vector2(rect.x, rect.y), new Vector2(50f, 50f));
             if (index % 2 == 0) Widgets.DrawHighlight(highLightRect);
             Widgets.DrawTextureFitted(textRect, thing.ExpandingIconTexture, 1f); // Icon of the site
-            Widgets.Label(fixedRect, thing.description + thing.description); // Description of the site
+            Widgets.Label(fixedRect, thing.description); // Description of the site
             if (Mouse.IsOver(highLightRect)) 
             {
                 Widgets.DrawLineHorizontal(highLightRect.x, highLightRect.y, highLightRect.width);
