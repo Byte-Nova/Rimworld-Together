@@ -213,8 +213,6 @@ namespace GameClient
                     continue;
                 }
             }
-
-            Logger.Warning($"{requiredQuantity} > {takenQuantity}");
         }
 
         public static void RemovePawnFromGame(Pawn pawn)

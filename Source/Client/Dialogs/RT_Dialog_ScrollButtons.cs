@@ -8,7 +8,7 @@ namespace GameClient
 {
     public class RT_Dialog_ScrollButtons : Window
     {
-        public override Vector2 InitialSize => new Vector2(350f, 350f);
+        public override Vector2 InitialSize => new Vector2(500f, 350f);
 
         private Vector2 scrollPosition = Vector2.zero;
 

@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 
-namespace Shared 
+namespace Shared
 {
     public class BookData 
     {

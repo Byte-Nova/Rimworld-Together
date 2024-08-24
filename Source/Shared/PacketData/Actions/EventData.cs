@@ -7,9 +7,11 @@ namespace Shared
     public class EventData
     {
         public EventStepMode eventStepMode;
+        
         public int fromTile;
+
         public int toTile;
 
-        public int eventID;
+        public EventFile eventFile;
     }
 }

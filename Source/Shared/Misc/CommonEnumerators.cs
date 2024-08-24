@@ -2,7 +2,7 @@ namespace Shared
 {
     public class CommonEnumerators
     {
-        public enum ServerFileMode { Configs, Actions, Sites, Events, Roads, World, Whitelist, Difficulty, Market, Discord }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
