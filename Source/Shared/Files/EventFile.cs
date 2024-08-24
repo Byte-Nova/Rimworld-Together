@@ -10,5 +10,7 @@ namespace Shared
         public string DefName;
 
         public int Cost;
+
+        public bool IsEnabled;
     }
 }

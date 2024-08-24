@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Shared;
@@ -36,16 +37,16 @@ namespace GameClient
 
             foreach (EventFile eventFile in EventManagerHelper.availableEvents) eventNames.Add(eventFile.Name);
 
+            Action a1 = delegate
+            {
+                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost} " +
+                    $"silver, continue?", SendEvent, null);
+
+                DialogManager.PushNewDialog(d2);
+            };
+
             RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
-                eventNames.ToArray(), ShowSendEventDialog, null);
-
-            DialogManager.PushNewDialog(d1);
-        }
-
-        public static void ShowSendEventDialog()
-        {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost} " +
-                $"silver, continue?", SendEvent, null);
+                eventNames.ToArray(), a1.Invoke, null);
 
             DialogManager.PushNewDialog(d1);
         }

@@ -224,7 +224,7 @@ namespace GameServer
             {
                 if (!foundEvents.Contains(pair.Key))
                 {
-                    GenerateEventFile(pair.Key, pair.Value);
+                    GenerateDefaultEventFile(pair.Key, pair.Value);
                 }
             }
         }
@@ -232,16 +232,22 @@ namespace GameServer
         public static void LoadAllEvents()
         {
             List<EventFile> toLoad = new List<EventFile>();
-            foreach(string str in Directory.GetFiles(Master.eventsPath)) toLoad.Add(Serializer.SerializeFromFile<EventFile>(str));
+            foreach(string str in Directory.GetFiles(Master.eventsPath))
+            {
+                EventFile eventFile = Serializer.SerializeFromFile<EventFile>(str);
+                if (eventFile.IsEnabled) toLoad.Add(eventFile);
+            }
+
             loadedEvents = toLoad.OrderBy(fetch => fetch.Name).ToArray();
         }
 
-        public static void GenerateEventFile(string defName, string name)
+        public static void GenerateDefaultEventFile(string defName, string name)
         {
             EventFile newEvent = new EventFile();
             newEvent.Name = name;
             newEvent.DefName = defName;
             newEvent.Cost = 500;
+            newEvent.IsEnabled = true;
 
             Serializer.SerializeToFile(Path.Combine(Master.eventsPath, defName + fileExtension), newEvent);
         }
