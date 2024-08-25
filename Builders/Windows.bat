@@ -6,13 +6,29 @@ set BASEBUILDPATH=""
 set BUILDRESULTPATH=""
 set RIMWORLDPATH=""
 set MODFOLDERPATH=""
+set FILEWITHGAMEPATH="RimWorldFolderPath.txt"
 
+::Check if txt file with path is present
+if exist %FILEWITHGAMEPATH% GOTO FileExists
+GOTO FileDoesntExist
+
+:FileExists
+echo %FILEWITHGAMEPATH% exists, continuing operation
+GOTO Execution
+
+:FileDoesntExist
+echo Put/Your/Path/To/Your/Game/In/Here > %FILEWITHGAMEPATH%
+echo %FILEWITHGAMEPATH% was just created, make sure to add your RimWorld path to it before you continue
+pause
+GOTO Execution
+
+:Execution
 ::Setting variables
 set BASEBUILDERPATH=%CD%
-set /p RIMWORLDPATH=<RimWorldFolderPath.txt
+set /p RIMWORLDPATH=<%FILEWITHGAMEPATH%
 set MODFOLDERPATH="%RIMWORLDPATH%/Mods/3005289691"
-echo "RimWorld path is set to %RIMWORLDPATH%"
-echo "RimWorld mod path is set to %MODFOLDERPATH%"
+echo RimWorld path is set to %RIMWORLDPATH%
+echo RimWorld mod path is set to %MODFOLDERPATH%
 
 ::Setting the BUILDRESULTPATH variable
 cd Result

@@ -6,13 +6,25 @@ BASEBUILDPATH=""
 BUILDRESULTPATH=""
 RIMWORLDPATH=""
 MODFOLDERPATH=""
+FILEWITHGAMEPATH="RimWorldFolderPath.txt"
+
+#Check if txt file with path is present
+if [ -f "$FILEWITHGAMEPATH" ]; then
+    echo "$FILEWITHGAMEPATH exists, continuing operation"
+    echo
+else
+    echo Put/Your/Path/To/Your/Game/In/Here > $FILEWITHGAMEPATH
+    echo "$FILEWITHGAMEPATH was just created, make sure to add your RimWorld path to it before you continue"
+    read
+fi
 
 #Setting variables
 BASEBUILDERPATH=$(pwd)
-RIMWORLDPATH=$(cat RimWorldFolderPath.txt)
+RIMWORLDPATH=$(cat $FILEWITHGAMEPATH)
 MODFOLDERPATH="$RIMWORLDPATH/Mods/3005289691"
 echo "RimWorld path is set to $RIMWORLDPATH"
 echo "RimWorld mod path is set to $MODFOLDERPATH"
+echo
 
 #Setting the BUILDRESULTPATH variable
 cd Result
@@ -47,10 +59,11 @@ cp -r $(pwd) $MODFOLDERPATH
 
 #Ask if boot
 cd $RIMWORLDPATH
+echo
 while true; do
     read -p "Boot RimWorld? (Yy/Nn)" yn
     case $yn in
-        [Yy]* ) "./RimWorldLinux"; break;;
+        [Yy]* ) echo; "./RimWorldLinux"; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer Yy or Nn.";;
     esac
