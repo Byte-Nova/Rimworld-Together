@@ -415,4 +415,4 @@ Source/buildClient.sh
 Source/buildServer.sh
 Source/publishServer.sh
 
-Builders/RimWorldFolderPath.txt
+RimWorldFolderPath.txt
