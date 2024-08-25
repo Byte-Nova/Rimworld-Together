@@ -156,7 +156,7 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTSiteCurrentWorker".Translate(),
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTSiteHasWorker".Translate(),
                     delegate { RequestWorkerRetrieval(siteData); }, null);
 
                 DialogManager.PushNewDialog(d1);

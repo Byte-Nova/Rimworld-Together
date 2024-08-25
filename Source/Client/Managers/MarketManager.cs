@@ -61,7 +61,7 @@ namespace GameClient
             else
             {
                 TransferManager.FinishTransfer(true);
-                DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogTransferSuccess".Translate()));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferSuccess".Translate()));
             }
         }
 
@@ -69,7 +69,7 @@ namespace GameClient
 
         public static void RequestGetStock(int marketIndex, int quantity)
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogWaitMarket".Translate()));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTMarketWait".Translate()));
 
             MarketData data = new MarketData();
             data.marketStepMode = MarketStepMode.Request;
@@ -99,7 +99,7 @@ namespace GameClient
         public static void RequestReloadStock()
         {
             DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingData[] { }, ClientValues.chosenSettlement.Map, null, null));
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogWaitMarket".Translate()));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTMarketWait".Translate()));
 
             MarketData marketData = new MarketData();
             marketData.marketStepMode = MarketStepMode.Reload;

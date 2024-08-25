@@ -27,28 +27,28 @@ namespace GameClient
             listingStandard.Label("Running version: " + CommonValues.executableVersion);
 
             listingStandard.GapLine();
-            listingStandard.Label("Multiplayer Parameters");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.rejectSiteRewardsBool, "Automatically site rewards");
-            listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref modConfigs.muteChatSoundBool, "Mute chat messages");
-            if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s")) ShowAutosaveFloatMenu();
+            listingStandard.Label("RTMultiplayerParameters".Translate());
+            listingStandard.CheckboxLabeled("RTDenyIncomingTransfers".Translate(), ref modConfigs.rejectTransfersBool, "RTDenyIncomingTransfersDesc".Translate());
+            listingStandard.CheckboxLabeled("RTDenyIncomingSiteRewards".Translate(), ref modConfigs.rejectSiteRewardsBool, "RTDenyIncomingSiteRewardsDesc".Translate());
+            listingStandard.CheckboxLabeled("RTMuteChat".Translate(), ref modConfigs.muteChatSoundBool, "RTMuteChatDesc".Translate());
+            if (listingStandard.ButtonTextLabeled("RTServerSyncInterval".Translate(), "RTServerSyncIntervalVar".Translate([ClientValues.autosaveDays]))) ShowAutosaveFloatMenu();
 
             listingStandard.GapLine();
-            listingStandard.Label("Compatibility");
-            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertFloatMenu(); }
-            if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
+            listingStandard.Label("RTCompatibility".Translate());
+            if (listingStandard.ButtonTextLabeled("RTConvertSave".Translate(), "RTConvertSaveButton".Translate())) { ShowConvertFloatMenu(); }
+            if (listingStandard.ButtonTextLabeled("RTOpenSaveFolder".Translate(), "RTConfigOpen".Translate())) StartProcess(Master.savesFolderPath);
 
             listingStandard.GapLine();
-            listingStandard.Label("Experimental");
-            listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info into the logs");
-            listingStandard.CheckboxLabeled("Use extreme verbose logs", ref modConfigs.extremeVerboseBool, "Output ALL available info into the logs");
+            listingStandard.Label("RTExperimental".Translate());
+            listingStandard.CheckboxLabeled("RTUseVerboseLogs".Translate(), ref modConfigs.verboseBool, "RTUseVerboseLogsDesc".Translate());
+            listingStandard.CheckboxLabeled("RTExtremeVerboseLogs".Translate(), ref modConfigs.extremeVerboseBool, "RTExtremeVerboseLogsDesc".Translate());
 
             listingStandard.GapLine();
-            listingStandard.Label("External Sources");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's wiki!", "Open")) StartProcess("https://rimworldtogether.github.io/Guide");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/RimworldTogether/Rimworld-Together");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's incompatibility list!", "Open")) StartProcess("https://github.com/RimworldTogether/Rimworld-Together/blob/development/IncompatibilityList.md");
-            if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/yUF2ec8Vt8");
+            listingStandard.Label("RTExternalSources".Translate());
+            if (listingStandard.ButtonTextLabeled("RTWikiOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://rimworldtogether.github.io/Guide");
+            if (listingStandard.ButtonTextLabeled("RTGithubOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/RimworldTogether/Rimworld-Together");
+            if (listingStandard.ButtonTextLabeled("RTIncompatibilityOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/RimworldTogether/Rimworld-Together/blob/development/IncompatibilityList.md");
+            if (listingStandard.ButtonTextLabeled("RTDiscordOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://discord.gg/yUF2ec8Vt8");
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
@@ -100,7 +100,7 @@ namespace GameClient
                     byte[] compressedBytes = GZip.Compress(File.ReadAllBytes(toConvertPath));
                     File.WriteAllBytes(conversionPath, compressedBytes);
 
-                    RT_Dialog_OK d2 = new RT_Dialog_OK("Save was converted successfully");
+                    RT_Dialog_OK d2 = new RT_Dialog_OK("RTConvertSaveSuccesful".Translate());
                     DialogManager.PushNewDialog(d2);
                 });
 

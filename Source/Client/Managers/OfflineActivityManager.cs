@@ -87,7 +87,7 @@ namespace GameClient
 
             DialogManager.PopWaitDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("RTEventPlayerNotAvailable".Translate()));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
         }
 
         //Executes after the action is unavailable
@@ -104,7 +104,7 @@ namespace GameClient
 
             DialogManager.PopWaitDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("RTEventPlayerNotAvailable".Translate()));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
         }
 
         //Executes when offline visit is accepted

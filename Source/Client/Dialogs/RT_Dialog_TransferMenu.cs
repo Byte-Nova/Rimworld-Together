@@ -17,8 +17,8 @@ namespace GameClient
         public override Vector2 InitialSize => new Vector2(600f, 512f);
         private Vector2 scrollPosition = Vector2.zero;
 
-        public readonly string title = "RTDialogTransferMenu".Translate();
-        public readonly string description = "RTDialogTransferSelect".Translate();
+        public readonly string title = "RTTransferMenu".Translate();
+        public readonly string description = "RTTransferDesc".Translate();
 
         private readonly float buttonX = 100f;
         private readonly float buttonY = 37f;
@@ -83,9 +83,9 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 55f, rect.width, rect.height - buttonY - 65));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferAccept".Translate())) OnAccept();
-            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferReset".Translate())) OnReset();
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferCancel".Translate())) OnCancel();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogAccept".Translate())) OnAccept();
+            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogReset".Translate())) OnReset();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogCancel".Translate())) OnCancel();
         }
 
         private void FillMainRect(Rect mainRect)
@@ -132,10 +132,10 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_2Button d2 = new RT_Dialog_2Button("RTDialogTransferType".Translate(), "RTDialogTransferTypeDesc".Translate(),
-                    "RTDialogTransferGift".Translate(), "RTDialogTransferTrade".Translate(), r1, r2, null);
+                RT_Dialog_2Button d2 = new RT_Dialog_2Button("RTTransferType".Translate(), "RTTransferTypeDesc".Translate(),
+                    "RTTransferGift".Translate(), "RTTransferTrade".Translate(), r1, r2, null);
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogTransferContinue".Translate(),
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTTransferContinue".Translate(),
                     delegate { DialogManager.PushNewDialog(d2); }, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -150,7 +150,7 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogTransferContinue".Translate(),
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTTransferContinue".Translate(),
                     r1, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -165,7 +165,7 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogTransferContinue".Translate(),
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTTransferContinue".Translate(),
                     r1, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -195,7 +195,7 @@ namespace GameClient
 
             if (transferLocation == TransferLocation.Settlement)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTDialogTransferCancelSure".Translate(),
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferCancelSure".Translate(),
                     r1, null));
             }
             else r1.Invoke();

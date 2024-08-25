@@ -129,7 +129,7 @@ namespace GameClient
 
             RimworldManager.PlaceThingIntoMap(silverToReturn, toReturnTo, ThingPlaceMode.Near, true);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("RTEventPlayerNotAvailable".Translate()));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
         }
     }
 

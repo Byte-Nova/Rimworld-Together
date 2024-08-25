@@ -80,7 +80,7 @@ namespace GameClient
 
         private void DrawPlayerCount(Rect rect)
         {
-            string toShow = ServerValues.currentPlayers > 1 ? $"{ServerValues.currentPlayers} Players Online" : $"{ServerValues.currentPlayers} Player Online" ;
+            string toShow = ServerValues.currentPlayers > 1 ? "RTChatOnlinePlayers".Translate(ServerValues.currentPlayers) : "RTChatOnlinePlayer".Translate(ServerValues.currentPlayers) ;
 
             Text.Font = GameFont.Small;
             Widgets.Label(new(rect.x, rect.y, Text.CalcSize(toShow).x, Text.CalcSize(toShow).y), $"<color=grey>{toShow}</color>");
@@ -153,7 +153,7 @@ namespace GameClient
 
         private void DrawPinCheckbox(Rect rect)
         {
-            string pinText = "Auto Scroll";
+            string pinText = "RTAutoScroll".Translate();
 
             Text.Font = GameFont.Small;
             Widgets.CheckboxLabeled(new Rect(rect.xMax - Text.CalcSize(pinText).x * 1.5f, rect.y, Text.CalcSize(pinText).x * 2,

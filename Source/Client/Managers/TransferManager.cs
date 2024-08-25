@@ -29,14 +29,14 @@ namespace GameClient
 
                 case TransferStepMode.TradeAccept:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogTransferSuccess".Translate()));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferSuccess".Translate()));
                     if (transferData.transferMode == TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
                 case TransferStepMode.TradeReject:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTransferPlayerRejected".Translate()));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferPlayerRejected".Translate()));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
@@ -52,13 +52,13 @@ namespace GameClient
 
                 case TransferStepMode.TradeReReject:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTransferPlayerRejected".Translate()));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferPlayerRejected".Translate()));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
                 case TransferStepMode.Recover:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTAidError".Translate()));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
             }
@@ -114,7 +114,7 @@ namespace GameClient
 
         public static void SendTransferRequestToServer(TransferLocation transferLocation)
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogTransferResponseWait".Translate()));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTTransferResponseWait".Translate()));
 
             if (transferLocation == TransferLocation.Caravan)
             {
@@ -206,8 +206,8 @@ namespace GameClient
 
             if (invokeMessage)
             {
-                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogTransferSuccess".Translate(), r1));
-                else DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTransferCancelled".Translate(), r1));
+                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferSuccess".Translate(), r1));
+                else DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferCancelled".Translate(), r1));
             }
             else r1.Invoke();
         }
@@ -225,8 +225,8 @@ namespace GameClient
 
             if (invokeMessage)
             {
-                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogTransferSuccess".Translate(), r1));
-                else DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTransferCancelled".Translate(), r1));
+                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferSuccess".Translate(), r1));
+                else DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferCancelled".Translate(), r1));
             }
             else r1.Invoke();
         }
@@ -280,17 +280,17 @@ namespace GameClient
 
                     if (transferData.transferMode == TransferMode.Gift)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogTransferGiftReceived".Translate(), r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferGiftReceived".Translate(), r1));
                     }
 
                     else if (transferData.transferMode == TransferMode.Trade)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogTransferTradeReceived".Translate(), r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferTradeReceived".Translate(), r1));
                     }
 
                     else if (transferData.transferMode == TransferMode.Pod)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogTransferGiftReceived".Translate(), r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferGiftReceived".Translate(), r1));
                     }
                 }
             }
@@ -408,9 +408,9 @@ namespace GameClient
             if (tradingSpot != null) return tradingSpot.Position;
             else
             {
-                RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RTDialogNoTransferSpot".Translate(),
-                    "RTDialogReceivedThings".Translate(),
-                    "RTDialogBuildTransferSpot".Translate()});
+                RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RTDialogNoTransferSpot1".Translate(),
+                    "RTDialogNoTransferSpot2".Translate(),
+                    "RTDialogNoTransferSpot3".Translate()});
 
                 DialogManager.PushNewDialog(d1);
 

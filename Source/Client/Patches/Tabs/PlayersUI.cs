@@ -19,14 +19,14 @@ namespace GameClient
         public PlayersUI()
         {
             size = WinSize;
-            labelKey = "Players";
+            labelKey = "RTPlayersMenu".Translate();
         }
 
         protected override void FillTab()
         {
             if (Network.state == NetworkState.Connected)
             {
-                tabTitle = $"Players Online [{ServerValues.currentPlayers}]";
+                tabTitle = "RTOnlinePlayers".Translate(ServerValues.currentPlayers);
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 

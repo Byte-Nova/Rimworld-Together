@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTMainMenuButton>Play Together</RTMainMenuButton>
+    
+    <!-- Configs -->
+    
+    <RTMultiplayerParameters>Multiplayer Parameters</RTMultiplayerParameters>
+    <RTDenyIncomingTransfers>[When Playing] Deny all incoming transfers</RTDenyIncomingTransfers>
+    <RTDenyIncomingTransfersDesc>Automatically denies transfers</RTDenyIncomingTransfersDesc>
+    <RTDenyIncomingSiteRewards>[When Playing] Deny all incoming site rewards</RTDenyIncomingSiteRewards>
+    <RTDenyIncomingSiteRewardsDesc>Automatically site rewards</RTDenyIncomingSiteRewardsDesc>
+    <RTMuteChat>[When Playing] Mute incomming chat messages</RTMuteChat>
+    <RTMuteChatDesc>Mute chat messages</RTMuteChatDesc>
+    <RTServerSyncInterval>[When Playing] Server sync interval</RTServerSyncInterval>
+    <RTServerSyncIntervalVar>{0} Day/s</RTServerSyncIntervalVar>
+    
+    <RTCompatibility>Compatibility</RTCompatibility>
+    <RTConvertSave>Convert save for server use</RTConvertSave>
+    <RTConvertSaveSuccesful>Save was converted successfully</RTConvertSaveSuccesful>
+    <RTConvertSaveButton>Convert</RTConvertSaveButton>
+    <RTOpenSaveFolder>Open saves folder</RTOpenSaveFolder>
+    <RTConfigOpen>Open</RTConfigOpen>
+    
+    <RTExperimental>Experimental</RTExperimental>
+    <RTUseVerboseLogs>Use verbose logs</RTUseVerboseLogs>
+    <RTUseVerboseLogsDesc>Output more advanced info into the logs</RTUseVerboseLogsDesc>
+    <RTExtremeVerboseLogs>Use extreme verbose logs</RTExtremeVerboseLogs>
+    <RTExtremeVerboseLogsDesc>Output ALL available info into the logs</RTExtremeVerboseLogsDesc>
+
+    <RTExternalSources>External Sources</RTExternalSources>
+    <RTWikiOpen>Check out the mod's wiki!</RTWikiOpen>
+    <RTGithubOpen>Check out the mod's Github!</RTGithubOpen>
+    <RTIncompatibilityOpen>Check out the mod's incompatibility list!</RTIncompatibilityOpen>
+    <RTDiscordOpen>Join the mod's Discord community!</RTDiscordOpen>
+    
+    <!-- Tabs -->
+
+    <RTBases>Player Bases {0}</RTBases>
+    <RTFocus>Focus</RTFocus>
+    
+    <RTChatOnlinePlayers>{0} Players Online</RTChatOnlinePlayers>
+    <RTChatOnlinePlayer>{0} Player Online</RTChatOnlinePlayer>
+    <RTAutoScroll>Auto Scroll</RTAutoScroll>
+    
+    <RTPlayersMenu>Players</RTPlayersMenu>
+    <RTOnlinePlayers>Players Online {0}</RTOnlinePlayers>
+    
+    <RTSitesMenu>Sites</RTSitesMenu>
+    <RTPlayerSites>Player Sites {0}</RTPlayerSites>
+
+    <!-- Connection --> 
+    <RTLoginNewUser>New User</RTLoginNewUser>
+    <RTLoginExistingUser>Existing User</RTLoginExistingUser>
+    <RTLoginUsername>Username</RTLoginUsername>
+    <RTLoginSelect>Login Select</RTLoginSelect>
+    <RTLoginSelectDesc>Choose your login type</RTLoginSelectDesc>
+    <RTLoginWait>Waiting for login response</RTLoginWait>
+    <RTPassword>Password</RTPassword>
+    <RTConfirmPassword>Confirm Password</RTConfirmPassword>
+    <RTConnectionDetails>Connection Details</RTConnectionDetails>
+    <RTServerIP>IP</RTServerIP>
+    <RTServerPort>Port</RTServerPort>
+    <RTTryingToConnect>Trying to connect to server</RTTryingToConnect>
+    <RTInvalidServer>Server details are invalid! Please try again!</RTInvalidServer>
+    <RTLoginInvalid>Login details are invalid! Please try again!</RTLoginInvalid>
+    <RTRegisterWait>Waiting for register response</RTRegisterWait>
+    <RTRegisterInvalid>Register details are invalid! Please try again!</RTRegisterInvalid>
+    <RTRegisterError>There was an error registering! Please try again!</RTRegisterError>
+    
+    <RTDialogBanned>You are banned from this server!</RTDialogBanned>
+    <RTDialogUsernameAlreadyUsed>That username is already in use! Please try again!</RTDialogUsernameAlreadyUsed>
+    <RTDialogAlreadyConnected>You connected from another place!</RTDialogAlreadyConnected>
+
+
+    <!-- Dialogs -->
+    <RTDialogMessage>MESSAGE</RTDialogMessage>
+    <RTDialogWait>WAIT</RTDialogWait>
+    <RTDialogOption>OPTION</RTDialogOption>
+    <RTDialogError>ERROR</RTDialogError>
+    
+    <RTDialogConfirm>Confirm</RTDialogConfirm>
+    <RTDialogCancel>Cancel</RTDialogCancel>
+    <RTDialogOK>OK</RTDialogOK>
+    <RTDialogClose>Close</RTDialogClose>
+    <RTDialogSelect>Select</RTDialogSelect>
+    <RTDialogNew>New</RTDialogNew>
+    <RTDialogReload>Reload</RTDialogReload>
+    <RTDialogAccept>Accept</RTDialogAccept>
+    <RTPlayerNotAvailable>Player is not currently available!</RTPlayerNotAvailable>
+    
+    <!-- Transfer -->
+    
+    <RTTransferMenuButton>Transfer Items</RTTransferMenuButton>
+    <RTTransferMenuButtonDesc>Transfer items between settlements</RTTransferMenuButtonDesc>
+    <RTDialogItemListing>Item Listing</RTDialogItemListing>
+    <RTTransferMenu>Transfer Menu</RTTransferMenu>
+    <RTTransferDesc>Select the items you wish to transfer</RTTransferDesc>
+    <RTTransferType>Transfer Type</RTTransferType>
+    <RTTransferTypeDesc>Please choose the transfer type to use</RTTransferTypeDesc>
+    <RTTransferGift>Gift</RTTransferGift>
+    <RTTransferTrade>Trade</RTTransferTrade>
+    <RTTransferContinue>Are you sure you want to continue with the transfer?</RTTransferContinue>
+    <RTTransferAcceptSure>Are you sure you want to accept?</RTTransferAcceptSure>
+    <RTTransferCancelSure>Are you sure you want to decline?</RTTransferCancelSure>
+    <RTTransferSuccess>Transfer was a success!</RTTransferSuccess>
+    <RTTransferCancelled>Transfer was cancelled!</RTTransferCancelled>
+    <RTTransferPlayerRejected>Player rejected the trade!</RTTransferPlayerRejected>
+    <RTTransferError>You do not have any pawn capable of trading!</RTTransferError>
+    <RTTransferResponseWait>Waiting for transfer response</RTTransferResponseWait>
+    <RTTransferGiftReceived>You are receiving a gift request</RTTransferGiftReceived>
+    <RTDialogNoTransferSpot1>You are missing a transfer spot!</RTDialogNoTransferSpot1>
+    <RTDialogNoTransferSpot2>Received things will appear in the center of the map</RTDialogNoTransferSpot2>
+    <RTDialogNoTransferSpot3>Build a trading spot to change the drop location!</RTDialogNoTransferSpot3>
+    <RTTransferTradeReceived>You are receiving a trade request</RTTransferTradeReceived>
+    <RTTransfering>Transfer things to {0}</RTTransfering>
+    <RTGlobalMarket>Global Market</RTGlobalMarket>
+    <RTGlobalMarketMenu>Global Market Menu</RTGlobalMarketMenu>
+    <RTGlobalMarketMenuDesc>Access the global market</RTGlobalMarketMenuDesc>
+    <RTGlobalMarketRequirement>You need a comms console to use the market!</RTGlobalMarketRequirement>
+    <RTAvailableSilver>Silver available for trade: {0}</RTAvailableSilver>
+    <RTNoOneToTrade>There's no one in the server to trade with!</RTNoOneToTrade>
+    <RTTradeQuantityError>You are trying to request an invalid quantity!</RTTradeQuantityError>
+    <RTTradeTooMuch>You are trying to request more than is available!</RTTradeTooMuch>
+    <RTDialogRequestQuantity>Quantity to request</RTDialogRequestQuantity>
+    <RTDialogRequestQuantityDesc>Type the quantity you want to request</RTDialogRequestQuantityDesc>
+    <RTMarketWait>Waiting for market response</RTMarketWait>
+    <RTNotEnoughSilver>You do not have enough silver!</RTNotEnoughSilver>
+    
+    <!-- Server -->
+    
+    <RTDialogFirstPlayer>You are the first person joining the server!</RTDialogFirstPlayer>
+    <RTDialogYouConfigure>Configure the world that everyone will play on</RTDialogYouConfigure>
+    <RTDialogNeedInServer>You need to be in a server to use this!</RTDialogNeedInServer>
+    <RTDialogSync>Syncing save with the server</RTDialogSync>
+    <RTDialogServerWait>Waiting for server response</RTDialogServerWait>
+    <RTDialogDeleteConfirm>Are you sure you want to delete your save?</RTDialogDeleteConfirm>
+    <RTDialogDeleteSave>Delete Save</RTDialogDeleteSave>
+    <RTFastJoinUnAvailable>You must join a server first to use this feature!</RTFastJoinUnAvailable>
+    <RTFastJoin> Join {0}:{1} as {2}</RTFastJoin>
+    <RTDisconnect>Disconnect</RTDisconnect>
+    <RTJoin>Join</RTJoin>
+    <RTCustomScenariosUnAvailable>This server doesn't allow custom scenarios!</RTCustomScenariosUnAvailable>
+    <RTDifficultyCantBeChanged>Difficulty can't be changed in this server!</RTDifficultyCantBeChanged>
+    <RTCustomDifficultySet>Custom difficulty has been sent!</RTCustomDifficultySet>
+    <RTSendDifficulty>Send Difficulty</RTSendDifficulty>
+    <RTCommandOPPlayer>You are now an admin!</RTCommandOPPlayer>
+    <RTCommandDEOPPlayer>You are no longer an admin!</RTCommandDEOPPlayer>
+    <RTCommandServerBroadcast>Server Broadcast</RTCommandServerBroadcast>
+    <RTDisconnectProgressSaved>Your progress has been saved!</RTDisconnectProgressSaved>
+    <RTDisconnectSave>Connection lost. Save game?</RTDisconnectSave>
+    <RTModMismatchMenu>Mod Conflicts</RTModMismatchMenu>
+    <RTModMismatchMenuDesc>The following mods are conflicting with the server</RTModMismatchMenuDesc>
+    <RTDialogServerFull>Server is full!</RTDialogServerFull>
+    <RTDialogWhitelisted>Server is whitelisted!</RTDialogWhitelisted>
+    <RTDialogVersionMismatch>Mod version mismatch! Expected version {0}</RTDialogVersionMismatch>
+    <RTDialogServerBeingSetup>Server is currently being set up! Join again later!</RTDialogServerBeingSetup>
+    
+    <!-- Managers -->
+    
+    <RTFactionMenu>Faction Menu</RTFactionMenu>
+    <RTFactionMenuButtonDesc>Access your faction menu</RTFactionMenuButtonDesc>
+    <RTFactionMemberWait>Waiting for member list</RTFactionMemberWait>
+    <RTFactionMembers>Members</RTFactionMembers>
+    <RTFactionMemberMenu>Faction Members</RTFactionMemberMenu>
+    <RTFactionMemberMenuDesc>All faction members are depicted here</RTFactionMemberMenuDesc>
+    <RTFactionDelete>Delete</RTFactionDelete>
+    <RTFactionWaitDelete>Waiting for faction deletion</RTFactionWaitDelete>
+    <RTFactionDeleteSure>Are you sure you want to DELETE your faction?</RTFactionDeleteSure>
+    <RTFactionDeleted>Your faction has been deleted!</RTFactionDeleted>
+    <RTFactionLeave>Leave</RTFactionLeave>
+    <RTFactionLeaveSure>Are you sure you want to LEAVE your faction?</RTFactionLeaveSure>
+    <RTFactionManagement>Faction Management</RTFactionManagement>
+    <RTFactionManagementDesc>Manage your faction from here</RTFactionManagementDesc>
+    <RTFactionNameInvalid>Faction name is invalid! Please try again!</RTFactionNameInvalid>
+    <RTFactionWaitCreate>Waiting for faction creation</RTFactionWaitCreate>
+    <RTFactionCreateNewName>New Faction Name</RTFactionCreateNewName>
+    <RTFactionCreateNewNameDesc>Input the name of your new faction</RTFactionCreateNewNameDesc>
+    <RTFactionNameAlreadyUsed>That faction name is already in use!</RTFactionNameAlreadyUsed>
+    <RTFactionCreated>Your faction has been created!</RTFactionCreated>
+    <RTFactionCreatedDesc>You can now access its menu through the same button</RTFactionCreatedDesc>
+    <RTFactionNotAMember>You are not a member of any faction! Create one?</RTFactionNotAMember>
+    <RTFactionDemote>Demote</RTFactionDemote>
+    <RTFactionDemoteSure>Are you sure you want to demote this player?</RTFactionDemoteSure>
+    <RTFactionPromote>Promote</RTFactionPromote>
+    <RTFactionPromoteSure>Are you sure you want to promote this player?</RTFactionPromoteSure>
+    <RTFactionKick>Kick</RTFactionKick>
+    <RTFactionKickSure>Are you sure you want to kick this player?</RTFactionKickSure>
+    <RTFactionYouKicked>You have been kicked from your faction!</RTFactionYouKicked>
+    <RTFactionPowers>Powers</RTFactionPowers>
+    <RTFactionNoPower>You don't have enough power for this action!</RTFactionNoPower>
+    <RTFactionPowerManagement>Power Management Menu</RTFactionPowerManagement>
+    <RTFactionPowerManagementDesc>Choose what you want to manage</RTFactionPowerManagementDesc>
+    <RTFactionMemberManagement>Management Menu</RTFactionMemberManagement>
+    <RTFactionMemberManagementDesc>Choose what you want to manage</RTFactionMemberManagementDesc>
+    <RTFactionInviteSure>Do you want to invite this player to your faction?</RTFactionInviteSure>
+    <RTFactionInvitedTo>Invited to {0}, accept?</RTFactionInvitedTo>
+    <RTFactionAdminProtection>You can't do this action as a faction admin!</RTFactionAdminProtection>
+    
+    <!-- Aid -->
+    
+    <RTAidButton>Aid</RTAidButton>
+    <RTAidButtonDesc>Send aid to this settlement</RTAidButtonDesc>
+    <RTAidMenu>Aid menu</RTAidMenu>
+    <RTAidMenuDesc>Select the pawn you want to send for aid</RTAidMenuDesc>
+    <RTAidSent>Sent aid</RTAidSent>
+    <RTAidSentDesc>You have sent aid towards a settlement! The owner will receive the news soon</RTAidSentDesc>
+    <RTAidReceivedSure>You are receiving aid, accept?</RTAidReceivedSure>
+    <RTAidReceived>Received aid</RTAidReceived>
+    <RTAidReceivedDesc>You have received aid from a player! The pawn should come to help soon</RTAidReceivedDesc>
+    
+    <!-- Events -->
+    
+    <RTEventMenu>Send Event</RTEventMenu>
+    <RTEventMenuDesc>Send an event to this settlement</RTEventMenuDesc>
+    <RTEventSend>This event will cost you {0} silver, continue?"</RTEventSend>
+    <RTEventSelector>Event Selector</RTEventSelector>
+    <RTEventSelectorDesc>Choose the even you want to send</RTEventSelectorDesc>
+    <RTEventNotEnoughSilver>You do not have enough silver for this action!</RTEventNotEnoughSilver>
+    <RTEventWait>Waiting for event</RTEventWait>
+    <RTEventLetterSend>Event - {0}</RTEventLetterSend>
+    <RTEventSended>Event sent!</RTEventSended>
+    <RTEventSendedDesc>Your event has been sent!</RTEventSendedDesc>
+    
+    <!-- GoodWill -->
+    
+    <RTGoodWillMenu>Change Goodwill</RTGoodWillMenu>
+    <RTGoodWillSettlementButtonDesc>Change the goodwill of this settlement</RTGoodWillSettlementButtonDesc>
+    <RTGoodWillSiteButtonDesc>Change the goodwill of this site</RTGoodWillSiteButtonDesc>
+    <RTGoodWillSettlementMenuDesc>Set settlement's goodwill to</RTGoodWillSettlementMenuDesc>
+    <RTGoodWillSiteMenuDesc>Set site's goodwill to</RTGoodWillSiteMenuDesc>
+    <RTEnemy>Enemy</RTEnemy>
+    <RTNeutral>Neutral</RTNeutral>
+    <RTAlly>Ally</RTAlly>
+    <RTGoodWillChanging>Changing settlement goodwill</RTGoodWillChanging>
+    <RTGoodWillAlreadyNeutral>Chosen settlement is already marked as neutral!</RTGoodWillAlreadyNeutral>
+    <RTGoodWillAlreadyEnemy>Chosen settlement is already marked as enemy!</RTGoodWillAlreadyEnemy>
+    <RTGoodWillAlreadyAlly>Chosen settlement is already marked as ally!</RTGoodWillAlreadyAlly>
+    
+    <!-- Activities -->
+
+    <RTOnline>[BETA] Online</RTOnline>
+    <RTOffline>Offline</RTOffline>
+    <RTAlreadyIRT>You are already in a real time activity!</RTAlreadyIRT>
+    <RTVisitedBy>Visited by {0}, accept?</RTVisitedBy>
+    <RTPlayerRejected>Player rejected the activity!</RTPlayerRejected>
+    <RTPlayerMustOnline>Player must be online!</RTPlayerMustOnline>
+    <RTOnlineEnded>Online activity ended</RTOnlineEnded>
+    
+    <RTSpyMenu>Spy Settlement</RTSpyMenu>
+    <RTSpyMenuDesc>Spy this settlement</RTSpyMenuDesc>
+    <RTSpyingCost>Spying a settlement costs {0} silver, continue?</RTSpyingCost>
+    <RTMapWait>Waiting for map</RTMapWait>
+    <RTMapUnknownModData>Map received but contains unknown mod data, continue?</RTMapUnknownModData>
+    
+    <RTRaidButton>Raid Settlement</RTRaidButton>
+    <RTRaidButtonDesc>Raid this settlement</RTRaidButtonDesc>
+    <RTRaidMenu>Raid Mode</RTRaidMenu>
+    <RTRaidMenuDesc>Please choose your raid mode</RTRaidMenuDesc>
+    <RTRaidedBy>Raided by {0}, accept?</RTRaidedBy>
+    
+    <RTVisitSettlementButton>Visit Settlement</RTVisitSettlementButton>
+    <RTVisitSettlementButtonDesc>Visit this settlement</RTVisitSettlementButtonDesc>
+    <RTVisitSettlementMenu>Visit Mode</RTVisitSettlementMenu>
+    <RTVisitSettlementMenuDesc>Please choose your visit mode</RTVisitSettlementMenuDesc>
+    
+    <!-- World -->
+    <RTFormCaravan>Form a new caravan</RTFormCaravan>
+    <RTSettlementName>{0}'s settlement</RTSettlementName>
+    
+    <RTRoadBuilder>Road Builder</RTRoadBuilder>
+    <RTRoadBuilderDesc>Build and destroy roads</RTRoadBuilderDesc>
+    <RTRoadManager>Road manager</RTRoadManager>
+    <RTRoadManagerDesc>Select the action you want to do</RTRoadManagerDesc>
+    <RTRoadBuild>Build</RTRoadBuild>
+    <RTRoadDestroy>Destroy</RTRoadDestroy>
+    
+    
+    <!-- Sites -->
+    <RTBuildPersonalSite>Build Personal Site</RTBuildPersonalSite>
+    <RTBuildPersonalSiteDesc>Build an utility site for your convenience</RTBuildPersonalSiteDesc>
+    <RTBuildablePersonalSites>Buildable Personal Sites</RTBuildablePersonalSites>
+    <RTBuildFactionSite>Build Faction Site</RTBuildFactionSite>
+    <RTBuildFactionSiteDesc>Build an utility site for your faction</RTBuildFactionSiteDesc>
+    <RTBuildableFactionSites>Buildable Faction Sites</RTBuildableFactionSites>
+    <RTAvailableToBuildSites>Available sites to build</RTAvailableToBuildSites>
+    <RTPersonalSiteAccess>Access Personal Site</RTPersonalSiteAccess>
+    <RTPersonalSiteAccessDesc>Access your personal site</RTPersonalSiteAccessDesc>
+    <RTSiteBuilt>The desired site has been built!</RTSiteBuilt>
+    <RTWaitSiteInfo>Waiting for site information</RTWaitSiteInfo>
+    <RTSiteNoCurrentWorker>There is no current worker on this site, send?</RTSiteNoCurrentWorker>
+    <RTSiteHasWorker>You have a worker on this site, retrieve?</RTSiteHasWorker>
+    <RTSiteWaitingWorker>Waiting for site worker</RTSiteWaitingWorker>
+    <RTSiteWorkerRecovered>Worker have been recovered</RTSiteWorkerRecovered>
+    <RTSitePawnSelectionMenu>Pawn Selection</RTSitePawnSelectionMenu>
+    <RTSitePawnSelectionMenuDesc>Select the pawn you wish to send</RTSitePawnSelectionMenuDesc>
+    <RTSiteDestroy>Destroy Site</RTSiteDestroy>
+    <RTSiteDestroyDesc>Destroy this site</RTSiteDestroyDesc>
+    <RTSiteDestroySure>Are you sure you want to destroy this site?</RTSiteDestroySure>
+    <RTSiteWorkerInside>The site has a worker inside!</RTSiteWorkerInside>
+    <RTSiteRewards>Site Rewards</RTSiteRewards>
+    <RTSiteRewardsDesc>You have received site rewards!</RTSiteRewardsDesc>
+    <RTSiteCost>This site will cost you {0} silver, continue?</RTSiteCost>
+    <RTSiteBuildingWait>Waiting for building</RTSiteBuildingWait>
+</LanguageData>

@@ -39,8 +39,8 @@ namespace GameClient
         {
             DialogManager.dialogMarketListing = this;
 
-            title = "RTDialogGlobalMarket".Translate();
-            description = "RTDialogSilverAvailable".Translate(RimworldManager.GetSilverInMap(settlementMap));
+            title = "RTGlobalMarket".Translate();
+            description = "RTAvailableSilver".Translate(RimworldManager.GetSilverInMap(settlementMap));
 
             this.elements = elements;
             this.actionClick = actionClick;
@@ -79,7 +79,7 @@ namespace GameClient
             {
                 if (Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction)) == null)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTradeNoOne".Translate()));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTNoOneToTrade".Translate()));
                 }
                 else { MarketManager.RequestAddStock(); }
 
@@ -147,12 +147,12 @@ namespace GameClient
                 {
                     if (int.Parse(DialogManager.dialog1ResultOne) <= 0)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTradeQualityError".Translate()));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTTradeQuantityError".Translate()));
                     }
 
                     else if (toDisplay.stackCount < int.Parse(DialogManager.dialog1ResultOne))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTradeTooMuch".Translate()));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTTradeTooMuch".Translate()));
                     }
 
                     else
@@ -163,10 +163,10 @@ namespace GameClient
                             actionClick?.Invoke();
                             Close();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTradeNotEnoughSilver".Translate()));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
                     }
                 };
-                DialogManager.PushNewDialog(new RT_Dialog_1Input("RTDialogRequestQuantity".Translate(), "RTDialogRequestQuantityType".Translate(), toDo, null));
+                DialogManager.PushNewDialog(new RT_Dialog_1Input("RTRequestQuantity".Translate(), "RTDialogRequestQuantityDesc".Translate(), toDo, null));
             }
         }
     }

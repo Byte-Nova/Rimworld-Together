@@ -76,7 +76,7 @@ namespace GameClient
             Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("RTAidError".Translate()));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
         }
 
         private static void AcceptAid(AidData data)

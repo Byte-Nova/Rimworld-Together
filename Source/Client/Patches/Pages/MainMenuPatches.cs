@@ -40,7 +40,7 @@ namespace GameClient
                         if (string.IsNullOrWhiteSpace(Network.port)) isInvalid = true;
                         if (string.IsNullOrWhiteSpace(ClientValues.username)) isInvalid = true;
 
-                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogJoinToUse".Translate()));
+                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("RTFastJoinUnAvailable".Translate()));
                         else ShowQuickConnectFloatMenu();
                     }
                 }
@@ -84,7 +84,7 @@ namespace GameClient
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
                 List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
                 {
-                    Tuple.Create($"Join '{Network.ip}:{Network.port}' as '{ClientValues.username}'", 0),
+                    Tuple.Create("RTFastJoin".Translate(Network.ip, Network.port, ClientValues.username), 0),
                 };
 
                 foreach (Tuple<string, int> tuple in quickConnectTuples)

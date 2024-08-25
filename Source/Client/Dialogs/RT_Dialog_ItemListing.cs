@@ -53,12 +53,12 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - buttonY - 45));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogTransferAccept".Translate()))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferAccept".Translate()))
             {
                 OnAccept();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogTransferCancel".Translate()))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferCancel".Translate()))
             {
                 OnReject();
             }
@@ -136,7 +136,7 @@ namespace GameClient
 
                     else
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTransferError".Translate()));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferError".Translate()));
                         TransferManager.RejectRequest(transferMode);
                     }
                 }
@@ -159,7 +159,7 @@ namespace GameClient
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTDialogTransferAcceptSure".Translate(),
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferAcceptSure".Translate(),
                 r1, null));
         }
 
@@ -172,7 +172,7 @@ namespace GameClient
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTDialogTransferCancelSure".Translate(),
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferCancelSure".Translate(),
                 r1, null));
         }
     }

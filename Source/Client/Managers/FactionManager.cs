@@ -52,7 +52,7 @@ namespace GameClient
         {
             Action r3 = delegate
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTFactionMemberList".Translate()));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTFactionMemberWait".Translate()));
 
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.manifestMode = FactionManifestMode.MemberList;

@@ -52,7 +52,7 @@ namespace GameClient
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), ""))
                 {
-                    if (Network.state == NetworkState.Disconnected) DialogManager.PushNewDialog(new RT_Dialog_Error("You need to be in a server to use this!"));
+                    if (Network.state == NetworkState.Disconnected) DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogNeedInServer".Translate()));
                     else
                     {
                         Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
@@ -65,7 +65,7 @@ namespace GameClient
                             Network.listener.EnqueuePacket(packet);
                         };
 
-                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogDelete".Translate(), r1, null);
+                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogDeleteConfirm".Translate(), r1, null);
                         DialogManager.PushNewDialog(d1);
                     }
                 }
@@ -82,7 +82,7 @@ namespace GameClient
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
                 GUI.color = new Color(1f, 0.3f, 0.35f);
-                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "Delete Save"))
+                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "RTDialogDeleteSave".Translate()))
                 {
 
                 }

@@ -26,7 +26,7 @@ namespace GameClient
         {
             if (Network.state == NetworkState.Connected)
             {
-                tabTitle = $"Player Bases [{PlayerSettlementManager.playerSettlements.Count()}]";
+                tabTitle = "RTBases".Translate(PlayerSettlementManager.playerSettlements.Count());
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -79,7 +79,7 @@ namespace GameClient
             float buttonX = 47f;
             float buttonY = 30f;
             Widgets.Label(fixedRect, $"{playerSettlement.Name} - {playerSettlement.Tile}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.y), new Vector2(buttonX, buttonY)), "Focus"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.y), new Vector2(buttonX, buttonY)), "RTFocus".Translate()))
             {
                 foreach (Settlement settlement in Find.World.worldObjects.Settlements)
                 {
