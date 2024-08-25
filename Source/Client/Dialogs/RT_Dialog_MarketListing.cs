@@ -39,8 +39,8 @@ namespace GameClient
         {
             DialogManager.dialogMarketListing = this;
 
-            title = "Global Market";
-            description = $"Silver available for trade: {RimworldManager.GetSilverInMap(settlementMap)}";
+            title = "RTDialogGlobalMarket".Translate();
+            description = "RTDialogSilverAvailable".Translate(RimworldManager.GetSilverInMap(settlementMap));
 
             this.elements = elements;
             this.actionClick = actionClick;
@@ -75,11 +75,11 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogNew".Translate()))
             {
                 if (Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction)) == null)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("There's no one in the server to trade with!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTradeNoOne".Translate()));
                 }
                 else { MarketManager.RequestAddStock(); }
 
@@ -87,12 +87,12 @@ namespace GameClient
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogTradeReload".Translate()))
             {
                 MarketManager.RequestReloadStock();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close")) 
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogClose".Translate())) 
             {
                 DialogManager.dialogMarketListing = null;
                 ClientValues.ToggleTransfer(false);
@@ -139,7 +139,7 @@ namespace GameClient
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
             
             Widgets.Label(fixedRect, $"{toDisplay.Label.CapitalizeFirst()} > ${toDisplay.MarketValue}/u");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "RTDialogSelect".Translate()))
             {
                 DialogManager.dialogMarketListingResult = index;
 
@@ -147,12 +147,12 @@ namespace GameClient
                 {
                     if (int.Parse(DialogManager.dialog1ResultOne) <= 0)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You are trying to request an invalid quantity!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTradeQualityError".Translate()));
                     }
 
                     else if (toDisplay.stackCount < int.Parse(DialogManager.dialog1ResultOne))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You are trying to request more than is available!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTradeTooMuch".Translate()));
                     }
 
                     else
@@ -163,10 +163,10 @@ namespace GameClient
                             actionClick?.Invoke();
                             Close();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogTradeNotEnoughSilver".Translate()));
                     }
                 };
-                DialogManager.PushNewDialog(new RT_Dialog_1Input("Quantity to request", "Type the quantity you want to request", toDo, null));
+                DialogManager.PushNewDialog(new RT_Dialog_1Input("RTDialogRequestQuantity".Translate(), "RTDialogRequestQuantityType".Translate(), toDo, null));
             }
         }
     }

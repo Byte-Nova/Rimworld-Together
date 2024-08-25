@@ -29,7 +29,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.enemyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as enemy!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RTGoodWillAlreadyEnemy".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Enemy);
@@ -39,7 +39,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.neutralPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as neutral!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RTGoodWillAlreadyNeutral".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Neutral);
@@ -49,7 +49,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.allyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as ally!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RTGoodWillAlreadyAlly".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Ally);
@@ -67,7 +67,7 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             Network.listener.EnqueuePacket(packet);
 
-            RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
+            RT_Dialog_Wait d1 = new RT_Dialog_Wait("RTGoodWillChanging".Translate());
             DialogManager.PushNewDialog(d1);
         }
 

@@ -90,13 +90,13 @@ namespace GameClient
 
         public static void RequestOnlineActivity(OnlineActivityType toRequest)
         {
-            if (ClientValues.currentRealTimeEvent != OnlineActivityType.None) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already in a real time activity!"));
+            if (ClientValues.currentRealTimeEvent != OnlineActivityType.None) DialogManager.PushNewDialog(new RT_Dialog_Error("RTAlreadyIRT"));
             else
             {
                 OnlineManagerHelper.ClearAllQueues();
                 ClientValues.ToggleRealTimeHost(false);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogServerWait".Translate()));
 
                 OnlineActivityData data = new OnlineActivityData();
                 data.activityStepMode = OnlineActivityStepMode.Request;
@@ -174,8 +174,8 @@ namespace GameClient
             };
 
             RT_Dialog_YesNo promptDialog = null;
-            if (data.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo($"Visited by {data.otherPlayerName}, accept?", r1, r2);
-            else if (data.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo($"Raided by {data.otherPlayerName}, accept?", r1, r2);
+            if (data.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo("RTVisitedBy".Translate(data.otherPlayerName), r1, r2);
+            else if (data.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo("RTRaidedBy".Translate(data.otherPlayerName), r1, r2);
 
             DialogManager.PushNewDialog(promptDialog);
         }
@@ -187,19 +187,19 @@ namespace GameClient
             Action r1 = delegate { JoinMap(visitData.mapData, visitData); };
             Action r2 = delegate { RequestStopOnlineActivity(); };
             if (!ModManager.CheckIfMapHasConflictingMods(visitData.mapData)) r1.Invoke();
-            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, r2));
+            else DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTMapUnknownModData".Translate(), r1, r2));
         }
 
         private static void OnActivityReject()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the activity!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerRejected".Translate()));
         }
 
         private static void OnActivityUnavailable()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player must be online!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerMustOnline".Translate()));
         }
 
         private static void OnActivityStop()
@@ -220,7 +220,7 @@ namespace GameClient
 
                 ClientValues.ToggleOnlineFunction(OnlineActivityType.None);
 
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Online activity ended"));
+                DialogManager.PushNewDialog(new RT_Dialog_OK("RTOnlineEnded".Translate()));
             }
         }
     }

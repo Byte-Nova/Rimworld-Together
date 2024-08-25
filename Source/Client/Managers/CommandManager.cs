@@ -40,19 +40,19 @@ namespace GameClient
         {
             ServerValues.isAdmin = true;
             ClientValues.ManageDevOptions();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("You are now an admin!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RTCommandOPPlayer".Translate()));
         }
 
         private static void OnDeopCommand()
         {
             ServerValues.isAdmin = false;
             ClientValues.ManageDevOptions();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("You are no longer an admin!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RTCommandDEOPPlayer".Translate()));
         }
 
         private static void OnBroadcastCommand(CommandData commandData)
         {
-            RimworldManager.GenerateLetter("Server Broadcast", commandData.commandDetails, LetterDefOf.PositiveEvent);
+            RimworldManager.GenerateLetter("RTCommandServerBroadcast".Translate(), commandData.commandDetails, LetterDefOf.PositiveEvent);
         }
 
         private static void OnForceSaveCommand()

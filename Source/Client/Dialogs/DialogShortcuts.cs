@@ -10,27 +10,27 @@ namespace GameClient
         public static void ShowLoginOrRegisterDialogs()
         {
             RT_Dialog_3Input a1 = new RT_Dialog_3Input(
-                "New User",
-                "Username",
-                "Password",
-                "Confirm Password",
+                "RTDialogLoginNewUser".Translate(),
+                "RTDialogLoginUsername".Translate(),
+                "RTDialogPassword".Translate(),
+                "RTDialogConfirmPassword".Translate(),
                 delegate { ParseRegisterUser(); },
                 delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
                 false, true, true);
 
             RT_Dialog_2Input a2 = new RT_Dialog_2Input(
-                "Existing User",
-                "Username",
-                "Password",
+                "RTDialogLoginExistingUser".Translate(),
+                "RTDialogLoginUsername".Translate(),
+                "RTDialogPassword".Translate(),
                 delegate { ParseLoginUser(); },
                 delegate { DialogManager.PushNewDialog(DialogManager.dialog2Button); },
                 false, true);
 
             RT_Dialog_2Button d1 = new RT_Dialog_2Button(
-                "Login Select",
-                "Choose your login type",
-                "New User",
-                "Existing User",
+                "RTDialogLoginSelect".Translate(),
+                "RTDialogLoginSelectDesc".Translate(),
+                "RTDialogLoginNewUser".Translate(),
+                "RTDialogLoginExistingUser".Translate(),
                 delegate { DialogManager.PushNewDialog(a1); },
                 delegate 
                 {
@@ -51,7 +51,7 @@ namespace GameClient
         public static void ShowConnectDialogs()
         {
             RT_Dialog_2Input dialog = new RT_Dialog_2Input(
-            "Connection Details", "IP", "Port",
+            "RTDialogConnectionDetails".Translate(), "RTDialogIP".Translate(), "RTDialogPort".Translate(),
             delegate { ParseConnectionDetails(false); },
             null);
 
@@ -101,13 +101,13 @@ namespace GameClient
                     PreferenceManager.SaveConnectionData(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
                 }
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogTryingToConnect".Translate()));
                 Network.StartConnection();
             }
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!");
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RTDialogInvalidServer".Translate());
                 DialogManager.PushNewDialog(d1);
             }
         }
@@ -133,12 +133,12 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), loginData);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for login response"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogLoginWait".Translate()));
             }
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Login details are invalid! Please try again!",
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RTDialogLoginInvalid".Translate(),
                     delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
                 DialogManager.PushNewDialog(d1);
@@ -168,12 +168,12 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RegisterClientPacket), loginData);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for register response"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogRegisterWait".Translate()));
             }
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Register details are invalid! Please try again!",
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RTDialogRegisterInvalid".Translate(),
                     delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
                 DialogManager.PushNewDialog(d1);

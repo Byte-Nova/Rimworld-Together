@@ -229,8 +229,8 @@ namespace GameClient
         {
             if (hasRoadOnTile)
             {
-                RT_Dialog_2Button d1 = new RT_Dialog_2Button("Road manager", "Select the action you want to do",
-                    "Build", "Destroy", delegate { ShowRoadBuildDialog(neighborTiles); }, delegate { ShowRoadDestroyDialog(neighborTiles); }, null);
+                RT_Dialog_2Button d1 = new RT_Dialog_2Button("RTRoadManager".Translate(), "RTRoadManagerDesc".Translate(),
+                    "RTRoadBuild".Translate(), "RTRoadDestroy".Translate(), delegate { ShowRoadBuildDialog(neighborTiles); }, delegate { ShowRoadDestroyDialog(neighborTiles); }, null);
 
                 DialogManager.PushNewDialog(d1);
             }

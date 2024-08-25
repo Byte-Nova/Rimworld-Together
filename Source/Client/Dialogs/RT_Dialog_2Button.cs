@@ -69,7 +69,7 @@ namespace GameClient
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2 + buttonX * 0.125f, rect.yMax - buttonY), new Vector2(buttonX * 0.75f, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2 + buttonX * 0.125f, rect.yMax - buttonY), new Vector2(buttonX * 0.75f, buttonY)), "RTDialogCancel".Translate()))
             {
                 if (actionCancel != null) actionCancel.Invoke();
                 Close();

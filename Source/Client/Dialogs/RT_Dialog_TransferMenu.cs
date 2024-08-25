@@ -17,8 +17,8 @@ namespace GameClient
         public override Vector2 InitialSize => new Vector2(600f, 512f);
         private Vector2 scrollPosition = Vector2.zero;
 
-        public readonly string title = "Transfer Menu";
-        public readonly string description = "Select the items you wish to transfer";
+        public readonly string title = "RTDialogTransferMenu".Translate();
+        public readonly string description = "RTDialogTransferSelect".Translate();
 
         private readonly float buttonX = 100f;
         private readonly float buttonY = 37f;
@@ -83,9 +83,9 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 55f, rect.width, rect.height - buttonY - 65));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept")) OnAccept();
-            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reset")) OnReset();
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel")) OnCancel();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferAccept".Translate())) OnAccept();
+            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferReset".Translate())) OnReset();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferCancel".Translate())) OnCancel();
         }
 
         private void FillMainRect(Rect mainRect)
@@ -132,10 +132,10 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_2Button d2 = new RT_Dialog_2Button("Transfer Type", "Please choose the transfer type to use",
-                    "Gift", "Trade", r1, r2, null);
+                RT_Dialog_2Button d2 = new RT_Dialog_2Button("RTDialogTransferType".Translate(), "RTDialogTransferTypeDesc".Translate(),
+                    "RTDialogTransferGift".Translate(), "RTDialogTransferTrade".Translate(), r1, r2, null);
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogTransferContinue".Translate(),
                     delegate { DialogManager.PushNewDialog(d2); }, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -150,7 +150,7 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogTransferContinue".Translate(),
                     r1, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -165,7 +165,7 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogTransferContinue".Translate(),
                     r1, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -195,7 +195,7 @@ namespace GameClient
 
             if (transferLocation == TransferLocation.Settlement)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTDialogTransferCancelSure".Translate(),
                     r1, null));
             }
             else r1.Invoke();

@@ -45,7 +45,7 @@ namespace GameClient
                 {
                     if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, spyCost))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
                     }
 
                     else
@@ -55,7 +55,7 @@ namespace GameClient
                     }
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Spying a settlement costs {spyCost} silver, continue?", r1, null);
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTSpyingCost".Translate(spyCost), r1, null);
                 DialogManager.PushNewDialog(d1);
             }
             else SendRequest();
@@ -63,7 +63,7 @@ namespace GameClient
 
         private static void SendRequest()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTMapWait".Translate()));
 
             OfflineActivityData data = new OfflineActivityData();
             data.activityStepMode = OfflineActivityStepMode.Request;
@@ -87,7 +87,7 @@ namespace GameClient
 
             DialogManager.PopWaitDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("This user is currently unavailable!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTEventPlayerNotAvailable".Translate()));
         }
 
         //Executes after the action is unavailable
@@ -104,7 +104,7 @@ namespace GameClient
 
             DialogManager.PopWaitDialog();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("This user is currently unavailable!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTEventPlayerNotAvailable".Translate()));
         }
 
         //Executes when offline visit is accepted
@@ -123,7 +123,7 @@ namespace GameClient
 
             if (ModManager.CheckIfMapHasConflictingMods(mapData))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTMapUnknownModData".Translate(), r1, null));
             }
             else r1.Invoke();
         }

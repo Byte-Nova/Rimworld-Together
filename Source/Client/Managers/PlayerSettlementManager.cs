@@ -41,7 +41,7 @@ namespace GameClient
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                     settlement.Tile = settlementFile.tile;
-                    settlement.Name = $"{settlementFile.owner}'s settlement";
+                    settlement.Name = "RTSettlementName".Translate(settlementFile.owner);
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(settlementFile.goodwill));
 
                     playerSettlements.Add(settlement);
@@ -67,7 +67,7 @@ namespace GameClient
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                     settlement.Tile = newSettlementJSON.tile;
-                    settlement.Name = $"{newSettlementJSON.owner}'s settlement";
+                    settlement.Name = "RTSettlementName".Translate(newSettlementJSON.owner);
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(newSettlementJSON.goodwill));
 
                     playerSettlements.Add(settlement);

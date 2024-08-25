@@ -40,7 +40,7 @@ namespace GameClient
                         if (string.IsNullOrWhiteSpace(Network.port)) isInvalid = true;
                         if (string.IsNullOrWhiteSpace(ClientValues.username)) isInvalid = true;
 
-                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
+                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("RTDialogJoinToUse".Translate()));
                         else ShowQuickConnectFloatMenu();
                     }
                 }
@@ -55,7 +55,7 @@ namespace GameClient
                 {
                     Vector2 buttonSize = new Vector2(170f, 45f);
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y + 0.5f);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Play Together"))
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RTMainMenuButton".Translate()))
                     {
 
                     }
@@ -93,7 +93,7 @@ namespace GameClient
                     {
                         ClientValues.ToggleQuickConnecting(true);
 
-                        DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogTryingToConnect".Translate()));
                         Network.StartConnection();
 
                         if (Network.state == NetworkState.Connected)

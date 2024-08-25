@@ -16,23 +16,23 @@ namespace GameClient
             switch(loginData.tryResponse)
             {
                 case LoginResponse.InvalidLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Login details are invalid! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogLoginInvalid".Translate()));
                     break;
 
                 case LoginResponse.BannedLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You are banned from this server!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogBanned".Translate()));
                     break;
 
                 case LoginResponse.RegisterInUse:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("That username is already in use! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogUsernameAlreadyUsed".Translate()));
                     break;
 
                 case LoginResponse.RegisterError:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("There was an error registering! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogRegisterError".Translate()));
                     break;
 
                 case LoginResponse.ExtraLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You connected from another place!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogAlreadyConnected".Translate()));
                     break;
 
                 case LoginResponse.WrongMods:
@@ -40,19 +40,19 @@ namespace GameClient
                     break;
 
                 case LoginResponse.ServerFull:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Server is full!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogServerFull".Translate()));
                     break;
 
                 case LoginResponse.Whitelist:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Server is whitelisted!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogWhitelisted".Translate()));
                     break;
 
                 case LoginResponse.WrongVersion:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginData.extraDetails[0]}"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogVersionMismatch".Translate(loginData.extraDetails[0])));
                     break;
 
                 case LoginResponse.NoWorld:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Server is currently being set up! Join again later!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogServerBeingSetup".Translate()));
                     break;
             }
         }

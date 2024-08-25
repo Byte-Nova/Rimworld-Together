@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTFactionMemberList>Waiting for member list</RTFactionMemberList>
+    <RTFactionDelete>Delete</RTFactionDelete>
+    <RTFactionWaitDelete>Waiting for faction deletion</RTFactionWaitDelete>
+    <RTFactionDeleteSure>Are you sure you want to DELETE your faction?</RTFactionDeleteSure>
+    <RTFactionDeleted>Your faction has been deleted!</RTFactionDeleted>
+    <RTFactionLeave>Leave</RTFactionLeave>
+    <RTFactionLeaveSure>Are you sure you want to LEAVE your faction?</RTFactionLeaveSure>
+    <RTFactionManagement>Faction Management</RTFactionManagement>
+    <RTFactionManagementDesc>Manage your faction from here</RTFactionManagementDesc>
+    <RTFactionMembers>Members</RTFactionMembers>
+    <RTFactionMemberMenu>Faction Members</RTFactionMemberMenu>
+    <RTFactionMemberMenuDesc>"All faction members are depicted here</RTFactionMemberMenuDesc>
+    <RTFactionNameInvalid>Faction name is invalid! Please try again!</RTFactionNameInvalid>
+    <RTFactionWaitCreate>Waiting for faction creation</RTFactionWaitCreate>
+    <RTFactionCreateNewName>New Faction Name</RTFactionCreateNewName>
+    <RTFactionCreateNewNameDesc>Input the name of your new faction</RTFactionCreateNewNameDesc>
+    <RTFactionNameAlreadyUsed>That faction name is already in use!</RTFactionNameAlreadyUsed>
+    <RTFactionCreated>Your faction has been created!</RTFactionCreated>
+    <RTFactionCreatedDesc>You can now access its menu through the same button</RTFactionCreatedDesc>
+    <RTFactionNotAMember>You are not a member of any faction! Create one?</RTFactionNotAMember>
+    <RTFactionDemote>Demote</RTFactionDemote>
+    <RTFactionDemoteSure>Are you sure you want to demote this player?</RTFactionDemoteSure>
+    <RTFactionPromote>Promote</RTFactionPromote>
+    <RTFactionPromoteSure>Are you sure you want to promote this player?</RTFactionPromoteSure>
+    <RTFactionKick>Kick</RTFactionKick>
+    <RTFactionKickSure>Are you sure you want to kick this player?</RTFactionKickSure>
+    <RTFactionYouKicked>You have been kicked from your faction!</RTFactionYouKicked>
+    <RTFactionPowers>Powers</RTFactionPowers>
+    <RTFactionNoPower>You don't have enough power for this action!</RTFactionNoPower>
+    <RTFactionPowerManagement>Power Management Menu</RTFactionPowerManagement>
+    <RTFactionPowerManagementDesc>Choose what you want to manage</RTFactionPowerManagementDesc>
+    <RTFactionMemberManagement>Management Menu</RTFactionMemberManagement>
+    <RTFactionMemberManagementDesc>Choose what you want to manage</RTFactionMemberManagementDesc>
+    <RTFactionInviteSure>Do you want to invite this player to your faction?</RTFactionInviteSure>
+    <RTFactionInvitedTo>Invited to {0}, accept?</RTFactionInvitedTo>
+    <RTFactionAdminProtection>You can't do this action as a faction admin!</RTFactionAdminProtection>
+    
+    <RTAidAcceptSure>You are receiving aid, accept?</RTAidAcceptSure>
+    <RTAidSent>Sent aid</RTAidSent>
+    <RTAidSentDesc>You have sent aid towards a settlement! The owner will receive the news soon</RTAidSentDesc>
+    <RTAidError>Player is not currently available!</RTAidError>
+    <RTAidReceived>Received aid</RTAidReceived>
+    <RTAidReceivedDesc>You have received aid from a player! The pawn should come to help soon</RTAidReceivedDesc>
+    
+    <RTCommandOPPlayer>You are now an admin!</RTCommandOPPlayer>
+    <RTCommandDEOPPlayer>You are no longer an admin!</RTCommandDEOPPlayer>
+    <RTCommandServerBroadcast>Server Broadcast</RTCommandServerBroadcast>
+    
+    <RTDisconnectProgressSaved>Your progress has been saved!</RTDisconnectProgressSaved>
+    <RTDisconnectSave>Connection lost. Save game?</RTDisconnectSave>
+    
+    <RTEventSend>This event will cost you {EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost} silver, continue?"</RTEventSend>
+    <RTEventSelector>Event Selector</RTEventSelector>
+    <RTEventSelectorDesc>Choose the even you want to send</RTEventSelectorDesc>
+    <RTEventNotEnoughSilver>You do not have enough silver for this action!</RTEventNotEnoughSilver>
+    <RTEventWait>Waiting for event</RTEventWait>
+    <RTEventLetterSend>Event - {0}</RTEventLetterSend>
+    <RTEventSended>Event sent!</RTEventSended>
+    <RTEventSendedDesc>Your event has been sent!</RTEventSendedDesc>
+    <RTEventPlayerNotAvailable>Player is not currently available!</RTEventPlayerNotAvailable>
+    
+    <RTGoodWillChanging>Changing settlement goodwill</RTGoodWillChanging>
+    <RTGoodWillAlreadyNeutral>Chosen settlement is already marked as neutral!</RTGoodWillAlreadyNeutral>
+    <RTGoodWillAlreadyEnemy>Chosen settlement is already marked as enemy!</RTGoodWillAlreadyEnemy>
+    <RTGoodWillAlreadyAlly>Chosen settlement is already marked as ally!</RTGoodWillAlreadyAlly>
+    
+    <RTModMismatchMenu>Mod Conflicts</RTModMismatchMenu>
+    <RTModMismatchMenuDesc>The following mods are conflicting with the server</RTModMismatchMenuDesc>
+    
+    <RTNotEnoughSilver>You do not have enough silver!</RTNotEnoughSilver>
+    <RTSpyingCost>Spying a settlement costs {0} silver, continue?</RTSpyingCost>
+    <RTMapWait>Waiting for map</RTMapWait>
+    <RTMapUnknownModData>Map received but contains unknown mod data, continue?</RTMapUnknownModData>
+    
+    <RTAlreadyIRT>You are already in a real time activity!</RTAlreadyIRT>
+    <RTVisitedBy>Visited by {0}, accept?</RTVisitedBy>
+    <RTRaidedBy>Raided by {data.otherPlayerName}, accept?</RTRaidedBy>
+    <RTPlayerRejected>Player rejected the activity!</RTPlayerRejected>
+    <RTPlayerMustOnline>Player must be online!</RTPlayerMustOnline>
+    <RTOnlineEnded>Online activity ended</RTOnlineEnded>
+    
+    <RTSettlementName>{0}'s settlement</RTSettlementName>
+    
+    <RTRoadManager>Road manager</RTRoadManager>
+    <RTRoadManagerDesc>Select the action you want to do</RTRoadManagerDesc>
+    <RTRoadBuild>Build</RTRoadBuild>
+    <RTRoadDestroy>Destroy</RTRoadDestroy>
+    
+    <RTSiteBuilt>The desired site has been built!</RTSiteBuilt>
+    <RTWaitSiteInfo>Waiting for site information</RTWaitSiteInfo>
+    <RTSiteNoCurrentWorker>There is no current worker on this site, send?</RTSiteNoCurrentWorker>
+    <RTSiteCurrentWorker>You have a worker on this site, retrieve?</RTSiteCurrentWorker>
+    <RTSiteWaitingWorker>Waiting for site worker</RTSiteWaitingWorker>
+    <RTSiteWorkerRecovered>Worker have been recovered</RTSiteWorkerRecovered>
+    <RTSitePawnSelectionMenu>Pawn Selection</RTSitePawnSelectionMenu>
+    <RTSitePawnSelectionMenuDesc>Select the pawn you wish to send</RTSitePawnSelectionMenuDesc>
+    <RTSiteDestroySure>Are you sure you want to destroy this site?</RTSiteDestroySure>
+    <RTSiteWorkerInside>The site has a worker inside!</RTSiteWorkerInside>
+    <RTSiteRewards>Site Rewards</RTSiteRewards>
+    <RTSiteRewardsDesc>You have received site rewards!</RTSiteRewardsDesc>
+    <RTSiteCost>This site will cost you {0} silver, continue?</RTSiteCost>
+    <RTSiteBuildingWait>Waiting for building</RTSiteBuildingWait>
+</LanguageData>

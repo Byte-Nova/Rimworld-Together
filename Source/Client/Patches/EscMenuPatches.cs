@@ -19,7 +19,7 @@ namespace GameClient
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 2, buttonSize.x, buttonSize.y), ""))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogSync".Translate()));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
@@ -28,7 +28,7 @@ namespace GameClient
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 3, buttonSize.x, buttonSize.y), ""))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogSync".Translate()));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToOS);
@@ -59,13 +59,13 @@ namespace GameClient
 
                         Action r1 = delegate
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
+                            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogServerWait".Translate()));
 
                             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ResetSavePacket));
                             Network.listener.EnqueuePacket(packet);
                         };
 
-                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to delete your save?", r1, null);
+                        RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTDialogDelete".Translate(), r1, null);
                         DialogManager.PushNewDialog(d1);
                     }
                 }

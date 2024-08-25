@@ -37,7 +37,7 @@ namespace GameClient
             Action toDoYes = delegate { AcceptAid(data); };
             Action toDoNo = delegate { RejectAid(data); };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("You are receiving aid, accept?", toDoYes, toDoNo));
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTAidAcceptSure".Translate(), toDoYes, toDoNo));
         }
 
         public static void SendAidRequest()
@@ -54,15 +54,15 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), aidData);
             Network.listener.EnqueuePacket(packet);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogServerWait".Translate()));
         }
 
         private static void OnAidAccept()
         {
             DialogManager.PopWaitDialog();
 
-            RimworldManager.GenerateLetter("Sent aid",
-                "You have sent aid towards a settlement! The owner will receive the news soon",
+            RimworldManager.GenerateLetter("RTAidSent".Translate(),
+                "RTAidSentDesc".Translate(),
                 LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();
@@ -76,7 +76,7 @@ namespace GameClient
             Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTAidError".Translate()));
         }
 
         private static void AcceptAid(AidData data)
@@ -89,8 +89,8 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
 
-            RimworldManager.GenerateLetter("Received aid",
-                "You have received aid from a player! The pawn should come to help soon",
+            RimworldManager.GenerateLetter("RTAidReceived".Translate(),
+                "RTAidReceivedDesc".Translate(),
                 LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();

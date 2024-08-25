@@ -8,13 +8,14 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(300f, 100f);
 
-        private string title = "WAIT";
+        private string title = "RTDialogWait".Translate();
         private string description = "";
 
         public RT_Dialog_Wait(string description)
         {
             DialogManager.dialogWait = this;
             this.description = description;
+            
 
             forcePause = true;
             absorbInputAroundWindow = true;

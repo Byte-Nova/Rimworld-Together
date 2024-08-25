@@ -9,7 +9,7 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(400f, 150f);
 
-        private string title = "OPTION";
+        private string title = "RTDialogOption".Translate();
         private string description = "";
 
         private float buttonX = 150f;
@@ -49,13 +49,13 @@ namespace GameClient
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogConfirm".Translate()))
             {
                 if (actionYes != null) actionYes.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogCancel".Translate()))
             {
                 if (actionNo != null) actionNo.Invoke();
                 Close();
