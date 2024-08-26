@@ -71,7 +71,7 @@ namespace GameServer
             else if (message.Channel.Id == Master.discordConfig.ConsoleChannelId)
             {
                 Logger.Outsider($"[Discord Command] > {message.CleanContent}");
-                ServerCommandManager.ParseServerCommands(message.CleanContent);
+                ConsoleCommandManager.ParseServerCommands(message.CleanContent);
             }
 
             return Task.CompletedTask;
