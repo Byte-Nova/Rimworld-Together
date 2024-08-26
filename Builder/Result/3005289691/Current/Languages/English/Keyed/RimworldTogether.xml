@@ -157,11 +157,15 @@
     
     <!-- Managers -->
     
+    <!-- Factions -->
+    
     <RTFactionMenu>Faction Menu</RTFactionMenu>
     <RTFactionMenuButtonDesc>Access your faction menu</RTFactionMenuButtonDesc>
     <RTFactionMemberWait>Waiting for member list</RTFactionMemberWait>
     <RTFactionMembers>Members</RTFactionMembers>
     <RTFactionMemberMenu>Faction Members</RTFactionMemberMenu>
+    <RTDays>Days</RTDays>
+    <RTDay>Day</RTDay>
     <RTFactionMemberMenuDesc>All faction members are depicted here</RTFactionMemberMenuDesc>
     <RTFactionDelete>Delete</RTFactionDelete>
     <RTFactionWaitDelete>Waiting for faction deletion</RTFactionWaitDelete>
