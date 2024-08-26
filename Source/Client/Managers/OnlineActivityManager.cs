@@ -445,7 +445,7 @@ namespace GameClient
             EnqueueThing(toSpawn);
 
             //Request
-            RimworldManager.PlaceThingIntoMap(toSpawn, OnlineActivityManager.onlineMap);
+            RimworldManager.PlaceThingIntoMap(toSpawn, OnlineActivityManager.onlineMap, ThingPlaceMode.Direct, false);
         }
 
         public static void ReceiveDestructionOrder(OnlineActivityData data)

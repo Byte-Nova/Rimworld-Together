@@ -116,9 +116,13 @@ namespace GameClient
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
 
-                    Thing thing = ThingScribeManager.StringToItem(elements[i]);
-                    if (thing.MarketValue > 0) DrawCustomRow(rect, thing, num4);
-                    else continue;
+                    try
+                    {
+                        Thing thing = ThingScribeManager.StringToItem(elements[i]);
+                        if (thing.MarketValue > 0) DrawCustomRow(rect, thing, num4);
+                        else continue;
+                    }
+                    catch { continue; }
                 }
 
                 num += 30f;

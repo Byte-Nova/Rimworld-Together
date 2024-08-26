@@ -13,6 +13,7 @@ namespace GameClient
 
         private static readonly string[] ignoreLogPackets =
         {
+            nameof(KeepAlivePacket),
             nameof(OnlineActivityPacket)
         };
 
@@ -157,7 +158,7 @@ namespace GameClient
             ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);
             ServerValues.SetServerParameters(serverGlobalData);
             ServerValues.SetAccountData(serverGlobalData);
-            EventManager.SetEventPrices(serverGlobalData);
+            EventManagerHelper.SetValues(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
             OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);

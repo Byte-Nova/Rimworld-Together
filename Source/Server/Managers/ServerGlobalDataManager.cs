@@ -48,7 +48,7 @@ namespace GameServer
 
         private static ServerGlobalData GetServerValues(ServerGlobalData globalData)
         {
-            globalData.eventValues = Master.eventValues;
+            globalData.eventValues = EventManagerHelper.loadedEvents;
             globalData.siteValues = Master.siteValues;
             globalData.difficultyValues = Master.difficultyValues;
             globalData.actionValues = Master.actionValues;

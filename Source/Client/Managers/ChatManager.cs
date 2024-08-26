@@ -209,7 +209,8 @@ namespace GameClient
             { UserColor.Normal, "<color=white>" },
             { UserColor.Admin, "<color=red>" },
             { UserColor.Console, "<color=yellow>" },
-            { UserColor.Private, "<color=#3ae0dd>" }
+            { UserColor.Private, "<color=#3ae0dd>" },
+            { UserColor.Discord, "<color=#9656ce>" }
         };
 
         public static Dictionary<MessageColor, string> messageColorDictionary = new Dictionary<MessageColor, string>()
@@ -217,7 +218,8 @@ namespace GameClient
             { MessageColor.Normal, "<color=white>" },
             { MessageColor.Admin, "<color=white>" },
             { MessageColor.Console, "<color=yellow>" },
-            { MessageColor.Private, "<color=#3ae0dd>" }
+            { MessageColor.Private, "<color=#3ae0dd>" },
+            { MessageColor.Discord, "<color=white>" }
         };
 
         public static string[] GetMessageWords(string message)

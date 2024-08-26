@@ -54,22 +54,29 @@ namespace GameServer
 
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
         {
+            if (marketData.quantityToManage == 0)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
+                return;
+            }
+
             ThingData toGet = Master.market.MarketStock[marketData.indexToManage];
             int reservedQuantity = toGet.quantity;
             toGet.quantity = marketData.quantityToManage;
             marketData.transferThings = new List<ThingData>() { toGet };
 
-            ThingData thingData = Master.market.MarketStock[marketData.indexToManage];
-            thingData.quantity = reservedQuantity;
-
-            if (marketData.quantityToManage == 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
-            else if (thingData.quantity > marketData.quantityToManage) thingData.quantity -= marketData.quantityToManage;
-            else if (thingData.quantity == marketData.quantityToManage) Master.market.MarketStock.RemoveAt(marketData.indexToManage);
-            else ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
-
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
-            client.listener.EnqueuePacket(packet);
 
+            toGet.quantity = reservedQuantity;
+            if (toGet.quantity > marketData.quantityToManage) toGet.quantity -= marketData.quantityToManage;
+            else if (toGet.quantity == marketData.quantityToManage) Master.market.MarketStock.RemoveAt(marketData.indexToManage);
+            else
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
+                return;
+            }
+
+            client.listener.EnqueuePacket(packet);
             marketData.marketStepMode = MarketStepMode.Reload;
             marketData.transferThings = Master.market.MarketStock;
             packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);

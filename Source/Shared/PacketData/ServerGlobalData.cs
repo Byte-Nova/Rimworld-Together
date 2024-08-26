@@ -10,7 +10,7 @@ namespace Shared
         public bool isClientFactionMember;
 
         public SiteValuesFile siteValues;
-        public EventValuesFile eventValues;
+        public EventFile[] eventValues;
         public ActionValuesFile actionValues;
         public RoadValuesFile roadValues;
         public DifficultyValuesFile difficultyValues;

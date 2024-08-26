@@ -153,10 +153,7 @@ namespace GameClient
                     {
                         ClientValues.chosenSettlement = __instance;
 
-                        RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
-                            EventManager.eventNames, EventManager.ShowSendEventDialog, null);
-
-                        DialogManager.PushNewDialog(d1);
+                        EventManager.ShowEventMenu();
                     }
                 };
 

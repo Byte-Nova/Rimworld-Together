@@ -132,7 +132,7 @@ namespace GameClient
                 Pawn pawn = thing as Pawn;
 
                 if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.PassToWorld(pawn);
-                pawn.SetFactionDirect(Faction.OfPlayer);
+                if (pawn.def.CanHaveFaction) pawn.SetFactionDirect(Faction.OfPlayer);
                 caravan.AddPawn(pawn, false);
             }
 
@@ -172,32 +172,45 @@ namespace GameClient
         {
             if (requiredQuantity == 0) return;
 
-            List<Thing> thingInMap = new List<Thing>();
+            List<Thing> thingsInMap = new List<Thing>();
             foreach (Zone zone in map.zoneManager.AllZones)
             {
                 foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
                 {
                     if (thing.def == thingDef && !thing.Position.Fogged(map))
                     {
-                        thingInMap.Add(thing);
+                        thingsInMap.Add(thing);
                     }
                 }
             }
 
             int takenQuantity = 0;
-            foreach (Thing thing in thingInMap)
+            foreach (Thing thing in thingsInMap)
             {
-                if (takenQuantity + thing.stackCount >= requiredQuantity)
+                if (takenQuantity == requiredQuantity) return;
+
+                else if (takenQuantity + thing.stackCount == requiredQuantity)
                 {
-                    thing.stackCount -= requiredQuantity - takenQuantity;
+                    takenQuantity = requiredQuantity;
+                    thing.Destroy();
+                    break;
+                }
+
+                else if (takenQuantity + thing.stackCount > requiredQuantity)
+                {
+                    int missingQuantity = requiredQuantity - takenQuantity;
+
+                    takenQuantity += missingQuantity;
+                    thing.stackCount -= missingQuantity;
                     if (thing.stackCount <= 0) thing.Destroy();
                     break;
                 }
 
                 else if (takenQuantity + thing.stackCount < requiredQuantity)
                 {
-                    thing.Destroy();
                     takenQuantity += thing.stackCount;
+                    thing.Destroy();
+                    continue;
                 }
             }
         }

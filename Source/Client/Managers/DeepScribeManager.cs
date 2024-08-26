@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -161,6 +162,40 @@ namespace GameClient
 
                         if (hd.Part != null) humanData.hediffPartDefName.Add(hd.Part.def.defName.ToString());
                         else humanData.hediffPartDefName.Add("null");
+
+                        if (hd.def.CompProps<HediffCompProperties_Immunizable>() != null) humanData.hediffImmunity.Add(pawn.health.immunity.GetImmunity(hd.def));
+                        else humanData.hediffImmunity.Add(-1f);
+
+                        if (hd.def.tendable)
+                        {
+                            HediffComp_TendDuration comp = hd.TryGetComp<HediffComp_TendDuration>();
+                            if (comp.IsTended)
+                            {
+                                humanData.hediffTendQuality.Add(comp.tendQuality);
+                                humanData.hediffTendDuration.Add(comp.tendTicksLeft);
+                            } 
+
+                            else 
+                            {
+                                humanData.hediffTendDuration.Add(-1);
+                                humanData.hediffTendQuality.Add(-1);
+                            }
+
+                            if (comp.TProps.disappearsAtTotalTendQuality >= 0)
+                            {
+                                Type type = comp.GetType();
+                                FieldInfo fieldInfo = type.GetField("totalTendQuality", BindingFlags.NonPublic | BindingFlags.Instance);
+                                humanData.hediffTotalTendQuality.Add((float)fieldInfo.GetValue(comp));
+                            }
+                            else humanData.hediffTotalTendQuality.Add(-1f);
+                        } 
+
+                        else 
+                        {
+                            humanData.hediffTendDuration.Add(-1);
+                            humanData.hediffTendQuality.Add(-1);
+                            humanData.hediffTotalTendQuality.Add(-1f);
+                        }
 
                         humanData.hediffSeverity.Add(hd.Severity.ToString());
                         humanData.heddifPermanent.Add(hd.IsPermanent());
@@ -413,7 +448,7 @@ namespace GameClient
 
                         if (humanData.hediffPartDefName[i] != "null")
                         {
-                            bodyPart = pawn.RaceProps.body.AllParts.ToList().Find(x => 
+                            bodyPart = pawn.RaceProps.body.AllParts.ToList().Find(x =>
                                 x.def.defName == humanData.hediffPartDefName[i]);
                         }
 
@@ -427,6 +462,27 @@ namespace GameClient
                         }
 
                         pawn.health.AddHediff(hediff, bodyPart);
+                        if (humanData.hediffImmunity[i] != -1f)
+                        {
+                            pawn.health.immunity.TryAddImmunityRecord(hediffDef, hediffDef);
+                            ImmunityRecord immunityRecord = pawn.health.immunity.GetImmunityRecord(hediffDef);
+                            immunityRecord.immunity = humanData.hediffImmunity[i];
+                        }
+
+                        if (humanData.hediffTendDuration[i] != -1)
+                        {
+                            HediffComp_TendDuration comp = hediff.TryGetComp<HediffComp_TendDuration>();
+                            comp.tendQuality = humanData.hediffTendQuality[i];
+                            comp.tendTicksLeft = humanData.hediffTendDuration[i];
+                        }
+                        
+                        if (humanData.hediffTotalTendQuality[i] != -1f) 
+                        {
+                            HediffComp_TendDuration comp = hediff.TryGetComp<HediffComp_TendDuration>();
+                            Type type = comp.GetType();
+                            FieldInfo fieldInfo = type.GetField("totalTendQuality", BindingFlags.NonPublic | BindingFlags.Instance);
+                            fieldInfo.SetValue(comp,humanData.hediffTotalTendQuality[i]);
+                        }
                     }
                     catch { Logger.Warning($"Failed to set heddif in {humanData.hediffPartDefName[i]} to human {humanData.name}"); }
                 }
@@ -946,6 +1002,8 @@ namespace GameClient
 
             GetItemRotation(toUse, thingData);
 
+            if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             return thingData;
         }
 
@@ -965,6 +1023,8 @@ namespace GameClient
 
             SetItemMinified(thing, thingData);
 
+            if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
             return thing;
         }
 
@@ -978,7 +1038,7 @@ namespace GameClient
 
         private static void GetItemMaterial(Thing thing, ThingData thingData)
         {
-            try 
+            try
             {
                 if (DeepScribeHelper.CheckIfThingHasMaterial(thing)) thingData.materialDefName = thing.Stuff.defName;
                 else thingData.materialDefName = null;
@@ -1006,11 +1066,7 @@ namespace GameClient
 
         private static void GetItemPosition(Thing thing, ThingData thingData)
         {
-            try
-            {
-                thingData.position = new string[] { thing.Position.x.ToString(),
-                    thing.Position.y.ToString(), thing.Position.z.ToString() };
-            }
+            try { thingData.position = new float[] { thing.Position.x, thing.Position.y, thing.Position.z }; }
             catch { Logger.Warning($"Failed to get position of thing {thing.def.defName}"); }
         }
 
@@ -1022,7 +1078,7 @@ namespace GameClient
 
         private static bool GetItemMinified(Thing thing, ThingData thingData)
         {
-            try 
+            try
             {
                 thingData.isMinified = DeepScribeHelper.CheckIfThingIsMinified(thing);
                 return thingData.isMinified;
@@ -1030,6 +1086,65 @@ namespace GameClient
             catch { Logger.Warning($"Failed to get minified of thing {thing.def.defName}"); }
 
             return false;
+        }
+
+        private static void GetGenepackDetails(Thing thing, ThingData thingData)
+        {
+            try
+            {
+                Genepack genepack = (Genepack)thing;
+
+                Type type = genepack.GetType();
+                FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
+                GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
+
+                type = geneSet.GetType();
+                fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
+                List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
+                foreach (GeneDef gene in geneList) thingData.genepackData.genepackDefs.Add(gene.defName);
+            }
+            catch { Logger.Warning($"Failed to generate genepack with {thing.def.defName}"); }
+        }
+
+        private static void GetBookDetails(Thing thing, ThingData thingData)
+        {
+            try
+            {
+                BookData bookData = new BookData();
+                Book book = (Book)thing;
+                bookData.title = book.Title;
+                bookData.description = book.DescriptionDetailed;
+                bookData.descriptionFlavor = book.FlavorUI;
+
+                Type type = book.GetType();
+                FieldInfo fieldInfo = type.GetField("mentalBreakChancePerHour", BindingFlags.NonPublic | BindingFlags.Instance);
+                bookData.mentalBreakChance = (float)fieldInfo.GetValue(book);
+
+                type = book.GetType();
+                fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
+                bookData.joyFactor = (float)fieldInfo.GetValue(book);
+
+                book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp xp);
+                if (xp != null)
+                {
+                    foreach (KeyValuePair<SkillDef, float> pair in xp.Values)
+                    {
+                        bookData.skillData.Add(pair.Key.defName, pair.Value);
+                    }
+                }
+
+                book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out ReadingOutcomeDoerGainResearch research);
+                if (research != null)
+                {
+                    type = research.GetType();
+                    fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Dictionary<ResearchProjectDef, float> researchDict = (Dictionary<ResearchProjectDef, float>)fieldInfo.GetValue(research);
+                    foreach (ResearchProjectDef key in researchDict.Keys) bookData.researchData.Add(key.defName, researchDict[key]);
+                }
+
+                thingData.bookData = bookData;
+            }
+            catch { Logger.Warning($"Error when getting book with def: {thing.def.defName}"); }
         }
 
         //Setters
@@ -1055,14 +1170,14 @@ namespace GameClient
 
         private static void SetItemQuality(Thing thing, ThingData thingData)
         {
-            if (thingData.quality != "null")
+            if (thingData.quality != -1)
             {
                 try
                 {
                     CompQuality compQuality = thing.TryGetComp<CompQuality>();
                     if (compQuality != null)
                     {
-                        QualityCategory iCategory = (QualityCategory)int.Parse(thingData.quality);
+                        QualityCategory iCategory = (QualityCategory)thingData.quality;
                         compQuality.SetQuality(iCategory, ArtGenerationContext.Outsider);
                     }
                 }
@@ -1078,15 +1193,8 @@ namespace GameClient
 
         private static void SetItemPosition(Thing thing, ThingData thingData)
         {
-            if (thingData.position != null)
-            {
-                try
-                {
-                    thing.Position = new IntVec3(int.Parse(thingData.position[0]), int.Parse(thingData.position[1]),
-                        int.Parse(thingData.position[2]));
-                }
-                catch { Logger.Warning($"Failed to set position for item {thingData.defName}"); }
-            }
+            try { thing.Position = new IntVec3((int)thingData.position[0], (int)thingData.position[1], (int)thingData.position[2]); }
+            catch { Logger.Warning($"Failed to set position for item {thingData.defName}"); }
         }
 
         private static void SetItemRotation(Thing thing, ThingData thingData)
@@ -1103,6 +1211,88 @@ namespace GameClient
                 //This function is where you should transform the item back into a minified.
                 //However, this isn't needed and is likely to cause issues with caravans if used
             }
+        }
+
+        private static void SetGenepackDetails(Thing thing, ThingData thingData)
+        {
+            try
+            {
+                Genepack genepack = (Genepack)thing;
+
+                Type type = genepack.GetType();
+                FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
+                GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
+
+                type = geneSet.GetType();
+                fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
+                geneList.Clear();
+                foreach (string str in thingData.genepackData.genepackDefs)
+                {
+                    GeneDef gene = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
+                    geneList.Add(gene);
+                }
+                geneSet.GenerateName();
+            }
+            catch { Logger.Warning($"Failed to generate genepack with {thing.def.defName}"); }
+        }
+
+        private static void SetBookDetails(Thing thing, ThingData thingData)
+        {
+            try
+            {
+                Book book = (Book)thing;
+                Type type = book.GetType();
+
+                FieldInfo fieldInfo = type.GetField("title", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, thingData.bookData.title);
+
+                fieldInfo = type.GetField("description", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, thingData.bookData.description);
+
+                fieldInfo = type.GetField("descriptionFlavor", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, thingData.bookData.descriptionFlavor);
+
+                fieldInfo = type.GetField("mentalBreakChancePerHour", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, thingData.bookData.mentalBreakChance);
+
+                fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(book, thingData.bookData.joyFactor);
+
+                book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp doerXP);
+                if (doerXP != null)
+                {
+                    type = doerXP.GetType();
+                    fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Dictionary<SkillDef, float> skilldict = new Dictionary<SkillDef, float>();
+
+                    foreach (string str in thingData.bookData.skillData.Keys)
+                    {
+                        SkillDef skillDef = DefDatabase<SkillDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                        skilldict.Add(skillDef, thingData.bookData.skillData[str]);
+                    }
+
+                    fieldInfo.SetValue(doerXP, skilldict);
+                }
+
+                book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out ReadingOutcomeDoerGainResearch doerResearch);
+                if (doerResearch != null)
+                {
+                    type = doerResearch.GetType();
+                    fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Dictionary<ResearchProjectDef, float> researchDict = new Dictionary<ResearchProjectDef, float>();
+
+                    foreach (string str in thingData.bookData.researchData.Keys)
+                    {
+                        ResearchProjectDef researchDef = DefDatabase<ResearchProjectDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                        researchDict.Add(researchDef, thingData.bookData.researchData[str]);
+                    }
+
+                    fieldInfo.SetValue(doerResearch, researchDict);
+                }
+            }
+            catch { Logger.Warning($"Error when setting book with name: {thing.def.defName}"); }
         }
     }
 
@@ -1218,7 +1408,7 @@ namespace GameClient
                             try
                             {
                                 Plant plant = thing as Plant;
-                                thingData.growthTicks = plant.Growth;
+                                thingData.plantData.growthTicks = plant.Growth;
                             }
                             catch { Logger.Warning($"Failed to parse plant {thing.def.defName}"); }
                         }
@@ -1363,7 +1553,7 @@ namespace GameClient
                             if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
                             {
                                 Plant plant = toGet as Plant;
-                                plant.Growth = item.growthTicks;
+                                plant.Growth = item.plantData.growthTicks;
                             }
                         }
                         catch { Logger.Warning($"Failed to parse thing {item.defName}"); }
@@ -1382,7 +1572,7 @@ namespace GameClient
                             if (DeepScribeHelper.CheckIfThingCanGrow(toGet))
                             {
                                 Plant plant = toGet as Plant;
-                                plant.Growth = item.growthTicks;
+                                plant.Growth = item.plantData.growthTicks;
                             }
                         }
                         catch { Logger.Warning($"Failed to parse thing {item.defName}"); }
@@ -1539,12 +1729,12 @@ namespace GameClient
 
         //Gets the quality of a transferable thing
 
-        public static string GetThingQuality(Thing thing)
+        public static int GetThingQuality(Thing thing)
         {
             QualityCategory qc = QualityCategory.Normal;
             thing.TryGetQuality(out qc);
 
-            return ((int)qc).ToString();
+            return (int)qc;
         }
 
         //Checks if transferable thing is minified
@@ -1552,6 +1742,25 @@ namespace GameClient
         public static bool CheckIfThingIsMinified(Thing thing)
         {
             if (thing.def == ThingDefOf.MinifiedThing || thing.def == ThingDefOf.MinifiedTree) return true;
+            else return false;
+        }
+
+        public static bool CheckIfThingIsBook(Thing thing)
+        {
+            if (!ModsConfig.AnomalyActive) return false;
+
+            if (thing.def.defName == ThingDefOf.TextBook.defName) return true;
+            else if (thing.def.defName == ThingDefOf.Schematic.defName) return true;
+            else if (thing.def.defName == ThingDefOf.Tome.defName) return true;
+            else if (thing.def.defName == ThingDefOf.Novel.defName) return true;
+            else return false;
+        }
+
+        public static bool CheckIfThingIsGenepack(Thing thing)
+        {
+            if (!ModsConfig.BiotechActive) return false;
+
+            if (thing.def.defName == ThingDefOf.Genepack.defName) return true;
             else return false;
         }
     }

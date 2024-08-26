@@ -22,6 +22,7 @@ namespace GameServer
         public static string factionsPath;
         public static string settlementsPath;
         public static string caravansPath;
+        public static string eventsPath;
 
         public static string backupsPath;
         public static string backupWorldPath;
@@ -44,11 +45,11 @@ namespace GameServer
         public static WhitelistFile whitelist;
         public static SiteValuesFile siteValues;
         public static WorldValuesFile worldValues;
-        public static EventValuesFile eventValues;
         public static ServerConfigFile serverConfig;
         public static ActionValuesFile actionValues;
         public static DifficultyValuesFile difficultyValues;
         public static RoadValuesFile roadValues;
+        public static DiscordConfigFile discordConfig;
 
         //Booleans
 
@@ -63,6 +64,8 @@ namespace GameServer
             SetCulture();
             LoadResources();
             ChangeTitle();
+
+            if (discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
 
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
@@ -94,6 +97,7 @@ namespace GameServer
             factionsPath = Path.Combine(mainPath, "Factions");
             settlementsPath = Path.Combine(mainPath, "Settlements");
             caravansPath = Path.Combine(mainPath, "Caravans");
+            eventsPath = Path.Combine(mainPath, "Events");
 
             backupsPath = Path.Combine(mainPath, "Backups");
             backupUsersPath = Path.Combine(backupsPath, "Users");
@@ -115,6 +119,7 @@ namespace GameServer
             if (!Directory.Exists(factionsPath)) Directory.CreateDirectory(factionsPath);
             if (!Directory.Exists(settlementsPath)) Directory.CreateDirectory(settlementsPath);
             if (!Directory.Exists(caravansPath)) Directory.CreateDirectory(caravansPath);
+            if (!Directory.Exists(eventsPath)) Directory.CreateDirectory(eventsPath);
 
             if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
             if (!Directory.Exists(backupUsersPath)) Directory.CreateDirectory(backupUsersPath);
@@ -151,9 +156,6 @@ namespace GameServer
             LoadValueFile(ServerFileMode.Sites);
             SaveValueFile(ServerFileMode.Sites, false);
 
-            LoadValueFile(ServerFileMode.Events);
-            SaveValueFile(ServerFileMode.Events, false);
-
             LoadValueFile(ServerFileMode.Roads);
             SaveValueFile(ServerFileMode.Roads, false);
 
@@ -166,9 +168,14 @@ namespace GameServer
             LoadValueFile(ServerFileMode.Market);
             SaveValueFile(ServerFileMode.Market, false);
 
+            LoadValueFile(ServerFileMode.Discord);
+            SaveValueFile(ServerFileMode.Discord, false);
+
             LoadValueFile(ServerFileMode.World);
 
             ModManager.LoadMods();
+
+            EventManager.LoadEvents();
 
             Logger.Title($"----------------------------------------");
         }
@@ -194,11 +201,6 @@ namespace GameServer
                     Serializer.SerializeToFile(pathToSave, siteValues);
                     break;
 
-                case ServerFileMode.Events:
-                    pathToSave = Path.Combine(corePath, "EventValues.json");
-                    Serializer.SerializeToFile(pathToSave, eventValues);
-                    break;
-
                 case ServerFileMode.Roads:
                     pathToSave = Path.Combine(corePath, "RoadValues.json");
                     Serializer.SerializeToFile(pathToSave, roadValues);
@@ -222,6 +224,11 @@ namespace GameServer
                 case ServerFileMode.Market:
                     pathToSave = Path.Combine(corePath, "Market.json");
                     Serializer.SerializeToFile(pathToSave, market);
+                    break;
+
+                case ServerFileMode.Discord:
+                    pathToSave = Path.Combine(corePath, "DiscordConfig.json");
+                    Serializer.SerializeToFile(pathToSave, discordConfig);
                     break;
             }
 
@@ -261,16 +268,6 @@ namespace GameServer
                     {
                         siteValues = new SiteValuesFile();
                         Serializer.SerializeToFile(pathToLoad, siteValues);
-                    }
-                    break;
-
-                case ServerFileMode.Events:
-                    pathToLoad = Path.Combine(corePath, "EventValues.json");
-                    if (File.Exists(pathToLoad)) eventValues = Serializer.SerializeFromFile<EventValuesFile>(pathToLoad);
-                    else
-                    {
-                        eventValues = new EventValuesFile();
-                        Serializer.SerializeToFile(pathToLoad, eventValues);
                     }
                     break;
 
@@ -317,6 +314,16 @@ namespace GameServer
                     {
                         market = new MarketFile();
                         Serializer.SerializeToFile(pathToLoad, market);
+                    }
+                    break;
+
+                case ServerFileMode.Discord:
+                    pathToLoad = Path.Combine(corePath, "DiscordConfig.json");
+                    if (File.Exists(pathToLoad)) discordConfig = Serializer.SerializeFromFile<DiscordConfigFile>(pathToLoad);
+                    else
+                    {
+                        discordConfig = new DiscordConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, discordConfig);
                     }
                     break;
             }
