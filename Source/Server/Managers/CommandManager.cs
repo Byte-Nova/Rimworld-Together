@@ -1,5 +1,4 @@
 ﻿using Shared;
-using static GameServer.ConsoleCommandManager;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
