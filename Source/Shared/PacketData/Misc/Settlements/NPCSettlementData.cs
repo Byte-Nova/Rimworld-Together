@@ -7,6 +7,7 @@ namespace Shared
     public class NPCSettlementData
     {
         public SettlementStepMode stepMode;
-        public PlanetNPCSettlement details;
+
+        public PlanetNPCSettlement settlementData = new PlanetNPCSettlement();
     }
 }

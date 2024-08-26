@@ -56,7 +56,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerRecountData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ServerGlobalData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\SettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\PlayerSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionGoodwillData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\WorldData.cs" />

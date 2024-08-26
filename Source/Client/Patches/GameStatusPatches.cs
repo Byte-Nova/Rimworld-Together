@@ -20,8 +20,8 @@ namespace GameClient
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = __instance.CurrentMap.Tile;
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData.settlementData.tile = __instance.CurrentMap.Tile;
                     settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -63,8 +63,8 @@ namespace GameClient
             {
                 if (Network.state == NetworkState.Connected)
                 {
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = caravan.Tile;
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData.settlementData.tile = caravan.Tile;
                     settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -83,8 +83,8 @@ namespace GameClient
             {
                 if (Network.state == NetworkState.Connected)
                 {
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = map.Tile;
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData.settlementData.tile = map.Tile;
                     settlementData.settlementStepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -103,8 +103,8 @@ namespace GameClient
             {
                 if (Network.state == NetworkState.Connected)
                 {
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = settlement.Tile;
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData.settlementData.tile = settlement.Tile;
                     settlementData.settlementStepMode = SettlementStepMode.Remove;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);

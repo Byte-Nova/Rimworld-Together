@@ -16,7 +16,7 @@ namespace GameServer
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveNPCSettlement(client, data.details);
+                    RemoveNPCSettlement(client, data.settlementData);
                     break;
             }
         }
@@ -51,7 +51,7 @@ namespace GameServer
         {
             NPCSettlementData data = new NPCSettlementData();
             data.stepMode = SettlementStepMode.Remove;
-            data.details = settlement;
+            data.settlementData = settlement;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
             NetworkHelper.SendPacketToAllClients(packet);

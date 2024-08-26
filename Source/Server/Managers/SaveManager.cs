@@ -186,9 +186,9 @@ namespace GameServer
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
-                SettlementData settlementData = new SettlementData();
-                settlementData.tile = settlementFile.tile;
-                settlementData.owner = settlementFile.owner;
+                PlayerSettlementData settlementData = new PlayerSettlementData();
+                settlementData.settlementData.tile = settlementFile.tile;
+                settlementData.settlementData.owner = settlementFile.owner;
 
                 SettlementManager.RemoveSettlement(client, settlementData);
             }

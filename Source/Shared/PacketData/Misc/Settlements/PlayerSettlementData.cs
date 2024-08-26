@@ -4,14 +4,10 @@ using static Shared.CommonEnumerators;
 namespace Shared
 {
     [Serializable]
-    public class SettlementData
+    public class PlayerSettlementData
     {
         public SettlementStepMode settlementStepMode;
 
-        public int tile;
-
-        public string owner;
-
-        public Goodwill goodwill;
+        public OnlineSettlementFile settlementData = new OnlineSettlementFile();
     }
 }
