@@ -78,8 +78,8 @@ namespace GameClient
                 //Only done once per save
                 if (!ClientValues.isGeneratingFreshWorld)
                 {
-                    WorldGeneratorManager.SetPlanetFeatures();
-                    WorldGeneratorManager.SetPlanetFactions();
+                    PlanetGeneratorManager.SetPlanetFeatures();
+                    PlanetGeneratorManager.SetPlanetFactions();
                     RiverManager.SetPlanetRivers();
                 }
 

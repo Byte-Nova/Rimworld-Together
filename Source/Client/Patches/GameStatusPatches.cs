@@ -31,7 +31,7 @@ namespace GameClient
 
                     if (ClientValues.isGeneratingFreshWorld)
                     {
-                        WorldGeneratorManager.SendWorldToServer();
+                        PlanetGeneratorManager.SendWorldToServer();
                         ClientValues.ToggleGenerateWorld(false);
                     }
                 }

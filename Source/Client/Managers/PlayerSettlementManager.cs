@@ -29,9 +29,9 @@ namespace GameClient
             }
         }
 
-        public static void AddSettlements(OnlineSettlementFile[] settlements)
+        public static void AddSettlements(OnlineSettlementFile[] toAdd)
         {
-            if (settlements == null) return;
+            if (toAdd == null) return;
 
             for (int i = 0; i < PlayerSettlementManagerHelper.tempSettlements.Count(); i++)
             {
@@ -59,36 +59,36 @@ namespace GameClient
             foreach (Settlement settlement in settlements) Find.WorldObjects.Remove(settlement);
         }
 
-        public static void SpawnSingleSettlement(SettlementData newSettlementJSON)
+        public static void SpawnSingleSettlement(SettlementData toAdd)
         {
             if (ClientValues.isReadyToPlay)
             {
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = newSettlementJSON.tile;
-                    settlement.Name = $"{newSettlementJSON.owner}'s settlement";
-                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(newSettlementJSON.goodwill));
+                    settlement.Tile = toAdd.tile;
+                    settlement.Name = $"{toAdd.owner}'s settlement";
+                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.goodwill));
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {newSettlementJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd.tile}. Reason: {e}"); }
             }
         }
 
-        public static void RemoveSingleSettlement(SettlementData newSettlementJSON)
+        public static void RemoveSingleSettlement(SettlementData toRemove)
         {
             if (ClientValues.isReadyToPlay)
             {
                 try
                 {
-                    Settlement toGet = playerSettlements.Find(x => x.Tile == newSettlementJSON.tile);
+                    Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove.tile);
 
                     playerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Logger.Error($"Failed to remove settlement at {newSettlementJSON.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.tile}. Reason: {e}"); }
             }
         }
     }

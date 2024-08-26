@@ -109,6 +109,7 @@ namespace GameClient
     public static class NPCSettlementManagerHelper
     {
         public static PlanetNPCSettlement[] tempNPCSettlements;
+        
         public static Settlement latestRemovedSettlement;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
