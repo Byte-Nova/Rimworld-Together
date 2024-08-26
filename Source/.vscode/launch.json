@@ -6,8 +6,8 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build server",
-            "program": "${workspaceFolder}/Server/bin/Debug/net7.0/GameServer.dll",
-            "cwd": "${workspaceFolder}/Server/bin/Debug/net7.0",
+            "program": "${workspaceFolder}/Server/bin/Debug/net8.0/GameServer.dll",
+            "cwd": "${workspaceFolder}/Server/bin/Debug/net8.0",
             "console": "externalTerminal"
         }
     ]
