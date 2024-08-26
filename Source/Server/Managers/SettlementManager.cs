@@ -38,7 +38,7 @@ namespace GameServer
                 Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension), settlementFile);
 
                 settlementData.settlementStepMode = SettlementStepMode.Add;
-                foreach (ServerClient cClient in Network.connectedClients.ToArray())
+                foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
                 {
                     if (cClient == client) continue;
                     else
@@ -86,12 +86,9 @@ namespace GameServer
             void SendRemovalSignal()
             {
                 settlementData.settlementStepMode = SettlementStepMode.Remove;
+                
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                foreach (ServerClient cClient in Network.connectedClients.ToArray())
-                {
-                    if (cClient == client) continue;
-                    else cClient.listener.EnqueuePacket(packet);
-                }
+                NetworkHelper.SendPacketToAllClients(packet, client);
             }
         }
 

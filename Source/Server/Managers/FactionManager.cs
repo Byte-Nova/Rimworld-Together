@@ -409,7 +409,7 @@ namespace GameServer
         private static ServerClient[] GetAllConnectedFactionMembers(FactionFile factionFile)
         {
             List<ServerClient> connectedFactionMembers = new List<ServerClient>();
-            foreach (ServerClient client in Network.connectedClients.ToArray())
+            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
                 if (factionFile.factionMembers.Contains(client.userFile.Username))
                 {

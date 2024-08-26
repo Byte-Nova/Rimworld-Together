@@ -75,7 +75,7 @@ namespace GameServer
 
         private static void RemoveOldClientIfAny(ServerClient client)
         {
-            foreach (ServerClient cClient in Network.connectedClients.ToArray())
+            foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
             {
                 if (cClient == client) continue;
                 else
@@ -91,11 +91,11 @@ namespace GameServer
         public static void SendPlayerRecount()
         {
             PlayerRecountData playerRecountData = new PlayerRecountData();
-            playerRecountData.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
-            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountData.currentPlayerNames.Add(client.userFile.Username);
+            playerRecountData.currentPlayers = NetworkHelper.GetConnectedClientsSafe().Count().ToString();
+            foreach(ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData.currentPlayerNames.Add(client.userFile.Username);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
-            foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
+            NetworkHelper.SendPacketToAllClients(packet);
         }
 
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)

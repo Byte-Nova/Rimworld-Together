@@ -34,10 +34,7 @@ namespace GameServer
             SaveRoad(data.details, client);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
-            foreach(ServerClient cClient in Network.connectedClients.ToArray())
-            {
-                cClient.listener.EnqueuePacket(packet);
-            }
+            NetworkHelper.SendPacketToAllClients(packet);
         }
 
         private static void RemoveRoad(ServerClient client, RoadData data)
@@ -70,10 +67,7 @@ namespace GameServer
             void BroadcastDeletion(RoadDetails toRemove)
             {
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
-                foreach (ServerClient cClient in Network.connectedClients.ToArray())
-                {
-                    cClient.listener.EnqueuePacket(packet);
-                }
+                NetworkHelper.SendPacketToAllClients(packet);
             }
         }
 

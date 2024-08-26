@@ -62,7 +62,7 @@ namespace GameServer
             siteData.type = siteFile.type;
             siteData.isFromFaction = siteFile.isFromFaction;
 
-            foreach (ServerClient cClient in Network.connectedClients.ToArray())
+            foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
             {
                 siteData.goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
@@ -201,7 +201,7 @@ namespace GameServer
             siteData.tile = siteFile.tile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
-            foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
+            NetworkHelper.SendPacketToAllClients(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.tile + fileExtension));
             Logger.Warning($"[Remove site] > {siteFile.tile}");
@@ -283,7 +283,7 @@ namespace GameServer
             SiteData siteData = new SiteData();
             siteData.siteStepMode = SiteStepMode.Reward;
 
-            foreach (ServerClient client in Network.connectedClients.ToArray())
+            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
                 siteData.sitesWithRewards.Clear();
 

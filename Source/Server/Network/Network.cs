@@ -95,17 +95,17 @@ namespace GameServer
 
     public static class NetworkHelper
     {
-        public static ServerClient[] GetConnectedClientsSafe()
+        public static ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)
         {
-            return Network.connectedClients.ToArray();
+            if (toExclude != null) return Network.connectedClients.Where(fetch => fetch.userFile.Username != toExclude.userFile.Username).ToArray();
+            else return Network.connectedClients.ToArray();
         }
 
         public static void SendPacketToAllClients(Packet packet, ServerClient toExclude = null)
         {
-            foreach(ServerClient client in GetConnectedClientsSafe())
+            foreach (ServerClient client in GetConnectedClientsSafe(toExclude))
             {
-                if (toExclude != null && client == toExclude) continue;
-                else client.listener.EnqueuePacket(packet);
+                client.listener.EnqueuePacket(packet);
             }
         }
     }

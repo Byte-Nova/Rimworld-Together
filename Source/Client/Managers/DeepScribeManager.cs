@@ -1719,7 +1719,9 @@ namespace GameClient
 
             catch (Exception e) 
             { 
-                Logger.Warning(e.ToString()); 
+                //Don't log to avoid countless spam logs
+                //Logger.Warning(e.ToString()); 
+                
                 return false;
             }
         }

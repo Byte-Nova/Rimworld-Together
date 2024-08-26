@@ -140,7 +140,7 @@ namespace GameServer
         {
             while (true)
             {
-                int count = Network.connectedClients.ToArray().Count();
+                int count = NetworkHelper.GetConnectedClientsSafe().Count();
                 string multiple = count > 1 ? "s" : "";
                 
                 await discordClient.SetCustomStatusAsync($"{count} Player{multiple} online");

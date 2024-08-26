@@ -192,9 +192,9 @@ namespace GameServer
 
         private static void ListCommandAction()
         {
-            Logger.Title($"Connected players: [{Network.connectedClients.ToArray().Count()}]");
+            Logger.Title($"Connected players: [{NetworkHelper.GetConnectedClientsSafe().Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (ServerClient client in Network.connectedClients.ToArray())
+            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
                 Logger.Warning($"{client.userFile.Username} - {client.userFile.SavedIP}");
             }
@@ -415,7 +415,7 @@ namespace GameServer
             if (toFind == null) Logger.Warning($"Event '{ConsoleCommandManager.commandParameters[0]}' was not found");
             else
             {
-                foreach (ServerClient client in Network.connectedClients.ToArray())
+                foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
                 {
                     CommandManager.SendEventCommand(client, toFind);
                 }
@@ -653,7 +653,7 @@ namespace GameServer
 
                 Main_.SetPaths();
                 Logger.Warning("World has been successfully reset and archived");
-                foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.disconnectFlag = true;
+                foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) client.listener.disconnectFlag = true;
         }
 
         private static void QuitCommandAction()
@@ -662,15 +662,9 @@ namespace GameServer
 
             Logger.Warning($"Waiting for all saves to quit");
 
-            foreach (ServerClient client in Network.connectedClients.ToArray())
-            {
-                CommandManager.SendForceSaveCommand(client);
-            }
+            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) CommandManager.SendForceSaveCommand(client);
 
-            while (Network.connectedClients.ToArray().Length > 0)
-            {
-                Thread.Sleep(1);
-            }
+            while (NetworkHelper.GetConnectedClientsSafe().Length > 0) Thread.Sleep(1);
 
             Environment.Exit(0);
         }

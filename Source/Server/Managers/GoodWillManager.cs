@@ -157,7 +157,7 @@ namespace GameServer
 
         public static void ClearAllFactionMemberGoodwills(FactionFile factionFile)
         {
-            ServerClient[] clients = Network.connectedClients.ToArray();
+            ServerClient[] clients = NetworkHelper.GetConnectedClientsSafe();
             List<ServerClient> clientsToGet = new List<ServerClient>();
 
             foreach (ServerClient client in clients)

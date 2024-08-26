@@ -63,10 +63,7 @@ namespace GameServer
             commandData.commandDetails = str;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
-            foreach (ServerClient client in Network.connectedClients.ToArray())
-            {
-                client.listener.EnqueuePacket(packet);
-            }
+            NetworkHelper.SendPacketToAllClients(packet);
         }
 
         public static void SendForceSaveCommand(ServerClient client)

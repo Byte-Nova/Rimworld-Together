@@ -44,12 +44,9 @@ namespace GameServer
 
             marketData.marketStepMode = MarketStepMode.Reload;
             marketData.transferThings = Master.market.MarketStock;
+
             packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
-            foreach (ServerClient sc in Network.connectedClients.ToArray())
-            {
-                if (sc == client) continue;
-                else sc.listener.EnqueuePacket(packet);
-            }
+            NetworkHelper.SendPacketToAllClients(packet, client);
         }
 
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
@@ -79,12 +76,9 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
             marketData.marketStepMode = MarketStepMode.Reload;
             marketData.transferThings = Master.market.MarketStock;
+            
             packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
-            foreach (ServerClient sc in Network.connectedClients.ToArray())
-            {
-                if (sc == client) continue;
-                else sc.listener.EnqueuePacket(packet);
-            }
+            NetworkHelper.SendPacketToAllClients(packet, client);
 
             Main_.SaveValueFile(ServerFileMode.Market);
         }
