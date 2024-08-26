@@ -5,11 +5,9 @@
     <HasSharedItems>true</HasSharedItems>
     <SharedGUID>C950CC92-131F-45B4-9201-1CB27C45CEDB</SharedGUID>
   </PropertyGroup>
-
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
-  
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
@@ -50,6 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Pollution\PollutionDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Rivers\RiverDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Roads\RoadDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\Save Our Ship 2\SpaceSiteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCFaction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\NPCSettlementData.cs" />
@@ -68,18 +67,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCSettlement.cs" />
-
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\HumanData.cs" />
-
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\AnimalData.cs" />
-
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\ThingData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\BookData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\GenepackData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\PlantData.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)PacketData\Modded\Save Our Ship 2\" />
   </ItemGroup>
 </Project>

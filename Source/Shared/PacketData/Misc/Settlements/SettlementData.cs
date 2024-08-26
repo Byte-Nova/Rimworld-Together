@@ -13,5 +13,7 @@ namespace Shared
         public string owner;
 
         public Goodwill goodwill;
+
+        public bool isShip = false;
     }
 }

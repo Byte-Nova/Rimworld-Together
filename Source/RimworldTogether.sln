@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameServer", "Server\GameSe
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{62154254-67B2-45CA-9888-5D96A470D929}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModPatches", "ModPatches", "{190450FF-1282-4A12-B1AF-BC5824599182}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Save Our Ship 2 Patches", "Mod Patches\Save Our Ship 2 Patches\Save Our Ship 2 Patches.csproj", "{8F0F3628-9BDA-4333-AA7D-A37C90D76BD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,9 +27,16 @@ Global
 		{30DC9F13-DE2C-4DE7-A38A-C660F9DE24AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30DC9F13-DE2C-4DE7-A38A-C660F9DE24AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30DC9F13-DE2C-4DE7-A38A-C660F9DE24AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F0F3628-9BDA-4333-AA7D-A37C90D76BD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F0F3628-9BDA-4333-AA7D-A37C90D76BD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F0F3628-9BDA-4333-AA7D-A37C90D76BD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F0F3628-9BDA-4333-AA7D-A37C90D76BD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8F0F3628-9BDA-4333-AA7D-A37C90D76BD8} = {190450FF-1282-4A12-B1AF-BC5824599182}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3EFA1303-2B45-40AC-9FEA-F684B5B3732F}
