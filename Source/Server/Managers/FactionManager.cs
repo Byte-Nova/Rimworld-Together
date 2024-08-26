@@ -13,37 +13,37 @@ namespace GameServer
         {
             PlayerFactionData factionManifest = Serializer.ConvertBytesToObject<PlayerFactionData>(packet.contents);
 
-            switch(factionManifest.manifestMode)
+            switch(factionManifest.stepMode)
             {
-                case FactionManifestMode.Create:
+                case FactionStepMode.Create:
                     CreateFaction(client, factionManifest);
                     break;
 
-                case FactionManifestMode.Delete:
+                case FactionStepMode.Delete:
                     DeleteFaction(client, factionManifest);
                     break;
 
-                case FactionManifestMode.AddMember:
+                case FactionStepMode.AddMember:
                     AddMemberToFaction(client, factionManifest);
                     break;
 
-                case FactionManifestMode.RemoveMember:
+                case FactionStepMode.RemoveMember:
                     RemoveMemberFromFaction(client, factionManifest);
                     break;
 
-                case FactionManifestMode.AcceptInvite:
+                case FactionStepMode.AcceptInvite:
                     ConfirmAddMemberToFaction(client, factionManifest);
                     break;
 
-                case FactionManifestMode.Promote:
+                case FactionStepMode.Promote:
                     PromoteMember(client, factionManifest);
                     break;
 
-                case FactionManifestMode.Demote:
+                case FactionStepMode.Demote:
                     DemoteMember(client, factionManifest);
                     break;
 
-                case FactionManifestMode.MemberList:
+                case FactionStepMode.MemberList:
                     SendFactionMemberList(client, factionManifest);
                     break;
             }
@@ -135,7 +135,7 @@ namespace GameServer
         {
             if (CheckIfFactionExistsByName(factionManifest.manifestDataString))
             {
-                factionManifest.manifestMode = FactionManifestMode.NameInUse;
+                factionManifest.stepMode = FactionStepMode.NameInUse;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
                 client.listener.EnqueuePacket(packet);
@@ -143,7 +143,7 @@ namespace GameServer
 
             else
             {
-                factionManifest.manifestMode = FactionManifestMode.Create;
+                factionManifest.stepMode = FactionStepMode.Create;
 
                 FactionFile factionFile = new FactionFile();
                 factionFile.factionName = factionManifest.manifestDataString;
@@ -174,7 +174,7 @@ namespace GameServer
 
                 else
                 {
-                    factionManifest.manifestMode = FactionManifestMode.Delete;
+                    factionManifest.stepMode = FactionStepMode.Delete;
 
                     UserFile[] userFiles = UserManagerHelper.GetAllUserFiles();
                     foreach (UserFile userFile in userFiles)
@@ -281,7 +281,7 @@ namespace GameServer
             {
                 if (settlementFile.owner == client.userFile.Username)
                 {
-                    factionManifest.manifestMode = FactionManifestMode.AdminProtection;
+                    factionManifest.stepMode = FactionStepMode.AdminProtection;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
                     client.listener.EnqueuePacket(packet);
                 }
