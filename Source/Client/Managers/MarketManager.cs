@@ -47,7 +47,7 @@ namespace GameClient
             DialogManager.dialogMarketListing = null;
 
             int silverToGet = 0;
-            Thing[] sentItems = TransferManagerHelper.GetAllTransferedItems(ClientValues.outgoingManifest);
+            Thing[] sentItems = TransferManagerHelper.GetAllTransferedItems(SessionValues.outgoingManifest);
             foreach (Thing thing in sentItems) silverToGet += (int)(thing.stackCount * thing.MarketValue * 0.5f);
 
             if (silverToGet > 0)
@@ -89,7 +89,7 @@ namespace GameClient
             TransferManager.GetTransferedItemsToSettlement(new Thing[] { toReceive }, customMap: false);
 
             int silverToPay = (int)(toReceive.MarketValue * toReceive.stackCount);
-            RimworldManager.RemoveThingFromSettlement(ClientValues.chosenSettlement.Map, ThingDefOf.Silver, silverToPay);
+            RimworldManager.RemoveThingFromSettlement(SessionValues.chosenSettlement.Map, ThingDefOf.Silver, silverToPay);
 
             SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
         }
@@ -98,7 +98,7 @@ namespace GameClient
 
         public static void RequestReloadStock()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingData[] { }, ClientValues.chosenSettlement.Map, null, null));
+            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingData[] { }, SessionValues.chosenSettlement.Map, null, null));
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData marketData = new MarketData();
@@ -115,7 +115,7 @@ namespace GameClient
                 DialogManager.PopWaitDialog();
 
                 Action toDo = delegate { RequestGetStock(DialogManager.dialogMarketListingResult, int.Parse(DialogManager.dialog1ResultOne)); };
-                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(marketData.transferThings.ToArray(), ClientValues.chosenSettlement.Map, toDo, null);
+                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(marketData.transferThings.ToArray(), SessionValues.chosenSettlement.Map, toDo, null);
                 DialogManager.PushNewDialog(dialog);
             }
         }

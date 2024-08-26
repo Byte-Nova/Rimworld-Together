@@ -17,7 +17,7 @@ namespace GameClient
         public static bool DoPre(Map map, Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
             //Don't execute patch if is different than the online one
@@ -64,7 +64,7 @@ namespace GameClient
         public static bool DoPre(Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
             //Don't execute patch if map doesn't contain the thing already
@@ -119,7 +119,7 @@ namespace GameClient
         public static bool DoPre(Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             //Don't execute patch if map doesn't contain the thing already
             bool shouldPatch = false;
@@ -169,7 +169,7 @@ namespace GameClient
         public static bool DoPre(Job newJob, Pawn ___pawn)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             //Don't execute patch if map doesn't contain the pawn
             bool shouldPatch = false;
@@ -215,7 +215,7 @@ namespace GameClient
         public static bool DoPre(DamageInfo dinfo, Thing __instance, ref DamageWorker.DamageResult __result)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             if (!OnlineActivityManager.mapThings.Contains(__instance)) return true;
             else
@@ -262,7 +262,7 @@ namespace GameClient
         public static bool DoPre(Hediff hediff, BodyPartRecord part, DamageInfo? dinfo, DamageWorker.DamageResult result, Pawn ___pawn)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             bool shouldPatch = false;
             if (OnlineActivityManager.factionPawns.Contains(___pawn)) shouldPatch = true;
@@ -307,7 +307,7 @@ namespace GameClient
         public static bool DoPre(Hediff hediff, Pawn ___pawn)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             bool shouldPatch = false;
             if (OnlineActivityManager.factionPawns.Contains(___pawn)) shouldPatch = true;
@@ -352,7 +352,7 @@ namespace GameClient
         public static bool DoPre(GameCondition cond)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             if (ClientValues.isRealTimeHost)
             {
@@ -389,7 +389,7 @@ namespace GameClient
         public static bool DoPre(GameCondition __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             if (ClientValues.isRealTimeHost)
             {
@@ -426,7 +426,7 @@ namespace GameClient
         public static bool DoPre(TickManager __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             if (ClientValues.isRealTimeHost)
             {
@@ -466,7 +466,7 @@ namespace GameClient
         public static bool DoPre(WeatherManager __instance, WeatherDef newWeather)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineActivityManager.onlineMap != __instance.map) return true;
 
             if (ClientValues.isRealTimeHost)
@@ -508,7 +508,7 @@ namespace GameClient
         public static bool DoPre(Map map, Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
@@ -532,7 +532,7 @@ namespace GameClient
         public static bool DoPre(Map map, Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
@@ -556,7 +556,7 @@ namespace GameClient
         public static bool DoPre(Map map, Thing __instance)
         {
             if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
@@ -580,7 +580,7 @@ namespace GameClient
     //    public static bool DoPre(Map map)
     //    {
     //        if (Network.state == NetworkState.Disconnected) return true;
-    //        if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+    //        if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
     //        if (OnlineActivityManager.onlineMap != map) return true;
 
     //        if (ClientValues.isRealTimeHost) return false;
@@ -597,7 +597,7 @@ namespace GameClient
         public static void DoPost()
         {
             if (Network.state == NetworkState.Disconnected) return;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             OnlineActivityManager.RequestStopOnlineActivity();
         }
@@ -610,7 +610,7 @@ namespace GameClient
         public static void DoPost()
         {
             if (Network.state == NetworkState.Disconnected) return;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             OnlineActivityManager.RequestStopOnlineActivity();
         }
@@ -623,7 +623,7 @@ namespace GameClient
         public static void DoPost()
         {
             if (Network.state == NetworkState.Disconnected) return;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             OnlineActivityManager.RequestStopOnlineActivity();
         }

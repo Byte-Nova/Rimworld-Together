@@ -15,7 +15,7 @@ namespace GameClient
             if (!FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
             
             ___tradeables = new List<Tradeable>();
-            ___tradeables.AddRange(ClientValues.listToShowInTradesMenu);
+            ___tradeables.AddRange(SessionValues.listToShowInTradesMenu);
             return false;
         }
     }

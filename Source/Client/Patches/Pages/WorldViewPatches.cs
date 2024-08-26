@@ -82,7 +82,7 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
+                        SessionValues.chosenSettlement = __instance;
 
                         Action r1 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
                             GoodwillTarget.Settlement); };
@@ -107,9 +107,9 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
+                        SessionValues.chosenSettlement = __instance;
 
-                        if (ClientValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
+                        if (SessionValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
                         else FactionManager.OnFactionOpenOnNonMember();
                     }
                 };
@@ -121,7 +121,7 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("UI/Commands/FormCaravan"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
+                        SessionValues.chosenSettlement = __instance;
 
                         Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved:true);
                         DialogManager.PushNewDialog(d1);
@@ -135,7 +135,7 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Aid"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
+                        SessionValues.chosenSettlement = __instance;
 
                         List<string> pawnNames = new List<string>();
                         foreach (Pawn pawn in RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
@@ -151,7 +151,7 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Event"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
+                        SessionValues.chosenSettlement = __instance;
 
                         EventManager.ShowEventMenu();
                     }
@@ -176,7 +176,7 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
+                        SessionValues.chosenSettlement = __instance;
 
                         if (ServerValues.hasFaction) FactionManager.OnFactionOpen();
                         else FactionManager.OnNoFactionOpen();
@@ -190,9 +190,9 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
                     action = delegate 
                     {
-                        ClientValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
+                        SessionValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
 
-                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(ClientValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
+                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(SessionValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
                     }
                 };
@@ -232,8 +232,8 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Spy"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
-                        ClientValues.chosenCaravan = caravan;
+                        SessionValues.chosenSettlement = __instance;
+                        SessionValues.chosenCaravan = caravan;
 
                         OfflineActivityManager.RequestOfflineActivity(OfflineActivityType.Spy);
                     }
@@ -246,8 +246,8 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Raid"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
-                        ClientValues.chosenCaravan = caravan;
+                        SessionValues.chosenSettlement = __instance;
+                        SessionValues.chosenCaravan = caravan;
 
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Raid Mode", "Please choose your raid mode",
                             "[BETA] Online", "Offline",
@@ -266,8 +266,8 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Visit"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
-                        ClientValues.chosenCaravan = caravan;
+                        SessionValues.chosenSettlement = __instance;
+                        SessionValues.chosenCaravan = caravan;
 
                         RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
                             "[BETA] Online", "Offline",
@@ -286,10 +286,10 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Transfer"),
                     action = delegate
                     {
-                        ClientValues.chosenSettlement = __instance;
-                        ClientValues.chosenCaravan = caravan;
+                        SessionValues.chosenSettlement = __instance;
+                        SessionValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckIfSocialPawnInCaravan(ClientValues.chosenCaravan))
+                        if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.chosenCaravan))
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
                         }
@@ -358,7 +358,7 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                     action = delegate
                     {
-                        ClientValues.chosenSite = __instance;
+                        SessionValues.chosenSite = __instance;
 
                         Action r1 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
                             GoodwillTarget.Site); };
@@ -429,7 +429,7 @@ namespace GameClient
                         icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
                         action = delegate
                         {
-                            ClientValues.chosenCaravan = __instance;
+                            SessionValues.chosenCaravan = __instance;
 
                             RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Personal Sites", "Available sites to build",
                                 SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, null);
@@ -445,7 +445,7 @@ namespace GameClient
                         icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
                         action = delegate
                         {
-                            ClientValues.chosenCaravan = __instance;
+                            SessionValues.chosenCaravan = __instance;
 
                             RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Faction Sites", "Available sites to build",
                                 SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, null);
@@ -467,8 +467,8 @@ namespace GameClient
                         icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
                         action = delegate
                         {
-                            ClientValues.chosenCaravan = __instance;
-                            ClientValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
+                            SessionValues.chosenCaravan = __instance;
+                            SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                             SiteManager.OnSimpleSiteRequest();
                         }
@@ -481,8 +481,8 @@ namespace GameClient
                         icon = ContentFinder<Texture2D>.Get("Commands/DestroySite"),
                         action = delegate
                         {
-                            ClientValues.chosenCaravan = __instance;
-                            ClientValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
+                            SessionValues.chosenCaravan = __instance;
+                            SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                             SiteManager.RequestDestroySite();
                         }
@@ -506,9 +506,9 @@ namespace GameClient
                     icon = ContentFinder<Texture2D>.Get("Commands/Road"),
                     action = delegate
                     {
-                        ClientValues.chosenCaravan = __instance;
+                        SessionValues.chosenCaravan = __instance;
                         List<int> neighborTiles = new List<int>();
-                        Find.WorldGrid.GetTileNeighbors(ClientValues.chosenCaravan.Tile, neighborTiles);
+                        Find.WorldGrid.GetTileNeighbors(SessionValues.chosenCaravan.Tile, neighborTiles);
                         RoadManagerHelper.ChooseRoadDialogs(neighborTiles.ToArray(), Find.WorldGrid[__instance.Tile].Roads != null);
                     }
                 };
@@ -533,13 +533,13 @@ namespace GameClient
 
                 if (Network.state == NetworkState.Connected)
                 {
-                    ClientValues.chosenSettlement = settlement;
-                    ClientValues.chosendPods = representative;
+                    SessionValues.chosenSettlement = settlement;
+                    SessionValues.chosendPods = representative;
 
                     string optionLabel = $"Transfer things to {settlement.Name}";
                     Action toDo = delegate
                     {
-                        TransferManager.TakeTransferItemsFromPods(ClientValues.chosendPods);
+                        TransferManager.TakeTransferItemsFromPods(SessionValues.chosendPods);
                         TransferManager.SendTransferRequestToServer(TransferLocation.Pod);
                     };
 

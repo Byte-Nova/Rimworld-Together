@@ -65,7 +65,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.manifestMode = FactionManifestMode.RemoveMember;
-                playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
+                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -131,7 +131,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.manifestMode = FactionManifestMode.Promote;
-                playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
+                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -141,7 +141,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.manifestMode = FactionManifestMode.Demote;
-                playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
+                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -151,7 +151,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.manifestMode = FactionManifestMode.RemoveMember;
-                playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
+                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -190,7 +190,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.manifestMode = FactionManifestMode.AddMember;
-                playerFactionData.manifestDataInt = ClientValues.chosenSettlement.Tile;
+                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);

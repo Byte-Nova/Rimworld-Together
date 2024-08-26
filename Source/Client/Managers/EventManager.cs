@@ -70,7 +70,7 @@ namespace GameClient
                 EventData eventData = new EventData();
                 eventData.eventStepMode = EventStepMode.Send;
                 eventData.fromTile = toGetSilverFrom.Tile;
-                eventData.toTile = ClientValues.chosenSettlement.Tile;
+                eventData.toTile = SessionValues.chosenSettlement.Tile;
                 eventData.eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);

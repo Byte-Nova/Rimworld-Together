@@ -107,7 +107,7 @@ namespace GameClient
 
         public static void WorldPacket(Packet packet)
         {
-            WorldManager.ParseWorldPacket(packet);
+            PlanetGeneratorManager.ParseWorldPacket(packet);
         }
 
         public static void BreakPacket(Packet packet)

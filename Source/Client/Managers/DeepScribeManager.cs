@@ -1482,7 +1482,7 @@ namespace GameClient
             IntVec3 mapSize = ValueParser.ArrayToIntVec3(mapData.mapSize);
 
             PlanetManagerHelper.SetOverrideGenerators();
-            Map toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(ClientValues.chosenSettlement.Tile, mapSize, null);
+            Map toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(SessionValues.chosenSettlement.Tile, mapSize, null);
             PlanetManagerHelper.SetDefaultGenerators();
 
             return toReturn;

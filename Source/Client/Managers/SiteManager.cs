@@ -135,7 +135,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site information"));
 
             SiteData siteData = new SiteData();
-            siteData.tile = ClientValues.chosenSite.Tile;
+            siteData.tile = SessionValues.chosenSite.Tile;
             siteData.siteStepMode = SiteStepMode.Info;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
@@ -181,7 +181,7 @@ namespace GameClient
             {
                 Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanData>(siteData.workerData));
 
-                RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, ClientValues.chosenCaravan);
+                RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, SessionValues.chosenCaravan);
 
                 SaveManager.ForceSave();
             };
@@ -191,7 +191,7 @@ namespace GameClient
 
         private static void PrepareSendPawnScreen()
         {
-            List<Pawn> pawns = ClientValues.chosenCaravan.PawnsListForReading;
+            List<Pawn> pawns = SessionValues.chosenCaravan.PawnsListForReading;
             List<string> pawnNames = new List<string>();
             foreach (Pawn pawn in pawns)
             {
@@ -206,7 +206,7 @@ namespace GameClient
 
         public static void SendPawnToSite()
         {
-            List<Pawn> caravanPawns = ClientValues.chosenCaravan.PawnsListForReading;
+            List<Pawn> caravanPawns = SessionValues.chosenCaravan.PawnsListForReading;
             List<Pawn> caravanHumans = new List<Pawn>();
             foreach (Pawn pawn in caravanPawns)
             {
@@ -214,17 +214,17 @@ namespace GameClient
             }
 
             Pawn pawnToSend = caravanHumans[DialogManager.dialogButtonListingResultInt];
-            ClientValues.chosenCaravan.RemovePawn(pawnToSend);
+            SessionValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteData siteData = new SiteData();
-            siteData.tile = ClientValues.chosenSite.Tile;
+            siteData.tile = SessionValues.chosenSite.Tile;
             siteData.siteStepMode = SiteStepMode.Deposit;
             siteData.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
 
-            if (caravanHumans.Count == 1) ClientValues.chosenCaravan.Destroy();
+            if (caravanHumans.Count == 1) SessionValues.chosenCaravan.Destroy();
 
             SaveManager.ForceSave();
         }
@@ -234,7 +234,7 @@ namespace GameClient
             Action r1 = delegate
             {
                 SiteData siteData = new SiteData();
-                siteData.tile = ClientValues.chosenSite.Tile;
+                siteData.tile = SessionValues.chosenSite.Tile;
                 siteData.siteStepMode = SiteStepMode.Destroy;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
@@ -331,18 +331,18 @@ namespace GameClient
         {
             DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], SessionValues.chosenCaravan);
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;
-                siteData.tile = ClientValues.chosenCaravan.Tile;
+                siteData.tile = SessionValues.chosenCaravan.Tile;
                 siteData.type = DialogManager.selectedScrollButton;
                 siteData.isFromFaction = false;
 
@@ -386,18 +386,18 @@ namespace GameClient
         {
             DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
+                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], SessionValues.chosenCaravan);
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;
-                siteData.tile = ClientValues.chosenCaravan.Tile;
+                siteData.tile = SessionValues.chosenCaravan.Tile;
                 siteData.type = DialogManager.selectedScrollButton;
                 siteData.isFromFaction = true;
 

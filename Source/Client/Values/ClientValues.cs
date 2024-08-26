@@ -23,19 +23,6 @@ namespace GameClient
 
         public static bool isRealTimeHost;
 
-        public static OnlineActivityType currentRealTimeEvent;
-
-        public static OfflineActivityType latestOfflineActivity;
-
-        public static Settlement chosenSettlement;
-        public static Caravan chosenCaravan;
-        public static Site chosenSite;
-        public static CompLaunchable chosendPods;
-
-        public static TransferData outgoingManifest = new TransferData();
-        public static TransferData incomingManifest = new TransferData();
-        public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();
-
         public static string username;
 
         public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
@@ -72,10 +59,6 @@ namespace GameClient
 
         public static void ToggleTransfer(bool mode) { isInTransfer = mode; }
 
-        public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }
-
-        public static void ToggleOfflineFunction(OfflineActivityType type) { latestOfflineActivity = type; }
-
         public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
 
         public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
@@ -92,20 +75,10 @@ namespace GameClient
             SetIntentionalDisconnect(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
-            ToggleOnlineFunction(OnlineActivityType.None);
-            ToggleOfflineFunction(OfflineActivityType.None);
             ToggleSavingGame(false);
             ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);
             ToggleRealTimeHost(false);
-
-            chosenSettlement = null;
-            chosenCaravan = null;
-            chosenSite = null;
-
-            outgoingManifest = new TransferData();
-            incomingManifest = new TransferData();
-            listToShowInTradesMenu = new List<Tradeable>();
         }
     }
 }
