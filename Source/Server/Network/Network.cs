@@ -31,7 +31,7 @@ namespace GameServer
             Logger.Warning("Server launched");  
             Logger.Warning($"Listening for users at {localAddress}:{port}");            
             Logger.Warning("Type 'help' to get a list of available commands");
-            Master.ChangeTitle();
+            Main_.ChangeTitle();
 
             while (true) ListenForIncomingUsers();
         }
@@ -63,7 +63,7 @@ namespace GameServer
                 {
                     connectedClients.Add(newServerClient);
 
-                    Master.ChangeTitle();
+                    Main_.ChangeTitle();
 
                     Logger.Message($"[Connect] > {newServerClient.userFile.Username} | {newServerClient.userFile.SavedIP}");
                 }
@@ -79,7 +79,7 @@ namespace GameServer
                 connectedClients.Remove(client);
                 client.listener.DestroyConnection();
 
-                Master.ChangeTitle();
+                Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
                 Logger.Message($"[Disconnect] > {client.userFile.Username} | {client.userFile.SavedIP}");
             }

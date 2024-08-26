@@ -83,7 +83,7 @@ namespace GameServer
             currentRoads.Add(details);
 
             Master.worldValues.Roads = currentRoads.ToArray();
-            Master.SaveValueFile(ServerFileMode.World);
+            Main_.SaveValueFile(ServerFileMode.World);
 
             if (client != null) Logger.Warning($"[Added road from tiles '{details.tileA}' to '{details.tileB}'] > {client.userFile.Username}");
             else Logger.Warning($"[Added road from tiles '{details.tileA}' to '{details.tileB}']");
@@ -95,7 +95,7 @@ namespace GameServer
             currentRoads.Remove(details);
 
             Master.worldValues.Roads = currentRoads.ToArray();
-            Master.SaveValueFile(ServerFileMode.World);
+            Main_.SaveValueFile(ServerFileMode.World);
 
             if (client != null) Logger.Warning($"[Removed road from tiles '{details.tileA}' to '{details.tileB}'] > {client.userFile.Username}");
             else Logger.Warning($"[Removed road from tiles '{details.tileA}' to '{details.tileB}']");

@@ -44,7 +44,7 @@ namespace GameServer
             finalSettlements.Remove(GetSettlementFromTile(settlement.tile));
             Master.worldValues.NPCSettlements = finalSettlements.ToArray();
 
-            Master.SaveValueFile(ServerFileMode.World);
+            Main_.SaveValueFile(ServerFileMode.World);
         }
 
         private static void BroadcastSettlementDeletion(PlanetNPCSettlement settlement)

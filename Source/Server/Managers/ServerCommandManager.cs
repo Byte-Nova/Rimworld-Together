@@ -420,7 +420,7 @@ namespace GameServer
             }
         }
 
-        private static void ReloadCommandAction() { Master.LoadResources(); }
+        private static void ReloadCommandAction() { Main_.LoadResources(); }
         
         private static void ModListCommandAction()
         {
@@ -592,14 +592,14 @@ namespace GameServer
         {
             Master.difficultyValues.UseCustomDifficulty = !Master.difficultyValues.UseCustomDifficulty;
             Logger.Warning($"Custom difficulty is now {(Master.difficultyValues.UseCustomDifficulty ? ("Enabled") : ("Disabled"))}");
-            Master.SaveValueFile(ServerFileMode.Difficulty);
+            Main_.SaveValueFile(ServerFileMode.Difficulty);
         }
 
         private static void ToggleCustomScenariosCommandAction()
         {
             Master.serverConfig.AllowCustomScenarios = !Master.serverConfig.AllowCustomScenarios;
             Logger.Warning($"Custom scenarios are now {(Master.serverConfig.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}");
-            Master.SaveValueFile(ServerFileMode.Configs);
+            Main_.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ToggleDiscordPressenceCommandAction()
@@ -607,14 +607,14 @@ namespace GameServer
             Master.discordConfig.Enabled = !Master.discordConfig.Enabled;
             Logger.Warning($"Discord pressence is now {(Master.discordConfig.Enabled ? ("Enabled") : ("Disabled"))}");
             Logger.Warning("Please restart the server to start the service");
-            Master.SaveValueFile(ServerFileMode.Discord);
+            Main_.SaveValueFile(ServerFileMode.Discord);
         }
 
         private static void ToggleUPnPCommandAction()
         {
             Master.serverConfig.UseUPnP = !Master.serverConfig.UseUPnP;
             Logger.Warning($"UPnP port mapping is now {(Master.serverConfig.UseUPnP ? ("Enabled") : ("Disabled"))}");
-            Master.SaveValueFile(ServerFileMode.Configs);
+            Main_.SaveValueFile(ServerFileMode.Configs);
 
             if (Master.serverConfig.UseUPnP)
             {
@@ -653,14 +653,14 @@ namespace GameServer
         {
             Master.serverConfig.VerboseLogs = !Master.serverConfig.VerboseLogs;
             Logger.Warning($"Verbose Logs set to {Master.serverConfig.VerboseLogs}");
-            Master.SaveValueFile(ServerFileMode.Configs);
+            Main_.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ToggleSyncLocalSaveCommandAction()
         {
             Master.serverConfig.SyncLocalSave = !Master.serverConfig.SyncLocalSave;
             Logger.Warning($"Sync Local Save set to {Master.serverConfig.SyncLocalSave}");
-            Master.SaveValueFile(ServerFileMode.Configs);
+            Main_.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ResetWorldCommandAction()
@@ -744,7 +744,7 @@ namespace GameServer
                 if (Directory.Exists(Master.usersPath)) Directory.Move(Master.usersPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Users");
                 if (Directory.Exists(Master.caravansPath)) Directory.Move(Master.caravansPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Caravans");
 
-                Master.SetPaths();
+                Main_.SetPaths();
                 Logger.Warning("World has been successfully reset and archived");
                 foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.disconnectFlag = true;
         }
