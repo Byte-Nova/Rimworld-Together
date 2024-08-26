@@ -11,7 +11,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    public static class WorldGeneratorManager
+    public static class PlanetGeneratorManager
     {
         public static WorldValuesFile cachedWorldValues;
 
@@ -27,6 +27,8 @@ namespace GameClient
             typeof(WorldGenStep_Pollution)
         };
 
+        
+
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
             cachedWorldValues = new WorldValuesFile();
@@ -37,7 +39,7 @@ namespace GameClient
             cachedWorldValues.Temperature = (int)temperature;
             cachedWorldValues.Population = (int)population;
             cachedWorldValues.Pollution = pollution;
-            cachedWorldValues.NPCFactions = WorldGeneratorHelper.GetNPCFactionsFromDef(factions.ToArray());
+            cachedWorldValues.NPCFactions = PlanetGeneratorManagerHelper.GetNPCFactionsFromDef(factions.ToArray());
         }
 
         public static void SetValuesFromServer(WorldData worldData) { cachedWorldValues = worldData.worldValuesFile; }
@@ -70,7 +72,7 @@ namespace GameClient
             Current.CreatingWorld.info.overallTemperature = (OverallTemperature)cachedWorldValues.Temperature;
             Current.CreatingWorld.info.overallPopulation = (OverallPopulation)cachedWorldValues.Population;
             Current.CreatingWorld.info.name = NameGenerator.GenerateName(RulePackDefOf.NamerWorld);
-            Current.CreatingWorld.info.factions = WorldGeneratorHelper.GetFactionDefsFromNPCFaction(cachedWorldValues.NPCFactions).ToList();
+            Current.CreatingWorld.info.factions = PlanetGeneratorManagerHelper.GetFactionDefsFromNPCFaction(cachedWorldValues.NPCFactions).ToList();
             Current.CreatingWorld.info.pollution = cachedWorldValues.Pollution;
 
             WorldGenStepDef[] worldGenSteps = GenStepsInOrder.ToArray();
@@ -123,7 +125,7 @@ namespace GameClient
         {
             WorldData worldData = new WorldData();
             worldData.worldStepMode = WorldStepMode.Required;
-            worldData.worldValuesFile = WorldGeneratorHelper.PopulateWorldValues();
+            worldData.worldValuesFile = PlanetGeneratorManagerHelper.PopulateWorldValues();
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);
@@ -180,17 +182,17 @@ namespace GameClient
         }
     }
 
-    public static class WorldGeneratorHelper
+    public static class PlanetGeneratorManagerHelper
     {
         public static WorldValuesFile PopulateWorldValues()
         {
-            WorldGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
-            WorldGeneratorManager.cachedWorldValues.Roads = RoadManagerHelper.GetPlanetRoads();
-            WorldGeneratorManager.cachedWorldValues.Rivers = RiverManagerHelper.GetPlanetRivers();
-            WorldGeneratorManager.cachedWorldValues.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
-            WorldGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
-            WorldGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
-            return WorldGeneratorManager.cachedWorldValues;
+            PlanetGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
+            PlanetGeneratorManager.cachedWorldValues.Roads = RoadManagerHelper.GetPlanetRoads();
+            PlanetGeneratorManager.cachedWorldValues.Rivers = RiverManagerHelper.GetPlanetRivers();
+            PlanetGeneratorManager.cachedWorldValues.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
+            PlanetGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
+            PlanetGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
+            return PlanetGeneratorManager.cachedWorldValues;
         }
 
         public static PlanetNPCFaction[] GetNPCFactionsFromDef(FactionDef[] factionDefs)
@@ -214,7 +216,7 @@ namespace GameClient
             List<FactionDef> defList = new List<FactionDef>();
             foreach (PlanetNPCFaction faction in factions)
             {
-                try { defList.Add(DefDatabase<FactionDef>.AllDefs.ToArray().First(fetch => fetch.defName == faction.factionDefName)); }
+                try { defList.Add(DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == faction.factionDefName)); }
                 catch (Exception e) { Logger.Error($"Failed get FactionDef '{faction.factionDefName}' from server. Reason: {e}"); }
             }
             return defList.ToArray();

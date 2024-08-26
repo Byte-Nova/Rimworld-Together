@@ -402,12 +402,12 @@ namespace GameClient
                 Enum.TryParse(humanData.gender, true, out Gender humanGender);
                 pawn.gender = humanGender;
 
-                pawn.story.hairDef = DefDatabase<HairDef>.AllDefs.ToList().Find(x => x.defName == humanData.hairDefName);
-                pawn.story.headType = DefDatabase<HeadTypeDef>.AllDefs.ToList().Find(x => x.defName == humanData.headTypeDefName);
-                pawn.style.beardDef = DefDatabase<BeardDef>.AllDefs.ToList().Find(x => x.defName == humanData.beardDefName);
-                pawn.story.bodyType = DefDatabase<BodyTypeDef>.AllDefs.ToList().Find(x => x.defName == humanData.bodyTypeDefName);
-                pawn.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanData.FaceTattooDefName);
-                pawn.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.ToList().Find(x => x.defName == humanData.BodyTattooDefName);
+                pawn.story.hairDef = DefDatabase<HairDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.hairDefName);
+                pawn.story.headType = DefDatabase<HeadTypeDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.headTypeDefName);
+                pawn.style.beardDef = DefDatabase<BeardDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.beardDefName);
+                pawn.story.bodyType = DefDatabase<BodyTypeDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.bodyTypeDefName);
+                pawn.style.FaceTattoo = DefDatabase<TattooDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.FaceTattooDefName);
+                pawn.style.BodyTattoo = DefDatabase<TattooDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.BodyTattooDefName);
 
                 string hairColor = humanData.hairColor.Replace("RGBA(", "").Replace(")", "");
                 string[] isolatedHair = hairColor.Split(',');
@@ -443,7 +443,7 @@ namespace GameClient
                 {
                     try
                     {
-                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.ToList().Find(x => x.defName == humanData.hediffDefNames[i]);
+                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.hediffDefNames[i]);
                         BodyPartRecord bodyPart = null;
 
                         if (humanData.hediffPartDefName[i] != "null")
@@ -501,7 +501,7 @@ namespace GameClient
             {
                 if (humanData.xenotypeDefName != "null")
                 {
-                    pawn.genes.SetXenotype(DefDatabase<XenotypeDef>.AllDefs.ToList().Find(x => x.defName == humanData.xenotypeDefName));
+                    pawn.genes.SetXenotype(DefDatabase<XenotypeDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.xenotypeDefName));
                 }
 
                 if (humanData.customXenotypeName != "null")
@@ -523,8 +523,8 @@ namespace GameClient
                 {
                     try
                     {
-                        GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
-                        pawn.genes.AddGene(def, true);
+                        GeneDef def = DefDatabase<GeneDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                        if (def != null) pawn.genes.AddGene(def, true);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
@@ -542,8 +542,8 @@ namespace GameClient
                 {
                     try
                     {
-                        GeneDef def = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
-                        pawn.genes.AddGene(def, false);
+                        GeneDef def = DefDatabase<GeneDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                        if (def != null) pawn.genes.AddGene(def, false);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
@@ -576,12 +576,12 @@ namespace GameClient
             {
                 if (humanData.childhoodStory != "null")
                 {
-                    pawn.story.Childhood = DefDatabase<BackstoryDef>.AllDefs.ToList().Find(x => x.defName == humanData.childhoodStory);
+                    pawn.story.Childhood = DefDatabase<BackstoryDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.childhoodStory);
                 }
 
                 if (humanData.adulthoodStory != "null")
                 {
-                    pawn.story.Adulthood = DefDatabase<BackstoryDef>.AllDefs.ToList().Find(x => x.defName == humanData.adulthoodStory);
+                    pawn.story.Adulthood = DefDatabase<BackstoryDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.adulthoodStory);
                 }
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -616,7 +616,7 @@ namespace GameClient
                 {
                     try
                     {
-                        TraitDef traitDef = DefDatabase<TraitDef>.AllDefs.ToList().Find(x => x.defName == humanData.traitDefNames[i]);
+                        TraitDef traitDef = DefDatabase<TraitDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.traitDefNames[i]);
                         Trait trait = new Trait(traitDef, int.Parse(humanData.traitDegrees[i]));
                         pawn.story.traits.GainTrait(trait);
                     }
@@ -900,7 +900,7 @@ namespace GameClient
                 {
                     try
                     {
-                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.ToList().Find(x => x.defName == animalData.hediffDefNames[i]);
+                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == animalData.hediffDefNames[i]);
                         BodyPartRecord bodyPart = null;
 
                         if (animalData.hediffPartDefName[i] != "null")
@@ -933,7 +933,7 @@ namespace GameClient
                 {
                     try
                     {
-                        TrainableDef trainable = DefDatabase<TrainableDef>.AllDefs.ToList().Find(x => x.defName == animalData.trainableDefNames[i]);
+                        TrainableDef trainable = DefDatabase<TrainableDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == animalData.trainableDefNames[i]);
                         if (animalData.canTrain[i]) animal.training.Train(trainable, null, complete: animalData.hasLearned[i]);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -1153,8 +1153,8 @@ namespace GameClient
         {
             try
             {
-                ThingDef thingDef = DefDatabase<ThingDef>.AllDefs.ToList().Find(x => x.defName == thingData.defName);
-                ThingDef defMaterial = DefDatabase<ThingDef>.AllDefs.ToList().Find(x => x.defName == thingData.materialDefName);
+                ThingDef thingDef = DefDatabase<ThingDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == thingData.defName);
+                ThingDef defMaterial = DefDatabase<ThingDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == thingData.materialDefName);
                 return ThingMaker.MakeThing(thingDef, defMaterial);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -1502,7 +1502,7 @@ namespace GameClient
 
                         try
                         {
-                            TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
+                            TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.FirstOrDefault(fetch => fetch.defName ==
                                 mapData.tileDefNames[index]);
 
                             map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
@@ -1513,8 +1513,8 @@ namespace GameClient
 
                         try
                         {
-                            RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList().Find(fetch => fetch.defName ==
-                                        mapData.tileRoofDefNames[index]);
+                            RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.FirstOrDefault(fetch => fetch.defName ==
+                                mapData.tileRoofDefNames[index]);
 
                             map.roofGrid.SetRoof(vectorToCheck, roofToUse);
                         }
@@ -1701,7 +1701,7 @@ namespace GameClient
 
         public static bool CheckIfThingIsAnimal(Thing thing)
         {
-            PawnKindDef animal = DefDatabase<PawnKindDef>.AllDefs.ToList().Find(fetch => fetch.defName == thing.def.defName);
+            PawnKindDef animal = DefDatabase<PawnKindDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == thing.def.defName);
             if (animal != null) return true;
             else return false;
         }

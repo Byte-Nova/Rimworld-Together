@@ -42,7 +42,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            WorldGeneratorManager.SetValuesFromServer(worldData);
+            PlanetGeneratorManager.SetValuesFromServer(worldData);
 
             DialogManager.PushNewDialog(new Page_SelectScenario());
         }

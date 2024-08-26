@@ -6,7 +6,6 @@ using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 
-
 namespace GameClient
 {
     public static class EventManager
@@ -101,9 +100,7 @@ namespace GameClient
                 if (eventData.toTile != -1) targetMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == eventData.toTile).Map;
                 else targetMap = Find.AnyPlayerHomeMap;
 
-                IncidentDef eventToTrigger = DefDatabase<IncidentDef>.AllDefs.ToArray()
-                    .FirstOrDefault(fetch => fetch.defName == eventData.eventFile.DefName);
-
+                IncidentDef eventToTrigger = DefDatabase<IncidentDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == eventData.eventFile.DefName);
                 if (eventToTrigger != null) TriggerEvent(eventToTrigger, targetMap);
             }
         }
