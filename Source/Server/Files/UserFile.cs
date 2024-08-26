@@ -101,7 +101,7 @@ namespace GameServer
         {
             savingSemaphore.WaitOne();
 
-            string savePath = Path.Combine(Master.usersPath, Username + UserManager.fileExtension);
+            string savePath = Path.Combine(Master.usersPath, Username + UserManagerHelper.fileExtension);
             Serializer.SerializeToFile(savePath, this);
 
             savingSemaphore.Release();

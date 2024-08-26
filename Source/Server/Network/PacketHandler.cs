@@ -30,12 +30,12 @@ namespace GameServer
 
         public static void LoginClientPacket(ServerClient client, Packet packet)
         {
-            UserLogin.TryLoginUser(client, packet);
+            UserManager.LoginUser(client, packet);
         }
 
         public static void RegisterClientPacket(ServerClient client, Packet packet)
         {
-            UserRegister.TryRegisterUser(client, packet);
+            UserManager.RegisterUser(client, packet);
         }
 
         public static void RequestSavePartPacket(ServerClient client, Packet packet)

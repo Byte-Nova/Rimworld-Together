@@ -176,7 +176,7 @@ namespace GameServer
                 {
                     factionManifest.manifestMode = FactionManifestMode.Delete;
 
-                    UserFile[] userFiles = UserManager.GetAllUserFiles();
+                    UserFile[] userFiles = UserManagerHelper.GetAllUserFiles();
                     foreach (UserFile userFile in userFiles)
                     {
                         if (userFile.FactionName == client.userFile.FactionName) userFile.UpdateFaction(null);
@@ -207,7 +207,7 @@ namespace GameServer
         {
             FactionFile factionFile = GetFactionFromClient(client);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDataInt);
-            ServerClient toAdd = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+            ServerClient toAdd = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
 
             if (factionFile == null) return;
             if (toAdd == null) return;
@@ -256,8 +256,8 @@ namespace GameServer
         {
             FactionFile factionFile = GetFactionFromClient(client);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDataInt);
-            UserFile toRemoveLocal = UserManager.GetUserFileFromName(settlementFile.owner);
-            ServerClient toRemove = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+            UserFile toRemoveLocal = UserManagerHelper.GetUserFileFromName(settlementFile.owner);
+            ServerClient toRemove = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
 
             if (GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member)
             {
@@ -328,7 +328,7 @@ namespace GameServer
         private static void PromoteMember(ServerClient client, PlayerFactionData factionManifest)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDataInt);
-            UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
             if (GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member)
@@ -365,7 +365,7 @@ namespace GameServer
         private static void DemoteMember(ServerClient client, PlayerFactionData factionManifest)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest.manifestDataInt);
-            UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.owner);
             FactionFile factionFile = GetFactionFromClient(client);
 
             if (GetMemberRank(factionFile, client.userFile.Username) != FactionRanks.Admin)

@@ -1,6 +1,4 @@
 ﻿using Shared;
-using System.Globalization;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -75,7 +73,7 @@ namespace GameServer
         public static DifficultyValuesFile difficultyValues;
 
         public static RoadValuesFile roadValues;
-        
+
         public static DiscordConfigFile discordConfig;
 
         //Booleans

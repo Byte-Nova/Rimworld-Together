@@ -20,6 +20,6 @@ namespace GameServer
             else userFile.SavedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
         }
 
-        public void LoadFromUserFile() { userFile = UserManager.GetUserFile(this); }
+        public void LoadFromUserFile() { userFile = UserManagerHelper.GetUserFile(this); }
     }
 }

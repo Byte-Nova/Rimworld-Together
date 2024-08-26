@@ -254,7 +254,7 @@ namespace GameServer
 
         private static void DeepListCommandAction()
         {
-            UserFile[] userFiles = UserManager.GetAllUserFiles();
+            UserFile[] userFiles = UserManagerHelper.GetAllUserFiles();
 
             Logger.Title($"Server players: [{userFiles.Count()}]");
             Logger.Title("----------------------------------------");
@@ -343,7 +343,7 @@ namespace GameServer
             ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
             if (toFind == null)
             {
-                UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+                UserFile userFile = UserManagerHelper.GetUserFileFromName(commandParameters[0]);
                 if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
                 else
@@ -381,20 +381,17 @@ namespace GameServer
 
         private static void BanListCommandAction()
         {
-            List<UserFile> userFiles = UserManager.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
+            List<UserFile> userFiles = UserManagerHelper.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
 
             Logger.Title($"Banned players: [{userFiles.Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (UserFile user in userFiles)
-            {
-                Logger.Warning($"{user.Username} - {user.SavedIP}");
-            }
+            foreach (UserFile user in userFiles) Logger.Warning($"{user.Username} - {user.SavedIP}");
             Logger.Title("----------------------------------------");
         }
 
         private static void PardonCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(commandParameters[0]);
             if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
@@ -521,7 +518,7 @@ namespace GameServer
 
         private static void WhitelistAddCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(commandParameters[0]);
             if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
@@ -544,7 +541,7 @@ namespace GameServer
 
         private static void WhitelistRemoveCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(commandParameters[0]);
             if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
 
             else
@@ -581,8 +578,8 @@ namespace GameServer
 
         private static void ResetPlayerCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
-            ServerClient toFind = UserManager.GetConnectedClientFromUsername(userFile.Username);
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(commandParameters[0]);
+            ServerClient toFind = UserManagerHelper.GetConnectedClientFromUsername(userFile.Username);
 
             if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
             else SaveManager.ResetPlayerData(toFind, userFile.Username);

@@ -71,7 +71,7 @@ namespace GameServer
             if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to visit a settlement at tile {data.targetTile}, but no settlement could be found");
             else
             {
-                ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
                     data.activityStepMode = OnlineActivityStepMode.Unavailable;
@@ -104,7 +104,7 @@ namespace GameServer
             if (settlementFile == null) return;
             else
             {
-                ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null) return;
                 else
                 {
@@ -123,7 +123,7 @@ namespace GameServer
             if (settlementFile == null) return;
             else
             {
-                ServerClient toGet = UserManager.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null) return;
                 else
                 {

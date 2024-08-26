@@ -39,7 +39,7 @@ namespace GameServer
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
-                if (!UserManager.CheckIfUserIsConnected(settlement.owner))
+                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
                 {
                     eventData.eventStepMode = EventStepMode.Recover;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
@@ -48,7 +48,7 @@ namespace GameServer
 
                 else
                 {
-                    ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
+                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlement.owner);
 
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
                     {

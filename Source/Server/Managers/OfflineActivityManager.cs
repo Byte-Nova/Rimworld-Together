@@ -36,7 +36,7 @@ namespace GameServer
             {
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.targetTile);
 
-                if (UserManager.CheckIfUserIsConnected(settlementFile.owner))
+                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.owner))
                 {
                     data.activityStepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
@@ -45,7 +45,7 @@ namespace GameServer
 
                 else
                 {
-                    UserFile userFile = UserManager.GetUserFileFromName(settlementFile.owner);
+                    UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.owner);
 
                     if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
                     {

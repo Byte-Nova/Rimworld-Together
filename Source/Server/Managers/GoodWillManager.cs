@@ -57,7 +57,7 @@ namespace GameServer
             {
                 if (site.isFromFaction)
                 {
-                    if (site.factionName == UserManager.GetUserFileFromName(factionGoodwillData.owner).FactionName)
+                    if (site.factionName == UserManagerHelper.GetUserFileFromName(factionGoodwillData.owner).FactionName)
                     {
                         factionGoodwillData.siteTiles.Add(site.tile);
                         tempList.Add(GetSiteGoodwill(client, site));
@@ -181,7 +181,7 @@ namespace GameServer
                 }
             }
 
-            UserFile[] userFiles = UserManager.GetAllUserFiles();
+            UserFile[] userFiles = UserManagerHelper.GetAllUserFiles();
             List<UserFile> usersToGet = new List<UserFile>();
 
             foreach (UserFile file in userFiles)
