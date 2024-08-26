@@ -10,14 +10,19 @@ namespace GameServer
     public static class Network
     {
         //IP and Port that the connection will be bound to
+
         private static IPAddress localAddress = IPAddress.Parse(Master.serverConfig.IP);
+
         public static int port = int.Parse(Master.serverConfig.Port);
 
         //TCP listener that will handle the connection with the clients, and list of currently connected clients
+
         private static TcpListener connection;
+
         public static List<ServerClient> connectedClients = new List<ServerClient>();
 
         //Entry point function of the network class
+
         public static void ReadyServer()
         {
             if (Master.serverConfig.UseUPnP) { _ = new UPnP(); }
@@ -37,6 +42,7 @@ namespace GameServer
         }
 
         //Listens for any user that might connect and executes all required tasks  with it
+        
         private static void ListenForIncomingUsers()
         {
             TcpClient newTCP = connection.AcceptTcpClient();

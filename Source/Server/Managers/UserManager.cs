@@ -19,7 +19,7 @@ namespace GameServer
 
             client.userFile.SetLoginDetails(loginData);
 
-            client.LoadFromUserFile();
+            client.LoadUserFromFile();
 
             Logger.Message($"[Handshake] > {client.userFile.SavedIP} | {client.userFile.Username}");
 

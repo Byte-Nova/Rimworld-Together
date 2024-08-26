@@ -15,7 +15,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
@@ -44,7 +44,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
@@ -61,7 +61,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Caravan caravan)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData.settlementData.tile = caravan.Tile;
@@ -81,7 +81,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Map map)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData.settlementData.tile = map.Tile;
@@ -101,7 +101,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData.settlementData.tile = settlement.Tile;
@@ -121,7 +121,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Settlement __instance)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     if (!ClientValues.isReadyToPlay) return;
 
@@ -138,7 +138,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == NetworkState.Connected) ClientValues.ManageDevOptions();
+                if (Network.state == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
                 else return;
             }
         }
@@ -149,7 +149,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == NetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
+                if (Network.state == ClientNetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
                 else return;
             }
         }

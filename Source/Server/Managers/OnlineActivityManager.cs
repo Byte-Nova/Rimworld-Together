@@ -81,7 +81,7 @@ namespace GameServer
 
                 else
                 {
-                    if (toGet.InVisitWith != null)
+                    if (toGet.inVisitWith != null)
                     {
                         data.activityStepMode = OnlineActivityStepMode.Unavailable;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
@@ -108,8 +108,8 @@ namespace GameServer
                 if (toGet == null) return;
                 else
                 {
-                    client.InVisitWith = toGet;
-                    toGet.InVisitWith = client;
+                    client.inVisitWith = toGet;
+                    toGet.inVisitWith = client;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                     toGet.listener.EnqueuePacket(packet);
@@ -135,7 +135,7 @@ namespace GameServer
 
         private static void SendVisitActions(ServerClient client, OnlineActivityData data)
         {
-            if (client.InVisitWith == null)
+            if (client.inVisitWith == null)
             {
                 data.activityStepMode = OnlineActivityStepMode.Stop;
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
@@ -145,7 +145,7 @@ namespace GameServer
             else
             {
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
-                client.InVisitWith.listener.EnqueuePacket(packet);
+                client.inVisitWith.listener.EnqueuePacket(packet);
             }
         }
 
@@ -157,12 +157,12 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), visitData);
             client.listener.EnqueuePacket(packet);
 
-            ServerClient otherPlayer = client.InVisitWith;
+            ServerClient otherPlayer = client.inVisitWith;
             if (otherPlayer != null)
             {
                 otherPlayer.listener.EnqueuePacket(packet);
-                otherPlayer.InVisitWith = null;
-                client.InVisitWith = null;
+                otherPlayer.inVisitWith = null;
+                client.inVisitWith = null;
             }
         }
     }

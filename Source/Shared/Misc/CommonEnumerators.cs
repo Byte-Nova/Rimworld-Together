@@ -2,6 +2,8 @@ namespace Shared
 {
     public class CommonEnumerators
     {
+        public enum ClientNetworkState { Disconnected, Connecting, Connected }
+
         public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
