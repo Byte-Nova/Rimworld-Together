@@ -19,11 +19,11 @@ namespace GameClient
             switch (data.stepMode)
             {
                 case RoadStepMode.Add:
-                    AddRoadSimple(data.details.tileA, data.details.tileB, RoadManagerHelper.GetRoadDefFromDefName(data.details.roadDefName), true);
+                    AddRoadSimple(data.details.fromTile, data.details.toTile, RoadManagerHelper.GetRoadDefFromDefName(data.details.roadDefName), true);
                     break;
 
                 case RoadStepMode.Remove:
-                    RemoveRoadSimple(data.details.tileA, data.details.tileB, true);
+                    RemoveRoadSimple(data.details.fromTile, data.details.toTile, true);
                     break;
             }
         }
@@ -34,8 +34,8 @@ namespace GameClient
             data.stepMode = RoadStepMode.Add;
 
             data.details = new RoadDetails();
-            data.details.tileA = tileAID;
-            data.details.tileB = tileBID;
+            data.details.fromTile = tileAID;
+            data.details.toTile = tileBID;
             data.details.roadDefName = roadDef.defName;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
@@ -48,8 +48,8 @@ namespace GameClient
             data.stepMode = RoadStepMode.Remove;
 
             data.details = new RoadDetails();
-            data.details.tileA = tileAID;
-            data.details.tileB = tileBID;
+            data.details.fromTile = tileAID;
+            data.details.toTile = tileBID;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -61,7 +61,7 @@ namespace GameClient
 
             foreach (RoadDetails detail in details)
             {
-                AddRoadSimple(detail.tileA, detail.tileB, RoadManagerHelper.GetRoadDefFromDefName(detail.roadDefName), forceRefresh);
+                AddRoadSimple(detail.fromTile, detail.toTile, RoadManagerHelper.GetRoadDefFromDefName(detail.roadDefName), forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
@@ -245,7 +245,7 @@ namespace GameClient
             foreach (int tileID in neighborTiles)
             {
                 if (!CheckIfCanBuildRoadOnTile(tileID)) continue;
-                else if (CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID)) continue;
+                else if (CheckIfTwoTilesAreConnected(SessionValues.chosenCaravan.Tile, tileID)) continue;
                 else
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
@@ -265,10 +265,10 @@ namespace GameClient
                     {
                         int selectedIndex = DialogManager.dialogButtonListingResultInt;
 
-                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, allowedRoadCosts[selectedIndex]))
+                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, allowedRoadCosts[selectedIndex]))
                         {
-                            RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, allowedRoadCosts[selectedIndex], ClientValues.chosenCaravan);
-                            RoadManager.SendRoadAddRequest(ClientValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
+                            RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, allowedRoadCosts[selectedIndex], SessionValues.chosenCaravan);
+                            RoadManager.SendRoadAddRequest(SessionValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             SaveManager.ForceSave();
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
@@ -288,7 +288,7 @@ namespace GameClient
 
             foreach (int tileID in neighborTiles)
             {
-                if (CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID))
+                if (CheckIfTwoTilesAreConnected(SessionValues.chosenCaravan.Tile, tileID))
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
                     string toDisplay = "RTRoadTile".Translate(vector.y.ToStringLatitude(), vector.x.ToStringLongitude());
@@ -301,7 +301,7 @@ namespace GameClient
             {
                 int selectedTile = selectableTiles[DialogManager.dialogButtonListingResultInt];
 
-                RoadManager.SendRoadRemoveRequest(ClientValues.chosenCaravan.Tile, selectedTile);
+                RoadManager.SendRoadRemoveRequest(SessionValues.chosenCaravan.Tile, selectedTile);
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("RTRoadDestroyer".Translate(), "RTRoadDestroyerDesc".Translate(),
@@ -318,11 +318,11 @@ namespace GameClient
                     foreach (Tile.RoadLink link in tile.Roads)
                     {
                         RoadDetails details = new RoadDetails();
-                        details.tileA = Find.WorldGrid.tiles.IndexOf(tile);
-                        details.tileB = link.neighbor;
+                        details.fromTile = Find.WorldGrid.tiles.IndexOf(tile);
+                        details.toTile = link.neighbor;
                         details.roadDefName = link.road.defName;
 
-                        if (!CheckIfExists(details.tileA, details.tileB)) toGet.Add(details);
+                        if (!CheckIfExists(details.fromTile, details.toTile)) toGet.Add(details);
                     }
                 }
             }
@@ -332,8 +332,8 @@ namespace GameClient
             {
                 foreach (RoadDetails details in toGet)
                 {
-                    if (details.tileA == tileA && details.tileB == tileB) return true;
-                    else if (details.tileA == tileB && details.tileB == tileA) return true;
+                    if (details.fromTile == tileA && details.toTile == tileB) return true;
+                    else if (details.fromTile == tileB && details.toTile == tileA) return true;
                 }
 
                 return false;

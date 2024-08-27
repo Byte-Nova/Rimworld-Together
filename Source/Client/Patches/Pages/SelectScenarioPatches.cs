@@ -4,6 +4,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -13,7 +14,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectScenario __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
 
             Vector2 buttonSize = new Vector2(150f, 38f);
             Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
@@ -29,7 +30,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (Network.state == NetworkState.Disconnected) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
 
             Text.Font = GameFont.Small;
             Vector2 buttonSize = new Vector2(150f, 38f);
@@ -44,7 +45,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
             if (ServerValues.AllowCustomScenarios) return true;
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("RTCustomScenariosUnAvailable".Translate()));
@@ -62,7 +63,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref Scenario ___curScen)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
             if (ServerValues.AllowCustomScenarios) return true;
 
             if (curScen != null) ___curScen = curScen;

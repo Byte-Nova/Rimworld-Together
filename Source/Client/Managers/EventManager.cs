@@ -6,7 +6,6 @@ using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 
-
 namespace GameClient
 {
     public static class EventManager
@@ -15,7 +14,7 @@ namespace GameClient
         {
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
-            switch (eventData.eventStepMode)
+            switch (eventData.stepMode)
             {
                 case EventStepMode.Send:
                     OnEventSent();
@@ -67,9 +66,9 @@ namespace GameClient
                 RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost);
 
                 EventData eventData = new EventData();
-                eventData.eventStepMode = EventStepMode.Send;
+                eventData.stepMode = EventStepMode.Send;
                 eventData.fromTile = toGetSilverFrom.Tile;
-                eventData.toTile = ClientValues.chosenSettlement.Tile;
+                eventData.toTile = SessionValues.chosenSettlement.Tile;
                 eventData.eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
@@ -99,9 +98,7 @@ namespace GameClient
                 if (eventData.toTile != -1) targetMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == eventData.toTile).Map;
                 else targetMap = Find.AnyPlayerHomeMap;
 
-                IncidentDef eventToTrigger = DefDatabase<IncidentDef>.AllDefs.ToArray()
-                    .FirstOrDefault(fetch => fetch.defName == eventData.eventFile.DefName);
-
+                IncidentDef eventToTrigger = DefDatabase<IncidentDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == eventData.eventFile.DefName);
                 if (eventToTrigger != null) TriggerEvent(eventToTrigger, targetMap);
             }
         }

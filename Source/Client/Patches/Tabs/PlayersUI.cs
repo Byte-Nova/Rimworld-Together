@@ -3,6 +3,7 @@ using System.Linq;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -24,7 +25,7 @@ namespace GameClient
 
         protected override void FillTab()
         {
-            if (Network.state == NetworkState.Connected)
+            if (Network.state == ClientNetworkState.Connected)
             {
                 tabTitle = "RTOnlinePlayers".Translate(ServerValues.currentPlayers);
 

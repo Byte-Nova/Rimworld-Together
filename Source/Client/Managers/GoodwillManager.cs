@@ -18,12 +18,12 @@ namespace GameClient
         public static void TryRequestGoodwill(Goodwill type, GoodwillTarget target)
         {
             int tileToUse = 0;
-            if (target == GoodwillTarget.Settlement) tileToUse = ClientValues.chosenSettlement.Tile;
-            else if (target == GoodwillTarget.Site) tileToUse = ClientValues.chosenSite.Tile;
+            if (target == GoodwillTarget.Settlement) tileToUse = SessionValues.chosenSettlement.Tile;
+            else if (target == GoodwillTarget.Site) tileToUse = SessionValues.chosenSite.Tile;
 
             Faction factionToUse = null;
-            if (target == GoodwillTarget.Settlement) factionToUse = ClientValues.chosenSettlement.Faction;
-            else if (target == GoodwillTarget.Site) factionToUse = ClientValues.chosenSite.Faction;
+            if (target == GoodwillTarget.Settlement) factionToUse = SessionValues.chosenSettlement.Faction;
+            else if (target == GoodwillTarget.Site) factionToUse = SessionValues.chosenSite.Faction;
 
             if (type == Goodwill.Enemy)
             {

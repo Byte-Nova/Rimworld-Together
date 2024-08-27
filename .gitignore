@@ -415,4 +415,8 @@ Source/buildClient.sh
 Source/buildServer.sh
 Source/publishServer.sh
 
-RimWorldFolderPath.txt
+# Builder variables
+Builders/RimWorldFolderPath.txt
+
+# Visual Studio Code
+Source/.vscode/*.*

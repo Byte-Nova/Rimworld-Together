@@ -8,17 +8,11 @@ namespace GameClient
     {
         //Useful disconnection variables
 
-        public enum DCReason
-        {
-            None,
-            SaveQuitToMenu,
-            SaveQuitToOS,
-            QuitToMenu,
-            ConnectionLost
-        }
+        public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost }
+
+        public static DCReason intentionalDisconnectReason;
 
         public static bool isIntentionalDisconnect;
-        public static DCReason intentionalDisconnectReason;
 
         //Executes different actions depending on the disconnection mode
 
@@ -83,14 +77,14 @@ namespace GameClient
         {
             ClientValues.CleanValues();
             ServerValues.CleanValues();
+            SessionValues.CleanValues();
             ChatManager.CleanChat();
 
             DialogManager.PopWaitDialog();
 
             if (Current.ProgramState != ProgramState.Entry)
             {
-                LongEventHandler.QueueLongEvent(delegate { }, 
-                    "Entry", "", doAsynchronously: false, null);
+                LongEventHandler.QueueLongEvent(delegate { }, "Entry", "", doAsynchronously: false, null);
             }
         }
 

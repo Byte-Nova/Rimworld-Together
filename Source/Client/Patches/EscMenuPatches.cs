@@ -4,6 +4,7 @@ using Shared;
 using System;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -13,7 +14,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == NetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (Network.state == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -46,13 +47,13 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == NetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (Network.state == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), ""))
                 {
-                    if (Network.state == NetworkState.Disconnected) DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogNeedInServer".Translate()));
+                    if (Network.state == ClientNetworkState.Disconnected) DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogNeedInServer".Translate()));
                     else
                     {
                         Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
@@ -77,7 +78,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.state == NetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (Network.state == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 

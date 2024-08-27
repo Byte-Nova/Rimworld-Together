@@ -10,6 +10,8 @@ namespace GameClient
 {
     public class ModStuff : Mod
     {
+        //Variables
+
         private readonly ModConfigs modConfigs;
 
         public ModStuff(ModContentPack content) : base(content)

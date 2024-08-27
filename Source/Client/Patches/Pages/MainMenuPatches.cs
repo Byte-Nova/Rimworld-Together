@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -23,7 +24,7 @@ namespace GameClient
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y + 0.5f);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
-                        if (Network.state != NetworkState.Disconnected) return true;
+                        if (Network.state != ClientNetworkState.Disconnected) return true;
                         DialogShortcuts.ShowConnectDialogs();
                     }
 
@@ -31,7 +32,7 @@ namespace GameClient
                     buttonLocation = new Vector2(rect.x - 50f, rect.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
-                        if (Network.state != NetworkState.Disconnected) return true;
+                        if (Network.state != ClientNetworkState.Disconnected) return true;
 
                         SetupQuickConnectVariables();
 
@@ -71,12 +72,12 @@ namespace GameClient
 
             private static void SetupQuickConnectVariables()
             {
-                string[] details = PreferenceManager.LoadConnectionData();
-                Network.ip = details[0];
-                Network.port = details[1];
+                ConnectionDataFile connectionData = PreferenceManager.LoadConnectionData();
+                Network.ip = connectionData.ip;
+                Network.port = connectionData.port;
 
-                details = PreferenceManager.LoadLoginData();
-                ClientValues.username = details[0];
+                LoginDataFile loginData = PreferenceManager.LoadLoginData();
+                ClientValues.username = loginData.username;
             }
 
             private static void ShowQuickConnectFloatMenu()
@@ -96,16 +97,17 @@ namespace GameClient
                         DialogManager.PushNewDialog(new RT_Dialog_Wait("RTTryingToConnect".Translate()));
                         Network.StartConnection();
 
-                        if (Network.state == NetworkState.Connected)
+                        if (Network.state == ClientNetworkState.Connected)
                         {
-                            string[] details = PreferenceManager.LoadLoginData();
-                            LoginData loginData = new LoginData();
-                            loginData.username = details[0];
-                            loginData.password = Hasher.GetHashFromString(details[1]);
-                            loginData.clientVersion = CommonValues.executableVersion;
-                            loginData.runningMods = ModManager.GetRunningModList().ToList();
+                            LoginDataFile loginData = PreferenceManager.LoadLoginData();
 
-                            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), loginData);
+                            LoginData data = new LoginData();
+                            data.username = loginData.username;
+                            data.password = Hasher.GetHashFromString(loginData.password);
+                            data.clientVersion = CommonValues.executableVersion;
+                            data.runningMods = ModManager.GetRunningModList().ToList();
+
+                            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), data);
                             Network.listener.EnqueuePacket(packet);
                         }
                     });

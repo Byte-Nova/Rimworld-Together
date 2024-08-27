@@ -17,7 +17,7 @@ namespace GameClient
         {
             OfflineActivityData offlineVisitData = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
-            switch (offlineVisitData.activityStepMode)
+            switch (offlineVisitData.stepMode)
             {
                 case OfflineActivityStepMode.Request:
                     OnRequestAccepted(offlineVisitData);
@@ -37,20 +37,20 @@ namespace GameClient
 
         public static void RequestOfflineActivity(OfflineActivityType activityType)
         {
-            ClientValues.ToggleOfflineFunction(activityType);
+            SessionValues.ToggleOfflineFunction(activityType);
 
             if (activityType == OfflineActivityType.Spy)
             {
                 Action r1 = delegate
                 {
-                    if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, spyCost))
+                    if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, spyCost))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
                     }
 
                     else
                     {
-                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost, ClientValues.chosenCaravan);
+                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost, SessionValues.chosenCaravan);
                         SendRequest();
                     }
                 };
@@ -66,8 +66,8 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("RTMapWait".Translate()));
 
             OfflineActivityData data = new OfflineActivityData();
-            data.activityStepMode = OfflineActivityStepMode.Request;
-            data.targetTile = ClientValues.chosenSettlement.Tile;
+            data.stepMode = OfflineActivityStepMode.Request;
+            data.targetTile = SessionValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -77,12 +77,12 @@ namespace GameClient
 
         private static void OnOfflineActivityDeny()
         {
-            if (ClientValues.latestOfflineActivity == OfflineActivityType.Spy)
+            if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy)
             {
                 Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
                 silverToReturn.stackCount = spyCost;
 
-                RimworldManager.PlaceThingIntoCaravan(silverToReturn, ClientValues.chosenCaravan);
+                RimworldManager.PlaceThingIntoCaravan(silverToReturn, SessionValues.chosenCaravan);
             }
 
             DialogManager.PopWaitDialog();
@@ -94,12 +94,12 @@ namespace GameClient
 
         private static void OnOfflineActivityUnavailable()
         {
-            if (ClientValues.latestOfflineActivity == OfflineActivityType.Spy)
+            if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy)
             {
                 Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
                 silverToReturn.stackCount = spyCost;
 
-                RimworldManager.PlaceThingIntoCaravan(silverToReturn, ClientValues.chosenCaravan);
+                RimworldManager.PlaceThingIntoCaravan(silverToReturn, SessionValues.chosenCaravan);
             }
 
             DialogManager.PopWaitDialog();
@@ -117,7 +117,7 @@ namespace GameClient
 
             Action r1 = delegate 
             {
-                if (ClientValues.latestOfflineActivity == OfflineActivityType.Spy) SaveManager.ForceSave();
+                if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy) SaveManager.ForceSave();
                 PrepareMapForOfflineActivity(mapData); 
             };
 
@@ -134,37 +134,37 @@ namespace GameClient
         {
             Map map = null;
 
-            if (ClientValues.latestOfflineActivity == OfflineActivityType.Visit)
+            if (SessionValues.latestOfflineActivity == OfflineActivityType.Visit)
             {
                 map = MapScribeManager.StringToMap(mapData, false, true, true, true, true, true);
             }
 
-            else if (ClientValues.latestOfflineActivity == OfflineActivityType.Raid)
+            else if (SessionValues.latestOfflineActivity == OfflineActivityType.Raid)
             {
                 map = MapScribeManager.StringToMap(mapData, true, true, true, true, true, true, true);
             }
 
-            else if (ClientValues.latestOfflineActivity == OfflineActivityType.Spy)
+            else if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy)
             {
                 map = MapScribeManager.StringToMap(mapData, false, true, false, true, false, true);
             }
 
             HandleMapFactions(map);
 
-            if (ClientValues.latestOfflineActivity == OfflineActivityType.Visit)
+            if (SessionValues.latestOfflineActivity == OfflineActivityType.Visit)
             {
-                CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
+                CaravanEnterMapUtility.Enter(SessionValues.chosenCaravan, map, CaravanEnterMode.Edge,
                     CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
             }
 
-            else if (ClientValues.latestOfflineActivity == OfflineActivityType.Raid)
+            else if (SessionValues.latestOfflineActivity == OfflineActivityType.Raid)
             {
-                SettlementUtility.Attack(ClientValues.chosenCaravan, ClientValues.chosenSettlement);
+                SettlementUtility.Attack(SessionValues.chosenCaravan, SessionValues.chosenSettlement);
             }
 
-            else if (ClientValues.latestOfflineActivity == OfflineActivityType.Spy)
+            else if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy)
             {
-                CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, map, CaravanEnterMode.Edge,
+                CaravanEnterMapUtility.Enter(SessionValues.chosenCaravan, map, CaravanEnterMode.Edge,
                     CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
             }
 
@@ -179,8 +179,8 @@ namespace GameClient
             {
                 if (pawn.Faction == FactionValues.neutralPlayer)
                 {
-                    if (ClientValues.latestOfflineActivity == OfflineActivityType.Visit) { pawn.SetFaction(FactionValues.allyPlayer); }
-                    else if (ClientValues.latestOfflineActivity == OfflineActivityType.Raid) { pawn.SetFaction(FactionValues.enemyPlayer); }
+                    if (SessionValues.latestOfflineActivity == OfflineActivityType.Visit) { pawn.SetFaction(FactionValues.allyPlayer); }
+                    else if (SessionValues.latestOfflineActivity == OfflineActivityType.Raid) { pawn.SetFaction(FactionValues.enemyPlayer); }
                 }
             }
 
@@ -188,8 +188,8 @@ namespace GameClient
             {
                 if (thing.Faction == FactionValues.neutralPlayer)
                 {
-                    if (ClientValues.latestOfflineActivity == OfflineActivityType.Visit) { thing.SetFaction(FactionValues.allyPlayer); }
-                    else if (ClientValues.latestOfflineActivity == OfflineActivityType.Raid) { thing.SetFaction(FactionValues.enemyPlayer); }
+                    if (SessionValues.latestOfflineActivity == OfflineActivityType.Visit) { thing.SetFaction(FactionValues.allyPlayer); }
+                    else if (SessionValues.latestOfflineActivity == OfflineActivityType.Raid) { thing.SetFaction(FactionValues.enemyPlayer); }
                 }
             }
         }
@@ -201,7 +201,7 @@ namespace GameClient
             Thing toFocusOn;
             IntVec3 deployPlace;
 
-            if (ClientValues.latestOfflineActivity == OfflineActivityType.Visit)
+            if (SessionValues.latestOfflineActivity == OfflineActivityType.Visit)
             {
                 deployPlace = map.Center;
                 toFocusOn = map.listerThings.AllThings.Find(x => x.def.defName == "RTChillSpot");
@@ -212,7 +212,7 @@ namespace GameClient
                 LordMaker.MakeNewLord(FactionValues.allyPlayer, job, map, lordPawns);
             }
 
-            else if (ClientValues.latestOfflineActivity == OfflineActivityType.Raid)
+            else if (SessionValues.latestOfflineActivity == OfflineActivityType.Raid)
             {
                 deployPlace = map.Center;
                 toFocusOn = map.listerThings.AllThings.Find(x => x.def.defName == "RTDefenseSpot");

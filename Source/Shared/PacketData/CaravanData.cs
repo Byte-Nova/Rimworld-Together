@@ -7,6 +7,7 @@ namespace Shared
     public class CaravanData
     {
         public CaravanStepMode stepMode;
-        public CaravanDetails details;
+
+        public CaravanFile caravanFile;
     }
 }

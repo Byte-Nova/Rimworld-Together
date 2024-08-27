@@ -9,7 +9,7 @@ namespace GameServer
         {
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
-            switch (eventData.eventStepMode)
+            switch (eventData.stepMode)
             {
                 case EventStepMode.Send:
                     SendEvent(client, eventData);
@@ -39,20 +39,20 @@ namespace GameServer
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
-                if (!UserManager.CheckIfUserIsConnected(settlement.owner))
+                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
                 {
-                    eventData.eventStepMode = EventStepMode.Recover;
+                    eventData.stepMode = EventStepMode.Recover;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
                 else
                 {
-                    ServerClient target = UserManager.GetConnectedClientFromUsername(settlement.owner);
+                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlement.owner);
 
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
                     {
-                        eventData.eventStepMode = EventStepMode.Recover;
+                        eventData.stepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
@@ -66,7 +66,7 @@ namespace GameServer
 
                         //To the person that should receive it
 
-                        eventData.eventStepMode = EventStepMode.Receive;
+                        eventData.stepMode = EventStepMode.Receive;
 
                         target.userFile.UpdateEventTime();
 

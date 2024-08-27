@@ -45,7 +45,7 @@ namespace GameClient
             AidData aidData = new AidData();
             aidData.stepMode = AidStepMode.Send;
             aidData.fromTile = Find.AnyPlayerHomeMap.Tile;
-            aidData.toTile = ClientValues.chosenSettlement.Tile;
+            aidData.toTile = SessionValues.chosenSettlement.Tile;
 
             Pawn toGet = RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResultInt];
             aidData.humanData = HumanScribeManager.HumanToString(toGet);

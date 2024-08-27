@@ -24,7 +24,7 @@ namespace GameClient
 
         protected override void FillTab()
         {
-            if (Network.state == NetworkState.Connected)
+            if (Network.state == ClientNetworkState.Connected)
             {
                 tabTitle = "RTBases".Translate(PlayerSettlementManager.playerSettlements.Count());
 
@@ -98,7 +98,7 @@ namespace GameClient
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        ClientValues.chosenSettlement = settlement;
+                        SessionValues.chosenSettlement = settlement;
 
                         GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
                             GoodwillTarget.Settlement);
@@ -114,7 +114,7 @@ namespace GameClient
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        ClientValues.chosenSettlement = settlement;
+                        SessionValues.chosenSettlement = settlement;
 
                         GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
                             GoodwillTarget.Settlement);
@@ -130,7 +130,7 @@ namespace GameClient
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        ClientValues.chosenSettlement = settlement;
+                        SessionValues.chosenSettlement = settlement;
 
                         GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
                             GoodwillTarget.Settlement);

@@ -7,7 +7,7 @@ namespace Shared
     [Serializable]
     public class TransferData
     {
-        public TransferStepMode transferStepMode;
+        public TransferStepMode stepMode;
 
         public TransferMode transferMode;
 

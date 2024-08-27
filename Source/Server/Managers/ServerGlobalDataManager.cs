@@ -18,7 +18,9 @@ namespace GameServer
 
             globalData = GetServerSites(client, globalData);
 
-            globalData = GetServerCaravans(client, globalData);
+            globalData = GetServerMarket(globalData);
+
+            globalData = GetServerCaravans(globalData);
 
             globalData = GetServerRoads(globalData);
 
@@ -41,7 +43,7 @@ namespace GameServer
         {
             globalData.isClientAdmin = client.userFile.IsAdmin;
 
-            globalData.isClientFactionMember = client.userFile.HasFaction;
+            globalData.isClientFactionMember = client.userFile.faction != null;
 
             return globalData;
         }
@@ -93,7 +95,7 @@ namespace GameServer
                 file.owner = site.owner;
                 file.goodwill = GoodwillManager.GetSiteGoodwill(client, site);
                 file.type = site.type;
-                file.fromFaction = site.isFromFaction;
+                file.fromFaction = site.factionFile != null;
 
                 tempList.Add(file);
             }
@@ -103,7 +105,13 @@ namespace GameServer
             return globalData;
         }
 
-        private static ServerGlobalData GetServerCaravans(ServerClient client, ServerGlobalData globalData)
+        private static ServerGlobalData GetServerMarket(ServerGlobalData globalData)
+        {
+            globalData.marketValues = Master.marketValues;
+            return globalData;
+        }
+
+        private static ServerGlobalData GetServerCaravans(ServerGlobalData globalData)
         {
             globalData.playerCaravans = CaravanManager.GetActiveCaravans();
             return globalData;

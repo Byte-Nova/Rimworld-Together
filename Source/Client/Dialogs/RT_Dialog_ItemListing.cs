@@ -148,9 +148,9 @@ namespace GameClient
 
                 else if (transferMode == TransferMode.Rebound)
                 {
-                    ClientValues.incomingManifest.transferStepMode = TransferStepMode.TradeReAccept;
+                    SessionValues.incomingManifest.stepMode = TransferStepMode.TradeReAccept;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), ClientValues.incomingManifest);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);

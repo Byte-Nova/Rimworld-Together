@@ -19,8 +19,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\EventFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\SiteFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\FactionFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\CaravanFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\MarketValuesFile.cs" />
+
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
+
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\AidData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineActivityData.cs" />
@@ -28,7 +38,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RoadData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CaravanData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Caravans\CaravanDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\CreationOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DamageOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\DestructionOrder.cs" />
@@ -44,39 +53,32 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\KeepAliveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\LoginData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapFileData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\TimeSpeedOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\WeatherOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Pollution\PollutionDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Rivers\RiverDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Roads\RoadDetails.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCFaction.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\PlanetGenerator\PlanetNPCFaction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\PlanetGenerator\PlanetFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\NPCSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerRecountData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ServerGlobalData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\SettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\PlayerSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionGoodwillData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\WorldData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCSettlement.cs" />
-
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\PlanetGenerator\PlanetNPCSettlement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\HumanData.cs" />
-
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\AnimalData.cs" />
-
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\ThingData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\BookData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\GenepackData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\PlantData.cs" />
+    
+    <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
   </ItemGroup>
 
   <ItemGroup>

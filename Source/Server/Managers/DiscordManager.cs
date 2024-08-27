@@ -71,7 +71,7 @@ namespace GameServer
             else if (message.Channel.Id == Master.discordConfig.ConsoleChannelId)
             {
                 Logger.Outsider($"[Discord Command] > {message.CleanContent}");
-                ServerCommandManager.ParseServerCommands(message.CleanContent);
+                ConsoleCommandManager.ParseServerCommands(message.CleanContent);
             }
 
             return Task.CompletedTask;
@@ -140,7 +140,7 @@ namespace GameServer
         {
             while (true)
             {
-                int count = Network.connectedClients.ToArray().Count();
+                int count = NetworkHelper.GetConnectedClientsSafe().Count();
                 string multiple = count > 1 ? "s" : "";
                 
                 await discordClient.SetCustomStatusAsync($"{count} Player{multiple} online");

@@ -1,60 +1,9 @@
-﻿using Shared;
-using static GameServer.ServerCommandManager;
+using Shared;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
-    public static class ServerCommandManager
-    {
-        public static string[] commandParameters;
-
-        public static void ParseServerCommands(string parsedString)
-        {
-            string parsedPrefix = parsedString.Split(' ')[0].ToLower();
-            int parsedParameters = parsedString.Split(' ').Count() - 1;
-            commandParameters = parsedString.Replace(parsedPrefix + " ", "").Split(" ");
-
-            try
-            {
-                ServerCommand commandToFetch = ServerCommandStorage.serverCommands.ToList().Find(x => x.prefix == parsedPrefix);
-                if (commandToFetch == null) Logger.Warning($"Command '{parsedPrefix}' was not found");
-                else
-                {
-                    if (commandToFetch.parameters != parsedParameters && commandToFetch.parameters != -1)
-                    {
-                        Logger.Warning($"Command '{commandToFetch.prefix}' wanted [{commandToFetch.parameters}] parameters "
-                            + $"but was passed [{parsedParameters}]");
-                    }
-
-                    else
-                    {
-                        if (commandToFetch.commandAction != null) commandToFetch.commandAction.Invoke();
-
-                        else Logger.Warning($"Command '{commandToFetch.prefix}' didn't have any action built in");
-                    }
-                }
-            }
-            catch (Exception e) { Logger.Error($"Couldn't parse command '{parsedPrefix}'. Reason: {e}"); }
-        }
-
-        public static void ListenForServerCommands()
-        {
-            bool interactiveConsole = false;
-
-            try { interactiveConsole = Console.In.Peek() != -1 ? true : false; }
-            catch { Logger.Warning($"Couldn't find interactive console, disabling commands"); }
-
-            if (interactiveConsole)
-            {
-                while (true)
-                {
-                    ParseServerCommands(Console.ReadLine());
-                }
-            }
-        }
-    }
-
-    public static class ServerCommandStorage
+    public static class CommandStorage
     {
         private static readonly ServerCommand helpCommand = new ServerCommand("help", 0,
             "Shows a list of all available commands to use",
@@ -243,9 +192,9 @@ namespace GameServer
 
         private static void ListCommandAction()
         {
-            Logger.Title($"Connected players: [{Network.connectedClients.ToArray().Count()}]");
+            Logger.Title($"Connected players: [{NetworkHelper.GetConnectedClientsSafe().Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (ServerClient client in Network.connectedClients.ToArray())
+            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
                 Logger.Warning($"{client.userFile.Username} - {client.userFile.SavedIP}");
             }
@@ -254,7 +203,7 @@ namespace GameServer
 
         private static void DeepListCommandAction()
         {
-            UserFile[] userFiles = UserManager.GetAllUserFiles();
+            UserFile[] userFiles = UserManagerHelper.GetAllUserFiles();
 
             Logger.Title($"Server players: [{userFiles.Count()}]");
             Logger.Title("----------------------------------------");
@@ -267,8 +216,8 @@ namespace GameServer
 
         private static void OpCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
-            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == ConsoleCommandManager.commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
 
             else
             {
@@ -279,7 +228,7 @@ namespace GameServer
 
                     CommandManager.SendOpCommand(toFind);
 
-                    Logger.Warning($"User '{commandParameters[0]}' has now admin privileges");
+                    Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' has now admin privileges");
                 }
             }
 
@@ -297,8 +246,8 @@ namespace GameServer
 
         private static void DeopCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
-            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == ConsoleCommandManager.commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
 
             else
             {
@@ -327,24 +276,24 @@ namespace GameServer
 
         private static void KickCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
-            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == ConsoleCommandManager.commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
 
             else
             {
                 toFind.listener.disconnectFlag = true;
 
-                Logger.Warning($"User '{commandParameters[0]}' has been kicked from the server");
+                Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' has been kicked from the server");
             }
         }
 
         private static void BanCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == ConsoleCommandManager.commandParameters[0]);
             if (toFind == null)
             {
-                UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
-                if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+                UserFile userFile = UserManagerHelper.GetUserFileFromName(ConsoleCommandManager.commandParameters[0]);
+                if (userFile == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
 
                 else
                 {
@@ -353,7 +302,7 @@ namespace GameServer
                     {
                         toFind.userFile.UpdateBan(true);
 
-                        Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
+                        Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' has been banned from the server");
                     }
                 }
             }
@@ -364,14 +313,14 @@ namespace GameServer
 
                 toFind.userFile.UpdateBan(true);
 
-                Logger.Warning($"User '{commandParameters[0]}' has been banned from the server");
+                Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' has been banned from the server");
             }
 
             bool CheckIfIsAlready(UserFile userFile)
             {
                 if (userFile.IsBanned)
                 {
-                    Logger.Warning($"User '{commandParameters[0]}' was already banned from the server");
+                    Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was already banned from the server");
                     return true;
                 }
 
@@ -381,21 +330,18 @@ namespace GameServer
 
         private static void BanListCommandAction()
         {
-            List<UserFile> userFiles = UserManager.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
+            List<UserFile> userFiles = UserManagerHelper.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
 
             Logger.Title($"Banned players: [{userFiles.Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (UserFile user in userFiles)
-            {
-                Logger.Warning($"{user.Username} - {user.SavedIP}");
-            }
+            foreach (UserFile user in userFiles) Logger.Warning($"{user.Username} - {user.SavedIP}");
             Logger.Title("----------------------------------------");
         }
 
         private static void PardonCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
-            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(ConsoleCommandManager.commandParameters[0]);
+            if (userFile == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
 
             else
             {
@@ -404,7 +350,7 @@ namespace GameServer
                 {
                     userFile.UpdateBan(false);
 
-                    Logger.Warning($"User '{commandParameters[0]}' is no longer banned from the server");
+                    Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' is no longer banned from the server");
                 }
             }
 
@@ -412,7 +358,7 @@ namespace GameServer
             {
                 if (!userFile.IsBanned)
                 {
-                    Logger.Warning($"User '{commandParameters[0]}' was not banned from the server");
+                    Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not banned from the server");
                     return true;
                 }
 
@@ -420,7 +366,7 @@ namespace GameServer
             }
         }
 
-        private static void ReloadCommandAction() { Master.LoadResources(); }
+        private static void ReloadCommandAction() { Main_.LoadResources(); }
         
         private static void ModListCommandAction()
         {
@@ -448,33 +394,33 @@ namespace GameServer
 
         private static void EventCommandAction()
         {
-            ServerClient client = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
-            if (client == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            ServerClient client = Network.connectedClients.ToList().Find(x => x.userFile.Username == ConsoleCommandManager.commandParameters[0]);
+            if (client == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
             else
             {
-                EventFile toFind = EventManagerHelper.loadedEvents.FirstOrDefault(fetch => fetch.DefName == commandParameters[1]);
-                if (toFind == null) Logger.Warning($"Event '{commandParameters[1]}' was not found");
+                EventFile toFind = EventManagerHelper.loadedEvents.FirstOrDefault(fetch => fetch.DefName == ConsoleCommandManager.commandParameters[1]);
+                if (toFind == null) Logger.Warning($"Event '{ConsoleCommandManager.commandParameters[1]}' was not found");
                 else
                 {
                     CommandManager.SendEventCommand(client, toFind);
 
-                    Logger.Title($"Sent event '{commandParameters[1]}' to '{commandParameters[0]}'");
+                    Logger.Title($"Sent event '{ConsoleCommandManager.commandParameters[1]}' to '{ConsoleCommandManager.commandParameters[0]}'");
                 }
             }
         }
 
         private static void EventAllCommandAction()
         {
-            EventFile toFind = EventManagerHelper.loadedEvents.FirstOrDefault(fetch => fetch.DefName == commandParameters[0]);
-            if (toFind == null) Logger.Warning($"Event '{commandParameters[0]}' was not found");
+            EventFile toFind = EventManagerHelper.loadedEvents.FirstOrDefault(fetch => fetch.DefName == ConsoleCommandManager.commandParameters[0]);
+            if (toFind == null) Logger.Warning($"Event '{ConsoleCommandManager.commandParameters[0]}' was not found");
             else
             {
-                foreach (ServerClient client in Network.connectedClients.ToArray())
+                foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
                 {
                     CommandManager.SendEventCommand(client, toFind);
                 }
 
-                Logger.Title($"Sent event '{commandParameters[0]}' to every connected player");
+                Logger.Title($"Sent event '{ConsoleCommandManager.commandParameters[0]}' to every connected player");
             }
         }
 
@@ -489,7 +435,7 @@ namespace GameServer
         private static void BroadcastCommandAction()
         {
             string fullText = "";
-            foreach (string str in commandParameters) fullText += $"{str} ";
+            foreach (string str in ConsoleCommandManager.commandParameters) fullText += $"{str} ";
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
             CommandManager.SendBroadcastCommand(fullText);
@@ -500,7 +446,7 @@ namespace GameServer
         private static void ServerMessageCommandAction()
         {
             string fullText = "";
-            foreach (string str in commandParameters)
+            foreach (string str in ConsoleCommandManager.commandParameters)
             {
                 fullText += $"{str} ";
             }
@@ -521,20 +467,20 @@ namespace GameServer
 
         private static void WhitelistAddCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
-            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(ConsoleCommandManager.commandParameters[0]);
+            if (userFile == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
 
             else
             {
                 if (CheckIfIsAlready(userFile)) return;
-                else WhitelistManager.AddUserToWhitelist(commandParameters[0]);
+                else WhitelistManager.AddUserToWhitelist(ConsoleCommandManager.commandParameters[0]);
             }
 
             bool CheckIfIsAlready(UserFile userFile)
             {
                 if (Master.whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
-                    Logger.Warning($"User '{commandParameters[0]}' was already whitelisted");
+                    Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was already whitelisted");
                     return true;
                 }
 
@@ -544,20 +490,20 @@ namespace GameServer
 
         private static void WhitelistRemoveCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
-            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(ConsoleCommandManager.commandParameters[0]);
+            if (userFile == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
 
             else
             {
                 if (CheckIfIsAlready(userFile)) return;
-                else WhitelistManager.RemoveUserFromWhitelist(commandParameters[0]);
+                else WhitelistManager.RemoveUserFromWhitelist(ConsoleCommandManager.commandParameters[0]);
             }
 
             bool CheckIfIsAlready(UserFile userFile)
             {
                 if (!Master.whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
-                    Logger.Warning($"User '{commandParameters[0]}' was not whitelisted");
+                    Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not whitelisted");
                     return true;
                 }
 
@@ -569,22 +515,22 @@ namespace GameServer
 
         private static void ForceSaveCommandAction()
         {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == commandParameters[0]);
-            if (toFind == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == ConsoleCommandManager.commandParameters[0]);
+            if (toFind == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
 
             else
             {
                 CommandManager.SendForceSaveCommand(toFind);
-                Logger.Warning($"User '{commandParameters[0]}' has been forced to save");
+                Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' has been forced to save");
             }
         }
 
         private static void ResetPlayerCommandAction()
         {
-            UserFile userFile = UserManager.GetUserFileFromName(commandParameters[0]);
-            ServerClient toFind = UserManager.GetConnectedClientFromUsername(userFile.Username);
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(ConsoleCommandManager.commandParameters[0]);
+            ServerClient toFind = UserManagerHelper.GetConnectedClientFromUsername(userFile.Username);
 
-            if (userFile == null) Logger.Warning($"User '{commandParameters[0]}' was not found");
+            if (userFile == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
             else SaveManager.ResetPlayerData(toFind, userFile.Username);
         }
 
@@ -592,14 +538,14 @@ namespace GameServer
         {
             Master.difficultyValues.UseCustomDifficulty = !Master.difficultyValues.UseCustomDifficulty;
             Logger.Warning($"Custom difficulty is now {(Master.difficultyValues.UseCustomDifficulty ? ("Enabled") : ("Disabled"))}");
-            Master.SaveValueFile(ServerFileMode.Difficulty);
+            Main_.SaveValueFile(ServerFileMode.Difficulty);
         }
 
         private static void ToggleCustomScenariosCommandAction()
         {
             Master.serverConfig.AllowCustomScenarios = !Master.serverConfig.AllowCustomScenarios;
             Logger.Warning($"Custom scenarios are now {(Master.serverConfig.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}");
-            Master.SaveValueFile(ServerFileMode.Configs);
+            Main_.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ToggleDiscordPressenceCommandAction()
@@ -607,14 +553,14 @@ namespace GameServer
             Master.discordConfig.Enabled = !Master.discordConfig.Enabled;
             Logger.Warning($"Discord pressence is now {(Master.discordConfig.Enabled ? ("Enabled") : ("Disabled"))}");
             Logger.Warning("Please restart the server to start the service");
-            Master.SaveValueFile(ServerFileMode.Discord);
+            Main_.SaveValueFile(ServerFileMode.Discord);
         }
 
         private static void ToggleUPnPCommandAction()
         {
             Master.serverConfig.UseUPnP = !Master.serverConfig.UseUPnP;
             Logger.Warning($"UPnP port mapping is now {(Master.serverConfig.UseUPnP ? ("Enabled") : ("Disabled"))}");
-            Master.SaveValueFile(ServerFileMode.Configs);
+            Main_.SaveValueFile(ServerFileMode.Configs);
 
             if (Master.serverConfig.UseUPnP)
             {
@@ -653,14 +599,14 @@ namespace GameServer
         {
             Master.serverConfig.VerboseLogs = !Master.serverConfig.VerboseLogs;
             Logger.Warning($"Verbose Logs set to {Master.serverConfig.VerboseLogs}");
-            Master.SaveValueFile(ServerFileMode.Configs);
+            Main_.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ToggleSyncLocalSaveCommandAction()
         {
             Master.serverConfig.SyncLocalSave = !Master.serverConfig.SyncLocalSave;
             Logger.Warning($"Sync Local Save set to {Master.serverConfig.SyncLocalSave}");
-            Master.SaveValueFile(ServerFileMode.Configs);
+            Main_.SaveValueFile(ServerFileMode.Configs);
         }
 
         private static void ResetWorldCommandAction()
@@ -669,61 +615,22 @@ namespace GameServer
             Logger.Warning("Are you sure you want to reset the world?");
             Logger.Warning("Please type 'YES' or 'NO'");
 
-            deleteWorldQuestion:
+            DeleteWorldQuestion:
                 string response = Console.ReadLine();
 
                 if (response == "NO") return;
                 else if (response != "YES")
                 {
                     Logger.Error($"{response} is not a valid option; The options must be capitalized");
-                    goto deleteWorldQuestion;
+                    goto DeleteWorldQuestion;
                 }
-
-                //Get the name of the new folder for the world
-                Logger.Warning("The current world will be saved in the 'ArchivedWorlds' folder.\n" +
-                                      "Would you like to name the world before it is moved?\n" +
-                                      "If not, the world will be named with the current date");
-                Logger.Warning("Please type 'YES' or 'NO'");
-
-            nameWorldQuestion:
-                response = Console.ReadLine();
-                string newWorldFolderPath;
-                string newWorldFolderName;
-
-                if (response == "YES")
-                {
-
-                    customName:
-                        Console.WriteLine("Please enter the name you would like to use:");
-                        newWorldFolderName = Console.ReadLine();
-                        newWorldFolderPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
-
-                        try { if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}"); }
-                        catch
-                        {
-                            Logger.Error("The name you entered is invalid.\n" +
-                                " Please make sure your name does not contain any of these sybols:\n" +
-                                "\\/*:<>?\"|");
-
-                            goto customName;
-                        }
-                }
-
-                else if (response == "NO")
-                {
-                    newWorldFolderName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}";
-                    newWorldFolderPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
-                    if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}");
-                }
-
-                else
-                {
-                    Logger.Error($"{response} is not a valid option; The options must be capitalized");
-                    goto nameWorldQuestion;
-                }
+    
+                string newWorldFolderName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
+                string newWorldFolderPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
+                if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}");
 
                 //Make the new folder and move all the current world folders to it
-                Logger.Warning($"The archived world will be saved as:\n{newWorldFolderPath}");
+                Logger.Warning($"The archived world will be saved as: {newWorldFolderPath}");
                 Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Core");
 
                 //The core directory is special because we want to copy the files, not just move them.
@@ -744,9 +651,9 @@ namespace GameServer
                 if (Directory.Exists(Master.usersPath)) Directory.Move(Master.usersPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Users");
                 if (Directory.Exists(Master.caravansPath)) Directory.Move(Master.caravansPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Caravans");
 
-                Master.SetPaths();
+                Main_.SetPaths();
                 Logger.Warning("World has been successfully reset and archived");
-                foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.disconnectFlag = true;
+                foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) client.listener.disconnectFlag = true;
         }
 
         private static void QuitCommandAction()
@@ -755,15 +662,9 @@ namespace GameServer
 
             Logger.Warning($"Waiting for all saves to quit");
 
-            foreach (ServerClient client in Network.connectedClients.ToArray())
-            {
-                CommandManager.SendForceSaveCommand(client);
-            }
+            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) CommandManager.SendForceSaveCommand(client);
 
-            while (Network.connectedClients.ToArray().Length > 0)
-            {
-                Thread.Sleep(1);
-            }
+            while (NetworkHelper.GetConnectedClientsSafe().Length > 0) Thread.Sleep(1);
 
             Environment.Exit(0);
         }

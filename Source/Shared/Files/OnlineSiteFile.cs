@@ -7,10 +7,13 @@ namespace Shared
     public class OnlineSiteFile
     {
         public int tile;
+
         public string owner;
+
         public Goodwill goodwill;
 
         public int type;
+        
         public bool fromFaction;
     }
 }
