@@ -84,7 +84,7 @@ namespace GameClient
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
                 List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
                 {
-                    Tuple.Create("RTFastJoin".Translate(Network.ip, Network.port, ClientValues.username), 0),
+                    Tuple.Create((string)"RTFastJoin".Translate(Network.ip, Network.port, ClientValues.username), 0),
                 };
 
                 foreach (Tuple<string, int> tuple in quickConnectTuples)
@@ -93,7 +93,7 @@ namespace GameClient
                     {
                         ClientValues.ToggleQuickConnecting(true);
 
-                        DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogTryingToConnect".Translate()));
+                        DialogManager.PushNewDialog(new RT_Dialog_Wait("RTTryingToConnect".Translate()));
                         Network.StartConnection();
 
                         if (Network.state == NetworkState.Connected)

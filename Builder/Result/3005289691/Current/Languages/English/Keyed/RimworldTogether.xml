@@ -34,8 +34,8 @@
     <RTDiscordOpen>Join the mod's Discord community!</RTDiscordOpen>
     
     <!-- Tabs -->
-
-    <RTBases>Player Bases {0}</RTBases>
+    <RTBasesLabel>Bases</RTBasesLabel>
+    <RTBases>Player Bases: {0}</RTBases>
     <RTFocus>Focus</RTFocus>
     
     <RTChatOnlinePlayers>{0} Players Online</RTChatOnlinePlayers>
@@ -43,10 +43,10 @@
     <RTAutoScroll>Auto Scroll</RTAutoScroll>
     
     <RTPlayersMenu>Players</RTPlayersMenu>
-    <RTOnlinePlayers>Players Online {0}</RTOnlinePlayers>
+    <RTOnlinePlayers>Players Online: {0}</RTOnlinePlayers>
     
     <RTSitesMenu>Sites</RTSitesMenu>
-    <RTPlayerSites>Player Sites {0}</RTPlayerSites>
+    <RTPlayerSites>Player Sites: {0}</RTPlayerSites>
 
     <!-- Connection --> 
     <RTLoginNewUser>New User</RTLoginNewUser>
@@ -121,8 +121,8 @@
     <RTNoOneToTrade>There's no one in the server to trade with!</RTNoOneToTrade>
     <RTTradeQuantityError>You are trying to request an invalid quantity!</RTTradeQuantityError>
     <RTTradeTooMuch>You are trying to request more than is available!</RTTradeTooMuch>
-    <RTDialogRequestQuantity>Quantity to request</RTDialogRequestQuantity>
-    <RTDialogRequestQuantityDesc>Type the quantity you want to request</RTDialogRequestQuantityDesc>
+    <RTRequestQuantity>Quantity to request</RTRequestQuantity>
+    <RTRequestQuantityDesc>Type the quantity you want to request</RTRequestQuantityDesc>
     <RTMarketWait>Waiting for market response</RTMarketWait>
     <RTNotEnoughSilver>You do not have enough silver!</RTNotEnoughSilver>
     
@@ -154,7 +154,7 @@
     <RTDialogWhitelisted>Server is whitelisted!</RTDialogWhitelisted>
     <RTDialogVersionMismatch>Mod version mismatch! Expected version {0}</RTDialogVersionMismatch>
     <RTDialogServerBeingSetup>Server is currently being set up! Join again later!</RTDialogServerBeingSetup>
-    
+    <RTServerDidntResponded>The server did not respond in time</RTServerDidntResponded>
     <!-- Managers -->
     
     <!-- Factions -->

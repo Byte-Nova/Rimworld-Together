@@ -87,7 +87,7 @@ namespace GameClient
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogTradeReload".Translate()))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogReload".Translate()))
             {
                 MarketManager.RequestReloadStock();
             }
@@ -166,7 +166,7 @@ namespace GameClient
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
                     }
                 };
-                DialogManager.PushNewDialog(new RT_Dialog_1Input("RTRequestQuantity".Translate(), "RTDialogRequestQuantityDesc".Translate(), toDo, null));
+                DialogManager.PushNewDialog(new RT_Dialog_1Input("RTRequestQuantity".Translate(), "RTRequestQuantityDesc".Translate(), toDo, null));
             }
         }
     }

@@ -20,7 +20,7 @@ namespace GameClient
         {
             LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Listing("RTModMismatchMenu".Translate, "RTModMismatchMenuDesc".Translate(),
+            DialogManager.PushNewDialog(new RT_Dialog_Listing("RTModMismatchMenu".Translate(), "RTModMismatchMenuDesc".Translate(),
                 loginData.extraDetails.ToArray()));
         }
 

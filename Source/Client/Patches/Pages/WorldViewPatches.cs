@@ -77,7 +77,7 @@ namespace GameClient
 
                 Command_Action command_Goodwill = new Command_Action
                 {
-                    defaultLabel = "RTGoodWillMenu">.Translate(),
+                    defaultLabel = "RTGoodWillMenu".Translate(),
                     defaultDesc = "RTGoodWillSettlementButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                     action = delegate
@@ -370,7 +370,7 @@ namespace GameClient
                             GoodwillTarget.Site); };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("RTGoodWillMenu".Translate(), "RTGoodWillSiteMenuDesc".Translate(),
-                            "RTEnemy".Translate(), "RTNeutral".Translate, "RTAlly".Translate(), r1, r2, r3, null);
+                            "RTEnemy".Translate(), "RTNeutral".Translate(), "RTAlly".Translate(), r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
                     }

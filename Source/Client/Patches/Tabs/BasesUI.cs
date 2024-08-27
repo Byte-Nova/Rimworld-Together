@@ -19,7 +19,7 @@ namespace GameClient
         public BasesUI()
         {
             size = WinSize;
-            labelKey = "Bases";
+            labelKey = "RTBasesLabel".Translate();
         }
 
         protected override void FillTab()

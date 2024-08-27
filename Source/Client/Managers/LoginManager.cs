@@ -1,5 +1,6 @@
 ﻿using Shared;
 using static Shared.CommonEnumerators;
+using Verse;
 
 namespace GameClient
 {
@@ -16,7 +17,7 @@ namespace GameClient
             switch(loginData.tryResponse)
             {
                 case LoginResponse.InvalidLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogLoginInvalid".Translate()));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTLoginInvalid".Translate()));
                     break;
 
                 case LoginResponse.BannedLogin:
@@ -28,7 +29,7 @@ namespace GameClient
                     break;
 
                 case LoginResponse.RegisterError:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogRegisterError".Translate()));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTRegisterError".Translate()));
                     break;
 
                 case LoginResponse.ExtraLogin:

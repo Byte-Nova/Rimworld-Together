@@ -119,7 +119,7 @@ namespace GameClient
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
-                    inputOneCensoredResult = new string('*', inputOne.Length);
+                    inputOneCensoredResult = new string('\u2588', inputOne.Length);
                     Text.Font = GameFont.Small;
                 }
             }
@@ -140,7 +140,7 @@ namespace GameClient
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
-                    inputTwoCensoredResult = new string('*', inputTwo.Length);
+                    inputTwoCensoredResult = new string('\u2588', inputTwo.Length);
                     Text.Font = GameFont.Small;
                 }
             }
@@ -161,7 +161,7 @@ namespace GameClient
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
-                    inputThreeCensoredResult = new string('*', inputThree.Length);
+                    inputThreeCensoredResult = new string('\u2588', inputThree.Length);
                     Text.Font = GameFont.Small;
                 }
             }
