@@ -6,8 +6,11 @@ namespace Shared
     public class PlanetFeature
     {
         public string defName;
+
         public string featureName;
+
         public float[] drawCenter;
+        
         public float maxDrawSizeInTiles;
     }
 }
