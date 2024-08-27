@@ -6,7 +6,9 @@ namespace Shared
     public class RoadDetails
     {
         public string roadDefName;
-        public int tileA;
-        public int tileB;
+
+        public int fromTile;
+
+        public int toTile;
     }
 }

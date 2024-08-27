@@ -4,6 +4,7 @@ using RimWorld.Planet;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -15,7 +16,7 @@ namespace GameClient
             [HarmonyPrefix]
             public static bool DoPre()
             {
-                if (Network.state == NetworkState.Disconnected) return true;
+                if (Network.state == ClientNetworkState.Disconnected) return true;
 
                 int num = TutorSystem.TutorialMode ? 4 : 5;
                 int num2 = (num < 4 || !((float)UI.screenWidth < 540f + (float)num * (150f + 10f))) ? 1 : 2;
@@ -46,7 +47,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == NetworkState.Disconnected) return;
+                if (Network.state == ClientNetworkState.Disconnected) return;
 
                 int num = TutorSystem.TutorialMode ? 4 : 5;
                 int num2 = (num < 4 || !((float)UI.screenWidth < 540f + (float)num * (150f + 10f))) ? 1 : 2;
@@ -73,13 +74,13 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == NetworkState.Disconnected) return;
+                if (Network.state == ClientNetworkState.Disconnected) return;
 
                 //Only done once per save
                 if (!ClientValues.isGeneratingFreshWorld)
                 {
-                    WorldGeneratorManager.SetPlanetFeatures();
-                    WorldGeneratorManager.SetPlanetFactions();
+                    PlanetGeneratorManager.SetPlanetFeatures();
+                    PlanetGeneratorManager.SetPlanetFactions();
                     RiverManager.SetPlanetRivers();
                 }
 

@@ -13,14 +13,15 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
+                    foreach (string str in XmlParser.GetChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()))
+                        if (Master.loadedRequiredMods.Contains(str))
                         {
-                            Logger.Warning($"Loaded > '{modPath}'");
-                            Master.loadedRequiredMods.Add(str.ToLower());
+                            continue;
                         }
+                        Logger.Warning($"Loaded > '{modPath}'");
+                        Master.loadedRequiredMods.Add(str);
                     }
                 }
                 catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
@@ -32,17 +33,15 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
+                    foreach (string str in XmlParser.GetChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()))
+                        if (Master.loadedRequiredMods.Contains(str) || Master.loadedOptionalMods.Contains(str))
                         {
-                            if (!Master.loadedOptionalMods.Contains(str.ToLower()))
-                            {
-                                Logger.Warning($"Loaded > '{modPath}'");
-                                Master.loadedOptionalMods.Add(str.ToLower());
-                            }
+                            continue;
                         }
+                        Logger.Warning($"Loaded > '{modPath}'");
+                        Master.loadedOptionalMods.Add(str);
                     }
                 }
                 catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
@@ -54,17 +53,15 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
+                    foreach (string str in XmlParser.GetChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()) && !Master.loadedOptionalMods.Contains(str.ToLower()))
+                        if (Master.loadedRequiredMods.Contains(str) || Master.loadedOptionalMods.Contains(str) || Master.loadedForbiddenMods.Contains(str))
                         {
-                            if (!Master.loadedForbiddenMods.Contains(str.ToLower()))
-                            {
-                                Logger.Warning($"Loaded > '{modPath}'");
-                                Master.loadedForbiddenMods.Add(str.ToLower());
-                            }
+                            continue;
                         }
+                        Logger.Warning($"Loaded > '{modPath}'");
+                        Master.loadedForbiddenMods.Add(str);
                     }
                 }
                 catch { Logger.Error($"Failed to load About.xml of mod at '{modPath}'"); }
@@ -84,7 +81,6 @@ namespace GameServer
                     {
                         conflictingMods.Add($"[Required] > {mod}");
                         conflictingNames.Add(mod);
-                        continue;
                     }
                 }
 
@@ -95,7 +91,6 @@ namespace GameServer
                     {
                         conflictingMods.Add($"[Disallowed] > {mod}");
                         conflictingNames.Add(mod);
-                        continue;
                     }
                 }
             }
@@ -128,12 +123,9 @@ namespace GameServer
                     return false;
                 }
 
-                else
-                {
-                    Logger.Warning($"[Mod Mismatch] > {client.userFile.Username}");
-                    UserManager.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
-                    return true;
-                }
+                Logger.Warning($"[Mod Mismatch] > {client.userFile.Username}");
+                UserManager.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
+                return true;
             }
         }
     }

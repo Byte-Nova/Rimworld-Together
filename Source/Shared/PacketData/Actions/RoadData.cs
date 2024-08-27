@@ -7,6 +7,7 @@ namespace Shared
     public class RoadData
     {
         public RoadStepMode stepMode;
+        
         public RoadDetails details;
     }
 }

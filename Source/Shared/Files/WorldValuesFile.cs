@@ -12,10 +12,15 @@ namespace Shared
         //World Values
 
         public string SeedString;
+
         public float PlanetCoverage;
+
         public int Rainfall;
+
         public int Temperature;
+
         public int Population;
+        
         public float Pollution;
 
         //World features

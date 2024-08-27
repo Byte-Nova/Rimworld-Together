@@ -20,7 +20,7 @@ namespace GameClient
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveNPCSettlementFromPacket(data.details);
+                    RemoveNPCSettlementFromPacket(data.settlementData);
                     break;
             }
         }
@@ -97,8 +97,8 @@ namespace GameClient
             {
                 NPCSettlementData data = new NPCSettlementData();
                 data.stepMode = SettlementStepMode.Remove;
-                data.details = new PlanetNPCSettlement();
-                data.details.tile = settlement.Tile;
+                data.settlementData = new PlanetNPCSettlement();
+                data.settlementData.tile = settlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
                 Network.listener.EnqueuePacket(packet);
@@ -109,6 +109,7 @@ namespace GameClient
     public static class NPCSettlementManagerHelper
     {
         public static PlanetNPCSettlement[] tempNPCSettlements;
+        
         public static Settlement latestRemovedSettlement;
 
         public static void SetValues(ServerGlobalData serverGlobalData)

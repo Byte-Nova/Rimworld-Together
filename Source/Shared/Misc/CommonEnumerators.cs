@@ -1,10 +1,12 @@
-﻿namespace Shared
+namespace Shared
 {
     public class CommonEnumerators
     {
-        public enum ServerFileMode { Configs, Actions, Sites, Events, Roads, World, Whitelist, Difficulty, Market }
+        public enum ClientNetworkState { Disconnected, Connecting, Connected }
 
-        public enum LogMode { Message, Warning, Error, Title }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord }
+
+        public enum LogMode { Message, Warning, Error, Title, Outsider }
 
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
@@ -18,20 +20,7 @@
 
         public enum RoadStepMode { Add, Remove }
 
-        public enum FactionManifestMode
-        {
-            Create,
-            Delete,
-            NameInUse,
-            NoPower,
-            AddMember,
-            RemoveMember,
-            AcceptInvite,
-            Promote,
-            Demote,
-            AdminProtection,
-            MemberList
-        }
+        public enum FactionStepMode { Create, Delete, NameInUse, NoPower, AddMember, RemoveMember, AcceptInvite, Promote, Demote, AdminProtection, MemberList }
 
         public enum FactionRanks { Member, Moderator, Admin }
 
@@ -65,28 +54,17 @@
 
         public enum SettlementStepMode { Add, Remove }
 
+        public enum WorldStepMode { Required, Existing }
+
         public enum SaveMode { Disconnect, Autosave, Strict }
 
-        public enum UserColor { Normal, Admin, Console }
+        public enum UserColor { Normal, Admin, Console, Private, Discord }
 
-        public enum MessageColor { Normal, Admin, Console }
+        public enum MessageColor { Normal, Admin, Console, Private, Discord }
 
         public enum LoginMode { Login, Register }
 
-        public enum LoginResponse 
-        { 
-            InvalidLogin, 
-            BannedLogin,
-            RegisterInUse, 
-            RegisterError, 
-            ExtraLogin, 
-            WrongMods, 
-            ServerFull,
-            Whitelist,
-            WrongVersion,
-            NoWorld
-        }
-
-        public enum WorldStepMode { Required, Existing }
+        public enum LoginResponse { InvalidLogin, BannedLogin, RegisterInUse, RegisterError, ExtraLogin, WrongMods, WrongVersion, ServerFull, Whitelist, NoWorld }
     }
 }
+

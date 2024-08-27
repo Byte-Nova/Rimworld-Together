@@ -49,7 +49,7 @@ We need to make sure everyone follows a certain set of contribution steps, so ev
 > TLDR: Give as many details as possible about your new craft!
 
 ## Any doubts after reading?
-### Make sure to ask around with an [issue](https://github.com/RimworldTogether/Rimworld-Together/issues), or ask around at our [Discord](https://discord.gg/NCsArSaqBW) server for more information.
+### Make sure to ask around with an [issue](https://github.com/RimworldTogether/Rimworld-Together/issues), or ask around at our [Discord](https://discord.gg/yUF2ec8Vt8) server for more information.
 - We understand that the process of contributing might be tedious and difficult, and will lend you a hand whenever it's possible.
 
 Thank you in advance! ❤️ ❤️ ❤️

@@ -7,7 +7,9 @@ namespace Shared
     public class GameConditionOrder
     {
         public OnlineActivityApplyMode applyMode;
+
         public string conditionDefName;
+        
         public int duration;
     }
 }

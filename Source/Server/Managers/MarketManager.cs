@@ -17,7 +17,7 @@ namespace GameServer
         {
             MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
-            switch (marketData.marketStepMode)
+            switch (marketData.stepMode)
             {
                 case MarketStepMode.Add:
                     AddToMarket(client, marketData);
@@ -35,56 +35,63 @@ namespace GameServer
 
         private static void AddToMarket(ServerClient client, MarketData marketData)
         {
+            if (!Master.marketValues.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use market while disabled!");
+
             foreach (ThingData item in marketData.transferThings) TryCombineStackIfAvailable(client, item);
 
-            Master.SaveValueFile(ServerFileMode.Market);
+            Main_.SaveValueFile(ServerFileMode.Market);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
 
-            marketData.marketStepMode = MarketStepMode.Reload;
-            marketData.transferThings = Master.market.MarketStock;
+            marketData.stepMode = MarketStepMode.Reload;
+            marketData.transferThings = Master.marketValues.MarketStock;
+
             packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
-            foreach (ServerClient sc in Network.connectedClients.ToArray())
-            {
-                if (sc == client) continue;
-                else sc.listener.EnqueuePacket(packet);
-            }
+            NetworkHelper.SendPacketToAllClients(packet, client);
         }
 
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
         {
-            ThingData toGet = Master.market.MarketStock[marketData.indexToManage];
+            if (!Master.marketValues.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use market while disabled!");
+
+            if (marketData.quantityToManage == 0)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
+                return;
+            }
+
+            ThingData toGet = Master.marketValues.MarketStock[marketData.indexToManage];
             int reservedQuantity = toGet.quantity;
             toGet.quantity = marketData.quantityToManage;
             marketData.transferThings = new List<ThingData>() { toGet };
 
-            ThingData thingData = Master.market.MarketStock[marketData.indexToManage];
-            thingData.quantity = reservedQuantity;
-
-            if (marketData.quantityToManage == 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
-            else if (thingData.quantity > marketData.quantityToManage) thingData.quantity -= marketData.quantityToManage;
-            else if (thingData.quantity == marketData.quantityToManage) Master.market.MarketStock.RemoveAt(marketData.indexToManage);
-            else ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
-
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
-            client.listener.EnqueuePacket(packet);
 
-            marketData.marketStepMode = MarketStepMode.Reload;
-            marketData.transferThings = Master.market.MarketStock;
-            packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
-            foreach (ServerClient sc in Network.connectedClients.ToArray())
+            toGet.quantity = reservedQuantity;
+            if (toGet.quantity > marketData.quantityToManage) toGet.quantity -= marketData.quantityToManage;
+            else if (toGet.quantity == marketData.quantityToManage) Master.marketValues.MarketStock.RemoveAt(marketData.indexToManage);
+            else
             {
-                if (sc == client) continue;
-                else sc.listener.EnqueuePacket(packet);
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
+                return;
             }
 
-            Master.SaveValueFile(ServerFileMode.Market);
+            client.listener.EnqueuePacket(packet);
+            marketData.stepMode = MarketStepMode.Reload;
+            marketData.transferThings = Master.marketValues.MarketStock;
+            
+            packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+            NetworkHelper.SendPacketToAllClients(packet, client);
+
+            Main_.SaveValueFile(ServerFileMode.Market);
         }
 
         private static void SendMarketStock(ServerClient client, MarketData marketData)
         {
-            marketData.transferThings = Master.market.MarketStock;
+            if (!Master.marketValues.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use market while disabled!");
+
+            marketData.transferThings = Master.marketValues.MarketStock;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
@@ -98,7 +105,7 @@ namespace GameServer
                 return;
             }
 
-            foreach (ThingData stockedItem in Master.market.MarketStock.ToArray())
+            foreach (ThingData stockedItem in Master.marketValues.MarketStock.ToArray())
             {
                 if (stockedItem.defName == thingData.defName && stockedItem.materialDefName == thingData.materialDefName)
                 {
@@ -107,7 +114,7 @@ namespace GameServer
                 }
             }
 
-            Master.market.MarketStock.Add(thingData);
+            Master.marketValues.MarketStock.Add(thingData);
         }
     }
 }

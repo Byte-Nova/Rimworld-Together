@@ -35,9 +35,10 @@ namespace GameClient
                 delegate 
                 {
                     DialogManager.PushNewDialog(a2);
-                    string[] details = PreferenceManager.LoadLoginData();
-                    DialogManager.dialog2Input.inputOneResult = details[0];
-                    DialogManager.dialog2Input.inputTwoResult = details[1];
+                    
+                    LoginDataFile loginData = PreferenceManager.LoadLoginData();
+                    DialogManager.dialog2Input.inputOneResult = loginData.username;
+                    DialogManager.dialog2Input.inputTwoResult = loginData.password;
                 },
                 delegate 
                 {
@@ -55,9 +56,9 @@ namespace GameClient
             delegate { ParseConnectionDetails(false); },
             null);
 
-            string[] details = PreferenceManager.LoadConnectionData();
-            DialogManager.dialog2Input.inputOneResult = details[0];
-            DialogManager.dialog2Input.inputTwoResult = details[1];
+            ConnectionDataFile connectionData = PreferenceManager.LoadConnectionData();
+            DialogManager.dialog2Input.inputOneResult = connectionData.ip;
+            DialogManager.dialog2Input.inputTwoResult = connectionData.port;
 
             DialogManager.PushNewDialog(dialog);
         }

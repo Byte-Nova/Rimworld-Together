@@ -10,8 +10,7 @@ jobs:
     strategy:
       matrix:
         version:
-          #- 8
-          - 7.0.x
+          - 8.0.x
         target: 
           - linux-arm
           - linux-arm64

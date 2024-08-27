@@ -7,7 +7,9 @@ namespace Shared
     public class OnlineSettlementFile
     {
         public int tile;
+
         public string owner;
+        
         public Goodwill goodwill;
     }
 }
