@@ -1747,6 +1747,8 @@ namespace GameClient
 
         public static bool CheckIfThingIsBook(Thing thing)
         {
+            if (!ModsConfig.AnomalyActive) return false;
+
             if (thing.def.defName == ThingDefOf.TextBook.defName) return true;
             else if (thing.def.defName == ThingDefOf.Schematic.defName) return true;
             else if (thing.def.defName == ThingDefOf.Tome.defName) return true;
@@ -1756,6 +1758,8 @@ namespace GameClient
 
         public static bool CheckIfThingIsGenepack(Thing thing)
         {
+            if (!ModsConfig.BiotechActive) return false;
+
             if (thing.def.defName == ThingDefOf.Genepack.defName) return true;
             else return false;
         }
