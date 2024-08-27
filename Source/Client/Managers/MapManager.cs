@@ -25,12 +25,7 @@ namespace GameClient
         private static void SendMapToServerSingle(Map map)
         {
             MapData mapData = ParseMap(map, true, true, true, true);
-
-            MapFileData mapFileData = new MapFileData();
-            mapFileData.mapTile = mapData.mapTile;
-            mapFileData.mapData = mapData;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MapPacket), mapFileData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MapPacket), mapData);
             Network.listener.EnqueuePacket(packet);
         }
 

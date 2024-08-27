@@ -30,12 +30,12 @@ namespace GameServer
 
         public static void LoginClientPacket(ServerClient client, Packet packet)
         {
-            UserLogin.TryLoginUser(client, packet);
+            UserManager.LoginUser(client, packet);
         }
 
         public static void RegisterClientPacket(ServerClient client, Packet packet)
         {
-            UserRegister.TryRegisterUser(client, packet);
+            UserManager.RegisterUser(client, packet);
         }
 
         public static void RequestSavePartPacket(ServerClient client, Packet packet)
@@ -140,44 +140,20 @@ namespace GameServer
 
         //Empty functions
 
-        public static void KeepAlivePacket(ServerClient client, Packet packet)
-        {
-            //Empty
-        }
+        public static void KeepAlivePacket(ServerClient client, Packet packet) { }
 
-        public static void UserUnavailablePacket()
-        {
-            //Empty
-        }
+        public static void UserUnavailablePacket(ServerClient client, Packet packet) { }
 
-        public static void IllegalActionPacket()
-        {
-            //Empty
-        }
+        public static void IllegalActionPacket(ServerClient client, Packet packet) { }
 
-        public static void BreakPacket()
-        {
-            //Empty
-        }
+        public static void BreakPacket(ServerClient client, Packet packet) { }
 
-        public static void PlayerRecountPacket()
-        {
-            //Empty
-        }
+        public static void PlayerRecountPacket(ServerClient client, Packet packet) { }
 
-        public static void ServerValuesPacket()
-        {
-            //Empty
-        }
+        public static void ServerValuesPacket(ServerClient client, Packet packet) { }
 
-        public static void CommandPacket()
-        {
-            //Empty
-        }
+        public static void CommandPacket(ServerClient client, Packet packet) { }
 
-        public static void LoginResponsePacket()
-        {
-            //Empty
-        }
+        public static void LoginResponsePacket(ServerClient client, Packet packet) { }
     }
 }

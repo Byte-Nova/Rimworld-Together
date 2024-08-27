@@ -6,7 +6,9 @@ namespace Shared
     public class RiverDetails
     {
         public string riverDefName;
-        public int tileA;
-        public int tileB;
+
+        public int fromTile;
+        
+        public int toTile;
     }
 }

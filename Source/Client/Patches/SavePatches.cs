@@ -2,6 +2,7 @@
 using HarmonyLib;
 using RimWorld;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -13,7 +14,7 @@ namespace GameClient
         {
             try
             {
-                if (Network.state == NetworkState.Disconnected) return true;
+                if (Network.state == ClientNetworkState.Disconnected) return true;
                 if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
 
                 ClientValues.ToggleSavingGame(true);
@@ -35,7 +36,7 @@ namespace GameClient
                 }
                 catch (Exception e) { Logger.Error("Exception while saving game: " + e); }
 
-                if (Network.state.Equals(NetworkState.Connected))
+                if (Network.state.Equals(ClientNetworkState.Connected))
                 {
                     Logger.Message("Sending maps to server");
                     MapManager.SendPlayerMapsToServer();
@@ -58,7 +59,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
 
             return false;
         }
@@ -70,7 +71,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
 
             ClientValues.autosaveCurrentTicks++;
 

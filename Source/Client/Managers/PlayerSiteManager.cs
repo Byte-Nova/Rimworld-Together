@@ -52,16 +52,16 @@ namespace GameClient
             {
                 try
                 {
-                    SitePartDef siteDef = SiteManager.GetDefForNewSite(siteData.type, siteData.isFromFaction);
+                    SitePartDef siteDef = SiteManager.GetDefForNewSite(siteData.siteFile.type, siteData.siteFile.factionFile != null);
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: siteData.tile,
+                        tile: siteData.siteFile.tile,
                         threatPoints: 1000,
                         faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(siteData.goodwill));
 
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn site at {siteData.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to spawn site at {siteData.siteFile.tile}. Reason: {e}"); }
             }
         }
 
@@ -71,12 +71,12 @@ namespace GameClient
             {
                 try
                 {
-                    Site toGet = playerSites.Find(x => x.Tile == siteData.tile);
+                    Site toGet = playerSites.Find(x => x.Tile == siteData.siteFile.tile);
 
                     playerSites.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Logger.Message($"Failed to remove site at {siteData.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Message($"Failed to remove site at {siteData.siteFile.tile}. Reason: {e}"); }
             }
         }
     }

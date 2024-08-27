@@ -11,9 +11,9 @@ namespace Shared
 
         public string password;
 
-        public LoginResponse tryResponse;
-
         public string clientVersion;
+
+        public LoginResponse tryResponse;
 
         public List<string> runningMods = new List<string>();
 

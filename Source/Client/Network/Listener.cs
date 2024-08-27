@@ -12,21 +12,29 @@ namespace GameClient
     public class Listener
     {
         //TCP variables needed for the listener to comunicate
+
         public TcpClient connection;
+
         public NetworkStream networkStream;
 
         //Stream tools used to read and write the connection stream
+
         public StreamWriter streamWriter;
+
         public StreamReader streamReader;
 
         //Upload and download classes to send/receive files
+
         public UploadManager uploadManager;
+
         public DownloadManager downloadManager;
 
         //Data queue used to hold packets that are to be sent through the connection
+
         private readonly Queue<Packet> dataQueue = new Queue<Packet>();
 
         //Useful variables to handle connection status
+        
         public bool disconnectFlag;
 
         public Listener(TcpClient connection)

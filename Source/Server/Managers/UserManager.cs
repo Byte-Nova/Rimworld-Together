@@ -5,6 +5,115 @@ namespace GameServer
 {
     public static class UserManager
     {
+        public static void LoginUser(ServerClient client, Packet packet)
+        {
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
+
+            if (!UserManagerHelper.CheckIfUserUpdated(client, loginData)) return;
+
+            if (!UserManagerHelper.CheckLoginData(client, loginData, LoginMode.Login)) return;
+
+            if (!UserManagerHelper.CheckIfUserExists(client, loginData, LoginMode.Login)) return;
+
+            if (!UserManagerHelper.CheckIfUserAuthCorrect(client, loginData)) return;
+
+            client.userFile.SetLoginDetails(loginData);
+
+            client.LoadUserFromFile();
+
+            Logger.Message($"[Handshake] > {client.userFile.SavedIP} | {client.userFile.Username}");
+
+            if (UserManagerHelper.CheckIfUserBanned(client)) return;
+
+            if (!UserManagerHelper.CheckWhitelist(client)) return;
+
+            if (ModManager.CheckIfModConflict(client, loginData)) return;
+
+            RemoveOldClientIfAny(client);
+
+            PostLogin(client);
+        }
+
+        public static void RegisterUser(ServerClient client, Packet packet)
+        {
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
+
+            if (!UserManagerHelper.CheckIfUserUpdated(client, loginData)) return;
+
+            if (!UserManagerHelper.CheckLoginData(client, loginData, LoginMode.Register)) return;
+
+            if (UserManagerHelper.CheckIfUserExists(client, loginData, LoginMode.Register)) return;
+
+            try
+            {
+                client.userFile.SetLoginDetails(loginData);
+
+                client.userFile.SaveUserFile();
+
+                LoginUser(client, packet);
+
+                Logger.Message($"[Registered] > {client.userFile.Username}");
+            }
+            catch { SendLoginResponse(client, LoginResponse.RegisterError); }
+        }
+
+        private static void PostLogin(ServerClient client)
+        {
+            SendPlayerRecount();
+
+            ServerGlobalDataManager.SendServerGlobalData(client);
+
+            foreach(string str in ChatManager.defaultJoinMessages) ChatManager.SendSystemMessage(client, str);
+
+            if (WorldManager.CheckIfWorldExists())
+            {
+                if (SaveManager.CheckIfUserHasSave(client)) SaveManager.SendSavePartToClient(client);
+                else WorldManager.SendWorldFile(client);
+            }
+            else WorldManager.RequireWorldFile(client);
+        }
+
+        private static void RemoveOldClientIfAny(ServerClient client)
+        {
+            foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
+            {
+                if (cClient == client) continue;
+                else
+                {
+                    if (cClient.userFile.Username == client.userFile.Username)
+                    {
+                        SendLoginResponse(cClient, LoginResponse.ExtraLogin);
+                    }
+                }
+            }
+        }
+
+        public static void SendPlayerRecount()
+        {
+            PlayerRecountData playerRecountData = new PlayerRecountData();
+            playerRecountData.currentPlayers = NetworkHelper.GetConnectedClientsSafe().Count().ToString();
+            foreach(ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData.currentPlayerNames.Add(client.userFile.Username);
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
+            NetworkHelper.SendPacketToAllClients(packet);
+        }
+
+        public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
+        {
+            LoginData loginData = new LoginData();
+            loginData.tryResponse = response;
+
+            if (response == LoginResponse.WrongMods) loginData.extraDetails = (List<string>)extraDetails;
+            else if (response == LoginResponse.WrongVersion) loginData.extraDetails = new List<string>() { CommonValues.executableVersion };
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginResponsePacket), loginData);
+            client.listener.EnqueuePacket(packet);
+            client.listener.disconnectFlag = true;
+        }
+    }
+
+    public static class UserManagerHelper
+    {
         //Variables
 
         public readonly static string fileExtension = ".mpuser";
@@ -52,16 +161,6 @@ namespace GameServer
             return userFiles.ToArray();
         }
 
-        public static void SendPlayerRecount()
-        {
-            PlayerRecountData playerRecountData = new PlayerRecountData();
-            playerRecountData.currentPlayers = Network.connectedClients.ToArray().Count().ToString();
-            foreach(ServerClient client in Network.connectedClients.ToArray()) playerRecountData.currentPlayerNames.Add(client.userFile.Username);
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
-            foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
-        }
-
         public static bool CheckIfUserIsConnected(string username)
         {
             List<ServerClient> connectedClients = Network.connectedClients.ToList();
@@ -88,12 +187,12 @@ namespace GameServer
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
                 if (existingUser.Username.ToLower() == data.username.ToLower())
                 {
-                    if (mode == LoginMode.Register) SendLoginResponse(client, LoginResponse.RegisterInUse);
+                    if (mode == LoginMode.Register) UserManager.SendLoginResponse(client, LoginResponse.RegisterInUse);
                     return true;
                 }
             }
 
-            if (mode == LoginMode.Login) SendLoginResponse(client, LoginResponse.InvalidLogin);
+            if (mode == LoginMode.Login) UserManager.SendLoginResponse(client, LoginResponse.InvalidLogin);
             return false;
         }
 
@@ -112,7 +211,7 @@ namespace GameServer
                 }
             }
 
-            SendLoginResponse(client, LoginResponse.InvalidLogin);
+            UserManager.SendLoginResponse(client, LoginResponse.InvalidLogin);
             return false;
         }
 
@@ -121,21 +220,9 @@ namespace GameServer
             if (!client.userFile.IsBanned) return false;
             else
             {
-                SendLoginResponse(client, LoginResponse.BannedLogin);
+                UserManager.SendLoginResponse(client, LoginResponse.BannedLogin);
                 return true;
             }
-        }
-
-        public static int[] GetUserStructuresTilesFromUsername(string username)
-        {
-            SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.owner == username).ToArray();
-            SiteFile[] sites = SiteManager.GetAllSites().ToList().FindAll(x => x.owner == username).ToArray();
-
-            List<int> tilesToExclude = new List<int>();
-            foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.tile);
-            foreach (SiteFile site in sites) tilesToExclude.Add(site.tile);
-
-            return tilesToExclude.ToArray();
         }
 
         public static bool CheckLoginData(ServerClient client, LoginData data, LoginMode mode)
@@ -150,23 +237,10 @@ namespace GameServer
             if (!isInvalid) return true;
             else
             {
-                if (mode == LoginMode.Login) SendLoginResponse(client, LoginResponse.InvalidLogin);
-                else if (mode == LoginMode.Register) SendLoginResponse(client, LoginResponse.RegisterError);
+                if (mode == LoginMode.Login) UserManager.SendLoginResponse(client, LoginResponse.InvalidLogin);
+                else if (mode == LoginMode.Register) UserManager.SendLoginResponse(client, LoginResponse.RegisterError);
                 return false;
             }
-        }
-
-        public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
-        {
-            LoginData loginData = new LoginData();
-            loginData.tryResponse = response;
-
-            if (response == LoginResponse.WrongMods) loginData.extraDetails = (List<string>)extraDetails;
-            else if (response == LoginResponse.WrongVersion) loginData.extraDetails = new List<string>() { CommonValues.executableVersion };
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginResponsePacket), loginData);
-            client.listener.EnqueuePacket(packet);
-            client.listener.disconnectFlag = true;
         }
 
         public static bool CheckWhitelist(ServerClient client)
@@ -180,7 +254,7 @@ namespace GameServer
                 }
             }
 
-            SendLoginResponse(client, LoginResponse.Whitelist);
+            UserManager.SendLoginResponse(client, LoginResponse.Whitelist);
             return false;
         }
 
@@ -190,9 +264,21 @@ namespace GameServer
             else
             {
                 Logger.Warning($"[Version Mismatch] > {client.userFile.Username}");
-                SendLoginResponse(client, LoginResponse.WrongVersion);
+                UserManager.SendLoginResponse(client, LoginResponse.WrongVersion);
                 return false;
             }
+        }
+
+        public static int[] GetUserStructuresTilesFromUsername(string username)
+        {
+            SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.owner == username).ToArray();
+            SiteFile[] sites = SiteManager.GetAllSites().ToList().FindAll(x => x.owner == username).ToArray();
+
+            List<int> tilesToExclude = new List<int>();
+            foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.tile);
+            foreach (SiteFile site in sites) tilesToExclude.Add(site.tile);
+
+            return tilesToExclude.ToArray();
         }
     }
 }

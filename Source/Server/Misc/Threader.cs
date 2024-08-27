@@ -11,7 +11,7 @@
                 ServerMode.Start => Task.Run(Network.ReadyServer),
                 ServerMode.Sites => Task.Run(SiteManager.StartSiteTicker),
                 ServerMode.Caravans => Task.Run(CaravanManager.StartCaravanTicker),
-                ServerMode.Console => Task.Run(ServerCommandManager.ListenForServerCommands),
+                ServerMode.Console => Task.Run(ConsoleCommandManager.ListenForServerCommands),
                 _ => throw new NotImplementedException(),
             };
         }

@@ -2,13 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "dotnet: launch",
+            "name": "shell: launch",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/Server/bin/Debug/net7.0/GameServer.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/Server/bin/Debug/net7.0",
+            "preLaunchTask": "dotnet: build server",
+            "program": "${workspaceFolder}/Server/bin/Debug/net8.0/GameServer.dll",
+            "cwd": "${workspaceFolder}/Server/bin/Debug/net8.0",
             "console": "externalTerminal"
         }
     ]
