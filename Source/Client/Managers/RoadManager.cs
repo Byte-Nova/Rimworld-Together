@@ -271,7 +271,7 @@ namespace GameClient
                             RoadManager.SendRoadAddRequest(ClientValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             SaveManager.ForceSave();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate());
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
                     });
 
                 DialogManager.PushNewDialog(d1);
