@@ -60,6 +60,18 @@ namespace GameClient
             if (hasBeenTagged) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
         }
 
+        public static void SendMessage(string messageToSend)
+        {
+            ChatSounds.OwnChatDing.PlayOneShotOnCamera();
+    
+            ChatData chatData = new ChatData();
+            chatData.username = ClientValues.username;
+            chatData.message = messageToSend;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            Network.listener?.EnqueuePacket(packet);
+        }
+
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
         {
             if (chatMessageCache.Count() > 100) chatMessageCache.RemoveAt(0);
