@@ -53,12 +53,12 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - buttonY - 45));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferAccept".Translate()))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogAccept".Translate()))
             {
                 OnAccept();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTTransferCancel".Translate()))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogCancel".Translate()))
             {
                 OnReject();
             }

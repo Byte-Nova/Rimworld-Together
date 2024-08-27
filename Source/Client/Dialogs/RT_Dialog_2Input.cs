@@ -126,7 +126,7 @@ namespace GameClient
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
-                    inputTwoCensoredResult = new string('*', inputTwo.Length);
+                    inputTwoCensoredResult = new string('\u2588', inputTwo.Length);
                     Text.Font = GameFont.Small;
                 }
             }

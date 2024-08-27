@@ -93,7 +93,7 @@ namespace GameClient
                     {
                         ClientValues.ToggleQuickConnecting(true);
 
-                        DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogTryingToConnect".Translate()));
+                        DialogManager.PushNewDialog(new RT_Dialog_Wait("RTTryingToConnect".Translate()));
                         Network.StartConnection();
 
                         if (Network.state == NetworkState.Connected)
