@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System;
 using Verse;
 using Shared;
 using static Shared.CommonEnumerators;
@@ -7,8 +6,10 @@ using GameClient;
 using SaveOurShip2;
 namespace RT_SOS2Patches
 {
+    [HarmonyPatch(typeof(ShipInteriorMod2), nameof(ShipInteriorMod2.GeneratePlayerShipMap))]
     public static class GeneratePlayerShipMapPost
     {
+        [HarmonyPostfix]
         public static void DoPost(Map __result)
         {
             if (Network.state == NetworkState.Connected)
@@ -20,7 +21,7 @@ namespace RT_SOS2Patches
 
                     ShipMapComp comp = __result.GetComponent<ShipMapComp>();
                     WorldObjectOrbitingShip orbitShip = comp.mapParent;
-                    SpaceSiteData spaceSiteData = new SpaceSiteData();
+                    SpaceSettlementData spaceSiteData = new SpaceSettlementData();
 
                     spaceSiteData.isShip = true;
                     spaceSiteData.name = comp.mapParent.Name;
@@ -30,16 +31,10 @@ namespace RT_SOS2Patches
                     spaceSiteData.theta = orbitShip.Theta;
                     spaceSiteData.radius = orbitShip.Radius;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), spaceSiteData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(GameClient.PacketHandler.SpaceSettlementPacket), spaceSiteData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
-
-                    if (ClientValues.isGeneratingFreshWorld)
-                    {
-                        WorldGeneratorManager.SendWorldToServer();
-                        ClientValues.ToggleGenerateWorld(false);
-                    }
                 }
             }
         }

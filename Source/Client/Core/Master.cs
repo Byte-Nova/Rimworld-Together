@@ -3,6 +3,7 @@ using System.IO;
 using UnityEngine;
 using Verse;
 using Shared;
+using System.Reflection;
 
 namespace GameClient
 {
@@ -14,6 +15,7 @@ namespace GameClient
 
         public static UnityMainThreadDispatcher threadDispatcher;
         public static ModConfigs modConfigs = new ModConfigs();
+        public static Assembly SOS2 = null;
 
         //Paths
 

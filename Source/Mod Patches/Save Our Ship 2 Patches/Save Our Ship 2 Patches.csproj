@@ -45,8 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
+    <Compile Include="Master\Main.cs" />
+    <Compile Include="Master\Interfaces.cs" />
+    <Compile Include="Master\SpaceSettlementManager.cs" />
     <Compile Include="Patches\GeneratePlayerShipMapPatch.cs" />
+    <Compile Include="Patches\NetworkPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

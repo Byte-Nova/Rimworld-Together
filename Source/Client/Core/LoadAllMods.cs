@@ -11,7 +11,7 @@ namespace GameClient
 {
     public static class LoadAllMods 
     {
-        public static string AssemblyPath = Path.Combine(Assembly.GetExecutingAssembly().Location, Path.DirectorySeparatorChar.ToString(), "..");
+        public static readonly string AssemblyPath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString(), "Patches");
         public static void LoadAllModAssemblies()
         {
             LoadSOS2Patch();
@@ -23,11 +23,11 @@ namespace GameClient
             {
                 try
                 {
-                    Assembly assembly = Assembly.LoadFrom(Path.Combine(AssemblyPath, Path.DirectorySeparatorChar.ToString(), "SOS2Patch"));
-                    Logger.Message($"Successfuly loaded SOS2Patches");
+                    Assembly assembly = Assembly.LoadFrom(Path.Combine(AssemblyPath, "SOS2Patch.dll"));
+                    Master.SOS2 = assembly;
                     return true;
                 }
-                catch (Exception ex) { Logger.Warning($"SOS2Patch could not be loaded despite SOS2 being in load order.\n{ex}"); }
+                catch (Exception ex) { Logger.Error($"SOS2Patch could not be loaded despite SOS2 being in load order.\n{ex}"); }
             }
             return false;
         }

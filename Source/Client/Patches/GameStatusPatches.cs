@@ -19,21 +19,23 @@ namespace GameClient
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
-
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = __instance.CurrentMap.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
-
-                    SaveManager.ForceSave();
-
-                    if (ClientValues.isGeneratingFreshWorld)
+                    if (SOS2SendData.IsMapShip(__instance.CurrentMap).Result == false)
                     {
-                        WorldGeneratorManager.SendWorldToServer();
-                        ClientValues.ToggleGenerateWorld(false);
+                        Logger.Warning("True");
+                        SettlementData settlementData = new SettlementData();
+                        settlementData.tile = __instance.CurrentMap.Tile;
+                        settlementData.settlementStepMode = SettlementStepMode.Add;
+
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Network.listener.EnqueuePacket(packet);
+
+                        SaveManager.ForceSave();
                     }
+                }
+                if (ClientValues.isGeneratingFreshWorld)
+                {
+                    WorldGeneratorManager.SendWorldToServer();
+                    ClientValues.ToggleGenerateWorld(false);
                 }
             }
         }

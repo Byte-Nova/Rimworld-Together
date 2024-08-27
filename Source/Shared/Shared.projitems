@@ -48,7 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Pollution\PollutionDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Rivers\RiverDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Roads\RoadDetails.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\Save Our Ship 2\SpaceSiteData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\Save Our Ship 2\SpaceSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetNPCFaction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\WorldGenerator\PlanetFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\NPCSettlementData.cs" />
