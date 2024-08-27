@@ -30,11 +30,11 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
         }
 
-        public static void SendNoPowerPacket(ServerClient client, PlayerFactionData factionManifest)
+        public static void SendNoPowerPacket(ServerClient client, PlayerFactionData data)
         {
-            factionManifest.manifestMode = FactionManifestMode.NoPower;
+            data.stepMode = FactionStepMode.NoPower;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), data);
             client.listener.EnqueuePacket(packet);
         }
 

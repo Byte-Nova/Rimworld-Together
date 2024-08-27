@@ -5,9 +5,13 @@ namespace GameClient
     public class ModConfigs : ModSettings
     {
         public bool verboseBool;
+
         public bool extremeVerboseBool;
+
         public bool muteChatSoundBool;
+
         public bool rejectTransfersBool;
+
         public bool rejectSiteRewardsBool;
 
         public override void ExposeData()
@@ -17,6 +21,7 @@ namespace GameClient
             Scribe_Values.Look(ref muteChatSoundBool, "muteChatSoundBool");
             Scribe_Values.Look(ref rejectTransfersBool, "rejectTransfersBool");
             Scribe_Values.Look(ref rejectSiteRewardsBool, "rejectSiteRewardsBool");
+            
             base.ExposeData();
 
             ClientValues.verboseBool = verboseBool;

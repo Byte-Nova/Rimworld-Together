@@ -1,4 +1,6 @@
-﻿namespace GameServer
+﻿using System;
+
+namespace Shared
 {
     [Serializable]
     public class SiteFile
@@ -11,8 +13,6 @@
 
         public byte[] workerData;
 
-        public bool isFromFaction;
-
-        public string factionName;
+        public FactionFile factionFile;
     }
 }

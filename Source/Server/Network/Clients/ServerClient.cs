@@ -8,11 +8,15 @@ namespace GameServer
     [Serializable]
     public class ServerClient
     {
+        //Contains a reference to the user file of the client
+
         public UserFile userFile = new UserFile();
+
+        //Variables
 
         [NonSerialized] public Listener listener;
 
-        [NonSerialized] public ServerClient InVisitWith;
+        [NonSerialized] public ServerClient inVisitWith;
 
         public ServerClient(TcpClient tcp)
         {
@@ -20,6 +24,6 @@ namespace GameServer
             else userFile.SavedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
         }
 
-        public void LoadFromUserFile() { userFile = UserManager.GetUserFile(this); }
+        public void LoadUserFromFile() { userFile = UserManagerHelper.GetUserFile(this); }
     }
 }

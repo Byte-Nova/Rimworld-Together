@@ -7,6 +7,7 @@ namespace GameServer
     public class UPnP
     {
         //Useful variables
+
         public bool autoPortForwardSuccessful;
 
         public UPnP()
@@ -19,6 +20,7 @@ namespace GameServer
         }
 
         //Function that acts as a clock to check if UPnP was forwarded correctly
+        
         public void TryToMapPort()
         {
 

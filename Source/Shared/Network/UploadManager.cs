@@ -5,14 +5,19 @@ namespace Shared
     public class UploadManager
     {
         public FileStream fileStream;
+
         private FileInfo fileInfo;
 
         public string filePath;
+
         public string fileName;
+
         public double fileSize;
+
         public double fileParts;
 
         private double partSize = 262144;
+        
         public bool isLastPart;
 
         public void PrepareUpload(string filePath)

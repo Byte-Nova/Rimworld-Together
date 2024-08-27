@@ -7,7 +7,7 @@ namespace Shared
     [Serializable]
     public class PlayerFactionData
     {
-        public FactionManifestMode manifestMode;
+        public FactionStepMode stepMode;
 
         public string manifestDataString;
 

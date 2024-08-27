@@ -7,6 +7,7 @@ namespace GameServer
         const uint ENABLE_QUICK_EDIT = 0x0040;
 
         // STD_INPUT_HANDLE (DWORD): -10 is the standard input device.
+        
         const int STD_INPUT_HANDLE = -10;
 
         [DllImport("kernel32.dll", SetLastError = true)]

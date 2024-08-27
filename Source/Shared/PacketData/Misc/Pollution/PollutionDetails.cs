@@ -6,6 +6,7 @@ namespace Shared
     public class PollutionDetails
     {
         public int tile;
+        
         public float quantity;
     }
 }

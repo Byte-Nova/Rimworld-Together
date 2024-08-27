@@ -15,14 +15,14 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
 
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = __instance.CurrentMap.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Add;
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData.settlementData.tile = __instance.CurrentMap.Tile;
+                    settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -31,7 +31,7 @@ namespace GameClient
 
                     if (ClientValues.isGeneratingFreshWorld)
                     {
-                        WorldGeneratorManager.SendWorldToServer();
+                        PlanetGeneratorManager.SendWorldToServer();
                         ClientValues.ToggleGenerateWorld(false);
                     }
                 }
@@ -44,7 +44,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
@@ -61,11 +61,11 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Caravan caravan)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = caravan.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Add;
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData.settlementData.tile = caravan.Tile;
+                    settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -81,11 +81,11 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Map map)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = map.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Add;
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData.settlementData.tile = map.Tile;
+                    settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -101,11 +101,11 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
-                    SettlementData settlementData = new SettlementData();
-                    settlementData.tile = settlement.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Remove;
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData.settlementData.tile = settlement.Tile;
+                    settlementData.stepMode = SettlementStepMode.Remove;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -121,7 +121,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void ModifyPost(Settlement __instance)
             {
-                if (Network.state == NetworkState.Connected)
+                if (Network.state == ClientNetworkState.Connected)
                 {
                     if (!ClientValues.isReadyToPlay) return;
 
@@ -138,7 +138,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == NetworkState.Connected) ClientValues.ManageDevOptions();
+                if (Network.state == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
                 else return;
             }
         }
@@ -149,7 +149,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == NetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
+                if (Network.state == ClientNetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
                 else return;
             }
         }
