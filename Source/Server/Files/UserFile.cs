@@ -10,11 +10,7 @@ namespace GameServer
         public string Password;
 
         public string Uid;
-
-        public string FactionName;
-
-        public bool HasFaction;
-
+        
         public bool IsAdmin;
 
         public bool IsBanned;
@@ -33,6 +29,8 @@ namespace GameServer
 
         public List<string> EnemyPlayers = new List<string>();
 
+        public FactionFile faction;
+
         [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
 
         public void SetLoginDetails(LoginData data)
@@ -44,19 +42,9 @@ namespace GameServer
             Uid = Hasher.GetHashFromString(Username);
         }
 
-        public void UpdateFaction(string updatedFactionName)
+        public void UpdateFaction(FactionFile toUpdateWith)
         {
-            if (string.IsNullOrWhiteSpace(updatedFactionName))
-            {
-                HasFaction = false;
-                FactionName = null;
-            }
-
-            else
-            {
-                HasFaction = true;
-                FactionName = updatedFactionName;
-            }
+            faction = toUpdateWith;
 
             SaveUserFile();
         }

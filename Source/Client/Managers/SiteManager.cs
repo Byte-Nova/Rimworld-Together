@@ -135,7 +135,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site information"));
 
             SiteData siteData = new SiteData();
-            siteData.tile = SessionValues.chosenSite.Tile;
+            siteData.siteFile.tile = SessionValues.chosenSite.Tile;
             siteData.siteStepMode = SiteStepMode.Info;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
@@ -146,7 +146,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            if (siteData.workerData == null)
+            if (siteData.siteFile.workerData == null)
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
                     delegate { PrepareSendPawnScreen(); }, null);
@@ -179,7 +179,7 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanData>(siteData.workerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanData>(siteData.siteFile.workerData));
 
                 RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, SessionValues.chosenCaravan);
 
@@ -217,9 +217,9 @@ namespace GameClient
             SessionValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteData siteData = new SiteData();
-            siteData.tile = SessionValues.chosenSite.Tile;
+            siteData.siteFile.tile = SessionValues.chosenSite.Tile;
             siteData.siteStepMode = SiteStepMode.Deposit;
-            siteData.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
+            siteData.siteFile.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
@@ -234,7 +234,7 @@ namespace GameClient
             Action r1 = delegate
             {
                 SiteData siteData = new SiteData();
-                siteData.tile = SessionValues.chosenSite.Tile;
+                siteData.siteFile.tile = SessionValues.chosenSite.Tile;
                 siteData.siteStepMode = SiteStepMode.Destroy;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
@@ -342,9 +342,8 @@ namespace GameClient
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;
-                siteData.tile = SessionValues.chosenCaravan.Tile;
-                siteData.type = DialogManager.selectedScrollButton;
-                siteData.isFromFaction = false;
+                siteData.siteFile.tile = SessionValues.chosenCaravan.Tile;
+                siteData.siteFile.type = DialogManager.selectedScrollButton;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);
@@ -397,9 +396,9 @@ namespace GameClient
 
                 SiteData siteData = new SiteData();
                 siteData.siteStepMode = SiteStepMode.Build;
-                siteData.tile = SessionValues.chosenCaravan.Tile;
-                siteData.type = DialogManager.selectedScrollButton;
-                siteData.isFromFaction = true;
+                siteData.siteFile.tile = SessionValues.chosenCaravan.Tile;
+                siteData.siteFile.type = DialogManager.selectedScrollButton;
+                siteData.siteFile.factionFile = new FactionFile();
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);

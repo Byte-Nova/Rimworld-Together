@@ -41,7 +41,7 @@ namespace GameServer
         {
             globalData.isClientAdmin = client.userFile.IsAdmin;
 
-            globalData.isClientFactionMember = client.userFile.HasFaction;
+            globalData.isClientFactionMember = client.userFile.faction != null;
 
             return globalData;
         }
@@ -93,7 +93,7 @@ namespace GameServer
                 file.owner = site.owner;
                 file.goodwill = GoodwillManager.GetSiteGoodwill(client, site);
                 file.type = site.type;
-                file.fromFaction = site.isFromFaction;
+                file.fromFaction = site.factionFile != null;
 
                 tempList.Add(file);
             }

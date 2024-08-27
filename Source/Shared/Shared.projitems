@@ -19,6 +19,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\EventFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\SiteFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\FactionFile.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
