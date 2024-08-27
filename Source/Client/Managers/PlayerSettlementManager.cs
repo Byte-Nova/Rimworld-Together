@@ -77,7 +77,7 @@ namespace GameClient
             }
         }
 
-        public static void RemoveSingleSettlement(SettlementData newSettlementJSON)
+        public static void RemoveSingleSettlement(PlayerSettlementData toRemove)
         {
             if (ClientValues.isReadyToPlay)
             {
