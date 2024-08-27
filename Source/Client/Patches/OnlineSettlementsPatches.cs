@@ -3,6 +3,7 @@ using RimWorld;
 using RimWorld.Planet;
 using System;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -12,7 +13,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Settlement factionBase)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
 
             if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
             else return true;
@@ -25,7 +26,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (Network.state == NetworkState.Disconnected) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
             if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
@@ -38,7 +39,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (Network.state == NetworkState.Disconnected) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
             if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
@@ -51,7 +52,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Site site, ref int __result)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
 
             if (FactionValues.playerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
             {

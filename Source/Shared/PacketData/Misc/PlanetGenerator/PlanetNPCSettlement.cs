@@ -6,7 +6,9 @@ namespace Shared
     public class PlanetNPCSettlement
     {
         public int tile;
+
         public string name;
+        
         public string factionDefName;
     }
 }

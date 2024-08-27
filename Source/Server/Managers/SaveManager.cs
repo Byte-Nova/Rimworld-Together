@@ -140,8 +140,8 @@ namespace GameServer
             catch { Logger.Warning($"Failed to find {client.userFile.Username}'s save"); }
 
             //Copy map files to archive
-            MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.userFile.Username);
-            foreach (MapFileData map in userMaps)
+            MapData[] userMaps = MapManager.GetAllMapsFromUsername(client.userFile.Username);
+            foreach (MapData map in userMaps)
             {
                 File.Copy(Path.Combine(Master.mapsPath, map.mapTile + MapManager.fileExtension), 
                     Path.Combine(mapsArchivePath, map.mapTile + MapManager.fileExtension));
@@ -175,8 +175,8 @@ namespace GameServer
             catch { Logger.Warning($"Failed to find {username}'s save"); }
 
             //Delete map files
-            MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(username);
-            foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
+            MapData[] userMaps = MapManager.GetAllMapsFromUsername(username);
+            foreach (MapData map in userMaps) MapManager.DeleteMap(map);
 
             //Delete site files
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(username);
@@ -186,9 +186,9 @@ namespace GameServer
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
-                SettlementData settlementData = new SettlementData();
-                settlementData.tile = settlementFile.tile;
-                settlementData.owner = settlementFile.owner;
+                PlayerSettlementData settlementData = new PlayerSettlementData();
+                settlementData.settlementData.tile = settlementFile.tile;
+                settlementData.settlementData.owner = settlementFile.owner;
 
                 SettlementManager.RemoveSettlement(client, settlementData);
             }

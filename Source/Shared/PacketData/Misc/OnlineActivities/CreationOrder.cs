@@ -7,6 +7,7 @@ namespace Shared
     public class CreationOrder
     {
         public byte[] dataToCreate;
+        
         public CreationType creationType;
     }
 }

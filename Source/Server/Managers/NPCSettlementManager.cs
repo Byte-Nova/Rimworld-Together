@@ -16,7 +16,7 @@ namespace GameServer
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveNPCSettlement(client, data.details);
+                    RemoveNPCSettlement(client, data.settlementData);
                     break;
             }
         }
@@ -44,14 +44,14 @@ namespace GameServer
             finalSettlements.Remove(GetSettlementFromTile(settlement.tile));
             Master.worldValues.NPCSettlements = finalSettlements.ToArray();
 
-            Master.SaveValueFile(ServerFileMode.World);
+            Main_.SaveValueFile(ServerFileMode.World);
         }
 
         private static void BroadcastSettlementDeletion(PlanetNPCSettlement settlement)
         {
             NPCSettlementData data = new NPCSettlementData();
             data.stepMode = SettlementStepMode.Remove;
-            data.details = settlement;
+            data.settlementData = settlement;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
             NetworkHelper.SendPacketToAllClients(packet);

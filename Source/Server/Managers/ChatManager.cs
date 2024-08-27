@@ -65,7 +65,7 @@ namespace GameServer
             chatData.messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
-            foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
+            NetworkHelper.SendPacketToAllClients(packet);
 
             WriteToLogs(client.userFile.Username, message);
             ChatManagerHelper.ShowChatInConsole(client.userFile.Username, message);
@@ -82,7 +82,7 @@ namespace GameServer
             chatData.messageColor = MessageColor.Discord;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
-            foreach (ServerClient cClient in Network.connectedClients.ToArray()) cClient.listener.EnqueuePacket(packet);
+            NetworkHelper.SendPacketToAllClients(packet);
 
             WriteToLogs(client, message);
             ChatManagerHelper.ShowChatInConsole(client, message, true);
@@ -97,7 +97,7 @@ namespace GameServer
             chatData.messageColor = MessageColor.Console;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
-            foreach (ServerClient client in Network.connectedClients.ToArray()) client.listener.EnqueuePacket(packet);
+            NetworkHelper.SendPacketToAllClients(packet);
 
             if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
 
@@ -263,7 +263,7 @@ namespace GameServer
     {
         public static ServerClient GetUserFromName(string username)
         {
-            return Network.connectedClients.ToArray().FirstOrDefault(fetch => fetch.userFile.Username == username);
+            return NetworkHelper.GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Username == username);
         }
 
         public static ChatCommand GetCommandFromName(string commandName)

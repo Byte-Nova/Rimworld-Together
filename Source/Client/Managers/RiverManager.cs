@@ -11,8 +11,8 @@ namespace GameClient
     {
         public static void SetPlanetRivers() 
         {
-            if (WorldGeneratorManager.cachedWorldValues.Rivers == null) return;
-            else AddRivers(WorldGeneratorManager.cachedWorldValues.Rivers, false);
+            if (PlanetGeneratorManager.cachedWorldValues.Rivers == null) return;
+            else AddRivers(PlanetGeneratorManager.cachedWorldValues.Rivers, false);
         }
 
         public static void AddRivers(RiverDetails[] rivers, bool forceRefresh)
@@ -23,7 +23,7 @@ namespace GameClient
             {
                 RiverDef riverDef = DefDatabase<RiverDef>.AllDefs.First(fetch => fetch.defName == details.riverDefName);
 
-                AddRiverSimple(details.tileA, details.tileB, riverDef, forceRefresh);
+                AddRiverSimple(details.fromTile, details.toTile, riverDef, forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
@@ -76,11 +76,11 @@ namespace GameClient
                     foreach (Tile.RiverLink link in tile.Rivers)
                     {
                         RiverDetails details = new RiverDetails();
-                        details.tileA = Find.WorldGrid.tiles.IndexOf(tile);
-                        details.tileB = link.neighbor;
+                        details.fromTile = Find.WorldGrid.tiles.IndexOf(tile);
+                        details.toTile = link.neighbor;
                         details.riverDefName = link.river.defName;
 
-                        if (!CheckIfExists(details.tileA, details.tileB)) toGet.Add(details);
+                        if (!CheckIfExists(details.fromTile, details.toTile)) toGet.Add(details);
                     }
                 }
             }
@@ -90,8 +90,8 @@ namespace GameClient
             {
                 foreach (RiverDetails details in toGet)
                 {
-                    if (details.tileA == tileA && details.tileB == tileB) return true;
-                    else if (details.tileA == tileB && details.tileB == tileA) return true;
+                    if (details.fromTile == tileA && details.toTile == tileB) return true;
+                    else if (details.fromTile == tileB && details.toTile == tileA) return true;
                 }
 
                 return false;

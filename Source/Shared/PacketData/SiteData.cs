@@ -9,17 +9,9 @@ namespace Shared
     {
         public SiteStepMode siteStepMode;
 
-        public int tile;
-
-        public int type;
-
-        public string owner;
-
-        public byte[] workerData;
+        public SiteFile siteFile = new SiteFile();
 
         public Goodwill goodwill;
-
-        public bool isFromFaction;
 
         public List<int> sitesWithRewards = new List<int>();
     }

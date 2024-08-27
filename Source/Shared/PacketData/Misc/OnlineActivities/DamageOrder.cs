@@ -8,10 +8,15 @@ namespace Shared
         public int targetIndex;
 
         public string defName;
+
         public string hitPartDefName;
+
         public float damageAmount;
+
         public string weaponDefName;
+
         public float armorPenetration;
+        
         public bool ignoreArmor;
     }
 }
