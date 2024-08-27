@@ -52,7 +52,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\KeepAliveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\LoginData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapFileData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\TimeSpeedOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\OnlineActivities\WeatherOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Pollution\PollutionDetails.cs" />

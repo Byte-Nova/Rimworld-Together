@@ -58,7 +58,7 @@ namespace GameServer
                     {
                         userFile.UpdateActivityTime();
 
-                        data.mapData = MapManager.GetUserMapFromTile(data.targetTile).mapData;
+                        data.mapData = MapManager.GetUserMapFromTile(data.targetTile);
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
