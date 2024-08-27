@@ -17,7 +17,7 @@ namespace RT_SOS2Patches
 
         public static void HandleData(SpaceSettlementData data)
         {
-            switch (data.settlementStepMode)
+            switch (data.stepMode)
             {
                 case SettlementStepMode.Add:
                     SpawnSingleSettlement(data);
@@ -66,30 +66,30 @@ namespace RT_SOS2Patches
                 try
                 {
                     WorldObjectOrbitingShip ship = (WorldObjectOrbitingShip)WorldObjectMaker.MakeWorldObject(ResourceBank.WorldObjectDefOf.ShipOrbiting);
-                    ship.Tile = data.tile;
-                    ship.Name = $"{data.owner}'s settlement";
-                    ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(data.goodwill));
+                    ship.Tile = data.settlementData.tile;
+                    ship.Name = $"{data.settlementData.owner}'s settlement";
+                    ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(data.settlementData.goodwill));
                     SetShipPosition(ship, data);
 
                     spacePlayerSettlement.Add(ship);
                     Find.WorldObjects.Add(ship);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {data.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {data.settlementData.tile}. Reason: {e}"); }
             }
         }
 
-        public static void RemoveSingleSettlement(SettlementData data)
+        public static void RemoveSingleSettlement(SpaceSettlementData data)
         {
             if (ClientValues.isReadyToPlay)
             {
                 try
                 {
-                    WorldObjectOrbitingShip toGet = spacePlayerSettlement.Find(x => x.Tile == data.tile);
+                    WorldObjectOrbitingShip toGet = spacePlayerSettlement.Find(x => x.Tile == data.settlementData.tile);
 
                     spacePlayerSettlement.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Logger.Error($"Failed to remove settlement at {data.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to remove settlement at {data.settlementData.tile}. Reason: {e}"); }
             }
         }
 
@@ -115,14 +115,14 @@ namespace RT_SOS2Patches
             WorldObjectOrbitingShip orbitShip = comp.mapParent;
             SpaceSettlementData spaceSiteData = new SpaceSettlementData();
 
-            spaceSiteData.isShip = true;
-            spaceSiteData.tile = map.Tile;
-            spaceSiteData.settlementStepMode = SettlementStepMode.Add;
+            spaceSiteData.settlementData.isShip = true;
+            spaceSiteData.settlementData.tile = map.Tile;
+            spaceSiteData.stepMode = SettlementStepMode.Add;
             spaceSiteData.phi = orbitShip.Phi;
             spaceSiteData.theta = orbitShip.Theta;
             spaceSiteData.radius = orbitShip.Radius;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), spaceSiteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SpaceSettlementPacket), spaceSiteData);
             Network.listener.EnqueuePacket(packet);
 
             SaveManager.ForceSave();

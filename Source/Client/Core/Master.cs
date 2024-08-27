@@ -1,4 +1,6 @@
-﻿namespace GameClient
+﻿using System.Reflection;
+
+namespace GameClient
 {
     //Class with all the critical variables for the client to work
 
@@ -9,6 +11,8 @@
         public static UnityMainThreadDispatcher threadDispatcher;
         
         public static ModConfigs modConfigs = new ModConfigs();
+
+        public static Assembly SOS2;
 
         //Paths
 

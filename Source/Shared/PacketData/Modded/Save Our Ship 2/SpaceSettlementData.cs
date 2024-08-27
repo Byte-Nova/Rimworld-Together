@@ -4,7 +4,7 @@ using static Shared.CommonEnumerators;
 namespace Shared
 {
     [Serializable]
-    public class SpaceSettlementData : SettlementData
+    public class SpaceSettlementData : PlayerSettlementData
     {
         public float radius;
         public float phi;

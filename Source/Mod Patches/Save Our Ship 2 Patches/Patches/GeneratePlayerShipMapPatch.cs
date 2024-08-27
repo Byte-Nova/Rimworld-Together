@@ -12,7 +12,7 @@ namespace RT_SOS2Patches
         [HarmonyPostfix]
         public static void DoPost(Map __result)
         {
-            if (Network.state == NetworkState.Connected)
+            if (Network.state == ClientNetworkState.Connected)
             {
                 if (__result != null)
                 {
@@ -23,10 +23,9 @@ namespace RT_SOS2Patches
                     WorldObjectOrbitingShip orbitShip = comp.mapParent;
                     SpaceSettlementData spaceSiteData = new SpaceSettlementData();
 
-                    spaceSiteData.isShip = true;
-                    spaceSiteData.name = comp.mapParent.Name;
-                    spaceSiteData.tile = __result.Tile;
-                    spaceSiteData.settlementStepMode = SettlementStepMode.Add;
+                    spaceSiteData.settlementData.isShip = true;
+                    spaceSiteData.settlementData.tile = __result.Tile;
+                    spaceSiteData.stepMode = SettlementStepMode.Add;
                     spaceSiteData.phi = orbitShip.Phi;
                     spaceSiteData.theta = orbitShip.Theta;
                     spaceSiteData.radius = orbitShip.Radius;

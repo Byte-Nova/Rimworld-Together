@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
-
+using Shared;
+using static Shared.CommonEnumerators;
 namespace GameClient
 {
     //TODO
@@ -12,7 +13,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
             else return false;
         }
     }
@@ -23,7 +24,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref bool __result)
         {
-            if (Network.state == NetworkState.Disconnected) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
             else __result = false;
         }
     }
@@ -34,7 +35,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(ref bool __result)
         {
-            if (Network.state == NetworkState.Disconnected) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
             else __result = false;
         }
     }
@@ -45,7 +46,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
             else return false;
         }
     }
