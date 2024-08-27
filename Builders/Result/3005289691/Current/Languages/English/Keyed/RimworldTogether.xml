@@ -116,6 +116,7 @@
     <RTGlobalMarket>Global Market</RTGlobalMarket>
     <RTGlobalMarketMenu>Global Market Menu</RTGlobalMarketMenu>
     <RTGlobalMarketMenuDesc>Access the global market</RTGlobalMarketMenuDesc>
+    <RTGlobalMarketDisabled>The market has been disabled in this server!</RTGlobalMarketDisabled>
     <RTGlobalMarketRequirement>You need a comms console to use the market!</RTGlobalMarketRequirement>
     <RTAvailableSilver>Silver available for trade: {0}</RTAvailableSilver>
     <RTNoOneToTrade>There's no one in the server to trade with!</RTNoOneToTrade>
