@@ -43,7 +43,7 @@ namespace GameServer
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
             {
-                if (settlement.owner == factionGoodwillData.owner)
+                if (settlement.owner != client.userFile.Username)
                 {
                     factionGoodwillData.settlementTiles.Add(settlement.tile);
                     tempList.Add(GetSettlementGoodwill(client, settlement));
@@ -55,23 +55,8 @@ namespace GameServer
             SiteFile[] sites = SiteManager.GetAllSites();
             foreach (SiteFile site in sites)
             {
-                if (site.factionFile != null)
-                {
-                    if (site.factionFile.name == UserManagerHelper.GetUserFileFromName(factionGoodwillData.owner).faction.name)
-                    {
-                        factionGoodwillData.siteTiles.Add(site.tile);
-                        tempList.Add(GetSiteGoodwill(client, site));
-                    }
-                }
-
-                else
-                {
-                    if (site.owner == factionGoodwillData.owner)
-                    {
-                        factionGoodwillData.siteTiles.Add(site.tile);
-                        tempList.Add(GetSiteGoodwill(client, site));
-                    }
-                }
+                factionGoodwillData.siteTiles.Add(site.tile);
+                tempList.Add(GetSiteGoodwill(client, site));
             }
             factionGoodwillData.siteGoodwills = tempList.ToArray();
 

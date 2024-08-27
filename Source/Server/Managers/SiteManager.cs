@@ -286,18 +286,22 @@ namespace GameServer
             {
                 siteData.sitesWithRewards.Clear();
 
-                List<SiteFile> playerSites = sites.ToList().FindAll(x => x.owner == client.userFile.Username);
+                //Get player specific sites
+
+                List<SiteFile> playerSites = sites.ToList().FindAll(fetch => fetch.factionFile == null && fetch.owner == client.userFile.Username);
                 foreach (SiteFile site in playerSites)
                 {
-                    if (site.workerData != null && site.factionFile != null)
+                    if (site.workerData != null)
                     {
                         siteData.sitesWithRewards.Add(site.tile);
                     }
                 }
 
+                //Get faction specific sites
+
                 if (client.userFile.faction != null)
                 {
-                    List<SiteFile> factionSites = sites.ToList().FindAll(x => x.factionFile.name == client.userFile.faction.name);
+                    List<SiteFile> factionSites = sites.ToList().FindAll(fetch => fetch.factionFile != null && fetch.factionFile.name == client.userFile.faction.name);
                     foreach (SiteFile site in factionSites)
                     {
                         if (site.factionFile != null) siteData.sitesWithRewards.Add(site.tile);
