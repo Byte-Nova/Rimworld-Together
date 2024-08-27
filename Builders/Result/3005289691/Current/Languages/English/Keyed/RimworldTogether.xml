@@ -277,7 +277,7 @@
     <RTRoadManager>Road manager</RTRoadManager>
     <RTRoadManagerDesc>Select the action you want to do</RTRoadManagerDesc>
     <RTRoadTileToConnect>Select a tile to connect with</RTRoadTileToConnect>
-    <RTRoadTile>Tile at {0} - {}</RTRoadTile>
+    <RTRoadTile>Tile at {0} - {1}</RTRoadTile>
     <RTRoadDestroyer>Road destroyer</RTRoadDestroyer>
     <RTRoadDestroyerDesc>Select a tile to disconnect from</RTRoadDestroyerDesc>
     <RTRoadBuild>Build</RTRoadBuild>
