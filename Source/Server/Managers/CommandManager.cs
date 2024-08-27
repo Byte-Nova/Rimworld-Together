@@ -46,7 +46,7 @@ namespace GameServer
         public static void SendEventCommand(ServerClient client, EventFile eventFile)
         {
             EventData eventData = new EventData();
-            eventData.eventStepMode = EventStepMode.Receive;
+            eventData.stepMode = EventStepMode.Receive;
             eventData.eventFile = eventFile;
 
             //We set it to -1 to let the client know it will fall at any settlement

@@ -13,7 +13,7 @@ namespace GameServer
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
 
-            switch (settlementData.settlementStepMode)
+            switch (settlementData.stepMode)
             {
                 case SettlementStepMode.Add:
                     AddSettlement(client, settlementData);
@@ -37,7 +37,7 @@ namespace GameServer
                 settlementFile.owner = client.userFile.Username;
                 Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.tile + fileExtension), settlementFile);
 
-                settlementData.settlementStepMode = SettlementStepMode.Add;
+                settlementData.stepMode = SettlementStepMode.Add;
                 foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
                 {
                     if (cClient == client) continue;
@@ -85,7 +85,7 @@ namespace GameServer
 
             void SendRemovalSignal()
             {
-                settlementData.settlementStepMode = SettlementStepMode.Remove;
+                settlementData.stepMode = SettlementStepMode.Remove;
                 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                 NetworkHelper.SendPacketToAllClients(packet, client);

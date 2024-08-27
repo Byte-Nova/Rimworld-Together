@@ -9,7 +9,7 @@ namespace GameServer
         {
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
-            switch (eventData.eventStepMode)
+            switch (eventData.stepMode)
             {
                 case EventStepMode.Send:
                     SendEvent(client, eventData);
@@ -41,7 +41,7 @@ namespace GameServer
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
                 if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
                 {
-                    eventData.eventStepMode = EventStepMode.Recover;
+                    eventData.stepMode = EventStepMode.Recover;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
@@ -52,7 +52,7 @@ namespace GameServer
 
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
                     {
-                        eventData.eventStepMode = EventStepMode.Recover;
+                        eventData.stepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
@@ -66,7 +66,7 @@ namespace GameServer
 
                         //To the person that should receive it
 
-                        eventData.eventStepMode = EventStepMode.Receive;
+                        eventData.stepMode = EventStepMode.Receive;
 
                         target.userFile.UpdateEventTime();
 

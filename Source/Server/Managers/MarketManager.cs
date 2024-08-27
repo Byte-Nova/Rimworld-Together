@@ -17,7 +17,7 @@ namespace GameServer
         {
             MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
-            switch (marketData.marketStepMode)
+            switch (marketData.stepMode)
             {
                 case MarketStepMode.Add:
                     AddToMarket(client, marketData);
@@ -44,7 +44,7 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             client.listener.EnqueuePacket(packet);
 
-            marketData.marketStepMode = MarketStepMode.Reload;
+            marketData.stepMode = MarketStepMode.Reload;
             marketData.transferThings = Master.marketValues.MarketStock;
 
             packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
@@ -78,7 +78,7 @@ namespace GameServer
             }
 
             client.listener.EnqueuePacket(packet);
-            marketData.marketStepMode = MarketStepMode.Reload;
+            marketData.stepMode = MarketStepMode.Reload;
             marketData.transferThings = Master.marketValues.MarketStock;
             
             packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);

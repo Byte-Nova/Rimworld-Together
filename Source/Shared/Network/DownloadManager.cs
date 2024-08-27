@@ -7,7 +7,9 @@ namespace Shared
         public FileStream fileStream;
 
         public string filePath;
+
         public double fileSize;
+        
         public double fileParts;
 
         public bool isLastPart;

@@ -14,7 +14,7 @@ namespace GameClient
         {
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
-            switch (eventData.eventStepMode)
+            switch (eventData.stepMode)
             {
                 case EventStepMode.Send:
                     OnEventSent();
@@ -68,7 +68,7 @@ namespace GameClient
                 RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost);
 
                 EventData eventData = new EventData();
-                eventData.eventStepMode = EventStepMode.Send;
+                eventData.stepMode = EventStepMode.Send;
                 eventData.fromTile = toGetSilverFrom.Tile;
                 eventData.toTile = SessionValues.chosenSettlement.Tile;
                 eventData.eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];

@@ -9,7 +9,7 @@ namespace GameServer
         {
             OnlineActivityData visitData = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 
-            switch (visitData.activityStepMode)
+            switch (visitData.stepMode)
             {
                 case OnlineActivityStepMode.Request:
                     SendVisitRequest(client, visitData);
@@ -67,14 +67,14 @@ namespace GameServer
 
         private static void SendVisitRequest(ServerClient client, OnlineActivityData data)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.targetTile);
-            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to visit a settlement at tile {data.targetTile}, but no settlement could be found");
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.toTile);
+            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to visit a settlement at tile {data.toTile}, but no settlement could be found");
             else
             {
                 ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
                 if (toGet == null)
                 {
-                    data.activityStepMode = OnlineActivityStepMode.Unavailable;
+                    data.stepMode = OnlineActivityStepMode.Unavailable;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }
@@ -83,14 +83,14 @@ namespace GameServer
                 {
                     if (toGet.inVisitWith != null)
                     {
-                        data.activityStepMode = OnlineActivityStepMode.Unavailable;
+                        data.stepMode = OnlineActivityStepMode.Unavailable;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
 
                     else
                     {
-                        data.otherPlayerName = client.userFile.Username;
+                        data.engagerName = client.userFile.Username;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                         toGet.listener.EnqueuePacket(packet);
                     }
@@ -137,7 +137,7 @@ namespace GameServer
         {
             if (client.inVisitWith == null)
             {
-                data.activityStepMode = OnlineActivityStepMode.Stop;
+                data.stepMode = OnlineActivityStepMode.Stop;
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                 client.listener.EnqueuePacket(packet);
             }
@@ -152,7 +152,7 @@ namespace GameServer
         public static void SendVisitStop(ServerClient client)
         {
             OnlineActivityData visitData = new OnlineActivityData();
-            visitData.activityStepMode = OnlineActivityStepMode.Stop;
+            visitData.stepMode = OnlineActivityStepMode.Stop;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), visitData);
             client.listener.EnqueuePacket(packet);

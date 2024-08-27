@@ -17,7 +17,7 @@ namespace GameClient
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
 
-            switch (settlementData.settlementStepMode)
+            switch (settlementData.stepMode)
             {
                 case SettlementStepMode.Add:
                     SpawnSingleSettlement(settlementData);

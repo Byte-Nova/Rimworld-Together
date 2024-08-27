@@ -28,7 +28,7 @@ namespace GameClient
         {
             OnlineActivityData data = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 
-            switch (data.activityStepMode)
+            switch (data.stepMode)
             {
                 case OnlineActivityStepMode.Request:
                     OnActivityRequest(data);
@@ -99,10 +99,10 @@ namespace GameClient
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
 
                 OnlineActivityData data = new OnlineActivityData();
-                data.activityStepMode = OnlineActivityStepMode.Request;
+                data.stepMode = OnlineActivityStepMode.Request;
                 data.activityType = toRequest;
                 data.fromTile = Find.AnyPlayerHomeMap.Tile;
-                data.targetTile = SessionValues.chosenSettlement.Tile;
+                data.toTile = SessionValues.chosenSettlement.Tile;
                 data.caravanHumans = OnlineManagerHelper.GetActivityHumans();
                 data.caravanAnimals = OnlineManagerHelper.GetActivityAnimals();
 
@@ -114,7 +114,7 @@ namespace GameClient
         public static void RequestStopOnlineActivity()
         {
             OnlineActivityData data = new OnlineActivityData();
-            data.activityStepMode = OnlineActivityStepMode.Stop;
+            data.stepMode = OnlineActivityStepMode.Stop;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -137,7 +137,7 @@ namespace GameClient
 
         private static void SendRequestedMap(OnlineActivityData data)
         {
-            data.activityStepMode = OnlineActivityStepMode.Accept;
+            data.stepMode = OnlineActivityStepMode.Accept;
             data.mapHumans = OnlineManagerHelper.GetActivityHumans();
             data.mapAnimals = OnlineManagerHelper.GetActivityAnimals();
             data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
@@ -154,7 +154,7 @@ namespace GameClient
                 OnlineManagerHelper.ClearAllQueues();
                 ClientValues.ToggleRealTimeHost(true);
 
-                onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == data.targetTile).Map;
+                onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == data.toTile).Map;
                 factionPawns = OnlineManagerHelper.GetMapPawns().ToList();
                 mapThings = RimworldManager.GetThingsInMap(onlineMap).OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToList();
 
@@ -168,14 +168,14 @@ namespace GameClient
 
             Action r2 = delegate
             {
-                data.activityStepMode = OnlineActivityStepMode.Reject;
+                data.stepMode = OnlineActivityStepMode.Reject;
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                 Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo promptDialog = null;
-            if (data.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo($"Visited by {data.otherPlayerName}, accept?", r1, r2);
-            else if (data.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo($"Raided by {data.otherPlayerName}, accept?", r1, r2);
+            if (data.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo($"Visited by {data.engagerName}, accept?", r1, r2);
+            else if (data.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo($"Raided by {data.engagerName}, accept?", r1, r2);
 
             DialogManager.PushNewDialog(promptDialog);
         }

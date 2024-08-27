@@ -47,14 +47,14 @@ namespace GameServer
 
             foreach (RoadDetails existingRoad in Master.worldValues.Roads)
             {
-                if (existingRoad.tileA == data.details.tileA && existingRoad.tileB == data.details.tileB)
+                if (existingRoad.fromTile == data.details.fromTile && existingRoad.toTile == data.details.toTile)
                 {
                     DeleteRoad(existingRoad, client);
                     BroadcastDeletion(existingRoad);
                     return;
                 }
 
-                else if (existingRoad.tileA == data.details.tileB && existingRoad.tileB == data.details.tileA)
+                else if (existingRoad.fromTile == data.details.toTile && existingRoad.toTile == data.details.fromTile)
                 {
                     DeleteRoad(existingRoad, client);
                     BroadcastDeletion(existingRoad);
@@ -79,8 +79,8 @@ namespace GameServer
             Master.worldValues.Roads = currentRoads.ToArray();
             Main_.SaveValueFile(ServerFileMode.World);
 
-            if (client != null) Logger.Warning($"[Added road from tiles '{details.tileA}' to '{details.tileB}'] > {client.userFile.Username}");
-            else Logger.Warning($"[Added road from tiles '{details.tileA}' to '{details.tileB}']");
+            if (client != null) Logger.Warning($"[Added road from tiles '{details.fromTile}' to '{details.toTile}'] > {client.userFile.Username}");
+            else Logger.Warning($"[Added road from tiles '{details.fromTile}' to '{details.toTile}']");
         }
 
         private static void DeleteRoad(RoadDetails details, ServerClient client = null)
@@ -91,8 +91,8 @@ namespace GameServer
             Master.worldValues.Roads = currentRoads.ToArray();
             Main_.SaveValueFile(ServerFileMode.World);
 
-            if (client != null) Logger.Warning($"[Removed road from tiles '{details.tileA}' to '{details.tileB}'] > {client.userFile.Username}");
-            else Logger.Warning($"[Removed road from tiles '{details.tileA}' to '{details.tileB}']");
+            if (client != null) Logger.Warning($"[Removed road from tiles '{details.fromTile}' to '{details.toTile}'] > {client.userFile.Username}");
+            else Logger.Warning($"[Removed road from tiles '{details.fromTile}' to '{details.toTile}']");
         }
     }
 
@@ -102,8 +102,8 @@ namespace GameServer
         {
             foreach (RoadDetails existingRoad in Master.worldValues.Roads)
             {
-                if (existingRoad.tileA == details.tileA && existingRoad.tileB == details.tileB) return true;
-                else if (existingRoad.tileA == details.tileB && existingRoad.tileB == details.tileA) return true;
+                if (existingRoad.fromTile == details.fromTile && existingRoad.toTile == details.toTile) return true;
+                else if (existingRoad.fromTile == details.toTile && existingRoad.toTile == details.fromTile) return true;
             }
 
             return false;

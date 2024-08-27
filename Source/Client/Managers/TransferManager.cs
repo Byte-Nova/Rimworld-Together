@@ -21,7 +21,7 @@ namespace GameClient
         {
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
-            switch (transferData.transferStepMode)
+            switch (transferData.stepMode)
             {
                 case TransferStepMode.TradeRequest:
                     ReceiveTransferRequest(transferData);
@@ -118,7 +118,7 @@ namespace GameClient
 
             if (transferLocation == TransferLocation.Caravan)
             {
-                SessionValues.outgoingManifest.transferStepMode = TransferStepMode.TradeRequest;
+                SessionValues.outgoingManifest.stepMode = TransferStepMode.TradeRequest;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
@@ -126,7 +126,7 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                SessionValues.outgoingManifest.transferStepMode = TransferStepMode.TradeReRequest;
+                SessionValues.outgoingManifest.stepMode = TransferStepMode.TradeReRequest;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
@@ -134,7 +134,7 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.Pod)
             {
-                SessionValues.outgoingManifest.transferStepMode = TransferStepMode.TradeRequest;
+                SessionValues.outgoingManifest.stepMode = TransferStepMode.TradeRequest;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
@@ -143,7 +143,7 @@ namespace GameClient
             else if (transferLocation == TransferLocation.World)
             {
                 MarketData marketData = new MarketData();
-                marketData.marketStepMode = MarketStepMode.Add;
+                marketData.stepMode = MarketStepMode.Add;
                 marketData.transferThings = SessionValues.outgoingManifest.itemDatas;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
@@ -338,7 +338,7 @@ namespace GameClient
 
             else if (transferMode == TransferMode.Trade)
             {
-                SessionValues.incomingManifest.transferStepMode = TransferStepMode.TradeReject;
+                SessionValues.incomingManifest.stepMode = TransferStepMode.TradeReject;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
@@ -351,7 +351,7 @@ namespace GameClient
 
             else if (transferMode == TransferMode.Rebound)
             {
-                SessionValues.incomingManifest.transferStepMode = TransferStepMode.TradeReReject;
+                SessionValues.incomingManifest.stepMode = TransferStepMode.TradeReReject;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);

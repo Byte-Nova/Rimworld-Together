@@ -22,7 +22,7 @@ namespace GameClient
 
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData.settlementData.tile = __instance.CurrentMap.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Add;
+                    settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -65,7 +65,7 @@ namespace GameClient
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData.settlementData.tile = caravan.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Add;
+                    settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -85,7 +85,7 @@ namespace GameClient
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData.settlementData.tile = map.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Add;
+                    settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -105,7 +105,7 @@ namespace GameClient
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData.settlementData.tile = settlement.Tile;
-                    settlementData.settlementStepMode = SettlementStepMode.Remove;
+                    settlementData.stepMode = SettlementStepMode.Remove;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);

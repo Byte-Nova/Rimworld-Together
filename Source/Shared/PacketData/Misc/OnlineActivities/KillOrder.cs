@@ -7,6 +7,7 @@ namespace Shared
     public class KillOrder
     {
         public OnlineActivityTargetFaction pawnFaction;
+        
         public int killTargetIndex;
     }
 }

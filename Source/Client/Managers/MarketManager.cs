@@ -17,7 +17,7 @@ namespace GameClient
         {
             MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
-            switch (marketData.marketStepMode)
+            switch (marketData.stepMode)
             {
                 case MarketStepMode.Add:
                     ConfirmAddStock();
@@ -72,7 +72,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData data = new MarketData();
-            data.marketStepMode = MarketStepMode.Request;
+            data.stepMode = MarketStepMode.Request;
             data.indexToManage = marketIndex;
             data.quantityToManage = quantity;
 
@@ -102,7 +102,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData marketData = new MarketData();
-            marketData.marketStepMode = MarketStepMode.Reload;
+            marketData.stepMode = MarketStepMode.Reload;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             Network.listener.EnqueuePacket(packet);

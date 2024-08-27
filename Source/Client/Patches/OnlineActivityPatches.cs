@@ -27,7 +27,7 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                    OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
+                    OnlineActivityData.stepMode = OnlineActivityStepMode.Create;
                     OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
@@ -79,7 +79,7 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
+                    onlineActivityData.stepMode = OnlineActivityStepMode.Destroy;
                     onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
@@ -132,7 +132,7 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Kill;
+                    onlineActivityData.stepMode = OnlineActivityStepMode.Kill;
                     onlineActivityData.killOrder = OnlineManagerHelper.CreateKillOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
@@ -182,7 +182,7 @@ namespace GameClient
                 if (OnlineActivityManager.factionPawns.Contains(___pawn))
                 {
                     OnlineActivityData data = new OnlineActivityData();
-                    data.activityStepMode = OnlineActivityStepMode.Action;
+                    data.stepMode = OnlineActivityStepMode.Action;
                     data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn, newJob);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
@@ -223,7 +223,7 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Damage;
+                    onlineActivityData.stepMode = OnlineActivityStepMode.Damage;
                     onlineActivityData.damageOrder = OnlineManagerHelper.CreateDamageOrder(dinfo, __instance);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
@@ -274,7 +274,7 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
+                    onlineActivityData.stepMode = OnlineActivityStepMode.Hediff;
                     onlineActivityData.hediffOrder = OnlineManagerHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Add);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
@@ -319,7 +319,7 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
+                    onlineActivityData.stepMode = OnlineActivityStepMode.Hediff;
                     onlineActivityData.hediffOrder = OnlineManagerHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Remove);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
@@ -357,7 +357,7 @@ namespace GameClient
             if (ClientValues.isRealTimeHost)
             {
                 OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                OnlineActivityData.activityStepMode = OnlineActivityStepMode.GameCondition;
+                OnlineActivityData.stepMode = OnlineActivityStepMode.GameCondition;
                 OnlineActivityData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(cond, OnlineActivityApplyMode.Add);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
@@ -394,7 +394,7 @@ namespace GameClient
             if (ClientValues.isRealTimeHost)
             {
                 OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                OnlineActivityData.activityStepMode = OnlineActivityStepMode.GameCondition;
+                OnlineActivityData.stepMode = OnlineActivityStepMode.GameCondition;
                 OnlineActivityData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(__instance, OnlineActivityApplyMode.Remove);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
@@ -437,7 +437,7 @@ namespace GameClient
                     OnlineActivityManager.queuedTimeSpeed = (int)__instance.CurTimeSpeed;
 
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.TimeSpeed;
+                    onlineActivityData.stepMode = OnlineActivityStepMode.TimeSpeed;
                     onlineActivityData.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
@@ -474,7 +474,7 @@ namespace GameClient
                 OnlineManagerHelper.EnqueueWeather(newWeather);
 
                 OnlineActivityData onlineActivityData = new OnlineActivityData();
-                onlineActivityData.activityStepMode = OnlineActivityStepMode.Weather;
+                onlineActivityData.stepMode = OnlineActivityStepMode.Weather;
                 onlineActivityData.weatherOrder = OnlineManagerHelper.CreateWeatherOrder(newWeather);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
