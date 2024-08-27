@@ -160,6 +160,7 @@ namespace GameClient
             ServerValues.SetAccountData(serverGlobalData);
             EventManagerHelper.SetValues(serverGlobalData);
             SiteManager.SetSiteData(serverGlobalData);
+            MarketManagerHelper.SetValues(serverGlobalData);
             OfflineActivityManager.SetSpyCost(serverGlobalData);
             CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);

@@ -120,4 +120,14 @@ namespace GameClient
             }
         }
     }
+
+    public static class MarketManagerHelper
+    {
+        public static MarketValuesFile marketValues;
+
+        public static void SetValues(ServerGlobalData globalData)
+        {
+            marketValues = globalData.marketValues;
+        }
+    }
 }

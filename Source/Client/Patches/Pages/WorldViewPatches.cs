@@ -192,8 +192,12 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
 
-                        if (RimworldManager.CheckIfPlayerHasConsoleInMap(SessionValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
+                        if (MarketManagerHelper.marketValues.IsEnabled)
+                        {
+                            if (RimworldManager.CheckIfPlayerHasConsoleInMap(SessionValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
+                        }
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("The market has been disabled in this server!"));
                     }
                 };
 

@@ -173,8 +173,8 @@ namespace GameServer
                     break;
 
                 case ServerFileMode.Market:
-                    pathToSave = Path.Combine(Master.corePath, "Market.json");
-                    Serializer.SerializeToFile(pathToSave, Master.market);
+                    pathToSave = Path.Combine(Master.corePath, "MarketValues.json");
+                    Serializer.SerializeToFile(pathToSave, Master.marketValues);
                     break;
 
                 case ServerFileMode.Discord:
@@ -259,12 +259,12 @@ namespace GameServer
                     break;
 
                 case ServerFileMode.Market:
-                    pathToLoad = Path.Combine(Master.corePath, "Market.json");
-                    if (File.Exists(pathToLoad)) Master.market = Serializer.SerializeFromFile<MarketFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.corePath, "MarketValues.json");
+                    if (File.Exists(pathToLoad)) Master.marketValues = Serializer.SerializeFromFile<MarketValuesFile>(pathToLoad);
                     else
                     {
-                        Master.market = new MarketFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.market);
+                        Master.marketValues = new MarketValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.marketValues);
                     }
                     break;
 

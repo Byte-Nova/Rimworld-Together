@@ -18,7 +18,9 @@ namespace GameServer
 
             globalData = GetServerSites(client, globalData);
 
-            globalData = GetServerCaravans(client, globalData);
+            globalData = GetServerMarket(globalData);
+
+            globalData = GetServerCaravans(globalData);
 
             globalData = GetServerRoads(globalData);
 
@@ -103,7 +105,13 @@ namespace GameServer
             return globalData;
         }
 
-        private static ServerGlobalData GetServerCaravans(ServerClient client, ServerGlobalData globalData)
+        private static ServerGlobalData GetServerMarket(ServerGlobalData globalData)
+        {
+            globalData.marketValues = Master.marketValues;
+            return globalData;
+        }
+
+        private static ServerGlobalData GetServerCaravans(ServerGlobalData globalData)
         {
             globalData.playerCaravans = CaravanManager.GetActiveCaravans();
             return globalData;

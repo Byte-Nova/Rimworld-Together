@@ -58,7 +58,7 @@ namespace GameServer
 
         //References
 
-        public static MarketFile market;
+        public static MarketValuesFile marketValues;
 
         public static WhitelistFile whitelist;
 

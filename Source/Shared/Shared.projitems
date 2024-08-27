@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\FactionFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\CaravanFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\MarketValuesFile.cs" />
 
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
