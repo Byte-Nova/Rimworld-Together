@@ -85,6 +85,7 @@
     <RTDialogSelect>Select</RTDialogSelect>
     <RTDialogNew>New</RTDialogNew>
     <RTDialogReload>Reload</RTDialogReload>
+    <RTDialogReset>Reset</RTDialogReset>
     <RTDialogAccept>Accept</RTDialogAccept>
     <RTPlayerNotAvailable>Player is not currently available!</RTPlayerNotAvailable>
     
@@ -222,7 +223,7 @@
     <RTEventSelectorDesc>Choose the even you want to send</RTEventSelectorDesc>
     <RTEventNotEnoughSilver>You do not have enough silver for this action!</RTEventNotEnoughSilver>
     <RTEventWait>Waiting for event</RTEventWait>
-    <RTEventLetterSend>Event - {0}</RTEventLetterSend>
+    <RTEventLetter>Event - {0}</RTEventLetter>
     <RTEventSended>Event sent!</RTEventSended>
     <RTEventSendedDesc>Your event has been sent!</RTEventSendedDesc>
     
