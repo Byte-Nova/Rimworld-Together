@@ -53,8 +53,8 @@ namespace GameClient
             toUse.next = new Page_SelectStartingSite();
             DialogManager.PushNewDialog(toUse);
 
-            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are the first person joining the server!",
-                "Configure the world that everyone will play on" });
+            RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RTDialogFirstPlayer".Translate(),
+                "RTDialogYouConfigure".Translate() });
 
             DialogManager.PushNewDialog(d1);
         }
