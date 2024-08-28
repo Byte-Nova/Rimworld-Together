@@ -133,7 +133,7 @@ namespace GameServer
 
                 if (siteData.siteFile.factionFile != null)
                 {
-                    FactionFile factionFile = FactionManager.GetFactionFromClient(client);
+                    FactionFile factionFile = client.userFile.faction;
 
                     if (FactionManager.GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member)
                     {
@@ -176,7 +176,7 @@ namespace GameServer
 
                 else
                 {
-                    FactionFile factionFile = FactionManager.GetFactionFromClient(client);
+                    FactionFile factionFile = client.userFile.faction;
 
                     if (FactionManager.GetMemberRank(factionFile, client.userFile.Username) !=
                         FactionRanks.Member) DestroySiteFromFile(siteFile);
@@ -222,7 +222,7 @@ namespace GameServer
         {
             SiteFile siteFile = GetSiteFileFromTile(siteData.siteFile.tile);
 
-            if (siteFile.owner != client.userFile.Username && FactionManager.GetFactionFromClient(client).currentMembers.Contains(siteFile.owner))
+            if (siteFile.owner != client.userFile.Username && client.userFile.faction.currentMembers.Contains(siteFile.owner))
             {
                 ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to deposit a worker in the site at tile {siteData.siteFile.tile}, but the player {siteFile.owner} owns it");
             }
@@ -243,7 +243,7 @@ namespace GameServer
         {
             SiteFile siteFile = GetSiteFileFromTile(siteData.siteFile.tile);
 
-            if (siteFile.owner != client.userFile.Username && FactionManager.GetFactionFromClient(client).currentMembers.Contains(siteFile.owner))
+            if (siteFile.owner != client.userFile.Username && client.userFile.faction.currentMembers.Contains(siteFile.owner))
             {
                 ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData.siteFile.tile}, but the player {siteFile.owner} of faction {siteFile.factionFile.name} owns it");
             }

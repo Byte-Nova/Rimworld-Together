@@ -27,13 +27,13 @@ jobs:
       - name: Compile target
         run: dotnet publish Source/Server/GameServer.csproj -c Release -r ${{ matrix.target }} --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true
       - name: Find release
-        run: ls Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish
+        run: ls Source/Server/bin/Release/net8.0/${{ matrix.target }}/publish
 
       - name: Rename and Zip Linux release
-        run: zip -j ${{ matrix.target }}.zip Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish/GameServer
+        run: zip -j ${{ matrix.target }}.zip Source/Server/bin/Release/net8.0/${{ matrix.target }}/publish/GameServer
         if: startsWith( matrix.target, 'linux')
       - name: Rename and Zip Windows release
-        run:  zip -j ${{ matrix.target }}.zip Source/Server/bin/Release/net7.0/${{ matrix.target }}/publish/GameServer.exe
+        run:  zip -j ${{ matrix.target }}.zip Source/Server/bin/Release/net8.0/${{ matrix.target }}/publish/GameServer.exe
         if: startsWith( matrix.target, 'win')
 
       - name: Upload compressed release

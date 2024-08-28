@@ -53,7 +53,7 @@ namespace GameClient
 
         private static void OnBroadcastCommand(CommandData commandData)
         {
-            RimworldManager.GenerateLetter("RTCommandServerBroadcast".Translate(), commandData.commandDetails, LetterDefOf.PositiveEvent);
+            RimworldManager.GenerateLetter("RTCommandServerBroadcast".Translate(), ChatManagerHelper.ParseMessage(commandData.commandDetails, true), LetterDefOf.PositiveEvent);
         }
 
         private static void OnForceSaveCommand()

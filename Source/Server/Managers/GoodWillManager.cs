@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using System.IO.Compression;
+using Shared;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -14,7 +15,7 @@ namespace GameServer
             if (settlementFile != null) factionGoodwillData.owner = settlementFile.owner;
             else factionGoodwillData.owner = siteFile.owner;
 
-            if (client.userFile.faction != null && FactionManager.GetFactionFromClient(client).currentMembers.Contains(factionGoodwillData.owner))
+            if (client.userFile.faction != null && client.userFile.faction.currentMembers.Contains(factionGoodwillData.owner))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
@@ -39,26 +40,33 @@ namespace GameServer
                 }
             }
 
-            List<Goodwill> tempList = new List<Goodwill>();
+            List<Goodwill> tempSettlementList = new List<Goodwill>();
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
             {
-                if (settlement.owner != client.userFile.Username)
+                //Check if settlement owner is the one we are looking for
+
+                if (settlement.owner == factionGoodwillData.owner)
                 {
                     factionGoodwillData.settlementTiles.Add(settlement.tile);
-                    tempList.Add(GetSettlementGoodwill(client, settlement));
+                    tempSettlementList.Add(GetSettlementGoodwill(client, settlement));
                 }
             }
-            factionGoodwillData.settlementGoodwills = tempList.ToArray();
+            factionGoodwillData.settlementGoodwills = tempSettlementList.ToArray();
 
-            tempList = new List<Goodwill>();
+            List<Goodwill> tempSiteList = new List<Goodwill>();
             SiteFile[] sites = SiteManager.GetAllSites();
             foreach (SiteFile site in sites)
             {
-                factionGoodwillData.siteTiles.Add(site.tile);
-                tempList.Add(GetSiteGoodwill(client, site));
+                //Check if site owner is the one we are looking for
+
+                if (site.owner == factionGoodwillData.owner)
+                {
+                    factionGoodwillData.siteTiles.Add(site.tile);
+                    tempSiteList.Add(GetSiteGoodwill(client, site));
+                }
             }
-            factionGoodwillData.siteGoodwills = tempList.ToArray();
+            factionGoodwillData.siteGoodwills = tempSiteList.ToArray();
 
             client.userFile.SaveUserFile();
 
