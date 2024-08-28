@@ -1,18 +1,26 @@
 ﻿using System;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
     public class SiteFile
     {
-        public int tile;
+        public int Tile;
 
-        public string owner;
+        public string Owner;
 
-        public int type;
+        public Goodwill Goodwill;
 
-        public byte[] workerData;
+        public int Type;
 
-        public FactionFile factionFile;
+        public byte[] WorkerData;
+
+        public FactionFile FactionFile;
+
+        public void UpdateFaction(FactionFile toUpdateWith)
+        {
+            FactionFile = toUpdateWith;
+        }
     }
 }

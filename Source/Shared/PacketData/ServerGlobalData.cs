@@ -7,8 +7,6 @@ namespace Shared
     {
         public bool isClientAdmin;
 
-        public bool AllowCustomScenarios;
-
         public bool isClientFactionMember;
 
         public SiteValuesFile siteValues;
@@ -25,9 +23,9 @@ namespace Shared
 
         public PlanetNPCSettlement[] npcSettlements;
 
-        public OnlineSettlementFile[] playerSettlements;
+        public SettlementFile[] playerSettlements;
 
-        public OnlineSiteFile[] playerSites;
+        public SiteFile[] playerSites;
 
         public CaravanFile[] playerCaravans;
 

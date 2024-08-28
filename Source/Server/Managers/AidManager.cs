@@ -9,6 +9,12 @@ namespace GameServer
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableAids)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             AidData data = Serializer.ConvertBytesToObject<AidData>(packet.contents);
 
             switch (data.stepMode)
@@ -37,9 +43,9 @@ namespace GameServer
             else
             {
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.toTile);
-                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.owner))
+                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
-                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
+                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
 
                     if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, baseAidTimer))
                     {
@@ -71,11 +77,11 @@ namespace GameServer
             else
             {
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.fromTile);
-                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.owner))
+                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
                     client.userFile.UpdateAidTime();
 
-                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
+                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     target.listener.EnqueuePacket(packet);
                 }
@@ -97,9 +103,9 @@ namespace GameServer
             else
             {
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.fromTile);
-                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.owner))
+                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
-                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
+                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
                     target.listener.EnqueuePacket(packet);
                 }

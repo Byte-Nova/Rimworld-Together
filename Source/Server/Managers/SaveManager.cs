@@ -151,16 +151,16 @@ namespace GameServer
             SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.userFile.Username);
             foreach (SiteFile site in playerSites)
             {
-                File.Copy(Path.Combine(Master.sitesPath, site.tile + SiteManager.fileExtension), 
-                    Path.Combine(sitesArchivePath, site.tile + SiteManager.fileExtension));
+                File.Copy(Path.Combine(Master.sitesPath, site.Tile + SiteManager.fileExtension), 
+                    Path.Combine(sitesArchivePath, site.Tile + SiteManager.fileExtension));
             }
 
             //Copy settlement files to archive
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.userFile.Username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
-                File.Copy(Path.Combine(Master.settlementsPath, settlementFile.tile + SettlementManager.fileExtension), 
-                    Path.Combine(settlementsArchivePath, settlementFile.tile + SettlementManager.fileExtension));
+                File.Copy(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension), 
+                    Path.Combine(settlementsArchivePath, settlementFile.Tile + SettlementManager.fileExtension));
             }
 
             ResetPlayerData(client, client.userFile.Username);
@@ -187,8 +187,8 @@ namespace GameServer
             foreach (SettlementFile settlementFile in playerSettlements)
             {
                 PlayerSettlementData settlementData = new PlayerSettlementData();
-                settlementData.settlementData.tile = settlementFile.tile;
-                settlementData.settlementData.owner = settlementFile.owner;
+                settlementData.settlementData.Tile = settlementFile.Tile;
+                settlementData.settlementData.Owner = settlementFile.Owner;
 
                 SettlementManager.RemoveSettlement(client, settlementData);
             }

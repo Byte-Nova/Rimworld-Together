@@ -543,8 +543,8 @@ namespace GameServer
 
         private static void ToggleCustomScenariosCommandAction()
         {
-            Master.serverConfig.AllowCustomScenarios = !Master.serverConfig.AllowCustomScenarios;
-            Logger.Warning($"Custom scenarios are now {(Master.serverConfig.AllowCustomScenarios ? ("Enabled") : ("Disabled"))}");
+            Master.actionValues.EnableCustomScenarios = !Master.actionValues.EnableCustomScenarios;
+            Logger.Warning($"Custom scenarios are now {(Master.actionValues.EnableCustomScenarios ? ("Enabled") : ("Disabled"))}");
             Main_.SaveValueFile(ServerFileMode.Configs);
         }
 

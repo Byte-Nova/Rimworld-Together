@@ -5,7 +5,7 @@ namespace GameClient
 {
     public static class CustomDifficultyManager
     {
-        public static void SetCustomDifficulty(ServerGlobalData serverGlobalData)
+        public static void SetValues(ServerGlobalData serverGlobalData)
         {
             DifficultyValues.UseCustomDifficulty = serverGlobalData.difficultyValues.UseCustomDifficulty;
 

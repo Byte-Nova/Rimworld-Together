@@ -9,6 +9,12 @@ namespace GameServer
 
         public static void ParseOfflineActivityPacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableOfflineActivities)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             OfflineActivityData data = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
             switch (data.stepMode)
@@ -36,7 +42,7 @@ namespace GameServer
             {
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.targetTile);
 
-                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.owner))
+                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
                     data.stepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
@@ -45,7 +51,7 @@ namespace GameServer
 
                 else
                 {
-                    UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.owner);
+                    UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
 
                     if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
                     {

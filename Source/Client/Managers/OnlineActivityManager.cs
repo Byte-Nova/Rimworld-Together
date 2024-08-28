@@ -90,7 +90,17 @@ namespace GameClient
 
         public static void RequestOnlineActivity(OnlineActivityType toRequest)
         {
-            if (SessionValues.currentRealTimeEvent != OnlineActivityType.None) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already in a real time activity!"));
+            if (!SessionValues.actionValues.EnableOnlineActivities)
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                return;
+            }
+
+            else if (SessionValues.currentRealTimeEvent != OnlineActivityType.None)
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You are already in a real time activity!"));
+            }
+            
             else
             {
                 OnlineManagerHelper.ClearAllQueues();

@@ -61,7 +61,7 @@ namespace GameServer
         {
             SendPlayerRecount();
 
-            ServerGlobalDataManager.SendServerGlobalData(client);
+            GlobalDataManager.SendServerGlobalData(client);
 
             foreach(string str in ChatManager.defaultJoinMessages) ChatManager.SendSystemMessage(client, str);
 
@@ -271,12 +271,12 @@ namespace GameServer
 
         public static int[] GetUserStructuresTilesFromUsername(string username)
         {
-            SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.owner == username).ToArray();
-            SiteFile[] sites = SiteManager.GetAllSites().ToList().FindAll(x => x.owner == username).ToArray();
+            SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.Owner == username).ToArray();
+            SiteFile[] sites = SiteManager.GetAllSites().ToList().FindAll(x => x.Owner == username).ToArray();
 
             List<int> tilesToExclude = new List<int>();
-            foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.tile);
-            foreach (SiteFile site in sites) tilesToExclude.Add(site.tile);
+            foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.Tile);
+            foreach (SiteFile site in sites) tilesToExclude.Add(site.Tile);
 
             return tilesToExclude.ToArray();
         }

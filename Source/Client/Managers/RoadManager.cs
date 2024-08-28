@@ -225,7 +225,7 @@ namespace GameClient
             return DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == defName);
         }
 
-        public static void ChooseRoadDialogs(int[] neighborTiles, bool hasRoadOnTile)
+        public static void ShowRoadChooseDialog(int[] neighborTiles, bool hasRoadOnTile)
         {
             if (hasRoadOnTile)
             {

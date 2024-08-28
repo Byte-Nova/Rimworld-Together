@@ -25,13 +25,11 @@ namespace GameServer
 
         public List<string> RunningMods = new List<string>();
 
-        public List<string> AllyPlayers = new List<string>();
+        public UserRelationshipsFile Relationships = new UserRelationshipsFile();
 
-        public List<string> EnemyPlayers = new List<string>();
+        public FactionFile FactionFile;
 
-        public FactionFile faction;
-
-        [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
+        [NonSerialized] private Semaphore savingSemaphore = new Semaphore(1, 1);
 
         public void SetLoginDetails(LoginData data)
         {
@@ -44,7 +42,7 @@ namespace GameServer
 
         public void UpdateFaction(FactionFile toUpdateWith)
         {
-            faction = toUpdateWith;
+            FactionFile = toUpdateWith;
 
             SaveUserFile();
         }
