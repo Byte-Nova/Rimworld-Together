@@ -69,7 +69,7 @@ namespace GameClient
             chatData.message = messageToSend;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
-            Network.listener?.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(packet);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
@@ -208,6 +208,7 @@ namespace GameClient
                             break;
 
                         //Check for NEW LINE (broadcasts only)
+                        
                         case "[n]":
                             if (fromBroadcast)
                             {
