@@ -21,14 +21,14 @@ namespace GameClient
                     CustomDifficultyManager.EnforceCustomDifficulty();
                     if (SOS2SendData.IsMapShip(__instance.CurrentMap).Result == false)
                     {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData.tile = __instance.CurrentMap.Tile;
-                    settlementData.stepMode = SettlementStepMode.Add;
+                        PlayerSettlementData settlementData = new PlayerSettlementData();
+                        settlementData.settlementData.tile = __instance.CurrentMap.Tile;
+                        settlementData.stepMode = SettlementStepMode.Add;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Network.listener.EnqueuePacket(packet);
 
-                    SaveManager.ForceSave();
+                        SaveManager.ForceSave();
                     }
 
                     if (ClientValues.isGeneratingFreshWorld)
@@ -36,11 +36,6 @@ namespace GameClient
                         PlanetGeneratorManager.SendWorldToServer();
                         ClientValues.ToggleGenerateWorld(false);
                     }
-                }
-                if (ClientValues.isGeneratingFreshWorld)
-                {
-                    PlanetGeneratorManager.SendWorldToServer();
-                    ClientValues.ToggleGenerateWorld(false);
                 }
             }
         }

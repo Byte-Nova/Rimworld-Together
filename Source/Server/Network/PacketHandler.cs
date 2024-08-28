@@ -113,6 +113,10 @@ namespace GameServer
             SettlementManager.ParseSettlementPacket(client, packet);
         }
 
+        public static void SpaceSettlementPacket(ServerClient client, Packet packet) 
+        {
+
+        }
         public static void NPCSettlementPacket(ServerClient client, Packet packet)
         {
             NPCSettlementManager.ParsePacket(client, packet);
