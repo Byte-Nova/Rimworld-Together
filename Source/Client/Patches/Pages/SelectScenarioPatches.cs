@@ -46,7 +46,7 @@ namespace GameClient
         public static bool DoPre()
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            if (ServerValues.AllowCustomScenarios) return true;
+            if (SessionValues.actionValues.EnableCustomScenarios) return true;
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("RTCustomScenariosUnAvailable".Translate()));
             return false;
@@ -64,7 +64,7 @@ namespace GameClient
         public static bool DoPre(Rect rect, ref Scenario ___curScen)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            if (ServerValues.AllowCustomScenarios) return true;
+            if (SessionValues.actionValues.EnableCustomScenarios) return true;
 
             if (curScen != null) ___curScen = curScen;
             rect.xMax += 2f;

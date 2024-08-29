@@ -9,6 +9,12 @@ namespace GameServer
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableRoads)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.contents);
 
             switch (data.stepMode)

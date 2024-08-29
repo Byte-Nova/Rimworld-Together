@@ -29,25 +29,25 @@ namespace GameClient
             }
         }
 
-        public static void AddSettlements(OnlineSettlementFile[] toAdd)
+        public static void AddSettlements(SettlementFile[] toAdd)
         {
             if (toAdd == null) return;
 
             for (int i = 0; i < PlayerSettlementManagerHelper.tempSettlements.Count(); i++)
             {
-                OnlineSettlementFile settlementFile = PlayerSettlementManagerHelper.tempSettlements[i];
+                SettlementFile settlementFile = PlayerSettlementManagerHelper.tempSettlements[i];
 
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = settlementFile.tile;
-                    settlement.Name = "RTSettlementName".Translate(settlementFile.owner);
+                    settlement.Tile = settlementFile.Tile;
+                    settlement.Name = "RTSettlementName".Translate(settlementFile.Owner);
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(settlementFile.goodwill));
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
-                catch (Exception e) { Logger.Error($"Failed to build settlement at {settlementFile.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to build settlement at {settlementFile.Tile}. Reason: {e}"); }
             }
         }
 
@@ -66,14 +66,14 @@ namespace GameClient
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = toAdd.settlementData.tile;
-                    settlement.Name = "RTSettlementName".Translate(toAdd.settlementData.owner);
+                    settlement.Tile = toAdd.settlementData.Tile;
+                    settlement.Name = "RTSettlementName".Translate(toAdd.settlementData.Owner);
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.settlementData.goodwill));
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd.settlementData.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd.settlementData.Tile}. Reason: {e}"); }
             }
         }
 
@@ -83,19 +83,19 @@ namespace GameClient
             {
                 try
                 {
-                    Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove.settlementData.tile);
+                    Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove.settlementData.Tile);
 
                     playerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.settlementData.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.settlementData.Tile}. Reason: {e}"); }
             }
         }
     }
 
     public static class PlayerSettlementManagerHelper
     {
-        public static OnlineSettlementFile[] tempSettlements;
+        public static SettlementFile[] tempSettlements;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {

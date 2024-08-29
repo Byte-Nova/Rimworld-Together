@@ -13,9 +13,13 @@ namespace Shared
 
         public Goodwill goodwill;
 
+        //Settlements
+
         public List<int> settlementTiles = new List<int>();
 
         public Goodwill[] settlementGoodwills;
+
+        //Sites
 
         public List<int> siteTiles = new List<int>();
         

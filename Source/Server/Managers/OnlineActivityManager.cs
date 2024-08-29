@@ -7,6 +7,12 @@ namespace GameServer
     {
         public static void ParseOnlineActivityPacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableOnlineActivities)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             OnlineActivityData visitData = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 
             switch (visitData.stepMode)
@@ -71,7 +77,7 @@ namespace GameServer
             if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to visit a settlement at tile {data.toTile}, but no settlement could be found");
             else
             {
-                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
                 if (toGet == null)
                 {
                     data.stepMode = OnlineActivityStepMode.Unavailable;
@@ -104,7 +110,7 @@ namespace GameServer
             if (settlementFile == null) return;
             else
             {
-                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
                 if (toGet == null) return;
                 else
                 {
@@ -123,7 +129,7 @@ namespace GameServer
             if (settlementFile == null) return;
             else
             {
-                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.owner);
+                ServerClient toGet = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
                 if (toGet == null) return;
                 else
                 {

@@ -90,7 +90,17 @@ namespace GameClient
 
         public static void RequestOnlineActivity(OnlineActivityType toRequest)
         {
-            if (SessionValues.currentRealTimeEvent != OnlineActivityType.None) DialogManager.PushNewDialog(new RT_Dialog_Error("RTAlreadyIRT".Translate()));
+            if (!SessionValues.actionValues.EnableOnlineActivities)
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
+                return;
+            }
+
+            else if (SessionValues.currentRealTimeEvent != OnlineActivityType.None)
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RTAlreadyIRT".Translate()));
+            }
+            
             else
             {
                 OnlineManagerHelper.ClearAllQueues();
@@ -174,8 +184,8 @@ namespace GameClient
             };
 
             RT_Dialog_YesNo promptDialog = null;
-            if (data.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo($"Visited by {data.engagerName}, accept?", r1, r2);
-            else if (data.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo($"Raided by {data.engagerName}, accept?", r1, r2);
+            if (data.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo("RTVisitedBy".Translate(data.engagerName), r1, r2);
+            else if (data.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo("RTRaidedBy".Translate(data.engagerName), r1, r2);
 
             DialogManager.PushNewDialog(promptDialog);
         }

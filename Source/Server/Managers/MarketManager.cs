@@ -15,6 +15,12 @@ namespace GameServer
 
         public static void ParseMarketPacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableMarket)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
             switch (marketData.stepMode)
@@ -35,8 +41,6 @@ namespace GameServer
 
         private static void AddToMarket(ServerClient client, MarketData marketData)
         {
-            if (!Master.marketValues.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use market while disabled!");
-
             foreach (ThingData item in marketData.transferThings) TryCombineStackIfAvailable(client, item);
 
             Main_.SaveValueFile(ServerFileMode.Market);
@@ -53,8 +57,6 @@ namespace GameServer
 
         private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
         {
-            if (!Master.marketValues.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use market while disabled!");
-
             if (marketData.quantityToManage == 0)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
@@ -89,8 +91,6 @@ namespace GameServer
 
         private static void SendMarketStock(ServerClient client, MarketData marketData)
         {
-            if (!Master.marketValues.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use market while disabled!");
-
             marketData.transferThings = Master.marketValues.MarketStock;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);

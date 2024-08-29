@@ -66,7 +66,7 @@ namespace GameServer
             SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in userSettlements)
             {
-                MapData mapFile = GetUserMapFromTile(settlementFile.tile);
+                MapData mapFile = GetUserMapFromTile(settlementFile.Tile);
                 userMaps.Add(mapFile);
             }
 

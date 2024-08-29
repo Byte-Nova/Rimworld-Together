@@ -7,6 +7,12 @@ namespace GameServer
     {
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableEvents)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
             switch (eventData.stepMode)
@@ -39,7 +45,7 @@ namespace GameServer
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
-                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
+                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
                 {
                     eventData.stepMode = EventStepMode.Recover;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
@@ -48,7 +54,7 @@ namespace GameServer
 
                 else
                 {
-                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlement.owner);
+                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner);
 
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
                     {

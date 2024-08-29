@@ -25,11 +25,9 @@ namespace GameServer
 
         public List<string> RunningMods = new List<string>();
 
-        public List<string> AllyPlayers = new List<string>();
+        public UserRelationshipsFile Relationships = new UserRelationshipsFile();
 
-        public List<string> EnemyPlayers = new List<string>();
-
-        public FactionFile faction;
+        public FactionFile FactionFile;
 
         [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
 
@@ -44,55 +42,45 @@ namespace GameServer
 
         public void UpdateFaction(FactionFile toUpdateWith)
         {
-            faction = toUpdateWith;
+            FactionFile = toUpdateWith;
 
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateEventTime()
         {
             EventProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateAidTime()
         {
             AidProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateActivityTime()
         {
             ActivityProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateAdmin(bool mode)
         {
             IsAdmin = mode;
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateBan(bool mode)
         {
             IsBanned = mode;
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateMods(List<string> mods)
         {
             RunningMods = mods;
-            SaveUserFile();
-        }
-
-        public void SaveUserFile()
-        {
-            savingSemaphore.WaitOne();
-
-            string savePath = Path.Combine(Master.usersPath, Username + UserManagerHelper.fileExtension);
-            Serializer.SerializeToFile(savePath, this);
-
-            savingSemaphore.Release();
+            UserManagerHelper.SaveUserFile(this);
         }
     }
 }

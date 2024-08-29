@@ -1,7 +1,6 @@
 ﻿using Shared;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using static Shared.CommonEnumerators;
 using Verse;
 
@@ -66,7 +65,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.stepMode = FactionStepMode.RemoveMember;
-                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
+                playerFactionData.dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -112,7 +111,7 @@ namespace GameClient
 
                     PlayerFactionData playerFactionData = new PlayerFactionData();
                     playerFactionData.stepMode = FactionStepMode.Create;
-                    playerFactionData.manifestDataString = DialogManager.dialog1ResultOne;
+                    playerFactionData.factionFile.name = DialogManager.dialog1ResultOne;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                     Network.listener.EnqueuePacket(packet);
@@ -132,7 +131,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.stepMode = FactionStepMode.Promote;
-                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
+                playerFactionData.dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -142,7 +141,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.stepMode = FactionStepMode.Demote;
-                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
+                playerFactionData.dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -152,7 +151,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.stepMode = FactionStepMode.RemoveMember;
-                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
+                playerFactionData.dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -191,7 +190,7 @@ namespace GameClient
             {
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData.stepMode = FactionStepMode.AddMember;
-                playerFactionData.manifestDataInt = SessionValues.chosenSettlement.Tile;
+                playerFactionData.dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -248,7 +247,7 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTFactionInvitedTo".Translate(factionManifest.manifestDataString), r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTFactionInvitedTo".Translate(factionManifest.factionFile.name), r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -268,15 +267,15 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            List<string> unraveledDatas = new List<string>();
-            for (int i = 0; i < factionManifest.manifestComplexData.Count(); i++)
+            List<string> toDisplay = new List<string>();
+            for (int i = 0; i < factionManifest.factionFile.currentMembers.Count; i++)
             {
-                unraveledDatas.Add($"{factionManifest.manifestComplexData[i]} " +
-                    $"- {(FactionRanks)int.Parse(factionManifest.manifestSecondaryComplexData[i])}");
+                toDisplay.Add($"{factionManifest.factionFile.currentMembers[i]} " +
+                    $"- {(FactionRanks)factionManifest.factionFile.currentRanks[i]}");
             }
 
             RT_Dialog_Listing d1 = new RT_Dialog_Listing("RTFactionMemberMenu".Translate(), 
-                "RTFactionMemberMenuDesc".Translate(), unraveledDatas.ToArray());
+                "RTFactionMemberMenuDesc".Translate(), toDisplay.ToArray());
 
             DialogManager.PushNewDialog(d1);
         }

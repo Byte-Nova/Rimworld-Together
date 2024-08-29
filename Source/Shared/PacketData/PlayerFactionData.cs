@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
 namespace Shared
@@ -9,12 +8,8 @@ namespace Shared
     {
         public FactionStepMode stepMode;
 
-        public string manifestDataString;
+        public FactionFile factionFile = new FactionFile();
 
-        public int manifestDataInt;
-
-        public List<string> manifestComplexData = new List<string>();
-
-        public List<string> manifestSecondaryComplexData = new List<string>();
+        public int dataInt;
     }
 }
