@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using static Shared.CommonEnumerators;
 
 namespace Shared
@@ -18,9 +19,6 @@ namespace Shared
 
         public FactionFile FactionFile;
 
-        public void UpdateFaction(FactionFile toUpdateWith)
-        {
-            FactionFile = toUpdateWith;
-        }
+        [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
     }
 }

@@ -29,7 +29,7 @@ namespace GameServer
 
         public FactionFile FactionFile;
 
-        [NonSerialized] private Semaphore savingSemaphore = new Semaphore(1, 1);
+        [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
 
         public void SetLoginDetails(LoginData data)
         {
@@ -44,53 +44,43 @@ namespace GameServer
         {
             FactionFile = toUpdateWith;
 
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateEventTime()
         {
             EventProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateAidTime()
         {
             AidProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateActivityTime()
         {
             ActivityProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateAdmin(bool mode)
         {
             IsAdmin = mode;
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateBan(bool mode)
         {
             IsBanned = mode;
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateMods(List<string> mods)
         {
             RunningMods = mods;
-            SaveUserFile();
-        }
-
-        public void SaveUserFile()
-        {
-            savingSemaphore.WaitOne();
-
-            string savePath = Path.Combine(Master.usersPath, Username + UserManagerHelper.fileExtension);
-            Serializer.SerializeToFile(savePath, this);
-
-            savingSemaphore.Release();
+            UserManagerHelper.SaveUserFile(this);
         }
     }
 }

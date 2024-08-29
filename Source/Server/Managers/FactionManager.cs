@@ -314,20 +314,28 @@ namespace GameServer
 
         public static void SaveFactionFile(FactionFile factionFile)
         {
-            string savePath = Path.Combine(Master.factionsPath, factionFile.name + fileExtension);
-            Serializer.SerializeToFile(savePath, factionFile);
+            factionFile.savingSemaphore.WaitOne();
 
-            foreach (string str in factionFile.currentMembers)
+            try
             {
-                ServerClient toUpdateConnected = UserManagerHelper.GetConnectedClientFromUsername(str);
-                toUpdateConnected?.userFile.UpdateFaction(factionFile);
+                string savePath = Path.Combine(Master.factionsPath, factionFile.name + fileExtension);
+                Serializer.SerializeToFile(savePath, factionFile);
 
-                UserFile toUpdateOffline = UserManagerHelper.GetUserFileFromName(str);
-                toUpdateOffline?.UpdateFaction(factionFile);
+                foreach (string str in factionFile.currentMembers)
+                {
+                    ServerClient toUpdateConnected = UserManagerHelper.GetConnectedClientFromUsername(str);
+                    toUpdateConnected?.userFile.UpdateFaction(factionFile);
+
+                    UserFile toUpdateOffline = UserManagerHelper.GetUserFileFromName(str);
+                    toUpdateOffline?.UpdateFaction(factionFile);
+                }
+
+                SiteFile[] factionSites = GetFactionSites(factionFile);
+                foreach(SiteFile site in factionSites) SiteManagerHelper.UpdateFaction(site, factionFile);
             }
+            catch (Exception e) { Logger.Error(e.ToString()); }
 
-            SiteFile[] factionSites = GetFactionSites(factionFile);
-            foreach(SiteFile site in factionSites) site.UpdateFaction(factionFile);
+            factionFile.savingSemaphore.Release();
         }
 
         public static bool CheckIfFactionExistsByName(string nameToCheck)
@@ -386,7 +394,7 @@ namespace GameServer
 
         public static SiteFile[] GetFactionSites(FactionFile factionFile)
         {
-            return SiteManager.GetAllSites().Where(fetch => fetch.FactionFile != null && 
+            return SiteManagerHelper.GetAllSites().Where(fetch => fetch.FactionFile != null && 
                 fetch.FactionFile.name == factionFile.name).ToArray();
         }
 

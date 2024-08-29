@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Shared
 {
@@ -11,5 +12,7 @@ namespace Shared
         public List<string> currentMembers = new List<string>();
 
         public List<int> currentRanks = new List<int>();
+
+        [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
     }
 }

@@ -78,7 +78,7 @@ namespace GameServer
         public static ServerGlobalData GetServerSites(ServerClient client, ServerGlobalData globalData)
         {
             List<SiteFile> tempList = new List<SiteFile>();
-            SiteFile[] sites = SiteManager.GetAllSites();
+            SiteFile[] sites = SiteManagerHelper.GetAllSites();
             foreach (SiteFile site in sites)
             {
                 SiteFile file = new SiteFile();

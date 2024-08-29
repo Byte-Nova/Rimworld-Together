@@ -7,8 +7,6 @@ namespace GameServer
     {
         //Variables
 
-        public readonly static string fileExtension = ".mpsite";
-
         public static void ParseSitePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableSites)
@@ -30,7 +28,7 @@ namespace GameServer
                     break;
 
                 case SiteStepMode.Info:
-                    GetSiteInfo(client, siteData);
+                    SiteManagerHelper.GetSiteInfo(client, siteData);
                     break;
 
                 case SiteStepMode.Deposit:
@@ -43,23 +41,9 @@ namespace GameServer
             }
         }
 
-        public static bool CheckIfTileIsInUse(int tileToCheck)
-        {
-            string[] sites = Directory.GetFiles(Master.sitesPath);
-            foreach (string site in sites)
-            {
-                if (!site.EndsWith(fileExtension)) continue;
-
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
-                if (siteFile.Tile == tileToCheck) return true;
-            }
-
-            return false;
-        }
-
         public static void ConfirmNewSite(ServerClient client, SiteFile siteFile)
         {
-            SaveSite(siteFile);
+            SiteManagerHelper.SaveSite(siteFile);
 
             SiteData siteData = new SiteData();
             siteData.siteStepMode = SiteStepMode.Build;
@@ -80,59 +64,10 @@ namespace GameServer
             Logger.Warning($"[Created site] > {client.userFile.Username}");
         }
 
-        public static void SaveSite(SiteFile siteFile)
-        {
-            Serializer.SerializeToFile(Path.Combine(Master.sitesPath, siteFile.Tile + fileExtension), siteFile);
-        }
-
-        public static SiteFile[] GetAllSites()
-        {
-            List<SiteFile> sitesList = new List<SiteFile>();
-
-            string[] sites = Directory.GetFiles(Master.sitesPath);
-            foreach (string site in sites)
-            {
-                if (!site.EndsWith(fileExtension)) continue;
-                sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
-            }
-
-            return sitesList.ToArray();
-        }
-
-        public static SiteFile[] GetAllSitesFromUsername(string username)
-        {
-            List<SiteFile> sitesList = new List<SiteFile>();
-
-            string[] sites = Directory.GetFiles(Master.sitesPath);
-            foreach (string site in sites)
-            {
-                if (!site.EndsWith(fileExtension)) continue;
-
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
-                if (siteFile.FactionFile == null && siteFile.Owner == username) sitesList.Add(siteFile);
-            }
-
-            return sitesList.ToArray();
-        }
-
-        public static SiteFile GetSiteFileFromTile(int tileToGet)
-        {
-            string[] sites = Directory.GetFiles(Master.sitesPath);
-            foreach (string site in sites)
-            {
-                if (!site.EndsWith(fileExtension)) continue;
-
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
-                if (siteFile.Tile == tileToGet) return siteFile;
-            }
-
-            return null;
-        }
-
         private static void AddNewSite(ServerClient client, SiteData siteData)
         {
             if (SettlementManager.CheckIfTileIsInUse(siteData.siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData.siteFile.Tile}, but that tile already has a settlement");
-            else if (CheckIfTileIsInUse(siteData.siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData.siteFile.Tile}, but that tile already has a site");
+            else if (SiteManagerHelper.CheckIfTileIsInUse(siteData.siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData.siteFile.Tile}, but that tile already has a site");
             else
             {
                 SiteFile siteFile = null;
@@ -171,7 +106,7 @@ namespace GameServer
 
         private static void DestroySite(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = GetSiteFileFromTile(siteData.siteFile.Tile);
+            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData.siteFile.Tile);
 
             if (siteFile.FactionFile != null)
             {
@@ -205,22 +140,13 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             NetworkHelper.SendPacketToAllClients(packet);
 
-            File.Delete(Path.Combine(Master.sitesPath, siteFile.Tile + fileExtension));
+            File.Delete(Path.Combine(Master.sitesPath, siteFile.Tile + SiteManagerHelper.fileExtension));
             Logger.Warning($"[Remove site] > {siteFile.Tile}");
-        }
-
-        private static void GetSiteInfo(ServerClient client, SiteData siteData)
-        {
-            SiteFile siteFile = GetSiteFileFromTile(siteData.siteFile.Tile);
-            siteData.siteFile = siteFile;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
-            client.listener.EnqueuePacket(packet);
         }
 
         private static void DepositWorkerIntoSite(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = GetSiteFileFromTile(siteData.siteFile.Tile);
+            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData.siteFile.Tile);
 
             if (siteFile.FactionFile != null)
             {
@@ -242,14 +168,14 @@ namespace GameServer
                 else
                 {
                     siteFile.WorkerData = siteData.siteFile.WorkerData;
-                    SaveSite(siteFile);
+                    SiteManagerHelper.SaveSite(siteFile);
                 }
             }
         }
 
         private static void RetrieveWorkerFromSite(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = GetSiteFileFromTile(siteData.siteFile.Tile);
+            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData.siteFile.Tile);
 
             if (siteFile.FactionFile != null)
             {
@@ -272,7 +198,7 @@ namespace GameServer
                 {
                     siteData.siteFile.WorkerData = siteFile.WorkerData;
                     siteFile.WorkerData = null;
-                    SaveSite(siteFile);
+                    SiteManagerHelper.SaveSite(siteFile);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                     client.listener.EnqueuePacket(packet);
@@ -293,7 +219,7 @@ namespace GameServer
 
         public static void SiteRewardTick()
         {
-            SiteFile[] sites = GetAllSites();
+            SiteFile[] sites = SiteManagerHelper.GetAllSites();
 
             SiteData siteData = new SiteData();
             siteData.siteStepMode = SiteStepMode.Reward;
@@ -332,6 +258,94 @@ namespace GameServer
             }
 
             Logger.Message($"[Site tick]");
+        }
+    }
+
+    public static class SiteManagerHelper
+    {
+        public readonly static string fileExtension = ".mpsite";
+
+        public static void SaveSite(SiteFile siteFile)
+        {
+            siteFile.savingSemaphore.WaitOne();
+
+            try { Serializer.SerializeToFile(Path.Combine(Master.sitesPath, siteFile.Tile + fileExtension), siteFile); }
+            catch (Exception e) { Logger.Error(e.ToString()); }
+            
+            siteFile.savingSemaphore.Release();
+        }
+
+        public static void UpdateFaction(SiteFile siteFile, FactionFile toUpdateWith)
+        {
+            siteFile.FactionFile = toUpdateWith;
+            SaveSite(siteFile);
+        }
+
+        public static SiteFile[] GetAllSitesFromUsername(string username)
+        {
+            List<SiteFile> sitesList = new List<SiteFile>();
+
+            string[] sites = Directory.GetFiles(Master.sitesPath);
+            foreach (string site in sites)
+            {
+                if (!site.EndsWith(fileExtension)) continue;
+
+                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
+                if (siteFile.FactionFile == null && siteFile.Owner == username) sitesList.Add(siteFile);
+            }
+
+            return sitesList.ToArray();
+        }
+
+        public static SiteFile GetSiteFileFromTile(int tileToGet)
+        {
+            string[] sites = Directory.GetFiles(Master.sitesPath);
+            foreach (string site in sites)
+            {
+                if (!site.EndsWith(fileExtension)) continue;
+
+                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
+                if (siteFile.Tile == tileToGet) return siteFile;
+            }
+
+            return null;
+        }
+
+        public static void GetSiteInfo(ServerClient client, SiteData siteData)
+        {
+            SiteFile siteFile = GetSiteFileFromTile(siteData.siteFile.Tile);
+            siteData.siteFile = siteFile;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            client.listener.EnqueuePacket(packet);
+        }
+
+        public static SiteFile[] GetAllSites()
+        {
+            List<SiteFile> sitesList = new List<SiteFile>();
+
+            string[] sites = Directory.GetFiles(Master.sitesPath);
+            foreach (string site in sites)
+            {
+                if (!site.EndsWith(fileExtension)) continue;
+                sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
+            }
+
+            return sitesList.ToArray();
+        }
+
+        public static bool CheckIfTileIsInUse(int tileToCheck)
+        {
+            string[] sites = Directory.GetFiles(Master.sitesPath);
+            foreach (string site in sites)
+            {
+                if (!site.EndsWith(fileExtension)) continue;
+
+                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
+                if (siteFile.Tile == tileToCheck) return true;
+            }
+
+            return false;
         }
     }
 }

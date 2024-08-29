@@ -48,7 +48,7 @@ namespace GameServer
             {
                 client.userFile.SetLoginDetails(loginData);
 
-                client.userFile.SaveUserFile();
+                UserManagerHelper.SaveUserFile(client.userFile);
 
                 LoginUser(client, packet);
 
@@ -272,13 +272,23 @@ namespace GameServer
         public static int[] GetUserStructuresTilesFromUsername(string username)
         {
             SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.Owner == username).ToArray();
-            SiteFile[] sites = SiteManager.GetAllSites().ToList().FindAll(x => x.Owner == username).ToArray();
+            SiteFile[] sites = SiteManagerHelper.GetAllSites().ToList().FindAll(x => x.Owner == username).ToArray();
 
             List<int> tilesToExclude = new List<int>();
             foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.Tile);
             foreach (SiteFile site in sites) tilesToExclude.Add(site.Tile);
 
             return tilesToExclude.ToArray();
+        }
+
+        public static void SaveUserFile(UserFile userFile)
+        {
+            userFile.savingSemaphore.WaitOne();
+
+            try { Serializer.SerializeToFile(Path.Combine(Master.usersPath, userFile.Username + fileExtension), userFile); }
+            catch (Exception e) { Logger.Error(e.ToString()); }
+            
+            userFile.savingSemaphore.Release();
         }
     }
 }
