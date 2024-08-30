@@ -15,12 +15,15 @@ namespace GameClient
         //UI
 
         public override Vector2 InitialSize => new Vector2(600f, 512f);
+
         private Vector2 scrollPosition = Vector2.zero;
 
         public readonly string title = "Transfer Menu";
+
         public readonly string description = "Select the items you wish to transfer";
 
         private readonly float buttonX = 100f;
+
         private readonly float buttonY = 37f;
 
         private readonly int startAcceptingInputAtFrame;
@@ -30,12 +33,17 @@ namespace GameClient
         //Variables
 
         private readonly TransferLocation transferLocation;
+
         private List<Tradeable> cachedTradeables;
+
         private Pawn playerNegotiator;
 
         private readonly bool allowItems;
+
         private readonly bool allowAnimals;
+
         private readonly bool allowHumans;
+
         private readonly bool allowFreeThings;
 
         public RT_Dialog_TransferMenu(TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false, bool allowFreeThings = true)
@@ -156,7 +164,7 @@ namespace GameClient
                 DialogManager.PushNewDialog(d1);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 Action r1 = delegate
                 {
@@ -221,7 +229,7 @@ namespace GameClient
                 playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 playerNegotiator = SessionValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
@@ -240,7 +248,7 @@ namespace GameClient
                     playerNegotiator, true);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 Settlement toUse = Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction));
                 TradeSession.SetupWith(toUse, playerNegotiator, true);
@@ -402,7 +410,7 @@ namespace GameClient
                 }
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 Map map = SessionValues.chosenSettlement.Map;
 

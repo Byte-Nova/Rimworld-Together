@@ -30,7 +30,7 @@ namespace Shared
 
         public enum TransferMode { Gift, Trade, Rebound, Pod, Market }
 
-        public enum TransferLocation { Caravan, Settlement, Pod, World }
+        public enum TransferLocation { Caravan, Settlement, Pod, Market }
 
         public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod, Market }
 

@@ -37,7 +37,7 @@ namespace GameClient
 
         public static void RequestAddStock()
         {
-            RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.World, true, false, false, false);
+            RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.Market, true, false, false, false);
             DialogManager.PushNewDialog(d1);
         }
 

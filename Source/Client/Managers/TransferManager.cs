@@ -140,7 +140,7 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 MarketData marketData = new MarketData();
                 marketData.stepMode = MarketStepMode.Add;
