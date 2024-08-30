@@ -42,8 +42,8 @@ namespace GameClient
                 },
                 delegate 
                 {
-                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu); 
-                    Network.listener.disconnectFlag = true; 
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
+                    if (Network.listener != null) Network.listener.disconnectFlag = true; 
                 });
 
             DialogManager.PushNewDialog(d1);
