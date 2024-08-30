@@ -6,12 +6,12 @@ namespace Shared
     [Serializable]
     public class ChatData
     {
-        public UserColor userColor;
+        public UserColor _usernameColor;
 
-        public MessageColor messageColor;
+        public MessageColor _messageColor;
 
-        public string username;
+        public string _username;
 
-        public string message;
+        public string _message;
     }
 }

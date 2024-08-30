@@ -17,7 +17,7 @@ namespace GameServer
 
             SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
 
-            switch(siteData.siteStepMode)
+            switch(siteData._stepMode)
             {
                 case SiteStepMode.Build:
                     AddNewSite(client, siteData);
@@ -46,18 +46,18 @@ namespace GameServer
             SiteManagerHelper.SaveSite(siteFile);
 
             SiteData siteData = new SiteData();
-            siteData.siteStepMode = SiteStepMode.Build;
-            siteData.siteFile = siteFile;
+            siteData._stepMode = SiteStepMode.Build;
+            siteData._siteFile = siteFile;
 
             foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
             {
-                siteData.goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
+                siteData._goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
 
                 cClient.listener.EnqueuePacket(packet);
             }
 
-            siteData.siteStepMode = SiteStepMode.Accept;
+            siteData._stepMode = SiteStepMode.Accept;
             Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(rPacket);
 
@@ -66,13 +66,13 @@ namespace GameServer
 
         private static void AddNewSite(ServerClient client, SiteData siteData)
         {
-            if (SettlementManager.CheckIfTileIsInUse(siteData.siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData.siteFile.Tile}, but that tile already has a settlement");
-            else if (SiteManagerHelper.CheckIfTileIsInUse(siteData.siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData.siteFile.Tile}, but that tile already has a site");
+            if (SettlementManager.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a settlement");
+            else if (SiteManagerHelper.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a site");
             else
             {
                 SiteFile siteFile = null;
 
-                if (siteData.siteFile.FactionFile != null)
+                if (siteData._siteFile.FactionFile != null)
                 {
                     FactionFile factionFile = client.userFile.FactionFile;
 
@@ -85,9 +85,9 @@ namespace GameServer
                     else
                     {
                         siteFile = new SiteFile();
-                        siteFile.Tile = siteData.siteFile.Tile;
+                        siteFile.Tile = siteData._siteFile.Tile;
                         siteFile.Owner = client.userFile.Username;
-                        siteFile.Type = siteData.siteFile.Type;
+                        siteFile.Type = siteData._siteFile.Type;
                         siteFile.FactionFile = factionFile;
                     }
                 }
@@ -95,9 +95,9 @@ namespace GameServer
                 else
                 {
                     siteFile = new SiteFile();
-                    siteFile.Tile = siteData.siteFile.Tile;
+                    siteFile.Tile = siteData._siteFile.Tile;
                     siteFile.Owner = client.userFile.Username;
-                    siteFile.Type = siteData.siteFile.Type;
+                    siteFile.Type = siteData._siteFile.Type;
                 }
 
                 ConfirmNewSite(client, siteFile);
@@ -106,13 +106,13 @@ namespace GameServer
 
         private static void DestroySite(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData.siteFile.Tile);
+            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
             if (siteFile.FactionFile != null)
             {
                 if (siteFile.FactionFile.name != client.userFile.FactionFile.name)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData.siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but player wasn't a part of faction {siteFile.FactionFile.name}");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but player wasn't a part of faction {siteFile.FactionFile.name}");
                 }
 
                 else
@@ -125,7 +125,7 @@ namespace GameServer
 
             else
             {
-                if (siteFile.Owner != client.userFile.Username) ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData.siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but the player {siteFile.Owner} owns it");
+                if (siteFile.Owner != client.userFile.Username) ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but the player {siteFile.Owner} owns it");
                 else if (siteFile.WorkerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);
                 else DestroySiteFromFile(siteFile);
             }
@@ -134,8 +134,8 @@ namespace GameServer
         public static void DestroySiteFromFile(SiteFile siteFile)
         {
             SiteData siteData = new SiteData();
-            siteData.siteStepMode = SiteStepMode.Destroy;
-            siteData.siteFile = siteFile;
+            siteData._stepMode = SiteStepMode.Destroy;
+            siteData._siteFile = siteFile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             NetworkHelper.SendPacketToAllClients(packet);
@@ -146,7 +146,7 @@ namespace GameServer
 
         private static void DepositWorkerIntoSite(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData.siteFile.Tile);
+            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
             if (siteFile.FactionFile != null)
             {
@@ -157,17 +157,17 @@ namespace GameServer
             {
                 if (siteFile.Owner != client.userFile.Username)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to deposit a worker in the site at tile {siteData.siteFile.Tile}, but the player {siteFile.Owner} owns it");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to deposit a worker in the site at tile {siteData._siteFile.Tile}, but the player {siteFile.Owner} owns it");
                 }
 
                 else if (siteFile.WorkerData != null)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to deposit a worker in the site at tile {siteData.siteFile.Tile}, but the site already has a worker");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to deposit a worker in the site at tile {siteData._siteFile.Tile}, but the site already has a worker");
                 }
 
                 else
                 {
-                    siteFile.WorkerData = siteData.siteFile.WorkerData;
+                    siteFile.WorkerData = siteData._siteFile.WorkerData;
                     SiteManagerHelper.SaveSite(siteFile);
                 }
             }
@@ -175,7 +175,7 @@ namespace GameServer
 
         private static void RetrieveWorkerFromSite(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData.siteFile.Tile);
+            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
             if (siteFile.FactionFile != null)
             {
@@ -186,17 +186,17 @@ namespace GameServer
             {
                 if (siteFile.Owner != client.userFile.Username)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData.siteFile.Tile}, but the player {siteFile.Owner} of faction {siteFile.FactionFile.name} owns it");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData._siteFile.Tile}, but the player {siteFile.Owner} of faction {siteFile.FactionFile.name} owns it");
                 }
 
                 else if (siteFile.WorkerData == null)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData.siteFile.Tile}, but it has no workers");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData._siteFile.Tile}, but it has no workers");
                 }
 
                 else
                 {
-                    siteData.siteFile.WorkerData = siteFile.WorkerData;
+                    siteData._siteFile.WorkerData = siteFile.WorkerData;
                     siteFile.WorkerData = null;
                     SiteManagerHelper.SaveSite(siteFile);
 
@@ -222,11 +222,11 @@ namespace GameServer
             SiteFile[] sites = SiteManagerHelper.GetAllSites();
 
             SiteData siteData = new SiteData();
-            siteData.siteStepMode = SiteStepMode.Reward;
+            siteData._stepMode = SiteStepMode.Reward;
 
             foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
-                siteData.sitesWithRewards.Clear();
+                siteData._sitesWithRewards.Clear();
 
                 //Get player specific sites
 
@@ -235,7 +235,7 @@ namespace GameServer
                 {
                     if (site.WorkerData != null)
                     {
-                        siteData.sitesWithRewards.Add(site.Tile);
+                        siteData._sitesWithRewards.Add(site.Tile);
                     }
                 }
 
@@ -246,11 +246,11 @@ namespace GameServer
                     List<SiteFile> factionSites = sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.name == client.userFile.FactionFile.name);
                     foreach (SiteFile site in factionSites)
                     {
-                        if (site.FactionFile != null) siteData.sitesWithRewards.Add(site.Tile);
+                        if (site.FactionFile != null) siteData._sitesWithRewards.Add(site.Tile);
                     }
                 }
 
-                if (siteData.sitesWithRewards.Count() > 0)
+                if (siteData._sitesWithRewards.Count() > 0)
                 {
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                     client.listener.EnqueuePacket(packet);
@@ -313,8 +313,8 @@ namespace GameServer
 
         public static void GetSiteInfo(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = GetSiteFileFromTile(siteData.siteFile.Tile);
-            siteData.siteFile = siteFile;
+            SiteFile siteFile = GetSiteFileFromTile(siteData._siteFile.Tile);
+            siteData._siteFile = siteFile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(packet);

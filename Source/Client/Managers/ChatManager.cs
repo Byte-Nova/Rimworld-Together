@@ -43,13 +43,13 @@ namespace GameClient
             ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
 
             bool hasBeenTagged = false;
-            if (ChatManagerHelper.GetMessageWords(chatData.message).Contains($"@{ClientValues.username}"))
+            if (ChatManagerHelper.GetMessageWords(chatData._message).Contains($"@{ClientValues.username}"))
             {
                 hasBeenTagged = true;
-                chatData.message = chatData.message.Replace($"@{ClientValues.username}", $"<color=red>@{ClientValues.username}</color>");
+                chatData._message = chatData._message.Replace($"@{ClientValues.username}", $"<color=red>@{ClientValues.username}</color>");
             }
 
-            AddMessageToChat(chatData.username, chatData.message, chatData.userColor, chatData.messageColor);
+            AddMessageToChat(chatData._username, chatData._message, chatData._usernameColor, chatData._messageColor);
 
             if (!ClientValues.isReadyToPlay) return;
 
@@ -65,8 +65,8 @@ namespace GameClient
             ChatSounds.OwnChatDing.PlayOneShotOnCamera();
     
             ChatData chatData = new ChatData();
-            chatData.username = ClientValues.username;
-            chatData.message = messageToSend;
+            chatData._username = ClientValues.username;
+            chatData._message = messageToSend;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             Network.listener.EnqueuePacket(packet);

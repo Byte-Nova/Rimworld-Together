@@ -7,18 +7,18 @@ namespace Shared
     [Serializable]
     public class TransferData
     {
-        public TransferStepMode stepMode;
+        public TransferStepMode _stepMode;
 
-        public TransferMode transferMode;
+        public TransferMode _transferMode;
 
-        public int fromTile;
+        public int _fromTile;
 
-        public int toTile;
+        public int _toTile;
 
-        public List<HumanData> humanDatas = new List<HumanData>();
+        public List<HumanData> _humans = new List<HumanData>();
 
-        public List<AnimalData> animalDatas = new List<AnimalData>();
+        public List<AnimalData> _animals = new List<AnimalData>();
 
-        public List<ThingData> itemDatas = new List<ThingData>();
+        public List<ThingData> _things = new List<ThingData>();
     }
 }

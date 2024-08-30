@@ -14,7 +14,7 @@ namespace GameClient
         {
             CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
 
-            switch(commandData.commandMode)
+            switch(commandData._commandMode)
             {
                 case CommandMode.Op:
                     OnOpCommand();
@@ -52,7 +52,7 @@ namespace GameClient
 
         private static void OnBroadcastCommand(CommandData commandData)
         {
-            RimworldManager.GenerateLetter("Server Broadcast", ChatManagerHelper.ParseMessage(commandData.commandDetails, true), LetterDefOf.PositiveEvent);
+            RimworldManager.GenerateLetter("Server Broadcast", ChatManagerHelper.ParseMessage(commandData._details, true), LetterDefOf.PositiveEvent);
         }
 
         private static void OnForceSaveCommand()

@@ -35,8 +35,8 @@ namespace GameServer
         {
             //Don't force save in this function because it wouldn't server any purpose
 
-            Username = data.username;
-            Password = data.password;
+            Username = data._username;
+            Password = data._password;
             Uid = Hasher.GetHashFromString(Username);
         }
 

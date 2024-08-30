@@ -109,7 +109,7 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            tempNPCSettlements = serverGlobalData.npcSettlements;
+            tempNPCSettlements = serverGlobalData._npcSettlements;
         }
     }
 }

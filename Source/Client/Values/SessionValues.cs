@@ -30,7 +30,7 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            actionValues = serverGlobalData.actionValues;
+            actionValues = serverGlobalData._actionValues;
         }
 
         public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }

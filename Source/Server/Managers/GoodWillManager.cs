@@ -8,34 +8,34 @@ namespace GameServer
         public static void ChangeUserGoodwills(ServerClient client, Packet packet)
         {
             FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionGoodwillData.tile);
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(factionGoodwillData.tile);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionGoodwillData._tile);
+            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(factionGoodwillData._tile);
 
-            if (settlementFile != null) factionGoodwillData.owner = settlementFile.Owner;
-            else factionGoodwillData.owner = siteFile.Owner;
+            if (settlementFile != null) factionGoodwillData._owner = settlementFile.Owner;
+            else factionGoodwillData._owner = siteFile.Owner;
 
-            if (client.userFile.FactionFile != null && client.userFile.FactionFile.currentMembers.Contains(factionGoodwillData.owner))
+            if (client.userFile.FactionFile != null && client.userFile.FactionFile.currentMembers.Contains(factionGoodwillData._owner))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
             }
 
-            client.userFile.Relationships.EnemyPlayers.Remove(factionGoodwillData.owner);
-            client.userFile.Relationships.AllyPlayers.Remove(factionGoodwillData.owner);
+            client.userFile.Relationships.EnemyPlayers.Remove(factionGoodwillData._owner);
+            client.userFile.Relationships.AllyPlayers.Remove(factionGoodwillData._owner);
 
-            if (factionGoodwillData.goodwill == Goodwill.Enemy)
+            if (factionGoodwillData._goodwill == Goodwill.Enemy)
             {
-                if (!client.userFile.Relationships.EnemyPlayers.Contains(factionGoodwillData.owner))
+                if (!client.userFile.Relationships.EnemyPlayers.Contains(factionGoodwillData._owner))
                 {
-                    client.userFile.Relationships.EnemyPlayers.Add(factionGoodwillData.owner);
+                    client.userFile.Relationships.EnemyPlayers.Add(factionGoodwillData._owner);
                 }
             }
 
-            else if (factionGoodwillData.goodwill == Goodwill.Ally)
+            else if (factionGoodwillData._goodwill == Goodwill.Ally)
             {
-                if (!client.userFile.Relationships.AllyPlayers.Contains(factionGoodwillData.owner))
+                if (!client.userFile.Relationships.AllyPlayers.Contains(factionGoodwillData._owner))
                 {
-                    client.userFile.Relationships.AllyPlayers.Add(factionGoodwillData.owner);
+                    client.userFile.Relationships.AllyPlayers.Add(factionGoodwillData._owner);
                 }
             }
 
@@ -45,13 +45,13 @@ namespace GameServer
             {
                 //Check if settlement owner is the one we are looking for
 
-                if (settlement.Owner == factionGoodwillData.owner)
+                if (settlement.Owner == factionGoodwillData._owner)
                 {
-                    factionGoodwillData.settlementTiles.Add(settlement.Tile);
+                    factionGoodwillData._settlementTiles.Add(settlement.Tile);
                     tempSettlementList.Add(GetSettlementGoodwill(client, settlement));
                 }
             }
-            factionGoodwillData.settlementGoodwills = tempSettlementList.ToArray();
+            factionGoodwillData._settlementGoodwills = tempSettlementList.ToArray();
 
             List<Goodwill> tempSiteList = new List<Goodwill>();
             SiteFile[] sites = SiteManagerHelper.GetAllSites();
@@ -59,13 +59,13 @@ namespace GameServer
             {
                 //Check if site owner is the one we are looking for
 
-                if (site.Owner == factionGoodwillData.owner)
+                if (site.Owner == factionGoodwillData._owner)
                 {
-                    factionGoodwillData.siteTiles.Add(site.Tile);
+                    factionGoodwillData._siteTiles.Add(site.Tile);
                     tempSiteList.Add(GetSiteGoodwill(client, site));
                 }
             }
-            factionGoodwillData.siteGoodwills = tempSiteList.ToArray();
+            factionGoodwillData._siteGoodwills = tempSiteList.ToArray();
 
             UserManagerHelper.SaveUserFile(client.userFile);
 
@@ -211,18 +211,18 @@ namespace GameServer
             {
                 if (settlement.Owner == client.userFile.Username) continue;
 
-                factionGoodwillData.settlementTiles.Add(settlement.Tile);
+                factionGoodwillData._settlementTiles.Add(settlement.Tile);
                 tempList.Add(GetSettlementGoodwill(client, settlement));
             }
-            factionGoodwillData.settlementGoodwills = tempList.ToArray();
+            factionGoodwillData._settlementGoodwills = tempList.ToArray();
 
             tempList = new List<Goodwill>();
             foreach (SiteFile site in sites)
             {
-                factionGoodwillData.siteTiles.Add(site.Tile);
+                factionGoodwillData._siteTiles.Add(site.Tile);
                 tempList.Add(GetSiteGoodwill(client, site));
             }
-            factionGoodwillData.siteGoodwills = tempList.ToArray();
+            factionGoodwillData._siteGoodwills = tempList.ToArray();
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             client.listener.EnqueuePacket(packet);

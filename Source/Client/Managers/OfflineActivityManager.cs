@@ -15,7 +15,7 @@ namespace GameClient
         {
             OfflineActivityData offlineVisitData = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
-            switch (offlineVisitData.stepMode)
+            switch (offlineVisitData._stepMode)
             {
                 case OfflineActivityStepMode.Request:
                     OnRequestAccepted(offlineVisitData);
@@ -70,8 +70,8 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             OfflineActivityData data = new OfflineActivityData();
-            data.stepMode = OfflineActivityStepMode.Request;
-            data.targetTile = SessionValues.chosenSettlement.Tile;
+            data._stepMode = OfflineActivityStepMode.Request;
+            data._targetTile = SessionValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -117,7 +117,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapData mapData = offlineVisitData.mapData;
+            MapData mapData = offlineVisitData._mapData;
 
             Action r1 = delegate 
             {

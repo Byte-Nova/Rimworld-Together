@@ -148,7 +148,7 @@ namespace GameClient
 
                 else if (transferMode == TransferMode.Rebound)
                 {
-                    SessionValues.incomingManifest.stepMode = TransferStepMode.TradeReAccept;
+                    SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);

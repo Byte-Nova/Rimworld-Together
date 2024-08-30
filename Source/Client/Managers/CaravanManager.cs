@@ -21,18 +21,18 @@ namespace GameClient
         {
             CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case CaravanStepMode.Add:
-                    AddCaravan(data.caravanFile);
+                    AddCaravan(data._caravanFile);
                     break;
 
                 case CaravanStepMode.Remove:
-                    RemoveCaravan(data.caravanFile);
+                    RemoveCaravan(data._caravanFile);
                     break;
 
                 case CaravanStepMode.Move:
-                    MoveCaravan(data.caravanFile);
+                    MoveCaravan(data._caravanFile);
                     break;
             }
         }
@@ -117,10 +117,10 @@ namespace GameClient
         public static void RequestCaravanAdd(Caravan caravan)
         {
             CaravanData data = new CaravanData();
-            data.stepMode = CaravanStepMode.Add;
-            data.caravanFile = new CaravanFile();
-            data.caravanFile.tile = caravan.Tile;
-            data.caravanFile.owner = ClientValues.username;
+            data._stepMode = CaravanStepMode.Add;
+            data._caravanFile = new CaravanFile();
+            data._caravanFile.tile = caravan.Tile;
+            data._caravanFile.owner = ClientValues.username;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -135,8 +135,8 @@ namespace GameClient
             else
             {
                 CaravanData data = new CaravanData();
-                data.stepMode = CaravanStepMode.Remove;
-                data.caravanFile = details;
+                data._stepMode = CaravanStepMode.Remove;
+                data._caravanFile = details;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 Network.listener.EnqueuePacket(packet);
@@ -152,8 +152,8 @@ namespace GameClient
             else
             {
                 CaravanData data = new CaravanData();
-                data.stepMode = CaravanStepMode.Move;
-                data.caravanFile = details;
+                data._stepMode = CaravanStepMode.Move;
+                data._caravanFile = details;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 Network.listener.EnqueuePacket(packet);
@@ -198,7 +198,7 @@ public static class CaravanManagerHelper
 
     public static void SetValues(ServerGlobalData serverGlobalData)
     {
-        tempCaravanDetails = serverGlobalData.playerCaravans;
+        tempCaravanDetails = serverGlobalData._playerCaravans;
     }
 
     public static CaravanFile GetCaravanDetailsFromID(int id)

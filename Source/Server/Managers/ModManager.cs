@@ -77,14 +77,14 @@ namespace GameServer
             {
                 foreach (string mod in Master.loadedRequiredMods)
                 {
-                    if (!loginData.runningMods.Contains(mod))
+                    if (!loginData._runningMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Required] > {mod}");
                         conflictingNames.Add(mod);
                     }
                 }
 
-                foreach (string mod in loginData.runningMods)
+                foreach (string mod in loginData._runningMods)
                 {
                     if (conflictingNames.Contains(mod)) continue;
                     if (!Master.loadedRequiredMods.Contains(mod) && !Master.loadedOptionalMods.Contains(mod))
@@ -100,7 +100,7 @@ namespace GameServer
                 foreach (string mod in Master.loadedForbiddenMods)
                 {
                     if (conflictingNames.Contains(mod)) continue;
-                    if (loginData.runningMods.Contains(mod))
+                    if (loginData._runningMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Forbidden] > {mod}");
                         conflictingNames.Add(mod);
@@ -110,7 +110,7 @@ namespace GameServer
 
             if (conflictingMods.Count == 0)
             {
-                client.userFile.UpdateMods(loginData.runningMods);
+                client.userFile.UpdateMods(loginData._runningMods);
                 return false;
             }
 
@@ -119,7 +119,7 @@ namespace GameServer
                 if (client.userFile.IsAdmin)
                 {
                     Logger.Warning($"[Mod bypass] > {client.userFile.Username}");
-                    client.userFile.UpdateMods(loginData.runningMods);
+                    client.userFile.UpdateMods(loginData._runningMods);
                     return false;
                 }
 

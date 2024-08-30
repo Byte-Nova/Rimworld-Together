@@ -31,7 +31,7 @@ namespace GameClient
         {
             WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 
-            switch (worldData.worldStepMode)
+            switch (worldData._stepMode)
             {
                 case WorldStepMode.Required:
                     OnRequireWorld();
@@ -81,7 +81,7 @@ namespace GameClient
             cachedWorldValues.NPCFactions = PlanetGeneratorManagerHelper.GetNPCFactionsFromDef(factions.ToArray());
         }
 
-        public static void SetValuesFromServer(WorldData worldData) { cachedWorldValues = worldData.worldValuesFile; }
+        public static void SetValuesFromServer(WorldData worldData) { cachedWorldValues = worldData._worldValuesFile; }
 
         public static void GeneratePatchedWorld()
         {
@@ -163,8 +163,8 @@ namespace GameClient
         public static void SendWorldToServer()
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = WorldStepMode.Required;
-            worldData.worldValuesFile = PlanetGeneratorManagerHelper.PopulateWorldValues();
+            worldData._stepMode = WorldStepMode.Required;
+            worldData._worldValuesFile = PlanetGeneratorManagerHelper.PopulateWorldValues();
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);

@@ -33,20 +33,20 @@ namespace GameServer
     {
         public static ServerGlobalData GetClientValues(ServerClient client, ServerGlobalData globalData)
         {
-            globalData.isClientAdmin = client.userFile.IsAdmin;
+            globalData._isClientAdmin = client.userFile.IsAdmin;
 
-            globalData.isClientFactionMember = client.userFile.FactionFile != null;
+            globalData._isClientFactionMember = client.userFile.FactionFile != null;
 
             return globalData;
         }
 
         public static ServerGlobalData GetServerValues(ServerGlobalData globalData)
         {
-            globalData.eventValues = EventManagerHelper.loadedEvents;
-            globalData.siteValues = Master.siteValues;
-            globalData.difficultyValues = Master.difficultyValues;
-            globalData.actionValues = Master.actionValues;
-            globalData.roadValues = Master.roadValues;
+            globalData._eventValues = EventManagerHelper.loadedEvents;
+            globalData._siteValues = Master.siteValues;
+            globalData._difficultyValues = Master.difficultyValues;
+            globalData._actionValues = Master.actionValues;
+            globalData._roadValues = Master.roadValues;
             return globalData;
         }
 
@@ -69,8 +69,8 @@ namespace GameServer
                 }
             }
 
-            globalData.playerSettlements = tempList.ToArray();
-            if (Master.worldValues != null) globalData.npcSettlements = Master.worldValues.NPCSettlements;
+            globalData._playerSettlements = tempList.ToArray();
+            if (Master.worldValues != null) globalData._npcSettlements = Master.worldValues.NPCSettlements;
 
             return globalData;
         }
@@ -92,32 +92,32 @@ namespace GameServer
                 tempList.Add(file);
             }
 
-            globalData.playerSites = tempList.ToArray();
+            globalData._playerSites = tempList.ToArray();
 
             return globalData;
         }
 
         public static ServerGlobalData GetServerMarket(ServerGlobalData globalData)
         {
-            globalData.marketValues = Master.marketValues;
+            globalData._marketValues = Master.marketValues;
             return globalData;
         }
 
         public static ServerGlobalData GetServerCaravans(ServerGlobalData globalData)
         {
-            globalData.playerCaravans = CaravanManager.GetActiveCaravans();
+            globalData._playerCaravans = CaravanManager.GetActiveCaravans();
             return globalData;
         }
 
         public static ServerGlobalData GetServerRoads(ServerGlobalData data)
         {
-            if (Master.worldValues != null) data.roads = Master.worldValues.Roads;
+            if (Master.worldValues != null) data._roads = Master.worldValues.Roads;
             return data;
         }
 
         public static ServerGlobalData GetServerPolution(ServerGlobalData data)
         {
-            if (Master.worldValues != null) data.pollutedTiles = Master.worldValues.PollutedTiles;
+            if (Master.worldValues != null) data._pollutedTiles = Master.worldValues.PollutedTiles;
             return data;
         }
     }

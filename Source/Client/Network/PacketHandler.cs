@@ -160,7 +160,7 @@ namespace GameClient
             SessionValues.SetValues(serverGlobalData);
             EventManagerHelper.SetValues(serverGlobalData);
             SiteManager.SetValues(serverGlobalData);
-            CustomDifficultyManager.SetValues(serverGlobalData);
+            DifficultyManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);
             NPCSettlementManagerHelper.SetValues(serverGlobalData);
             PlayerSiteManagerHelper.SetValues(serverGlobalData);
