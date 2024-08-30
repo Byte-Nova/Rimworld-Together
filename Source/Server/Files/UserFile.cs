@@ -23,7 +23,7 @@ namespace GameServer
 
         public double AidProtectionTime;
 
-        public List<string> RunningMods = new List<string>();
+        public string[] RunningMods;
 
         public UserRelationshipsFile Relationships = new UserRelationshipsFile();
 
@@ -77,7 +77,7 @@ namespace GameServer
             UserManagerHelper.SaveUserFile(this);
         }
 
-        public void UpdateMods(List<string> mods)
+        public void UpdateMods(string[] mods)
         {
             RunningMods = mods;
             UserManagerHelper.SaveUserFile(this);

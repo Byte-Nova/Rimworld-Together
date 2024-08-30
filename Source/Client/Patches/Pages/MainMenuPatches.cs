@@ -105,7 +105,7 @@ namespace GameClient
                             data._username = loginData.username;
                             data._password = Hasher.GetHashFromString(loginData.password);
                             data._version = CommonValues.executableVersion;
-                            data._runningMods = ModManager.GetRunningModList().ToList();
+                            data._runningMods = ModManager.GetRunningModList();
 
                             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), data);
                             Network.listener.EnqueuePacket(packet);

@@ -126,7 +126,7 @@ namespace GameClient
                 loginData._username = DialogManager.dialog2ResultOne;
                 loginData._password = Hasher.GetHashFromString(DialogManager.dialog2ResultTwo);
                 loginData._version = CommonValues.executableVersion;
-                loginData._runningMods = ModManager.GetRunningModList().ToList();
+                loginData._runningMods = ModManager.GetRunningModList();
 
                 ClientValues.username = loginData._username;
                 PreferenceManager.SaveLoginData(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
@@ -161,7 +161,7 @@ namespace GameClient
                 loginData._username = DialogManager.dialog3ResultOne;
                 loginData._password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
                 loginData._version = CommonValues.executableVersion;
-                loginData._runningMods = ModManager.GetRunningModList().ToList();
+                loginData._runningMods = ModManager.GetRunningModList();
 
                 ClientValues.username = loginData._username;
                 PreferenceManager.SaveLoginData(DialogManager.dialog3ResultOne, DialogManager.dialog3ResultTwo);
