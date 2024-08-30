@@ -28,13 +28,13 @@ public const CONSTANTVARIABLE
 ```
 
 ### Packet specific variables that are sent through the network:
-Will always use starting underscore followed by "cammel Case" *[_variableName]*.
+Will always use starting underscore followed by "cammel Case".
 ```C#
 public int _variableName
 ```
 
 ### File specific variables that can be edited by players:
-Will always use "Pascal Case" *[VariableName]*.
+Will always use "Pascal Case".
 ```C#
 public float VariableName
 ```
