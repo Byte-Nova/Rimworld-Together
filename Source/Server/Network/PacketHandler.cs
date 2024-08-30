@@ -113,9 +113,14 @@ namespace GameServer
             SettlementManager.ParseSettlementPacket(client, packet);
         }
 
-        public static void SpaceSettlementPacket(ServerClient client, Packet packet) 
+        public static void SpaceSettlementPacket(ServerClient client, Packet packet)
         {
+            SettlementManager.ParseSettlementPacket(client, packet);
+        }
 
+        public static void ShipMovementPacket(ServerClient client, Packet packet) 
+        {
+            ShipMovementManager.HandlePacket(client, packet);
         }
         public static void NPCSettlementPacket(ServerClient client, Packet packet)
         {

@@ -57,6 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\PlanetGenerator\PlanetNPCFaction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\PlanetGenerator\PlanetFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Settlements\NPCSettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\SOS2\MovementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerRecountData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ServerGlobalData.cs" />
@@ -71,7 +72,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\BookData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\GenepackData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Misc\Transfers\Thing\PlantData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\Save Our Ship 2\SpaceSettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\SOS2\SpaceSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />

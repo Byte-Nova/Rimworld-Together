@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<WorldObjectDef MayRequire = "kentington.saveourship2">
+		<defName>RT_Ship</defName>
+		<label>Player Ship</label>
+		<description>A player ship sitting in low orbit</description>
+		<worldObjectClass>GameClient.WorldObjectFakeOrbitingShip</worldObjectClass>
+		<texture>World/WorldObjects/Ship_Friendly</texture>
+		<useDynamicDrawer>true</useDynamicDrawer>
+		<expandingIcon>true</expandingIcon>
+		<expandingIconTexture>World/WorldObjects/Ship_Friendly</expandingIconTexture>
+		<expandingIconPriority>70</expandingIconPriority>
+		<IncidentTargetTags>
+			<li>Map_SpaceHome</li>
+		</IncidentTargetTags>
+		<mapGenerator>EmptySpaceMap</mapGenerator>
+		<canBePlayerHome>true</canBePlayerHome>
+	</WorldObjectDef>
+	<WorldObjectDef MayRequire = "kentington.saveourship2">
+		<defName>RT_ShipEnemy</defName>
+		<label>Hostile Player Ship</label>
+		<description>A nearby hostile player ship.</description>
+		<worldObjectClass>GameClient.WorldObjectFakeOrbitingShip</worldObjectClass>
+		<texture>World/WorldObjects/Ship_Enemy</texture>
+		<useDynamicDrawer>true</useDynamicDrawer>
+		<expandingIcon>true</expandingIcon>
+		<expandingIconTexture>World/WorldObjects/Ship_Enemy</expandingIconTexture>
+		<useDynamicDrawer>true</useDynamicDrawer>
+		<expandingIconPriority>60</expandingIconPriority>
+		<mapGenerator>EmptySpaceMap</mapGenerator>
+		<canBePlayerHome>false</canBePlayerHome>
+	</WorldObjectDef>
+		<WorldObjectDef MayRequire = "kentington.saveourship2">
+		<defName>RT_ShipNeutral</defName>
+		<label>Neutral Player Ship</label>
+		<description>A nearby neutral player ship.</description>
+		<worldObjectClass>GameClient.WorldObjectFakeOrbitingShip</worldObjectClass>
+		<texture>World/WorldObjects/Ship_Neutral</texture>
+		<useDynamicDrawer>true</useDynamicDrawer>
+		<expandingIcon>true</expandingIcon>
+		<expandingIconTexture>World/WorldObjects/Ship_Neutral</expandingIconTexture>
+		<expandingIconPriority>60</expandingIconPriority>
+		<mapGenerator>EmptySpaceMap</mapGenerator>
+		<canBePlayerHome>false</canBePlayerHome>
+	</WorldObjectDef>
+</Defs>

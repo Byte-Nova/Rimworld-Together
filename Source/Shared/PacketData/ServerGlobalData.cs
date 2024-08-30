@@ -27,6 +27,8 @@ namespace Shared
 
         public OnlineSettlementFile[] playerSettlements;
 
+        public OnlineSpaceSettlementFile[] playerSpaceSettlements;
+
         public OnlineSiteFile[] playerSites;
 
         public CaravanFile[] playerCaravans;

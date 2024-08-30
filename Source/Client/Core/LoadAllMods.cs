@@ -25,6 +25,7 @@ namespace GameClient
                 {
                     Assembly assembly = Assembly.LoadFrom(Path.Combine(AssemblyPath, "SOS2Patch.dll"));
                     Master.SOS2 = assembly;
+                    SOS2SendData.StartSOS2();
                     return true;
                 }
                 catch (Exception ex) { Logger.Error($"SOS2Patch could not be loaded despite SOS2 being in load order.\n{ex}"); }

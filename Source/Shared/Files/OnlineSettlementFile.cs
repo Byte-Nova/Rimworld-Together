@@ -14,4 +14,12 @@ namespace Shared
 
         public bool isShip = false;
     }
+
+    public class OnlineSpaceSettlementFile : OnlineSettlementFile 
+    {
+        public float radius;
+        public float phi;
+        public float theta;
+    }
+
 }

@@ -84,10 +84,14 @@ namespace GameClient
         {
             PlayerSettlementManager.ParsePacket(packet);
         }
-        //Patched in Save our Ship 2 to grab the data
-        public static SpaceSettlementData SpaceSettlementPacket(Packet packet) 
+
+        public static void SpaceSettlementPacket(Packet packet) 
         {
-            return Serializer.ConvertBytesToObject<SpaceSettlementData>(packet.contents);
+            //Empty
+        }
+        public static void ShipMovementPacket(Packet packet) 
+        {
+            SOS2SendData.MakeShipMove(packet);
         }
 
         public static void NPCSettlementPacket(Packet packet)

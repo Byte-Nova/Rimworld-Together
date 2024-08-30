@@ -19,7 +19,7 @@ namespace GameClient
                 {
                     ClientValues.ManageDevOptions();
                     CustomDifficultyManager.EnforceCustomDifficulty();
-                    if (SOS2SendData.IsMapShip(__instance.CurrentMap).Result == false)
+                    if (!SOS2SendData.IsMapShip(__instance.CurrentMap).Result)
                     {
                         PlayerSettlementData settlementData = new PlayerSettlementData();
                         settlementData.settlementData.tile = __instance.CurrentMap.Tile;
@@ -29,7 +29,7 @@ namespace GameClient
                         Network.listener.EnqueuePacket(packet);
 
                         SaveManager.ForceSave();
-                    }
+                    } 
 
                     if (ClientValues.isGeneratingFreshWorld)
                     {
@@ -85,14 +85,17 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData.tile = map.Tile;
-                    settlementData.stepMode = SettlementStepMode.Add;
+                    if (!SOS2SendData.IsMapShip(map).Result)
+                    {
+                        PlayerSettlementData settlementData = new PlayerSettlementData();
+                        settlementData.settlementData.tile = map.Tile;
+                        settlementData.stepMode = SettlementStepMode.Add;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Network.listener.EnqueuePacket(packet);
 
-                    SaveManager.ForceSave();
+                        SaveManager.ForceSave();
+                    }
                 }
             }
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,25 @@ namespace GameClient
         Task<bool> ReceiveDataAsync(Map data);
     }
     public interface IClearAllShipSettlement
+    {
+        void ReceiveData();
+    }
+    public interface ISpawnShip
+    {
+        void ReceiveDataSettlement(SpaceSettlementData data);
+        void ReceiveDataFile(OnlineSpaceSettlementFile data);
+    }
+
+    public interface IShipMovement 
+    {
+        void ReceiveData(MovementData data);
+    }
+    public interface IRemoveShip
+    {
+        void ReceiveData(SpaceSettlementData data);
+    }
+
+    public interface IStartSOS2 
     {
         void ReceiveData();
     }

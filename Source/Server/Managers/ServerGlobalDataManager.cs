@@ -61,6 +61,7 @@ namespace GameServer
         private static ServerGlobalData GetServerSettlements(ServerClient client, ServerGlobalData globalData)
         {
             List<OnlineSettlementFile> tempList = new List<OnlineSettlementFile>();
+            List<OnlineSpaceSettlementFile> tempSpaceList = new List<OnlineSpaceSettlementFile>();
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
             {
@@ -69,15 +70,32 @@ namespace GameServer
                 if (settlement.owner == client.userFile.Username) continue;
                 else
                 {
-                    file.tile = settlement.tile;
-                    file.owner = settlement.owner;
-                    file.goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
-
-                    tempList.Add(file);
+                    if (settlement.isShip)
+                    {
+                        OnlineSpaceSettlementFile onlineSpaceSettlementFile = new OnlineSpaceSettlementFile();
+                        SpaceSettlementFile spaceFile = (SpaceSettlementFile)settlement;
+                        onlineSpaceSettlementFile.owner = spaceFile.owner;
+                        onlineSpaceSettlementFile.tile = spaceFile.tile;
+                        onlineSpaceSettlementFile.phi = spaceFile.phi;
+                        onlineSpaceSettlementFile.radius = spaceFile.radius;
+                        onlineSpaceSettlementFile.theta = spaceFile.theta;
+                        onlineSpaceSettlementFile.isShip = spaceFile.isShip;
+                        onlineSpaceSettlementFile.goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
+                        tempSpaceList.Add(onlineSpaceSettlementFile);
+                    } 
+                    else 
+                    {
+                        file.tile = settlement.tile;
+                        file.owner = settlement.owner;
+                        file.isShip = settlement.isShip;
+                        file.goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
+                        tempList.Add(file);
+                    }
                 }
             }
 
             globalData.playerSettlements = tempList.ToArray();
+            globalData.playerSpaceSettlements = tempSpaceList.ToArray();
             if (Master.worldValues != null) globalData.npcSettlements = Master.worldValues.NPCSettlements;
 
             return globalData;

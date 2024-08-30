@@ -16,16 +16,32 @@ namespace GameClient
         public static void ParsePacket(Packet packet)
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
-
-            switch (settlementData.stepMode)
+            if (settlementData.settlementData.isShip)
             {
-                case SettlementStepMode.Add:
-                    SpawnSingleSettlement(settlementData);
-                    break;
+                switch (settlementData.stepMode)
+                {
+                    case SettlementStepMode.Add:
+                        SpaceSettlementData data = (SpaceSettlementData)settlementData;
+                        SOS2SendData.AddShipSettlement(data);
+                        break;
 
-                case SettlementStepMode.Remove:
-                    RemoveSingleSettlement(settlementData);
-                    break;
+                    case SettlementStepMode.Remove:
+                        RemoveSingleSettlement(settlementData);
+                        break;
+                }
+            }
+            else
+            {
+                switch (settlementData.stepMode)
+                {
+                    case SettlementStepMode.Add:
+                        SpawnSingleSettlement(settlementData);
+                        break;
+
+                    case SettlementStepMode.Remove:
+                        RemoveSingleSettlement(settlementData);
+                        break;
+                }
             }
         }
 
@@ -36,18 +52,30 @@ namespace GameClient
             for (int i = 0; i < PlayerSettlementManagerHelper.tempSettlements.Count(); i++)
             {
                 OnlineSettlementFile settlementFile = PlayerSettlementManagerHelper.tempSettlements[i];
-
-                try
                 {
-                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = settlementFile.tile;
-                    settlement.Name = $"{settlementFile.owner}'s settlement";
-                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(settlementFile.goodwill));
+                    try
+                    {
+                        Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                        settlement.Tile = settlementFile.tile;
+                        settlement.Name = $"{settlementFile.owner}'s settlement";
+                        settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(settlementFile.goodwill));
 
-                    playerSettlements.Add(settlement);
-                    Find.WorldObjects.Add(settlement);
+                        playerSettlements.Add(settlement);
+                        Find.WorldObjects.Add(settlement);
+                    }
+                    catch (Exception e) { Logger.Error($"Failed to build settlement at {settlementFile.tile}. Reason: {e}"); }
                 }
-                catch (Exception e) { Logger.Error($"Failed to build settlement at {settlementFile.tile}. Reason: {e}"); }
+            }
+            for (int i = 0; i < PlayerSettlementManagerHelper.tempSpaceSettlements.Count(); i++)
+            {
+                OnlineSpaceSettlementFile settlementFile = PlayerSettlementManagerHelper.tempSpaceSettlements[i];
+                {
+                    try
+                    {
+                        SOS2SendData.AddShipSettlement(settlementFile);
+                    }
+                    catch (Exception e) { Logger.Error($"Failed to build ship at {settlementFile.tile}. Reason: {e}"); }
+                }
             }
         }
 
@@ -96,9 +124,11 @@ namespace GameClient
     public static class PlayerSettlementManagerHelper
     {
         public static OnlineSettlementFile[] tempSettlements;
+        public static OnlineSpaceSettlementFile[] tempSpaceSettlements;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
+            tempSpaceSettlements = serverGlobalData.playerSpaceSettlements;
             tempSettlements = serverGlobalData.playerSettlements;
         }
     }

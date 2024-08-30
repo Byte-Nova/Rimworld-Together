@@ -6,7 +6,7 @@ namespace RT_SOS2Patches
     public static class Main
     {
         private static readonly string patchID = "RT_SOS2Patches";
-        static Main() 
+        public static void Start() 
         {
             LoadHarmonyPatches();
         }
