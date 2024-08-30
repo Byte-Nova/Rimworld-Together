@@ -4,11 +4,11 @@ namespace Shared
 {
     [Serializable]
     public class PlanetNPCFaction
-    {
-        public string factionDefName;
+    {   
+        public float[] color;
 
-        public string factionName;
-        
-        public float[] factionColor;
+        public string name;
+
+        public string defName;
     }
 }
