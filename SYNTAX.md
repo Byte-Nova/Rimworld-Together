@@ -9,16 +9,16 @@ Will always use "Pascal Case".
 public class ClassName
 ```
 
-### Interface class names:
-Will always start with "I" followed by "Pascal Case".
-```C#
-public interface IClassName
-```
-
 ### Class variables:
 Will always use "cammel Case".
 ```C#
 public string variableName
+```
+
+### Interface names:
+Will always start with "I" followed by "Pascal Case".
+```C#
+public interface IName
 ```
 
 ### Constant variables:
