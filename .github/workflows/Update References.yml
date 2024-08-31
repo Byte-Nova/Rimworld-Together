@@ -1,0 +1,87 @@
+name: Generate package
+
+on:
+# How often this script runs.
+  schedule:
+    - cron: '0 0,12 * * *'  # every day at midnight and noon (UTC)
+
+# Allows manually triggering this script.
+  workflow_dispatch:
+
+env:
+  # The commit hash of DepotDownloader to download and use in this script.
+  DEPOT_DOWNLOADER_COMMIT: 907b3360ccec0bace6810bca32c8ff0b74ad3273
+  RIMWORLD_APP_ID: 294100
+  # Id of the mod:
+  MOD_ID: 1909914131
+
+jobs:
+  generate-package:
+
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up dotnet
+        uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: 8.0.x
+        env:
+          DOTNET_NOLOGO: true
+          DOTNET_CLI_TELEMETRY_OPTOUT: true
+          
+        # DepotDownloader is retrieved from cache, if possible.
+      - name: Try set up DepotDownloader from cache
+        id: cache-depot-downloader
+        uses: actions/cache@v4.0.2
+        with:
+          path: /usr/local/bin/depot-downloader
+          key: depot-downloader-${{ env.DEPOT_DOWNLOADER_COMMIT }}
+          
+        # Installs DepotDownloader, unless it's available in the cache since a previous run.
+      - name: Set up DepotDownloader
+        run: |
+          sudo git clone --no-checkout https://github.com/SteamRE/DepotDownloader.git .
+          sudo git -c advice.detachedHead=false checkout ${{ env.DEPOT_DOWNLOADER_COMMIT }}
+          sudo dotnet publish \
+            DepotDownloader/DepotDownloader.csproj \
+            --configuration Release \
+            --output /usr/local/bin \
+            --runtime linux-x64 \
+            --self-contained \
+            /p:DebugType=embedded \
+            /p:PublishReadyToRun=true \
+            /p:PublishSingleFile=true \
+            /p:AssemblyName=depot-downloader
+        working-directory: /usr/local/src
+        if: steps.cache-depot-downloader.outputs.cache-hit != 'true'
+        
+      - name: Set up Refasmer
+        run: dotnet tool install --global JetBrains.Refasmer.CliTool --version 1.0.33
+
+        # Specifically downloads the Version.txt and managed assemblies for Rimworld.
+      - name: Download SOS2
+        run: |
+          filelist="$(mktemp)"
+          echo "Version.txt" > $filelist
+          echo "regex:^1.5\/Assemblies\/.*dll$" >> $filelist
+          echo "Downloading Version.txt and all managed assemblies of Rimworld from Steam"
+          depot-downloader \
+            -app ${{ env.RIMWORLD_APP_ID }} \
+            -pubfile ${{ env.MOD_ID }} \
+            -filelist $filelist \
+            -dir ${{ github.workspace }}
+        
+      - name: Generate reference assemblies
+        run: refasmer -v --all -O ${{ github.workspace }}/package/ref/net472 $(ls) 
+        working-directory: ./1.5/Assemblies
+
+        # Uploads the package as a GitHub artifact.
+      - name: Upload GitHub artifact
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: SOS2.dll
+          path: ./Source/LocalDlls/ShipsHaveInsides.dll
+          retention-days: 7 

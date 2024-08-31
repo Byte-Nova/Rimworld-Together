@@ -33,8 +33,7 @@
 
   <ItemGroup>
     <Reference Include="ShipsHaveInsides">
-      <HintPath>..\..\..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\1909914131\1.5\Assemblies\ShipsHaveInsides.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\LocalDlls\ShipsHaveInsides.dll</HintPath>
     </Reference>
   </ItemGroup>
 

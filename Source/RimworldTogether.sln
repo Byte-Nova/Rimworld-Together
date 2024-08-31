@@ -10,9 +10,6 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{62154254-67B2-45CA-9888-5D96A470D929}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModPatches", "ModPatches", "{190450FF-1282-4A12-B1AF-BC5824599182}"
-	ProjectSection(SolutionItems) = preProject
-		Readme.txt = Readme.txt
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Save Our Ship 2 Patches", "Mod Patches\Save Our Ship 2 Patches\Save Our Ship 2 Patches.csproj", "{8F0F3628-9BDA-4333-AA7D-A37C90D76BD8}"
 EndProject
