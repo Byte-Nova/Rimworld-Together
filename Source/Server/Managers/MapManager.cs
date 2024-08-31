@@ -11,21 +11,21 @@ namespace GameServer
         public static void SaveUserMap(ServerClient client, Packet packet)
         {
             MapData mapData = Serializer.ConvertBytesToObject<MapData>(packet.contents);
-            mapData.mapOwner = client.userFile.Username;
+            mapData._mapOwner = client.userFile.Username;
 
             byte[] compressedMapBytes = Serializer.ConvertObjectToBytes(mapData);
-            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapData.mapTile + fileExtension), compressedMapBytes);
+            File.WriteAllBytes(Path.Combine(Master.mapsPath, mapData._mapTile + fileExtension), compressedMapBytes);
 
-            Logger.Message($"[Save map] > {client.userFile.Username} > {mapData.mapTile}");
+            Logger.Message($"[Save map] > {client.userFile.Username} > {mapData._mapTile}");
         }
 
         public static void DeleteMap(MapData mapData)
         {
             if (mapData == null) return;
 
-            File.Delete(Path.Combine(Master.mapsPath, mapData.mapTile + fileExtension));
+            File.Delete(Path.Combine(Master.mapsPath, mapData._mapTile + fileExtension));
 
-            Logger.Warning($"[Remove map] > {mapData.mapTile}");
+            Logger.Warning($"[Remove map] > {mapData._mapTile}");
         }
 
         public static MapData[] GetAllMapFiles()
@@ -50,7 +50,7 @@ namespace GameServer
             MapData[] maps = GetAllMapFiles();
             foreach (MapData map in maps)
             {
-                if (map.mapTile == mapTileToCheck)
+                if (map._mapTile == mapTileToCheck)
                 {
                     return true;
                 }
@@ -66,7 +66,7 @@ namespace GameServer
             SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in userSettlements)
             {
-                MapData mapFile = GetUserMapFromTile(settlementFile.tile);
+                MapData mapFile = GetUserMapFromTile(settlementFile.Tile);
                 userMaps.Add(mapFile);
             }
 
@@ -79,7 +79,7 @@ namespace GameServer
 
             foreach (MapData mapFile in mapFiles)
             {
-                if (mapFile.mapTile == mapTileToGet) return mapFile;
+                if (mapFile._mapTile == mapTileToGet) return mapFile;
             }
 
             return null;

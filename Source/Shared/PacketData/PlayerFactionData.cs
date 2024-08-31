@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
 namespace Shared
@@ -7,14 +6,10 @@ namespace Shared
     [Serializable]
     public class PlayerFactionData
     {
-        public FactionStepMode stepMode;
+        public FactionStepMode _stepMode;
 
-        public string manifestDataString;
+        public FactionFile _factionFile = new FactionFile();
 
-        public int manifestDataInt;
-
-        public List<string> manifestComplexData = new List<string>();
-
-        public List<string> manifestSecondaryComplexData = new List<string>();
+        public int _dataInt;
     }
 }

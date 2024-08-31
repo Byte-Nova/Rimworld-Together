@@ -4,7 +4,7 @@
 		{
 			"label": "dotnet: build client",
 			"type": "dotnet",
-			"task": "build ${workspaceFolder}/Client/GameClient.csproj -o ${workspaceFolder}/Client/bin/Debug/Net7.0",
+			"task": "build ${workspaceFolder}/Client/GameClient.csproj -o ${workspaceFolder}/Client/bin/Debug/Net8.0",
 			"group": "build",
 			"problemMatcher": [],
 		},
@@ -12,7 +12,7 @@
 		{
 			"label": "dotnet: build server",
 			"type": "dotnet",
-			"task": "build ${workspaceFolder}/Server/GameServer.csproj -o ${workspaceFolder}/Server/bin/Debug/Net7.0",
+			"task": "build ${workspaceFolder}/Server/GameServer.csproj -o ${workspaceFolder}/Server/bin/Debug/Net8.0",
 			"group": "build",
 			"problemMatcher": [],
 		}

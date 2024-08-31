@@ -7,9 +7,15 @@ namespace GameServer
     {
         public static void ParseEventPacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableEvents)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
-            switch (eventData.stepMode)
+            switch (eventData._stepMode)
             {
                 case EventStepMode.Send:
                     SendEvent(client, eventData);
@@ -35,24 +41,24 @@ namespace GameServer
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an event to settlement at tile {eventData.toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData.toTile);
-                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
+                SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData._toTile);
+                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
                 {
-                    eventData.stepMode = EventStepMode.Recover;
+                    eventData._stepMode = EventStepMode.Recover;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
                 else
                 {
-                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlement.owner);
+                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner);
 
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
                     {
-                        eventData.stepMode = EventStepMode.Recover;
+                        eventData._stepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
@@ -66,7 +72,7 @@ namespace GameServer
 
                         //To the person that should receive it
 
-                        eventData.stepMode = EventStepMode.Receive;
+                        eventData._stepMode = EventStepMode.Receive;
 
                         target.userFile.UpdateEventTime();
 

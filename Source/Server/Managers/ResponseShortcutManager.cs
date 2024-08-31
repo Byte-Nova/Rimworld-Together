@@ -32,7 +32,7 @@ namespace GameServer
 
         public static void SendNoPowerPacket(ServerClient client, PlayerFactionData data)
         {
-            data.stepMode = FactionStepMode.NoPower;
+            data._stepMode = FactionStepMode.NoPower;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), data);
             client.listener.EnqueuePacket(packet);
@@ -41,7 +41,7 @@ namespace GameServer
         public static void SendWorkerInsidePacket(ServerClient client)
         {
             SiteData siteData = new SiteData();
-            siteData.siteStepMode = SiteStepMode.WorkerError;
+            siteData._stepMode = SiteStepMode.WorkerError;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(packet);

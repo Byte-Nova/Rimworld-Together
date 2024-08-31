@@ -13,10 +13,10 @@ namespace GameServer
         {
             WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 
-            switch (worldData.worldStepMode)
+            switch (worldData._stepMode)
             {
                 case WorldStepMode.Required:
-                    Master.worldValues = worldData.worldValuesFile;
+                    Master.worldValues = worldData._worldValuesFile;
                     Main_.SaveValueFile(ServerFileMode.World);
                     break;
 
@@ -31,7 +31,7 @@ namespace GameServer
         public static void RequireWorldFile(ServerClient client)
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = WorldStepMode.Required;
+            worldData._stepMode = WorldStepMode.Required;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);
@@ -40,8 +40,8 @@ namespace GameServer
         public static void SendWorldFile(ServerClient client)
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = WorldStepMode.Existing;
-            worldData.worldValuesFile = Master.worldValues;
+            worldData._stepMode = WorldStepMode.Existing;
+            worldData._worldValuesFile = Master.worldValues;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
             client.listener.EnqueuePacket(packet);

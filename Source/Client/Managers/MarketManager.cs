@@ -17,7 +17,7 @@ namespace GameClient
         {
             MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
-            switch (marketData.stepMode)
+            switch (marketData._stepMode)
             {
                 case MarketStepMode.Add:
                     ConfirmAddStock();
@@ -37,7 +37,7 @@ namespace GameClient
 
         public static void RequestAddStock()
         {
-            RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.World, true, false, false, false);
+            RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.Market, true, false, false, false);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -72,9 +72,9 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData data = new MarketData();
-            data.stepMode = MarketStepMode.Request;
-            data.indexToManage = marketIndex;
-            data.quantityToManage = quantity;
+            data._stepMode = MarketStepMode.Request;
+            data._indexToManage = marketIndex;
+            data._quantityToManage = quantity;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -85,7 +85,7 @@ namespace GameClient
             DialogManager.PopWaitDialog();
             DialogManager.dialogMarketListing = null;
 
-            Thing toReceive = ThingScribeManager.StringToItem(marketData.transferThings[0]);
+            Thing toReceive = ThingScribeManager.StringToItem(marketData._transferThings[0]);
             TransferManager.GetTransferedItemsToSettlement(new Thing[] { toReceive }, customMap: false);
 
             int silverToPay = (int)(toReceive.MarketValue * toReceive.stackCount);
@@ -102,7 +102,7 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData marketData = new MarketData();
-            marketData.stepMode = MarketStepMode.Reload;
+            marketData._stepMode = MarketStepMode.Reload;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             Network.listener.EnqueuePacket(packet);
@@ -115,19 +115,9 @@ namespace GameClient
                 DialogManager.PopWaitDialog();
 
                 Action toDo = delegate { RequestGetStock(DialogManager.dialogMarketListingResult, int.Parse(DialogManager.dialog1ResultOne)); };
-                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(marketData.transferThings.ToArray(), SessionValues.chosenSettlement.Map, toDo, null);
+                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(marketData._transferThings.ToArray(), SessionValues.chosenSettlement.Map, toDo, null);
                 DialogManager.PushNewDialog(dialog);
             }
-        }
-    }
-
-    public static class MarketManagerHelper
-    {
-        public static MarketValuesFile marketValues;
-
-        public static void SetValues(ServerGlobalData globalData)
-        {
-            marketValues = globalData.marketValues;
         }
     }
 }

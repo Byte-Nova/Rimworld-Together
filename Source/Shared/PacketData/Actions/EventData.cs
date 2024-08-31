@@ -6,12 +6,12 @@ namespace Shared
     [Serializable]
     public class EventData
     {
-        public EventStepMode stepMode;
+        public EventStepMode _stepMode;
         
-        public int fromTile;
+        public int _fromTile;
 
-        public int toTile;
+        public int _toTile;
 
-        public EventFile eventFile;
+        public EventFile _eventFile;
     }
 }

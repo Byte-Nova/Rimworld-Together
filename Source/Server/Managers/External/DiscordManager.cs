@@ -7,9 +7,11 @@ namespace GameServer
     public static class DiscordManager
     {
         private static DiscordSocketClient discordClient;
+
         private static readonly Queue<string> consoleBuffer = new Queue<string>();
 
         private static readonly int sendToConsoleDelay = 1000;
+        
         private static readonly int updatePlayerCountDelay = 60000;
 
         private static readonly DiscordSocketConfig config = new() { GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent };

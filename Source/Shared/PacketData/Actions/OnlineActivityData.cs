@@ -7,48 +7,48 @@ namespace Shared
     [Serializable]
     public class OnlineActivityData
     {
-        public OnlineActivityStepMode stepMode;
+        public OnlineActivityStepMode _stepMode;
 
-        public OnlineActivityType activityType;
+        public OnlineActivityType _activityType;
 
         //Map
 
-        public MapData mapData;
+        public MapData _mapData;
 
-        public List<HumanData> mapHumans = new List<HumanData>();
+        public List<HumanData> _mapHumans = new List<HumanData>();
 
-        public List<AnimalData> mapAnimals = new List<AnimalData>();
+        public List<AnimalData> _mapAnimals = new List<AnimalData>();
 
-        public List<HumanData> caravanHumans = new List<HumanData>();
+        public List<HumanData> _caravanHumans = new List<HumanData>();
 
-        public List<AnimalData> caravanAnimals = new List<AnimalData>();
+        public List<AnimalData> _caravanAnimals = new List<AnimalData>();
 
         //Misc
 
-        public string engagerName;
+        public string _engagerName;
 
-        public int fromTile;
+        public int _fromTile;
 
-        public int toTile;
+        public int _toTile;
 
         //Orders
 
-        public PawnOrder pawnOrder;
+        public PawnOrder _pawnOrder;
 
-        public CreationOrder creationOrder;
+        public CreationOrder _creationOrder;
 
-        public DestructionOrder destructionOrder;
+        public DestructionOrder _destructionOrder;
 
-        public DamageOrder damageOrder;
+        public DamageOrder _damageOrder;
 
-        public HediffOrder hediffOrder;
+        public HediffOrder _hediffOrder;
 
-        public TimeSpeedOrder timeSpeedOrder;
+        public TimeSpeedOrder _timeSpeedOrder;
 
-        public GameConditionOrder gameConditionOrder;
+        public GameConditionOrder _gameConditionOrder;
 
-        public WeatherOrder weatherOrder;
+        public WeatherOrder _weatherOrder;
 
-        public KillOrder killOrder;
+        public KillOrder _killOrder;
     }
 }

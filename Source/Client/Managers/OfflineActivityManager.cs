@@ -11,13 +11,11 @@ namespace GameClient
 {
     public static class OfflineActivityManager
     {
-        public static int spyCost;
-
         public static void ParseOfflineActivityPacket(Packet packet)
         {
             OfflineActivityData offlineVisitData = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
-            switch (offlineVisitData.stepMode)
+            switch (offlineVisitData._stepMode)
             {
                 case OfflineActivityStepMode.Request:
                     OnRequestAccepted(offlineVisitData);
@@ -37,25 +35,31 @@ namespace GameClient
 
         public static void RequestOfflineActivity(OfflineActivityType activityType)
         {
+            if (!SessionValues.actionValues.EnableOfflineActivities)
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                return;
+            }
+
             SessionValues.ToggleOfflineFunction(activityType);
 
             if (activityType == OfflineActivityType.Spy)
             {
                 Action r1 = delegate
                 {
-                    if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, spyCost))
+                    if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, SessionValues.actionValues.SpyCost))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
                     }
 
                     else
                     {
-                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, spyCost, SessionValues.chosenCaravan);
+                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, SessionValues.actionValues.SpyCost, SessionValues.chosenCaravan);
                         SendRequest();
                     }
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Spying a settlement costs {spyCost} silver, continue?", r1, null);
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Spying a settlement costs {SessionValues.actionValues.SpyCost} silver, continue?", r1, null);
                 DialogManager.PushNewDialog(d1);
             }
             else SendRequest();
@@ -66,8 +70,8 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             OfflineActivityData data = new OfflineActivityData();
-            data.stepMode = OfflineActivityStepMode.Request;
-            data.targetTile = SessionValues.chosenSettlement.Tile;
+            data._stepMode = OfflineActivityStepMode.Request;
+            data._targetTile = SessionValues.chosenSettlement.Tile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -80,7 +84,7 @@ namespace GameClient
             if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy)
             {
                 Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
-                silverToReturn.stackCount = spyCost;
+                silverToReturn.stackCount = SessionValues.actionValues.SpyCost;
 
                 RimworldManager.PlaceThingIntoCaravan(silverToReturn, SessionValues.chosenCaravan);
             }
@@ -97,7 +101,7 @@ namespace GameClient
             if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy)
             {
                 Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
-                silverToReturn.stackCount = spyCost;
+                silverToReturn.stackCount = SessionValues.actionValues.SpyCost;
 
                 RimworldManager.PlaceThingIntoCaravan(silverToReturn, SessionValues.chosenCaravan);
             }
@@ -113,7 +117,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapData mapData = offlineVisitData.mapData;
+            MapData mapData = offlineVisitData._mapData;
 
             Action r1 = delegate 
             {
@@ -221,20 +225,6 @@ namespace GameClient
                 Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == FactionValues.enemyPlayer).ToArray();
                 LordJob_DefendBase job = new LordJob_DefendBase(FactionValues.enemyPlayer, deployPlace, true);
                 LordMaker.MakeNewLord(FactionValues.enemyPlayer, job, map, lordPawns);
-            }
-        }
-
-        //TODO
-        //Remove from here
-
-        public static void SetSpyCost(ServerGlobalData serverGlobalData)
-        {
-            try { spyCost = serverGlobalData.actionValues.SpyCost; }
-            catch
-            {
-                Logger.Warning("Server didn't have spy cost set, defaulting to 0");
-
-                spyCost = 0;
             }
         }
     }

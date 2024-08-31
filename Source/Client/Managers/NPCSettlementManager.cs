@@ -46,7 +46,7 @@ namespace GameClient
                 //TODO
                 //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
                 //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
-                settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.factionDefName));
+                settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName));
 
                 Find.WorldObjects.Add(settlement);
             }
@@ -84,7 +84,7 @@ namespace GameClient
         {
             if (settlement != null)
             {
-                NPCSettlementManagerHelper.latestRemovedSettlement = settlement;
+                NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
                 Find.WorldObjects.Remove(settlement);
             }
             else if (destroyedSettlement != null) Find.WorldObjects.Remove(destroyedSettlement);
@@ -92,17 +92,12 @@ namespace GameClient
 
         public static void RequestSettlementRemoval(Settlement settlement)
         {
-            if (NPCSettlementManagerHelper.latestRemovedSettlement == settlement) return;
-            else
-            {
-                NPCSettlementData data = new NPCSettlementData();
-                data.stepMode = SettlementStepMode.Remove;
-                data.settlementData = new PlanetNPCSettlement();
-                data.settlementData.tile = settlement.Tile;
+            NPCSettlementData data = new NPCSettlementData();
+            data.stepMode = SettlementStepMode.Remove;
+            data.settlementData.tile = settlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
-                Network.listener.EnqueuePacket(packet);
-            }
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
+            Network.listener.EnqueuePacket(packet);
         }
     }
 
@@ -110,11 +105,11 @@ namespace GameClient
     {
         public static PlanetNPCSettlement[] tempNPCSettlements;
         
-        public static Settlement latestRemovedSettlement;
+        public static Settlement lastRemovedSettlement;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            tempNPCSettlements = serverGlobalData.npcSettlements;
+            tempNPCSettlements = serverGlobalData._npcSettlements;
         }
     }
 }

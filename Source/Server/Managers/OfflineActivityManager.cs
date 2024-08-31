@@ -9,9 +9,15 @@ namespace GameServer
 
         public static void ParseOfflineActivityPacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableOfflineActivities)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             OfflineActivityData data = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case OfflineActivityStepMode.Request:
                     SendRequestedMap(client, data);
@@ -25,31 +31,31 @@ namespace GameServer
 
         private static void SendRequestedMap(ServerClient client, OfflineActivityData data)
         {
-            if (!MapManager.CheckIfMapExists(data.targetTile))
+            if (!MapManager.CheckIfMapExists(data._targetTile))
             {
-                data.stepMode = OfflineActivityStepMode.Unavailable;
+                data._stepMode = OfflineActivityStepMode.Unavailable;
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                 client.listener.EnqueuePacket(packet);
             }
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data.targetTile);
+                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._targetTile);
 
-                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.owner))
+                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
-                    data.stepMode = OfflineActivityStepMode.Deny;
+                    data._stepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                     client.listener.EnqueuePacket(packet);
                 }
 
                 else
                 {
-                    UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.owner);
+                    UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
 
                     if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
                     {
-                        data.stepMode = OfflineActivityStepMode.Deny;
+                        data._stepMode = OfflineActivityStepMode.Deny;
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
@@ -58,7 +64,7 @@ namespace GameServer
                     {
                         userFile.UpdateActivityTime();
 
-                        data.mapData = MapManager.GetUserMapFromTile(data.targetTile);
+                        data._mapData = MapManager.GetUserMapFromTile(data._targetTile);
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
                         client.listener.EnqueuePacket(packet);
                     }
