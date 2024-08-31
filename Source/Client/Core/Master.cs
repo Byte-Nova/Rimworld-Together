@@ -12,7 +12,7 @@ namespace GameClient
         
         public static ModConfigs modConfigs = new ModConfigs();
 
-        public static Assembly SOS2;
+        public static Assembly SOS2; public static bool isSOS2;
 
         //Paths
 

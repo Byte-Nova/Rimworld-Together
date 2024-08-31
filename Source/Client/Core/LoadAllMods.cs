@@ -14,7 +14,7 @@ namespace GameClient
         public static readonly string AssemblyPath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString(), "Patches");
         public static void LoadAllModAssemblies()
         {
-            LoadSOS2Patch();
+            Master.isSOS2 = LoadSOS2Patch();
         } 
 
         public static bool LoadSOS2Patch() 

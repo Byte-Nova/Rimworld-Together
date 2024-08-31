@@ -11,20 +11,24 @@ namespace GameClient.SOS2
     {
         public static async Task<bool> IsMapShip(Map data) 
         {
-            Type receiverType = Master.SOS2.GetTypes().FirstOrDefault(t => typeof(IisShip).IsAssignableFrom(t));
-            if (receiverType != null)
+            if (Master.isSOS2)
             {
-                if (ClientValues.verboseBool) Logger.Message("[SOS2]Checking if current map is a ship");
-                object receiverInstance = Activator.CreateInstance(receiverType);
-                var methodInfo = receiverType.GetMethod("ReceiveDataAsync");
-                bool resultTask = await (Task<bool>)methodInfo.Invoke(receiverInstance, new object[] { data });
-                return resultTask;
-            } 
-            else 
-            {
-                Logger.Error("Could not find type for ReceiveDataAsync in RT_SOS2Patches for interface IisShip. This should never happen");
-                return false;
+                Type receiverType = Master.SOS2.GetTypes().FirstOrDefault(t => typeof(IisShip).IsAssignableFrom(t));
+                if (receiverType != null)
+                {
+                    if (ClientValues.verboseBool) Logger.Message("[SOS2]Checking if current map is a ship");
+                    object receiverInstance = Activator.CreateInstance(receiverType);
+                    var methodInfo = receiverType.GetMethod("ReceiveDataAsync");
+                    bool resultTask = await (Task<bool>)methodInfo.Invoke(receiverInstance, new object[] { data });
+                    return resultTask;
+                }
+                else
+                {
+                    Logger.Error("Could not find type for ReceiveDataAsync in RT_SOS2Patches for interface IisShip. This should never happen");
+                    return false;
+                }
             }
+            return false;
         }
 
         public static void StartSOS2()
