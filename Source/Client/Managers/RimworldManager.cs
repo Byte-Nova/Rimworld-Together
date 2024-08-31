@@ -51,20 +51,8 @@ namespace GameClient
         public static int GetSilverInMap(Map map)
         {
             List<Thing> silverInMap = new List<Thing>();
-            foreach (Zone zone in map.zoneManager.AllZones)
-            {
-                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
-                {
-                    if (thing.def == ThingDefOf.Silver && !thing.Position.Fogged(map))
-                    {
-                        silverInMap.Add(thing);
-                    }
-                }
-            }
-
-            int totalSilver = 0;
-            foreach (Thing silverStack in silverInMap) totalSilver += silverStack.stackCount;
-
+            ResourceCounter resourceCounter = map.resourceCounter;
+            int totalSilver = resourceCounter.Silver;
             return totalSilver;
         }
 
