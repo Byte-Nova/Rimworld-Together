@@ -39,7 +39,7 @@ namespace RT_SOS2Patches.Master
         }
         public static void MoveShipFromTile(MovementData data) 
         {
-            WorldObjectFakeOrbitingShip ship = PlayerSpaceSettlementManager.spacePlayerSettlement.Find(x => x.Tile == data.tile);
+            WorldObjectFakeOrbitingShip ship = PlayerShipManager.spacePlayerSettlement.Find(x => x.Tile == data.tile);
             ship.phi = data.phi;
             ship.theta = data.theta;
             ship.radius = data.radius;

@@ -14,6 +14,8 @@ namespace GameClient
 
         public static Settlement chosenSettlement;
 
+        public static WorldObject chosenWorldObject;
+
         public static Caravan chosenCaravan;
 
         public static Site chosenSite;
@@ -38,6 +40,7 @@ namespace GameClient
             chosenSettlement = null;
             chosenCaravan = null;
             chosenSite = null;
+            chosenWorldObject = null;
 
             outgoingManifest = new TransferData();
             incomingManifest = new TransferData();

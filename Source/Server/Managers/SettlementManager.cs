@@ -233,7 +233,7 @@ namespace GameServer
                     {
                         settlementData.settlementData.goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
 
-                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SpaceSettlementPacket), settlementData);
                         cClient.listener.EnqueuePacket(rPacket);
                     }
                 }

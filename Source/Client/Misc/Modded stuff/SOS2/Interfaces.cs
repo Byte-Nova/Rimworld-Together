@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -31,12 +32,18 @@ namespace GameClient
         void ReceiveData(SpaceSettlementData data);
     }
 
+    public interface IRemoveShipFromTile 
+    {
+        void ReceiveData(int tile);
+    }
+
     public interface IStartSOS2 
     {
         void ReceiveData();
     }
-    public interface IRemoveShipFromTile
+
+    public interface IChangeShipGoodwill 
     {
-        void ReceiveData(int i);
+        void ReceiveData(int tile,Goodwill data);
     }
 }

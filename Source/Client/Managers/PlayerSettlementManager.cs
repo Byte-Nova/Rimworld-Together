@@ -111,13 +111,40 @@ namespace GameClient
             {
                 try
                 {
-                    Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove.settlementData.tile);
+                    if(!toRemove.settlementData.isShip) {
+                        Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove.settlementData.tile);
 
-                    playerSettlements.Remove(toGet);
-                    Find.WorldObjects.Remove(toGet);
+                        playerSettlements.Remove(toGet);
+                        Find.WorldObjects.Remove(toGet);
+                    } else 
+                    {
+                        SOS2SendData.RemoveShip(toRemove.settlementData.tile);
+                    }
                 }
                 catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.settlementData.tile}. Reason: {e}"); }
             }
+        }
+
+        public static WorldObject GetWorldObjectFromTile(int tile)
+        {
+            try
+            {
+                WorldObject toGet = Find.WorldObjects.AllWorldObjects.Where(x => x.Tile == tile).FirstOrDefault();
+                if (toGet != null)
+                {
+                    if (toGet.def.defName == "RT_Ship" || toGet.def.defName == "RT_ShipEnemy" || toGet.def.defName == "RT_ShipNeutral")
+                    {
+                        return (WorldObjectFakeOrbitingShip)toGet;
+                    }
+                    else
+                    {
+                        return (Settlement)toGet;
+                    }
+                }
+                return null;
+            }
+            catch (Exception e) { GameClient.Logger.Error($"Failed to find WorldObject at {tile}. Reason: {e}"); }
+            return null;
         }
     }
 

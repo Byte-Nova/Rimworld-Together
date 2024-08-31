@@ -22,7 +22,6 @@
 		<description>A nearby hostile player ship.</description>
 		<worldObjectClass>GameClient.WorldObjectFakeOrbitingShip</worldObjectClass>
 		<texture>World/WorldObjects/Ship_Enemy</texture>
-		<useDynamicDrawer>true</useDynamicDrawer>
 		<expandingIcon>true</expandingIcon>
 		<expandingIconTexture>World/WorldObjects/Ship_Enemy</expandingIconTexture>
 		<useDynamicDrawer>true</useDynamicDrawer>

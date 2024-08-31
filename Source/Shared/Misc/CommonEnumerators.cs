@@ -26,7 +26,7 @@ namespace Shared
 
         public enum Goodwill { Enemy, Neutral, Ally, Faction, Personal }
 
-        public enum GoodwillTarget { Settlement, Site }
+        public enum GoodwillTarget { Settlement, Site, Ship }
 
         public enum TransferMode { Gift, Trade, Rebound, Pod, Market }
 

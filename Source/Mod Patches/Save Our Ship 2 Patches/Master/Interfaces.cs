@@ -4,6 +4,7 @@ using SaveOurShip2;
 using Shared;
 using System.Threading.Tasks;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace RT_SOS2Patches
 {
@@ -23,12 +24,13 @@ namespace RT_SOS2Patches
             }
         }
     }
+
     public class ClearAllSettlements : GameClient.IClearAllShipSettlement
     {
         public void ReceiveData()
         {
             Logger.Message("[SOS2]Clearing all SOS2 settlements");
-            PlayerSpaceSettlementManager.ClearAllSettlements();
+            PlayerShipManager.ClearAllSettlements();
         }
     }
 
@@ -36,13 +38,30 @@ namespace RT_SOS2Patches
     {
         public void ReceiveDataSettlement(SpaceSettlementData data) 
         {
-            PlayerSpaceSettlementManager.SpawnSingleSettlement(data);
+            PlayerShipManager.SpawnSingleSettlement(data);
         }
         public void ReceiveDataFile(OnlineSpaceSettlementFile data) 
         {
-            PlayerSpaceSettlementManager.AddSettlementFromFile(data);
+            PlayerShipManager.AddSettlementFromFile(data);
         }
     }
+
+    public class RemoveShipFromTile : GameClient.IRemoveShipFromTile 
+    {
+        public void ReceiveData(int data)
+        {
+            PlayerShipManager.RemoveFromTile(data);
+        }
+    }
+
+    public class RemoveShip : GameClient.IRemoveShip
+    {
+        public void ReceiveData(SpaceSettlementData data)
+        {
+            //Todo
+        }
+    }
+
     public class MoveShip : GameClient.IShipMovement
     {
         public void ReceiveData(MovementData data)
@@ -55,6 +74,13 @@ namespace RT_SOS2Patches
         public void ReceiveData() 
         {
             Main.Start();
+        }
+    }
+    public class ChangeGoodwillShip : GameClient.IChangeShipGoodwill
+    {
+        public void ReceiveData(int tile,Goodwill data)
+        {
+            PlayerShipManager.ChangeGoodwill(tile, data);
         }
     }
 }

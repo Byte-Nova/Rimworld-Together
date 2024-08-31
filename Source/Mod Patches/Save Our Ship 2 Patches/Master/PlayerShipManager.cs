@@ -7,13 +7,10 @@ using Verse;
 using Shared;
 using static Shared.CommonEnumerators;
 using GameClient;
-using System.Threading.Tasks;
 using SaveOurShip2;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
-using UnityEngine;
 namespace RT_SOS2Patches
 {
-    public static class PlayerSpaceSettlementManager
+    public static class PlayerShipManager
     {
         public static List<WorldObjectFakeOrbitingShip> spacePlayerSettlement = new List<WorldObjectFakeOrbitingShip>();
 
@@ -21,26 +18,10 @@ namespace RT_SOS2Patches
         {
                 try
                 {
-                WorldObjectFakeOrbitingShip ship;
-                switch (settlementFile.goodwill)
-                {
-                    default:
-                        ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_ShipNeutral"));
-                        break;
-                    case Goodwill.Enemy:
-                        ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_ShipEnemy"));
-                        break;
-                    case Goodwill.Ally:
-                        ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_Ship"));
-                        break;
-                    case Goodwill.Faction:
-                        ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_Ship"));
-                        break;
-                }
+                WorldObjectFakeOrbitingShip ship = SetGoodWillShip(settlementFile.goodwill);
                 ship.Tile = settlementFile.tile;
                 ship.name = $"{settlementFile.owner}'s ship";
                 ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(settlementFile.goodwill));
-                GameClient.Logger.Warning("Test");
                 ship.phi = settlementFile.phi;
                 ship.theta = settlementFile.theta;
                 ship.radius = settlementFile.radius;
@@ -68,26 +49,10 @@ namespace RT_SOS2Patches
             {
                 try
                 {
-                    WorldObjectFakeOrbitingShip ship;
-                    switch (data.settlementData.goodwill)
-                    {
-                        default:
-                            ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_ShipNeutral"));
-                            break;
-                        case Goodwill.Enemy:
-                            ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_ShipEnemy"));
-                            break;
-                        case Goodwill.Ally:
-                            ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_Ship"));
-                            break;
-                        case Goodwill.Faction:
-                            ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_Ship"));
-                            break;
-                    }
+                    WorldObjectFakeOrbitingShip ship = SetGoodWillShip(data.settlementData.goodwill);
                     ship.Tile = data.settlementData.tile;
                     ship.name = $"{data.settlementData.owner}'s ship";
                     ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(data.settlementData.goodwill));
-                    GameClient.Logger.Warning("Test");
                     ship.phi = data.phi;
                     ship.theta = data.theta;
                     ship.radius = data.radius;
@@ -101,6 +66,52 @@ namespace RT_SOS2Patches
                 catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to spawn ship at {data.settlementData.tile}. Reason: {e}"); }
             }
         }
+
+        public static void ChangeGoodwill(int tile, Goodwill goodwill, WorldObjectFakeOrbitingShip oldship = null) 
+        {
+            if (oldship == null) 
+            {
+                oldship = (WorldObjectFakeOrbitingShip)PlayerSettlementManager.GetWorldObjectFromTile(tile);
+            }
+            Logger.Warning(oldship.Faction.Name);
+            PlayerShipManager.spacePlayerSettlement.Remove(oldship);
+            Find.WorldObjects.Remove(oldship);
+
+            WorldObjectFakeOrbitingShip ship = SetGoodWillShip(goodwill);
+            ship.Tile = oldship.Tile;
+            ship.name = $"{oldship.name}'s ship";
+            ship.phi = oldship.phi;
+            ship.theta = oldship.theta;
+            ship.radius = oldship.radius;
+            ship.OrbitSet();
+            ship.altitude = 1000;
+
+            spacePlayerSettlement.Add(ship);
+            Find.WorldObjects.Add(ship);
+        }
+
+        public static WorldObjectFakeOrbitingShip SetGoodWillShip(Goodwill goodwill) 
+        {
+            WorldObjectFakeOrbitingShip ship;
+            switch (goodwill)
+            {
+                default:
+                    ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_ShipNeutral"));
+                    break;
+                case Goodwill.Enemy:
+                    ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_ShipEnemy"));
+                    break;
+                case Goodwill.Ally:
+                    ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_Ship"));
+                    break;
+                case Goodwill.Faction:
+                    ship = (WorldObjectFakeOrbitingShip)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.GetNamed("RT_Ship"));
+                    break;
+            }
+            ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(goodwill));
+            return ship;
+        }
+
         public static void RemoveFromTile(int tile)
         {
             try
@@ -129,7 +140,7 @@ namespace RT_SOS2Patches
             spaceSiteData.stepMode = SettlementStepMode.Add;
             spaceSiteData.theta = orbitShip.Theta;
             spaceSiteData.radius = orbitShip.Radius;
-            orbitShip.Phi = UnityEngine.Random.Range(-20f, 20f);
+            orbitShip.Phi = UnityEngine.Random.Range(-70f, 70f);
             spaceSiteData.phi = orbitShip.Phi;
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SpaceSettlementPacket), spaceSiteData);
             Network.listener.EnqueuePacket(packet);

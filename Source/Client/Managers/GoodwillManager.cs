@@ -20,10 +20,11 @@ namespace GameClient
             int tileToUse = 0;
             if (target == GoodwillTarget.Settlement) tileToUse = SessionValues.chosenSettlement.Tile;
             else if (target == GoodwillTarget.Site) tileToUse = SessionValues.chosenSite.Tile;
-
+            else if (target == GoodwillTarget.Ship) tileToUse = SessionValues.chosenWorldObject.Tile;
             Faction factionToUse = null;
             if (target == GoodwillTarget.Settlement) factionToUse = SessionValues.chosenSettlement.Faction;
             else if (target == GoodwillTarget.Site) factionToUse = SessionValues.chosenSite.Faction;
+            else if (target == GoodwillTarget.Ship) factionToUse = SessionValues.chosenWorldObject.Faction;
 
             if (type == Goodwill.Enemy)
             {
@@ -85,9 +86,17 @@ namespace GameClient
         private static void ChangeSettlementGoodwills(FactionGoodwillData factionGoodwillData)
         {
             List<Settlement> toChange = new List<Settlement>();
+            List<WorldObjectFakeOrbitingShip> shipsToChange = new List<WorldObjectFakeOrbitingShip>();
             foreach (int settlementTile in factionGoodwillData.settlementTiles)
             {
-                toChange.Add(Find.WorldObjects.Settlements.Find(x => x.Tile == settlementTile));
+                WorldObject worldObject = PlayerSettlementManager.GetWorldObjectFromTile(settlementTile);
+                if(worldObject is WorldObjectFakeOrbitingShip) 
+                {
+                    shipsToChange.Add((WorldObjectFakeOrbitingShip)worldObject);
+                } else 
+                {
+                    toChange.Add((Settlement)worldObject);
+                }
             }
 
             for (int i = 0; i < toChange.Count(); i++)
@@ -102,6 +111,10 @@ namespace GameClient
 
                 PlayerSettlementManager.playerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
+            }
+            for (int i = 0; i < shipsToChange.Count(); i++)
+            {
+                SOS2SendData.ChangeGoodWillOfShip(factionGoodwillData.settlementGoodwills[i], shipsToChange[i].Tile);
             }
         }
 

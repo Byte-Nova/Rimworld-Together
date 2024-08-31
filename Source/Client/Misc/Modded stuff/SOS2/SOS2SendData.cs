@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.EventSystems;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -134,6 +135,25 @@ namespace GameClient
                 object receiverInstance = Activator.CreateInstance(receiverType);
                 var methodInfo = receiverType.GetMethod("ReceiveData");
                 methodInfo.Invoke(receiverInstance, new object[] { });
+            }
+            else
+            {
+                Logger.Error("Could not find type for ReceiveData in RT_SOS2Patches for interface IShipMovement. This should never happen");
+            }
+        }
+
+        public static void ChangeGoodWillOfShip(Goodwill data, int tile) 
+        {
+            if (ClientValues.verboseBool) Logger.Message($"[SOS2]Changing goodwill of {tile}");
+            Type receiverType = Master.SOS2.GetTypes().FirstOrDefault(t => typeof(IChangeShipGoodwill).IsAssignableFrom(t));
+            if (receiverType != null)
+            {
+                try
+                {
+                    object receiverInstance = Activator.CreateInstance(receiverType);
+                    var methodInfo = receiverType.GetMethod("ReceiveData");
+                    methodInfo.Invoke(receiverInstance, new object[] { tile, data });
+                } catch (Exception e) {Logger.Error(e.ToString()); }
             }
             else
             {
