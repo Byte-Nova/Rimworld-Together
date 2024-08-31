@@ -2,6 +2,7 @@
 using HarmonyLib;
 using RimWorld;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -11,11 +12,11 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref List<Tradeable> ___tradeables)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
             if (!FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
             
             ___tradeables = new List<Tradeable>();
-            ___tradeables.AddRange(ClientValues.listToShowInTradesMenu);
+            ___tradeables.AddRange(SessionValues.listToShowInTradesMenu);
             return false;
         }
     }
@@ -26,7 +27,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
         {
-            if (Network.state == NetworkState.Connected && FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) 
+            if (Network.state == ClientNetworkState.Connected && FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) 
             {
                 TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], ___countToTransfer);                
             }

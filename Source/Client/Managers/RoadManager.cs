@@ -16,14 +16,14 @@ namespace GameClient
         {
             RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case RoadStepMode.Add:
-                    AddRoadSimple(data.details.tileA, data.details.tileB, RoadManagerHelper.GetRoadDefFromDefName(data.details.roadDefName), true);
+                    AddRoadSimple(data._details.fromTile, data._details.toTile, RoadManagerHelper.GetRoadDefFromDefName(data._details.roadDefName), true);
                     break;
 
                 case RoadStepMode.Remove:
-                    RemoveRoadSimple(data.details.tileA, data.details.tileB, true);
+                    RemoveRoadSimple(data._details.fromTile, data._details.toTile, true);
                     break;
             }
         }
@@ -31,12 +31,12 @@ namespace GameClient
         public static void SendRoadAddRequest(int tileAID, int tileBID, RoadDef roadDef)
         {
             RoadData data = new RoadData();
-            data.stepMode = RoadStepMode.Add;
+            data._stepMode = RoadStepMode.Add;
 
-            data.details = new RoadDetails();
-            data.details.tileA = tileAID;
-            data.details.tileB = tileBID;
-            data.details.roadDefName = roadDef.defName;
+            data._details = new RoadDetails();
+            data._details.fromTile = tileAID;
+            data._details.toTile = tileBID;
+            data._details.roadDefName = roadDef.defName;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -45,11 +45,11 @@ namespace GameClient
         public static void SendRoadRemoveRequest(int tileAID, int tileBID)
         {
             RoadData data = new RoadData();
-            data.stepMode = RoadStepMode.Remove;
+            data._stepMode = RoadStepMode.Remove;
 
-            data.details = new RoadDetails();
-            data.details.tileA = tileAID;
-            data.details.tileB = tileBID;
+            data._details = new RoadDetails();
+            data._details.fromTile = tileAID;
+            data._details.toTile = tileBID;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -61,7 +61,7 @@ namespace GameClient
 
             foreach (RoadDetails detail in details)
             {
-                AddRoadSimple(detail.tileA, detail.tileB, RoadManagerHelper.GetRoadDefFromDefName(detail.roadDefName), forceRefresh);
+                AddRoadSimple(detail.fromTile, detail.toTile, RoadManagerHelper.GetRoadDefFromDefName(detail.roadDefName), forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
@@ -163,22 +163,22 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData) 
         {
-            tempRoadDetails = serverGlobalData.roads;
+            tempRoadDetails = serverGlobalData._roads;
 
             List<RoadDef> allowedRoads = new List<RoadDef>();
-            if (serverGlobalData.roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
-            if (serverGlobalData.roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
-            if (serverGlobalData.roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
-            if (serverGlobalData.roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
-            if (serverGlobalData.roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
+            if (serverGlobalData._roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
+            if (serverGlobalData._roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
+            if (serverGlobalData._roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
+            if (serverGlobalData._roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
+            if (serverGlobalData._roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
             allowedRoadDefs = allowedRoads.ToArray();
 
             List<int> allowedCosts = new List<int>();
-            if (serverGlobalData.roadValues.AllowDirtPath) allowedCosts.Add(serverGlobalData.roadValues.DirtPathCost);
-            if (serverGlobalData.roadValues.AllowDirtRoad) allowedCosts.Add(serverGlobalData.roadValues.DirtRoadCost);
-            if (serverGlobalData.roadValues.AllowStoneRoad) allowedCosts.Add(serverGlobalData.roadValues.StoneRoadCost);
-            if (serverGlobalData.roadValues.AllowAsphaltPath) allowedCosts.Add(serverGlobalData.roadValues.AsphaltPathCost);
-            if (serverGlobalData.roadValues.AllowAsphaltHighway) allowedCosts.Add(serverGlobalData.roadValues.AsphaltHighwayCost);
+            if (serverGlobalData._roadValues.AllowDirtPath) allowedCosts.Add(serverGlobalData._roadValues.DirtPathCost);
+            if (serverGlobalData._roadValues.AllowDirtRoad) allowedCosts.Add(serverGlobalData._roadValues.DirtRoadCost);
+            if (serverGlobalData._roadValues.AllowStoneRoad) allowedCosts.Add(serverGlobalData._roadValues.StoneRoadCost);
+            if (serverGlobalData._roadValues.AllowAsphaltPath) allowedCosts.Add(serverGlobalData._roadValues.AsphaltPathCost);
+            if (serverGlobalData._roadValues.AllowAsphaltHighway) allowedCosts.Add(serverGlobalData._roadValues.AsphaltHighwayCost);
             allowedRoadCosts = allowedCosts.ToArray();
         }
 
@@ -225,7 +225,7 @@ namespace GameClient
             return DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == defName);
         }
 
-        public static void ChooseRoadDialogs(int[] neighborTiles, bool hasRoadOnTile)
+        public static void ShowRoadChooseDialog(int[] neighborTiles, bool hasRoadOnTile)
         {
             if (hasRoadOnTile)
             {
@@ -245,7 +245,7 @@ namespace GameClient
             foreach (int tileID in neighborTiles)
             {
                 if (!CheckIfCanBuildRoadOnTile(tileID)) continue;
-                else if (CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID)) continue;
+                else if (CheckIfTwoTilesAreConnected(SessionValues.chosenCaravan.Tile, tileID)) continue;
                 else
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
@@ -265,10 +265,10 @@ namespace GameClient
                     {
                         int selectedIndex = DialogManager.dialogButtonListingResultInt;
 
-                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, allowedRoadCosts[selectedIndex]))
+                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, allowedRoadCosts[selectedIndex]))
                         {
-                            RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, allowedRoadCosts[selectedIndex], ClientValues.chosenCaravan);
-                            RoadManager.SendRoadAddRequest(ClientValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
+                            RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, allowedRoadCosts[selectedIndex], SessionValues.chosenCaravan);
+                            RoadManager.SendRoadAddRequest(SessionValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             SaveManager.ForceSave();
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
@@ -288,7 +288,7 @@ namespace GameClient
 
             foreach (int tileID in neighborTiles)
             {
-                if (CheckIfTwoTilesAreConnected(ClientValues.chosenCaravan.Tile, tileID))
+                if (CheckIfTwoTilesAreConnected(SessionValues.chosenCaravan.Tile, tileID))
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
                     string toDisplay = $"Tile at {vector.y.ToStringLatitude()} - {vector.x.ToStringLongitude()}";
@@ -301,7 +301,7 @@ namespace GameClient
             {
                 int selectedTile = selectableTiles[DialogManager.dialogButtonListingResultInt];
 
-                RoadManager.SendRoadRemoveRequest(ClientValues.chosenCaravan.Tile, selectedTile);
+                RoadManager.SendRoadRemoveRequest(SessionValues.chosenCaravan.Tile, selectedTile);
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road destroyer", "Select a tile to disconnect from",
@@ -318,11 +318,11 @@ namespace GameClient
                     foreach (Tile.RoadLink link in tile.Roads)
                     {
                         RoadDetails details = new RoadDetails();
-                        details.tileA = Find.WorldGrid.tiles.IndexOf(tile);
-                        details.tileB = link.neighbor;
+                        details.fromTile = Find.WorldGrid.tiles.IndexOf(tile);
+                        details.toTile = link.neighbor;
                         details.roadDefName = link.road.defName;
 
-                        if (!CheckIfExists(details.tileA, details.tileB)) toGet.Add(details);
+                        if (!CheckIfExists(details.fromTile, details.toTile)) toGet.Add(details);
                     }
                 }
             }
@@ -332,8 +332,8 @@ namespace GameClient
             {
                 foreach (RoadDetails details in toGet)
                 {
-                    if (details.tileA == tileA && details.tileB == tileB) return true;
-                    else if (details.tileA == tileB && details.tileB == tileA) return true;
+                    if (details.fromTile == tileA && details.toTile == tileB) return true;
+                    else if (details.fromTile == tileB && details.toTile == tileA) return true;
                 }
 
                 return false;

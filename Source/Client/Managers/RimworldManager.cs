@@ -100,7 +100,7 @@ namespace GameClient
 
         public static void SetGameTicks(int newGameTicks) { Find.TickManager.DebugSetTicksGame(newGameTicks); }
 
-        public static JobDef GetJobFromDef(string defToFind) { return DefDatabase<JobDef>.AllDefs.ToList().Find(fetch => fetch.defName == defToFind); }
+        public static JobDef GetJobFromDef(string defToFind) { return DefDatabase<JobDef>.AllDefs.First(fetch => fetch.defName == defToFind); }
 
         public static Job SetJobFromDef(JobDef jobDef, LocalTargetInfo targetA, LocalTargetInfo targetB, LocalTargetInfo targetC)
         {

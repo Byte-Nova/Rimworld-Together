@@ -7,33 +7,48 @@ namespace Shared
     [Serializable]
     public class OnlineActivityData
     {
-        public OnlineActivityStepMode activityStepMode;
-        public OnlineActivityType activityType;
+        public OnlineActivityStepMode _stepMode;
+
+        public OnlineActivityType _activityType;
 
         //Map
 
-        public MapData mapData;
-        public List<HumanData> mapHumans = new List<HumanData>();
-        public List<AnimalData> mapAnimals = new List<AnimalData>();
-        public List<HumanData> caravanHumans = new List<HumanData>();
-        public List<AnimalData> caravanAnimals = new List<AnimalData>();
+        public MapData _mapData;
+
+        public List<HumanData> _mapHumans = new List<HumanData>();
+
+        public List<AnimalData> _mapAnimals = new List<AnimalData>();
+
+        public List<HumanData> _caravanHumans = new List<HumanData>();
+
+        public List<AnimalData> _caravanAnimals = new List<AnimalData>();
 
         //Misc
 
-        public string otherPlayerName;
-        public int fromTile;
-        public int targetTile;
+        public string _engagerName;
+
+        public int _fromTile;
+
+        public int _toTile;
 
         //Orders
 
-        public PawnOrder pawnOrder;
-        public CreationOrder creationOrder;
-        public DestructionOrder destructionOrder;
-        public DamageOrder damageOrder;
-        public HediffOrder hediffOrder;
-        public TimeSpeedOrder timeSpeedOrder;
-        public GameConditionOrder gameConditionOrder;
-        public WeatherOrder weatherOrder;
-        public KillOrder killOrder;
+        public PawnOrder _pawnOrder;
+
+        public CreationOrder _creationOrder;
+
+        public DestructionOrder _destructionOrder;
+
+        public DamageOrder _damageOrder;
+
+        public HediffOrder _hediffOrder;
+
+        public TimeSpeedOrder _timeSpeedOrder;
+
+        public GameConditionOrder _gameConditionOrder;
+
+        public WeatherOrder _weatherOrder;
+
+        public KillOrder _killOrder;
     }
 }

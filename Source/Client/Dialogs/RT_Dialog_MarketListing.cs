@@ -18,15 +18,19 @@ namespace GameClient
         private Vector2 scrollPosition = Vector2.zero;
 
         private readonly string title;
+
         private readonly string description;
 
         private readonly Action actionClick;
+
         private readonly Action actionCancel;
 
         private readonly float buttonX = 100f;
+
         private readonly float buttonY = 38f;
 
         private readonly float selectButtonX = 47f;
+
         private readonly float selectButtonY = 25f;
 
         //Variables
@@ -96,6 +100,8 @@ namespace GameClient
             {
                 DialogManager.dialogMarketListing = null;
                 ClientValues.ToggleTransfer(false);
+                
+                if (actionCancel != null) actionCancel.Invoke();
                 Close(); 
             }
         }

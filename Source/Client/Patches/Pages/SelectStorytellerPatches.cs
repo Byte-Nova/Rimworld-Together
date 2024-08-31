@@ -5,6 +5,7 @@ using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -14,9 +15,9 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (DifficultyValues.UseCustomDifficulty)
+            if (DifficultyManager.difficultyValues.UseCustomDifficulty)
             {
                 ___difficulty = DifficultyDefOf.Rough;
                 ___difficultyValues = new Difficulty(___difficulty);
@@ -33,7 +34,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (Network.state == NetworkState.Disconnected) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
             if (ClientValues.isGeneratingFreshWorld) return;
 
             Text.Font = GameFont.Small;
@@ -49,9 +50,9 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStorytellerInGame __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (DifficultyValues.UseCustomDifficulty)
+            if (DifficultyManager.difficultyValues.UseCustomDifficulty)
             {
                 __instance.Close();
                 DialogManager.PushNewDialog(new RT_Dialog_Error("Difficulty can't be changed in this server!"));
@@ -67,7 +68,7 @@ namespace GameClient
                     Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty"))
                     {
-                        CustomDifficultyManager.SendCustomDifficulty();
+                        DifficultyManager.SendCustomDifficulty();
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Custom difficulty has been sent!"));
                     }
                 }
@@ -79,8 +80,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (Network.state == NetworkState.Disconnected) return;
-            if (DifficultyValues.UseCustomDifficulty) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
+            if (DifficultyManager.difficultyValues.UseCustomDifficulty) return;
 
             if (ServerValues.isAdmin)
             {
@@ -123,7 +124,7 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref StorytellerDef chosenStoryteller, ref DifficultyDef difficulty, ref Difficulty difficultyValues, Listing_Standard infoListing)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
             if (Current.ProgramState != ProgramState.Entry) return true;
             
             Widgets.BeginGroup(rect);
@@ -177,7 +178,7 @@ namespace GameClient
                 infoListing.Gap(6f);
             }
 
-            if (!DifficultyValues.UseCustomDifficulty)
+            if (!DifficultyManager.difficultyValues.UseCustomDifficulty)
             {
                 if (chosenStoryteller != null && chosenStoryteller.listVisible)
                 {
@@ -208,7 +209,7 @@ namespace GameClient
             num = rect3.y + infoListing.CurHeight;
             infoListing.End();
 
-            if (!DifficultyValues.UseCustomDifficulty)
+            if (!DifficultyManager.difficultyValues.UseCustomDifficulty)
             {
                 if (difficulty != null && difficulty.isCustom)
                 {

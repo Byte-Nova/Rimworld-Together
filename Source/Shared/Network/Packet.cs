@@ -6,7 +6,9 @@ namespace Shared
     public class Packet
     {
         public string header;
+
         public byte[] contents;
+        
         public bool requiresMainThread;
 
         public Packet(string header, byte[] contents, bool requiresMainThread)

@@ -22,10 +22,8 @@ We need to make sure everyone follows a certain set of contribution steps, so ev
 - Compact and extremely efficient code is great for performance, although it's also good for scaring away newcomers and other coders. Please make sure to use coding techniques that are easy to read and understand by the average person.
 ### Make use of comments whenever you see minimally fit.
 - If you find yourself not completely understanding what your code does, the rest of the coders will have a hard time understanding it. A comment or two can go a long way into making everything more accessible.
-### Try your best to create code using a structure that already matches the existing one.
-- Since there's a lot of people contributing to the project, it's best to have a common ground for everyone. Every time you can, please make sure to have a similar code structure as the current one.
-### Use coding / typing techniques that already match the existing ones.
-- This includes spacings, tabulations, naming strategies (like camelCase), and more.
+### Use coding / typing techniques that match our project's current structure.
+- More information can be found at our [Syntax Ruleset](https://github.com/RimworldTogether/Rimworld-Together/blob/development/SYNTAX.md).
 
 > [!NOTE]
 > TLDR: Keep your code simple, easy to read, and consistent with the current one!

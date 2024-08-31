@@ -8,32 +8,41 @@ namespace Shared
     {
         //Misc
 
-        public int mapTile;
-        public int[] mapSize;
-        public string mapOwner;
-        public string[] mapMods;
-        public string curWeatherDefName;
+        public int _mapTile;
+
+        public int[] _mapSize;
+
+        public string _mapOwner;
+
+        public string[] _mapMods;
+
+        public string _curWeatherDefName;
 
         //Tiles
 
-        public string[] tileDefNames;
-        public string[] tileRoofDefNames;
-        public bool[] tilePollutions;
+        public string[] _tileDefNames;
+
+        public string[] _tileRoofDefNames;
+
+        public bool[] _tilePollutions;
 
         //Things
 
-        public ThingData[] factionThings;
-        public ThingData[] nonFactionThings;
+        public ThingData[] _factionThings;
+
+        public ThingData[] _nonFactionThings;
 
         //Humans
 
-        public HumanData[] factionHumans;
-        public HumanData[] nonFactionHumans;
+        public HumanData[] _factionHumans;
+
+        public HumanData[] _nonFactionHumans;
 
         //Animals
 
-        public AnimalData[] factionAnimals;
-        public AnimalData[] nonFactionAnimals;
+        public AnimalData[] _factionAnimals;
+        
+        public AnimalData[] _nonFactionAnimals;
         
     }
 }

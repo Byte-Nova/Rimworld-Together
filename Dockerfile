@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /App
 
 # Copy everything
@@ -8,10 +8,10 @@ COPY Source Source
 RUN dotnet build Source/Server/GameServer.csproj --configuration Release /property:WarningLevel=0
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /App
 
-COPY --from=build-env /App/Source/Server/bin/Release/net7.0 /App/Server
+COPY --from=build-env /App/Source/Server/bin/Release/net8.0 /App/Server
 
 WORKDIR /Data
 

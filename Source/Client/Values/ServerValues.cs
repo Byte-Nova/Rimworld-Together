@@ -5,8 +5,6 @@ namespace GameClient
 {
     public static class ServerValues
     {
-        public static bool AllowCustomScenarios;
-
         public static bool isAdmin;
 
         public static bool hasFaction;
@@ -15,29 +13,22 @@ namespace GameClient
 
         public static List<string> currentPlayerNames = new List<string>();
 
-        public static void SetServerParameters(ServerGlobalData serverGlobalData)
+        public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            AllowCustomScenarios = serverGlobalData.AllowCustomScenarios;
-        }
+            isAdmin = serverGlobalData._isClientAdmin;
 
-        public static void SetAccountData(ServerGlobalData serverGlobalData)
-        {
-            isAdmin = serverGlobalData.isClientAdmin;
-
-            hasFaction = serverGlobalData.isClientFactionMember;
+            hasFaction = serverGlobalData._isClientFactionMember;
         }
 
         public static void SetServerPlayers(Packet packet)
         {
             PlayerRecountData playerRecountData = Serializer.ConvertBytesToObject<PlayerRecountData>(packet.contents);
-            currentPlayers = int.Parse(playerRecountData.currentPlayers);
-            currentPlayerNames = playerRecountData.currentPlayerNames;
+            currentPlayers = int.Parse(playerRecountData._currentPlayers);
+            currentPlayerNames = playerRecountData._currentPlayerNames;
         }
 
         public static void CleanValues()
         {
-            AllowCustomScenarios = false;
-
             isAdmin = false;
 
             hasFaction = false;
