@@ -87,7 +87,7 @@ namespace GameClient
 
         public static void SpaceSettlementPacket(Packet packet) 
         {
-            SOS2SendData.AddShipSettlement(Serializer.ConvertBytesToObject<SpaceSettlementData>(packet.contents));
+            SOS2SendData.AddShipSettlement(Serializer.ConvertBytesToObject<PlayerShipData>(packet.contents));
         }
         public static void ShipMovementPacket(Packet packet) 
         {

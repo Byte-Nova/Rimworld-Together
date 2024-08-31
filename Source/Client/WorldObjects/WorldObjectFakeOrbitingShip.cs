@@ -141,7 +141,7 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
 
-                        if (MarketManagerHelper.marketValues.IsEnabled)
+                        if (SessionValues.actionValues.EnableMarket)
                         {
                             if (RimworldManager.CheckIfPlayerHasConsoleInMap(SessionValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
                             else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));

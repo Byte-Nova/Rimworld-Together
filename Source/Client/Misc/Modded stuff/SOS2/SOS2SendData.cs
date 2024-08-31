@@ -47,13 +47,13 @@ namespace GameClient
             }
         }
 
-        public static void AddShipSettlement(SpaceSettlementData data)
+        public static void AddShipSettlement(PlayerShipData data)
         {
             if (ClientValues.verboseBool) Logger.Message("[SOS2]Adding new dummy ship from data");
             Type receiverType = Master.SOS2.GetTypes().FirstOrDefault(t => typeof(ISpawnShip).IsAssignableFrom(t));
             if (receiverType != null)
             {
-                Logger.Warning($"Ship came with {data.settlementData.owner} owner");
+                Logger.Warning($"Ship came with {data.settlementData.Owner} owner");
                 object receiverInstance = Activator.CreateInstance(receiverType);
                 var methodInfo = receiverType.GetMethod("ReceiveDataSettlement");
                 methodInfo.Invoke(receiverInstance, new object[] {data});
@@ -63,7 +63,7 @@ namespace GameClient
                 Logger.Error("Could not find type for ReceiveData in RT_SOS2Patches for interface ISpawnShip. This should never happen");
             }
         }
-        public static void AddShipSettlement(OnlineSpaceSettlementFile data)
+        public static void AddShipSettlement(SpaceSettlementFile data)
         {
             if (ClientValues.verboseBool) Logger.Message("[SOS2]Adding new dummy ship from file");
             Type receiverType = Master.SOS2.GetTypes().FirstOrDefault(t => typeof(ISpawnShip).IsAssignableFrom(t));
@@ -79,7 +79,7 @@ namespace GameClient
             }
         }
 
-        public static void RemoveShip(SpaceSettlementData data) 
+        public static void RemoveShip(PlayerShipData data) 
         {
             if (ClientValues.verboseBool) Logger.Message("[SOS2]Removing dummy ship");
             Type receiverType = Master.SOS2.GetTypes().FirstOrDefault(t => typeof(IRemoveShip).IsAssignableFrom(t));

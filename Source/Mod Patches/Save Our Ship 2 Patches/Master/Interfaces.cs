@@ -36,11 +36,11 @@ namespace RT_SOS2Patches
 
     public class SpawnShip : GameClient.ISpawnShip
     {
-        public void ReceiveDataSettlement(SpaceSettlementData data) 
+        public void ReceiveDataSettlement(PlayerShipData data) 
         {
             PlayerShipManager.SpawnSingleSettlement(data);
         }
-        public void ReceiveDataFile(OnlineSpaceSettlementFile data) 
+        public void ReceiveDataFile(SpaceSettlementFile data) 
         {
             PlayerShipManager.AddSettlementFromFile(data);
         }
@@ -56,7 +56,7 @@ namespace RT_SOS2Patches
 
     public class RemoveShip : GameClient.IRemoveShip
     {
-        public void ReceiveData(SpaceSettlementData data)
+        public void ReceiveData(PlayerShipData data)
         {
             //Todo
         }

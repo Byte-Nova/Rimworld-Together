@@ -19,8 +19,8 @@ namespace GameClient
     }
     public interface ISpawnShip
     {
-        void ReceiveDataSettlement(SpaceSettlementData data);
-        void ReceiveDataFile(OnlineSpaceSettlementFile data);
+        void ReceiveDataSettlement(PlayerShipData data);
+        void ReceiveDataFile(SpaceSettlementFile data);
     }
 
     public interface IShipMovement 
@@ -29,7 +29,7 @@ namespace GameClient
     }
     public interface IRemoveShip
     {
-        void ReceiveData(SpaceSettlementData data);
+        void ReceiveData(PlayerShipData data);
     }
 
     public interface IRemoveShipFromTile 

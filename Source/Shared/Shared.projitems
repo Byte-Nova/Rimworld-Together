@@ -78,6 +78,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\SOS2\MovementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\SOS2\SpaceSettlementData.cs" />
   </ItemGroup>
 
   <ItemGroup>

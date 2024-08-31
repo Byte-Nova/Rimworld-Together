@@ -11,5 +11,15 @@ namespace Shared
         public string Owner;
         
         public Goodwill Goodwill;
+
+        public bool isShip;
     }
+
+    public class SpaceSettlementFile : SettlementFile
+    {
+        public float theta;
+        public float radius;
+        public float phi;
+    }
+
 }

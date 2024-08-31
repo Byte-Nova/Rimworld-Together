@@ -62,8 +62,8 @@ namespace GameClient
         public static void RequestChangeStructureGoodwill(int structureTile, Goodwill goodwill)
         {
             FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
-            factionGoodwillData.tile = structureTile;
-            factionGoodwillData.goodwill = goodwill;
+            factionGoodwillData._tile = structureTile;
+            factionGoodwillData._goodwill = goodwill;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
             Network.listener.EnqueuePacket(packet);
@@ -87,7 +87,7 @@ namespace GameClient
         {
             List<Settlement> toChange = new List<Settlement>();
             List<WorldObjectFakeOrbitingShip> shipsToChange = new List<WorldObjectFakeOrbitingShip>();
-            foreach (int settlementTile in factionGoodwillData.settlementTiles)
+            foreach (int settlementTile in factionGoodwillData._settlementTiles)
             {
                 WorldObject worldObject = PlayerSettlementManager.GetWorldObjectFromTile(settlementTile);
                 if(worldObject is WorldObjectFakeOrbitingShip) 
@@ -107,14 +107,14 @@ namespace GameClient
                 Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                 newSettlement.Tile = toChange[i].Tile;
                 newSettlement.Name = toChange[i].Name;
-                newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData.settlementGoodwills[i]));
+                newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._settlementGoodwills[i]));
 
                 PlayerSettlementManager.playerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
             }
             for (int i = 0; i < shipsToChange.Count(); i++)
             {
-                SOS2SendData.ChangeGoodWillOfShip(factionGoodwillData.settlementGoodwills[i], shipsToChange[i].Tile);
+                SOS2SendData.ChangeGoodWillOfShip(factionGoodwillData._settlementGoodwills[i], shipsToChange[i].Tile);
             }
         }
 
@@ -123,7 +123,7 @@ namespace GameClient
         private static void ChangeSiteGoodwills(FactionGoodwillData factionGoodwillData)
         {
             List<Site> toChange = new List<Site>();
-            foreach (int siteTile in factionGoodwillData.siteTiles) { toChange.Add(Find.WorldObjects.Sites.Find(x => x.Tile == siteTile)); }
+            foreach (int siteTile in factionGoodwillData._siteTiles) { toChange.Add(Find.WorldObjects.Sites.Find(x => x.Tile == siteTile)); }
 
             for (int i = 0; i < toChange.Count(); i++)
             {
@@ -133,7 +133,7 @@ namespace GameClient
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
                             tile: toChange[i].Tile,
                             threatPoints: 1000,
-                            faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData.siteGoodwills[i]));
+                            faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._siteGoodwills[i]));
 
                 PlayerSiteManager.playerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);

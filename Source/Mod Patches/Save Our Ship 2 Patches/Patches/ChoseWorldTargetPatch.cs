@@ -33,8 +33,8 @@ namespace RT_SOS2Patches
                     if (target.WorldObject == null && !Find.World.Impassable(target.Tile))
                     {
                         PlayerSettlementData settlementData = new PlayerSettlementData();
-                        settlementData.settlementData = new OnlineSpaceSettlementFile();
-                        settlementData.settlementData.tile = target.Tile;
+                        settlementData.settlementData = new SettlementFile();
+                        settlementData.settlementData.Tile = target.Tile;
                         settlementData.stepMode = SettlementStepMode.Add;
                         settlementData.settlementData.isShip = false;
 
@@ -63,8 +63,8 @@ namespace RT_SOS2Patches
                     if (tile != -1)
                     {
                         PlayerSettlementData settlementData = new PlayerSettlementData();
-                        settlementData.settlementData = new OnlineSpaceSettlementFile();
-                        settlementData.settlementData.tile = tile;
+                        settlementData.settlementData = new SpaceSettlementFile();
+                        settlementData.settlementData.Tile = tile;
                         settlementData.stepMode = SettlementStepMode.Remove;
                         settlementData.settlementData.isShip = false;
 

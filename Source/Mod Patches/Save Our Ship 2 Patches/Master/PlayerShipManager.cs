@@ -14,14 +14,14 @@ namespace RT_SOS2Patches
     {
         public static List<WorldObjectFakeOrbitingShip> spacePlayerSettlement = new List<WorldObjectFakeOrbitingShip>();
 
-        public static void AddSettlementFromFile(OnlineSpaceSettlementFile settlementFile)
+        public static void AddSettlementFromFile(SpaceSettlementFile settlementFile)
         {
                 try
                 {
-                WorldObjectFakeOrbitingShip ship = SetGoodWillShip(settlementFile.goodwill);
-                ship.Tile = settlementFile.tile;
-                ship.name = $"{settlementFile.owner}'s ship";
-                ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(settlementFile.goodwill));
+                WorldObjectFakeOrbitingShip ship = SetGoodWillShip(settlementFile.Goodwill);
+                ship.Tile = settlementFile.Tile;
+                ship.name = $"{settlementFile.Owner}'s ship";
+                ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(settlementFile.Goodwill));
                 ship.phi = settlementFile.phi;
                 ship.theta = settlementFile.theta;
                 ship.radius = settlementFile.radius;
@@ -32,7 +32,7 @@ namespace RT_SOS2Patches
                 spacePlayerSettlement.Add(ship);
                 Find.WorldObjects.Add(ship);
             }
-            catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to build ship at {settlementFile.tile}. Reason: {e}"); }
+            catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to build ship at {settlementFile.Tile}. Reason: {e}"); }
         }
 
         public static void ClearAllSettlements()
@@ -43,16 +43,16 @@ namespace RT_SOS2Patches
             foreach (WorldObject ship in ships) Find.WorldObjects.Remove(ship);
         }
 
-        public static void SpawnSingleSettlement(SpaceSettlementData data)
+        public static void SpawnSingleSettlement(PlayerShipData data)
         {
             if (ClientValues.isReadyToPlay)
             {
                 try
                 {
-                    WorldObjectFakeOrbitingShip ship = SetGoodWillShip(data.settlementData.goodwill);
-                    ship.Tile = data.settlementData.tile;
-                    ship.name = $"{data.settlementData.owner}'s ship";
-                    ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(data.settlementData.goodwill));
+                    WorldObjectFakeOrbitingShip ship = SetGoodWillShip(data.settlementData.Goodwill);
+                    ship.Tile = data.settlementData.Tile;
+                    ship.name = $"{data.settlementData.Owner}'s ship";
+                    ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(data.settlementData.Goodwill));
                     ship.phi = data.phi;
                     ship.theta = data.theta;
                     ship.radius = data.radius;
@@ -63,7 +63,7 @@ namespace RT_SOS2Patches
                     spacePlayerSettlement.Add(ship);
                     Find.WorldObjects.Add(ship);
                 }
-                catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to spawn ship at {data.settlementData.tile}. Reason: {e}"); }
+                catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to spawn ship at {data.settlementData.Tile}. Reason: {e}"); }
             }
         }
 
@@ -133,10 +133,10 @@ namespace RT_SOS2Patches
         {
             ShipMapComp comp = map.GetComponent<ShipMapComp>();
             WorldObjectOrbitingShip orbitShip = comp.mapParent;
-            SpaceSettlementData spaceSiteData = new SpaceSettlementData();
+            PlayerShipData spaceSiteData = new PlayerShipData();
 
             spaceSiteData.settlementData.isShip = true;
-            spaceSiteData.settlementData.tile = map.Tile;
+            spaceSiteData.settlementData.Tile = map.Tile;
             spaceSiteData.stepMode = SettlementStepMode.Add;
             spaceSiteData.theta = orbitShip.Theta;
             spaceSiteData.radius = orbitShip.Radius;
