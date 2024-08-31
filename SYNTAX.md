@@ -38,3 +38,15 @@ Will always use "Pascal Case".
 ```C#
 public float VariableName
 ```
+
+### Functions that explicitly set values:
+Will always use "Pascal Case" and start with "Set" followed by an identified of the value.
+```C#
+public void SetExampleDouble()
+```
+
+### Functions that explicitly return values:
+Will always use "Pascal Case" and start with "Get" followed by an identifier of the value.
+```C#
+public double GetExampleDouble()
+```
