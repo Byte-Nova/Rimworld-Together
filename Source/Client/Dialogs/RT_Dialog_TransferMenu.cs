@@ -15,12 +15,15 @@ namespace GameClient
         //UI
 
         public override Vector2 InitialSize => new Vector2(600f, 512f);
+
         private Vector2 scrollPosition = Vector2.zero;
 
         public readonly string title = "RTTransferMenu".Translate();
+
         public readonly string description = "RTTransferDesc".Translate();
 
         private readonly float buttonX = 100f;
+
         private readonly float buttonY = 37f;
 
         private readonly int startAcceptingInputAtFrame;
@@ -30,12 +33,17 @@ namespace GameClient
         //Variables
 
         private readonly TransferLocation transferLocation;
+
         private List<Tradeable> cachedTradeables;
+
         private Pawn playerNegotiator;
 
         private readonly bool allowItems;
+
         private readonly bool allowAnimals;
+
         private readonly bool allowHumans;
+
         private readonly bool allowFreeThings;
 
         public RT_Dialog_TransferMenu(TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false, bool allowFreeThings = true)
@@ -122,13 +130,13 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    SessionValues.outgoingManifest.transferMode = TransferMode.Gift;
+                    SessionValues.outgoingManifest._transferMode = TransferMode.Gift;
                     postChoosing();
                 };
 
                 Action r2 = delegate
                 {
-                    SessionValues.outgoingManifest.transferMode = TransferMode.Trade;
+                    SessionValues.outgoingManifest._transferMode = TransferMode.Trade;
                     postChoosing();
                 };
 
@@ -145,7 +153,7 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    SessionValues.outgoingManifest.transferMode = TransferMode.Rebound;
+                    SessionValues.outgoingManifest._transferMode = TransferMode.Rebound;
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -156,11 +164,11 @@ namespace GameClient
                 DialogManager.PushNewDialog(d1);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 Action r1 = delegate
                 {
-                    SessionValues.outgoingManifest.transferMode = TransferMode.Market;
+                    SessionValues.outgoingManifest._transferMode = TransferMode.Market;
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -221,7 +229,7 @@ namespace GameClient
                 playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 playerNegotiator = SessionValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
@@ -236,11 +244,11 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                TradeSession.SetupWith(Find.WorldObjects.SettlementAt(SessionValues.incomingManifest.fromTile), 
+                TradeSession.SetupWith(Find.WorldObjects.SettlementAt(SessionValues.incomingManifest._fromTile), 
                     playerNegotiator, true);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 Settlement toUse = Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction));
                 TradeSession.SetupWith(toUse, playerNegotiator, true);
@@ -341,7 +349,7 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                Map map = Find.Maps.Find(x => x.Tile == SessionValues.incomingManifest.toTile);
+                Map map = Find.Maps.Find(x => x.Tile == SessionValues.incomingManifest._toTile);
 
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
@@ -402,7 +410,7 @@ namespace GameClient
                 }
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 Map map = SessionValues.chosenSettlement.Map;
 

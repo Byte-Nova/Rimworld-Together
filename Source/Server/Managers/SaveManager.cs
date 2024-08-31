@@ -21,13 +21,13 @@ namespace GameServer
             if (client.listener.downloadManager == null)
             {
                 client.listener.downloadManager = new DownloadManager();
-                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferData.fileParts);
+                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferData._fileParts);
             }
 
-            client.listener.downloadManager.WriteFilePart(fileTransferData.fileBytes);
+            client.listener.downloadManager.WriteFilePart(fileTransferData._fileBytes);
 
             //if this is the last packet
-            if (fileTransferData.isLastPart)
+            if (fileTransferData._isLastPart)
             {
                 client.listener.downloadManager.FinishFileWrite();
                 client.listener.downloadManager = null;
@@ -61,11 +61,11 @@ namespace GameServer
             }
 
             FileTransferData fileTransferData = new FileTransferData();
-            fileTransferData.fileSize = client.listener.uploadManager.fileSize;
-            fileTransferData.fileParts = client.listener.uploadManager.fileParts;
-            fileTransferData.fileBytes = client.listener.uploadManager.ReadFilePart();
-            fileTransferData.isLastPart = client.listener.uploadManager.isLastPart;
-            if(!Master.serverConfig.SyncLocalSave) fileTransferData.instructions = (int)SaveMode.Strict;
+            fileTransferData._fileSize = client.listener.uploadManager.fileSize;
+            fileTransferData._fileParts = client.listener.uploadManager.fileParts;
+            fileTransferData._fileBytes = client.listener.uploadManager.ReadFilePart();
+            fileTransferData._isLastPart = client.listener.uploadManager.isLastPart;
+            if(!Master.serverConfig.SyncLocalSave) fileTransferData._instructions = (int)SaveMode.Strict;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             client.listener.EnqueuePacket(packet);
@@ -77,7 +77,7 @@ namespace GameServer
 
         private static void OnUserSave(ServerClient client, FileTransferData fileTransferData)
         {
-            if (fileTransferData.instructions == (int)SaveMode.Disconnect)
+            if (fileTransferData._instructions == (int)SaveMode.Disconnect)
             {
                 client.listener.disconnectFlag = true;
                 Logger.Message($"[Save game] > {client.userFile.Username} > Disconnect");
@@ -143,8 +143,8 @@ namespace GameServer
             MapData[] userMaps = MapManager.GetAllMapsFromUsername(client.userFile.Username);
             foreach (MapData map in userMaps)
             {
-                File.Copy(Path.Combine(Master.mapsPath, map.mapTile + MapManager.fileExtension), 
-                    Path.Combine(mapsArchivePath, map.mapTile + MapManager.fileExtension));
+                File.Copy(Path.Combine(Master.mapsPath, map._mapTile + MapManager.fileExtension), 
+                    Path.Combine(mapsArchivePath, map._mapTile + MapManager.fileExtension));
             }
 
             //Copy site files to archive

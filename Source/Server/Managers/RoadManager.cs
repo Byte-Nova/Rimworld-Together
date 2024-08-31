@@ -17,7 +17,7 @@ namespace GameServer
 
             RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case RoadStepMode.Add:
                     AddRoad(client, data);
@@ -31,13 +31,13 @@ namespace GameServer
 
         private static void AddRoad(ServerClient client, RoadData data)
         {
-            if (RoadManagerHelper.CheckIfRoadExists(data.details))
+            if (RoadManagerHelper.CheckIfRoadExists(data._details))
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to add a road that already existed");
                 return;
             }
 
-            SaveRoad(data.details, client);
+            SaveRoad(data._details, client);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             NetworkHelper.SendPacketToAllClients(packet);
@@ -45,7 +45,7 @@ namespace GameServer
 
         private static void RemoveRoad(ServerClient client, RoadData data)
         {
-            if (!RoadManagerHelper.CheckIfRoadExists(data.details))
+            if (!RoadManagerHelper.CheckIfRoadExists(data._details))
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to remove a road that didn't exist");
                 return;
@@ -53,14 +53,14 @@ namespace GameServer
 
             foreach (RoadDetails existingRoad in Master.worldValues.Roads)
             {
-                if (existingRoad.fromTile == data.details.fromTile && existingRoad.toTile == data.details.toTile)
+                if (existingRoad.fromTile == data._details.fromTile && existingRoad.toTile == data._details.toTile)
                 {
                     DeleteRoad(existingRoad, client);
                     BroadcastDeletion(existingRoad);
                     return;
                 }
 
-                else if (existingRoad.fromTile == data.details.toTile && existingRoad.toTile == data.details.fromTile)
+                else if (existingRoad.fromTile == data._details.toTile && existingRoad.toTile == data._details.fromTile)
                 {
                     DeleteRoad(existingRoad, client);
                     BroadcastDeletion(existingRoad);

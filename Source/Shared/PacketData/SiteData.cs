@@ -7,12 +7,12 @@ namespace Shared
     [Serializable]
     public class SiteData
     {
-        public SiteStepMode siteStepMode;
+        public SiteStepMode _stepMode;
 
-        public SiteFile siteFile = new SiteFile();
+        public SiteFile _siteFile = new SiteFile();
 
-        public Goodwill goodwill;
+        public Goodwill _goodwill;
 
-        public List<int> sitesWithRewards = new List<int>();
+        public List<int> _sitesWithRewards = new List<int>();
     }
 }

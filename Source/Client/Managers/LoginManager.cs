@@ -14,7 +14,7 @@ namespace GameClient
         {
             LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
 
-            switch(loginData.tryResponse)
+            switch(loginData._tryResponse)
             {
                 case LoginResponse.InvalidLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("RTLoginInvalid".Translate()));
@@ -49,7 +49,7 @@ namespace GameClient
                     break;
 
                 case LoginResponse.WrongVersion:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogVersionMismatch".Translate(loginData.extraDetails[0])));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTDialogVersionMismatch".Translate(loginData._extraDetails[0])));
                     break;
 
                 case LoginResponse.NoWorld:

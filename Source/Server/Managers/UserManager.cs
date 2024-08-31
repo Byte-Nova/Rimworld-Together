@@ -91,8 +91,8 @@ namespace GameServer
         public static void SendPlayerRecount()
         {
             PlayerRecountData playerRecountData = new PlayerRecountData();
-            playerRecountData.currentPlayers = NetworkHelper.GetConnectedClientsSafe().Count().ToString();
-            foreach(ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData.currentPlayerNames.Add(client.userFile.Username);
+            playerRecountData._currentPlayers = NetworkHelper.GetConnectedClientsSafe().Count().ToString();
+            foreach(ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.userFile.Username);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.PlayerRecountPacket), playerRecountData);
             NetworkHelper.SendPacketToAllClients(packet);
@@ -101,10 +101,10 @@ namespace GameServer
         public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
         {
             LoginData loginData = new LoginData();
-            loginData.tryResponse = response;
+            loginData._tryResponse = response;
 
-            if (response == LoginResponse.WrongMods) loginData.extraDetails = (List<string>)extraDetails;
-            else if (response == LoginResponse.WrongVersion) loginData.extraDetails = new List<string>() { CommonValues.executableVersion };
+            if (response == LoginResponse.WrongMods) loginData._extraDetails = (List<string>)extraDetails;
+            else if (response == LoginResponse.WrongVersion) loginData._extraDetails = new List<string>() { CommonValues.executableVersion };
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginResponsePacket), loginData);
             client.listener.EnqueuePacket(packet);
@@ -185,7 +185,7 @@ namespace GameServer
                 if (!user.EndsWith(fileExtension)) continue;
 
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.Username.ToLower() == data.username.ToLower())
+                if (existingUser.Username.ToLower() == data._username.ToLower())
                 {
                     if (mode == LoginMode.Register) UserManager.SendLoginResponse(client, LoginResponse.RegisterInUse);
                     return true;
@@ -204,9 +204,9 @@ namespace GameServer
             {
                 if (!user.EndsWith(fileExtension)) continue;
                 UserFile existingUser = Serializer.SerializeFromFile<UserFile>(user);
-                if (existingUser.Username == data.username)
+                if (existingUser.Username == data._username)
                 {
-                    if (existingUser.Password == data.password) return true;
+                    if (existingUser.Password == data._password) return true;
                     else break;
                 }
             }
@@ -228,11 +228,11 @@ namespace GameServer
         public static bool CheckLoginData(ServerClient client, LoginData data, LoginMode mode)
         {
             bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(data.username)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(data.password)) isInvalid = true;
-            if (data.username.Any(Char.IsWhiteSpace)) isInvalid = true;
-            if (data.username.Length > 32) isInvalid = true;
-            if (data.password.Length > 64) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(data._username)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(data._password)) isInvalid = true;
+            if (data._username.Any(Char.IsWhiteSpace)) isInvalid = true;
+            if (data._username.Length > 32) isInvalid = true;
+            if (data._password.Length > 64) isInvalid = true;
 
             if (!isInvalid) return true;
             else
@@ -260,7 +260,7 @@ namespace GameServer
 
         public static bool CheckIfUserUpdated(ServerClient client, LoginData loginData)
         {
-            if (loginData.clientVersion == CommonValues.executableVersion) return true;
+            if (loginData._version == CommonValues.executableVersion) return true;
             else
             {
                 Logger.Warning($"[Version Mismatch] > {client.userFile.Username}");

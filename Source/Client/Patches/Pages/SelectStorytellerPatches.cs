@@ -17,7 +17,7 @@ namespace GameClient
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (DifficultyValues.UseCustomDifficulty)
+            if (DifficultyManager.difficultyValues.UseCustomDifficulty)
             {
                 ___difficulty = DifficultyDefOf.Rough;
                 ___difficultyValues = new Difficulty(___difficulty);
@@ -52,7 +52,7 @@ namespace GameClient
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (DifficultyValues.UseCustomDifficulty)
+            if (DifficultyManager.difficultyValues.UseCustomDifficulty)
             {
                 __instance.Close();
                 DialogManager.PushNewDialog(new RT_Dialog_Error("RTDifficultyCantBeChanged".Translate()));
@@ -68,7 +68,7 @@ namespace GameClient
                     Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty"))
                     {
-                        CustomDifficultyManager.SendCustomDifficulty();
+                        DifficultyManager.SendCustomDifficulty();
                         DialogManager.PushNewDialog(new RT_Dialog_OK("RTCustomDifficultySet".Translate()));
                     }
                 }
@@ -81,7 +81,7 @@ namespace GameClient
         public static void DoPost(Rect rect)
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
-            if (DifficultyValues.UseCustomDifficulty) return;
+            if (DifficultyManager.difficultyValues.UseCustomDifficulty) return;
 
             if (ServerValues.isAdmin)
             {
@@ -178,7 +178,7 @@ namespace GameClient
                 infoListing.Gap(6f);
             }
 
-            if (!DifficultyValues.UseCustomDifficulty)
+            if (!DifficultyManager.difficultyValues.UseCustomDifficulty)
             {
                 if (chosenStoryteller != null && chosenStoryteller.listVisible)
                 {
@@ -209,7 +209,7 @@ namespace GameClient
             num = rect3.y + infoListing.CurHeight;
             infoListing.End();
 
-            if (!DifficultyValues.UseCustomDifficulty)
+            if (!DifficultyManager.difficultyValues.UseCustomDifficulty)
             {
                 if (difficulty != null && difficulty.isCustom)
                 {

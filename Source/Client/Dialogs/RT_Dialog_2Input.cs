@@ -11,26 +11,32 @@ namespace GameClient
 
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
-        private int startAcceptingInputAtFrame;
+        private readonly int startAcceptingInputAtFrame;
 
-        private string title;
+        private readonly string title;
 
-        private float buttonX = 150f;
-        private float buttonY = 38f;
+        private readonly float buttonX = 150f;
 
-        private Action actionConfirm;
-        private Action actionCancel;
+        private readonly float buttonY = 38f;
 
-        private string inputOneLabel;
-        private string inputTwoLabel;
+        private readonly Action actionConfirm;
+
+        private readonly Action actionCancel;
+
+        private readonly string inputOneLabel;
+
+        private readonly string inputTwoLabel;
 
         public string inputOneResult;
+
         public string inputTwoResult;
 
-        private bool inputOneCensored;
+        private readonly bool inputOneCensored;
+
         private string inputOneCensoredResult;
 
-        private bool inputTwoCensored;
+        private readonly bool inputTwoCensored;
+        
         private string inputTwoCensoredResult;
 
         public RT_Dialog_2Input(string title, string inputOneLabel, string inputTwoLabel, Action actionConfirm, Action actionCancel, 

@@ -6,10 +6,10 @@ namespace Shared
     [Serializable]
     public class PlayerFactionData
     {
-        public FactionStepMode stepMode;
+        public FactionStepMode _stepMode;
 
-        public FactionFile factionFile = new FactionFile();
+        public FactionFile _factionFile = new FactionFile();
 
-        public int dataInt;
+        public int _dataInt;
     }
 }

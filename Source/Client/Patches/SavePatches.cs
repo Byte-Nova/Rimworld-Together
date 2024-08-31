@@ -20,7 +20,7 @@ namespace GameClient
                 ClientValues.ToggleSavingGame(true);
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
-                CustomDifficultyManager.EnforceCustomDifficulty();
+                DifficultyManager.EnforceCustomDifficulty();
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
 

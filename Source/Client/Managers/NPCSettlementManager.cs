@@ -46,7 +46,7 @@ namespace GameClient
                 //TODO
                 //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
                 //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
-                settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.factionDefName));
+                settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName));
 
                 Find.WorldObjects.Add(settlement);
             }
@@ -109,7 +109,7 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            tempNPCSettlements = serverGlobalData.npcSettlements;
+            tempNPCSettlements = serverGlobalData._npcSettlements;
         }
     }
 }

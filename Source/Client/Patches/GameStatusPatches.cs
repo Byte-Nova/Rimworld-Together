@@ -18,7 +18,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
-                    CustomDifficultyManager.EnforceCustomDifficulty();
+                    DifficultyManager.EnforceCustomDifficulty();
 
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData.settlementData.Tile = __instance.CurrentMap.Tile;
@@ -47,7 +47,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
-                    CustomDifficultyManager.EnforceCustomDifficulty();
+                    DifficultyManager.EnforceCustomDifficulty();
 
                     PlanetManager.BuildPlanet();
                     ClientValues.ToggleReadyToPlay(true);
@@ -149,7 +149,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == ClientNetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
+                if (Network.state == ClientNetworkState.Connected) DifficultyManager.EnforceCustomDifficulty();
                 else return;
             }
         }

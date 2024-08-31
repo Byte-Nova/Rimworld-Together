@@ -9,6 +9,6 @@ namespace Shared
 
         public string name;
         
-        public string factionDefName;
+        public string defName;
     }
 }

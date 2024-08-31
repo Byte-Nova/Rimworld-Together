@@ -306,11 +306,20 @@ namespace GameClient
                         SessionValues.chosenSettlement = __instance;
                         SessionValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.chosenCaravan))
+                        if (!SessionValues.actionValues.EnableTrading)
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
+                            DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
+                            return;
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferError".Translate()));
+
+                        else
+                        {
+                            if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.chosenCaravan))
+                            {
+                                DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
+                            }
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferError".Translate()));
+                        }
                     }
                 };
 

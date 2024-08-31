@@ -99,7 +99,7 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            tempSettlements = serverGlobalData.playerSettlements;
+            tempSettlements = serverGlobalData._playerSettlements;
         }
     }
 }

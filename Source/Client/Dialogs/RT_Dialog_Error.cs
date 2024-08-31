@@ -9,13 +9,15 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(500f, 150f);
 
-        private string title = "RTDialogError".Translate();
-        private string description = "";
+        private readonly string title = "RTDialogError".Translate();
 
-        private float buttonX = 150f;
-        private float buttonY = 38f;
+        private readonly string description = "";
 
-        private Action actionOK;
+        private readonly float buttonX = 150f;
+
+        private readonly float buttonY = 38f;
+
+        private readonly Action actionOK;
 
         public RT_Dialog_Error(string description, Action actionOK = null)
         {

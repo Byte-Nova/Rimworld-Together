@@ -14,7 +14,7 @@ namespace GameClient
         {
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
-            switch (eventData.stepMode)
+            switch (eventData._stepMode)
             {
                 case EventStepMode.Send:
                     OnEventSent();
@@ -66,10 +66,10 @@ namespace GameClient
                 RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost);
 
                 EventData eventData = new EventData();
-                eventData.stepMode = EventStepMode.Send;
-                eventData.fromTile = toGetSilverFrom.Tile;
-                eventData.toTile = SessionValues.chosenSettlement.Tile;
-                eventData.eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
+                eventData._stepMode = EventStepMode.Send;
+                eventData._fromTile = toGetSilverFrom.Tile;
+                eventData._toTile = SessionValues.chosenSettlement.Tile;
+                eventData._eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
                 Network.listener.EnqueuePacket(packet);
@@ -95,10 +95,10 @@ namespace GameClient
             if (ClientValues.isReadyToPlay)
             {
                 Map targetMap;
-                if (eventData.toTile != -1) targetMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == eventData.toTile).Map;
+                if (eventData._toTile != -1) targetMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == eventData._toTile).Map;
                 else targetMap = Find.AnyPlayerHomeMap;
 
-                IncidentDef eventToTrigger = DefDatabase<IncidentDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == eventData.eventFile.DefName);
+                IncidentDef eventToTrigger = DefDatabase<IncidentDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == eventData._eventFile.DefName);
                 if (eventToTrigger != null) TriggerEvent(eventToTrigger, targetMap);
             }
         }
@@ -134,6 +134,6 @@ namespace GameClient
     {
         public static EventFile[] availableEvents;
 
-        public static void SetValues(ServerGlobalData serverGlobalData) { availableEvents = serverGlobalData.eventValues; }
+        public static void SetValues(ServerGlobalData serverGlobalData) { availableEvents = serverGlobalData._eventValues; }
     }
 }

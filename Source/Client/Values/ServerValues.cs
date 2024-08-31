@@ -15,16 +15,16 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            isAdmin = serverGlobalData.isClientAdmin;
+            isAdmin = serverGlobalData._isClientAdmin;
 
-            hasFaction = serverGlobalData.isClientFactionMember;
+            hasFaction = serverGlobalData._isClientFactionMember;
         }
 
         public static void SetServerPlayers(Packet packet)
         {
             PlayerRecountData playerRecountData = Serializer.ConvertBytesToObject<PlayerRecountData>(packet.contents);
-            currentPlayers = int.Parse(playerRecountData.currentPlayers);
-            currentPlayerNames = playerRecountData.currentPlayerNames;
+            currentPlayers = int.Parse(playerRecountData._currentPlayers);
+            currentPlayerNames = playerRecountData._currentPlayerNames;
         }
 
         public static void CleanValues()

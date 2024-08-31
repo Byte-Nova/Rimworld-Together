@@ -42,8 +42,8 @@ namespace GameClient
                 },
                 delegate 
                 {
-                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu); 
-                    Network.listener.disconnectFlag = true; 
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
+                    if (Network.listener != null) Network.listener.disconnectFlag = true; 
                 });
 
             DialogManager.PushNewDialog(d1);
@@ -123,12 +123,12 @@ namespace GameClient
             if (!isInvalid)
             {
                 LoginData loginData = new LoginData();
-                loginData.username = DialogManager.dialog2ResultOne;
-                loginData.password = Hasher.GetHashFromString(DialogManager.dialog2ResultTwo);
-                loginData.clientVersion = CommonValues.executableVersion;
-                loginData.runningMods = ModManager.GetRunningModList().ToList();
+                loginData._username = DialogManager.dialog2ResultOne;
+                loginData._password = Hasher.GetHashFromString(DialogManager.dialog2ResultTwo);
+                loginData._version = CommonValues.executableVersion;
+                loginData._runningMods = ModManager.GetRunningModList();
 
-                ClientValues.username = loginData.username;
+                ClientValues.username = loginData._username;
                 PreferenceManager.SaveLoginData(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), loginData);
@@ -158,12 +158,12 @@ namespace GameClient
             if (!isInvalid)
             {
                 LoginData loginData = new LoginData();
-                loginData.username = DialogManager.dialog3ResultOne;
-                loginData.password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
-                loginData.clientVersion = CommonValues.executableVersion;
-                loginData.runningMods = ModManager.GetRunningModList().ToList();
+                loginData._username = DialogManager.dialog3ResultOne;
+                loginData._password = Hasher.GetHashFromString(DialogManager.dialog3ResultTwo);
+                loginData._version = CommonValues.executableVersion;
+                loginData._runningMods = ModManager.GetRunningModList();
 
-                ClientValues.username = loginData.username;
+                ClientValues.username = loginData._username;
                 PreferenceManager.SaveLoginData(DialogManager.dialog3ResultOne, DialogManager.dialog3ResultTwo);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RegisterClientPacket), loginData);

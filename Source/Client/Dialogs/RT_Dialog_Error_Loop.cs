@@ -9,16 +9,18 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(500f, 150f);
 
-        private string title = "RTDialogError".Translate();
+        private readonly string title = "RTDialogError".Translate();
         private string descriptionDummy;
-        private string[] descriptionLoop;
+
+        private readonly string[] descriptionLoop;
 
         private int currentDescriptionIndex = 0;
 
-        private float buttonX = 150f;
-        private float buttonY = 38f;
+        private readonly float buttonX = 150f;
 
-        private Action actionOK;
+        private readonly float buttonY = 38f;
+
+        private readonly Action actionOK;
 
         public RT_Dialog_Error_Loop(string[] descriptionLoop, Action actionOK = null)
         {

@@ -52,16 +52,16 @@ namespace GameClient
             {
                 try
                 {
-                    SitePartDef siteDef = SiteManager.GetDefForNewSite(siteData.siteFile.Type, siteData.siteFile.FactionFile != null);
+                    SitePartDef siteDef = SiteManager.GetDefForNewSite(siteData._siteFile.Type, siteData._siteFile.FactionFile != null);
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: siteData.siteFile.Tile,
+                        tile: siteData._siteFile.Tile,
                         threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(siteData.goodwill));
+                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(siteData._goodwill));
 
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn site at {siteData.siteFile.Tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to spawn site at {siteData._siteFile.Tile}. Reason: {e}"); }
             }
         }
 
@@ -71,12 +71,12 @@ namespace GameClient
             {
                 try
                 {
-                    Site toGet = playerSites.Find(x => x.Tile == siteData.siteFile.Tile);
+                    Site toGet = playerSites.Find(x => x.Tile == siteData._siteFile.Tile);
 
                     playerSites.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Logger.Message($"Failed to remove site at {siteData.siteFile.Tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Message($"Failed to remove site at {siteData._siteFile.Tile}. Reason: {e}"); }
             }
         }
     }
@@ -87,7 +87,7 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            tempSites = serverGlobalData.playerSites;
+            tempSites = serverGlobalData._playerSites;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace GameServer
         {
             CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
 
-            switch (commandData.commandMode)
+            switch (commandData._commandMode)
             {
                 case CommandMode.Op:
                     //Do nothing
@@ -28,7 +28,7 @@ namespace GameServer
         public static void SendOpCommand(ServerClient client)
         {
             CommandData commandData = new CommandData();
-            commandData.commandMode = CommandMode.Op;
+            commandData._commandMode = CommandMode.Op;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
@@ -37,7 +37,7 @@ namespace GameServer
         public static void SendDeOpCommand(ServerClient client)
         {
             CommandData commandData = new CommandData();
-            commandData.commandMode = CommandMode.Deop;
+            commandData._commandMode = CommandMode.Deop;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);
@@ -46,11 +46,11 @@ namespace GameServer
         public static void SendEventCommand(ServerClient client, EventFile eventFile)
         {
             EventData eventData = new EventData();
-            eventData.stepMode = EventStepMode.Receive;
-            eventData.eventFile = eventFile;
+            eventData._stepMode = EventStepMode.Receive;
+            eventData._eventFile = eventFile;
 
             //We set it to -1 to let the client know it will fall at any settlement
-            eventData.toTile = -1;
+            eventData._toTile = -1;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
             client.listener.EnqueuePacket(packet);
@@ -59,8 +59,8 @@ namespace GameServer
         public static void SendBroadcastCommand(string str)
         {
             CommandData commandData = new CommandData();
-            commandData.commandMode = CommandMode.Broadcast;
-            commandData.commandDetails = str;
+            commandData._commandMode = CommandMode.Broadcast;
+            commandData._details = str;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             NetworkHelper.SendPacketToAllClients(packet);
@@ -69,7 +69,7 @@ namespace GameServer
         public static void SendForceSaveCommand(ServerClient client)
         {
             CommandData commandData = new CommandData();
-            commandData.commandMode = CommandMode.ForceSave;
+            commandData._commandMode = CommandMode.ForceSave;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
             client.listener.EnqueuePacket(packet);

@@ -10,23 +10,25 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(400f, 400f);
 
-        public string title;
+        public readonly string title;
 
-        public string description;
+        public readonly string description;
 
-        public string[] elements;
+        public readonly string[] elements;
 
-        private Action actionClick;
+        private readonly Action actionClick;
 
-        private Action actionCancel;
+        private readonly Action actionCancel;
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        private float buttonX = 150f;
-        private float buttonY = 38f;
+        private readonly float buttonX = 150f;
 
-        private float selectButtonX = 47f;
-        private float selectButtonY = 25f;
+        private readonly float buttonY = 38f;
+
+        private readonly float selectButtonX = 47f;
+
+        private readonly float selectButtonY = 25f;
 
         public RT_Dialog_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
         {

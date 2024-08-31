@@ -12,21 +12,21 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(350f, 512f);
 
-        public string title = "RTDialogItemListing".Translate();
+        public readonly string title = "RTDialogItemListing".Translate();
 
-        private int startAcceptingInputAtFrame;
+        private readonly int startAcceptingInputAtFrame;
 
         private Vector2 scrollPosition = Vector2.zero;
 
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
-        private float buttonX = 100f;
+        private readonly float buttonX = 100f;
 
-        private float buttonY = 37f;
+        private readonly float buttonY = 37f;
 
-        private Thing[] listedThings;
+        private readonly Thing[] listedThings;
 
-        private TransferMode transferMode;
+        private readonly TransferMode transferMode;
 
         public RT_Dialog_ItemListing(Thing[] listedThings, TransferMode transferMode)
         {
@@ -148,7 +148,7 @@ namespace GameClient
 
                 else if (transferMode == TransferMode.Rebound)
                 {
-                    SessionValues.incomingManifest.stepMode = TransferStepMode.TradeReAccept;
+                    SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);

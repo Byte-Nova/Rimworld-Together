@@ -21,21 +21,21 @@ namespace GameClient
             LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("RTModMismatchMenu".Translate(), "RTModMismatchMenuDesc".Translate(),
-                loginData.extraDetails.ToArray()));
+                loginData._extraDetails.ToArray()));
         }
 
         public static bool CheckIfMapHasConflictingMods(MapData mapData)
         {
             string[] currentMods = GetRunningModList();
 
-            foreach (string mod in mapData.mapMods)
+            foreach (string mod in mapData._mapMods)
             {
                 if (!currentMods.Contains(mod)) return true;
             }
 
             foreach (string mod in currentMods)
             {
-                if (!mapData.mapMods.Contains(mod)) return true;
+                if (!mapData._mapMods.Contains(mod)) return true;
             }
 
             return false;

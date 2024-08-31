@@ -31,7 +31,7 @@ namespace GameClient
         {
             WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 
-            switch (worldData.worldStepMode)
+            switch (worldData._stepMode)
             {
                 case WorldStepMode.Required:
                     OnRequireWorld();
@@ -81,7 +81,7 @@ namespace GameClient
             cachedWorldValues.NPCFactions = PlanetGeneratorManagerHelper.GetNPCFactionsFromDef(factions.ToArray());
         }
 
-        public static void SetValuesFromServer(WorldData worldData) { cachedWorldValues = worldData.worldValuesFile; }
+        public static void SetValuesFromServer(WorldData worldData) { cachedWorldValues = worldData._worldValuesFile; }
 
         public static void GeneratePatchedWorld()
         {
@@ -163,8 +163,8 @@ namespace GameClient
         public static void SendWorldToServer()
         {
             WorldData worldData = new WorldData();
-            worldData.worldStepMode = WorldStepMode.Required;
-            worldData.worldValuesFile = PlanetGeneratorManagerHelper.PopulateWorldValues();
+            worldData._stepMode = WorldStepMode.Required;
+            worldData._worldValuesFile = PlanetGeneratorManagerHelper.PopulateWorldValues();
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
             Network.listener.EnqueuePacket(packet);
@@ -184,7 +184,7 @@ namespace GameClient
                     WorldFeature worldFeature = new WorldFeature();
                     worldFeature.def = DefDatabase<FeatureDef>.AllDefs.First(fetch => fetch.defName == planetFeature.defName);
                     worldFeature.uniqueID = i;
-                    worldFeature.name = planetFeature.featureName;
+                    worldFeature.name = planetFeature.name;
                     worldFeature.maxDrawSizeInTiles = planetFeature.maxDrawSizeInTiles;
                     worldFeature.drawCenter = new Vector3(planetFeature.drawCenter[0], planetFeature.drawCenter[1], planetFeature.drawCenter[2]);
 
@@ -209,14 +209,14 @@ namespace GameClient
                 {
                     Faction toModify = planetFactions[i];
 
-                    toModify.Name = faction.factionName;
+                    toModify.Name = faction.name;
 
-                    toModify.color = new Color(faction.factionColor[0],
-                        faction.factionColor[1],
-                        faction.factionColor[2],
-                        faction.factionColor[3]);
+                    toModify.color = new Color(faction.color[0],
+                        faction.color[1],
+                        faction.color[2],
+                        faction.color[3]);
                 }
-                catch (Exception e) { Logger.Error($"Failed set planet faction from def '{faction.factionDefName}'. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed set planet faction from def '{faction.defName}'. Reason: {e}"); }
             }
         }
     }
@@ -242,7 +242,7 @@ namespace GameClient
                 try
                 {
                     PlanetNPCFaction toCreate = new PlanetNPCFaction();
-                    toCreate.factionDefName = faction.defName;
+                    toCreate.defName = faction.defName;
                     npcFactions.Add(toCreate);
                 }
                 catch (Exception e) { Logger.Error($"Failed transform faction '{faction.defName}' from game. Reason: {e}"); }
@@ -255,8 +255,8 @@ namespace GameClient
             List<FactionDef> defList = new List<FactionDef>();
             foreach (PlanetNPCFaction faction in factions)
             {
-                try { defList.Add(DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == faction.factionDefName)); }
-                catch (Exception e) { Logger.Error($"Failed get FactionDef '{faction.factionDefName}' from server. Reason: {e}"); }
+                try { defList.Add(DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == faction.defName)); }
+                catch (Exception e) { Logger.Error($"Failed get FactionDef '{faction.defName}' from server. Reason: {e}"); }
             }
             return defList.ToArray();
         }
@@ -274,9 +274,9 @@ namespace GameClient
                     else
                     {
                         PlanetNPCFaction planetFaction = new PlanetNPCFaction();
-                        planetFaction.factionDefName = faction.def.defName;
-                        planetFaction.factionName = faction.Name;
-                        planetFaction.factionColor = new float[] { faction.Color.r, faction.Color.g, faction.Color.b, faction.Color.a };
+                        planetFaction.defName = faction.def.defName;
+                        planetFaction.name = faction.Name;
+                        planetFaction.color = new float[] { faction.Color.r, faction.Color.g, faction.Color.b, faction.Color.a };
 
                         planetFactions.Add(planetFaction);
                     }
@@ -302,7 +302,7 @@ namespace GameClient
                 {
                     PlanetNPCSettlement PlanetNPCSettlement = new PlanetNPCSettlement();
                     PlanetNPCSettlement.tile = settlement.Tile;
-                    PlanetNPCSettlement.factionDefName = settlement.Faction.def.defName;
+                    PlanetNPCSettlement.defName = settlement.Faction.def.defName;
                     PlanetNPCSettlement.name = settlement.Name;
 
                     npcSettlements.Add(PlanetNPCSettlement);
@@ -321,7 +321,7 @@ namespace GameClient
                 try
                 {
                     PlanetFeature planetFeature = new PlanetFeature();
-                    planetFeature.featureName = worldFeature.name;
+                    planetFeature.name = worldFeature.name;
                     planetFeature.defName = worldFeature.def.defName;
                     planetFeature.maxDrawSizeInTiles = worldFeature.maxDrawSizeInTiles;
                     planetFeature.drawCenter = new float[] { worldFeature.drawCenter.x, worldFeature.drawCenter.y, worldFeature.drawCenter.z };

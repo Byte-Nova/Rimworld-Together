@@ -5,9 +5,9 @@ namespace Shared
     [Serializable]
     public class PlanetFeature
     {
-        public string defName;
+        public string name;
 
-        public string featureName;
+        public string defName;
 
         public float[] drawCenter;
         

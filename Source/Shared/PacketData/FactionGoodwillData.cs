@@ -7,22 +7,22 @@ namespace Shared
     [Serializable]
     public class FactionGoodwillData
     {
-        public int tile;
+        public int _tile;
 
-        public string owner;
+        public string _owner;
 
-        public Goodwill goodwill;
+        public Goodwill _goodwill;
 
         //Settlements
 
-        public List<int> settlementTiles = new List<int>();
+        public List<int> _settlementTiles = new List<int>();
 
-        public Goodwill[] settlementGoodwills;
+        public Goodwill[] _settlementGoodwills;
 
         //Sites
 
-        public List<int> siteTiles = new List<int>();
+        public List<int> _siteTiles = new List<int>();
         
-        public Goodwill[] siteGoodwills;
+        public Goodwill[] _siteGoodwills;
     }
 }

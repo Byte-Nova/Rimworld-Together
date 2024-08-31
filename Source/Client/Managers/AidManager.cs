@@ -12,7 +12,7 @@ namespace GameClient
         {
             AidData data = Serializer.ConvertBytesToObject<AidData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case AidStepMode.Send:
                     //Empty
@@ -43,12 +43,12 @@ namespace GameClient
         public static void SendAidRequest()
         {
             AidData aidData = new AidData();
-            aidData.stepMode = AidStepMode.Send;
-            aidData.fromTile = Find.AnyPlayerHomeMap.Tile;
-            aidData.toTile = SessionValues.chosenSettlement.Tile;
+            aidData._stepMode = AidStepMode.Send;
+            aidData._fromTile = Find.AnyPlayerHomeMap.Tile;
+            aidData._toTile = SessionValues.chosenSettlement.Tile;
 
             Pawn toGet = RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResultInt];
-            aidData.humanData = HumanScribeManager.HumanToString(toGet);
+            aidData._humanData = HumanScribeManager.HumanToString(toGet);
             RimworldManager.RemovePawnFromGame(toGet);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), aidData);
@@ -72,8 +72,8 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            Map map = Find.World.worldObjects.SettlementAt(data.fromTile).Map;
-            Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
+            Map map = Find.World.worldObjects.SettlementAt(data._fromTile).Map;
+            Pawn pawn = HumanScribeManager.StringToHuman(data._humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
@@ -81,11 +81,11 @@ namespace GameClient
 
         private static void AcceptAid(AidData data)
         {
-            Map map = Find.World.worldObjects.SettlementAt(data.toTile).Map;
-            Pawn pawn = HumanScribeManager.StringToHuman(data.humanData);
+            Map map = Find.World.worldObjects.SettlementAt(data._toTile).Map;
+            Pawn pawn = HumanScribeManager.StringToHuman(data._humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
-            data.stepMode = AidStepMode.Accept;
+            data._stepMode = AidStepMode.Accept;
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
 
@@ -98,7 +98,7 @@ namespace GameClient
 
         private static void RejectAid(AidData data)
         {
-            data.stepMode = AidStepMode.Reject;
+            data._stepMode = AidStepMode.Reject;
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
             Network.listener.EnqueuePacket(packet);
         }

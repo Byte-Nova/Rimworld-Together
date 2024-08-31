@@ -6,8 +6,8 @@ namespace Shared
     [Serializable]
     public class WorldData
     {
-        public WorldStepMode worldStepMode;
+        public WorldStepMode _stepMode;
 
-        public WorldValuesFile worldValuesFile;
+        public WorldValuesFile _worldValuesFile;
     }
 }

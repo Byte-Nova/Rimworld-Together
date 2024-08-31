@@ -9,14 +9,17 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(400f, 150f);
 
-        private string title = "RTDialogOption".Translate();
-        private string description = "";
+        private readonly string title = "RTDialogOption".Translate();
 
-        private float buttonX = 150f;
-        private float buttonY = 38f;
+        private readonly string description = "";
 
-        private Action actionYes;
-        private Action actionNo;
+        private readonly float buttonX = 150f;
+
+        private readonly float buttonY = 38f;
+
+        private readonly Action actionYes;
+        
+        private readonly Action actionNo;
 
         public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo)
         {
