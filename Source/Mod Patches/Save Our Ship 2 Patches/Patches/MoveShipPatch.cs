@@ -17,7 +17,7 @@ namespace RT_SOS2Patches
             if (Network.state == ClientNetworkState.Connected)
             {
                 ClientValues.ManageDevOptions();
-                CustomDifficultyManager.EnforceCustomDifficulty();
+                DifficultyManager.EnforceCustomDifficulty();
                 Map map = core.Map;
                 if (!targetMap.IsSpace() && ShipInteriorMod2.FindPlayerShipMap() == null)
                 {
@@ -26,8 +26,8 @@ namespace RT_SOS2Patches
                         Logger.Warning("[SOS2]Deleting empty space map");
                     }
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData = new OnlineSpaceSettlementFile();
-                    settlementData.settlementData.tile = Main.shipTile;
+                    settlementData.settlementData = new SpaceSettlementFile();
+                    settlementData.settlementData.Tile = Main.shipTile;
                     Main.shipTile = -1;
                     settlementData.stepMode = SettlementStepMode.Remove;
                     settlementData.settlementData.isShip = true;

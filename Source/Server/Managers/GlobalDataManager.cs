@@ -53,6 +53,7 @@ namespace GameServer
         public static ServerGlobalData GetServerSettlements(ServerClient client, ServerGlobalData globalData)
         {
             List<SettlementFile> tempList = new List<SettlementFile>();
+            List<SpaceSettlementFile> spaceTempList = new List<SpaceSettlementFile>();
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
             {
@@ -61,15 +62,28 @@ namespace GameServer
                 if (settlement.Owner == client.userFile.Username) continue;
                 else
                 {
-                    file.Tile = settlement.Tile;
-                    file.Owner = settlement.Owner;
-                    file.Goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
+                    if (settlement.isShip)
+                    {
+                        Logger.Warning("Test");
+                        SpaceSettlementFile spaceFile = (SpaceSettlementFile)settlement;
+                        spaceFile.Tile = settlement.Tile;
+                        spaceFile.Owner = settlement.Owner;
+                        spaceFile.Goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
+                        spaceTempList.Add(spaceFile);
+                    }
+                    else
+                    {
+                        file.Tile = settlement.Tile;
+                        file.Owner = settlement.Owner;
+                        file.Goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
 
-                    tempList.Add(file);
+                        tempList.Add(file);
+                    }
                 }
             }
 
             globalData._playerSettlements = tempList.ToArray();
+            globalData.playerSpaceSettlements = spaceTempList.ToArray();
             if (Master.worldValues != null) globalData._npcSettlements = Master.worldValues.NPCSettlements;
 
             return globalData;

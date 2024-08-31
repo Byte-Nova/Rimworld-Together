@@ -184,6 +184,7 @@ namespace GameServer
                 SettlementFile settlement = Serializer.SerializeFromFile<SettlementFile>(settlementFile);
                 if (settlement.isShip) 
                 {
+                    Logger.Warning("Test");
                     settlement = Serializer.SerializeFromFile<SpaceSettlementFile>(settlementFile);
                 }
                 settlementList.Add(settlement);

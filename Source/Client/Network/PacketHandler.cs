@@ -87,11 +87,11 @@ namespace GameClient
 
         public static void SpaceSettlementPacket(Packet packet) 
         {
-            SOS2SendData.AddShipSettlement(Serializer.ConvertBytesToObject<PlayerShipData>(packet.contents));
+            GameClient.SOS2.PlayerShipManager.SpawnSingleSettlement(Serializer.ConvertBytesToObject<PlayerShipData>(packet.contents));
         }
         public static void ShipMovementPacket(Packet packet) 
         {
-            SOS2SendData.MakeShipMove(packet);
+            GameClient.SOS2.MovementManager.MoveShipFromTile(packet);
         }
 
         public static void NPCSettlementPacket(Packet packet)

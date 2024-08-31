@@ -1,15 +1,8 @@
-﻿using GameClient;
-using RimWorld.Planet;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Shared;
 using System.Threading;
 using System.Threading.Tasks;
-using Verse;
 
-namespace RT_SOS2Patches.Master
+namespace GameClient.SOS2
 {
     public static class MovementManager
     {
@@ -37,12 +30,13 @@ namespace RT_SOS2Patches.Master
             }
 
         }
-        public static void MoveShipFromTile(MovementData data) 
+        public static void MoveShipFromTile(Packet data) 
         {
-            WorldObjectFakeOrbitingShip ship = PlayerShipManager.spacePlayerSettlement.Find(x => x.Tile == data.tile);
-            ship.phi = data.phi;
-            ship.theta = data.theta;
-            ship.radius = data.radius;
+            MovementData movement = Serializer.ConvertBytesToObject<MovementData>(data.contents);
+            WorldObjectFakeOrbitingShip ship = PlayerShipManager.spacePlayerSettlement.Find(x => x.Tile == movement.tile);
+            ship.phi = movement.phi;
+            ship.theta = movement.theta;
+            ship.radius = movement.radius;
             ship.OrbitSet();
         }
     }

@@ -114,7 +114,7 @@ namespace GameClient
             }
             for (int i = 0; i < shipsToChange.Count(); i++)
             {
-                SOS2SendData.ChangeGoodWillOfShip(factionGoodwillData._settlementGoodwills[i], shipsToChange[i].Tile);
+                GameClient.SOS2.PlayerShipManager.ChangeGoodwill(shipsToChange[i].Tile, factionGoodwillData._settlementGoodwills[i]);
             }
         }
 

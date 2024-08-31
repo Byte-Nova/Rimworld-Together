@@ -17,9 +17,9 @@ namespace RT_SOS2Patches
                 if (__result != null)
                 {
                     ClientValues.ManageDevOptions();
-                    CustomDifficultyManager.EnforceCustomDifficulty();
+                    DifficultyManager.EnforceCustomDifficulty();
                     Main.shipTile = __result.Tile;
-                    PlayerSpaceSettlementHelper.SendSettlementToServer(__result);
+                    PlayerShipManagerHelper.SendSettlementToServer(__result);
 
 
                     SaveManager.ForceSave();

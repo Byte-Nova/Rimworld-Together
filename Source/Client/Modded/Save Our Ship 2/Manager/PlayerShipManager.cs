@@ -1,14 +1,13 @@
-﻿using RimWorld.Planet;
-using RimWorld;
+﻿using RimWorld;
+using RimWorld.Planet;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
-using Shared;
 using static Shared.CommonEnumerators;
-using GameClient;
-using SaveOurShip2;
-namespace RT_SOS2Patches
+
+namespace GameClient.SOS2
 {
     public static class PlayerShipManager
     {
@@ -16,8 +15,8 @@ namespace RT_SOS2Patches
 
         public static void AddSettlementFromFile(SpaceSettlementFile settlementFile)
         {
-                try
-                {
+            try
+            {
                 WorldObjectFakeOrbitingShip ship = SetGoodWillShip(settlementFile.Goodwill);
                 ship.Tile = settlementFile.Tile;
                 ship.name = $"{settlementFile.Owner}'s ship";
@@ -34,7 +33,6 @@ namespace RT_SOS2Patches
             }
             catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to build ship at {settlementFile.Tile}. Reason: {e}"); }
         }
-
         public static void ClearAllSettlements()
         {
             spacePlayerSettlement.Clear();
@@ -67,9 +65,9 @@ namespace RT_SOS2Patches
             }
         }
 
-        public static void ChangeGoodwill(int tile, Goodwill goodwill, WorldObjectFakeOrbitingShip oldship = null) 
+        public static void ChangeGoodwill(int tile, Goodwill goodwill, WorldObjectFakeOrbitingShip oldship = null)
         {
-            if (oldship == null) 
+            if (oldship == null)
             {
                 oldship = (WorldObjectFakeOrbitingShip)PlayerSettlementManager.GetWorldObjectFromTile(tile);
             }
@@ -79,7 +77,7 @@ namespace RT_SOS2Patches
 
             WorldObjectFakeOrbitingShip ship = SetGoodWillShip(goodwill);
             ship.Tile = oldship.Tile;
-            ship.name = $"{oldship.name}'s ship";
+            ship.name = $"{oldship.name}";
             ship.phi = oldship.phi;
             ship.theta = oldship.theta;
             ship.radius = oldship.radius;
@@ -90,7 +88,7 @@ namespace RT_SOS2Patches
             Find.WorldObjects.Add(ship);
         }
 
-        public static WorldObjectFakeOrbitingShip SetGoodWillShip(Goodwill goodwill) 
+        public static WorldObjectFakeOrbitingShip SetGoodWillShip(Goodwill goodwill)
         {
             WorldObjectFakeOrbitingShip ship;
             switch (goodwill)
@@ -124,28 +122,6 @@ namespace RT_SOS2Patches
                 }
             }
             catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to remove ship at {tile}. Reason: {e}"); }
-        }
-    }
-
-    public static class PlayerSpaceSettlementHelper
-    {
-        public static void SendSettlementToServer(Map map) 
-        {
-            ShipMapComp comp = map.GetComponent<ShipMapComp>();
-            WorldObjectOrbitingShip orbitShip = comp.mapParent;
-            PlayerShipData spaceSiteData = new PlayerShipData();
-
-            spaceSiteData.settlementData.isShip = true;
-            spaceSiteData.settlementData.Tile = map.Tile;
-            spaceSiteData.stepMode = SettlementStepMode.Add;
-            spaceSiteData.theta = orbitShip.Theta;
-            spaceSiteData.radius = orbitShip.Radius;
-            orbitShip.Phi = UnityEngine.Random.Range(-70f, 70f);
-            spaceSiteData.phi = orbitShip.Phi;
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SpaceSettlementPacket), spaceSiteData);
-            Network.listener.EnqueuePacket(packet);
-
-            SaveManager.ForceSave();
         }
     }
 }

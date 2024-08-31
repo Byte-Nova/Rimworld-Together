@@ -22,7 +22,7 @@ namespace GameClient
                 {
                     case SettlementStepMode.Add:
                         PlayerShipData data = (PlayerShipData)settlementData;
-                        SOS2SendData.AddShipSettlement(data);
+                        GameClient.SOS2.PlayerShipManager.SpawnSingleSettlement(data);
                         break;
 
                     case SettlementStepMode.Remove:
@@ -72,7 +72,7 @@ namespace GameClient
                 {
                     try
                     {
-                        SOS2SendData.AddShipSettlement(settlementFile);
+                        GameClient.SOS2.PlayerShipManager.AddSettlementFromFile(settlementFile);
                     }
                     catch (Exception e) { Logger.Error($"Failed to build ship at {settlementFile.Tile}. Reason: {e}"); }
                 }
@@ -118,7 +118,7 @@ namespace GameClient
                         Find.WorldObjects.Remove(toGet);
                     } else 
                     {
-                        SOS2SendData.RemoveShip(toRemove.settlementData.Tile);
+                        GameClient.SOS2.PlayerShipManager.RemoveFromTile(toRemove.settlementData.Tile);
                     }
                 }
                 catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.settlementData.Tile}. Reason: {e}"); }

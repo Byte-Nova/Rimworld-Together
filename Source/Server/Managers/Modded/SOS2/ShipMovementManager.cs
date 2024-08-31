@@ -21,25 +21,25 @@ namespace GameServer
             SpaceSettlementFile file = (SpaceSettlementFile)SettlementManager.GetSettlementFileFromTile(data.tile);
             if (file != null)
             {
-                if (file.owner == client.userFile.Username)
+                if (file.Owner == client.userFile.Username)
                 {
                     file.phi = data.phi;
                     file.theta = data.theta;
                     file.radius = data.radius;
                     Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, data.tile + fileExtension), file);
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ShipMovementPacket), new MovementData() { phi = file.phi, theta = file.theta, radius = file.radius, tile = file.tile });
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ShipMovementPacket), new MovementData() { phi = file.phi, theta = file.theta, radius = file.radius, tile = file.Tile });
                     foreach(ServerClient gameClient in Network.connectedClients) 
                     {
                         if(gameClient != client)gameClient.listener.EnqueuePacket(packet);
                     }
                     if (Master.serverConfig.ExtremeVerboseLogs)
                     {
-                        Logger.Warning($"[SOS2]{file.owner}'s ship moved on tile {file.tile} with coordinate:\nPhi:{file.phi}, Theta:{file.theta}, Radius:{file.theta}");
+                        Logger.Warning($"[SOS2]{file.Owner}'s ship moved on tile {file.Tile} with coordinate:\nPhi:{file.phi}, Theta:{file.theta}, Radius:{file.theta}");
                     }
                 }
                 else
                 {
-                    Logger.Warning($"[SOS2]{client.userFile.Username} tried to move {file.owner}'s ship at tile {file.tile}");
+                    Logger.Warning($"[SOS2]{client.userFile.Username} tried to move {file.Owner}'s ship at tile {file.Tile}");
                 }
             } else 
             {

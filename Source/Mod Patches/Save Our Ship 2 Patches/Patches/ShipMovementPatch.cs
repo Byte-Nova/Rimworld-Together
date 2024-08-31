@@ -1,14 +1,7 @@
 ﻿using GameClient;
+using GameClient.SOS2;
 using HarmonyLib;
-using RT_SOS2Patches.Master;
 using SaveOurShip2;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Verse;
 using static Shared.CommonEnumerators;
 
 namespace RT_SOS2Patches
