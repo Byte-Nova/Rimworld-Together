@@ -50,10 +50,8 @@ namespace GameClient
 
         public static int GetSilverInMap(Map map)
         {
-            List<Thing> silverInMap = new List<Thing>();
             ResourceCounter resourceCounter = map.resourceCounter;
-            int totalSilver = resourceCounter.Silver;
-            return totalSilver;
+            return resourceCounter.Silver;;
         }
 
         public static int GetSilverInCaravan(Caravan caravan)
