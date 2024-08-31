@@ -94,6 +94,21 @@ namespace GameClient
             }
         }
 
+        public static void RemoveShip(int tile) 
+        {
+            if (ClientValues.verboseBool) Logger.Message($"[SOS2]Removing dummy ship on tile {tile}");
+            Type receiverType = Master.SOS2.GetTypes().FirstOrDefault(t => typeof(IRemoveShipFromTile).IsAssignableFrom(t));
+            if (receiverType != null)
+            {
+                object receiverInstance = Activator.CreateInstance(receiverType);
+                var methodInfo = receiverType.GetMethod("ReceiveData");
+                methodInfo.Invoke(receiverInstance, new object[] { tile });
+            }
+            else
+            {
+                Logger.Error("Could not find type for ReceiveData in RT_SOS2Patches for interface IRemoveShipFromTile. This should never happen");
+            }
+        }
         public static void MakeShipMove(Packet packet)
         {
             if (ClientValues.verboseBool) Logger.Message("[SOS2]Moving a ship");

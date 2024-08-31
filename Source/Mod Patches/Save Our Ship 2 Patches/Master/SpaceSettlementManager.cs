@@ -51,7 +51,7 @@ namespace RT_SOS2Patches
                 spacePlayerSettlement.Add(ship);
                 Find.WorldObjects.Add(ship);
             }
-            catch (Exception e) { GameClient.Logger.Error($"Failed to build ship at {settlementFile.tile}. Reason: {e}"); }
+            catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to build ship at {settlementFile.tile}. Reason: {e}"); }
         }
 
         public static void ClearAllSettlements()
@@ -98,15 +98,21 @@ namespace RT_SOS2Patches
                     spacePlayerSettlement.Add(ship);
                     Find.WorldObjects.Add(ship);
                 }
-                catch (Exception e) { GameClient.Logger.Error($"Failed to spawn ship at {data.settlementData.tile}. Reason: {e}"); }
+                catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to spawn ship at {data.settlementData.tile}. Reason: {e}"); }
             }
         }
-
-        public static void SetShipPosition(WorldObjectOrbitingShip ship, SpaceSettlementData data) 
+        public static void RemoveFromTile(int tile)
         {
-            ship.Radius = data.radius;
-            ship.Theta = data.theta;
-            ship.Phi = data.phi;
+            try
+            {
+                WorldObject toGet = Find.WorldObjects.AllWorldObjects.Where(x => x.Tile == tile).FirstOrDefault();
+                WorldObjectFakeOrbitingShip settlement = spacePlayerSettlement.Find(x => x.Tile == toGet.Tile);
+                if (settlement != null)
+                {
+                    spacePlayerSettlement.Remove(settlement);
+                }
+            }
+            catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to remove ship at {tile}. Reason: {e}"); }
         }
     }
 
@@ -121,10 +127,10 @@ namespace RT_SOS2Patches
             spaceSiteData.settlementData.isShip = true;
             spaceSiteData.settlementData.tile = map.Tile;
             spaceSiteData.stepMode = SettlementStepMode.Add;
-            spaceSiteData.phi = orbitShip.Phi;
             spaceSiteData.theta = orbitShip.Theta;
             spaceSiteData.radius = orbitShip.Radius;
-
+            orbitShip.Phi = UnityEngine.Random.Range(-20f, 20f);
+            spaceSiteData.phi = orbitShip.Phi;
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SpaceSettlementPacket), spaceSiteData);
             Network.listener.EnqueuePacket(packet);
 

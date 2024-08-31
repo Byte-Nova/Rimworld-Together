@@ -18,9 +18,7 @@ namespace RT_SOS2Patches.Master
         public static float theta;
         public static float radius;
         public static int tile = -1;
-        private static readonly int sleepTime = 5000;
-        private static readonly int activeTime = 250;
-        private static int currentTime = sleepTime;
+        private static readonly int sleepTime = 125;
         static MovementManager() 
         {
             Task.Run(PositionChecker);
@@ -29,15 +27,12 @@ namespace RT_SOS2Patches.Master
         {
             while (true)
             {
-                Thread.Sleep(currentTime);
+                Thread.Sleep(sleepTime);
                 if (shipMoved)
                 {
-                    currentTime = activeTime;
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ShipMovementPacket), new MovementData() { phi = phi, theta = theta, radius = radius, tile = tile });
                     Network.listener.EnqueuePacket(packet);
-                } else 
-                {
-                    currentTime = sleepTime;
+                    shipMoved = false;
                 }
             }
 

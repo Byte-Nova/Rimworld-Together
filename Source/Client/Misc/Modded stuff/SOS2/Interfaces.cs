@@ -35,4 +35,8 @@ namespace GameClient
     {
         void ReceiveData();
     }
+    public interface IRemoveShipFromTile
+    {
+        void ReceiveData(int i);
+    }
 }

@@ -12,17 +12,13 @@ namespace RT_SOS2Patches
     {
         public Task<bool> ReceiveDataAsync(Map data)
         {
-            Logger.Warning(data.Parent.Label + " SOS");
             ShipMapComp comp = data.GetComponent<ShipMapComp>();
             if (comp.IsPlayerShipMap == true)
             {
-                Logger.Warning("True");
-                PlayerSpaceSettlementHelper.SendSettlementToServer(data);
                 return Task.FromResult(true);
             }
             else
             {
-                Logger.Warning("False");
                 return Task.FromResult(false);
             }
         }
@@ -31,7 +27,7 @@ namespace RT_SOS2Patches
     {
         public void ReceiveData()
         {
-            Logger.Message("Clearing all SOS2 settlements");
+            Logger.Message("[SOS2]Clearing all SOS2 settlements");
             PlayerSpaceSettlementManager.ClearAllSettlements();
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GameClient
 {
-    public class WorldObjectFakeOrbitingShip : MapParent
+    public class WorldObjectFakeOrbitingShip : WorldObject
     {
         public override Vector3 DrawPos
         {

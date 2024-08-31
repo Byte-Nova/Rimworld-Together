@@ -19,7 +19,6 @@ namespace RT_SOS2Patches
         [HarmonyPostfix]
         public static void DoPost(WorldObjectOrbitingShip __instance)
         {
-            Logger.Warning("TickShip");
             if (Network.state == ClientNetworkState.Connected)
             {
                 if (__instance.orbitalMove != 0)
