@@ -18,10 +18,10 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
-                    CustomDifficultyManager.EnforceCustomDifficulty();
+                    DifficultyManager.EnforceCustomDifficulty();
 
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData.tile = __instance.CurrentMap.Tile;
+                    settlementData.settlementData.Tile = __instance.CurrentMap.Tile;
                     settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -47,7 +47,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     ClientValues.ManageDevOptions();
-                    CustomDifficultyManager.EnforceCustomDifficulty();
+                    DifficultyManager.EnforceCustomDifficulty();
 
                     PlanetManager.BuildPlanet();
                     ClientValues.ToggleReadyToPlay(true);
@@ -64,7 +64,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData.tile = caravan.Tile;
+                    settlementData.settlementData.Tile = caravan.Tile;
                     settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -84,7 +84,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData.tile = map.Tile;
+                    settlementData.settlementData.Tile = map.Tile;
                     settlementData.stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -104,7 +104,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData.tile = settlement.Tile;
+                    settlementData.settlementData.Tile = settlement.Tile;
                     settlementData.stepMode = SettlementStepMode.Remove;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
@@ -127,7 +127,7 @@ namespace GameClient
 
                     if (__instance.Faction == Faction.OfPlayer) return;
                     else if (FactionValues.playerFactions.Contains(__instance.Faction)) return;
-                    else NPCSettlementManager.RequestSettlementRemoval(__instance);
+                    else if (NPCSettlementManagerHelper.lastRemovedSettlement != __instance) NPCSettlementManager.RequestSettlementRemoval(__instance);
                 }
             }
         }
@@ -149,7 +149,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == ClientNetworkState.Connected) CustomDifficultyManager.EnforceCustomDifficulty();
+                if (Network.state == ClientNetworkState.Connected) DifficultyManager.EnforceCustomDifficulty();
                 else return;
             }
         }

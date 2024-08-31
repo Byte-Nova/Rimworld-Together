@@ -109,8 +109,12 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = __instance;
 
-                        if (SessionValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
-                        else FactionManager.OnFactionOpenOnNonMember();
+                        if (SessionValues.actionValues.EnableFactions)
+                        {
+                            if (SessionValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
+                            else FactionManager.OnFactionOpenOnNonMember();
+                        }
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                     }
                 };
 
@@ -137,10 +141,14 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = __instance;
 
-                        List<string> pawnNames = new List<string>();
-                        foreach (Pawn pawn in RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
-                        DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Aid menu", "Select the pawn you want to send for aid", 
-                            pawnNames.ToArray(), AidManager.SendAidRequest));
+                        if (SessionValues.actionValues.EnableAids)
+                        {
+                            List<string> pawnNames = new List<string>();
+                            foreach (Pawn pawn in RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
+                            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Aid menu", "Select the pawn you want to send for aid", 
+                                pawnNames.ToArray(), AidManager.SendAidRequest));
+                        }
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                     }
                 };
 
@@ -153,7 +161,8 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = __instance;
 
-                        EventManager.ShowEventMenu();
+                        if (SessionValues.actionValues.EnableEvents) EventManager.ShowEventMenu();
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                     }
                 };
 
@@ -178,8 +187,12 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = __instance;
 
-                        if (ServerValues.hasFaction) FactionManager.OnFactionOpen();
-                        else FactionManager.OnNoFactionOpen();
+                        if (SessionValues.actionValues.EnableFactions)
+                        {
+                            if (ServerValues.hasFaction) FactionManager.OnFactionOpen();
+                            else FactionManager.OnNoFactionOpen();
+                        }
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                     }
                 };
 
@@ -192,12 +205,12 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
 
-                        if (MarketManagerHelper.marketValues.IsEnabled)
+                        if (SessionValues.actionValues.EnableMarket)
                         {
                             if (RimworldManager.CheckIfPlayerHasConsoleInMap(SessionValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
                             else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("The market has been disabled in this server!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                     }
                 };
 
@@ -434,11 +447,15 @@ namespace GameClient
                         action = delegate
                         {
                             SessionValues.chosenCaravan = __instance;
+                            
+                            if (SessionValues.actionValues.EnableSites)
+                            {
+                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Personal Sites", "Available sites to build",
+                                    SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, null);
 
-                            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Personal Sites", "Available sites to build",
-                                SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, null);
-
-                            DialogManager.PushNewDialog(d1);
+                                DialogManager.PushNewDialog(d1);
+                            }
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };
 
@@ -451,10 +468,14 @@ namespace GameClient
                         {
                             SessionValues.chosenCaravan = __instance;
 
-                            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Faction Sites", "Available sites to build",
-                                SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, null);
+                            if (SessionValues.actionValues.EnableSites)
+                            {
+                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Faction Sites", "Available sites to build",
+                                    SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, null);
 
-                            DialogManager.PushNewDialog(d1);
+                                DialogManager.PushNewDialog(d1);
+                            }
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };
 
@@ -474,7 +495,8 @@ namespace GameClient
                             SessionValues.chosenCaravan = __instance;
                             SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
-                            SiteManager.OnSimpleSiteRequest();
+                            if (SessionValues.actionValues.EnableSites) SiteManager.OnSimpleSiteRequest();
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };
 
@@ -488,7 +510,8 @@ namespace GameClient
                             SessionValues.chosenCaravan = __instance;
                             SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
-                            SiteManager.RequestDestroySite();
+                            if (SessionValues.actionValues.EnableSites) SiteManager.RequestDestroySite();
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };
 
@@ -511,9 +534,14 @@ namespace GameClient
                     action = delegate
                     {
                         SessionValues.chosenCaravan = __instance;
-                        List<int> neighborTiles = new List<int>();
-                        Find.WorldGrid.GetTileNeighbors(SessionValues.chosenCaravan.Tile, neighborTiles);
-                        RoadManagerHelper.ChooseRoadDialogs(neighborTiles.ToArray(), Find.WorldGrid[__instance.Tile].Roads != null);
+
+                        if (SessionValues.actionValues.EnableRoads)
+                        {
+                            List<int> neighborTiles = new List<int>();
+                            Find.WorldGrid.GetTileNeighbors(SessionValues.chosenCaravan.Tile, neighborTiles);
+                            RoadManagerHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), Find.WorldGrid[__instance.Tile].Roads != null);
+                        }
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                     }
                 };
 

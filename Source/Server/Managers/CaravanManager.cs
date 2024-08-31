@@ -15,7 +15,7 @@ namespace GameServer
         {
             CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case CaravanStepMode.Add:
                     AddCaravan(client, data);
@@ -33,38 +33,38 @@ namespace GameServer
 
         private static void AddCaravan(ServerClient client, CaravanData data)
         {
-            data.caravanFile.ID = GetNewCaravanID();
-            RefreshCaravanTimer(data.caravanFile);
+            data._caravanFile.ID = GetNewCaravanID();
+            RefreshCaravanTimer(data._caravanFile);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
             NetworkHelper.SendPacketToAllClients(packet);
 
-            Logger.Message($"[Add Caravan] > {data.caravanFile.ID} > {client.userFile.Username}");
+            Logger.Message($"[Add Caravan] > {data._caravanFile.ID} > {client.userFile.Username}");
         }
 
         private static void RemoveCaravan(ServerClient client, CaravanData data)
         {
-            CaravanFile toRemove = GetCaravanFromID(client, data.caravanFile.ID);
+            CaravanFile toRemove = GetCaravanFromID(client, data._caravanFile.ID);
             if (toRemove == null) return;
             else
             {
-                DeleteCaravan(data.caravanFile);
+                DeleteCaravan(data._caravanFile);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 NetworkHelper.SendPacketToAllClients(packet);
 
-                Logger.Message($"[Remove Caravan] > {data.caravanFile.ID} > {client.userFile.Username}");
+                Logger.Message($"[Remove Caravan] > {data._caravanFile.ID} > {client.userFile.Username}");
             }
         }
 
         private static void MoveCaravan(ServerClient client, CaravanData data)
         {
-            CaravanFile toMove = GetCaravanFromID(client, data.caravanFile.ID);
+            CaravanFile toMove = GetCaravanFromID(client, data._caravanFile.ID);
             if (toMove == null) return;
             else
             {
-                UpdateCaravan(toMove, data.caravanFile);
-                RefreshCaravanTimer(data.caravanFile);
+                UpdateCaravan(toMove, data._caravanFile);
+                RefreshCaravanTimer(data._caravanFile);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                 NetworkHelper.SendPacketToAllClients(packet, client);
@@ -113,8 +113,8 @@ namespace GameServer
                     DeleteCaravan(caravans);
 
                     CaravanData data = new CaravanData();
-                    data.stepMode = CaravanStepMode.Remove;
-                    data.caravanFile = caravans;
+                    data._stepMode = CaravanStepMode.Remove;
+                    data._caravanFile = caravans;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
                     NetworkHelper.SendPacketToAllClients(packet);

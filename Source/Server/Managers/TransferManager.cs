@@ -9,7 +9,7 @@ namespace GameServer
         {
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
-            switch (transferData.stepMode)
+            switch (transferData._stepMode)
             {
                 case TransferStepMode.TradeRequest:
                     TransferThings(client, transferData);
@@ -39,17 +39,17 @@ namespace GameServer
 
         public static void TransferThings(ServerClient client, TransferData transferData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(transferData.toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send items to a settlement at tile {transferData.toTile}, but no settlement could be found");
+            if (!SettlementManager.CheckIfTileIsInUse(transferData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send items to a settlement at tile {transferData._toTile}, but no settlement could be found");
             else
             {
-                SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.toTile);
+                SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData._toTile);
 
-                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
+                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
                 {
-                    if (transferData.transferMode == TransferMode.Pod) ResponseShortcutManager.SendUnavailablePacket(client);
+                    if (transferData._transferMode == TransferMode.Pod) ResponseShortcutManager.SendUnavailablePacket(client);
                     else
                     {
-                        transferData.stepMode = TransferStepMode.Recover;
+                        transferData._stepMode = TransferStepMode.Recover;
                         Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
@@ -57,24 +57,24 @@ namespace GameServer
 
                 else
                 {
-                    if (transferData.transferMode == TransferMode.Gift)
+                    if (transferData._transferMode == TransferMode.Gift)
                     {
-                        transferData.stepMode = TransferStepMode.TradeAccept;
+                        transferData._stepMode = TransferStepMode.TradeAccept;
                         Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
 
-                    else if (transferData.transferMode == TransferMode.Pod)
+                    else if (transferData._transferMode == TransferMode.Pod)
                     {
-                        transferData.stepMode = TransferStepMode.TradeAccept;
+                        transferData._stepMode = TransferStepMode.TradeAccept;
                         Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                         client.listener.EnqueuePacket(rPacket);
                     }
 
-                    transferData.stepMode = TransferStepMode.TradeRequest;
+                    transferData._stepMode = TransferStepMode.TradeRequest;
                     string[] contents2 = new string[] { Serializer.SerializeToString(transferData) };
                     Packet rPacket2 = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
-                    UserManagerHelper.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket2);
+                    UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket2);
                 }
             }
         }
@@ -83,19 +83,19 @@ namespace GameServer
         {
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
-            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.fromTile);
-            if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
+            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData._fromTile);
+            if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
             {
-                transferData.stepMode = TransferStepMode.Recover;
+                transferData._stepMode = TransferStepMode.Recover;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
-                transferData.stepMode = TransferStepMode.TradeReject;
+                transferData._stepMode = TransferStepMode.TradeReject;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
-                UserManagerHelper.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
+                UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
             }
         }
 
@@ -103,19 +103,19 @@ namespace GameServer
         {
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
-            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.toTile);
-            if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
+            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData._toTile);
+            if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
             {
-                transferData.stepMode = TransferStepMode.TradeReReject;
+                transferData._stepMode = TransferStepMode.TradeReReject;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
-                transferData.stepMode = TransferStepMode.TradeReRequest;
+                transferData._stepMode = TransferStepMode.TradeReRequest;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
-                UserManagerHelper.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
+                UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
             }
         }
 
@@ -123,19 +123,19 @@ namespace GameServer
         {
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
             
-            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.fromTile);
-            if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
+            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData._fromTile);
+            if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
             {
-                transferData.stepMode = TransferStepMode.Recover;
+                transferData._stepMode = TransferStepMode.Recover;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
-                transferData.stepMode = TransferStepMode.TradeReAccept;
+                transferData._stepMode = TransferStepMode.TradeReAccept;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
-                UserManagerHelper.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
+                UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
             }
         }
 
@@ -143,19 +143,19 @@ namespace GameServer
         {
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
-            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData.fromTile);
-            if (!UserManagerHelper.CheckIfUserIsConnected(settlement.owner))
+            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(transferData._fromTile);
+            if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
             {
-                transferData.stepMode = TransferStepMode.Recover;
+                transferData._stepMode = TransferStepMode.Recover;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
                 client.listener.EnqueuePacket(rPacket);
             }
 
             else
             {
-                transferData.stepMode = TransferStepMode.TradeReReject;
+                transferData._stepMode = TransferStepMode.TradeReReject;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), transferData);
-                UserManagerHelper.GetConnectedClientFromUsername(settlement.owner).listener.EnqueuePacket(rPacket);
+                UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
             }
         }
     }

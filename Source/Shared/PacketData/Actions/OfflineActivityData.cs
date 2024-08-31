@@ -6,10 +6,10 @@ namespace Shared
     [Serializable]
     public class OfflineActivityData
     {
-        public OfflineActivityStepMode stepMode;
+        public OfflineActivityStepMode _stepMode;
 
-        public int targetTile;
+        public int _targetTile;
         
-        public MapData mapData;
+        public MapData _mapData;
     }
 }

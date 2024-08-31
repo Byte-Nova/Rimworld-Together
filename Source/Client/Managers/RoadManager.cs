@@ -16,14 +16,14 @@ namespace GameClient
         {
             RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case RoadStepMode.Add:
-                    AddRoadSimple(data.details.fromTile, data.details.toTile, RoadManagerHelper.GetRoadDefFromDefName(data.details.roadDefName), true);
+                    AddRoadSimple(data._details.fromTile, data._details.toTile, RoadManagerHelper.GetRoadDefFromDefName(data._details.roadDefName), true);
                     break;
 
                 case RoadStepMode.Remove:
-                    RemoveRoadSimple(data.details.fromTile, data.details.toTile, true);
+                    RemoveRoadSimple(data._details.fromTile, data._details.toTile, true);
                     break;
             }
         }
@@ -31,12 +31,12 @@ namespace GameClient
         public static void SendRoadAddRequest(int tileAID, int tileBID, RoadDef roadDef)
         {
             RoadData data = new RoadData();
-            data.stepMode = RoadStepMode.Add;
+            data._stepMode = RoadStepMode.Add;
 
-            data.details = new RoadDetails();
-            data.details.fromTile = tileAID;
-            data.details.toTile = tileBID;
-            data.details.roadDefName = roadDef.defName;
+            data._details = new RoadDetails();
+            data._details.fromTile = tileAID;
+            data._details.toTile = tileBID;
+            data._details.roadDefName = roadDef.defName;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -45,11 +45,11 @@ namespace GameClient
         public static void SendRoadRemoveRequest(int tileAID, int tileBID)
         {
             RoadData data = new RoadData();
-            data.stepMode = RoadStepMode.Remove;
+            data._stepMode = RoadStepMode.Remove;
 
-            data.details = new RoadDetails();
-            data.details.fromTile = tileAID;
-            data.details.toTile = tileBID;
+            data._details = new RoadDetails();
+            data._details.fromTile = tileAID;
+            data._details.toTile = tileBID;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -163,22 +163,22 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData) 
         {
-            tempRoadDetails = serverGlobalData.roads;
+            tempRoadDetails = serverGlobalData._roads;
 
             List<RoadDef> allowedRoads = new List<RoadDef>();
-            if (serverGlobalData.roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
-            if (serverGlobalData.roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
-            if (serverGlobalData.roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
-            if (serverGlobalData.roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
-            if (serverGlobalData.roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
+            if (serverGlobalData._roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
+            if (serverGlobalData._roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
+            if (serverGlobalData._roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
+            if (serverGlobalData._roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
+            if (serverGlobalData._roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
             allowedRoadDefs = allowedRoads.ToArray();
 
             List<int> allowedCosts = new List<int>();
-            if (serverGlobalData.roadValues.AllowDirtPath) allowedCosts.Add(serverGlobalData.roadValues.DirtPathCost);
-            if (serverGlobalData.roadValues.AllowDirtRoad) allowedCosts.Add(serverGlobalData.roadValues.DirtRoadCost);
-            if (serverGlobalData.roadValues.AllowStoneRoad) allowedCosts.Add(serverGlobalData.roadValues.StoneRoadCost);
-            if (serverGlobalData.roadValues.AllowAsphaltPath) allowedCosts.Add(serverGlobalData.roadValues.AsphaltPathCost);
-            if (serverGlobalData.roadValues.AllowAsphaltHighway) allowedCosts.Add(serverGlobalData.roadValues.AsphaltHighwayCost);
+            if (serverGlobalData._roadValues.AllowDirtPath) allowedCosts.Add(serverGlobalData._roadValues.DirtPathCost);
+            if (serverGlobalData._roadValues.AllowDirtRoad) allowedCosts.Add(serverGlobalData._roadValues.DirtRoadCost);
+            if (serverGlobalData._roadValues.AllowStoneRoad) allowedCosts.Add(serverGlobalData._roadValues.StoneRoadCost);
+            if (serverGlobalData._roadValues.AllowAsphaltPath) allowedCosts.Add(serverGlobalData._roadValues.AsphaltPathCost);
+            if (serverGlobalData._roadValues.AllowAsphaltHighway) allowedCosts.Add(serverGlobalData._roadValues.AsphaltHighwayCost);
             allowedRoadCosts = allowedCosts.ToArray();
         }
 
@@ -225,7 +225,7 @@ namespace GameClient
             return DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == defName);
         }
 
-        public static void ChooseRoadDialogs(int[] neighborTiles, bool hasRoadOnTile)
+        public static void ShowRoadChooseDialog(int[] neighborTiles, bool hasRoadOnTile)
         {
             if (hasRoadOnTile)
             {

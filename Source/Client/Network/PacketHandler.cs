@@ -156,13 +156,11 @@ namespace GameClient
         public static void ServerValuesPacket(Packet packet)
         {
             ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);
-            ServerValues.SetServerParameters(serverGlobalData);
-            ServerValues.SetAccountData(serverGlobalData);
+            ServerValues.SetValues(serverGlobalData);
+            SessionValues.SetValues(serverGlobalData);
             EventManagerHelper.SetValues(serverGlobalData);
-            SiteManager.SetSiteData(serverGlobalData);
-            MarketManagerHelper.SetValues(serverGlobalData);
-            OfflineActivityManager.SetSpyCost(serverGlobalData);
-            CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
+            SiteManager.SetValues(serverGlobalData);
+            DifficultyManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);
             NPCSettlementManagerHelper.SetValues(serverGlobalData);
             PlayerSiteManagerHelper.SetValues(serverGlobalData);

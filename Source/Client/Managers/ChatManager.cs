@@ -43,13 +43,13 @@ namespace GameClient
             ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
 
             bool hasBeenTagged = false;
-            if (ChatManagerHelper.GetMessageWords(chatData.message).Contains($"@{ClientValues.username}"))
+            if (ChatManagerHelper.GetMessageWords(chatData._message).Contains($"@{ClientValues.username}"))
             {
                 hasBeenTagged = true;
-                chatData.message = chatData.message.Replace($"@{ClientValues.username}", $"<color=red>@{ClientValues.username}</color>");
+                chatData._message = chatData._message.Replace($"@{ClientValues.username}", $"<color=red>@{ClientValues.username}</color>");
             }
 
-            AddMessageToChat(chatData.username, chatData.message, chatData.userColor, chatData.messageColor);
+            AddMessageToChat(chatData._username, chatData._message, chatData._usernameColor, chatData._messageColor);
 
             if (!ClientValues.isReadyToPlay) return;
 
@@ -65,79 +65,11 @@ namespace GameClient
             ChatSounds.OwnChatDing.PlayOneShotOnCamera();
     
             ChatData chatData = new ChatData();
-            chatData.username = ClientValues.username;
-            chatData.message = messageToSend;
+            chatData._username = ClientValues.username;
+            chatData._message = messageToSend;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
-            Network.listener?.EnqueuePacket(packet);
-        }
-
-        private static string ParseMessage(string message)
-        {
-            bool verifying = false;
-            string verification = "";
-            Stack<string> codeType = new Stack<string>();
-
-            message = Regex.Replace(message, @"\*\*\*(.+?)\*\*\*", "[b][i]$1[/][/]");
-            message = Regex.Replace(message, @"\*\*(.+?)\*\*", "[b]$1[/]");
-            message = Regex.Replace(message, @"\*(.+?)\*", "[i]$1[/]");
-            message = Regex.Replace(message, @"\&([a-fA-F0-9]{6})(.+?)\&\&", "[$1]$2[/]");
-
-            foreach (char c in message)
-            {
-                if (c == '[') verifying = true;
-
-                if (verifying)
-                {
-                    verification += c;
-                    if (c == ']') verifying = false;
-                }
-
-                if (verification != "" && !verifying)
-                {
-                    switch (verification.ToLower())
-                    {
-                        //Check for TAG CLOSING
-
-                        case "[/]":
-                            if (codeType.Count > 0) message = message.ReplaceFirst(verification, $"</{codeType.Pop()}>");
-                            verification = "";
-                            break;
-
-                        //Check for BOLD
-
-                        case "[b]":
-                            message = message.Replace(verification, "<b>");
-                            codeType.Push("b");
-                            verification = "";
-                            break;
-
-                        //Check for CURSIVE
-
-                        case "[i]":
-                            message = message.Replace(verification, "<i>");
-                            codeType.Push("i");
-                            verification = "";
-                            break;
-
-                        //Check for CUSTOM COLOR
-
-                        default:
-                            if (Regex.IsMatch(verification, @"\[[a-fA-F0-9]{6}\]"))
-                            {
-                                string verificationReplacement = verification.Replace("[", "<color=#").Replace("]", ">");
-                                message = message.Replace(verification, verificationReplacement);
-                                codeType.Push("color");
-                                verification = "";
-                            }
-                            break;
-                    }
-                }
-            }
-
-            while (codeType.Count > 0) message += $"</{codeType.Pop()}>";
-
-            return message;
+            Network.listener.EnqueuePacket(packet);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
@@ -145,7 +77,7 @@ namespace GameClient
             if (chatMessageCache.Count() > 100) chatMessageCache.RemoveAt(0);
 
             chatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerHelper.userColorDictionary[userColor]}{username}</color>: " +
-                $"{ChatManagerHelper.messageColorDictionary[messageColor]}{ParseMessage(message)}</color>");
+                $"{ChatManagerHelper.messageColorDictionary[messageColor]}{ChatManagerHelper.ParseMessage(message)}</color>");
 
             if (chatAutoscroll) ClientValues.ToggleChatScroll(true);
         }
@@ -225,6 +157,84 @@ namespace GameClient
         public static string[] GetMessageWords(string message)
         {
             return message.Split(' ');
+        }
+
+        public static string ParseMessage(string message, bool fromBroadcast = false)
+        {
+            bool verifying = false;
+            string verification = "";
+            Stack<string> codeType = new Stack<string>();
+
+            message = Regex.Replace(message, @"\*\*\*(.+?)\*\*\*", "[b][i]$1[/][/]");
+            message = Regex.Replace(message, @"\*\*(.+?)\*\*", "[b]$1[/]");
+            message = Regex.Replace(message, @"\*(.+?)\*", "[i]$1[/]");
+            message = Regex.Replace(message, @"\&([a-fA-F0-9]{6})(.+?)\&\&", "[$1]$2[/]");
+
+            foreach (char c in message)
+            {
+                if (c == '[') verifying = true;
+
+                if (verifying)
+                {
+                    verification += c;
+                    if (c == ']') verifying = false;
+                }
+
+                if (verification != "" && !verifying)
+                {
+                    switch (verification.ToLower())
+                    {
+                        //Check for TAG CLOSING
+
+                        case "[/]":
+                            if (codeType.Count > 0) message = message.ReplaceFirst(verification, $"</{codeType.Pop()}>");
+                            verification = "";
+                            break;
+
+                        //Check for BOLD
+
+                        case "[b]":
+                            message = message.Replace(verification, "<b>");
+                            codeType.Push("b");
+                            verification = "";
+                            break;
+
+                        //Check for CURSIVE
+
+                        case "[i]":
+                            message = message.Replace(verification, "<i>");
+                            codeType.Push("i");
+                            verification = "";
+                            break;
+
+                        //Check for NEW LINE (broadcasts only)
+                        
+                        case "[n]":
+                            if (fromBroadcast)
+                            {
+                                message = message.Replace(verification, "\n");
+                                verification = "";
+                            }
+                            break;
+
+                        //Check for CUSTOM COLOR
+
+                        default:
+                            if (Regex.IsMatch(verification, @"\[[a-fA-F0-9]{6}\]"))
+                            {
+                                string verificationReplacement = verification.Replace("[", "<color=#").Replace("]", ">");
+                                message = message.Replace(verification, verificationReplacement);
+                                codeType.Push("color");
+                                verification = "";
+                            }
+                            break;
+                    }
+                }
+            }
+
+            while (codeType.Count > 0) message += $"</{codeType.Pop()}>";
+
+            return message;
         }
     }
 

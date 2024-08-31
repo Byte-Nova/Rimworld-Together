@@ -29,8 +29,8 @@ namespace GameServer
         {
             ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
 
-            if (chatData.message.StartsWith("/")) ExecuteChatCommand(client, chatData.message.Split(' '));
-            else BroadcastChatMessage(client, chatData.message);
+            if (chatData._message.StartsWith("/")) ExecuteChatCommand(client, chatData._message.Split(' '));
+            else BroadcastChatMessage(client, chatData._message);
         }
 
         private static void ExecuteChatCommand(ServerClient client, string[] command)
@@ -59,10 +59,10 @@ namespace GameServer
             if (Master.serverConfig == null) return;
 
             ChatData chatData = new ChatData();
-            chatData.username = client.userFile.Username;
-            chatData.message = message;
-            chatData.userColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
-            chatData.messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
+            chatData._username = client.userFile.Username;
+            chatData._message = message;
+            chatData._usernameColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
+            chatData._messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
@@ -70,16 +70,16 @@ namespace GameServer
             WriteToLogs(client.userFile.Username, message);
             ChatManagerHelper.ShowChatInConsole(client.userFile.Username, message);
 
-            if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
+            if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData._username, message);
         }
 
         public static void BroadcastDiscordMessage(string client, string message)
         {
             ChatData chatData = new ChatData();
-            chatData.username = client;
-            chatData.message = message;
-            chatData.userColor = UserColor.Discord;
-            chatData.messageColor = MessageColor.Discord;
+            chatData._username = client;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Discord;
+            chatData._messageColor = MessageColor.Discord;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
@@ -91,27 +91,27 @@ namespace GameServer
         public static void BroadcastServerMessage(string message)
         {
             ChatData chatData = new ChatData();
-            chatData.username = systemName;
-            chatData.message = message;
-            chatData.userColor = UserColor.Console;
-            chatData.messageColor = MessageColor.Console;
+            chatData._username = systemName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Console;
+            chatData._messageColor = MessageColor.Console;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
 
-            if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData.username, message);
+            if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData._username, message);
 
-            WriteToLogs(chatData.username, message);
-            ChatManagerHelper.ShowChatInConsole(chatData.username, message);
+            WriteToLogs(chatData._username, message);
+            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
         }
 
         public static void SendSystemMessage(ServerClient client, string message)
         {
             ChatData chatData = new ChatData();
-            chatData.username = systemName;
-            chatData.message = message;
-            chatData.userColor = UserColor.Console;
-            chatData.messageColor = MessageColor.Console;
+            chatData._username = systemName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Console;
+            chatData._messageColor = MessageColor.Console;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
             client.listener.EnqueuePacket(packet);
@@ -237,21 +237,21 @@ namespace GameServer
                         else
                         {
                             ChatData chatData = new ChatData();
-                            chatData.message = message;
-                            chatData.userColor = UserColor.Private;
-                            chatData.messageColor = MessageColor.Private;
+                            chatData._message = message;
+                            chatData._usernameColor = UserColor.Private;
+                            chatData._messageColor = MessageColor.Private;
 
                             //Send to sender
-                            chatData.username = $">> {toFind.userFile.Username}";
+                            chatData._username = $">> {toFind.userFile.Username}";
                             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
                             targetClient.listener.EnqueuePacket(packet);
 
                             //Send to recipient
-                            chatData.username = $"<< {targetClient.userFile.Username}";
+                            chatData._username = $"<< {targetClient.userFile.Username}";
                             packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
                             toFind.listener.EnqueuePacket(packet);
 
-                            ChatManagerHelper.ShowChatInConsole(chatData.username, message);
+                            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
                         }
                     }
                 }

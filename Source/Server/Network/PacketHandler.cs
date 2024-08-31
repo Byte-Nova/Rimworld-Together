@@ -130,7 +130,7 @@ namespace GameServer
 
         public static void CustomDifficultyPacket(ServerClient client, Packet packet)
         {
-            CustomDifficultyManager.ParseDifficultyPacket(client, packet);
+            DifficultyManager.ParseDifficultyPacket(client, packet);
         }
 
         public static void ResetSavePacket(ServerClient client, Packet packet)

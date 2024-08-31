@@ -17,12 +17,35 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Discord.Net" Version="3.15.3" />
       <PackageReference Include="Mono.Nat" Version="3.0.4" />
       <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
+	    <Reference Include="Discord.Net.Commands">
+	      <HintPath>..\Shared\Assemblies\Discord.Net.Commands.dll</HintPath>
+	      <Private>True</Private>
+	    </Reference>
+	    <Reference Include="Discord.Net.Core">
+	      <HintPath>..\Shared\Assemblies\Discord.Net.Core.dll</HintPath>
+	      <Private>True</Private>
+	    </Reference>
+	    <Reference Include="Discord.Net.Interactions">
+	      <HintPath>..\Shared\Assemblies\Discord.Net.Interactions.dll</HintPath>
+	      <Private>True</Private>
+	    </Reference>
+	    <Reference Include="Discord.Net.Rest">
+	      <HintPath>..\Shared\Assemblies\Discord.Net.Rest.dll</HintPath>
+	      <Private>True</Private>
+	    </Reference>
+	    <Reference Include="Discord.Net.Webhook">
+	      <HintPath>..\Shared\Assemblies\Discord.Net.Webhook.dll</HintPath>
+	      <Private>True</Private>
+	    </Reference>
+	    <Reference Include="Discord.Net.WebSocket">
+	      <HintPath>..\Shared\Assemblies\Discord.Net.WebSocket.dll</HintPath>
+	      <Private>True</Private>
+	    </Reference>
 	    <Reference Include="Newtonsoft.Json">
 			<HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
 		</Reference>

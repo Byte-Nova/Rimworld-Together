@@ -19,7 +19,7 @@ namespace GameClient
         {
             List<Pawn> humans = new List<Pawn>();
 
-            for (int i = 0; i < transferData.humanDatas.Count(); i++) humans.Add(StringToHuman(transferData.humanDatas[i]));
+            for (int i = 0; i < transferData._humans.Count(); i++) humans.Add(StringToHuman(transferData._humans[i]));
 
             return humans.ToArray();
         }
@@ -713,7 +713,7 @@ namespace GameClient
         {
             List<Pawn> animals = new List<Pawn>();
 
-            for (int i = 0; i < transferData.animalDatas.Count(); i++) animals.Add(StringToAnimal(transferData.animalDatas[i]));
+            for (int i = 0; i < transferData._animals.Count(); i++) animals.Add(StringToAnimal(transferData._animals[i]));
 
             return animals.ToArray();
         }
@@ -971,9 +971,9 @@ namespace GameClient
         {
             List<Thing> things = new List<Thing>();
 
-            for (int i = 0; i < transferData.itemDatas.Count(); i++)
+            for (int i = 0; i < transferData._things.Count(); i++)
             {
-                Thing thingToAdd = StringToItem(transferData.itemDatas[i]);
+                Thing thingToAdd = StringToItem(transferData._things[i]);
                 if (thingToAdd != null) things.Add(thingToAdd);
             }
 
@@ -1348,13 +1348,13 @@ namespace GameClient
 
         private static void GetMapTile(MapData mapData, Map map)
         {
-            try { mapData.mapTile = map.Tile; }
+            try { mapData._mapTile = map.Tile; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
         private static void GetMapSize(MapData mapData, Map map)
         {
-            try { mapData.mapSize = ValueParser.IntVec3ToArray(map.Size); }
+            try { mapData._mapSize = ValueParser.IntVec3ToArray(map.Size); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
@@ -1380,9 +1380,9 @@ namespace GameClient
                     }
                 }
 
-                mapData.tileDefNames = tempTileDefNames.ToArray();
-                mapData.tileRoofDefNames = tempTileRoofDefNames.ToArray();
-                mapData.tilePollutions = tempTilePollutions.ToArray();
+                mapData._tileDefNames = tempTileDefNames.ToArray();
+                mapData._tileRoofDefNames = tempTileRoofDefNames.ToArray();
+                mapData._tilePollutions = tempTilePollutions.ToArray();
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1415,8 +1415,8 @@ namespace GameClient
                     }
                 }
 
-                mapData.factionThings = tempFactionThings.ToArray();
-                mapData.nonFactionThings = tempNonFactionThings.ToArray();
+                mapData._factionThings = tempFactionThings.ToArray();
+                mapData._nonFactionThings = tempNonFactionThings.ToArray();
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1439,8 +1439,8 @@ namespace GameClient
                     }
                 }
 
-                mapData.factionHumans = tempFactionHumans.ToArray();
-                mapData.nonFactionHumans = tempNonFactionHumans.ToArray();
+                mapData._factionHumans = tempFactionHumans.ToArray();
+                mapData._nonFactionHumans = tempNonFactionHumans.ToArray();
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1463,15 +1463,15 @@ namespace GameClient
                     }
                 }
 
-                mapData.factionAnimals = tempFactionAnimals.ToArray();
-                mapData.nonFactionAnimals = tempNonFactionAnimals.ToArray();
+                mapData._factionAnimals = tempFactionAnimals.ToArray();
+                mapData._nonFactionAnimals = tempNonFactionAnimals.ToArray();
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
         private static void GetMapWeather(MapData mapData, Map map)
         {
-            try { mapData.curWeatherDefName = map.weatherManager.curWeather.defName; }
+            try { mapData._curWeatherDefName = map.weatherManager.curWeather.defName; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
@@ -1479,7 +1479,7 @@ namespace GameClient
 
         private static Map SetEmptyMap(MapData mapData)
         {
-            IntVec3 mapSize = ValueParser.ArrayToIntVec3(mapData.mapSize);
+            IntVec3 mapSize = ValueParser.ArrayToIntVec3(mapData._mapSize);
 
             PlanetManagerHelper.SetOverrideGenerators();
             Map toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(SessionValues.chosenSettlement.Tile, mapSize, null);
@@ -1503,10 +1503,10 @@ namespace GameClient
                         try
                         {
                             TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.FirstOrDefault(fetch => fetch.defName ==
-                                mapData.tileDefNames[index]);
+                                mapData._tileDefNames[index]);
 
                             map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
-                            map.pollutionGrid.SetPolluted(vectorToCheck, mapData.tilePollutions[index]);
+                            map.pollutionGrid.SetPolluted(vectorToCheck, mapData._tilePollutions[index]);
 
                         }
                         catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -1514,7 +1514,7 @@ namespace GameClient
                         try
                         {
                             RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.FirstOrDefault(fetch => fetch.defName ==
-                                mapData.tileRoofDefNames[index]);
+                                mapData._tileRoofDefNames[index]);
 
                             map.roofGrid.SetRoof(vectorToCheck, roofToUse);
                         }
@@ -1537,7 +1537,7 @@ namespace GameClient
                 {
                     Random rnd = new Random();
 
-                    foreach (ThingData item in mapData.factionThings)
+                    foreach (ThingData item in mapData._factionThings)
                     {
                         try
                         {
@@ -1562,7 +1562,7 @@ namespace GameClient
 
                 if (nonFactionThings)
                 {
-                    foreach (ThingData item in mapData.nonFactionThings)
+                    foreach (ThingData item in mapData._nonFactionThings)
                     {
                         try
                         {
@@ -1594,7 +1594,7 @@ namespace GameClient
             {
                 if (factionHumans)
                 {
-                    foreach (HumanData pawn in mapData.factionHumans)
+                    foreach (HumanData pawn in mapData._factionHumans)
                     {
                         try
                         {
@@ -1609,7 +1609,7 @@ namespace GameClient
 
                 if (nonFactionHumans)
                 {
-                    foreach (HumanData pawn in mapData.nonFactionHumans)
+                    foreach (HumanData pawn in mapData._nonFactionHumans)
                     {
                         try
                         {
@@ -1629,7 +1629,7 @@ namespace GameClient
             {
                 if (factionAnimals)
                 {
-                    foreach (AnimalData pawn in mapData.factionAnimals)
+                    foreach (AnimalData pawn in mapData._factionAnimals)
                     {
                         try
                         {
@@ -1644,7 +1644,7 @@ namespace GameClient
 
                 if (nonFactionAnimals)
                 {
-                    foreach (AnimalData pawn in mapData.nonFactionAnimals)
+                    foreach (AnimalData pawn in mapData._nonFactionAnimals)
                     {
                         try
                         {
@@ -1662,7 +1662,7 @@ namespace GameClient
         {
             try
             {
-                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == mapData.curWeatherDefName);
+                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == mapData._curWeatherDefName);
                 map.weatherManager.TransitionTo(weatherDef);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }

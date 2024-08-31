@@ -5,34 +5,32 @@ namespace Shared
     [Serializable]
     public class ServerGlobalData
     {
-        public bool isClientAdmin;
+        public bool _isClientAdmin;
 
-        public bool AllowCustomScenarios;
+        public bool _isClientFactionMember;
 
-        public bool isClientFactionMember;
+        public SiteValuesFile _siteValues;
 
-        public SiteValuesFile siteValues;
+        public MarketValuesFile _marketValues;
 
-        public MarketValuesFile marketValues;
+        public EventFile[] _eventValues;
 
-        public EventFile[] eventValues;
+        public ActionValuesFile _actionValues;
 
-        public ActionValuesFile actionValues;
+        public RoadValuesFile _roadValues;
 
-        public RoadValuesFile roadValues;
+        public DifficultyValuesFile _difficultyValues;
 
-        public DifficultyValuesFile difficultyValues;
+        public PlanetNPCSettlement[] _npcSettlements;
 
-        public PlanetNPCSettlement[] npcSettlements;
+        public SettlementFile[] _playerSettlements;
 
-        public OnlineSettlementFile[] playerSettlements;
+        public SiteFile[] _playerSites;
 
-        public OnlineSiteFile[] playerSites;
+        public CaravanFile[] _playerCaravans;
 
-        public CaravanFile[] playerCaravans;
+        public RoadDetails[] _roads;
 
-        public RoadDetails[] roads;
-
-        public PollutionDetails[] pollutedTiles;
+        public PollutionDetails[] _pollutedTiles;
     }
 }

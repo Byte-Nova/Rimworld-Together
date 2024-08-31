@@ -26,6 +26,13 @@ namespace GameClient
         
         public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();
 
+        public static ActionValuesFile actionValues;
+
+        public static void SetValues(ServerGlobalData serverGlobalData)
+        {
+            actionValues = serverGlobalData._actionValues;
+        }
+
         public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }
 
         public static void ToggleOfflineFunction(OfflineActivityType type) { latestOfflineActivity = type; }

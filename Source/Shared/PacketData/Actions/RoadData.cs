@@ -6,8 +6,8 @@ namespace Shared
     [Serializable]
     public class RoadData
     {
-        public RoadStepMode stepMode;
+        public RoadStepMode _stepMode;
         
-        public RoadDetails details;
+        public RoadDetails _details;
     }
 }
