@@ -21,6 +21,8 @@ namespace Shared
 
         public bool EnableAids = true;
 
+        public bool EnableTrading = true;
+
         public bool EnableCustomScenarios = true;
 
         public int SpyCost = 100;

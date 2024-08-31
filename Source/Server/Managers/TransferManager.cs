@@ -7,6 +7,12 @@ namespace GameServer
     {
         public static void ParseTransferPacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableTrading)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
             switch (transferData._stepMode)

@@ -306,11 +306,20 @@ namespace GameClient
                         SessionValues.chosenSettlement = __instance;
                         SessionValues.chosenCaravan = caravan;
 
-                        if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.chosenCaravan))
+                        if (!SessionValues.actionValues.EnableTrading)
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
+                            DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                            return;
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+
+                        else
+                        {
+                            if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.chosenCaravan))
+                            {
+                                DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
+                            }
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                        }
                     }
                 };
 
