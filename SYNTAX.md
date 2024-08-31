@@ -9,16 +9,16 @@ Will always use "Pascal Case".
 public class ClassName
 ```
 
-### Interface class names:
-Will always start with "I" followed by "Pascal Case".
-```C#
-public interface IClassName
-```
-
 ### Class variables:
 Will always use "cammel Case".
 ```C#
 public string variableName
+```
+
+### Interface names:
+Will always start with "I" followed by "Pascal Case".
+```C#
+public interface IName
 ```
 
 ### Constant variables:
@@ -28,13 +28,25 @@ public const CONSTANTVARIABLE
 ```
 
 ### Packet specific variables that are sent through the network:
-Will always use starting underscore followed by "cammel Case" *[_variableName]*.
+Will always use starting underscore followed by "cammel Case".
 ```C#
 public int _variableName
 ```
 
 ### File specific variables that can be edited by players:
-Will always use "Pascal Case" *[VariableName]*.
+Will always use "Pascal Case".
 ```C#
 public float VariableName
+```
+
+### Functions that explicitly set values:
+Will always use "Pascal Case" and start with "Set" followed by an identified of the value.
+```C#
+public void SetExampleDouble()
+```
+
+### Functions that explicitly return values:
+Will always use "Pascal Case" and start with "Get" followed by an identifier of the value.
+```C#
+public double GetExampleDouble()
 ```

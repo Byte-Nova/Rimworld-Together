@@ -25,8 +25,6 @@ namespace GameServer
                 }
 
                 reader.Close();
-
-                return result.ToArray();
             }
             catch (Exception e) { Logger.Error($"Failed to parse mod at '{xmlPath}'. Exception: {e}"); }
 
