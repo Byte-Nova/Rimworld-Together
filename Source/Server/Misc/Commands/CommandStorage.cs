@@ -1,3 +1,4 @@
+using GameServer.Updater;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -8,6 +9,10 @@ namespace GameServer
         private static readonly ServerCommand helpCommand = new ServerCommand("help", 0,
             "Shows a list of all available commands to use",
             HelpCommandAction);
+
+        private static readonly ServerCommand updateCommand = new ServerCommand("update", 0,
+            "Update the server from a previous version. Do not use if not in need of update.",
+            UpdateCommandAction);
 
         private static readonly ServerCommand listCommand = new ServerCommand("list", 0,
             "Shows all connected players",
@@ -176,7 +181,8 @@ namespace GameServer
             resetWorldCommand,
             quitCommand,
             forceQuitCommand,
-            clearCommand
+            clearCommand,
+            updateCommand
         };
 
         private static void HelpCommandAction()
@@ -188,6 +194,11 @@ namespace GameServer
                 Logger.Warning($"{command.prefix} - {command.description}");
             }
             Logger.Title("----------------------------------------");
+        }
+
+        private static void UpdateCommandAction() 
+        {
+            Updater.Updater.Update();
         }
 
         private static void ListCommandAction()
