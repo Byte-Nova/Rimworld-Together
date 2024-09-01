@@ -30,18 +30,18 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
         }
 
-        public static void SendNoPowerPacket(ServerClient client, PlayerFactionData factionManifest)
+        public static void SendNoPowerPacket(ServerClient client, PlayerFactionData data)
         {
-            factionManifest.manifestMode = FactionManifestMode.NoPower;
+            data._stepMode = FactionStepMode.NoPower;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), data);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendWorkerInsidePacket(ServerClient client)
         {
             SiteData siteData = new SiteData();
-            siteData.siteStepMode = SiteStepMode.WorkerError;
+            siteData._stepMode = SiteStepMode.WorkerError;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             client.listener.EnqueuePacket(packet);

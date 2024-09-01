@@ -13,6 +13,7 @@ namespace GameClient
 
         private static readonly string[] ignoreLogPackets =
         {
+            nameof(KeepAlivePacket),
             nameof(OnlineActivityPacket)
         };
 
@@ -41,7 +42,7 @@ namespace GameClient
 
         public static void ChatPacket(Packet packet)
         {
-            ChatManager.ReceiveMessage(packet);
+            ChatManager.ParsePacket(packet);
         }
 
         public static void CommandPacket(Packet packet)
@@ -106,7 +107,7 @@ namespace GameClient
 
         public static void WorldPacket(Packet packet)
         {
-            WorldManager.ParseWorldPacket(packet);
+            PlanetGeneratorManager.ParseWorldPacket(packet);
         }
 
         public static void BreakPacket(Packet packet)
@@ -155,12 +156,11 @@ namespace GameClient
         public static void ServerValuesPacket(Packet packet)
         {
             ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);
-            ServerValues.SetServerParameters(serverGlobalData);
-            ServerValues.SetAccountData(serverGlobalData);
-            EventManager.SetEventPrices(serverGlobalData);
-            SiteManager.SetSiteData(serverGlobalData);
-            OfflineActivityManager.SetSpyCost(serverGlobalData);
-            CustomDifficultyManager.SetCustomDifficulty(serverGlobalData);
+            ServerValues.SetValues(serverGlobalData);
+            SessionValues.SetValues(serverGlobalData);
+            EventManagerHelper.SetValues(serverGlobalData);
+            SiteManager.SetValues(serverGlobalData);
+            DifficultyManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);
             NPCSettlementManagerHelper.SetValues(serverGlobalData);
             PlayerSiteManagerHelper.SetValues(serverGlobalData);
@@ -171,34 +171,16 @@ namespace GameClient
 
         //Empty functions
 
-        public static void KeepAlivePacket()
-        {
-            //EMPTY
-        }
+        public static void KeepAlivePacket(Packet packet) { }
 
-        public static void ResetSavePacket()
-        {
-            //Empty
-        }
+        public static void ResetSavePacket(Packet packet) { }
 
-        public static void MapPacket()
-        {
-            //Empty
-        }
+        public static void MapPacket(Packet packet) { }
 
-        public static void RegisterClientPacket()
-        {
-            //Empty
-        }
+        public static void RegisterClientPacket(Packet packet) { }
 
-        public static void LoginClientPacket()
-        {
-            //Empty
-        }
+        public static void LoginClientPacket(Packet packet) { }
 
-        public static void CustomDifficultyPacket()
-        {
-            //Empty
-        }
+        public static void CustomDifficultyPacket(Packet packet) { }
     }
 }

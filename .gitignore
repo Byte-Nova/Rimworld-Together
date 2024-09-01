@@ -409,3 +409,14 @@ Source/Client/HugsLib.dll
 
 # Container run volume
 Data
+
+# Custom local scripts
+Source/buildClient.sh
+Source/buildServer.sh
+Source/publishServer.sh
+
+# Builder variables
+Builders/RimWorldFolderPath.txt
+
+# Visual Studio Code
+Source/.vscode/*.*

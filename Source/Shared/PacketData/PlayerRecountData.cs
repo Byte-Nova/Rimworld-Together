@@ -6,8 +6,8 @@ namespace Shared
     [Serializable]
     public class PlayerRecountData
     {
-        public string currentPlayers;
+        public string _currentPlayers;
 
-        public List<string> currentPlayerNames = new List<string>();
+        public List<string> _currentPlayerNames = new List<string>();
     }
 }

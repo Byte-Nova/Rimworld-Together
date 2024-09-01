@@ -15,12 +15,15 @@ namespace GameClient
         //UI
 
         public override Vector2 InitialSize => new Vector2(600f, 512f);
+
         private Vector2 scrollPosition = Vector2.zero;
 
         public readonly string title = "Transfer Menu";
+
         public readonly string description = "Select the items you wish to transfer";
 
         private readonly float buttonX = 100f;
+
         private readonly float buttonY = 37f;
 
         private readonly int startAcceptingInputAtFrame;
@@ -30,12 +33,17 @@ namespace GameClient
         //Variables
 
         private readonly TransferLocation transferLocation;
+
         private List<Tradeable> cachedTradeables;
+
         private Pawn playerNegotiator;
 
         private readonly bool allowItems;
+
         private readonly bool allowAnimals;
+
         private readonly bool allowHumans;
+
         private readonly bool allowFreeThings;
 
         public RT_Dialog_TransferMenu(TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false, bool allowFreeThings = true)
@@ -122,13 +130,13 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = TransferMode.Gift;
+                    SessionValues.outgoingManifest._transferMode = TransferMode.Gift;
                     postChoosing();
                 };
 
                 Action r2 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = TransferMode.Trade;
+                    SessionValues.outgoingManifest._transferMode = TransferMode.Trade;
                     postChoosing();
                 };
 
@@ -145,7 +153,7 @@ namespace GameClient
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = TransferMode.Rebound;
+                    SessionValues.outgoingManifest._transferMode = TransferMode.Rebound;
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -156,11 +164,11 @@ namespace GameClient
                 DialogManager.PushNewDialog(d1);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 Action r1 = delegate
                 {
-                    ClientValues.outgoingManifest.transferMode = TransferMode.Market;
+                    SessionValues.outgoingManifest._transferMode = TransferMode.Market;
                     DialogManager.PopDialog(DialogManager.dialogItemListing);
                     postChoosing();
                 };
@@ -213,7 +221,7 @@ namespace GameClient
         {
             if (transferLocation == TransferLocation.Caravan)
             {
-                playerNegotiator = ClientValues.chosenCaravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+                playerNegotiator = SessionValues.chosenCaravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
@@ -221,9 +229,9 @@ namespace GameClient
                 playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
-                playerNegotiator = ClientValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+                playerNegotiator = SessionValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
         }
 
@@ -231,16 +239,16 @@ namespace GameClient
         {
             if (transferLocation == TransferLocation.Caravan)
             {
-                TradeSession.SetupWith(ClientValues.chosenSettlement, playerNegotiator, true);
+                TradeSession.SetupWith(SessionValues.chosenSettlement, playerNegotiator, true);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                TradeSession.SetupWith(Find.WorldObjects.SettlementAt(ClientValues.incomingManifest.fromTile), 
+                TradeSession.SetupWith(Find.WorldObjects.SettlementAt(SessionValues.incomingManifest._fromTile), 
                     playerNegotiator, true);
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
                 Settlement toUse = Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction));
                 TradeSession.SetupWith(toUse, playerNegotiator, true);
@@ -288,11 +296,11 @@ namespace GameClient
 
         public void GenerateTradeList()
         {
-            ClientValues.listToShowInTradesMenu = new List<Tradeable>();
+            SessionValues.listToShowInTradesMenu = new List<Tradeable>();
 
             if (transferLocation == TransferLocation.Caravan)
             {
-                List<Thing> caravanItems = CaravanInventoryUtility.AllInventoryItems(ClientValues.chosenCaravan);
+                List<Thing> caravanItems = CaravanInventoryUtility.AllInventoryItems(SessionValues.chosenCaravan);
 
                 if (allowItems)
                 {
@@ -303,14 +311,14 @@ namespace GameClient
                         {
                             Tradeable tradeable = new Tradeable();
                             tradeable.AddThing(thing, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
+                            SessionValues.listToShowInTradesMenu.Add(tradeable);
                         }
                     }
                 }
 
                 if (allowHumans || allowAnimals)
                 {
-                    foreach (Pawn pawn in ClientValues.chosenCaravan.pawns)
+                    foreach (Pawn pawn in SessionValues.chosenCaravan.pawns)
                     {
                         if (DeepScribeHelper.CheckIfThingIsHuman(pawn))
                         {
@@ -321,7 +329,7 @@ namespace GameClient
                                 {
                                     Tradeable tradeable = new Tradeable();
                                     tradeable.AddThing(pawn, Transactor.Colony);
-                                    ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                    SessionValues.listToShowInTradesMenu.Add(tradeable);
                                 }
                             }
                         }
@@ -332,7 +340,7 @@ namespace GameClient
                             {
                                 Tradeable tradeable = new Tradeable();
                                 tradeable.AddThing(pawn, Transactor.Colony);
-                                ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                SessionValues.listToShowInTradesMenu.Add(tradeable);
                             }
                         }
                     }
@@ -341,7 +349,7 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                Map map = Find.Maps.Find(x => x.Tile == ClientValues.incomingManifest.toTile);
+                Map map = Find.Maps.Find(x => x.Tile == SessionValues.incomingManifest._toTile);
 
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
@@ -366,7 +374,7 @@ namespace GameClient
                         {
                             Tradeable tradeable = new Tradeable();
                             tradeable.AddThing(thing, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
+                            SessionValues.listToShowInTradesMenu.Add(tradeable);
                         }
                     }
                 }
@@ -381,7 +389,7 @@ namespace GameClient
                             {
                                 Tradeable tradeable = new Tradeable();
                                 tradeable.AddThing(pawn, Transactor.Colony);
-                                ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                SessionValues.listToShowInTradesMenu.Add(tradeable);
                             }
                         }
 
@@ -394,7 +402,7 @@ namespace GameClient
                                 {
                                     Tradeable tradeable = new Tradeable();
                                     tradeable.AddThing(pawn, Transactor.Colony);
-                                    ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                    SessionValues.listToShowInTradesMenu.Add(tradeable);
                                 }
                             }
                         }
@@ -402,9 +410,9 @@ namespace GameClient
                 }
             }
 
-            else if (transferLocation == TransferLocation.World)
+            else if (transferLocation == TransferLocation.Market)
             {
-                Map map = ClientValues.chosenSettlement.Map;
+                Map map = SessionValues.chosenSettlement.Map;
 
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
@@ -430,7 +438,7 @@ namespace GameClient
                         {
                             Tradeable tradeable = new Tradeable();
                             tradeable.AddThing(thing, Transactor.Colony);
-                            ClientValues.listToShowInTradesMenu.Add(tradeable);
+                            SessionValues.listToShowInTradesMenu.Add(tradeable);
                         }
                     }
                 }
@@ -445,7 +453,7 @@ namespace GameClient
                             {
                                 Tradeable tradeable = new Tradeable();
                                 tradeable.AddThing(pawn, Transactor.Colony);
-                                ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                SessionValues.listToShowInTradesMenu.Add(tradeable);
                             }
                         }
 
@@ -458,7 +466,7 @@ namespace GameClient
                                 {
                                     Tradeable tradeable = new Tradeable();
                                     tradeable.AddThing(pawn, Transactor.Colony);
-                                    ClientValues.listToShowInTradesMenu.Add(tradeable);
+                                    SessionValues.listToShowInTradesMenu.Add(tradeable);
                                 }
                             }
                         }
@@ -469,12 +477,12 @@ namespace GameClient
 
         public void LoadAllAvailableTradeables()
         {
-            cachedTradeables = (from tr in ClientValues.listToShowInTradesMenu 
-                                orderby 0 descending select tr)
-                                .ThenBy((Tradeable tr) => tr.ThingDef.label)
-                                .ThenBy((Tradeable tr) => tr.AnyThing.TryGetQuality(out QualityCategory qc) ? ((int)qc) : (-1))
-                                .ThenBy((Tradeable tr) => tr.AnyThing.HitPoints)
-                                .ToList();
+            cachedTradeables = (from tr in SessionValues.listToShowInTradesMenu 
+                orderby 0 descending select tr)
+                .ThenBy((Tradeable tr) => tr.ThingDef.label)
+                .ThenBy((Tradeable tr) => tr.AnyThing.TryGetQuality(out QualityCategory qc) ? ((int)qc) : (-1))
+                .ThenBy((Tradeable tr) => tr.AnyThing.HitPoints)
+                .ToList();
         }
     }
 }

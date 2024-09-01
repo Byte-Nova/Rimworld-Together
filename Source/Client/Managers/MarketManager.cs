@@ -17,7 +17,7 @@ namespace GameClient
         {
             MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
-            switch (marketData.marketStepMode)
+            switch (marketData._stepMode)
             {
                 case MarketStepMode.Add:
                     ConfirmAddStock();
@@ -37,7 +37,7 @@ namespace GameClient
 
         public static void RequestAddStock()
         {
-            RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.World, true, false, false, false);
+            RT_Dialog_TransferMenu d1 = new RT_Dialog_TransferMenu(TransferLocation.Market, true, false, false, false);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -47,7 +47,7 @@ namespace GameClient
             DialogManager.dialogMarketListing = null;
 
             int silverToGet = 0;
-            Thing[] sentItems = TransferManagerHelper.GetAllTransferedItems(ClientValues.outgoingManifest);
+            Thing[] sentItems = TransferManagerHelper.GetAllTransferedItems(SessionValues.outgoingManifest);
             foreach (Thing thing in sentItems) silverToGet += (int)(thing.stackCount * thing.MarketValue * 0.5f);
 
             if (silverToGet > 0)
@@ -72,9 +72,9 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData data = new MarketData();
-            data.marketStepMode = MarketStepMode.Request;
-            data.indexToManage = marketIndex;
-            data.quantityToManage = quantity;
+            data._stepMode = MarketStepMode.Request;
+            data._indexToManage = marketIndex;
+            data._quantityToManage = quantity;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -85,11 +85,11 @@ namespace GameClient
             DialogManager.PopWaitDialog();
             DialogManager.dialogMarketListing = null;
 
-            Thing toReceive = ThingScribeManager.StringToItem(marketData.transferThings[0]);
+            Thing toReceive = ThingScribeManager.StringToItem(marketData._transferThings[0]);
             TransferManager.GetTransferedItemsToSettlement(new Thing[] { toReceive }, customMap: false);
 
             int silverToPay = (int)(toReceive.MarketValue * toReceive.stackCount);
-            RimworldManager.RemoveThingFromSettlement(ClientValues.chosenSettlement.Map, ThingDefOf.Silver, silverToPay);
+            RimworldManager.RemoveThingFromSettlement(SessionValues.chosenSettlement.Map, ThingDefOf.Silver, silverToPay);
 
             SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
         }
@@ -98,11 +98,11 @@ namespace GameClient
 
         public static void RequestReloadStock()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingData[] { }, ClientValues.chosenSettlement.Map, null, null));
+            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingData[] { }, SessionValues.chosenSettlement.Map, null, null));
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData marketData = new MarketData();
-            marketData.marketStepMode = MarketStepMode.Reload;
+            marketData._stepMode = MarketStepMode.Reload;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             Network.listener.EnqueuePacket(packet);
@@ -115,7 +115,7 @@ namespace GameClient
                 DialogManager.PopWaitDialog();
 
                 Action toDo = delegate { RequestGetStock(DialogManager.dialogMarketListingResult, int.Parse(DialogManager.dialog1ResultOne)); };
-                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(marketData.transferThings.ToArray(), ClientValues.chosenSettlement.Map, toDo, null);
+                RT_Dialog_MarketListing dialog = new RT_Dialog_MarketListing(marketData._transferThings.ToArray(), SessionValues.chosenSettlement.Map, toDo, null);
                 DialogManager.PushNewDialog(dialog);
             }
         }

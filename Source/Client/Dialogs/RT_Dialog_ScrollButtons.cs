@@ -8,20 +8,23 @@ namespace GameClient
 {
     public class RT_Dialog_ScrollButtons : Window
     {
-        public override Vector2 InitialSize => new Vector2(350f, 350f);
+        public override Vector2 InitialSize => new Vector2(500f, 350f);
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        private string title = "";
-        private string description = "";
+        private readonly string title = "";
 
-        private float buttonX = 250f;
-        private float buttonY = 38f;
+        private readonly string description = "";
 
-        private string[] buttonNames;
+        private readonly float buttonX = 250f;
 
-        private Action actionSelect;
-        private Action actionCancel;
+        private readonly float buttonY = 38f;
+
+        private readonly string[] buttonNames;
+
+        private readonly Action actionSelect;
+        
+        private readonly Action actionCancel;
             
         public RT_Dialog_ScrollButtons(string title, string description, string[] buttonNames, Action actionSelect, Action actionCancel)
         {

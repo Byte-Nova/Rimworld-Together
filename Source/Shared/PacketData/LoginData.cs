@@ -7,16 +7,16 @@ namespace Shared
     [Serializable]
     public class LoginData
     {
-        public string username;
+        public string _username;
 
-        public string password;
+        public string _password;
 
-        public LoginResponse tryResponse;
+        public string _version;
 
-        public string clientVersion;
+        public LoginResponse _tryResponse;
 
-        public List<string> runningMods = new List<string>();
+        public string[] _runningMods;
 
-        public List<string> extraDetails = new List<string>();
+        public List<string> _extraDetails = new List<string>();
     }
 }

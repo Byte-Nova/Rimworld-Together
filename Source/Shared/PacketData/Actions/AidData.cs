@@ -6,10 +6,12 @@ namespace Shared
     [Serializable]
     public class AidData
     {
-        public AidStepMode stepMode;
-        public int fromTile;
-        public int toTile;
+        public AidStepMode _stepMode;
+        
+        public int _fromTile;
 
-        public HumanData humanData;
+        public int _toTile;
+
+        public HumanData _humanData;
     }
 }

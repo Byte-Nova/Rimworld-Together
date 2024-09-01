@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using System.Collections;
+using Shared;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -13,10 +14,12 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { 
+                        MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
+
+                    foreach (string str in XmlParser.GetChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()))
+                        if (!Master.loadedRequiredMods.Contains(str))
                         {
                             Logger.Warning($"Loaded > '{modPath}'");
                             Master.loadedRequiredMods.Add(str.ToLower());
@@ -32,12 +35,14 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { 
+                        MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
+
+                    foreach (string str in XmlParser.GetChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()))
+                        if (!Master.loadedRequiredMods.Contains(str))
                         {
-                            if (!Master.loadedOptionalMods.Contains(str.ToLower()))
+                            if (!Master.loadedOptionalMods.Contains(str))
                             {
                                 Logger.Warning($"Loaded > '{modPath}'");
                                 Master.loadedOptionalMods.Add(str.ToLower());
@@ -54,12 +59,14 @@ namespace GameServer
             {
                 try
                 {
-                    string aboutFile = Directory.GetFiles(modPath, "About.xml", SearchOption.AllDirectories)[0];
-                    foreach (string str in XmlParser.ChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
+                    string aboutFile = Directory.GetFiles(modPath, "About.xml", new EnumerationOptions { 
+                        MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true })[0];
+
+                    foreach (string str in XmlParser.GetChildContentFromParent(aboutFile, "packageId", "ModMetaData"))
                     {
-                        if (!Master.loadedRequiredMods.Contains(str.ToLower()) && !Master.loadedOptionalMods.Contains(str.ToLower()))
+                        if (!Master.loadedRequiredMods.Contains(str) && !Master.loadedOptionalMods.Contains(str))
                         {
-                            if (!Master.loadedForbiddenMods.Contains(str.ToLower()))
+                            if (!Master.loadedForbiddenMods.Contains(str))
                             {
                                 Logger.Warning($"Loaded > '{modPath}'");
                                 Master.loadedForbiddenMods.Add(str.ToLower());
@@ -80,7 +87,7 @@ namespace GameServer
             {
                 foreach (string mod in Master.loadedRequiredMods)
                 {
-                    if (!loginData.runningMods.Contains(mod))
+                    if (!loginData._runningMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Required] > {mod}");
                         conflictingNames.Add(mod);
@@ -88,7 +95,7 @@ namespace GameServer
                     }
                 }
 
-                foreach (string mod in loginData.runningMods)
+                foreach (string mod in loginData._runningMods)
                 {
                     if (conflictingNames.Contains(mod)) continue;
                     if (!Master.loadedRequiredMods.Contains(mod) && !Master.loadedOptionalMods.Contains(mod))
@@ -105,7 +112,7 @@ namespace GameServer
                 foreach (string mod in Master.loadedForbiddenMods)
                 {
                     if (conflictingNames.Contains(mod)) continue;
-                    if (loginData.runningMods.Contains(mod))
+                    if (loginData._runningMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Forbidden] > {mod}");
                         conflictingNames.Add(mod);
@@ -115,7 +122,7 @@ namespace GameServer
 
             if (conflictingMods.Count == 0)
             {
-                client.userFile.UpdateMods(loginData.runningMods);
+                client.userFile.UpdateMods(loginData._runningMods);
                 return false;
             }
 
@@ -124,7 +131,7 @@ namespace GameServer
                 if (client.userFile.IsAdmin)
                 {
                     Logger.Warning($"[Mod bypass] > {client.userFile.Username}");
-                    client.userFile.UpdateMods(loginData.runningMods);
+                    client.userFile.UpdateMods(loginData._runningMods);
                     return false;
                 }
 

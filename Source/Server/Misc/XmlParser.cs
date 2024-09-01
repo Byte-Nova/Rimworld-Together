@@ -4,7 +4,7 @@ namespace GameServer
 {
     public static class XmlParser
     {
-        public static string[] ChildContentFromParent(string xmlPath, string elementName, string parentElement)
+        public static string[] GetChildContentFromParent(string xmlPath, string elementName, string parentElement)
         {
             List<string> result = new List<string>();
 
@@ -25,8 +25,6 @@ namespace GameServer
                 }
 
                 reader.Close();
-
-                return result.ToArray();
             }
             catch (Exception e) { Logger.Error($"Failed to parse mod at '{xmlPath}'. Exception: {e}"); }
 

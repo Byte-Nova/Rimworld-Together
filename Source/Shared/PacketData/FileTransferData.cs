@@ -5,11 +5,14 @@ namespace Shared
     [Serializable]
     public class FileTransferData
     {
-        public double fileSize;
-        public double fileParts;
-        public byte[] fileBytes;
+        public double _fileSize;
 
-        public bool isLastPart;
-        public int instructions = -1;
+        public double _fileParts;
+
+        public byte[] _fileBytes;
+
+        public bool _isLastPart;
+        
+        public int _instructions = -1;
     }
 }

@@ -16,8 +16,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Map map, Thing __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
             //Don't execute patch if is different than the online one
@@ -27,8 +27,8 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                    OnlineActivityData.activityStepMode = OnlineActivityStepMode.Create;
-                    OnlineActivityData.creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
+                    OnlineActivityData._stepMode = OnlineActivityStepMode.Create;
+                    OnlineActivityData._creationOrder = OnlineManagerHelper.CreateCreationOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -63,8 +63,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Thing __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
 
             //Don't execute patch if map doesn't contain the thing already
@@ -79,8 +79,8 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Destroy;
-                    onlineActivityData.destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
+                    onlineActivityData._stepMode = OnlineActivityStepMode.Destroy;
+                    onlineActivityData._destructionOrder = OnlineManagerHelper.CreateDestructionOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -118,8 +118,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Thing __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             //Don't execute patch if map doesn't contain the thing already
             bool shouldPatch = false;
@@ -132,8 +132,8 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Kill;
-                    onlineActivityData.killOrder = OnlineManagerHelper.CreateKillOrder(__instance);
+                    onlineActivityData._stepMode = OnlineActivityStepMode.Kill;
+                    onlineActivityData._killOrder = OnlineManagerHelper.CreateKillOrder(__instance);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -168,8 +168,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Job newJob, Pawn ___pawn)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             //Don't execute patch if map doesn't contain the pawn
             bool shouldPatch = false;
@@ -182,8 +182,8 @@ namespace GameClient
                 if (OnlineActivityManager.factionPawns.Contains(___pawn))
                 {
                     OnlineActivityData data = new OnlineActivityData();
-                    data.activityStepMode = OnlineActivityStepMode.Action;
-                    data.pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn, newJob);
+                    data._stepMode = OnlineActivityStepMode.Action;
+                    data._pawnOrder = OnlineManagerHelper.CreatePawnOrder(___pawn, newJob);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                     Network.listener.EnqueuePacket(packet);
@@ -214,8 +214,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(DamageInfo dinfo, Thing __instance, ref DamageWorker.DamageResult __result)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             if (!OnlineActivityManager.mapThings.Contains(__instance)) return true;
             else
@@ -223,8 +223,8 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Damage;
-                    onlineActivityData.damageOrder = OnlineManagerHelper.CreateDamageOrder(dinfo, __instance);
+                    onlineActivityData._stepMode = OnlineActivityStepMode.Damage;
+                    onlineActivityData._damageOrder = OnlineManagerHelper.CreateDamageOrder(dinfo, __instance);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -261,8 +261,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Hediff hediff, BodyPartRecord part, DamageInfo? dinfo, DamageWorker.DamageResult result, Pawn ___pawn)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             bool shouldPatch = false;
             if (OnlineActivityManager.factionPawns.Contains(___pawn)) shouldPatch = true;
@@ -274,8 +274,8 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
-                    onlineActivityData.hediffOrder = OnlineManagerHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Add);
+                    onlineActivityData._stepMode = OnlineActivityStepMode.Hediff;
+                    onlineActivityData._hediffOrder = OnlineManagerHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Add);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -306,8 +306,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Hediff hediff, Pawn ___pawn)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             bool shouldPatch = false;
             if (OnlineActivityManager.factionPawns.Contains(___pawn)) shouldPatch = true;
@@ -319,8 +319,8 @@ namespace GameClient
                 if (ClientValues.isRealTimeHost)
                 {
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.Hediff;
-                    onlineActivityData.hediffOrder = OnlineManagerHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Remove);
+                    onlineActivityData._stepMode = OnlineActivityStepMode.Hediff;
+                    onlineActivityData._hediffOrder = OnlineManagerHelper.CreateHediffOrder(hediff, ___pawn, OnlineActivityApplyMode.Remove);
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -351,14 +351,14 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(GameCondition cond)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             if (ClientValues.isRealTimeHost)
             {
                 OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                OnlineActivityData.activityStepMode = OnlineActivityStepMode.GameCondition;
-                OnlineActivityData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(cond, OnlineActivityApplyMode.Add);
+                OnlineActivityData._stepMode = OnlineActivityStepMode.GameCondition;
+                OnlineActivityData._gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(cond, OnlineActivityApplyMode.Add);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                 Network.listener.EnqueuePacket(packet);
@@ -388,14 +388,14 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(GameCondition __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             if (ClientValues.isRealTimeHost)
             {
                 OnlineActivityData OnlineActivityData = new OnlineActivityData();
-                OnlineActivityData.activityStepMode = OnlineActivityStepMode.GameCondition;
-                OnlineActivityData.gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(__instance, OnlineActivityApplyMode.Remove);
+                OnlineActivityData._stepMode = OnlineActivityStepMode.GameCondition;
+                OnlineActivityData._gameConditionOrder = OnlineManagerHelper.CreateGameConditionOrder(__instance, OnlineActivityApplyMode.Remove);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), OnlineActivityData);
                 Network.listener.EnqueuePacket(packet);
@@ -425,8 +425,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(TickManager __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
 
             if (ClientValues.isRealTimeHost)
             {
@@ -437,8 +437,8 @@ namespace GameClient
                     OnlineActivityManager.queuedTimeSpeed = (int)__instance.CurTimeSpeed;
 
                     OnlineActivityData onlineActivityData = new OnlineActivityData();
-                    onlineActivityData.activityStepMode = OnlineActivityStepMode.TimeSpeed;
-                    onlineActivityData.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
+                    onlineActivityData._stepMode = OnlineActivityStepMode.TimeSpeed;
+                    onlineActivityData._timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                     Network.listener.EnqueuePacket(packet);
@@ -465,8 +465,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(WeatherManager __instance, WeatherDef newWeather)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineActivityManager.onlineMap != __instance.map) return true;
 
             if (ClientValues.isRealTimeHost)
@@ -474,8 +474,8 @@ namespace GameClient
                 OnlineManagerHelper.EnqueueWeather(newWeather);
 
                 OnlineActivityData onlineActivityData = new OnlineActivityData();
-                onlineActivityData.activityStepMode = OnlineActivityStepMode.Weather;
-                onlineActivityData.weatherOrder = OnlineManagerHelper.CreateWeatherOrder(newWeather);
+                onlineActivityData._stepMode = OnlineActivityStepMode.Weather;
+                onlineActivityData._weatherOrder = OnlineManagerHelper.CreateWeatherOrder(newWeather);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
                 Network.listener.EnqueuePacket(packet);
@@ -507,8 +507,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Map map, Thing __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
@@ -531,8 +531,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Map map, Thing __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
@@ -555,8 +555,8 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(Map map, Thing __instance)
         {
-            if (Network.state == NetworkState.Disconnected) return true;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
             if (OnlineActivityManager.onlineMap != map) return true;
 
             if (ClientValues.isRealTimeHost) return true;
@@ -580,7 +580,7 @@ namespace GameClient
     //    public static bool DoPre(Map map)
     //    {
     //        if (Network.state == NetworkState.Disconnected) return true;
-    //        if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+    //        if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
     //        if (OnlineActivityManager.onlineMap != map) return true;
 
     //        if (ClientValues.isRealTimeHost) return false;
@@ -596,8 +596,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.state == NetworkState.Disconnected) return;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             OnlineActivityManager.RequestStopOnlineActivity();
         }
@@ -609,8 +609,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.state == NetworkState.Disconnected) return;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             OnlineActivityManager.RequestStopOnlineActivity();
         }
@@ -622,8 +622,8 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.state == NetworkState.Disconnected) return;
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (Network.state == ClientNetworkState.Disconnected) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             OnlineActivityManager.RequestStopOnlineActivity();
         }

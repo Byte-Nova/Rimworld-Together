@@ -13,7 +13,7 @@ namespace GameClient
         private Vector2 scrollPositionPlayers = Vector2.zero;
         private Vector2 scrollPositionChat = Vector2.zero;
 
-        private int startAcceptingInputAtFrame;
+        private readonly int startAcceptingInputAtFrame;
             
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 

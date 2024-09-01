@@ -28,7 +28,7 @@ namespace GameClient
         {
             OnlineActivityData data = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 
-            switch (data.activityStepMode)
+            switch (data._stepMode)
             {
                 case OnlineActivityStepMode.Request:
                     OnActivityRequest(data);
@@ -90,7 +90,17 @@ namespace GameClient
 
         public static void RequestOnlineActivity(OnlineActivityType toRequest)
         {
-            if (ClientValues.currentRealTimeEvent != OnlineActivityType.None) DialogManager.PushNewDialog(new RT_Dialog_Error("You are already in a real time activity!"));
+            if (!SessionValues.actionValues.EnableOnlineActivities)
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                return;
+            }
+
+            else if (SessionValues.currentRealTimeEvent != OnlineActivityType.None)
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("You are already in a real time activity!"));
+            }
+            
             else
             {
                 OnlineManagerHelper.ClearAllQueues();
@@ -99,12 +109,12 @@ namespace GameClient
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
 
                 OnlineActivityData data = new OnlineActivityData();
-                data.activityStepMode = OnlineActivityStepMode.Request;
-                data.activityType = toRequest;
-                data.fromTile = Find.AnyPlayerHomeMap.Tile;
-                data.targetTile = ClientValues.chosenSettlement.Tile;
-                data.caravanHumans = OnlineManagerHelper.GetActivityHumans();
-                data.caravanAnimals = OnlineManagerHelper.GetActivityAnimals();
+                data._stepMode = OnlineActivityStepMode.Request;
+                data._activityType = toRequest;
+                data._fromTile = Find.AnyPlayerHomeMap.Tile;
+                data._toTile = SessionValues.chosenSettlement.Tile;
+                data._caravanHumans = OnlineManagerHelper.GetActivityHumans();
+                data._caravanAnimals = OnlineManagerHelper.GetActivityAnimals();
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                 Network.listener.EnqueuePacket(packet);
@@ -114,7 +124,7 @@ namespace GameClient
         public static void RequestStopOnlineActivity()
         {
             OnlineActivityData data = new OnlineActivityData();
-            data.activityStepMode = OnlineActivityStepMode.Stop;
+            data._stepMode = OnlineActivityStepMode.Stop;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -131,17 +141,17 @@ namespace GameClient
             OnlineManagerHelper.EnterMap(activityData);
 
             //ALWAYS BEFORE RECEIVING ANY ORDERS BECAUSE THEY WILL BE IGNORED OTHERWISE
-            ClientValues.ToggleOnlineFunction(activityData.activityType);
+            SessionValues.ToggleOnlineFunction(activityData._activityType);
             OnlineManagerHelper.ReceiveTimeSpeedOrder(activityData);
         }
 
         private static void SendRequestedMap(OnlineActivityData data)
         {
-            data.activityStepMode = OnlineActivityStepMode.Accept;
-            data.mapHumans = OnlineManagerHelper.GetActivityHumans();
-            data.mapAnimals = OnlineManagerHelper.GetActivityAnimals();
-            data.timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
-            data.mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
+            data._stepMode = OnlineActivityStepMode.Accept;
+            data._mapHumans = OnlineManagerHelper.GetActivityHumans();
+            data._mapAnimals = OnlineManagerHelper.GetActivityAnimals();
+            data._timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
+            data._mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -154,7 +164,7 @@ namespace GameClient
                 OnlineManagerHelper.ClearAllQueues();
                 ClientValues.ToggleRealTimeHost(true);
 
-                onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == data.targetTile).Map;
+                onlineMap = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == data._toTile).Map;
                 factionPawns = OnlineManagerHelper.GetMapPawns().ToList();
                 mapThings = RimworldManager.GetThingsInMap(onlineMap).OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToList();
 
@@ -163,19 +173,19 @@ namespace GameClient
                 OnlineManagerHelper.SpawnMapPawns(data);
 
                 //ALWAYS LAST TO MAKE SURE WE DON'T SEND NON-NEEDED DETAILS BEFORE EVERYTHING IS READY
-                ClientValues.ToggleOnlineFunction(data.activityType);
+                SessionValues.ToggleOnlineFunction(data._activityType);
             };
 
             Action r2 = delegate
             {
-                data.activityStepMode = OnlineActivityStepMode.Reject;
+                data._stepMode = OnlineActivityStepMode.Reject;
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
                 Network.listener.EnqueuePacket(packet);
             };
 
             RT_Dialog_YesNo promptDialog = null;
-            if (data.activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo($"Visited by {data.otherPlayerName}, accept?", r1, r2);
-            else if (data.activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo($"Raided by {data.otherPlayerName}, accept?", r1, r2);
+            if (data._activityType == OnlineActivityType.Visit) promptDialog = new RT_Dialog_YesNo($"Visited by {data._engagerName}, accept?", r1, r2);
+            else if (data._activityType == OnlineActivityType.Raid) promptDialog = new RT_Dialog_YesNo($"Raided by {data._engagerName}, accept?", r1, r2);
 
             DialogManager.PushNewDialog(promptDialog);
         }
@@ -184,9 +194,9 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            Action r1 = delegate { JoinMap(visitData.mapData, visitData); };
+            Action r1 = delegate { JoinMap(visitData._mapData, visitData); };
             Action r2 = delegate { RequestStopOnlineActivity(); };
-            if (!ModManager.CheckIfMapHasConflictingMods(visitData.mapData)) r1.Invoke();
+            if (!ModManager.CheckIfMapHasConflictingMods(visitData._mapData)) r1.Invoke();
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, r2));
         }
 
@@ -204,7 +214,7 @@ namespace GameClient
 
         private static void OnActivityStop()
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
             else
             {
                 foreach (Pawn pawn in nonFactionPawns.ToArray())
@@ -218,7 +228,7 @@ namespace GameClient
 
                 ClientValues.ToggleRealTimeHost(false);
 
-                ClientValues.ToggleOnlineFunction(OnlineActivityType.None);
+                SessionValues.ToggleOnlineFunction(OnlineActivityType.None);
 
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Online activity ended"));
             }
@@ -384,26 +394,26 @@ namespace GameClient
 
         public static void ReceivePawnOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             try
             {
-                Pawn pawn = OnlineActivityManager.nonFactionPawns[data.pawnOrder.pawnIndex];
-                IntVec3 jobPositionStart = ValueParser.ArrayToIntVec3(data.pawnOrder.updatedPosition);
-                Rot4 jobRotationStart = ValueParser.IntToRot4(data.pawnOrder.updatedRotation);
+                Pawn pawn = OnlineActivityManager.nonFactionPawns[data._pawnOrder.pawnIndex];
+                IntVec3 jobPositionStart = ValueParser.ArrayToIntVec3(data._pawnOrder.updatedPosition);
+                Rot4 jobRotationStart = ValueParser.IntToRot4(data._pawnOrder.updatedRotation);
                 ChangePawnTransform(pawn, jobPositionStart, jobRotationStart);
-                SetPawnDraftState(pawn, data.pawnOrder.isDrafted);
+                SetPawnDraftState(pawn, data._pawnOrder.isDrafted);
 
-                JobDef jobDef = RimworldManager.GetJobFromDef(data.pawnOrder.defName);
-                LocalTargetInfo targetA = SetActionTargetsFromString(data.pawnOrder, 0);
-                LocalTargetInfo targetB = SetActionTargetsFromString(data.pawnOrder, 1);
-                LocalTargetInfo targetC = SetActionTargetsFromString(data.pawnOrder, 2);
-                LocalTargetInfo[] targetQueueA = SetQueuedActionTargetsFromString(data.pawnOrder, 0);
-                LocalTargetInfo[] targetQueueB = SetQueuedActionTargetsFromString(data.pawnOrder, 1);
+                JobDef jobDef = RimworldManager.GetJobFromDef(data._pawnOrder.defName);
+                LocalTargetInfo targetA = SetActionTargetsFromString(data._pawnOrder, 0);
+                LocalTargetInfo targetB = SetActionTargetsFromString(data._pawnOrder, 1);
+                LocalTargetInfo targetC = SetActionTargetsFromString(data._pawnOrder, 2);
+                LocalTargetInfo[] targetQueueA = SetQueuedActionTargetsFromString(data._pawnOrder, 0);
+                LocalTargetInfo[] targetQueueB = SetQueuedActionTargetsFromString(data._pawnOrder, 1);
 
                 Job newJob = RimworldManager.SetJobFromDef(jobDef, targetA, targetB, targetC);
-                newJob.count = data.pawnOrder.targetCount;
-                if (data.pawnOrder.queueTargetCounts != null) newJob.countQueue = data.pawnOrder.queueTargetCounts.ToList();
+                newJob.count = data._pawnOrder.targetCount;
+                if (data._pawnOrder.queueTargetCounts != null) newJob.countQueue = data._pawnOrder.queueTargetCounts.ToList();
 
                 foreach (LocalTargetInfo target in targetQueueA) newJob.AddQueuedTarget(TargetIndex.A, target);
                 foreach (LocalTargetInfo target in targetQueueB) newJob.AddQueuedTarget(TargetIndex.B, target);
@@ -412,47 +422,47 @@ namespace GameClient
                 ChangeCurrentJob(pawn, newJob);
                 ChangeJobSpeedIfNeeded(newJob);
             }
-            catch { Logger.Warning($"Couldn't set order for pawn with index '{data.pawnOrder.pawnIndex}'"); }
+            catch { Logger.Warning($"Couldn't set order for pawn with index '{data._pawnOrder.pawnIndex}'"); }
         }
 
         //This function doesn't take into account non-host thing creation right now, handle with care
 
         public static void ReceiveCreationOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             Thing toSpawn;
-            if (data.creationOrder.creationType == CreationType.Human)
+            if (data._creationOrder.creationType == CreationType.Human)
             {
-                HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(data.creationOrder.dataToCreate);
+                HumanData humanData = Serializer.ConvertBytesToObject<HumanData>(data._creationOrder.dataToCreate);
                 toSpawn = HumanScribeManager.StringToHuman(humanData);
                 toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
-            else if (data.creationOrder.creationType == CreationType.Animal)
+            else if (data._creationOrder.creationType == CreationType.Animal)
             {
-                AnimalData animalData = Serializer.ConvertBytesToObject<AnimalData>(data.creationOrder.dataToCreate);
+                AnimalData animalData = Serializer.ConvertBytesToObject<AnimalData>(data._creationOrder.dataToCreate);
                 toSpawn = AnimalScribeManager.StringToAnimal(animalData);
                 toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else
             {
-                ThingData thingData = Serializer.ConvertBytesToObject<ThingData>(data.creationOrder.dataToCreate);
+                ThingData thingData = Serializer.ConvertBytesToObject<ThingData>(data._creationOrder.dataToCreate);
                 toSpawn = ThingScribeManager.StringToItem(thingData);
             }
 
             EnqueueThing(toSpawn);
 
             //Request
-            RimworldManager.PlaceThingIntoMap(toSpawn, OnlineActivityManager.onlineMap);
+            RimworldManager.PlaceThingIntoMap(toSpawn, OnlineActivityManager.onlineMap, ThingPlaceMode.Direct, false);
         }
 
         public static void ReceiveDestructionOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
-            Thing toDestroy = OnlineActivityManager.mapThings[data.destructionOrder.indexToDestroy];
+            Thing toDestroy = OnlineActivityManager.mapThings[data._destructionOrder.indexToDestroy];
 
             //Request
             if (ClientValues.isRealTimeHost) toDestroy.Destroy(DestroyMode.Deconstruct);
@@ -465,20 +475,20 @@ namespace GameClient
 
         public static void ReceiveDamageOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             try
             {
                 BodyPartRecord bodyPartRecord = new BodyPartRecord();
-                bodyPartRecord.def = DefDatabase<BodyPartDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data.damageOrder.hitPartDefName);
+                bodyPartRecord.def = DefDatabase<BodyPartDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data._damageOrder.hitPartDefName);
 
-                DamageDef damageDef = DefDatabase<DamageDef>.AllDefs.First(fetch => fetch.defName == data.damageOrder.defName);
-                ThingDef thingDef = DefDatabase<ThingDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data.damageOrder.weaponDefName);
+                DamageDef damageDef = DefDatabase<DamageDef>.AllDefs.First(fetch => fetch.defName == data._damageOrder.defName);
+                ThingDef thingDef = DefDatabase<ThingDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data._damageOrder.weaponDefName);
 
-                DamageInfo damageInfo = new DamageInfo(damageDef, data.damageOrder.damageAmount, data.damageOrder.armorPenetration, -1, null, bodyPartRecord, thingDef);
-                damageInfo.SetIgnoreArmor(data.damageOrder.ignoreArmor);
+                DamageInfo damageInfo = new DamageInfo(damageDef, data._damageOrder.damageAmount, data._damageOrder.armorPenetration, -1, null, bodyPartRecord, thingDef);
+                damageInfo.SetIgnoreArmor(data._damageOrder.ignoreArmor);
 
-                Thing toApplyTo = OnlineActivityManager.mapThings[data.damageOrder.targetIndex];
+                Thing toApplyTo = OnlineActivityManager.mapThings[data._damageOrder.targetIndex];
 
                 EnqueueThing(toApplyTo);
 
@@ -490,33 +500,33 @@ namespace GameClient
 
         public static void ReceiveHediffOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             try
             {
                 Pawn toTarget = null;
-                if (data.hediffOrder.pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineActivityManager.factionPawns[data.hediffOrder.hediffTargetIndex];
-                else toTarget = OnlineActivityManager.nonFactionPawns[data.hediffOrder.hediffTargetIndex];
+                if (data._hediffOrder.pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineActivityManager.factionPawns[data._hediffOrder.hediffTargetIndex];
+                else toTarget = OnlineActivityManager.nonFactionPawns[data._hediffOrder.hediffTargetIndex];
 
                 EnqueueThing(toTarget);
 
-                BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data.hediffOrder.hediffPartDefName);
+                BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data._hediffOrder.hediffPartDefName);
 
-                if (data.hediffOrder.applyMode == OnlineActivityApplyMode.Add)
+                if (data._hediffOrder.applyMode == OnlineActivityApplyMode.Add)
                 {
-                    HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.First(fetch => fetch.defName == data.hediffOrder.hediffDefName);
+                    HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.First(fetch => fetch.defName == data._hediffOrder.hediffDefName);
                     Hediff toMake = HediffMaker.MakeHediff(hediffDef, toTarget, bodyPartRecord);
                     
-                    if (data.hediffOrder.hediffWeaponDefName != null)
+                    if (data._hediffOrder.hediffWeaponDefName != null)
                     {
-                        ThingDef source = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == data.hediffOrder.hediffWeaponDefName);
+                        ThingDef source = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == data._hediffOrder.hediffWeaponDefName);
                         toMake.sourceDef = source;
                         toMake.sourceLabel = source.label;
                     }
 
-                    toMake.Severity = data.hediffOrder.hediffSeverity;
+                    toMake.Severity = data._hediffOrder.hediffSeverity;
 
-                    if (data.hediffOrder.hediffPermanent)
+                    if (data._hediffOrder.hediffPermanent)
                     {
                         HediffComp_GetsPermanent hediffComp = toMake.TryGetComp<HediffComp_GetsPermanent>();
                         hediffComp.IsPermanent = true;
@@ -528,7 +538,7 @@ namespace GameClient
 
                 else
                 {
-                    Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data.hediffOrder.hediffDefName &&
+                    Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data._hediffOrder.hediffDefName &&
                         fetch.Part.def.defName == bodyPartRecord.def.defName);
 
                     //Request
@@ -540,29 +550,29 @@ namespace GameClient
 
         public static void ReceiveTimeSpeedOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             try
             {
-                EnqueueTimeSpeed(data.timeSpeedOrder.targetTimeSpeed);
-                RimworldManager.SetGameTicks(data.timeSpeedOrder.targetMapTicks);
+                EnqueueTimeSpeed(data._timeSpeedOrder.targetTimeSpeed);
+                RimworldManager.SetGameTicks(data._timeSpeedOrder.targetMapTicks);
             }
             catch (Exception e) { Logger.Warning($"Couldn't apply time speed order. Reason: {e}"); }
         }
 
         public static void ReceiveGameConditionOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             try
             {
                 GameCondition gameCondition = null;
 
-                if (data.gameConditionOrder.applyMode == OnlineActivityApplyMode.Add)
+                if (data._gameConditionOrder.applyMode == OnlineActivityApplyMode.Add)
                 {
-                    GameConditionDef conditionDef = DefDatabase<GameConditionDef>.AllDefs.First(fetch => fetch.defName == data.gameConditionOrder.conditionDefName);
+                    GameConditionDef conditionDef = DefDatabase<GameConditionDef>.AllDefs.First(fetch => fetch.defName == data._gameConditionOrder.conditionDefName);
                     gameCondition = GameConditionMaker.MakeCondition(conditionDef);
-                    gameCondition.Duration = data.gameConditionOrder.duration;
+                    gameCondition.Duration = data._gameConditionOrder.duration;
                     EnqueueGameCondition(gameCondition);
 
                     //Request
@@ -571,7 +581,7 @@ namespace GameClient
 
                 else
                 {
-                    gameCondition = Find.World.gameConditionManager.ActiveConditions.First(fetch => fetch.def.defName == data.gameConditionOrder.conditionDefName);
+                    gameCondition = Find.World.gameConditionManager.ActiveConditions.First(fetch => fetch.def.defName == data._gameConditionOrder.conditionDefName);
                     EnqueueGameCondition(gameCondition);
 
                     //Request
@@ -583,11 +593,11 @@ namespace GameClient
 
         public static void ReceiveWeatherOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             try
             {
-                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == data.weatherOrder.weatherDefName);
+                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == data._weatherOrder.weatherDefName);
 
                 EnqueueWeather(weatherDef);
 
@@ -599,13 +609,13 @@ namespace GameClient
 
         public static void ReceiveKillOrder(OnlineActivityData data)
         {
-            if (ClientValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
 
             try
             {
                 Pawn toTarget = null;
-                if (data.killOrder.pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineActivityManager.factionPawns[data.killOrder.killTargetIndex];
-                else toTarget = OnlineActivityManager.nonFactionPawns[data.killOrder.killTargetIndex];
+                if (data._killOrder.pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineActivityManager.factionPawns[data._killOrder.killTargetIndex];
+                else toTarget = OnlineActivityManager.nonFactionPawns[data._killOrder.killTargetIndex];
 
                 EnqueueThing(toTarget);
 
@@ -1040,8 +1050,8 @@ namespace GameClient
                 OnlineActivityManager.nonFactionPawns = GetCaravanPawns(activityData).ToList();
                 foreach (Pawn pawn in OnlineActivityManager.nonFactionPawns)
                 {
-                    if (activityData.activityType == OnlineActivityType.Visit) pawn.SetFaction(FactionValues.allyPlayer);
-                    else if (activityData.activityType == OnlineActivityType.Raid) pawn.SetFaction(FactionValues.enemyPlayer);
+                    if (activityData._activityType == OnlineActivityType.Visit) pawn.SetFaction(FactionValues.allyPlayer);
+                    else if (activityData._activityType == OnlineActivityType.Raid) pawn.SetFaction(FactionValues.enemyPlayer);
 
                     //Initial position and rotation left to default since caravan doesn't have it stored
                     GenSpawn.Spawn(pawn, OnlineActivityManager.onlineMap.Center, OnlineActivityManager.onlineMap, Rot4.Random);
@@ -1053,8 +1063,8 @@ namespace GameClient
                 OnlineActivityManager.nonFactionPawns = GetMapPawns(activityData).ToList();
                 foreach (Pawn pawn in OnlineActivityManager.nonFactionPawns)
                 {
-                    if (activityData.activityType == OnlineActivityType.Visit) pawn.SetFaction(FactionValues.allyPlayer);
-                    else if (activityData.activityType == OnlineActivityType.Raid) pawn.SetFaction(FactionValues.enemyPlayer);
+                    if (activityData._activityType == OnlineActivityType.Visit) pawn.SetFaction(FactionValues.allyPlayer);
+                    else if (activityData._activityType == OnlineActivityType.Raid) pawn.SetFaction(FactionValues.enemyPlayer);
 
                     //Initial position and rotation grabbed from online details
                     GenSpawn.Spawn(pawn, pawn.Position, OnlineActivityManager.onlineMap, pawn.Rotation);
@@ -1087,13 +1097,13 @@ namespace GameClient
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
-                foreach (HumanData humanData in activityData.mapHumans)
+                foreach (HumanData humanData in activityData._mapHumans)
                 {
                     Pawn human = HumanScribeManager.StringToHuman(humanData);
                     pawnList.Add(human);
                 }
 
-                foreach (AnimalData animalData in activityData.mapAnimals)
+                foreach (AnimalData animalData in activityData._mapAnimals)
                 {
                     Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
                     pawnList.Add(animal);
@@ -1109,13 +1119,13 @@ namespace GameClient
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
-                foreach (HumanData humanData in activityData.caravanHumans)
+                foreach (HumanData humanData in activityData._caravanHumans)
                 {
                     Pawn human = HumanScribeManager.StringToHuman(humanData);
                     pawnList.Add(human);
                 }
 
-                foreach (AnimalData animalData in activityData.caravanAnimals)
+                foreach (AnimalData animalData in activityData._caravanAnimals)
                 {
                     Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
                     pawnList.Add(animal);
@@ -1126,12 +1136,12 @@ namespace GameClient
 
             else
             {
-                List<Pawn> caravanHumans = ClientValues.chosenCaravan.PawnsListForReading
+                List<Pawn> caravanHumans = SessionValues.chosenCaravan.PawnsListForReading
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<Pawn> caravanAnimals = ClientValues.chosenCaravan.PawnsListForReading
+                List<Pawn> caravanAnimals = SessionValues.chosenCaravan.PawnsListForReading
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -1165,7 +1175,7 @@ namespace GameClient
 
             else
             {
-                List<Pawn> caravanHumans = ClientValues.chosenCaravan.PawnsListForReading
+                List<Pawn> caravanHumans = SessionValues.chosenCaravan.PawnsListForReading
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsHuman(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -1202,7 +1212,7 @@ namespace GameClient
 
             else
             {
-                List<Pawn> caravanAnimals = ClientValues.chosenCaravan.PawnsListForReading
+                List<Pawn> caravanAnimals = SessionValues.chosenCaravan.PawnsListForReading
                     .FindAll(fetch => DeepScribeHelper.CheckIfThingIsAnimal(fetch))
                     .OrderBy(p => p.def.defName)
                     .ToList();
@@ -1227,15 +1237,15 @@ namespace GameClient
 
         public static void EnterMap(OnlineActivityData activityData)
         {
-            if (activityData.activityType == OnlineActivityType.Visit)
+            if (activityData._activityType == OnlineActivityType.Visit)
             {
-                CaravanEnterMapUtility.Enter(ClientValues.chosenCaravan, OnlineActivityManager.onlineMap, CaravanEnterMode.Edge,
+                CaravanEnterMapUtility.Enter(SessionValues.chosenCaravan, OnlineActivityManager.onlineMap, CaravanEnterMode.Edge,
                     CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
             }
 
-            else if (activityData.activityType == OnlineActivityType.Raid)
+            else if (activityData._activityType == OnlineActivityType.Raid)
             {
-                SettlementUtility.Attack(ClientValues.chosenCaravan, ClientValues.chosenSettlement);
+                SettlementUtility.Attack(SessionValues.chosenCaravan, SessionValues.chosenSettlement);
             }
 
             CameraJumper.TryJump(OnlineActivityManager.factionPawns[0].Position, OnlineActivityManager.onlineMap);

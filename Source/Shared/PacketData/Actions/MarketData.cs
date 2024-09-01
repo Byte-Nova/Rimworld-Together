@@ -7,10 +7,12 @@ namespace Shared
     [Serializable]
     public class MarketData
     {
-        public MarketStepMode marketStepMode;
-        public int quantityToManage;
-        public int indexToManage;
+        public MarketStepMode _stepMode;
 
-        public List<ThingData> transferThings;
+        public int _quantityToManage;
+
+        public int _indexToManage;
+
+        public List<ThingData> _transferThings;
     }
 }

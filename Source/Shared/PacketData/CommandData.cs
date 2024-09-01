@@ -6,8 +6,8 @@ namespace Shared
     [Serializable]
     public class CommandData
     {
-        public CommandMode commandMode;
+        public CommandMode _commandMode;
 
-        public string commandDetails;
+        public string _details;
     }
 }

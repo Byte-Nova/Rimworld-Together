@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "shell: launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build server",
+            "program": "${workspaceFolder}/Server/bin/Debug/net8.0/GameServer.dll",
+            "cwd": "${workspaceFolder}/Server/bin/Debug/net8.0",
+            "console": "externalTerminal"
+        }
+    ]
+}

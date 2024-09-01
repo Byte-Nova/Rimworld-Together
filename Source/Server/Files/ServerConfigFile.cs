@@ -21,8 +21,6 @@
 
         public bool SyncLocalSave = true;
 
-        public bool AllowCustomScenarios = true;
-
         public bool AllowNPCDestruction = false;
 
         public bool TemporalActivityProtection = true;
