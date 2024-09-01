@@ -16,6 +16,8 @@ namespace GameServer
             ChangeTitle();
             TryDisableQuickEdit();
 
+            Logger.Title($"----------------------------------------");
+
             if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
 
             Threader.GenerateServerThread(Threader.ServerMode.Start);
@@ -127,8 +129,6 @@ namespace GameServer
             ModManager.LoadMods();
 
             EventManager.LoadEvents();
-
-            Logger.Title($"----------------------------------------");
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)
