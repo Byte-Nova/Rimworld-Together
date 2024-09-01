@@ -166,6 +166,9 @@
     <RTFactionMemberWait>Waiting for member list</RTFactionMemberWait>
     <RTFactionMembers>Members</RTFactionMembers>
     <RTFactionMemberMenu>Faction Members</RTFactionMemberMenu>
+    <RTFactionMember>Member</RTFactionMember>
+    <RTFactionModerator>Moderator</RTFactionModerator>
+    <RTFactionAdmin>Admin</RTFactionAdmin>
     <RTDays>Days</RTDays>
     <RTDay>Day</RTDay>
     <RTFactionMemberMenuDesc>All faction members are depicted here</RTFactionMemberMenuDesc>
