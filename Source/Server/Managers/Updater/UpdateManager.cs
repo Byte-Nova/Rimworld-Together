@@ -16,6 +16,7 @@ namespace GameServer.Updater
             UpdateSettlementFiles();
             UpdateSites();
             UpdateCaravan();
+            UpdateWorld();
         }
 
         private static void Backup()
@@ -194,6 +195,78 @@ namespace GameServer.Updater
                 newfile._caravanFile = caravan;
                 Serializer.SerializeToFile(userFile, newfile);
             }
+        }
+
+        private static void UpdateWorld() 
+        {
+            string pathToSave = Path.Combine(Master.corePath, "WorldValues.json");
+            WorldValuesFile old = Serializer.SerializeFromFile<WorldValuesFile>(pathToSave);
+
+            Shared.WorldValuesFile newValues = new Shared.WorldValuesFile();
+
+            newValues.Pollution = old.Pollution;
+            newValues.Population = old.Population;
+            newValues.SeedString = old.SeedString;
+            newValues.Rainfall = old.Rainfall;
+            newValues.Temperature = old.Temperature;
+            newValues.PersistentRandomValue = old.PersistentRandomValue;
+
+            List<Shared.PlanetFeature> newFeatures = new List<Shared.PlanetFeature>();
+            foreach (PlanetFeature feature in old.Features)
+            {
+                Shared.PlanetFeature newfeature = new Shared.PlanetFeature();
+                newfeature.defName = feature.defName;
+                newfeature.name = feature.featureName;
+                newfeature.drawCenter = feature.drawCenter;
+                newfeature.maxDrawSizeInTiles = feature.maxDrawSizeInTiles;
+                newFeatures.Add(newfeature);
+            }
+            newValues.Features = newFeatures.ToArray();
+
+            List<Shared.RoadDetails> newRoads = new List<Shared.RoadDetails>();
+            foreach(RoadDetails road in old.Roads) 
+            {
+                Shared.RoadDetails newRoad = new Shared.RoadDetails();
+                newRoad.roadDefName = road.roadDefName;
+                newRoad.toTile = road.tileB;
+                newRoad.fromTile = road.tileA;
+                newRoads.Add(newRoad);
+            }
+            newValues.Roads = newRoads.ToArray();
+
+            List<Shared.RiverDetails> newRivers = new List<Shared.RiverDetails>();
+            foreach (RiverDetails river in old.Rivers)
+            {
+                Shared.RiverDetails newRiver = new Shared.RiverDetails();
+                newRiver.riverDefName = river.riverDefName;
+                newRiver.fromTile = river.tileA;
+                newRiver.toTile = river.tileB;
+                newRivers.Add(newRiver);
+            }
+            newValues.Rivers = newRivers.ToArray();
+
+            List<Shared.PlanetNPCFaction> newNpcFactions = new List<Shared.PlanetNPCFaction>();
+            foreach (PlanetNPCFaction faction in old.NPCFactions)
+            {
+                Shared.PlanetNPCFaction newFaction = new Shared.PlanetNPCFaction();
+                newFaction.defName = faction.factionDefName;
+                newFaction.name = faction.factionName;
+                newFaction.color = faction.factionColor;
+                newNpcFactions.Add(newFaction);
+            }
+            newValues.NPCFactions = newNpcFactions.ToArray();
+
+            List<Shared.PlanetNPCSettlement> newNpcSettlement = new List<Shared.PlanetNPCSettlement>();
+            foreach (PlanetNPCSettlement settlement in old.NPCSettlements)
+            {
+                Shared.PlanetNPCSettlement newSettlement = new Shared.PlanetNPCSettlement();
+                newSettlement.defName = settlement.factionDefName;
+                newSettlement.name = settlement.name;
+                newSettlement.tile = settlement.tile;
+                newNpcSettlement.Add(newSettlement);
+            }
+            newValues.NPCSettlements = newNpcSettlement.ToArray();
+            Serializer.SerializeToFile(pathToSave, newValues);
         }
     }
 }
