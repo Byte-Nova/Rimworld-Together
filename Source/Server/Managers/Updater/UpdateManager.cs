@@ -120,21 +120,21 @@ namespace GameServer.Updater
                 newFile.EventProtectionTime = old.EventProtectionTime;
                 newFile.AidProtectionTime = old.AidProtectionTime;
                 newFile.RunningMods = old.RunningMods.ToArray();
-                Shared.FactionFile factionFile = new Shared.FactionFile();
-                factionFile.Name = old.FactionName;
-                if (factionFile.Name == "null"){} else 
-                {
+                Shared.FactionFile factionFile = null;
+                if (old.HasFaction) {
+                    factionFile = new Shared.FactionFile();
+                    factionFile.Name = old.FactionName;
                     factionFile.CurrentMembers = oldFactionSite.factionMembers;
                     foreach (string str in oldFactionSite.factionMemberRanks)
                     {
                         factionFile.CurrentRanks.Add(int.Parse(str));
                     }
+                    factions.Add(factionFile);
                 }
                 UserRelationshipsFile relationshipsFile = new UserRelationshipsFile();
                 relationshipsFile.AllyPlayers = old.AllyPlayers;
                 relationshipsFile.EnemyPlayers = old.EnemyPlayers;
                 newFile.FactionFile = factionFile;
-                factions.Add(factionFile);
                 newFile.Relationships = relationshipsFile;
                 Serializer.SerializeToFile(userFile, newFile);
             }
@@ -166,12 +166,15 @@ namespace GameServer.Updater
                 newfile.Type = old.type;
                 newfile.WorkerData = old.workerData;
                 Shared.FactionFile faction = null;
-                foreach (Shared.FactionFile file in factions)
+                if (old.isFromFaction)
                 {
-                    if(file.Name == old.factionName) 
+                    foreach (Shared.FactionFile file in factions)
                     {
-                        faction = file;
-                        break;
+                        if (file.Name == old.factionName)
+                        {
+                            faction = file;
+                            break;
+                        }
                     }
                 }
                 newfile.FactionFile = faction;
@@ -185,15 +188,12 @@ namespace GameServer.Updater
             foreach (string userFile in userFiles)
             {
                 GameServer.Updater.CaravanDetails old = Serializer.SerializeFromFile<CaravanDetails>(userFile);
-                Shared.CaravanData newfile = new Shared.CaravanData();
-                Shared.CaravanFile caravan = new Shared.CaravanFile();
-                Shared.CaravanData data = new Shared.CaravanData();
-                caravan.Tile = old.tile;
-                caravan.TimeSinceRefresh = old.timeSinceRefresh;
-                caravan.ID = old.ID;
-                caravan.Owner = old.owner;
-                newfile._caravanFile = caravan;
-                Serializer.SerializeToFile(userFile, newfile);
+                Shared.CaravanFile newFile = new Shared.CaravanFile();
+                newFile.Tile = old.tile;
+                newFile.TimeSinceRefresh = old.timeSinceRefresh;
+                newFile.ID = old.ID;
+                newFile.Owner = old.owner;
+                Serializer.SerializeToFile(userFile, newFile);
             }
         }
 
@@ -209,6 +209,7 @@ namespace GameServer.Updater
             newValues.SeedString = old.SeedString;
             newValues.Rainfall = old.Rainfall;
             newValues.Temperature = old.Temperature;
+            newValues.PlanetCoverage = old.PlanetCoverage;
             newValues.PersistentRandomValue = old.PersistentRandomValue;
 
             List<Shared.PlanetFeature> newFeatures = new List<Shared.PlanetFeature>();
@@ -266,6 +267,20 @@ namespace GameServer.Updater
                 newNpcSettlement.Add(newSettlement);
             }
             newValues.NPCSettlements = newNpcSettlement.ToArray();
+
+            List<Shared.PollutionDetails> newPollutedTiles = new List<Shared.PollutionDetails>();
+            if (old.PollutedTiles != null)
+            {
+                foreach (PollutionDetails settlement in old.PollutedTiles)
+                {
+                    Shared.PollutionDetails newSettlement = new Shared.PollutionDetails();
+                    newSettlement.tile = settlement.tile;
+                    newSettlement.quantity = settlement.quantity;
+                    newPollutedTiles.Add(newSettlement);
+                }
+            }
+            newValues.PollutedTiles = newPollutedTiles.ToArray();
+
             Serializer.SerializeToFile(pathToSave, newValues);
         }
     }
