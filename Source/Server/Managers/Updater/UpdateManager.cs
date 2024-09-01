@@ -121,13 +121,13 @@ namespace GameServer.Updater
                 newFile.AidProtectionTime = old.AidProtectionTime;
                 newFile.RunningMods = old.RunningMods.ToArray();
                 Shared.FactionFile factionFile = new Shared.FactionFile();
-                factionFile.name = old.FactionName;
-                if (factionFile.name == "null"){} else 
+                factionFile.Name = old.FactionName;
+                if (factionFile.Name == "null"){} else 
                 {
-                    factionFile.currentMembers = oldFactionSite.factionMembers;
+                    factionFile.CurrentMembers = oldFactionSite.factionMembers;
                     foreach (string str in oldFactionSite.factionMemberRanks)
                     {
-                        factionFile.currentRanks.Add(int.Parse(str));
+                        factionFile.CurrentRanks.Add(int.Parse(str));
                     }
                 }
                 UserRelationshipsFile relationshipsFile = new UserRelationshipsFile();
@@ -168,7 +168,7 @@ namespace GameServer.Updater
                 Shared.FactionFile faction = null;
                 foreach (Shared.FactionFile file in factions)
                 {
-                    if(file.name == old.factionName) 
+                    if(file.Name == old.factionName) 
                     {
                         faction = file;
                         break;
@@ -188,10 +188,10 @@ namespace GameServer.Updater
                 Shared.CaravanData newfile = new Shared.CaravanData();
                 Shared.CaravanFile caravan = new Shared.CaravanFile();
                 Shared.CaravanData data = new Shared.CaravanData();
-                caravan.tile = old.tile;
-                caravan.timeSinceRefresh = old.timeSinceRefresh;
+                caravan.Tile = old.tile;
+                caravan.TimeSinceRefresh = old.timeSinceRefresh;
                 caravan.ID = old.ID;
-                caravan.owner = old.owner;
+                caravan.Owner = old.owner;
                 newfile._caravanFile = caravan;
                 Serializer.SerializeToFile(userFile, newfile);
             }
