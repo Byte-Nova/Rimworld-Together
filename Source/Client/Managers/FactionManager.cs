@@ -111,7 +111,7 @@ namespace GameClient
 
                     PlayerFactionData playerFactionData = new PlayerFactionData();
                     playerFactionData._stepMode = FactionStepMode.Create;
-                    playerFactionData._factionFile.name = DialogManager.dialog1ResultOne;
+                    playerFactionData._factionFile.Name = DialogManager.dialog1ResultOne;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
                     Network.listener.EnqueuePacket(packet);
@@ -247,7 +247,7 @@ namespace GameClient
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTFactionInvitedTo".Translate(factionManifest._factionFile.name), r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTFactionInvitedTo".Translate(factionManifest._factionFile.Name), r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -268,10 +268,10 @@ namespace GameClient
             DialogManager.PopWaitDialog();
 
             List<string> toDisplay = new List<string>();
-            for (int i = 0; i < factionManifest._factionFile.currentMembers.Count; i++)
+            for (int i = 0; i < factionManifest._factionFile.CurrentMembers.Count; i++)
             {
-                toDisplay.Add($"{factionManifest._factionFile.currentMembers[i]} " +
-                    $"- {(FactionRanks)factionManifest._factionFile.currentRanks[i]}");
+                toDisplay.Add($"{factionManifest._factionFile.CurrentMembers[i]} " +
+                    $"- {(FactionRanks)factionManifest._factionFile.CurrentRanks[i]}");
             }
 
             RT_Dialog_Listing d1 = new RT_Dialog_Listing("RTFactionMemberMenu".Translate(), 

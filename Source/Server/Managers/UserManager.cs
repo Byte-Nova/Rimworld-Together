@@ -283,12 +283,12 @@ namespace GameServer
 
         public static void SaveUserFile(UserFile userFile)
         {
-            userFile.savingSemaphore.WaitOne();
+            userFile.SavingSemaphore.WaitOne();
 
             try { Serializer.SerializeToFile(Path.Combine(Master.usersPath, userFile.Username + fileExtension), userFile); }
             catch (Exception e) { Logger.Error(e.ToString()); }
             
-            userFile.savingSemaphore.Release();
+            userFile.SavingSemaphore.Release();
         }
     }
 }

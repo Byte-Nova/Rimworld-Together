@@ -83,12 +83,12 @@ namespace GameServer
 
         private static void UpdateCaravan(CaravanFile details, CaravanFile newDetails)
         {
-            details.tile = newDetails.tile;
+            details.Tile = newDetails.Tile;
         }
 
         private static void RefreshCaravanTimer(CaravanFile details)
         {
-            details.timeSinceRefresh = TimeConverter.CurrentTimeToEpoch();
+            details.TimeSinceRefresh = TimeConverter.CurrentTimeToEpoch();
 
             SaveCaravan(details);
         }
@@ -108,7 +108,7 @@ namespace GameServer
         {
             foreach(CaravanFile caravans in GetActiveCaravans())
             {
-                if (TimeConverter.CheckForEpochTimer(caravans.timeSinceRefresh, baseMaxTimer))
+                if (TimeConverter.CheckForEpochTimer(caravans.TimeSinceRefresh, baseMaxTimer))
                 {
                     DeleteCaravan(caravans);
 
@@ -138,7 +138,7 @@ namespace GameServer
         public static CaravanFile GetCaravanFromID(ServerClient client, int caravanID)
         {
             CaravanFile toGet = GetActiveCaravans().FirstOrDefault(fetch => fetch.ID == caravanID &&
-                fetch.owner == client.userFile.Username);
+                fetch.Owner == client.userFile.Username);
 
             if (toGet == null) return null;
             else return toGet;

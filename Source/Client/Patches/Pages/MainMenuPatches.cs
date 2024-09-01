@@ -73,11 +73,11 @@ namespace GameClient
             private static void SetupQuickConnectVariables()
             {
                 ConnectionDataFile connectionData = PreferenceManager.LoadConnectionData();
-                Network.ip = connectionData.ip;
-                Network.port = connectionData.port;
+                Network.ip = connectionData.IP;
+                Network.port = connectionData.Port;
 
                 LoginDataFile loginData = PreferenceManager.LoadLoginData();
-                ClientValues.username = loginData.username;
+                ClientValues.username = loginData.Username;
             }
 
             private static void ShowQuickConnectFloatMenu()
@@ -102,8 +102,8 @@ namespace GameClient
                             LoginDataFile loginData = PreferenceManager.LoadLoginData();
 
                             LoginData data = new LoginData();
-                            data._username = loginData.username;
-                            data._password = Hasher.GetHashFromString(loginData.password);
+                            data._username = loginData.Username;
+                            data._password = Hasher.GetHashFromString(loginData.Password);
                             data._version = CommonValues.executableVersion;
                             data._runningMods = ModManager.GetRunningModList();
 

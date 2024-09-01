@@ -16,8 +16,8 @@ namespace GameClient
             if (File.Exists(Master.connectionDataPath)) newConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
             else newConnectionData = new ConnectionDataFile();
 
-            newConnectionData.ip = ip;
-            newConnectionData.port = port;
+            newConnectionData.IP = ip;
+            newConnectionData.Port = port;
 
             Serializer.SerializeToFile(Master.connectionDataPath, newConnectionData);
         }
@@ -38,8 +38,8 @@ namespace GameClient
             if (File.Exists(Master.loginDataPath)) newLoginData = Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
             else newLoginData = new LoginDataFile();
 
-            newLoginData.username = username;
-            newLoginData.password = password;
+            newLoginData.Username = username;
+            newLoginData.Password = password;
 
             Serializer.SerializeToFile(Master.loginDataPath, newLoginData);
         }

@@ -110,9 +110,9 @@ namespace GameServer
 
             if (siteFile.FactionFile != null)
             {
-                if (siteFile.FactionFile.name != client.userFile.FactionFile.name)
+                if (siteFile.FactionFile.Name != client.userFile.FactionFile.Name)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but player wasn't a part of faction {siteFile.FactionFile.name}");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but player wasn't a part of faction {siteFile.FactionFile.Name}");
                 }
 
                 else
@@ -186,7 +186,7 @@ namespace GameServer
             {
                 if (siteFile.Owner != client.userFile.Username)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData._siteFile.Tile}, but the player {siteFile.Owner} of faction {siteFile.FactionFile.name} owns it");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData._siteFile.Tile}, but the player {siteFile.Owner} of faction {siteFile.FactionFile.Name} owns it");
                 }
 
                 else if (siteFile.WorkerData == null)
@@ -243,7 +243,7 @@ namespace GameServer
 
                 if (client.userFile.FactionFile != null)
                 {
-                    List<SiteFile> factionSites = sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.name == client.userFile.FactionFile.name);
+                    List<SiteFile> factionSites = sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.Name == client.userFile.FactionFile.Name);
                     foreach (SiteFile site in factionSites)
                     {
                         if (site.FactionFile != null) siteData._sitesWithRewards.Add(site.Tile);
@@ -267,12 +267,12 @@ namespace GameServer
 
         public static void SaveSite(SiteFile siteFile)
         {
-            siteFile.savingSemaphore.WaitOne();
+            siteFile.SavingSemaphore.WaitOne();
 
             try { Serializer.SerializeToFile(Path.Combine(Master.sitesPath, siteFile.Tile + fileExtension), siteFile); }
             catch (Exception e) { Logger.Error(e.ToString()); }
             
-            siteFile.savingSemaphore.Release();
+            siteFile.SavingSemaphore.Release();
         }
 
         public static void UpdateFaction(SiteFile siteFile, FactionFile toUpdateWith)
