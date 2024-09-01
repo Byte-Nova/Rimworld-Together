@@ -37,8 +37,8 @@ namespace GameClient
                     DialogManager.PushNewDialog(a2);
                     
                     LoginDataFile loginData = PreferenceManager.LoadLoginData();
-                    DialogManager.dialog2Input.inputOneResult = loginData.username;
-                    DialogManager.dialog2Input.inputTwoResult = loginData.password;
+                    DialogManager.dialog2Input.inputOneResult = loginData.Username;
+                    DialogManager.dialog2Input.inputTwoResult = loginData.Password;
                 },
                 delegate 
                 {
@@ -57,8 +57,8 @@ namespace GameClient
             null);
 
             ConnectionDataFile connectionData = PreferenceManager.LoadConnectionData();
-            DialogManager.dialog2Input.inputOneResult = connectionData.ip;
-            DialogManager.dialog2Input.inputTwoResult = connectionData.port;
+            DialogManager.dialog2Input.inputOneResult = connectionData.IP;
+            DialogManager.dialog2Input.inputTwoResult = connectionData.Port;
 
             DialogManager.PushNewDialog(dialog);
         }

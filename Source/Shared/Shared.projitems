@@ -30,12 +30,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
 
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\AidData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineActivityData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OnlineActivityData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RoadData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\AidData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\EventData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\OfflineActivityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\OnlineActivityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\RoadData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CaravanData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\CreationOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\DamageOrder.cs" />
@@ -44,7 +44,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\HediffOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\KillOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\PawnOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\MarketData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\MarketData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\DifficultyData.cs" />
