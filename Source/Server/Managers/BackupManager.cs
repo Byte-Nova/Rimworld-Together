@@ -25,7 +25,7 @@ namespace GameServer
             files.AddRange(Directory.GetFiles(Master.sitesPath, "*.*", SearchOption.AllDirectories));
             files.AddRange(Directory.GetFiles(Master.usersPath, "*.*", SearchOption.AllDirectories));
             files.AddRange(Directory.GetFiles(Master.caravansPath, "*.*", SearchOption.AllDirectories));
-            CreateArchiveWorld(files, backupName, backupPath);
+            CreateArchive(files, backupName, backupPath, Master.backupWorldPath);
             if (Directory.GetFiles(Master.backupWorldPath).Count() > Master.backupConfig.Amount && Master.backupConfig.AutomaticDeletion == true) 
             {
                 DeleteOldestArchive();
@@ -68,13 +68,13 @@ namespace GameServer
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in playerSettlements) files.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
 
-            CreateArchiveUser(files, username, playerArchivedSavePath);
+            CreateArchive(files, username, playerArchivedSavePath, Master.usersPath);
             Logger.Warning($"Successfully backed up user data for {username} under the name {playerArchivedSavePath}.");
         }
 
-        private static void CreateArchiveWorld(List<string> files, string name, string path)
+        private static void CreateArchive(List<string> files, string name, string toPath, string fromPath) 
         {
-            using (FileStream zip = new FileStream(path, FileMode.CreateNew))
+            using (FileStream zip = new FileStream(toPath, FileMode.CreateNew))
             {
                 using (ZipArchive archive = new ZipArchive(zip, ZipArchiveMode.Create))
                 {
@@ -82,26 +82,7 @@ namespace GameServer
                     {
                         if (File.Exists(file))
                         {
-                            string relativePath = Path.GetRelativePath(Master.backupWorldPath, file);
-
-                            archive.CreateEntryFromFile(file, relativePath);
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void CreateArchiveUser(List<string> files, string name, string path) 
-        {
-            using (FileStream zip = new FileStream(path, FileMode.CreateNew))
-            {
-                using (ZipArchive archive = new ZipArchive(zip, ZipArchiveMode.Create))
-                {
-                    foreach (string file in files)
-                    {
-                        if (File.Exists(file))
-                        {
-                            string relativePath = Path.GetRelativePath(Master.backupUsersPath, file);
+                            string relativePath = Path.GetRelativePath(fromPath, file);
 
                             archive.CreateEntryFromFile(file, relativePath);
                         }
