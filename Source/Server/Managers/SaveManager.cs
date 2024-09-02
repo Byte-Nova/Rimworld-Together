@@ -118,56 +118,13 @@ namespace GameServer
             }
             client.listener.disconnectFlag = true;
 
-            //Locate and make sure there's no other backup save in the server
-            string playerArchivedSavePath = Path.Combine(Master.backupUsersPath, client.userFile.Username);
-            if (Directory.Exists(playerArchivedSavePath)) Directory.Delete(playerArchivedSavePath,true);
-            Directory.CreateDirectory(playerArchivedSavePath);
-
-            //Assign save paths to the backup files
-            string mapsArchivePath = Path.Combine(playerArchivedSavePath, "Maps");
-            string savesArchivePath = Path.Combine(playerArchivedSavePath, "Saves");
-            string sitesArchivePath = Path.Combine(playerArchivedSavePath, "Sites");
-            string settlementsArchivePath = Path.Combine(playerArchivedSavePath, "Settlements");
-
-            //Create directories for the backup files
-            Directory.CreateDirectory(mapsArchivePath);
-            Directory.CreateDirectory(savesArchivePath);
-            Directory.CreateDirectory(sitesArchivePath);
-            Directory.CreateDirectory(settlementsArchivePath);
-
-            //Copy save file to archive
-            try { File.Copy(Path.Combine(Master.savesPath, client.userFile.Username + fileExtension), Path.Combine(savesArchivePath , client.userFile.Username + fileExtension)); }
-            catch { Logger.Warning($"Failed to find {client.userFile.Username}'s save"); }
-
-            //Copy map files to archive
-            MapData[] userMaps = MapManager.GetAllMapsFromUsername(client.userFile.Username);
-            foreach (MapData map in userMaps)
-            {
-                File.Copy(Path.Combine(Master.mapsPath, map._mapTile + MapManager.fileExtension), 
-                    Path.Combine(mapsArchivePath, map._mapTile + MapManager.fileExtension));
-            }
-
-            //Copy site files to archive
-            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(client.userFile.Username);
-            foreach (SiteFile site in playerSites)
-            {
-                File.Copy(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension), 
-                    Path.Combine(sitesArchivePath, site.Tile + SiteManagerHelper.fileExtension));
-            }
-
-            //Copy settlement files to archive
-            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.userFile.Username);
-            foreach (SettlementFile settlementFile in playerSettlements)
-            {
-                File.Copy(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension), 
-                    Path.Combine(settlementsArchivePath, settlementFile.Tile + SettlementManager.fileExtension));
-            }
-
             ResetPlayerData(client, client.userFile.Username);
         }
 
         public static void ResetPlayerData(ServerClient client, string username)
         {
+            BackupManager.BackupUser(username);
+
             if (client != null) client.listener.disconnectFlag = true;
 
             //Delete save file

@@ -76,6 +76,8 @@ namespace GameServer
 
         public static DiscordConfigFile discordConfig;
 
+        public static BackupConfigFile backupConfig;
+
         //Booleans
 
         public static bool isClosing;

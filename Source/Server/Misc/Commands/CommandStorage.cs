@@ -14,6 +14,14 @@ namespace GameServer
             "Update the server from a previous version. DO NOT USE IF ALREADY UP TO DATE",
             UpdateCommandAction);
 
+        private static readonly ServerCommand backupCommand = new ServerCommand("backup", 0,
+            "Backup the server.",
+            BackupCommandAction);
+
+        private static readonly ServerCommand backupUserCommand = new ServerCommand("backupuser", 1,
+            "Backup the data of a specific user",
+            BackupUserCommandAction);
+
         private static readonly ServerCommand listCommand = new ServerCommand("list", 0,
             "Shows all connected players",
             ListCommandAction);
@@ -148,41 +156,43 @@ namespace GameServer
 
         public static readonly ServerCommand[] serverCommands = new ServerCommand[]
         {
-            helpCommand,
-            listCommand,
-            deepListCommand,
-            opCommand,
-            deopCommand,
-            kickCommand,
+            backupCommand,
+            backupUserCommand,
             banCommand,
             banListCommand,
-            pardonCommand,
-            reloadCommand,
-            modListCommand,
-            eventCommand,
-            eventAllCommand,
-            eventListCommand,
-            doSiteRewards,
             broadcastCommand,
-            serverMessageCommand,
-            whitelistCommand,
-            whitelistAddCommand,
-            whitelistRemoveCommand,
-            whitelistToggleCommand,
-            forceSaveCommand,
-            resetPlayerCommand,
-            toggleDifficultyCommand,
-            toggleCustomScenariosCommand,
-            toggleDiscordPresenceCommand,
-            toggleUPnPCommand,
-            portforwardCommand,
-            toggleVerboseLogsCommand,
-            toggleSyncLocalSaveCommand,
-            resetWorldCommand,
-            quitCommand,
-            forceQuitCommand,
             clearCommand,
-            updateCommand
+            deepListCommand,
+            deopCommand,
+            doSiteRewards,
+            eventAllCommand,
+            eventCommand,
+            eventListCommand,
+            forceQuitCommand,
+            forceSaveCommand,
+            helpCommand,
+            kickCommand,
+            listCommand,
+            modListCommand,
+            opCommand,
+            pardonCommand,
+            portforwardCommand,
+            quitCommand,
+            reloadCommand,
+            resetPlayerCommand,
+            resetWorldCommand,
+            serverMessageCommand,
+            toggleCustomScenariosCommand,
+            toggleDifficultyCommand,
+            toggleDiscordPresenceCommand,
+            toggleSyncLocalSaveCommand,
+            toggleUPnPCommand,
+            toggleVerboseLogsCommand,
+            updateCommand,
+            whitelistAddCommand,
+            whitelistCommand,
+            whitelistRemoveCommand,
+            whitelistToggleCommand
         };
 
         private static void HelpCommandAction()
@@ -215,6 +225,33 @@ namespace GameServer
             Logger.Warning("Successfully updated world, please restart the server for the changes to fully take effect!");
         }
 
+        private static void BackupCommandAction() 
+        {
+            BackupManager.BackupServer();
+        }
+
+        private static void BackupUserCommandAction() 
+        {
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(ConsoleCommandManager.commandParameters[0]);
+
+            if (userFile == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
+            else
+            {
+
+            DeleteWorldQuestion:
+                Logger.Warning("Please type 'YES' or 'NO'");
+                string response = Console.ReadLine();
+
+                if (response == "NO") BackupManager.BackupUser(userFile.Username);
+                else if (response == "YES") BackupManager.BackupUser(userFile.Username, true);
+                else
+                {
+                    Logger.Error($"{response} is not a valid option; The options must be capitalized");
+                    goto DeleteWorldQuestion;
+                }
+                
+            }
+        }
         private static void ListCommandAction()
         {
             Logger.Title($"Connected players: [{NetworkHelper.GetConnectedClientsSafe().Count()}]");
@@ -649,35 +686,11 @@ namespace GameServer
                     Logger.Error($"{response} is not a valid option; The options must be capitalized");
                     goto DeleteWorldQuestion;
                 }
-    
-                string newWorldFolderName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
-                string newWorldFolderPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
-                if (!Directory.Exists($"{newWorldFolderPath}")) Directory.CreateDirectory($"{newWorldFolderPath}");
 
-                //Make the new folder and move all the current world folders to it
-                Logger.Warning($"The archived world will be saved as: {newWorldFolderPath}");
-                Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Core");
-
-                //The core directory is special because we want to copy the files, not just move them.
-                foreach (string file in Directory.GetFiles(Master.corePath))
-                {
-                    if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Core{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-                }
-
-                //Remove the old world file
+                BackupManager.BackupServer();
                 File.Delete($"{Master.corePath + Path.DirectorySeparatorChar}WorldValues.json");
 
-                //Move the rest of the directories
-                if (Directory.Exists(Master.factionsPath)) Directory.Move(Master.factionsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Factions");
-                if (Directory.Exists(Master.mapsPath)) Directory.Move(Master.mapsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Maps");
-                if (Directory.Exists(Master.savesPath)) Directory.Move(Master.savesPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Saves");
-                if (Directory.Exists(Master.settlementsPath)) Directory.Move(Master.settlementsPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Settlements");
-                if (Directory.Exists(Master.sitesPath)) Directory.Move(Master.sitesPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Sites");
-                if (Directory.Exists(Master.usersPath)) Directory.Move(Master.usersPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Users");
-                if (Directory.Exists(Master.caravansPath)) Directory.Move(Master.caravansPath, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Caravans");
-
-                Main_.SetPaths();
-                Logger.Warning("World has been successfully reset and archived");
+                Logger.Warning("World has been successfully reset");
                 foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) client.listener.disconnectFlag = true;
         }
 

@@ -19,7 +19,7 @@ namespace GameServer
             Logger.Title($"----------------------------------------");
 
             if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
-
+            if (Master.backupConfig.AutomaticBackups)BackupManager.AutoBackup();
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
 
@@ -124,6 +124,9 @@ namespace GameServer
             LoadValueFile(ServerFileMode.Discord);
             SaveValueFile(ServerFileMode.Discord, false);
 
+            LoadValueFile(ServerFileMode.Backup);
+            SaveValueFile(ServerFileMode.Backup, false);
+
             LoadValueFile(ServerFileMode.World);
 
             ModManager.LoadMods();
@@ -180,6 +183,11 @@ namespace GameServer
                 case ServerFileMode.Discord:
                     pathToSave = Path.Combine(Master.corePath, "DiscordConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.discordConfig);
+                    break;
+
+                case ServerFileMode.Backup:
+                    pathToSave = Path.Combine(Master.corePath, "BackupConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.backupConfig);
                     break;
             }
 
@@ -275,6 +283,16 @@ namespace GameServer
                     {
                         Master.discordConfig = new DiscordConfigFile();
                         Serializer.SerializeToFile(pathToLoad, Master.discordConfig);
+                    }
+                    break;
+
+                case ServerFileMode.Backup:
+                    pathToLoad = Path.Combine(Master.corePath, "BackupConfig.json");
+                    if (File.Exists(pathToLoad)) Master.backupConfig = Serializer.SerializeFromFile<BackupConfigFile>(pathToLoad);
+                    else
+                    {
+                        Master.backupConfig = new BackupConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.backupConfig);
                     }
                     break;
             }
