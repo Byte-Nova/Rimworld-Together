@@ -399,13 +399,6 @@ FodyWeavers.xsd
 
 # Project
 *.idea
-rimworld_dir.txt
-
-# Ignore built dlls
-*.dll
-
-Source/Client/0Harmony.dll
-Source/Client/HugsLib.dll
 
 # Container run volume
 Data
@@ -417,6 +410,8 @@ Source/publishServer.sh
 
 # Builder variables
 Builders/RimWorldFolderPath.txt
+Builders/Result/3005289691/Current/Assemblies/GameClient.dll
+Builders/Result/3005289691/Current/Assemblies/Newtonsoft.Json.dll
 
 # Visual Studio Code
 Source/.vscode/*.*

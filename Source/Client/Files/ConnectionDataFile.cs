@@ -5,8 +5,8 @@ namespace GameClient
     [Serializable]
     public class ConnectionDataFile
     {
-        public string ip;
+        public string IP;
 
-        public string port;
+        public string Port;
     }
 }
