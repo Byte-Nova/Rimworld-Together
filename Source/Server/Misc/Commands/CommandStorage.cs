@@ -1,4 +1,3 @@
-using GameServer.Updater;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -9,10 +8,6 @@ namespace GameServer
         private static readonly ServerCommand helpCommand = new ServerCommand("help", 0,
             "Shows a list of all available commands to use",
             HelpCommandAction);
-
-        private static readonly ServerCommand updateCommand = new ServerCommand("update", 0,
-            "Update the server from a previous version. DO NOT USE IF ALREADY UP TO DATE",
-            UpdateCommandAction);
 
         private static readonly ServerCommand backupCommand = new ServerCommand("backup", 0,
             "Backup the server.",
@@ -188,7 +183,6 @@ namespace GameServer
             toggleSyncLocalSaveCommand,
             toggleUPnPCommand,
             toggleVerboseLogsCommand,
-            updateCommand,
             whitelistAddCommand,
             whitelistCommand,
             whitelistRemoveCommand,
@@ -199,30 +193,12 @@ namespace GameServer
         {
             Logger.Title($"List of available commands: [{serverCommands.Count()}]");
             Logger.Title("----------------------------------------");
-            foreach (ServerCommand command in serverCommands)
+            
+            foreach (ServerCommand command in serverCommands.ToList().OrderBy(fetch => fetch.prefix))
             {
                 Logger.Warning($"{command.prefix} - {command.description}");
             }
             Logger.Title("----------------------------------------");
-        }
-
-        private static void UpdateCommandAction() 
-        {
-            //Make sure the user wants to update your world
-            Logger.Warning("Are you sure you want to update the world? You should only do this if you aren't already up to date.");
-            Logger.Warning("Please type 'YES' or 'NO'");
-
-        DeleteWorldQuestion:
-            string response = Console.ReadLine();
-
-            if (response == "NO") return;
-            else if (response != "YES")
-            {
-                Logger.Error($"{response} is not a valid option; The options must be capitalized");
-                goto DeleteWorldQuestion;
-            }
-            Updater.Updater.Update();
-            Logger.Warning("Successfully updated world, please restart the server for the changes to fully take effect!");
         }
 
         private static void BackupCommandAction() 
