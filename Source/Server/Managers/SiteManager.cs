@@ -7,6 +7,8 @@ namespace GameServer
     {
         //Variables
 
+        private static readonly double taskDelayMS = 1800000;
+
         public static void ParseSitePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableSites)
@@ -206,14 +208,14 @@ namespace GameServer
             }
         }
 
-        public static void StartSiteTicker()
+        public static async Task StartSiteTicker()
         {
             while (true)
             {
-                Thread.Sleep(1800000);
-
                 try { SiteRewardTick(); }
                 catch (Exception e) { Logger.Error($"Site tick failed, this should never happen. Exception > {e}"); }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(taskDelayMS));
             }
         }
 
@@ -257,7 +259,7 @@ namespace GameServer
                 }
             }
 
-            Logger.Message($"[Site tick]");
+            Logger.Warning($"[Site tick]");
         }
     }
 
