@@ -13,12 +13,16 @@ body:
       placeholder: Short and explicit description of your incident...
     validations:
       required: true
-  - type: input
-    id: reprod-url
+  - type: dropdown
+    id: os
     attributes:
-      label: "Reproduction URL"
-      description: Please enter your GitHub URL to provide a reproduction of the issue
-      placeholder: ex. https://github.com/USERNAME/REPO-NAME
+      label: "OS"
+      description: What is the impacted environment ?
+      multiple: true
+      options:
+        - Windows
+        - Linux
+        - Mac
     validations:
       required: true
   - type: textarea
@@ -45,22 +49,18 @@ body:
     validations:
       required: false
   - type: textarea
-    id: logs
+    id: clientLogs
     attributes:
-      label: "Logs"
+      label: "Client logs"
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: bash
     validations:
-      required: false
-  - type: dropdown
-    id: os
+      required: true
+  - type: textarea
+    id: serverLogs
     attributes:
-      label: "OS"
-      description: What is the impacted environment ?
-      multiple: true
-      options:
-        - Windows
-        - Linux
-        - Mac
+      label: "Server logs"
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: bash
     validations:
-      required: false
+      required: true
