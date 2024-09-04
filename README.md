@@ -31,7 +31,7 @@ git submodule update --init --recursive
 This will clone (or update) our [Guide](https://github.com/RimworldTogether/Guide) and Deployments project. You can also use the `--recurse-submodules` flag on your initial clone to automatically pull the documentation at the same time.
 
 ## Contributing
-Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/CONTRIBUTING.md) before contributing!
+Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!
 
 ## Other Questions?
 Please don't hesitate to create an issue on Github if you have any questions/issues with the mod. We are here for you! You can also contact us via our Discord server (see top of this page).
