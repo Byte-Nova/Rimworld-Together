@@ -105,7 +105,7 @@ namespace GameServer
 
         public static ServerGlobalData GetServerCaravans(ServerGlobalData globalData)
         {
-            globalData._playerCaravans = CaravanManager.GetActiveCaravans();
+            globalData._playerCaravans = CaravanManagerHelper.GetActiveCaravans();
             return globalData;
         }
 

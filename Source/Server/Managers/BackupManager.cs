@@ -93,7 +93,7 @@ namespace GameServer
                 SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
                 foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
 
-                CaravanFile[] playerCaravans = CaravanManager.GetCaravansFromOwner(username);
+                CaravanFile[] playerCaravans = CaravanManagerHelper.GetCaravansFromOwner(username);
                 foreach (CaravanFile caravanFile in playerCaravans) toArchive.Add(Path.Combine(Master.caravansPath, caravanFile.ID + CaravanManager.fileExtension));
 
                 CreateArchive(toArchive, playerArchivedSavePath);
