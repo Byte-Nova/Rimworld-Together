@@ -20,4 +20,3 @@ VOLUME /Data
 EXPOSE 25555/tcp
 
 ENTRYPOINT ["/App/Server/GameServer"]
-
