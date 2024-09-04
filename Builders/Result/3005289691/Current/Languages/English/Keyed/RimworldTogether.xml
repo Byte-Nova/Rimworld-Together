@@ -9,10 +9,19 @@
     <RTDenyIncomingTransfersDesc>Automatically denies transfers</RTDenyIncomingTransfersDesc>
     <RTDenyIncomingSiteRewards>[When Playing] Deny all incoming site rewards</RTDenyIncomingSiteRewards>
     <RTDenyIncomingSiteRewardsDesc>Automatically site rewards</RTDenyIncomingSiteRewardsDesc>
-    <RTMuteChat>[When Playing] Mute incomming chat messages</RTMuteChat>
+    <RTMuteChat>[When Playing] Mute incoming chat messages</RTMuteChat>
     <RTMuteChatDesc>Mute chat messages</RTMuteChatDesc>
     <RTServerSyncInterval>[When Playing] Server sync interval</RTServerSyncInterval>
     <RTServerSyncIntervalVar>{0} Day/s</RTServerSyncIntervalVar>
+    <RTDays0.125>0.125 Days</RTDays0.125>
+    <RTDays0.25>0.25 Days</RTDays0.25>
+    <RTDays0.5>0.5 Days</RTDays0.5>
+    <RTDays1>1 Day</RTDays1>
+    <RTDays2>2 Days</RTDays2>
+    <RTDays3>3 Days</RTDays3>
+    <RTDays5>5 Days</RTDays5>
+    <RTDays7>7 Days</RTDays7>
+    <RTDays14>14 Days</RTDays14>
     
     <RTCompatibility>Compatibility</RTCompatibility>
     <RTConvertSave>Convert save for server use</RTConvertSave>
@@ -169,8 +178,6 @@
     <RTFactionMember>Member</RTFactionMember>
     <RTFactionModerator>Moderator</RTFactionModerator>
     <RTFactionAdmin>Admin</RTFactionAdmin>
-    <RTDays>Days</RTDays>
-    <RTDay>Day</RTDay>
     <RTFactionMemberMenuDesc>All faction members are depicted here</RTFactionMemberMenuDesc>
     <RTFactionDelete>Delete</RTFactionDelete>
     <RTFactionWaitDelete>Waiting for faction deletion</RTFactionWaitDelete>

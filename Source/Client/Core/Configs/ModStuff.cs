@@ -61,15 +61,15 @@ namespace GameClient
             List<FloatMenuOption> list = new List<FloatMenuOption>();
             List<Tuple<string, float>> autosaveDays = new List<Tuple<string, float>>()
             {
-                Tuple.Create("0.125 " + (string)"RTDays".Translate(), 0.125f),
-                Tuple.Create("0.25 " + (string)"RTDays".Translate(), 0.25f),
-                Tuple.Create("0.5 " + (string)"RTDays".Translate(), 0.5f),
-                Tuple.Create("1 " + (string)"RTDay".Translate(), 1.0f),
-                Tuple.Create("2 " + (string)"RTDays".Translate(), 2.0f),
-                Tuple.Create("3 " + (string)"RTDays".Translate(), 3.0f),
-                Tuple.Create("5 " + (string)"RTDays".Translate(), 5.0f),
-                Tuple.Create("7 " + (string)"RTDays".Translate(), 7.0f),
-                Tuple.Create("14 " + (string)"RTDays".Translate(), 14.0f)
+                Tuple.Create((string)"RTDays0.125".Translate(), 0.125f),
+                Tuple.Create((string)"RTDays0.25".Translate(), 0.25f),
+                Tuple.Create((string)"RTDays0.5".Translate(), 0.5f),
+                Tuple.Create((string)"RTDays1".Translate(), 1.0f),
+                Tuple.Create((string)"RTDays2".Translate(), 2.0f),
+                Tuple.Create((string)"RTDays3".Translate(), 3.0f),
+                Tuple.Create((string)"RTDays5".Translate(), 5.0f),
+                Tuple.Create((string)"RTDays7".Translate(), 7.0f),
+                Tuple.Create((string)"RTDays14".Translate(), 14.0f)
             };
 
             foreach (Tuple<string, float> tuple in autosaveDays)
