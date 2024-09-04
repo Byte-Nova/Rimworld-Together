@@ -10,7 +10,7 @@ namespace GameServer.Updater
         private static List<Shared.FactionFile> factions = new List<Shared.FactionFile>();
         public static void Update()
         {
-            Backup();
+            BackupManager.BackupServer();
             UpdateDifficulty();
             UpdateUserFile();
             UpdateSettlementFiles();
@@ -19,54 +19,6 @@ namespace GameServer.Updater
             UpdateWorld();
         }
 
-        private static void Backup()
-        {
-            string newWorldFolderName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
-            string newWorldFolderPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{newWorldFolderName}";
-            Logger.Warning($"The server will be saved as: {newWorldFolderPath}");
-            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Core");
-            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Factions");
-            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Maps");
-            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Saves");
-            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Settlements");
-            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Sites");
-            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Users");
-            Directory.CreateDirectory($"{newWorldFolderPath + Path.DirectorySeparatorChar}Caravans");
-            foreach (string file in Directory.GetFiles(Master.corePath))
-            {
-                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Core{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-            }
-            foreach (string file in Directory.GetFiles(Master.factionsPath))
-            {
-                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Factions{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-            }
-            foreach (string file in Directory.GetFiles(Master.mapsPath))
-            {
-                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Maps{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-            }
-            foreach (string file in Directory.GetFiles(Master.savesPath))
-            {
-                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Saves{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-            }
-            foreach (string file in Directory.GetFiles(Master.settlementsPath))
-            {
-                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Settlements{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-            }
-            foreach (string file in Directory.GetFiles(Master.sitesPath))
-            {
-                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Sites{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-            }
-            foreach (string file in Directory.GetFiles(Master.usersPath))
-            {
-                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Users{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-            }
-            foreach (string file in Directory.GetFiles(Master.caravansPath))
-            {
-                if (File.Exists(file)) File.Copy(file, $"{newWorldFolderPath + Path.DirectorySeparatorChar}Caravans{Path.DirectorySeparatorChar}{Path.GetFileName(file)}");
-            }
-
-            Main_.SetPaths();
-        }
         private static void UpdateDifficulty() 
         {
             string pathToSave = Path.Combine(Master.corePath, "DifficultyValues.json");

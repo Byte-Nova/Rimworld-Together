@@ -19,7 +19,7 @@ namespace GameServer
             Logger.Title($"----------------------------------------");
 
             if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
-
+            if (Master.backupConfig.AutomaticBackups)BackupManager.AutoBackup();
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
 
@@ -54,7 +54,7 @@ namespace GameServer
 
             Master.backupsPath = Path.Combine(Master.mainPath, "Backups");
             Master.backupUsersPath = Path.Combine(Master.backupsPath, "Users");
-            Master.backupWorldPath = Path.Combine(Master.backupsPath, "Worlds");
+            Master.backupServerPath = Path.Combine(Master.backupsPath, "Servers");
 
             Master.modsPath = Path.Combine(Master.mainPath, "Mods");
             Master.requiredModsPath = Path.Combine(Master.modsPath, "Required");
@@ -76,7 +76,7 @@ namespace GameServer
 
             if (!Directory.Exists(Master.backupsPath)) Directory.CreateDirectory(Master.backupsPath);
             if (!Directory.Exists(Master.backupUsersPath)) Directory.CreateDirectory(Master.backupUsersPath);
-            if (!Directory.Exists(Master.backupWorldPath)) Directory.CreateDirectory(Master.backupWorldPath);
+            if (!Directory.Exists(Master.backupServerPath)) Directory.CreateDirectory(Master.backupServerPath);
 
             if (!Directory.Exists(Master.modsPath)) Directory.CreateDirectory(Master.modsPath);
             if (!Directory.Exists(Master.requiredModsPath)) Directory.CreateDirectory(Master.requiredModsPath);
@@ -123,6 +123,9 @@ namespace GameServer
 
             LoadValueFile(ServerFileMode.Discord);
             SaveValueFile(ServerFileMode.Discord, false);
+
+            LoadValueFile(ServerFileMode.Backup);
+            SaveValueFile(ServerFileMode.Backup, false);
 
             LoadValueFile(ServerFileMode.World);
 
@@ -180,6 +183,11 @@ namespace GameServer
                 case ServerFileMode.Discord:
                     pathToSave = Path.Combine(Master.corePath, "DiscordConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.discordConfig);
+                    break;
+
+                case ServerFileMode.Backup:
+                    pathToSave = Path.Combine(Master.corePath, "BackupConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.backupConfig);
                     break;
             }
 
@@ -275,6 +283,16 @@ namespace GameServer
                     {
                         Master.discordConfig = new DiscordConfigFile();
                         Serializer.SerializeToFile(pathToLoad, Master.discordConfig);
+                    }
+                    break;
+
+                case ServerFileMode.Backup:
+                    pathToLoad = Path.Combine(Master.corePath, "BackupConfig.json");
+                    if (File.Exists(pathToLoad)) Master.backupConfig = Serializer.SerializeFromFile<BackupConfigFile>(pathToLoad);
+                    else
+                    {
+                        Master.backupConfig = new BackupConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.backupConfig);
                     }
                     break;
             }
