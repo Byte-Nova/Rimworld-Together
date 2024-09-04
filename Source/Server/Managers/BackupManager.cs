@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Discord;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
@@ -12,64 +13,85 @@ namespace GameServer
     public static class BackupManager
     {
         public static readonly string fileExtension = ".zip";
+        private static readonly Semaphore inUse = new Semaphore(1,1);
         public static void BackupServer(string backupName = "")
         {
-            backupName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
-            string backupPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{backupName}{fileExtension}";
-            List<string> files = new List<string>();
-            files.AddRange(Directory.GetFiles(Master.corePath, "*.*", SearchOption.AllDirectories));
-            files.AddRange(Directory.GetFiles(Master.factionsPath, "*.*", SearchOption.AllDirectories));
-            files.AddRange(Directory.GetFiles(Master.mapsPath, "*.*", SearchOption.AllDirectories));
-            files.AddRange(Directory.GetFiles(Master.savesPath, "*.*", SearchOption.AllDirectories));
-            files.AddRange(Directory.GetFiles(Master.settlementsPath, "*.*", SearchOption.AllDirectories));
-            files.AddRange(Directory.GetFiles(Master.sitesPath, "*.*", SearchOption.AllDirectories));
-            files.AddRange(Directory.GetFiles(Master.usersPath, "*.*", SearchOption.AllDirectories));
-            files.AddRange(Directory.GetFiles(Master.caravansPath, "*.*", SearchOption.AllDirectories));
-            CreateArchive(files, backupPath, Master.backupWorldPath);
-            if (Directory.GetFiles(Master.backupWorldPath).Count() > Master.backupConfig.Amount && Master.backupConfig.AutomaticDeletion == true) 
+            inUse.WaitOne();
+            try
             {
-                DeleteOldestArchive();
+                backupName = $"World-{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day} {DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
+                string backupPath = $"{Master.backupWorldPath + Path.DirectorySeparatorChar}{backupName}{fileExtension}";
+                List<string> files = new List<string>();
+                files.AddRange(Directory.GetFiles(Master.corePath, "*.*", SearchOption.AllDirectories));
+                files.AddRange(Directory.GetFiles(Master.factionsPath, "*.*", SearchOption.AllDirectories));
+                files.AddRange(Directory.GetFiles(Master.mapsPath, "*.*", SearchOption.AllDirectories));
+                files.AddRange(Directory.GetFiles(Master.savesPath, "*.*", SearchOption.AllDirectories));
+                files.AddRange(Directory.GetFiles(Master.settlementsPath, "*.*", SearchOption.AllDirectories));
+                files.AddRange(Directory.GetFiles(Master.sitesPath, "*.*", SearchOption.AllDirectories));
+                files.AddRange(Directory.GetFiles(Master.usersPath, "*.*", SearchOption.AllDirectories));
+                files.AddRange(Directory.GetFiles(Master.caravansPath, "*.*", SearchOption.AllDirectories));
+                CreateArchive(files, backupPath, Master.backupWorldPath);
+                if (Directory.GetFiles(Master.backupWorldPath).Count() > Master.backupConfig.Amount && Master.backupConfig.AutomaticDeletion == true)
+                {
+                    DeleteOldestArchive();
+                }
+                Logger.Warning($"Successfully backed up server under {backupName}{fileExtension}");
+                Main_.SetPaths();
             }
-            Logger.Warning($"Successfully backed up server under {backupName}{fileExtension}");
-            Main_.SetPaths();
+            catch (Exception ex) { Logger.Error(ex.ToString()); }
+            inUse.Release();
         }
 
         public static void BackupUser(string username, bool persistent = false) 
         {
-            string playerArchivedSavePath = Path.Combine(Master.backupUsersPath, username);
-            if (persistent) playerArchivedSavePath += " - persistent";
-            playerArchivedSavePath += fileExtension;
-
-            if (File.Exists(playerArchivedSavePath))
+            inUse.WaitOne();
+            try
             {
-                if (persistent == true)
+                string playerArchivedSavePath = Path.Combine(Master.backupUsersPath, username);
+                if (persistent) playerArchivedSavePath += " - persistent";
+                playerArchivedSavePath += fileExtension;
+
+                if (File.Exists(playerArchivedSavePath))
                 {
-                    Logger.Error($"Could not backup user {username} because the file {playerArchivedSavePath} already exist. Consider running a non-persistent backup if you want to overwrite it.");
-                    return;
+                    if (persistent == true)
+                    {
+                        Logger.Error($"Could not backup user {username} because the file {playerArchivedSavePath} already exist. Consider running a non-persistent backup if you want to overwrite it.");
+                        inUse.Release();
+                        return;
+                    }
+                    else
+                    {
+                        File.Delete(playerArchivedSavePath);
+                        if (Master.serverConfig.VerboseLogs) Logger.Warning($"Deleting backup of {username} because he already had one.");
+                    }
                 }
-                else
+
+
+                List<string> files = new List<string>();
+
+                if(File.Exists(Path.Combine(Master.savesPath, username + SaveManager.fileExtension))) files.Add(Path.Combine(Master.savesPath, username + SaveManager.fileExtension));
+
+                MapData[] userMaps = MapManager.GetAllMapsFromUsername(username);
+                foreach (MapData map in userMaps)
                 {
-                    File.Delete(playerArchivedSavePath);
-                    if (Master.serverConfig.VerboseLogs) Logger.Warning($"Deleting backup of {username} because he already had one.");
+                    if(map != null) files.Add(Path.Combine(Master.mapsPath, map._mapTile + MapManager.fileExtension));
                 }
-            }
 
+                SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+                foreach (SiteFile site in playerSites)
+                {
+                    if(site != null) files.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
+                }
+                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
+                foreach (SettlementFile settlementFile in playerSettlements)
+                {
+                    if(settlementFile != null) files.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
+                }
 
-            List<string> files = new List<string>();
-
-            files.Add(Path.Combine(Master.savesPath, username + SaveManager.fileExtension));
-
-            MapData[] userMaps = MapManager.GetAllMapsFromUsername(username);
-            foreach (MapData map in userMaps) files.Add(Path.Combine(Master.mapsPath, map._mapTile + MapManager.fileExtension));
-
-            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-            foreach (SiteFile site in playerSites) files.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
-
-            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
-            foreach (SettlementFile settlementFile in playerSettlements) files.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
-
-            CreateArchive(files, playerArchivedSavePath, Master.usersPath);
-            Logger.Warning($"Successfully backed up user data for {username} under the name {playerArchivedSavePath}.");
+                CreateArchive(files, playerArchivedSavePath, Master.usersPath);
+                Logger.Warning($"Successfully backed up user data for {username} under the name {playerArchivedSavePath}.");
+            }catch (Exception ex) { Logger.Error(ex.ToString()); }
+            inUse.Release();
         }
 
         private static void CreateArchive(List<string> files, string toPath, string fromPath) 
