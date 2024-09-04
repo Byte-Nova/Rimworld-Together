@@ -54,7 +54,7 @@ namespace GameServer
 
             Master.backupsPath = Path.Combine(Master.mainPath, "Backups");
             Master.backupUsersPath = Path.Combine(Master.backupsPath, "Users");
-            Master.backupWorldPath = Path.Combine(Master.backupsPath, "Worlds");
+            Master.backupServerPath = Path.Combine(Master.backupsPath, "Servers");
 
             Master.modsPath = Path.Combine(Master.mainPath, "Mods");
             Master.requiredModsPath = Path.Combine(Master.modsPath, "Required");
@@ -76,7 +76,7 @@ namespace GameServer
 
             if (!Directory.Exists(Master.backupsPath)) Directory.CreateDirectory(Master.backupsPath);
             if (!Directory.Exists(Master.backupUsersPath)) Directory.CreateDirectory(Master.backupUsersPath);
-            if (!Directory.Exists(Master.backupWorldPath)) Directory.CreateDirectory(Master.backupWorldPath);
+            if (!Directory.Exists(Master.backupServerPath)) Directory.CreateDirectory(Master.backupServerPath);
 
             if (!Directory.Exists(Master.modsPath)) Directory.CreateDirectory(Master.modsPath);
             if (!Directory.Exists(Master.requiredModsPath)) Directory.CreateDirectory(Master.requiredModsPath);

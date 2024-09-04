@@ -67,7 +67,7 @@ namespace GameServer
             foreach (SettlementFile settlementFile in userSettlements)
             {
                 MapData mapFile = GetUserMapFromTile(settlementFile.Tile);
-                userMaps.Add(mapFile);
+                if (mapFile != null) userMaps.Add(mapFile);
             }
 
             return userMaps.ToArray();

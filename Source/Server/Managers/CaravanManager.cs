@@ -7,7 +7,7 @@ namespace GameServer
     {
         //Variables
 
-        private static readonly string fileExtension = ".mpcaravan";
+        public static readonly string fileExtension = ".mpcaravan";
 
         private static readonly double baseMaxTimer = 86400000;
 
@@ -139,6 +139,22 @@ namespace GameServer
         {
             CaravanFile toGet = GetActiveCaravans().FirstOrDefault(fetch => fetch.ID == caravanID &&
                 fetch.Owner == client.userFile.Username);
+
+            if (toGet == null) return null;
+            else return toGet;
+        }
+
+        public static CaravanFile[] GetCaravansFromOwner(string userName)
+        {
+            CaravanFile[] toGet = GetActiveCaravans().Where(fetch => fetch.Owner == userName).ToArray();
+
+            if (toGet == null) return null;
+            else return toGet;
+        }
+
+        public static CaravanFile GetCaravanFromOwner(string userName)
+        {
+            CaravanFile toGet = GetActiveCaravans().FirstOrDefault(fetch => fetch.Owner == userName);
 
             if (toGet == null) return null;
             else return toGet;

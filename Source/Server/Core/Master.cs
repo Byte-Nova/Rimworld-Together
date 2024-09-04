@@ -36,7 +36,7 @@ namespace GameServer
 
         public static string backupsPath;
 
-        public static string backupWorldPath;
+        public static string backupServerPath;
 
         public static string backupUsersPath;
 
