@@ -25,7 +25,7 @@ namespace GameServer
             files.AddRange(Directory.GetFiles(Master.sitesPath, "*.*", SearchOption.AllDirectories));
             files.AddRange(Directory.GetFiles(Master.usersPath, "*.*", SearchOption.AllDirectories));
             files.AddRange(Directory.GetFiles(Master.caravansPath, "*.*", SearchOption.AllDirectories));
-            CreateArchive(files, backupName, backupPath, Master.backupWorldPath);
+            CreateArchive(files, backupPath, Master.backupWorldPath);
             if (Directory.GetFiles(Master.backupWorldPath).Count() > Master.backupConfig.Amount && Master.backupConfig.AutomaticDeletion == true) 
             {
                 DeleteOldestArchive();
@@ -68,11 +68,11 @@ namespace GameServer
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in playerSettlements) files.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
 
-            CreateArchive(files, username, playerArchivedSavePath, Master.usersPath);
+            CreateArchive(files, playerArchivedSavePath, Master.usersPath);
             Logger.Warning($"Successfully backed up user data for {username} under the name {playerArchivedSavePath}.");
         }
 
-        private static void CreateArchive(List<string> files, string name, string toPath, string fromPath) 
+        private static void CreateArchive(List<string> files, string toPath, string fromPath) 
         {
             using (FileStream zip = new FileStream(toPath, FileMode.CreateNew))
             {
@@ -82,7 +82,7 @@ namespace GameServer
                     {
                         if (File.Exists(file))
                         {
-                            string relativePath = Path.GetRelativePath(fromPath, file);
+                            string relativePath = Path.GetRelativePath(Master.mainPath, file);
 
                             archive.CreateEntryFromFile(file, relativePath);
                         }
