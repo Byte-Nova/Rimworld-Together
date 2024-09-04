@@ -237,8 +237,8 @@ namespace GameServer
             if (userFile == null) Logger.Warning($"User '{ConsoleCommandManager.commandParameters[0]}' was not found");
             else
             {
-
-            DeleteWorldQuestion:
+                Logger.Warning("Do you want this backup to be persistent? (Will not be automatically deleted)");
+            DeleteUser:
                 Logger.Warning("Please type 'YES' or 'NO'");
                 string response = Console.ReadLine();
 
@@ -247,7 +247,7 @@ namespace GameServer
                 else
                 {
                     Logger.Error($"{response} is not a valid option; The options must be capitalized");
-                    goto DeleteWorldQuestion;
+                    goto DeleteUser;
                 }
                 
             }
