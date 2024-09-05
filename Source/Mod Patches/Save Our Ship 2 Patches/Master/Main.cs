@@ -28,7 +28,6 @@ namespace RT_SOS2Patches
         {
             Harmony harmony = new Harmony(patchID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-            Logger.Message($"Successfuly loaded SOS2Patches");
         }
     }
 

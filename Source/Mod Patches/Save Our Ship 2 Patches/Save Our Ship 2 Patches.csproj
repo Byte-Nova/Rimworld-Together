@@ -28,12 +28,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Client\GameClient.csproj" />
+    <ProjectReference Include="..\..\Client\GameClient.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="ShipsHaveInsides">
       <HintPath>..\..\LocalDlls\ShipsHaveInsides.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
 
