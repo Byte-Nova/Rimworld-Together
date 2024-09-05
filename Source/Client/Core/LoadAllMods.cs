@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -17,11 +18,17 @@ namespace GameClient
             {
                 if(LoadedModManager.RunningModsListForReading.Any(mod => mod.Name == allModsToLoad[name]))
                 {
-                    Assembly assembly = Assembly.LoadFrom(Path.Combine(assemblyPath, name + fileExtension));
-                    if(assembly != null)
-                    {
-                         Master.loadedPatches.Add(name,assembly);
-                         Logger.Message($"Loaded patch {name} patching {allModsToLoad[name]}");
+                    if(File.Exists(Path.Combine(assemblyPath, name + fileExtension))) {
+                        Assembly assembly = Assembly.LoadFrom(Path.Combine(assemblyPath, name + fileExtension));
+                        Master.loadedPatches.Add(name,assembly);
+                        try 
+                        {
+                            Type toUse = typeof(LoadAllMods);
+                            MethodInfo methodInfo = toUse.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static);
+                            methodInfo.Invoke(name,null);
+                            Logger.Message($"Loaded patch {name} patching {allModsToLoad[name]}");
+                        }
+                        catch (Exception ex){ Logger.Warning($"Failed to load patch {name} because :\n{ex.ToString()}"); }
                     }
                 }
             }
@@ -31,7 +38,7 @@ namespace GameClient
         {
             return new Dictionary<string,string>()
             {
-                // PatchName    //Mod ID
+                // PatchName    // Mod name
                 {"SOS2Patch", "Save Our Ship 2"}
             };
         }
