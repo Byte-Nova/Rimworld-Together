@@ -41,7 +41,7 @@ namespace GameServer
 
         private static void AddToMarket(ServerClient client, MarketData marketData)
         {
-            foreach (ThingData item in marketData._transferThings) TryCombineStackIfAvailable(client, item);
+            foreach (ThingDataFile item in marketData._transferThings) TryCombineStackIfAvailable(client, item);
 
             Main_.SaveValueFile(ServerFileMode.Market);
 
@@ -63,16 +63,16 @@ namespace GameServer
                 return;
             }
 
-            ThingData toGet = Master.marketValues.MarketStock[marketData._indexToManage];
-            int reservedQuantity = toGet.quantity;
-            toGet.quantity = marketData._quantityToManage;
-            marketData._transferThings = new List<ThingData>() { toGet };
+            ThingDataFile toGet = Master.marketValues.MarketStock[marketData._indexToManage];
+            int reservedQuantity = toGet.Quantity;
+            toGet.Quantity = marketData._quantityToManage;
+            marketData._transferThings = new List<ThingDataFile>() { toGet };
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
 
-            toGet.quantity = reservedQuantity;
-            if (toGet.quantity > marketData._quantityToManage) toGet.quantity -= marketData._quantityToManage;
-            else if (toGet.quantity == marketData._quantityToManage) Master.marketValues.MarketStock.RemoveAt(marketData._indexToManage);
+            toGet.Quantity = reservedQuantity;
+            if (toGet.Quantity > marketData._quantityToManage) toGet.Quantity -= marketData._quantityToManage;
+            else if (toGet.Quantity == marketData._quantityToManage) Master.marketValues.MarketStock.RemoveAt(marketData._indexToManage);
             else
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to buy illegal quantity at market");
@@ -97,19 +97,19 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
         }
 
-        private static void TryCombineStackIfAvailable(ServerClient client, ThingData thingData)
+        private static void TryCombineStackIfAvailable(ServerClient client, ThingDataFile thingData)
         {
-            if (thingData.quantity <= 0)
+            if (thingData.Quantity <= 0)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
                 return;
             }
 
-            foreach (ThingData stockedItem in Master.marketValues.MarketStock.ToArray())
+            foreach (ThingDataFile stockedItem in Master.marketValues.MarketStock.ToArray())
             {
-                if (stockedItem.defName == thingData.defName && stockedItem.materialDefName == thingData.materialDefName)
+                if (stockedItem.DefName == thingData.DefName && stockedItem.MaterialDefName == thingData.MaterialDefName)
                 {
-                    stockedItem.quantity += thingData.quantity;
+                    stockedItem.Quantity += thingData.Quantity;
                     return;
                 }
             }

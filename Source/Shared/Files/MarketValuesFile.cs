@@ -6,6 +6,6 @@ namespace Shared
     [Serializable]
     public class MarketValuesFile
     {
-        public List<ThingData> MarketStock = new List<ThingData>();
+        public List<ThingDataFile> MarketStock = new List<ThingDataFile>();
     }
 }

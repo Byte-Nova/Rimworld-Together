@@ -144,8 +144,8 @@ namespace GameServer
             foreach (SettlementFile settlementFile in playerSettlements)
             {
                 PlayerSettlementData settlementData = new PlayerSettlementData();
-                settlementData.settlementData.Tile = settlementFile.Tile;
-                settlementData.settlementData.Owner = settlementFile.Owner;
+                settlementData._settlementData.Tile = settlementFile.Tile;
+                settlementData._settlementData.Owner = settlementFile.Owner;
 
                 SettlementManager.RemoveSettlement(client, settlementData);
             }

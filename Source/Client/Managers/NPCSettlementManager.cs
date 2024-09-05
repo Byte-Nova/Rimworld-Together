@@ -14,13 +14,13 @@ namespace GameClient
         {
             NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case SettlementStepMode.Add:                    
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveNPCSettlementFromPacket(data.settlementData);
+                    RemoveNPCSettlementFromPacket(data._settlementData);
                     break;
             }
         }
@@ -93,8 +93,8 @@ namespace GameClient
         public static void RequestSettlementRemoval(Settlement settlement)
         {
             NPCSettlementData data = new NPCSettlementData();
-            data.stepMode = SettlementStepMode.Remove;
-            data.settlementData.tile = settlement.Tile;
+            data._stepMode = SettlementStepMode.Remove;
+            data._settlementData.tile = settlement.Tile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
             Network.listener.EnqueuePacket(packet);

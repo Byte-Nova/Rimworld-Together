@@ -6,8 +6,8 @@ namespace Shared
     [Serializable]
     public class PlayerSettlementData
     {
-        public SettlementStepMode stepMode;
+        public SettlementStepMode _stepMode;
 
-        public SettlementFile settlementData = new SettlementFile();
+        public SettlementFile _settlementData = new SettlementFile();
     }
 }

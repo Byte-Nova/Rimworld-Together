@@ -179,7 +179,7 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanData>(siteData._siteFile.WorkerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanDataFile>(siteData._siteFile.WorkerData));
 
                 RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, SessionValues.chosenCaravan);
 
@@ -282,11 +282,11 @@ namespace GameClient
                 {
                     if (site.MainSitePartDef == siteDefs[i])
                     {
-                        ThingData thingData = new ThingData();
-                        thingData.defName = siteRewardDefNames[i].defName;
-                        thingData.quantity = siteRewardCount[i];
-                        thingData.quality = 0;
-                        thingData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
+                        ThingDataFile thingData = new ThingDataFile();
+                        thingData.DefName = siteRewardDefNames[i].defName;
+                        thingData.Quantity = siteRewardCount[i];
+                        thingData.Quality = 0;
+                        thingData.Hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
 
                         if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(thingData));
 
