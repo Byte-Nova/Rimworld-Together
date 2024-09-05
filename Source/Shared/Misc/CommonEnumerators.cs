@@ -4,7 +4,7 @@ namespace Shared
     {
         public enum ClientNetworkState { Disconnected, Connecting, Connected }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup}
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 

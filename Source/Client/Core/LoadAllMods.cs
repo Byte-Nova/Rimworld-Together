@@ -1,36 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace GameClient
 {
     public static class LoadAllMods 
     {
-        public static readonly string AssemblyPath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString(), "Patches");
-        public static void LoadAllModAssemblies()
+        public static readonly string assemblyPath = Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString(), "Patches");
+        public static readonly string fileExtension = ".dll";
+        public static void LoadAllPatchAssemblies()
         {
-            Master.isSOS2 = LoadSOS2Patch();
+            Dictionary<string,string> allModsToLoad = GetAllPatchedMods();
+            foreach(string name in allModsToLoad.Keys)
+            {
+                if(LoadedModManager.RunningModsListForReading.Any(mod => mod.Name == allModsToLoad[name]))
+                {
+                    Assembly assembly = Assembly.LoadFrom(Path.Combine(assemblyPath, name + fileExtension));
+                    if(assembly != null)
+                    {
+                         Master.loadedPatches.Add(name,assembly);
+                         Logger.Message($"Loaded patch {name} patching {allModsToLoad[name]}");
+                    }
+                }
+            }
         } 
 
-        public static bool LoadSOS2Patch() 
+        private static Dictionary<string,string> GetAllPatchedMods()
         {
-            if (LoadedModManager.RunningModsListForReading.Any(x => x.Name == "Save Our Ship 2"))
+            return new Dictionary<string,string>()
             {
-                try
-                {
-                    Assembly assembly = Assembly.LoadFrom(Path.Combine(AssemblyPath, "SOS2Patch.dll"));
-                    Master.SOS2 = assembly;
-                    GameClient.SOS2.SOS2SendData.StartSOS2();
-                    return true;
-                }
-                catch (Exception ex) { Logger.Error($"SOS2Patch could not be loaded despite SOS2 being in load order.\n{ex}"); }
-            }
-            return false;
+                // PatchName    //Mod ID
+                {"SOS2Patch", "Save Our Ship 2"}
+            };
         }
     }
 }

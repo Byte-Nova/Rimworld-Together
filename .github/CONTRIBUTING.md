@@ -23,7 +23,7 @@ We need to make sure everyone follows a certain set of contribution steps, so ev
 ### Make use of comments whenever you see minimally fit.
 - If you find yourself not completely understanding what your code does, the rest of the coders will have a hard time understanding it. A comment or two can go a long way into making everything more accessible.
 ### Use coding / typing techniques that match our project's current structure.
-- More information can be found at our [Syntax Ruleset](https://github.com/RimworldTogether/Rimworld-Together/blob/development/SYNTAX.md).
+- More information can be found at our [Syntax Ruleset](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/SYNTAX.md).
 
 > [!NOTE]
 > TLDR: Keep your code simple, easy to read, and consistent with the current one!

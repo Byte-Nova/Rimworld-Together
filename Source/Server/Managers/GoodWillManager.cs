@@ -14,7 +14,7 @@ namespace GameServer
             if (settlementFile != null) factionGoodwillData._owner = settlementFile.Owner;
             else factionGoodwillData._owner = siteFile.Owner;
 
-            if (client.userFile.FactionFile != null && client.userFile.FactionFile.currentMembers.Contains(factionGoodwillData._owner))
+            if (client.userFile.FactionFile != null && client.userFile.FactionFile.CurrentMembers.Contains(factionGoodwillData._owner))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
@@ -82,7 +82,7 @@ namespace GameServer
             if (settlementFile != null) usernameToCheck = settlementFile.Owner;
             else usernameToCheck = siteFile.Owner;
 
-            if (client.userFile.FactionFile != null && FactionManagerHelper.GetFactionFromFactionName(client.userFile.FactionFile.name).currentMembers.Contains(usernameToCheck))
+            if (client.userFile.FactionFile != null && FactionManagerHelper.GetFactionFromFactionName(client.userFile.FactionFile.Name).CurrentMembers.Contains(usernameToCheck))
             {
                 if (usernameToCheck == client.userFile.Username) return Goodwill.Personal;
                 else return Goodwill.Faction;
@@ -95,7 +95,7 @@ namespace GameServer
 
         public static Goodwill GetSettlementGoodwill(ServerClient client, SettlementFile settlement)
         {
-            if (client.userFile.FactionFile != null && FactionManagerHelper.GetFactionFromFactionName(client.userFile.FactionFile.name).currentMembers.Contains(settlement.Owner))
+            if (client.userFile.FactionFile != null && FactionManagerHelper.GetFactionFromFactionName(client.userFile.FactionFile.Name).CurrentMembers.Contains(settlement.Owner))
             {
                 if (settlement.Owner == client.userFile.Username) return Goodwill.Personal;
                 else return Goodwill.Faction;
@@ -111,13 +111,13 @@ namespace GameServer
         {
             if (site.FactionFile != null)
             {
-                if (client.userFile.FactionFile != null && client.userFile.FactionFile.name == site.FactionFile.name) return Goodwill.Faction;
+                if (client.userFile.FactionFile != null && client.userFile.FactionFile.Name == site.FactionFile.Name) return Goodwill.Faction;
 
                 else if (client.userFile.Relationships.EnemyPlayers.Contains(site.Owner)) return Goodwill.Enemy;
 
                 else if (client.userFile.Relationships.AllyPlayers.Contains(site.Owner)) return Goodwill.Ally;
 
-                FactionFile factionFile = FactionManagerHelper.GetFactionFromFactionName(site.FactionFile.name);
+                FactionFile factionFile = FactionManagerHelper.GetFactionFromFactionName(site.FactionFile.Name);
 
                 foreach(string str in client.userFile.Relationships.EnemyPlayers)
                 {
@@ -154,21 +154,21 @@ namespace GameServer
 
             foreach (ServerClient client in clients)
             {
-                if (factionFile.currentMembers.Contains(client.userFile.Username)) clientsToGet.Add(client);
+                if (factionFile.CurrentMembers.Contains(client.userFile.Username)) clientsToGet.Add(client);
             }
 
             foreach (ServerClient client in clientsToGet)
             {
-                for (int i = 0; i < factionFile.currentMembers.Count(); i++)
+                for (int i = 0; i < factionFile.CurrentMembers.Count(); i++)
                 {
-                    if (client.userFile.Relationships.EnemyPlayers.Contains(factionFile.currentMembers[i]))
+                    if (client.userFile.Relationships.EnemyPlayers.Contains(factionFile.CurrentMembers[i]))
                     {
-                        client.userFile.Relationships.EnemyPlayers.Remove(factionFile.currentMembers[i]);
+                        client.userFile.Relationships.EnemyPlayers.Remove(factionFile.CurrentMembers[i]);
                     }
 
-                    else if (client.userFile.Relationships.AllyPlayers.Contains(factionFile.currentMembers[i]))
+                    else if (client.userFile.Relationships.AllyPlayers.Contains(factionFile.CurrentMembers[i]))
                     {
-                        client.userFile.Relationships.AllyPlayers.Remove(factionFile.currentMembers[i]);
+                        client.userFile.Relationships.AllyPlayers.Remove(factionFile.CurrentMembers[i]);
                     }
                 }
             }
@@ -178,21 +178,21 @@ namespace GameServer
 
             foreach (UserFile file in userFiles)
             {
-                if (factionFile.currentMembers.Contains(file.Username)) usersToGet.Add(file);
+                if (factionFile.CurrentMembers.Contains(file.Username)) usersToGet.Add(file);
             }
 
             foreach (UserFile file in usersToGet)
             {
-                for (int i = 0; i < factionFile.currentMembers.Count(); i++)
+                for (int i = 0; i < factionFile.CurrentMembers.Count(); i++)
                 {
-                    if (file.Relationships.EnemyPlayers.Contains(factionFile.currentMembers[i]))
+                    if (file.Relationships.EnemyPlayers.Contains(factionFile.CurrentMembers[i]))
                     {
-                        file.Relationships.EnemyPlayers.Remove(factionFile.currentMembers[i]);
+                        file.Relationships.EnemyPlayers.Remove(factionFile.CurrentMembers[i]);
                     }
 
-                    else if (file.Relationships.AllyPlayers.Contains(factionFile.currentMembers[i]))
+                    else if (file.Relationships.AllyPlayers.Contains(factionFile.CurrentMembers[i]))
                     {
-                        file.Relationships.AllyPlayers.Remove(factionFile.currentMembers[i]);
+                        file.Relationships.AllyPlayers.Remove(factionFile.CurrentMembers[i]);
                     }
                 }
 

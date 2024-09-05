@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace GameClient
 {
@@ -12,7 +13,7 @@ namespace GameClient
         
         public static ModConfigs modConfigs = new ModConfigs();
 
-        public static Assembly SOS2; public static bool isSOS2;
+        public static Dictionary<string,Assembly> loadedPatches = new Dictionary<string,Assembly>();
 
         //Paths
 

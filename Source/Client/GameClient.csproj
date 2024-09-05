@@ -28,7 +28,7 @@
 
   <ItemGroup>
 	  <Reference Include="Newtonsoft.Json">
-		<HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
+		<HintPath>..\Shared\Assemblies\Client\Newtonsoft.Json.dll</HintPath>
 	  </Reference>
   </ItemGroup>
 	

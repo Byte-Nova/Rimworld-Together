@@ -5,11 +5,9 @@
     <HasSharedItems>true</HasSharedItems>
     <SharedGUID>C950CC92-131F-45B4-9201-1CB27C45CEDB</SharedGUID>
   </PropertyGroup>
-
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
-  
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
@@ -22,20 +20,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\FactionFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\CaravanFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\MarketValuesFile.cs" />
-
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
-
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\AidData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\EventData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OfflineActivityData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\OnlineActivityData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\RoadData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\TransferData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\AidData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\EventData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\OfflineActivityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\OnlineActivityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\RoadData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CaravanData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\CreationOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\DamageOrder.cs" />
@@ -44,7 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\HediffOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\KillOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\PawnOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Actions\MarketData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\MarketData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\DifficultyData.cs" />
@@ -74,14 +70,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Transfers\Thing\BookData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Transfers\Thing\GenepackData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Transfers\Thing\PlantData.cs" />
-    
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\SOS2\MovementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Modded\SOS2\SpaceSettlementData.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
   </ItemGroup>

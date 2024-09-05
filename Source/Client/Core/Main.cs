@@ -20,7 +20,7 @@ namespace GameClient
             static RimworldTogether() 
             {
                 ApplyHarmonyPathches();
-                LoadAllMods.LoadAllModAssemblies();
+                LoadAllMods.LoadAllPatchAssemblies();
 
                 PrepareCulture();
                 PreparePaths();
