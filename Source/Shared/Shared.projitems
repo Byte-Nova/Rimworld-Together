@@ -73,6 +73,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\ApparelComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\EndogeneComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\HediffComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\ItemComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\SkillComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\StoryComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\TraitComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\TransformComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\XenogeneComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\XenotypeComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />

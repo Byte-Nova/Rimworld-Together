@@ -39,78 +39,30 @@ namespace Shared
 
         public string BodyTattooDefName;
 
-        //Hediffs
-
-        public List<string> HediffDefNames = new List<string>();
-
-        public List<string> HediffPartDefName = new List<string>();
-
-        public List<string> HediffSeverity = new List<string>();
-
-        public List<float> HediffImmunity = new List<float>();
-
-        public List<float> HediffTendQuality = new List<float>();
-
-        public List<float> HediffTotalTendQuality = new List<float>();
-
-        public List<int> HediffTendDuration = new List<int>();
-
-        public List<bool> HeddifPermanent = new List<bool>();
-
-        //Xenotypes
-
-        public string XenotypeDefName;
-
-        public string CustomXenotypeName;
-
-        //Genes
-
-        public List<string> XenogeneDefNames = new List<string>();
-
-        public List<string> EndogeneDefNames = new List<string>();
-
-        //Stories
-
-        public string ChildhoodStory;
-
-        public string AdulthoodStory;
-
-        //Skills
-
-        public List<string> SkillDefNames = new List<string>();
-
-        public List<string> SkillLevels = new List<string>();
-
-        public List<string> Passions = new List<string>();
-
-        //Traits
-
-        public List<string> TraitDefNames = new List<string>();
-
-        public List<string> TraitDegrees = new List<string>();
-
-        //Apparel
-
-        public List<ThingDataFile> EquippedApparel = new List<ThingDataFile>();
-
-        public List<bool> ApparelWornByCorpse = new List<bool>();
-
-        //Equipment
-
-        public ThingDataFile EquippedWeapon;
-
-        public List<ThingDataFile> InventoryItems = new List<ThingDataFile>();
-
-        //Transform
-
-        public string[] Position;
-
-        public int Rotation;
-
-        //Misc
-
         public string FavoriteColor;
         
         public float GrowthPoints;
+
+        public HediffComponent[] hediffs = new HediffComponent[0];
+
+        public XenotypeComponent xenotype = new XenotypeComponent();
+
+        public XenogeneComponent[] xenogenes  = new XenogeneComponent[0];
+
+        public EndogeneComponent[] endogenes  = new EndogeneComponent[0];
+
+        public StoryComponent stories = new StoryComponent();
+
+        public SkillComponent[] skills  = new SkillComponent[0];
+
+        public TraitComponent[] traits  = new TraitComponent[0];
+
+        public ApparelComponent[] equipedApparel  = new ApparelComponent[0];
+
+        public ThingDataFile EquippedWeapon = new ThingDataFile();
+
+        public ItemComponent[] items = new ItemComponent[0];
+
+        public TransformComponent transform = new TransformComponent();
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -61,9 +63,7 @@ namespace GameClient
 
             GetPawnFavoriteColor(pawn, humanData);
 
-            GetPawnPosition(pawn, humanData);
-
-            GetPawnRotation(pawn, humanData);
+            GetPawnTransform(pawn, humanData);
 
             return humanData;
         }
@@ -105,9 +105,7 @@ namespace GameClient
 
             SetPawnFavoriteColor(pawn, humanData);
 
-            SetPawnPosition(pawn, humanData);
-
-            SetPawnRotation(pawn, humanData);
+            SetPawnTransform(pawn, humanData);
 
             return pawn;
         }
@@ -154,54 +152,61 @@ namespace GameClient
         {
             if (pawn.health.hediffSet.hediffs.Count() > 0)
             {
+                List<HediffComponent> toGet = new List<HediffComponent>();
+
                 foreach (Hediff hd in pawn.health.hediffSet.hediffs)
                 {
                     try
                     {
-                        humanData.HediffDefNames.Add(hd.def.defName);
+                        HediffComponent component = new HediffComponent();
+                        component.HediffDefName = hd.def.defName;
 
-                        if (hd.Part != null) humanData.HediffPartDefName.Add(hd.Part.def.defName.ToString());
-                        else humanData.HediffPartDefName.Add("null");
+                        if (hd.Part != null) component.HediffPartDefName = hd.Part.def.defName;
+                        else component.HediffPartDefName = "null";
 
-                        if (hd.def.CompProps<HediffCompProperties_Immunizable>() != null) humanData.HediffImmunity.Add(pawn.health.immunity.GetImmunity(hd.def));
-                        else humanData.HediffImmunity.Add(-1f);
+                        if (hd.def.CompProps<HediffCompProperties_Immunizable>() != null) component.HediffImmunity = pawn.health.immunity.GetImmunity(hd.def);
+                        else component.HediffImmunity = -1f;
 
                         if (hd.def.tendable)
                         {
                             HediffComp_TendDuration comp = hd.TryGetComp<HediffComp_TendDuration>();
                             if (comp.IsTended)
                             {
-                                humanData.HediffTendQuality.Add(comp.tendQuality);
-                                humanData.HediffTendDuration.Add(comp.tendTicksLeft);
+                                component.HediffTendQuality = comp.tendQuality;
+                                component.HediffTendDuration = comp.tendTicksLeft;
                             } 
 
                             else 
                             {
-                                humanData.HediffTendDuration.Add(-1);
-                                humanData.HediffTendQuality.Add(-1);
+                                component.HediffTendDuration = -1;
+                                component.HediffTendQuality = -1;
                             }
 
                             if (comp.TProps.disappearsAtTotalTendQuality >= 0)
                             {
                                 Type type = comp.GetType();
                                 FieldInfo fieldInfo = type.GetField("totalTendQuality", BindingFlags.NonPublic | BindingFlags.Instance);
-                                humanData.HediffTotalTendQuality.Add((float)fieldInfo.GetValue(comp));
+                                component.HediffTotalTendQuality = (float)fieldInfo.GetValue(comp);
                             }
-                            else humanData.HediffTotalTendQuality.Add(-1f);
+                            else component.HediffTotalTendQuality = -1f;
                         } 
 
                         else 
                         {
-                            humanData.HediffTendDuration.Add(-1);
-                            humanData.HediffTendQuality.Add(-1);
-                            humanData.HediffTotalTendQuality.Add(-1f);
+                            component.HediffTendDuration = -1;
+                            component.HediffTendQuality = -1;
+                            component.HediffTotalTendQuality = -1f;
                         }
 
-                        humanData.HediffSeverity.Add(hd.Severity.ToString());
-                        humanData.HeddifPermanent.Add(hd.IsPermanent());
+                        component.HediffSeverity = hd.Severity.ToString();
+                        component.HeddifPermanent = hd.IsPermanent();
+
+                        toGet.Add(component);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
+
+                humanData.hediffs = toGet.ToArray();
             }
         }
 
@@ -215,11 +220,11 @@ namespace GameClient
         {
             try
             {
-                if (pawn.genes.Xenotype != null) humanData.XenotypeDefName = pawn.genes.Xenotype.defName.ToString();
-                else humanData.XenotypeDefName = "null";
+                if (pawn.genes.Xenotype != null) humanData.xenotype.DefName = pawn.genes.Xenotype.defName.ToString();
+                else humanData.xenotype.DefName = "null";
 
-                if (pawn.genes.CustomXenotype != null) humanData.CustomXenotypeName = pawn.genes.xenotypeName.ToString();
-                else humanData.CustomXenotypeName = "null";
+                if (pawn.genes.CustomXenotype != null) humanData.xenotype.CustomXenotypeName = pawn.genes.xenotypeName.ToString();
+                else humanData.xenotype.CustomXenotypeName = "null";
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -228,11 +233,21 @@ namespace GameClient
         {
             if (pawn.genes.Xenogenes.Count() > 0)
             {
+                List<XenogeneComponent> toGet = new List<XenogeneComponent>();
+
                 foreach (Gene gene in pawn.genes.Xenogenes)
                 {
-                    try { humanData.XenogeneDefNames.Add(gene.def.defName); }
+                    try                 
+                    { 
+                        XenogeneComponent component = new XenogeneComponent();
+                        component.DefName = gene.def.defName;
+
+                        toGet.Add(component);
+                    }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
+
+                humanData.xenogenes = toGet.ToArray();
             }
         }
 
@@ -240,11 +255,21 @@ namespace GameClient
         {
             if (pawn.genes.Endogenes.Count() > 0)
             {
+                List<EndogeneComponent> toGet = new List<EndogeneComponent>();
+
                 foreach (Gene gene in pawn.genes.Endogenes)
                 {
-                    try { humanData.EndogeneDefNames.Add(gene.def.defName.ToString()); }
+                    try 
+                    {  
+                        EndogeneComponent component = new EndogeneComponent();
+                        component.DefName = gene.def.defName;
+
+                        toGet.Add(component);
+                    }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
+
+                humanData.endogenes = toGet.ToArray();
             }
         }
 
@@ -258,11 +283,11 @@ namespace GameClient
         {
             try
             {
-                if (pawn.story.Childhood != null) humanData.ChildhoodStory = pawn.story.Childhood.defName.ToString();
-                else humanData.ChildhoodStory = "null";
+                if (pawn.story.Childhood != null) humanData.stories.ChildhoodStoryDefName = pawn.story.Childhood.defName.ToString();
+                else humanData.stories.ChildhoodStoryDefName = "null";
 
-                if (pawn.story.Adulthood != null) humanData.AdulthoodStory = pawn.story.Adulthood.defName.ToString();
-                else humanData.AdulthoodStory = "null";
+                if (pawn.story.Adulthood != null) humanData.stories.AdulthoodStoryDefName = pawn.story.Adulthood.defName.ToString();
+                else humanData.stories.AdulthoodStoryDefName = "null";
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -271,16 +296,23 @@ namespace GameClient
         {
             if (pawn.skills.skills.Count() > 0)
             {
+                List<SkillComponent> toGet = new List<SkillComponent>();
+
                 foreach (SkillRecord skill in pawn.skills.skills)
                 {
                     try
                     {
-                        humanData.SkillDefNames.Add(skill.def.defName);
-                        humanData.SkillLevels.Add(skill.levelInt.ToString());
-                        humanData.Passions.Add(skill.passion.ToString());
+                        SkillComponent component = new SkillComponent();
+                        component.SkillDefName = skill.def.defName;
+                        component.SkillLevel = skill.levelInt;
+                        component.Passion = skill.passion.ToString();
+
+                        toGet.Add(component);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
+
+                humanData.skills = toGet.ToArray();
             }
         }
 
@@ -288,15 +320,22 @@ namespace GameClient
         {
             if (pawn.story.traits.allTraits.Count() > 0)
             {
+                List<TraitComponent> toGet = new List<TraitComponent>();
+
                 foreach (Trait trait in pawn.story.traits.allTraits)
                 {
                     try
                     {
-                        humanData.TraitDefNames.Add(trait.def.defName);
-                        humanData.TraitDegrees.Add(trait.Degree.ToString());
+                        TraitComponent component = new TraitComponent();
+                        component.TraitDefName = trait.def.defName;
+                        component.TraitDegree = trait.Degree;
+
+                        toGet.Add(component);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
+
+                humanData.traits = toGet.ToArray();
             }
         }
 
@@ -304,16 +343,23 @@ namespace GameClient
         {
             if (pawn.apparel.WornApparel.Count() > 0)
             {
+                List<ApparelComponent> toGet = new List<ApparelComponent>();
+
                 foreach (Apparel ap in pawn.apparel.WornApparel)
                 {
                     try
                     {
                         ThingDataFile thingData = ThingScribeManager.ItemToString(ap, 1);
-                        humanData.EquippedApparel.Add(thingData);
-                        humanData.ApparelWornByCorpse.Add(ap.WornByCorpse);
+                        ApparelComponent component = new ApparelComponent();
+                        component.EquippedApparel = thingData;
+                        component.WornByCorpse = ap.WornByCorpse;
+
+                        toGet.Add(component);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
+
+                humanData.equipedApparel = toGet.ToArray();
             }
         }
 
@@ -335,31 +381,38 @@ namespace GameClient
         {
             if (pawn.inventory.innerContainer.Count() != 0)
             {
+                List<ItemComponent> toGet = new List<ItemComponent>();
+
                 foreach (Thing thing in pawn.inventory.innerContainer)
                 {
                     try
                     {
                         ThingDataFile thingData = ThingScribeManager.ItemToString(thing, thing.stackCount);
-                        humanData.InventoryItems.Add(thingData);
+                        ItemComponent component = new ItemComponent();
+                        component.InventoryItem = thingData;
+
+                        toGet.Add(component);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
+
+                humanData.items = toGet.ToArray();
             }
         }
 
-        private static void GetPawnPosition(Pawn pawn, HumanDataFile humanData)
+        private static void GetPawnTransform(Pawn pawn, HumanDataFile humanData)
         {
             try
             {
-                humanData.Position = new string[] { pawn.Position.x.ToString(),
-                    pawn.Position.y.ToString(), pawn.Position.z.ToString() };
-            }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
-        }
+                humanData.transform.Position = new string[] 
+                { 
+                    pawn.Position.x.ToString(),
+                    pawn.Position.y.ToString(), 
+                    pawn.Position.z.ToString() 
+                };
 
-        private static void GetPawnRotation(Pawn pawn, HumanDataFile humanData)
-        {
-            try { humanData.Rotation = pawn.Rotation.AsInt; }
+                humanData.transform.Rotation = pawn.Rotation.AsInt;
+            }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
@@ -437,51 +490,52 @@ namespace GameClient
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
-            if (humanData.HediffDefNames.Count() > 0)
+            if (humanData.hediffs.Length > 0)
             {
-                for (int i = 0; i < humanData.HediffDefNames.Count(); i++)
+                for (int i = 0; i < humanData.hediffs.Length; i++)
                 {
                     try
                     {
-                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.HediffDefNames[i]);
+                        HediffComponent component = humanData.hediffs[i];
+                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.HediffDefName);
                         BodyPartRecord bodyPart = null;
 
-                        if (humanData.HediffPartDefName[i] != "null")
+                        if (component.HediffPartDefName != "null")
                         {
                             bodyPart = pawn.RaceProps.body.AllParts.ToList().Find(x =>
-                                x.def.defName == humanData.HediffPartDefName[i]);
+                                x.def.defName == component.HediffPartDefName);
                         }
 
                         Hediff hediff = HediffMaker.MakeHediff(hediffDef, pawn);
-                        hediff.Severity = float.Parse(humanData.HediffSeverity[i]);
+                        hediff.Severity = float.Parse(component.HediffSeverity);
 
-                        if (humanData.HeddifPermanent[i])
+                        if (component.HeddifPermanent)
                         {
                             HediffComp_GetsPermanent hediffComp = hediff.TryGetComp<HediffComp_GetsPermanent>();
                             hediffComp.IsPermanent = true;
                         }
 
                         pawn.health.AddHediff(hediff, bodyPart);
-                        if (humanData.HediffImmunity[i] != -1f)
+                        if (component.HediffImmunity != -1f)
                         {
                             pawn.health.immunity.TryAddImmunityRecord(hediffDef, hediffDef);
                             ImmunityRecord immunityRecord = pawn.health.immunity.GetImmunityRecord(hediffDef);
-                            immunityRecord.immunity = humanData.HediffImmunity[i];
+                            immunityRecord.immunity = component.HediffImmunity;
                         }
 
-                        if (humanData.HediffTendDuration[i] != -1)
+                        if (component.HediffTendDuration != -1)
                         {
                             HediffComp_TendDuration comp = hediff.TryGetComp<HediffComp_TendDuration>();
-                            comp.tendQuality = humanData.HediffTendQuality[i];
-                            comp.tendTicksLeft = humanData.HediffTendDuration[i];
+                            comp.tendQuality = component.HediffTendQuality;
+                            comp.tendTicksLeft = component.HediffTendDuration;
                         }
                         
-                        if (humanData.HediffTotalTendQuality[i] != -1f) 
+                        if (component.HediffTotalTendQuality != -1f) 
                         {
                             HediffComp_TendDuration comp = hediff.TryGetComp<HediffComp_TendDuration>();
                             Type type = comp.GetType();
                             FieldInfo fieldInfo = type.GetField("totalTendQuality", BindingFlags.NonPublic | BindingFlags.Instance);
-                            fieldInfo.SetValue(comp,humanData.HediffTotalTendQuality[i]);
+                            fieldInfo.SetValue(comp, component.HediffTotalTendQuality);
                         }
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -499,14 +553,14 @@ namespace GameClient
         {
             try
             {
-                if (humanData.XenotypeDefName != "null")
+                if (humanData.xenotype.DefName != "null")
                 {
-                    pawn.genes.SetXenotype(DefDatabase<XenotypeDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.XenotypeDefName));
+                    pawn.genes.SetXenotype(DefDatabase<XenotypeDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.xenotype.DefName));
                 }
 
-                if (humanData.CustomXenotypeName != "null")
+                if (humanData.xenotype.CustomXenotypeName != "null")
                 {
-                    pawn.genes.xenotypeName = humanData.CustomXenotypeName;
+                    pawn.genes.xenotypeName = humanData.xenotype.CustomXenotypeName;
                 }
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -517,13 +571,14 @@ namespace GameClient
             try { pawn.genes.Xenogenes.Clear(); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
-            if (humanData.XenogeneDefNames.Count() > 0)
+            if (humanData.xenogenes.Length > 0)
             {
-                foreach (string str in humanData.XenogeneDefNames)
+                for (int i = 0; i < humanData.xenogenes.Length; i++)
                 {
                     try
                     {
-                        GeneDef def = DefDatabase<GeneDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
+                        XenogeneComponent component = humanData.xenogenes[i];
+                        GeneDef def = DefDatabase<GeneDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.DefName);
                         if (def != null) pawn.genes.AddGene(def, true);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -536,14 +591,15 @@ namespace GameClient
             try { pawn.genes.Endogenes.Clear(); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
-            if (humanData.EndogeneDefNames.Count() > 0)
+            if (humanData.endogenes.Length > 0)
             {
-                foreach (string str in humanData.EndogeneDefNames)
+                for (int i = 0; i < humanData.endogenes.Length; i++)
                 {
                     try
                     {
-                        GeneDef def = DefDatabase<GeneDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == str);
-                        if (def != null) pawn.genes.AddGene(def, false);
+                        EndogeneComponent component = humanData.endogenes[i];
+                        GeneDef def = DefDatabase<GeneDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.DefName);
+                        if (def != null) pawn.genes.AddGene(def, true);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
                 }
@@ -574,14 +630,14 @@ namespace GameClient
         {
             try
             {
-                if (humanData.ChildhoodStory != "null")
+                if (humanData.stories.ChildhoodStoryDefName != "null")
                 {
-                    pawn.story.Childhood = DefDatabase<BackstoryDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.ChildhoodStory);
+                    pawn.story.Childhood = DefDatabase<BackstoryDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.stories.ChildhoodStoryDefName);
                 }
 
-                if (humanData.AdulthoodStory != "null")
+                if (humanData.stories.AdulthoodStoryDefName != "null")
                 {
-                    pawn.story.Adulthood = DefDatabase<BackstoryDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.AdulthoodStory);
+                    pawn.story.Adulthood = DefDatabase<BackstoryDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.stories.AdulthoodStoryDefName);
                 }
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -589,15 +645,16 @@ namespace GameClient
 
         private static void SetPawnSkills(Pawn pawn, HumanDataFile humanData)
         {
-            if (humanData.SkillDefNames.Count() > 0)
+            if (humanData.skills.Length > 0)
             {
-                for (int i = 0; i < humanData.SkillDefNames.Count(); i++)
+                for (int i = 0; i < humanData.skills.Length; i++)
                 {
                     try
                     {
-                        pawn.skills.skills[i].levelInt = int.Parse(humanData.SkillLevels[i]);
+                        SkillComponent component = humanData.skills[i];
+                        pawn.skills.skills[i].levelInt = component.SkillLevel;
 
-                        Enum.TryParse(humanData.Passions[i], true, out Passion passion);
+                        Enum.TryParse(component.Passion, true, out Passion passion);
                         pawn.skills.skills[i].passion = passion;
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -610,14 +667,15 @@ namespace GameClient
             try { pawn.story.traits.allTraits.Clear(); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
-            if (humanData.TraitDefNames.Count() > 0)
+            if (humanData.traits.Length > 0)
             {
-                for (int i = 0; i < humanData.TraitDefNames.Count(); i++)
+                for (int i = 0; i < humanData.traits.Length; i++)
                 {
                     try
                     {
-                        TraitDef traitDef = DefDatabase<TraitDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == humanData.TraitDefNames[i]);
-                        Trait trait = new Trait(traitDef, int.Parse(humanData.TraitDegrees[i]));
+                        TraitComponent component = humanData.traits[i];
+                        TraitDef traitDef = DefDatabase<TraitDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.TraitDefName);
+                        Trait trait = new Trait(traitDef, component.TraitDegree);
                         pawn.story.traits.GainTrait(trait);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -634,14 +692,15 @@ namespace GameClient
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
-            if (humanData.EquippedApparel.Count() > 0)
+            if (humanData.equipedApparel.Length > 0)
             {
-                for (int i = 0; i < humanData.EquippedApparel.Count(); i++)
+                for (int i = 0; i < humanData.equipedApparel.Length; i++)
                 {
                     try
                     {
-                        Apparel apparel = (Apparel)ThingScribeManager.StringToItem(humanData.EquippedApparel[i]);
-                        if (humanData.ApparelWornByCorpse[i]) apparel.WornByCorpse.MustBeTrue();
+                        ApparelComponent component = humanData.equipedApparel[i];
+                        Apparel apparel = (Apparel)ThingScribeManager.StringToItem(component.EquippedApparel);
+                        if (component.WornByCorpse) apparel.WornByCorpse.MustBeTrue();
                         else apparel.WornByCorpse.MustBeFalse();
 
                         pawn.apparel.Wear(apparel);
@@ -669,13 +728,14 @@ namespace GameClient
 
         private static void SetPawnInventory(Pawn pawn, HumanDataFile humanData)
         {
-            if (humanData.InventoryItems.Count() > 0)
+            if (humanData.items.Length > 0)
             {
-                foreach (ThingDataFile item in humanData.InventoryItems)
+                for (int i = 0; i < humanData.items.Length; i++)
                 {
                     try
                     {
-                        Thing thing = ThingScribeManager.StringToItem(item);
+                        ItemComponent component = humanData.items[i];
+                        Thing thing = ThingScribeManager.StringToItem(component.InventoryItem);
                         pawn.inventory.TryAddAndUnforbid(thing);
                     }
                     catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -683,23 +743,19 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnPosition(Pawn pawn, HumanDataFile humanData)
+        private static void SetPawnTransform(Pawn pawn, HumanDataFile humanData)
         {
-            if (humanData.Position != null)
+            if (humanData.transform.Position != null)
             {
                 try
                 {
-                    pawn.Position = new IntVec3(int.Parse(humanData.Position[0]), int.Parse(humanData.Position[1]),
-                        int.Parse(humanData.Position[2]));
+                    pawn.Position = new IntVec3(int.Parse(humanData.transform.Position[0]), int.Parse(humanData.transform.Position[1]),
+                        int.Parse(humanData.transform.Position[2]));
+
+                    pawn.Rotation = new Rot4(humanData.transform.Rotation);
                 }
                 catch (Exception e) { Logger.Warning(e.ToString()); }
             }
-        }
-
-        private static void SetPawnRotation(Pawn pawn, HumanDataFile humanData)
-        {
-            try { pawn.Rotation = new Rot4(humanData.Rotation); }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
         }
     }
 

@@ -15,7 +15,7 @@ namespace Shared
 
         public int Type;
 
-        public byte[] WorkerData;
+        public HumanDataFile WorkerData;
 
         public FactionFile FactionFile;
 
