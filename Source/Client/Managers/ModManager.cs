@@ -24,18 +24,18 @@ namespace GameClient
                 loginData._extraDetails.ToArray()));
         }
 
-        public static bool CheckIfMapHasConflictingMods(MapData mapData)
+        public static bool CheckIfMapHasConflictingMods(MapFile mapFile)
         {
             string[] currentMods = GetRunningModList();
 
-            foreach (string mod in mapData._mapMods)
+            foreach (string mod in mapFile.Mods)
             {
                 if (!currentMods.Contains(mod)) return true;
             }
 
             foreach (string mod in currentMods)
             {
-                if (!mapData._mapMods.Contains(mod)) return true;
+                if (!mapFile.Mods.Contains(mod)) return true;
             }
 
             return false;

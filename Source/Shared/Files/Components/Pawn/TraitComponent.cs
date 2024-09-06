@@ -2,8 +2,8 @@ namespace Shared
 {
     public class TraitComponent
     {
-        public string TraitDefName;
+        public string DefName;
 
-        public int TraitDegree;
+        public int Degree;
     }
 }

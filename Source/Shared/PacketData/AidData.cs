@@ -12,6 +12,6 @@ namespace Shared
 
         public int _toTile;
 
-        public HumanDataFile _humanData;
+        public HumanFile _humanData;
     }
 }

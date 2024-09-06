@@ -130,9 +130,9 @@ namespace GameClient
             Network.listener.EnqueuePacket(packet);
         }
 
-        private static void JoinMap(MapData mapData, OnlineActivityData activityData)
+        private static void JoinMap(MapFile mapFile, OnlineActivityData activityData)
         {
-            onlineMap = MapScribeManager.StringToMap(mapData, true, true, false, false, false, false);
+            onlineMap = MapScribeManager.StringToMap(mapFile, true, true, false, false, false, false);
             factionPawns = OnlineManagerHelper.GetCaravanPawns().ToList();
             mapThings = RimworldManager.GetThingsInMap(onlineMap).OrderBy(fetch => (fetch.PositionHeld.ToVector3() - Vector3.zero).sqrMagnitude).ToList();
 
@@ -434,21 +434,21 @@ namespace GameClient
             Thing toSpawn;
             if (data._creationOrder._creationType == CreationType.Human)
             {
-                HumanDataFile humanData = Serializer.ConvertBytesToObject<HumanDataFile>(data._creationOrder._dataToCreate);
+                HumanFile humanData = Serializer.ConvertBytesToObject<HumanFile>(data._creationOrder._dataToCreate);
                 toSpawn = HumanScribeManager.StringToHuman(humanData);
                 toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else if (data._creationOrder._creationType == CreationType.Animal)
             {
-                AnimalDataFile animalData = Serializer.ConvertBytesToObject<AnimalDataFile>(data._creationOrder._dataToCreate);
+                AnimalFile animalData = Serializer.ConvertBytesToObject<AnimalFile>(data._creationOrder._dataToCreate);
                 toSpawn = AnimalScribeManager.StringToAnimal(animalData);
                 toSpawn.SetFaction(FactionValues.allyPlayer);
             }
 
             else
             {
-                ThingDataFile thingData = Serializer.ConvertBytesToObject<ThingDataFile>(data._creationOrder._dataToCreate);
+                ThingFile thingData = Serializer.ConvertBytesToObject<ThingFile>(data._creationOrder._dataToCreate);
                 toSpawn = ThingScribeManager.StringToItem(thingData);
             }
 
@@ -1097,13 +1097,13 @@ namespace GameClient
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
-                foreach (HumanDataFile humanData in activityData._mapHumans)
+                foreach (HumanFile humanData in activityData._mapHumans)
                 {
                     Pawn human = HumanScribeManager.StringToHuman(humanData);
                     pawnList.Add(human);
                 }
 
-                foreach (AnimalDataFile animalData in activityData._mapAnimals)
+                foreach (AnimalFile animalData in activityData._mapAnimals)
                 {
                     Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
                     pawnList.Add(animal);
@@ -1119,13 +1119,13 @@ namespace GameClient
             {
                 List<Pawn> pawnList = new List<Pawn>();
 
-                foreach (HumanDataFile humanData in activityData._caravanHumans)
+                foreach (HumanFile humanData in activityData._caravanHumans)
                 {
                     Pawn human = HumanScribeManager.StringToHuman(humanData);
                     pawnList.Add(human);
                 }
 
-                foreach (AnimalDataFile animalData in activityData._caravanAnimals)
+                foreach (AnimalFile animalData in activityData._caravanAnimals)
                 {
                     Pawn animal = AnimalScribeManager.StringToAnimal(animalData);
                     pawnList.Add(animal);
@@ -1154,7 +1154,7 @@ namespace GameClient
             }
         }
 
-        public static List<HumanDataFile> GetActivityHumans()
+        public static List<HumanFile> GetActivityHumans()
         {
             if (ClientValues.isRealTimeHost)
             {
@@ -1163,10 +1163,10 @@ namespace GameClient
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<HumanDataFile> convertedList = new List<HumanDataFile>();
+                List<HumanFile> convertedList = new List<HumanFile>();
                 foreach (Pawn human in mapHumans)
                 {
-                    HumanDataFile data = HumanScribeManager.HumanToString(human);
+                    HumanFile data = HumanScribeManager.HumanToString(human);
                     convertedList.Add(data);
                 }
 
@@ -1180,10 +1180,10 @@ namespace GameClient
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<HumanDataFile> convertedList = new List<HumanDataFile>();
+                List<HumanFile> convertedList = new List<HumanFile>();
                 foreach (Pawn human in caravanHumans)
                 {
-                    HumanDataFile data = HumanScribeManager.HumanToString(human);
+                    HumanFile data = HumanScribeManager.HumanToString(human);
                     convertedList.Add(data);
                 }
 
@@ -1191,7 +1191,7 @@ namespace GameClient
             }
         }
 
-        public static List<AnimalDataFile> GetActivityAnimals()
+        public static List<AnimalFile> GetActivityAnimals()
         {
             if (ClientValues.isRealTimeHost)
             {
@@ -1200,10 +1200,10 @@ namespace GameClient
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<AnimalDataFile> convertedList = new List<AnimalDataFile>();
+                List<AnimalFile> convertedList = new List<AnimalFile>();
                 foreach (Pawn animal in mapAnimals)
                 {
-                    AnimalDataFile data = AnimalScribeManager.AnimalToString(animal);
+                    AnimalFile data = AnimalScribeManager.AnimalToString(animal);
                     convertedList.Add(data);
                 }
 
@@ -1217,10 +1217,10 @@ namespace GameClient
                     .OrderBy(p => p.def.defName)
                     .ToList();
 
-                List<AnimalDataFile> convertedList = new List<AnimalDataFile>();
+                List<AnimalFile> convertedList = new List<AnimalFile>();
                 foreach (Pawn animal in caravanAnimals)
                 {
-                    AnimalDataFile data = AnimalScribeManager.AnimalToString(animal);
+                    AnimalFile data = AnimalScribeManager.AnimalToString(animal);
                     convertedList.Add(data);
                 }
 

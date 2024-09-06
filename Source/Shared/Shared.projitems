@@ -64,12 +64,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionGoodwillData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\WorldData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\PlanetGenerator\PlanetNPCSettlement.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\HumanDataFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\AnimalDataFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\ThingDataFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\BookData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\GenepackData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\PlantData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\HumanFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\AnimalFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ThingFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\BookComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\GenepackComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\PlantComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
@@ -81,9 +81,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\SkillComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\StoryComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\TraitComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\TrainableComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\TransformComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\XenogeneComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\XenotypeComponent.cs" />
+
+    <Compile Include="$(MSBuildThisFileDirectory)Files\MapFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Map\TileComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />

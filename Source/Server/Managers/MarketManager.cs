@@ -41,7 +41,7 @@ namespace GameServer
 
         private static void AddToMarket(ServerClient client, MarketData marketData)
         {
-            foreach (ThingDataFile item in marketData._transferThings) TryCombineStackIfAvailable(client, item);
+            foreach (ThingFile item in marketData._transferThings) TryCombineStackIfAvailable(client, item);
 
             Main_.SaveValueFile(ServerFileMode.Market);
 
@@ -63,10 +63,10 @@ namespace GameServer
                 return;
             }
 
-            ThingDataFile toGet = Master.marketValues.MarketStock[marketData._indexToManage];
+            ThingFile toGet = Master.marketValues.MarketStock[marketData._indexToManage];
             int reservedQuantity = toGet.Quantity;
             toGet.Quantity = marketData._quantityToManage;
-            marketData._transferThings = new List<ThingDataFile>() { toGet };
+            marketData._transferThings = new List<ThingFile>() { toGet };
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
 
@@ -97,7 +97,7 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
         }
 
-        private static void TryCombineStackIfAvailable(ServerClient client, ThingDataFile thingData)
+        private static void TryCombineStackIfAvailable(ServerClient client, ThingFile thingData)
         {
             if (thingData.Quantity <= 0)
             {
@@ -105,7 +105,7 @@ namespace GameServer
                 return;
             }
 
-            foreach (ThingDataFile stockedItem in Master.marketValues.MarketStock.ToArray())
+            foreach (ThingFile stockedItem in Master.marketValues.MarketStock.ToArray())
             {
                 if (stockedItem.DefName == thingData.DefName && stockedItem.MaterialDefName == thingData.MaterialDefName)
                 {

@@ -13,15 +13,15 @@ namespace Shared
 
         //Map
 
-        public MapData _mapData;
+        public MapFile _mapData;
 
-        public List<HumanDataFile> _mapHumans = new List<HumanDataFile>();
+        public List<HumanFile> _mapHumans = new List<HumanFile>();
 
-        public List<AnimalDataFile> _mapAnimals = new List<AnimalDataFile>();
+        public List<AnimalFile> _mapAnimals = new List<AnimalFile>();
 
-        public List<HumanDataFile> _caravanHumans = new List<HumanDataFile>();
+        public List<HumanFile> _caravanHumans = new List<HumanFile>();
 
-        public List<AnimalDataFile> _caravanAnimals = new List<AnimalDataFile>();
+        public List<AnimalFile> _caravanAnimals = new List<AnimalFile>();
 
         //Misc
 

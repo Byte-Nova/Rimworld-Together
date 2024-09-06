@@ -2,9 +2,9 @@ namespace Shared
 {
     public class SkillComponent
     {
-        public string SkillDefName;
+        public string DefName;
 
-        public int SkillLevel;
+        public int Level;
 
         public string Passion;
     }

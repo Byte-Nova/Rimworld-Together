@@ -2,20 +2,20 @@ namespace Shared
 {
     public class HediffComponent
     {
-        public string HediffDefName;
+        public string DefName;
 
-        public string HediffPartDefName;
+        public string PartDefName;
 
-        public string HediffSeverity;
+        public float Severity;
 
-        public float HediffImmunity;
+        public float Immunity;
 
-        public float HediffTendQuality;
+        public float TendQuality;
 
-        public float HediffTotalTendQuality;
+        public float TotalTendQuality;
 
-        public int HediffTendDuration;
+        public int TendDuration;
 
-        public bool HeddifPermanent;
+        public bool IsPermanent;
     }
 }

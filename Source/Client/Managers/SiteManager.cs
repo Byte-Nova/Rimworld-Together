@@ -282,7 +282,7 @@ namespace GameClient
                 {
                     if (site.MainSitePartDef == siteDefs[i])
                     {
-                        ThingDataFile thingData = new ThingDataFile();
+                        ThingFile thingData = new ThingFile();
                         thingData.DefName = siteRewardDefNames[i].defName;
                         thingData.Quantity = siteRewardCount[i];
                         thingData.Quality = 0;
