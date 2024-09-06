@@ -1,4 +1,7 @@
-﻿namespace GameClient
+﻿using System.Collections.Generic;
+using System.Reflection;
+
+namespace GameClient
 {
     //Class with all the critical variables for the client to work
 
@@ -9,6 +12,8 @@
         public static UnityMainThreadDispatcher threadDispatcher;
         
         public static ModConfigs modConfigs = new ModConfigs();
+
+        public static Dictionary<string,Assembly> loadedPatches = new Dictionary<string,Assembly>();
 
         //Paths
 
