@@ -355,14 +355,11 @@ namespace GameClient
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
 
                 List<Thing> thingsInMap = new List<Thing>();
-                foreach(Zone zone in map.zoneManager.AllZones)
+                foreach(Thing thing in map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item && fetch.IsInAnyStorage()))
                 {
-                    foreach(Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                    if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
                     {
-                        if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
-                        {
                             thingsInMap.Add(thing);
-                        }
                     }
                 }
 
@@ -418,14 +415,11 @@ namespace GameClient
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
 
                 List<Thing> thingsInMap = new List<Thing>();
-                foreach (Zone zone in map.zoneManager.AllZones)
+                foreach (Thing thing in map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item && fetch.IsInAnyStorage()))
                 {
-                    foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                    if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
                     {
-                        if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
-                        {
-                            thingsInMap.Add(thing);
-                        }
+                        thingsInMap.Add(thing);
                     }
                 }
 
