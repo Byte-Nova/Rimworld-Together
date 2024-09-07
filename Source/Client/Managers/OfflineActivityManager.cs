@@ -41,7 +41,7 @@ namespace GameClient
                 return;
             }
 
-            SessionValues.ToggleOfflineFunction(activityType);
+            SessionValues.ToggleOfflineActivity(activityType);
 
             if (activityType == OfflineActivityType.Spy)
             {

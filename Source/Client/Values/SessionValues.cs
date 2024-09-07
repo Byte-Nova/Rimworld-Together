@@ -33,14 +33,14 @@ namespace GameClient
             actionValues = serverGlobalData._actionValues;
         }
 
-        public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }
+        public static void ToggleOnlineActivity(OnlineActivityType type) { currentRealTimeEvent = type; }
 
-        public static void ToggleOfflineFunction(OfflineActivityType type) { latestOfflineActivity = type; }
+        public static void ToggleOfflineActivity(OfflineActivityType type) { latestOfflineActivity = type; }
         
         public static void CleanValues()
         {
-            ToggleOnlineFunction(OnlineActivityType.None);
-            ToggleOfflineFunction(OfflineActivityType.None);
+            ToggleOnlineActivity(OnlineActivityType.None);
+            ToggleOfflineActivity(OfflineActivityType.None);
 
             chosenSettlement = null;
             chosenCaravan = null;
