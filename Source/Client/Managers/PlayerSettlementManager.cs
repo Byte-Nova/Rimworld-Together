@@ -17,7 +17,7 @@ namespace GameClient
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
 
-            switch (settlementData.stepMode)
+            switch (settlementData._stepMode)
             {
                 case SettlementStepMode.Add:
                     SpawnSingleSettlement(settlementData);
@@ -66,14 +66,14 @@ namespace GameClient
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = toAdd.settlementData.Tile;
-                    settlement.Name = "RTSettlementName".Translate(toAdd.settlementData.Owner);
-                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.settlementData.Goodwill));
+                    settlement.Tile = toAdd._settlementData.Tile;
+                    settlement.Name = "RTSettlementName".Translate(toAdd._settlementData.Owner);
+                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd._settlementData.Goodwill));
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd.settlementData.Tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd._settlementData.Tile}. Reason: {e}"); }
             }
         }
 
@@ -83,12 +83,12 @@ namespace GameClient
             {
                 try
                 {
-                    Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove.settlementData.Tile);
+                    Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove._settlementData.Tile);
 
                     playerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.settlementData.Tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove._settlementData.Tile}. Reason: {e}"); }
             }
         }
     }
