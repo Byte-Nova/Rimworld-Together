@@ -53,7 +53,7 @@ namespace GameServer
 
             foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
             {
-                siteData._goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
+                siteData._siteFile.Goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
 
                 cClient.listener.EnqueuePacket(packet);

@@ -93,11 +93,11 @@ namespace GameClient
                     break;
 
                 case SiteStepMode.Build:
-                    PlayerSiteManager.SpawnSingleSite(siteData);
+                    PlayerSiteManager.SpawnSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Destroy:
-                    PlayerSiteManager.RemoveSingleSite(siteData);
+                    PlayerSiteManager.RemoveSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Info:

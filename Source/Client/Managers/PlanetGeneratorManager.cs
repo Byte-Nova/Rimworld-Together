@@ -190,7 +190,7 @@ namespace GameClient
 
                     Find.WorldFeatures.features.Add(worldFeature);
                 }
-                catch (Exception e) { Logger.Error($"Failed set planet feature from def '{planetFeature.defName}'. Reason: {e}"); }
+                catch (Exception e) { Logger.Warning($"Failed set planet feature from def '{planetFeature.defName}'. Reason: {e}"); }
             }
 
             Find.WorldFeatures.textsCreated = false;
@@ -203,11 +203,11 @@ namespace GameClient
 
             for (int i = 0; i < cachedWorldValues.NPCFactions.Length; i++)
             {
-                PlanetNPCFaction faction = cachedWorldValues.NPCFactions[i];
-
                 try
                 {
-                    Faction toModify = planetFactions[i];
+                    PlanetNPCFaction faction = cachedWorldValues.NPCFactions[i];
+
+                    Faction toModify = planetFactions.First(fetch => fetch.def.defName == cachedWorldValues.NPCFactions[i].defName);
 
                     toModify.Name = faction.name;
 
@@ -216,7 +216,7 @@ namespace GameClient
                         faction.color[2],
                         faction.color[3]);
                 }
-                catch (Exception e) { Logger.Error($"Failed set planet faction from def '{faction.defName}'. Reason: {e}"); }
+                catch (Exception e) { Logger.Warning($"Failed set planet faction from def '{cachedWorldValues.NPCFactions[i].defName}'. Reason: {e}"); }
             }
         }
     }
@@ -245,7 +245,7 @@ namespace GameClient
                     toCreate.defName = faction.defName;
                     npcFactions.Add(toCreate);
                 }
-                catch (Exception e) { Logger.Error($"Failed transform faction '{faction.defName}' from game. Reason: {e}"); }
+                catch (Exception e) { Logger.Warning($"Failed to get faction '{faction.defName}' from game. Reason: {e}"); }
             }
             return npcFactions.ToArray();
         }
@@ -255,8 +255,8 @@ namespace GameClient
             List<FactionDef> defList = new List<FactionDef>();
             foreach (PlanetNPCFaction faction in factions)
             {
-                try { defList.Add(DefDatabase<FactionDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == faction.defName)); }
-                catch (Exception e) { Logger.Error($"Failed get FactionDef '{faction.defName}' from server. Reason: {e}"); }
+                try { defList.Add(DefDatabase<FactionDef>.AllDefs.First(fetch => fetch.defName == faction.defName)); }
+                catch (Exception e) { Logger.Warning($"Failed to get FactionDef '{faction.defName}' from server. Reason: {e}"); }
             }
             return defList.ToArray();
         }
@@ -281,7 +281,7 @@ namespace GameClient
                         planetFactions.Add(planetFaction);
                     }
                 }
-                catch (Exception e) { Logger.Error($"Failed get NPC faction '{faction.def.defName}' to populate. Reason: {e}"); }
+                catch (Exception e) { Logger.Warning($"Failed to get NPC faction '{faction.def.defName}' to populate. Reason: {e}"); }
             }
 
             return planetFactions.ToArray();
@@ -307,7 +307,7 @@ namespace GameClient
 
                     npcSettlements.Add(PlanetNPCSettlement);
                 }
-                catch (Exception e) { Logger.Error($"Failed get NPC settlement '{settlement.Tile}' to populate. Reason: {e}"); }
+                catch (Exception e) { Logger.Warning($"Failed to get NPC settlement '{settlement.Tile}' to populate. Reason: {e}"); }
             }
             return npcSettlements.ToArray();
         }
@@ -328,7 +328,7 @@ namespace GameClient
 
                     planetFeatures.Add(planetFeature);
                 }
-                catch (Exception e) { Logger.Error($"Failed get feature '{worldFeature.def.defName}' to populate. Reason: {e}"); }
+                catch (Exception e) { Logger.Warning($"Failed to get feature '{worldFeature.def.defName}' to populate. Reason: {e}"); }
             }
 
             return planetFeatures.ToArray();
