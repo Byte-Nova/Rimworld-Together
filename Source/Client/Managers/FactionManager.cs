@@ -271,7 +271,7 @@ namespace GameClient
             for (int i = 0; i < factionManifest._factionFile.CurrentMembers.Count; i++)
             {
                 toDisplay.Add($"{factionManifest._factionFile.CurrentMembers[i]} " +
-                    "- " + $"RTFaction{factionManifest._factionFile.CurrentRanks[i]}".Translate());
+                    "- " + $"RTFaction{(FactionRanks)factionManifest._factionFile.CurrentRanks[i]}".Translate());
             }
 
             RT_Dialog_Listing d1 = new RT_Dialog_Listing("RTFactionMemberMenu".Translate(), 
