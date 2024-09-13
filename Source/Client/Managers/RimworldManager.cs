@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -29,12 +31,11 @@ namespace GameClient
             if (playerNegotiator != null) return true;
             else return false;
         }
-
         public static bool CheckIfHasEnoughSilverInMap(Map map, int requiredQuantity)
         {
             if (requiredQuantity == 0) return true;
 
-            int silverInMap = GetSilverInMap(map);
+            int silverInMap = GetSpecificThingCountInMap(ThingDefOf.Silver, map);
             if (silverInMap >= requiredQuantity) return true;
             else return false;
         }
@@ -48,24 +49,29 @@ namespace GameClient
             else return false;
         }
 
-        public static int GetSilverInMap(Map map)
+        public static Thing[] GetAllThingsInMap(Map map)
         {
-            List<Thing> silverInMap = new List<Thing>();
-            foreach (Zone zone in map.zoneManager.AllZones)
+            return map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item 
+                && fetch.IsInAnyStorage() && fetch.def.category == ThingCategory.Item && !fetch.Position.Fogged(map)).ToArray();
+        }
+
+        public static Thing[] GetSpecificThingInMap(ThingDef thingDef, Map map)
+        {
+            return map.listerThings.AllThings.Where(fetch => fetch.def == thingDef && !fetch.Position.Fogged(map)).ToArray();
+        }
+
+        public static int GetSpecificThingCountInMap(ThingDef thingDef, Map map)
+        {
+            int totalCount = 0;
+
+            Thing[] allFetchedThings = map.listerThings.AllThings.Where(fetch => fetch.def == thingDef && !fetch.Position.Fogged(map)).ToArray();
+
+            foreach (Thing thing in allFetchedThings)
             {
-                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
-                {
-                    if (thing.def == ThingDefOf.Silver && !thing.Position.Fogged(map))
-                    {
-                        silverInMap.Add(thing);
-                    }
-                }
+                totalCount += thing.stackCount;
             }
 
-            int totalSilver = 0;
-            foreach (Thing silverStack in silverInMap) totalSilver += silverStack.stackCount;
-
-            return totalSilver;
+            return totalCount;
         }
 
         public static int GetSilverInCaravan(Caravan caravan)
@@ -144,7 +150,7 @@ namespace GameClient
             }
         }
 
-        public static void RemoveThingFromCaravan(ThingDef thingDef, int requiredQuantity, Caravan caravan)
+        public static void RemoveThingFromCaravan(Caravan caravan, ThingDef thingDef, int requiredQuantity)
         {
             if (requiredQuantity == 0) return;
 
@@ -170,47 +176,18 @@ namespace GameClient
 
         public static void RemoveThingFromSettlement(Map map, ThingDef thingDef, int requiredQuantity)
         {
-            if (requiredQuantity == 0) return;
-
-            List<Thing> thingsInMap = new List<Thing>();
-            foreach (Zone zone in map.zoneManager.AllZones)
+            while (requiredQuantity > 0)
             {
-                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                List<Thing> things = map.listerThings.ThingsOfDef(thingDef).Where(fetch => fetch.IsInAnyStorage())
+                    .ToList();
+
+                while (requiredQuantity > 0)
                 {
-                    if (thing.def == thingDef && !thing.Position.Fogged(map))
-                    {
-                        thingsInMap.Add(thing);
-                    }
-                }
-            }
-
-            int takenQuantity = 0;
-            foreach (Thing thing in thingsInMap)
-            {
-                if (takenQuantity == requiredQuantity) return;
-
-                else if (takenQuantity + thing.stackCount == requiredQuantity)
-                {
-                    takenQuantity = requiredQuantity;
-                    thing.Destroy();
-                    break;
-                }
-
-                else if (takenQuantity + thing.stackCount > requiredQuantity)
-                {
-                    int missingQuantity = requiredQuantity - takenQuantity;
-
-                    takenQuantity += missingQuantity;
-                    thing.stackCount -= missingQuantity;
-                    if (thing.stackCount <= 0) thing.Destroy();
-                    break;
-                }
-
-                else if (takenQuantity + thing.stackCount < requiredQuantity)
-                {
-                    takenQuantity += thing.stackCount;
-                    thing.Destroy();
-                    continue;
+                    Thing thing = things.First();
+                    int stackDeleting = Mathf.Min(requiredQuantity, thing.stackCount);
+                    thing.SplitOff(stackDeleting);
+                    requiredQuantity -= stackDeleting;
+                    things.Remove(thing);
                 }
             }
         }
