@@ -28,21 +28,21 @@ namespace Shared
 
         //Things
 
-        public ThingData[] _factionThings;
+        public ThingDataFile[] _factionThings;
 
-        public ThingData[] _nonFactionThings;
+        public ThingDataFile[] _nonFactionThings;
 
         //Humans
 
-        public HumanData[] _factionHumans;
+        public HumanDataFile[] _factionHumans;
 
-        public HumanData[] _nonFactionHumans;
+        public HumanDataFile[] _nonFactionHumans;
 
         //Animals
 
-        public AnimalData[] _factionAnimals;
+        public AnimalDataFile[] _factionAnimals;
         
-        public AnimalData[] _nonFactionAnimals;
+        public AnimalDataFile[] _nonFactionAnimals;
         
     }
 }

@@ -13,7 +13,7 @@ namespace GameServer
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
 
-            switch (settlementData.stepMode)
+            switch (settlementData._stepMode)
             {
                 case SettlementStepMode.Add:
                     AddSettlement(client, settlementData);
@@ -27,23 +27,23 @@ namespace GameServer
 
         public static void AddSettlement(ServerClient client, PlayerSettlementData settlementData)
         {
-            if (CheckIfTileIsInUse(settlementData.settlementData.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to add a settlement at tile {settlementData.settlementData.Tile}, but that tile already has a settlement");
+            if (CheckIfTileIsInUse(settlementData._settlementData.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to add a settlement at tile {settlementData._settlementData.Tile}, but that tile already has a settlement");
             else
             {
-                settlementData.settlementData.Owner = client.userFile.Username;
+                settlementData._settlementData.Owner = client.userFile.Username;
 
                 SettlementFile settlementFile = new SettlementFile();
-                settlementFile.Tile = settlementData.settlementData.Tile;
+                settlementFile.Tile = settlementData._settlementData.Tile;
                 settlementFile.Owner = client.userFile.Username;
                 Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.Tile + fileExtension), settlementFile);
 
-                settlementData.stepMode = SettlementStepMode.Add;
+                settlementData._stepMode = SettlementStepMode.Add;
                 foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
                 {
                     if (cClient == client) continue;
                     else
                     {
-                        settlementData.settlementData.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
+                        settlementData._settlementData.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
 
                         Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                         cClient.listener.EnqueuePacket(rPacket);
@@ -56,13 +56,13 @@ namespace GameServer
 
         public static void RemoveSettlement(ServerClient client, PlayerSettlementData settlementData)
         {
-            if (!CheckIfTileIsInUse(settlementData.settlementData.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.settlementData.Tile} was attempted to be removed, but the tile doesn't contain a settlement");
+            if (!CheckIfTileIsInUse(settlementData._settlementData.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementData.Tile} was attempted to be removed, but the tile doesn't contain a settlement");
 
-            SettlementFile settlementFile = GetSettlementFileFromTile(settlementData.settlementData.Tile);
+            SettlementFile settlementFile = GetSettlementFileFromTile(settlementData._settlementData.Tile);
 
             if (client != null)
             {
-                if (settlementFile.Owner != client.userFile.Username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.settlementData.Tile} attempted to be removed by {client.userFile.Username}, but {settlementFile.Owner} owns the settlement");
+                if (settlementFile.Owner != client.userFile.Username) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementData.Tile} attempted to be removed by {client.userFile.Username}, but {settlementFile.Owner} owns the settlement");
                 else
                 {
                     Delete();
@@ -85,7 +85,7 @@ namespace GameServer
 
             void SendRemovalSignal()
             {
-                settlementData.stepMode = SettlementStepMode.Remove;
+                settlementData._stepMode = SettlementStepMode.Remove;
                 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                 NetworkHelper.SendPacketToAllClients(packet, client);

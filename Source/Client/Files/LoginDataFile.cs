@@ -5,8 +5,8 @@ namespace GameClient
     [Serializable]
     public class LoginDataFile
     {
-        public string username;
+        public string Username;
 
-        public string password;
+        public string Password;
     }
 }

@@ -30,12 +30,13 @@ namespace GameServer
             connection = new TcpListener(localAddress, port);
             connection.Start();
 
-            Threader.GenerateServerThread(Threader.ServerMode.Sites);
-            Threader.GenerateServerThread(Threader.ServerMode.Caravans);
-
             Logger.Warning("Server launched");  
             Logger.Warning($"Listening for users at {localAddress}:{port}");            
             Logger.Warning("Type 'help' to get a list of available commands");
+
+            Threader.GenerateServerThread(Threader.ServerMode.Sites);
+            Threader.GenerateServerThread(Threader.ServerMode.Caravans);
+
             Main_.ChangeTitle();
 
             while (true) ListenForIncomingUsers();

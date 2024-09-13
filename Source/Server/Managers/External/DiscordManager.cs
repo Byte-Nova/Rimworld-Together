@@ -41,8 +41,8 @@ namespace GameServer
                 //Start server functions
                 Threader.GenerateDiscordThread(Threader.DiscordMode.Console);
                 Threader.GenerateDiscordThread(Threader.DiscordMode.Count);
-            }
-            catch { Logger.Error("Failed to start Discord integration"); }
+            }         
+            catch (Exception e) { Logger.Error(e.ToString()); }
         }
 
         private static Task LogAsync(LogMessage log)

@@ -51,7 +51,7 @@ namespace GameClient
         {
             activeCaravans.Add(details);
 
-            if (details.owner == ClientValues.username)
+            if (details.Owner == ClientValues.username)
             {
                 Caravan toAdd = Find.WorldObjects.Caravans.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer && 
                     !activePlayerCaravans.ContainsKey(fetch));
@@ -63,7 +63,7 @@ namespace GameClient
             else
             {
                 OnlineCaravan onlineCaravan = (OnlineCaravan)WorldObjectMaker.MakeWorldObject(onlineCaravanDef);
-                onlineCaravan.Tile = details.tile;
+                onlineCaravan.Tile = details.Tile;
                 onlineCaravan.SetFaction(FactionValues.neutralPlayer);
                 Find.World.worldObjects.Add(onlineCaravan);
             }
@@ -77,7 +77,7 @@ namespace GameClient
             {
                 activeCaravans.Remove(toRemove);
 
-                if (details.owner == ClientValues.username)
+                if (details.Owner == ClientValues.username)
                 {
                     foreach (KeyValuePair<Caravan, int> pair in activePlayerCaravans.ToArray())
                     {
@@ -91,7 +91,7 @@ namespace GameClient
 
                 else
                 {
-                    WorldObject worldObject = Find.World.worldObjects.AllWorldObjects.First(fetch => fetch.Tile == details.tile 
+                    WorldObject worldObject = Find.World.worldObjects.AllWorldObjects.First(fetch => fetch.Tile == details.Tile 
                         && fetch.def == onlineCaravanDef);
 
                     Find.World.worldObjects.Remove(worldObject);
@@ -105,7 +105,7 @@ namespace GameClient
             if (toMove == null) return;
             else
             {
-                if (details.owner == ClientValues.username) return;
+                if (details.Owner == ClientValues.username) return;
                 else
                 {
                     RemoveCaravan(toMove);
@@ -119,8 +119,8 @@ namespace GameClient
             CaravanData data = new CaravanData();
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = new CaravanFile();
-            data._caravanFile.tile = caravan.Tile;
-            data._caravanFile.owner = ClientValues.username;
+            data._caravanFile.Tile = caravan.Tile;
+            data._caravanFile.Owner = ClientValues.username;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
             Network.listener.EnqueuePacket(packet);
@@ -182,7 +182,7 @@ namespace GameClient
             {
                 if (details.ID == caravanID)
                 {
-                    details.tile = updatedTile;
+                    details.Tile = updatedTile;
                     break;
                 }
             }

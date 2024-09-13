@@ -35,11 +35,11 @@ namespace GameClient
 
         //Variables
 
-        private readonly ThingData[] elements;
+        private readonly ThingDataFile[] elements;
 
         private readonly Map settlementMap;
 
-        public RT_Dialog_MarketListing(ThingData[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
+        public RT_Dialog_MarketListing(ThingDataFile[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
         {
             DialogManager.dialogMarketListing = this;
 

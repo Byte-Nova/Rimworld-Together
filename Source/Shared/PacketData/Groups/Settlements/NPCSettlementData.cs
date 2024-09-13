@@ -6,8 +6,8 @@ namespace Shared
     [Serializable]
     public class NPCSettlementData
     {
-        public SettlementStepMode stepMode;
+        public SettlementStepMode _stepMode;
 
-        public PlanetNPCSettlement settlementData = new PlanetNPCSettlement();
+        public PlanetNPCSettlement _settlementData = new PlanetNPCSettlement();
     }
 }

@@ -7,10 +7,10 @@ namespace Shared
     {
         public int ID;
 
-        public int tile;
+        public int Tile;
 
-        public string owner;
+        public string Owner;
 
-        public double timeSinceRefresh;
+        public double TimeSinceRefresh;
     }
 }
