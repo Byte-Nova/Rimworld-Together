@@ -54,7 +54,7 @@ namespace GameClient
 
                     else
                     {
-                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, SessionValues.actionValues.SpyCost, SessionValues.chosenCaravan);
+                        RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, SessionValues.actionValues.SpyCost);
                         SendRequest();
                     }
                 };
