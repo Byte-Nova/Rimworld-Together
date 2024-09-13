@@ -354,14 +354,7 @@ namespace GameClient
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
 
-                List<Thing> thingsInMap = new List<Thing>();
-                foreach(Thing thing in map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item && fetch.IsInAnyStorage()))
-                {
-                    if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
-                    {
-                            thingsInMap.Add(thing);
-                    }
-                }
+                Thing[] thingsInMap = RimworldManager.GetAllThingsInMap(map);
 
                 if (allowItems)
                 {
