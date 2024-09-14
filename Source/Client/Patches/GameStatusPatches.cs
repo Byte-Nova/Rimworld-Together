@@ -66,8 +66,8 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData.Tile = caravan.Tile;
-                    settlementData.stepMode = SettlementStepMode.Add;
+                    settlementData._settlementData.Tile = caravan.Tile;
+                    settlementData._stepMode = SettlementStepMode.Add;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);
@@ -109,8 +109,8 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData.Tile = settlement.Tile;
-                    settlementData.stepMode = SettlementStepMode.Remove;
+                    settlementData._settlementData.Tile = settlement.Tile;
+                    settlementData._stepMode = SettlementStepMode.Remove;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);

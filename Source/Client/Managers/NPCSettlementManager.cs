@@ -14,43 +14,45 @@ namespace GameClient
         {
             NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
-                case SettlementStepMode.Add:                    
+                case SettlementStepMode.Add:
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveNPCSettlementFromPacket(data.settlementData);
+                    RemoveNPCSettlementFromPacket(data._settlementData);
                     break;
             }
         }
 
         public static void AddSettlements(PlanetNPCSettlement[] settlements)
         {
-            if (settlements == null) return;
-
-            foreach(PlanetNPCSettlement settlement in NPCSettlementManagerHelper.tempNPCSettlements)
+            foreach(PlanetNPCSettlement settlement in settlements)
             {
-                SpawnSettlement(settlement);
+                SpawnSingleSettlement(settlement);
             }
         }
 
-        public static void SpawnSettlement(PlanetNPCSettlement toAdd)
+        public static void SpawnSingleSettlement(PlanetNPCSettlement toAdd)
         {
-            try
+            if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.tile) != null) return;
+            else
             {
-                Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                settlement.Tile = toAdd.tile;
-                settlement.Name = toAdd.name;
+                try
+                {
+                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                    settlement.Tile = toAdd.tile;
+                    settlement.Name = toAdd.name;
 
-                //TODO
-                //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
-                //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
-                settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName));
+                    //TODO
+                    //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
+                    //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
+                    settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName));
 
-                Find.WorldObjects.Add(settlement);
+                    Find.WorldObjects.Add(settlement);
+                }
+                catch (Exception e) { Logger.Warning($"Failed to build NPC settlement at {toAdd.tile}. Reason: {e}"); }
             }
-            catch (Exception e) { Logger.Error($"Failed to build NPC settlement at {toAdd.tile}. Reason: {e}"); }
         }
 
         public static void ClearAllSettlements()
@@ -60,7 +62,7 @@ namespace GameClient
 
             foreach (Settlement settlement in settlements)
             {
-                RemoveSettlement(settlement, null);
+                RemoveSingleSettlement(settlement, null);
             }
 
             DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !FactionValues.playerFactions.Contains(fetch.Faction) &&
@@ -68,7 +70,7 @@ namespace GameClient
 
             foreach (DestroyedSettlement settlement in destroyedSettlements)
             {
-                RemoveSettlement(null, settlement);
+                RemoveSingleSettlement(null, settlement);
             }
         }
 
@@ -77,24 +79,44 @@ namespace GameClient
             Settlement toRemove = Find.World.worldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data.tile &&
                 fetch.Faction != Faction.OfPlayer);
 
-            if (toRemove != null) RemoveSettlement(toRemove, null);
+            if (toRemove != null) RemoveSingleSettlement(toRemove, null);
         }
 
-        public static void RemoveSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
+        public static void RemoveSingleSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
         {
             if (settlement != null)
             {
-                NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
-                Find.WorldObjects.Remove(settlement);
+                try
+                {
+                    if (!RimworldManager.CheckIfMapHasPlayerPawns(settlement.Map))
+                    {
+                        NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
+                        Find.WorldObjects.Remove(settlement);
+                    }
+                    else Logger.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
+                }
+                catch (Exception e) { Logger.Warning($"Failed to remove NPC settlement at {settlement.Tile}. Reason: {e}"); }
             }
-            else if (destroyedSettlement != null) Find.WorldObjects.Remove(destroyedSettlement);
+
+            else if (destroyedSettlement != null)
+            {
+                try
+                {
+                    if (!RimworldManager.CheckIfMapHasPlayerPawns(destroyedSettlement.Map))
+                    {
+                        Find.WorldObjects.Remove(destroyedSettlement);
+                    }
+                    else Logger.Warning($"Ignored removal of settlement at {destroyedSettlement.Tile} because player was inside");
+                }
+                catch (Exception e) { Logger.Warning($"Failed to remove NPC settlement at {destroyedSettlement.Tile}. Reason: {e}"); }       
+            }
         }
 
         public static void RequestSettlementRemoval(Settlement settlement)
         {
             NPCSettlementData data = new NPCSettlementData();
-            data.stepMode = SettlementStepMode.Remove;
-            data.settlementData.tile = settlement.Tile;
+            data._stepMode = SettlementStepMode.Remove;
+            data._settlementData.tile = settlement.Tile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
             Network.listener.EnqueuePacket(packet);

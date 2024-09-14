@@ -15,10 +15,10 @@ namespace Shared
 
         public int _toTile;
 
-        public List<HumanData> _humans = new List<HumanData>();
+        public List<HumanDataFile> _humans = new List<HumanDataFile>();
 
-        public List<AnimalData> _animals = new List<AnimalData>();
+        public List<AnimalDataFile> _animals = new List<AnimalDataFile>();
 
-        public List<ThingData> _things = new List<ThingData>();
+        public List<ThingDataFile> _things = new List<ThingDataFile>();
     }
 }

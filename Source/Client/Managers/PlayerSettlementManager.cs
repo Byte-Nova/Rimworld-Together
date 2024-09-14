@@ -45,71 +45,58 @@ namespace GameClient
             }
         }
 
-        public static void AddSettlements(SettlementFile[] toAdd)
+        public static void AddSettlements(SettlementFile[] settlements)
         {
-            if (toAdd == null) return;
-
-            for (int i = 0; i < PlayerSettlementManagerHelper.tempSettlements.Count(); i++)
+            foreach (SettlementFile toAdd in settlements)
             {
-                SettlementFile settlementFile = PlayerSettlementManagerHelper.tempSettlements[i];
-                {
-                    try
-                    {
-                        Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                        settlement.Tile = settlementFile.Tile;
-                        settlement.Name = $"{settlementFile.Owner}'s settlement";
-                        settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(settlementFile.Goodwill));
-
-                        playerSettlements.Add(settlement);
-                        Find.WorldObjects.Add(settlement);
-                    }
-                    catch (Exception e) { Logger.Error($"Failed to build settlement at {settlementFile.Tile}. Reason: {e}"); }
-                }
+                SpawnSingleSettlement(toAdd);
             }
-            for (int i = 0; i < PlayerSettlementManagerHelper.tempSpaceSettlements.Count(); i++)
+            foreach (SpaceSettlementFile settlementFile in PlayerSettlementManager.tempSpaceSettlements)
             {
-                SpaceSettlementFile settlementFile = PlayerSettlementManagerHelper.tempSpaceSettlements[i];
+                try
                 {
-                    try
-                    {
-                        GameClient.SOS2.PlayerShipManager.AddSettlementFromFile(settlementFile);
-                    }
-                    catch (Exception e) { Logger.Error($"Failed to build ship at {settlementFile.Tile}. Reason: {e}"); }
+                    GameClient.SOS2.PlayerShipManager.AddSettlementFromFile(settlementFile);
                 }
+                catch (Exception e) { Logger.Error($"Failed to build ship at {settlementFile.Tile}. Reason: {e}"); }
             }
         }
 
         public static void ClearAllSettlements()
         {
-            playerSettlements.Clear();
-
             Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction)).ToArray();
-            foreach (Settlement settlement in settlements) Find.WorldObjects.Remove(settlement);
+            foreach (Settlement settlement in settlements)
+            {
+                SettlementFile toRemove = new SettlementFile();
+                toRemove.Tile = settlement.Tile;
+                RemoveSingleSettlement(toRemove);
+            }
         }
 
-        public static void SpawnSingleSettlement(PlayerSettlementData toAdd)
+        public static void SpawnSingleSettlement(SettlementFile toAdd)
         {
-            if (ClientValues.isReadyToPlay)
+            if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
+            else
             {
                 try
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = toAdd.settlementData.Tile;
-                    settlement.Name = $"{toAdd.settlementData.Owner}'s settlement";
-                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.settlementData.Goodwill));
+                    settlement.Tile = toAdd.Tile;
+                    settlement.Name = $"{toAdd.Owner}'s settlement";
+                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd.settlementData.Tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
             }
         }
 
-        public static void RemoveSingleSettlement(PlayerSettlementData toRemove)
+        public static void RemoveSingleSettlement(SettlementFile toRemove)
         {
-            if (ClientValues.isReadyToPlay)
+            try
             {
-                try
+                Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
+                if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
                     if(!toRemove.settlementData.isShip) {
                         Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove.settlementData.Tile);
@@ -121,8 +108,9 @@ namespace GameClient
                         GameClient.SOS2.PlayerShipManager.RemoveFromTile(toRemove.settlementData.Tile);
                     }
                 }
-                catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.settlementData.Tile}. Reason: {e}"); }
+                else Logger.Warning($"Ignored removal of settlement at {toGet.Tile} because player was inside");
             }
+            catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.Tile}. Reason: {e}"); }
         }
 
         public static WorldObject GetWorldObjectFromTile(int tile)

@@ -35,16 +35,16 @@ namespace GameClient
 
         //Variables
 
-        private readonly ThingData[] elements;
+        private readonly ThingDataFile[] elements;
 
         private readonly Map settlementMap;
 
-        public RT_Dialog_MarketListing(ThingData[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
+        public RT_Dialog_MarketListing(ThingDataFile[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
         {
             DialogManager.dialogMarketListing = this;
 
             title = "Global Market";
-            description = $"Silver available for trade: {RimworldManager.GetSilverInMap(settlementMap)}";
+            description = $"Silver available for trade: {RimworldManager.GetSpecificThingCountInMap(ThingDefOf.Silver, settlementMap)}";
 
             this.elements = elements;
             this.actionClick = actionClick;

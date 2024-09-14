@@ -19,7 +19,7 @@ namespace GameServer
             Logger.Title($"----------------------------------------");
 
             if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
-            if (Master.backupConfig.AutomaticBackups)BackupManager.AutoBackup();
+            if (Master.backupConfig.AutomaticBackups) BackupManager.AutoBackup();
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
 

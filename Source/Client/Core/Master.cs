@@ -13,13 +13,17 @@ namespace GameClient
         
         public static ModConfigs modConfigs = new ModConfigs();
 
-        public static Dictionary<string,Assembly> loadedPatches = new Dictionary<string,Assembly>();
+        public static Dictionary<string, Assembly> loadedCompatibilityPatches = new Dictionary<string,Assembly>();
 
         //Paths
 
         public static string mainPath;
         
         public static string modFolderPath;
+
+        public static string modAssemblyPath;
+
+        public static string compatibilityPatchesFolderPath;
 
         public static string connectionDataPath;
 

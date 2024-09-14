@@ -133,7 +133,8 @@ namespace GameServer
         {
             while (true)
             {
-                BackupServer();
+                try { BackupServer(); }
+                catch (Exception e) { Logger.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
 
                 await Task.Delay(TimeSpan.FromHours(Master.backupConfig.IntervalHours));
             }
