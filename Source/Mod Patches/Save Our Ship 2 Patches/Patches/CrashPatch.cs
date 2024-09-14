@@ -21,11 +21,11 @@ namespace RT_SOS2Patches
                         Logger.Warning("[SOS2]Player lost ship.");
                     }
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData.settlementData = new SpaceSettlementFile();
-                    settlementData.settlementData.Tile = Main.shipTile;
+                    settlementData._settlementData = new SpaceSettlementFile();
+                    settlementData._settlementData.Tile = Main.shipTile;
                     Main.shipTile = -1;
-                    settlementData.stepMode = SettlementStepMode.Remove;
-                    settlementData.settlementData.isShip = true;
+                    settlementData._stepMode = SettlementStepMode.Remove;
+                    settlementData._settlementData.isShip = true;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                     Network.listener.EnqueuePacket(packet);

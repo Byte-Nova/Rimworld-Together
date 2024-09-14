@@ -5,7 +5,7 @@
     <RootNamespace>RT_SOS2Patches</RootNamespace>
     <Nullable>enable</Nullable>
     <LangVersion>9</LangVersion>
-    <AssemblyName>SOS2Patch</AssemblyName>
+    <AssemblyName>kentington.saveourship2</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -16,9 +16,9 @@ namespace GameClient
         public static void ParsePacket(Packet packet)
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
-            if (settlementData.settlementData.isShip)
+            if (settlementData._settlementData.isShip)
             {
-                switch (settlementData.stepMode)
+                switch (settlementData._stepMode)
                 {
                     case SettlementStepMode.Add:
                         PlayerShipData data = (PlayerShipData)settlementData;
@@ -26,20 +26,20 @@ namespace GameClient
                         break;
 
                     case SettlementStepMode.Remove:
-                        RemoveSingleSettlement(settlementData);
+                        RemoveSingleSettlement(settlementData._settlementData);
                         break;
                 }
             }
             else
             {
-                switch (settlementData.stepMode)
+                switch (settlementData._stepMode)
                 {
                     case SettlementStepMode.Add:
-                        SpawnSingleSettlement(settlementData);
+                        SpawnSingleSettlement(settlementData._settlementData);
                         break;
 
                     case SettlementStepMode.Remove:
-                        RemoveSingleSettlement(settlementData);
+                        RemoveSingleSettlement(settlementData._settlementData);
                         break;
                 }
             }
@@ -51,7 +51,7 @@ namespace GameClient
             {
                 SpawnSingleSettlement(toAdd);
             }
-            foreach (SpaceSettlementFile settlementFile in PlayerSettlementManager.tempSpaceSettlements)
+            foreach (SpaceSettlementFile settlementFile in PlayerSettlementManagerHelper.tempSpaceSettlements)
             {
                 try
                 {
@@ -98,14 +98,14 @@ namespace GameClient
                 Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
-                    if(!toRemove.settlementData.isShip) {
-                        Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove.settlementData.Tile);
+                    if(!toRemove.isShip) {
+                        toGet = playerSettlements.Find(x => x.Tile == toRemove.Tile);
 
                         playerSettlements.Remove(toGet);
                         Find.WorldObjects.Remove(toGet);
                     } else 
                     {
-                        GameClient.SOS2.PlayerShipManager.RemoveFromTile(toRemove.settlementData.Tile);
+                        GameClient.SOS2.PlayerShipManager.RemoveFromTile(toRemove.Tile);
                     }
                 }
                 else Logger.Warning($"Ignored removal of settlement at {toGet.Tile} because player was inside");

@@ -18,13 +18,13 @@ namespace RT_SOS2Patches
             WorldObjectOrbitingShip orbitShip = comp.mapParent;
             PlayerShipData spaceSiteData = new PlayerShipData();
 
-            spaceSiteData.settlementData.isShip = true;
-            spaceSiteData.settlementData.Tile = map.Tile;
-            spaceSiteData.stepMode = SettlementStepMode.Add;
-            spaceSiteData.theta = orbitShip.Theta;
-            spaceSiteData.radius = orbitShip.Radius;
+            spaceSiteData._settlementData.isShip = true;
+            spaceSiteData._settlementData.Tile = map.Tile;
+            spaceSiteData._stepMode = SettlementStepMode.Add;
+            spaceSiteData._theta = orbitShip.Theta;
+            spaceSiteData._radius = orbitShip.Radius;
             orbitShip.Phi = UnityEngine.Random.Range(-70f, 70f);
-            spaceSiteData.phi = orbitShip.Phi;
+            spaceSiteData._phi = orbitShip.Phi;
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SpaceSettlementPacket), spaceSiteData);
             Network.listener.EnqueuePacket(packet);
 

@@ -26,10 +26,10 @@ namespace RT_SOS2Patches
                     if (target.WorldObject == null && !Find.World.Impassable(target.Tile))
                     {
                         PlayerSettlementData settlementData = new PlayerSettlementData();
-                        settlementData.settlementData = new SettlementFile();
-                        settlementData.settlementData.Tile = target.Tile;
-                        settlementData.stepMode = SettlementStepMode.Add;
-                        settlementData.settlementData.isShip = false;
+                        settlementData._settlementData = new SettlementFile();
+                        settlementData._settlementData.Tile = target.Tile;
+                        settlementData._stepMode = SettlementStepMode.Add;
+                        settlementData._settlementData.isShip = false;
 
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                         Network.listener.EnqueuePacket(packet);
@@ -56,10 +56,10 @@ namespace RT_SOS2Patches
                     if (tile != -1)
                     {
                         PlayerSettlementData settlementData = new PlayerSettlementData();
-                        settlementData.settlementData = new SpaceSettlementFile();
-                        settlementData.settlementData.Tile = tile;
-                        settlementData.stepMode = SettlementStepMode.Remove;
-                        settlementData.settlementData.isShip = false;
+                        settlementData._settlementData = new SpaceSettlementFile();
+                        settlementData._settlementData.Tile = tile;
+                        settlementData._stepMode = SettlementStepMode.Remove;
+                        settlementData._settlementData.isShip = false;
 
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                         Network.listener.EnqueuePacket(packet);

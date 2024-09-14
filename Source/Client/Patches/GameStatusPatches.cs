@@ -22,8 +22,8 @@ namespace GameClient
                     if (!GameClient.SOS2.SOS2SendData.IsMapShip(__instance.CurrentMap).Result)
                     {
                         PlayerSettlementData settlementData = new PlayerSettlementData();
-                        settlementData.settlementData.Tile = __instance.CurrentMap.Tile;
-                        settlementData.stepMode = SettlementStepMode.Add;
+                        settlementData._settlementData.Tile = __instance.CurrentMap.Tile;
+                        settlementData._stepMode = SettlementStepMode.Add;
 
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                         Network.listener.EnqueuePacket(packet);
@@ -88,8 +88,8 @@ namespace GameClient
                     if (!GameClient.SOS2.SOS2SendData.IsMapShip(map).Result)
                     {
                         PlayerSettlementData settlementData = new PlayerSettlementData();
-                        settlementData.settlementData.Tile = map.Tile;
-                        settlementData.stepMode = SettlementStepMode.Add;
+                        settlementData._settlementData.Tile = map.Tile;
+                        settlementData._stepMode = SettlementStepMode.Add;
 
                         Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
                         Network.listener.EnqueuePacket(packet);

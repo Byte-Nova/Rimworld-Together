@@ -47,13 +47,13 @@ namespace GameClient.SOS2
             {
                 try
                 {
-                    WorldObjectFakeOrbitingShip ship = SetGoodWillShip(data.settlementData.Goodwill);
-                    ship.Tile = data.settlementData.Tile;
-                    ship.name = $"{data.settlementData.Owner}'s ship";
-                    ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(data.settlementData.Goodwill));
-                    ship.phi = data.phi;
-                    ship.theta = data.theta;
-                    ship.radius = data.radius;
+                    WorldObjectFakeOrbitingShip ship = SetGoodWillShip(data._settlementData.Goodwill);
+                    ship.Tile = data._settlementData.Tile;
+                    ship.name = $"{data._settlementData.Owner}'s ship";
+                    ship.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(data._settlementData.Goodwill));
+                    ship.phi = data._phi;
+                    ship.theta = data._theta;
+                    ship.radius = data._radius;
                     ship.OrbitSet();
 
                     ship.altitude = 1000;
@@ -61,7 +61,7 @@ namespace GameClient.SOS2
                     spacePlayerSettlement.Add(ship);
                     Find.WorldObjects.Add(ship);
                 }
-                catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to spawn ship at {data.settlementData.Tile}. Reason: {e}"); }
+                catch (Exception e) { GameClient.Logger.Error($"[SOS2]Failed to spawn ship at {data._settlementData.Tile}. Reason: {e}"); }
             }
         }
 

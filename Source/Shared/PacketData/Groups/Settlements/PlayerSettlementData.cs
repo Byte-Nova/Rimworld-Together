@@ -12,8 +12,8 @@ namespace Shared
     }
     public class PlayerShipData : PlayerSettlementData 
     {
-        public float theta;
-        public float radius;
-        public float phi;
+        public float _theta;
+        public float _radius;
+        public float _phi;
     }
 }

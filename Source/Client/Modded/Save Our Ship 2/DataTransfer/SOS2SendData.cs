@@ -31,7 +31,7 @@ namespace GameClient.SOS2
 
         public static void StartSOS2()
         {
-            sos2Assembly = Master.loadedPatches["SOS2Patch"];
+            sos2Assembly = Master.loadedCompatibilityPatches["kentington.saveourship2"];
             Type receiverType = sos2Assembly.GetTypes().FirstOrDefault(t => typeof(IStartSOS2).IsAssignableFrom(t));
             if (receiverType != null)
             {

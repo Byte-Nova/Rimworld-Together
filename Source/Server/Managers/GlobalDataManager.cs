@@ -64,7 +64,6 @@ namespace GameServer
                 {
                     if (settlement.isShip)
                     {
-                        Logger.Warning("Test");
                         SpaceSettlementFile spaceFile = (SpaceSettlementFile)settlement;
                         spaceFile.Tile = settlement.Tile;
                         spaceFile.Owner = settlement.Owner;
