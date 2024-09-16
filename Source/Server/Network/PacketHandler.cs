@@ -123,6 +123,11 @@ namespace GameServer
             EventManager.ParseEventPacket(client, packet);
         }
 
+        public static void ModPacket(ServerClient client, Packet packet)
+        {
+            throw new NotImplementedException();
+        }
+
         public static void WorldPacket(ServerClient client, Packet packet)
         {
             WorldManager.ParseWorldPacket(client, packet);

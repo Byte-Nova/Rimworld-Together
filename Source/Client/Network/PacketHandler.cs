@@ -153,6 +153,11 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
         }
 
+        public static void ModPacket(Packet packet)
+        {
+            throw new NotImplementedException();
+        }
+
         public static void ServerValuesPacket(Packet packet)
         {
             ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);

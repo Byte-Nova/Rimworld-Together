@@ -48,6 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\KeepAliveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\LoginData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\ModConfigData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\TimeSpeedOrderData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\WeatherOrderData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Pollution\PollutionDetails.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\HumanDataFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\AnimalDataFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\ThingDataFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ModConfigFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\BookData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\GenepackData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\PlantData.cs" />
