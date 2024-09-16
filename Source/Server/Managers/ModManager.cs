@@ -6,6 +6,44 @@ namespace GameServer
 {
     public static class ModManager
     {
+        public static void ParsePacket(ServerClient client, Packet packet)
+        {
+            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(packet.contents);
+
+            switch (data._stepMode)
+            {
+                case ModConfigStepMode.Send:
+                    SaveModConfig(client, data._configFile);
+                    break;
+
+                case ModConfigStepMode.Receive:
+                    //DO
+                    break;
+
+                case ModConfigStepMode.Ask:
+                    //DO
+                    break;
+
+                case ModConfigStepMode.Mismatch:
+                    //DO
+                    break;
+            }
+        }
+
+        private static void SaveModConfig(ServerClient client, ModConfigFile file)
+        {
+            if (Master.worldValues != null && !client.userFile.IsAdmin)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to change mod config without being admin");
+            }
+
+            else
+            {
+                Master.modConfig = file;
+                Main_.SaveValueFile(ServerFileMode.Mods, true);
+            }
+        }
+
         public static void LoadMods()
         {
             Master.loadedRequiredMods.Clear();

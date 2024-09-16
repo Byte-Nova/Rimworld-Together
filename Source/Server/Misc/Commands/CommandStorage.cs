@@ -149,6 +149,10 @@ namespace GameServer
             "Clears the console output",
             ClearCommandAction);
 
+        private static readonly ServerCommand showModManagerCommand = new ServerCommand("showmodmanager", 1,
+            "Allows a player to change mod configuration for the server",
+            ShowModManagerCommandAction);
+
         public static readonly ServerCommand[] serverCommands = new ServerCommand[]
         {
             backupCommand,
@@ -186,7 +190,8 @@ namespace GameServer
             whitelistAddCommand,
             whitelistCommand,
             whitelistRemoveCommand,
-            whitelistToggleCommand
+            whitelistToggleCommand,
+            showModManagerCommand
         };
 
         private static void HelpCommandAction()
@@ -690,6 +695,27 @@ namespace GameServer
             Console.Clear();
 
             Logger.Title("[Cleared console]");
+        }
+
+        private static void ShowModManagerCommandAction()
+        {
+            ServerClient toFind = UserManagerHelper.GetConnectedClientFromUsername(ConsoleCommandManager.commandParameters[0]);
+            if (toFind == null) Logger.Error($"Player '{ConsoleCommandManager.commandParameters[0]}' was not found");
+            else
+            {
+                if (!toFind.userFile.IsAdmin) Logger.Error($"Player '{ConsoleCommandManager.commandParameters[0]}' needs to be an operator");
+                else
+                {
+                    ModConfigData data = new ModConfigData();
+                    data._stepMode = ModConfigStepMode.Ask;
+                    data._configFile = Master.modConfig;
+
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ModPacket), data);
+                    toFind.listener.EnqueuePacket(packet);
+
+                    Logger.Warning("Command sent sucessfully");
+                }
+            }
         }
     }
 }

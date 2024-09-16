@@ -2,8 +2,8 @@ namespace Shared
 {
     public class ModConfigFile
     {
-        public string[] Mods;
+        public string[] Mods = new string[0];
 
-        public int[] Categories;
+        public int[] Categories = new int[0];
     }
 }

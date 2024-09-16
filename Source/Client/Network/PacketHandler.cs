@@ -107,7 +107,7 @@ namespace GameClient
 
         public static void WorldPacket(Packet packet)
         {
-            PlanetGeneratorManager.ParseWorldPacket(packet);
+            PlanetGeneratorManager.ParsePacket(packet);
         }
 
         public static void BreakPacket(Packet packet)
@@ -155,7 +155,7 @@ namespace GameClient
 
         public static void ModPacket(Packet packet)
         {
-            throw new NotImplementedException();
+            ModManager.ParsePacket(packet);
         }
 
         public static void ServerValuesPacket(Packet packet)

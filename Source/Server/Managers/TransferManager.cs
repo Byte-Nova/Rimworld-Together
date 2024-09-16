@@ -5,7 +5,7 @@ namespace GameServer
 {
     public static class TransferManager
     {
-        public static void ParseTransferPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableTrading)
             {

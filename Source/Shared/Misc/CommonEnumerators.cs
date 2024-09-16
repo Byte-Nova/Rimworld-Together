@@ -4,7 +4,7 @@ namespace Shared
     {
         public enum ClientNetworkState { Disconnected, Connecting, Connected }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup}
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
@@ -20,7 +20,7 @@ namespace Shared
 
         public enum RoadStepMode { Add, Remove }
 
-        public enum ModConfigStepMode { Send, Receive, Mismatch }
+        public enum ModConfigStepMode { Send, Receive, Mismatch, Ask }
 
         public enum FactionStepMode { Create, Delete, NameInUse, NoPower, AddMember, RemoveMember, AcceptInvite, Promote, Demote, AdminProtection, MemberList }
 

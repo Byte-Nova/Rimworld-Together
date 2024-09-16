@@ -127,6 +127,9 @@ namespace GameServer
             LoadValueFile(ServerFileMode.Backup);
             SaveValueFile(ServerFileMode.Backup, false);
 
+            LoadValueFile(ServerFileMode.Mods);
+            SaveValueFile(ServerFileMode.Mods, true);
+
             LoadValueFile(ServerFileMode.World);
 
             ModManager.LoadMods();
@@ -188,6 +191,11 @@ namespace GameServer
                 case ServerFileMode.Backup:
                     pathToSave = Path.Combine(Master.corePath, "BackupConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.backupConfig);
+                    break;
+
+                case ServerFileMode.Mods:
+                    pathToSave = Path.Combine(Master.corePath, "ModConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.modConfig);
                     break;
             }
 
@@ -293,6 +301,16 @@ namespace GameServer
                     {
                         Master.backupConfig = new BackupConfigFile();
                         Serializer.SerializeToFile(pathToLoad, Master.backupConfig);
+                    }
+                    break;
+
+                case ServerFileMode.Mods:
+                    pathToLoad = Path.Combine(Master.corePath, "ModConfig.json");
+                    if (File.Exists(pathToLoad)) Master.modConfig = Serializer.SerializeFromFile<ModConfigFile>(pathToLoad);
+                    else
+                    {
+                        Master.modConfig = new ModConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.modConfig);
                     }
                     break;
             }

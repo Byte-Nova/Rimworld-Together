@@ -5,7 +5,7 @@ namespace GameServer
 {
     public static class OnlineActivityManager
     {
-        public static void ParseOnlineActivityPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableOnlineActivities)
             {

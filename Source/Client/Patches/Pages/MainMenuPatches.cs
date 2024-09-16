@@ -24,24 +24,8 @@ namespace GameClient
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y + 0.5f);
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
-                        //if (Network.state != ClientNetworkState.Disconnected) return true;
-                        //DialogShortcuts.ShowConnectDialogs();
-
-                        Action toDo = delegate
-                        {
-                            ModConfigData data = new ModConfigData();
-                            data._stepMode = ModConfigStepMode.Send;
-                            data._configFile = new ModConfigFile();
-                            data._configFile.Mods = DialogManager.dialogTupleListingResultString;
-                            data._configFile.Categories = DialogManager.dialogTupleListingResultInt;
-
-                            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ModPacket), data);
-                            Network.listener.EnqueuePacket(packet);
-                        };
-
-                        string[] loadedMods = ModManager.GetRunningModList();
-                        RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager" , "Manage mods for the server", loadedMods, toDo);
-                        DialogManager.PushNewDialog(dialog);
+                        if (Network.state != ClientNetworkState.Disconnected) return true;
+                        DialogShortcuts.ShowConnectDialogs();
                     }
 
                     buttonSize = new Vector2(45f, 45f);

@@ -78,6 +78,8 @@ namespace GameServer
 
         public static BackupConfigFile backupConfig;
 
+        public static ModConfigFile modConfig;
+
         //Booleans
 
         public static bool isClosing;
