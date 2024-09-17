@@ -20,7 +20,7 @@ namespace Shared
 
         public enum RoadStepMode { Add, Remove }
 
-        public enum ModConfigStepMode { Send, Receive, Mismatch, Ask }
+        public enum ModConfigStepMode { Send, Ask }
 
         public enum FactionStepMode { Create, Delete, NameInUse, NoPower, AddMember, RemoveMember, AcceptInvite, Promote, Demote, AdminProtection, MemberList }
 

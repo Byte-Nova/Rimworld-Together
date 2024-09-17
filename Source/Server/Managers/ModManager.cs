@@ -14,18 +14,6 @@ namespace GameServer
                 case ModConfigStepMode.Send:
                     SaveModConfig(client, data._configFile);
                     break;
-
-                case ModConfigStepMode.Receive:
-                    //DO
-                    break;
-
-                case ModConfigStepMode.Ask:
-                    //DO
-                    break;
-
-                case ModConfigStepMode.Mismatch:
-                    //DO
-                    break;
             }
         }
 

@@ -16,20 +16,8 @@ namespace GameClient
 
             switch (data._stepMode)
             {
-                case ModConfigStepMode.Send:
-                    //DO
-                    break;
-
-                case ModConfigStepMode.Receive:
-                    //DO
-                    break;
-
                 case ModConfigStepMode.Ask:
                     OpenModManagerMenu(false, data._configFile);
-                    break;
-
-                case ModConfigStepMode.Mismatch:
-                    //DO
                     break;
             }
         }
