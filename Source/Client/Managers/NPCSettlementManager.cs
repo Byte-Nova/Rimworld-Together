@@ -30,31 +30,33 @@ namespace GameClient
 
         public static void AddSettlements(PlanetNPCSettlement[] settlements)
         {
-            if (settlements == null) return;
-
-            foreach (PlanetNPCSettlement settlement in NPCSettlementManagerHelper.tempNPCSettlements)
+            foreach(PlanetNPCSettlement settlement in settlements)
             {
-                SpawnSettlement(settlement);
+                SpawnSingleSettlement(settlement);
             }
         }
 
-        public static void SpawnSettlement(PlanetNPCSettlement toAdd)
+        public static void SpawnSingleSettlement(PlanetNPCSettlement toAdd)
         {
-            try
+            if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.tile) != null) return;
+            else
             {
-                Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                settlement.Tile = toAdd.tile;
-                settlement.Name = toAdd.name;
+                try
+                {
+                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                    settlement.Tile = toAdd.tile;
+                    settlement.Name = toAdd.name;
 
-                //TODO
-                //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
-                //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
-                settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName));
+                    //TODO
+                    //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
+                    //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
+                    settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName));
 
                 WorldObjectManagerHelper.lastWorldObjectAdded = settlement.Tile;
                 Find.WorldObjects.Add(settlement);
+                }
+                catch (Exception e) { Logger.Warning($"Failed to build NPC settlement at {toAdd.tile}. Reason: {e}"); }
             }
-            catch (Exception e) { Logger.Error($"Failed to build NPC settlement at {toAdd.tile}. Reason: {e}"); }
         }
 
         public static void ClearAllSettlements()
@@ -73,7 +75,7 @@ namespace GameClient
 
             foreach (DestroyedSettlement settlement in destroyedSettlements)
             {
-                RemoveSettlement(null, settlement);
+                RemoveSingleSettlement(null, settlement);
             }
         }
 
@@ -89,13 +91,34 @@ namespace GameClient
             catch (Exception ex) { Logger.Error(ex.ToString()); }
         }
 
-        public static void RemoveSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
+        public static void RemoveSingleSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
         {
             if (settlement != null)
             {
-                Find.WorldObjects.Remove(settlement);
+                try
+                {
+                    if (!RimworldManager.CheckIfMapHasPlayerPawns(settlement.Map))
+                    {
+                        NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
+                        Find.WorldObjects.Remove(settlement);
+                    }
+                    else Logger.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
+                }
+                catch (Exception e) { Logger.Warning($"Failed to remove NPC settlement at {settlement.Tile}. Reason: {e}"); }
             }
-            else if (destroyedSettlement != null) Find.WorldObjects.Remove(destroyedSettlement);
+
+            else if (destroyedSettlement != null)
+            {
+                try
+                {
+                    if (!RimworldManager.CheckIfMapHasPlayerPawns(destroyedSettlement.Map))
+                    {
+                        Find.WorldObjects.Remove(destroyedSettlement);
+                    }
+                    else Logger.Warning($"Ignored removal of settlement at {destroyedSettlement.Tile} because player was inside");
+                }
+                catch (Exception e) { Logger.Warning($"Failed to remove NPC settlement at {destroyedSettlement.Tile}. Reason: {e}"); }       
+            }
         }
     }
 

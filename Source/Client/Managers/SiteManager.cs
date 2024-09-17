@@ -93,11 +93,11 @@ namespace GameClient
                     break;
 
                 case SiteStepMode.Build:
-                    PlayerSiteManager.SpawnSingleSite(siteData);
+                    PlayerSiteManager.SpawnSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Destroy:
-                    PlayerSiteManager.RemoveSingleSite(siteData);
+                    PlayerSiteManager.RemoveSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Info:
@@ -338,7 +338,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], SessionValues.chosenCaravan);
+                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
                 siteData._stepMode = SiteStepMode.Build;
@@ -392,7 +392,7 @@ namespace GameClient
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], SessionValues.chosenCaravan);
+                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
                 siteData._stepMode = SiteStepMode.Build;
