@@ -40,12 +40,12 @@ namespace GameClient
                     toUse.next = new Page_SelectStartingSite();
                     DialogManager.PushNewDialog(toUse);
                 }
-                else DialogManager.PushNewDialog(new RT_Dialog_OK("Mod configuration has been changed!"));
+                else DialogManager.PushNewDialog(new RT_Dialog_OK("RTModConfigurationChanged".Translate()));
             };
 
             string[] keys = ModManagerHelper.GetRunningModList().UnsortedMods;
-            string[] values = new string[] { "Required", "Optional", "Forbidden" };
-            RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager" , "Manage mods for the server", keys, values, toDo);
+            string[] values = new string[] { "RTModConfigurationRequired".Translate(), "RTModConfigurationOptional".Translate(), "RTModConfigurationForbidden".Translate() };
+            RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("RTModConfigurationTitle".Translate() , "RTModConfigurationDesc".Translate(), keys, values, toDo);
             DialogManager.PushNewDialog(dialog);
         }
 

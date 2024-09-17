@@ -74,7 +74,7 @@ namespace GameClient
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - defaultButtonSize.y - 85f));
 
             Text.Font = GameFont.Small;
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomCenter), "Accept"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomCenter), "RTDialogAccept".Translate()))
             {
                 DialogManager.dialogTupleListingResultString = keys;
                 DialogManager.dialogTupleListingResultInt = valueInt;

@@ -168,6 +168,15 @@
     <RTServerDidntResponded>The server did not respond in time</RTServerDidntResponded>
     <!-- Managers -->
     
+    <!-- ModManager -->
+    
+    <RTModConfigurationTitle>Mod Manager</RTModConfigurationTitle>
+    <RTModConfigurationDesc>Manage mods for the server</RTModConfigurationDesc>
+    <RTModConfigurationChanged>Mod configuration has been changed!</RTModConfigurationChanged>
+    <RTModConfigurationRequired>Required</RTModConfigurationRequired>
+    <RTModConfigurationOptional>Optional</RTModConfigurationOptional>
+    <RTModConfigurationForbidden>Forbidden</RTModConfigurationForbidden>
+    
     <!-- Factions -->
     
     <RTFactionMenu>Faction Menu</RTFactionMenu>
