@@ -196,7 +196,7 @@ namespace GameClient
 
             Action r1 = delegate { JoinMap(visitData._mapData, visitData); };
             Action r2 = delegate { RequestStopOnlineActivity(); };
-            if (!ModManager.CheckIfMapHasConflictingMods(visitData._mapData)) r1.Invoke();
+            if (!ModManagerHelper.CheckIfMapHasConflictingMods(visitData._mapData)) r1.Invoke();
             else DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, r2));
         }
 

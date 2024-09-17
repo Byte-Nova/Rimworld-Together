@@ -27,7 +27,7 @@ namespace GameClient
             typeof(WorldGenStep_Pollution)
         };
 
-        public static void ParseWorldPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 
@@ -48,13 +48,9 @@ namespace GameClient
             DialogManager.PopWaitDialog();
 
             ClientValues.ToggleGenerateWorld(true);
-
-            Page toUse = new Page_SelectScenario();
-            toUse.next = new Page_SelectStartingSite();
-            DialogManager.PushNewDialog(toUse);
-
+            
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are the first person joining the server!",
-                "Configure the world that everyone will play on" });
+                "Configure the world that everyone will play on" } , delegate { ModManager.OpenModManagerMenu(true); });
 
             DialogManager.PushNewDialog(d1);
         }

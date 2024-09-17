@@ -1,12 +1,14 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using static GameClient.DialogManagerHelper;
 
 namespace GameClient
 {
-    public class RT_Dialog_ListingWithButton : Window
+    public class RT_Dialog_ListingWithTuple : Window
     {
         public override Vector2 InitialSize => new Vector2(400f, 400f);
 
@@ -14,39 +16,42 @@ namespace GameClient
 
         public readonly string description;
 
-        public readonly string[] elements;
+        public readonly string[] keys;
 
-        private readonly Action actionClick;
+        public string[] values;
 
-        private readonly Action actionCancel;
+        private readonly Action actionAccept;
+
+        private readonly Vector2 selectButton = new Vector2(100f, 25f);
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        private readonly float buttonX = 150f;
+        public string[] valueString;
 
-        private readonly float buttonY = 38f;
+        public int[] valueInt;
 
-        private readonly float selectButtonX = 47f;
-
-        private readonly float selectButtonY = 25f;
-
-        public RT_Dialog_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
+        public RT_Dialog_ListingWithTuple(string title, string description, string[] keys, string[] values, Action actionAccept = null)
         {
-            DialogManager.dialogButtonListing = this;
+            DialogManager.dialogTupleListing = this;
             this.title = title;
             this.description = description;
-            this.elements = elements;
-            this.actionClick = actionClick;
-            this.actionCancel = actionCancel;
+            this.keys = keys;
+            this.values = values;
+            this.actionAccept = actionAccept;
 
             forcePause = true;
-            absorbInputAroundWindow = true;
-
-            soundAppear = SoundDefOf.CommsWindow_Open;
-            
-
             closeOnAccept = false;
             closeOnCancel = false;
+            absorbInputAroundWindow = true;
+            soundAppear = SoundDefOf.CommsWindow_Open;
+
+            List<string> strings = new List<string>();
+            for (int i = 0; i < keys.Length; i++) strings.Add(values[0]);
+            valueString = strings.ToArray();
+
+            List<int> ints = new List<int>();
+            for (int i = 0; i < keys.Length; i++) ints.Add(0);
+            valueInt = ints.ToArray();
         }
 
         public override void DoWindowContents(Rect rect)
@@ -66,19 +71,21 @@ namespace GameClient
             Text.Font = GameFont.Medium;
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
-            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
+            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - defaultButtonSize.y - 85f));
 
             Text.Font = GameFont.Small;
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomCenter), "Accept"))
             {
-                if (actionCancel != null) actionCancel.Invoke();
+                DialogManager.dialogTupleListingResultString = keys;
+                DialogManager.dialogTupleListingResultInt = valueInt;
+                actionAccept?.Invoke();
                 Close();
             }
         }
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + (float)elements.Count() * 30f;
+            float height = 6f + keys.Length * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
             float num = 0;
@@ -86,12 +93,12 @@ namespace GameClient
             float num3 = scrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < elements.Count(); i++)
+            for (int i = 0; i < keys.Length; i++)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, elements[i], num4);
+                    DrawCustomRow(rect, keys[i], num4);
                 }
 
                 num += 30f;
@@ -107,14 +114,30 @@ namespace GameClient
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            Widgets.Label(fixedRect, $"{element}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
+            Widgets.Label(fixedRect, element);
+            string buttonLabel = valueString[index];
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButton.x, rect.yMax - selectButton.y), selectButton), buttonLabel))
             {
-                DialogManager.dialogButtonListingResultInt = index;
-                DialogManager.dialogButtonListingResultString = element;
-                if (actionClick != null) actionClick.Invoke();
-                Close();
+                ShowFloatMenu(index);
             }
         }
+
+        private void ShowFloatMenu(int index)
+        {
+            List<FloatMenuOption> list = new List<FloatMenuOption>();
+
+            foreach(string str in values)
+            {
+                list.Add(new FloatMenuOption(str, delegate
+                {
+                    valueString[index] = str;
+                    valueInt[index] = GetValueFromString(str);
+                }));
+            }
+
+            Find.WindowStack.Add(new FloatMenu(list));
+        }
+
+        private int GetValueFromString(string str) { return values.FirstIndexOf(fetch => fetch == str); }
     }
 }

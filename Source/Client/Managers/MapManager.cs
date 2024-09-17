@@ -34,9 +34,7 @@ namespace GameClient
         public static MapData ParseMap(Map map, bool includeThings, bool includeHumans, bool includeAnimals, bool includeMods)
         {
             MapData mapData = MapScribeManager.MapToString(map, includeThings, includeThings, includeHumans, includeHumans, includeAnimals, includeAnimals);
-
-            if (includeMods) mapData._mapMods = ModManager.GetRunningModList();
-
+            if (includeMods) mapData._mapMods = ModManagerHelper.GetRunningModList().UnsortedMods;
             return mapData;
         }
     }

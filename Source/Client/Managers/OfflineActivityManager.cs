@@ -125,7 +125,7 @@ namespace GameClient
                 PrepareMapForOfflineActivity(mapData); 
             };
 
-            if (ModManager.CheckIfMapHasConflictingMods(mapData))
+            if (ModManagerHelper.CheckIfMapHasConflictingMods(mapData))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }

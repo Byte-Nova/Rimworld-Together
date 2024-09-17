@@ -9,7 +9,7 @@ namespace GameServer
 
         private static readonly double taskDelayMS = 1800000;
 
-        public static void ParseSitePacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableSites)
             {
