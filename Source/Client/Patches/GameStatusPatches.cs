@@ -20,13 +20,6 @@ namespace GameClient
                     ClientValues.ManageDevOptions();
                     DifficultyManager.EnforceCustomDifficulty();
 
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = __instance.CurrentMap.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
-
                     SaveManager.ForceSave();
 
                     if (ClientValues.isGeneratingFreshWorld)
@@ -51,83 +44,6 @@ namespace GameClient
 
                     PlanetManager.BuildPlanet();
                     ClientValues.ToggleReadyToPlay(true);
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(SettleInEmptyTileUtility), nameof(SettleInEmptyTileUtility.Settle))]
-        public static class SettlePatch
-        {
-            [HarmonyPostfix]
-            public static void ModifyPost(Caravan caravan)
-            {
-                if (Network.state == ClientNetworkState.Connected)
-                {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = caravan.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
-
-                    SaveManager.ForceSave();
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(SettleInExistingMapUtility), nameof(SettleInExistingMapUtility.Settle))]
-        public static class SettleInMapPatch
-        {
-            [HarmonyPostfix]
-            public static void ModifyPost(Map map)
-            {
-                if (Network.state == ClientNetworkState.Connected)
-                {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = map.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
-
-                    SaveManager.ForceSave();
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(SettlementAbandonUtility), "Abandon")]
-        public static class AbandonPatch
-        {
-            [HarmonyPostfix]
-            public static void ModifyPost(Settlement settlement)
-            {
-                if (Network.state == ClientNetworkState.Connected)
-                {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = settlement.Tile;
-                    settlementData._stepMode = SettlementStepMode.Remove;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
-
-                    SaveManager.ForceSave();
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(Settlement), nameof(Settlement.PostRemove))]
-        public static class DestroyNPCSettlementPatch
-        {
-            [HarmonyPostfix]
-            public static void ModifyPost(Settlement __instance)
-            {
-                if (Network.state == ClientNetworkState.Connected)
-                {
-                    if (!ClientValues.isReadyToPlay) return;
-
-                    if (__instance.Faction == Faction.OfPlayer) return;
-                    else if (FactionValues.playerFactions.Contains(__instance.Faction)) return;
-                    else if (NPCSettlementManagerHelper.lastRemovedSettlement != __instance) NPCSettlementManager.RequestSettlementRemoval(__instance);
                 }
             }
         }

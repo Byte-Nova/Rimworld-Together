@@ -1,5 +1,6 @@
 ﻿using Shared;
 using static Shared.CommonEnumerators;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer
 {
@@ -23,22 +24,38 @@ namespace GameServer
 
         public static void RemoveNPCSettlement(ServerClient client, PlanetNPCSettlement settlement)
         {
-            if (!Master.serverConfig.AllowNPCDestruction) return;
+            if (!Master.serverConfig.AllowNPCModifications) return;
             else
             {
                 if (!NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.tile))
                 {
                     ResponseShortcutManager.SendIllegalPacket(client, "Tried removing a non-existing NPC settlement");
                 }
-                
                 else
                 {
                     DeleteSettlement(settlement);
 
-                    BroadcastSettlementDeletion(settlement);
+                    BroadcastSettlementDeletion(settlement, client);
 
                     Logger.Warning($"[Delete NPC settlement] > {settlement.tile} > {client.userFile.Username}");
                 }
+            }
+        }
+
+        public static void AddNPCSettlement(ServerClient client, PlanetNPCSettlement settlement) 
+        {
+            if (!Master.serverConfig.AllowNPCModifications) return;
+            if (NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.tile))
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, $"Tried adding a settlement on an existing settlement");
+            }
+            else
+            {
+                AddSettlement(settlement);
+
+                BroadcastSettlementAddition(settlement, client);
+
+                Logger.Warning($"[Add NPC settlement] > {settlement.tile} > {client.userFile.Username}");
             }
         }
 
@@ -50,14 +67,30 @@ namespace GameServer
             Main_.SaveValueFile(ServerFileMode.World);
         }
 
-        private static void BroadcastSettlementDeletion(PlanetNPCSettlement settlement)
+        private static void AddSettlement(PlanetNPCSettlement settlement) 
+        {
+            List<PlanetNPCSettlement> finalSettlements = Master.worldValues.NPCSettlements.ToList();
+            finalSettlements.Add(settlement);
+            Master.worldValues.NPCSettlements = finalSettlements.ToArray();
+        }
+        private static void BroadcastSettlementDeletion(PlanetNPCSettlement settlement, ServerClient client)
         {
             NPCSettlementData data = new NPCSettlementData();
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData = settlement;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(packet, client);
+        }
+
+        private static void BroadcastSettlementAddition(PlanetNPCSettlement settlement, ServerClient client) 
+        {
+            NPCSettlementData data = new NPCSettlementData();
+            data._stepMode = SettlementStepMode.Add;
+            data._settlementData = settlement;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
+            NetworkHelper.SendPacketToAllClients(packet, client);
         }
     }
 
@@ -76,6 +109,27 @@ namespace GameServer
         public static PlanetNPCSettlement GetSettlementFromTile(int tile)
         {
             return Master.worldValues.NPCSettlements.FirstOrDefault(fetch => fetch.tile == tile); ;
+        }
+    }
+    public static class NPCFactionManager 
+    {
+        public static void AddNPCFaction(PlanetNPCFaction faction, ServerClient client)
+        {
+            try
+            {
+                List<PlanetNPCFaction> currentFactions = Master.worldValues.NPCFactions.ToList();
+                currentFactions.Add(faction);
+                Master.worldValues.NPCFactions = currentFactions.ToArray();
+                BroadCastNewNPCFaction(faction, client);
+                Logger.Warning($"[Add NPC settlement] > {faction.defName} > {client.userFile.Username}");
+            }
+            catch (Exception ex){ Logger.Warning($"Failed to generate faction, Reason: {ex.ToString()}"); }
+        }
+
+        public static void BroadCastNewNPCFaction(PlanetNPCFaction faction, ServerClient client) 
+        {
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCFactionPacket), faction);
+            NetworkHelper.SendPacketToAllClients(packet, client);
         }
     }
 }

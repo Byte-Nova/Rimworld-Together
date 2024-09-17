@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\AidData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\EventData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\WorldObjects\NewWorldObjects.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\OfflineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\OnlineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\RoadData.cs" />
@@ -55,11 +56,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Roads\RoadDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\PlanetGenerator\PlanetNPCFaction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\PlanetGenerator\PlanetFeature.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\Settlements\NPCSettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\WorldObjects\Settlements\NPCSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerFactionData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\PlayerRecountData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ServerGlobalData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\Settlements\PlayerSettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\WorldObjects\Settlements\PlayerSettlementData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\FactionGoodwillData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\WorldData.cs" />

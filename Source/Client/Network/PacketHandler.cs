@@ -85,9 +85,19 @@ namespace GameClient
             PlayerSettlementManager.ParsePacket(packet);
         }
 
+        public static void NewWorldObjectData(Packet packet) 
+        {
+
+        }
+
         public static void NPCSettlementPacket(Packet packet)
         {
             NPCSettlementManager.ParsePacket(packet);
+        }
+
+        public static void NPCFactionPacket(Packet packet) 
+        {
+            NPCFactionManager.SpawnFaction(Serializer.ConvertBytesToObject<PlanetNPCFaction>(packet.contents));
         }
 
         public static void SitePacket(Packet packet)

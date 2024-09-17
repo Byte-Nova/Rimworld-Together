@@ -71,6 +71,7 @@ namespace GameClient
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd._settlementData.Goodwill));
 
                     playerSettlements.Add(settlement);
+                    WorldObjectManagerHelper.lastWorldObjectAdded = settlement.Tile;
                     Find.WorldObjects.Add(settlement);
                 }
                 catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd._settlementData.Tile}. Reason: {e}"); }
@@ -86,6 +87,7 @@ namespace GameClient
                     Settlement toGet = playerSettlements.Find(x => x.Tile == toRemove._settlementData.Tile);
 
                     playerSettlements.Remove(toGet);
+                    WorldObjectManagerHelper.lastWorldObjectAdded = toGet.Tile;
                     Find.WorldObjects.Remove(toGet);
                 }
                 catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove._settlementData.Tile}. Reason: {e}"); }
