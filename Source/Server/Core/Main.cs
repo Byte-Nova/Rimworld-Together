@@ -56,11 +56,6 @@ namespace GameServer
             Master.backupUsersPath = Path.Combine(Master.backupsPath, "Users");
             Master.backupServerPath = Path.Combine(Master.backupsPath, "Servers");
 
-            Master.modsPath = Path.Combine(Master.mainPath, "Mods");
-            Master.requiredModsPath = Path.Combine(Master.modsPath, "Required");
-            Master.optionalModsPath = Path.Combine(Master.modsPath, "Optional");
-            Master.forbiddenModsPath = Path.Combine(Master.modsPath, "Forbidden");
-
             if (!Directory.Exists(Master.corePath)) Directory.CreateDirectory(Master.corePath);
             if (!Directory.Exists(Master.usersPath)) Directory.CreateDirectory(Master.usersPath);
             if (!Directory.Exists(Master.savesPath)) Directory.CreateDirectory(Master.savesPath);
@@ -77,11 +72,6 @@ namespace GameServer
             if (!Directory.Exists(Master.backupsPath)) Directory.CreateDirectory(Master.backupsPath);
             if (!Directory.Exists(Master.backupUsersPath)) Directory.CreateDirectory(Master.backupUsersPath);
             if (!Directory.Exists(Master.backupServerPath)) Directory.CreateDirectory(Master.backupServerPath);
-
-            if (!Directory.Exists(Master.modsPath)) Directory.CreateDirectory(Master.modsPath);
-            if (!Directory.Exists(Master.requiredModsPath)) Directory.CreateDirectory(Master.requiredModsPath);
-            if (!Directory.Exists(Master.optionalModsPath)) Directory.CreateDirectory(Master.optionalModsPath);
-            if (!Directory.Exists(Master.forbiddenModsPath)) Directory.CreateDirectory(Master.forbiddenModsPath);
         }
 
         private static void SetCulture()
@@ -131,8 +121,6 @@ namespace GameServer
             SaveValueFile(ServerFileMode.Mods, true);
 
             LoadValueFile(ServerFileMode.World);
-
-            ModManager.LoadMods();
 
             EventManager.LoadEvents();
         }

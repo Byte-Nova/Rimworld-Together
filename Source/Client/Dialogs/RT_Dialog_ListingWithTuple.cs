@@ -126,16 +126,18 @@ namespace GameClient
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
-            for (int i = 0; i < values.Length; i++)
+            foreach(string str in values)
             {
-                list.Add(new FloatMenuOption(values[i], delegate
+                list.Add(new FloatMenuOption(str, delegate
                 {
-                    valueString[index] = values[i];
-                    valueInt[index] = i;
+                    valueString[index] = str;
+                    valueInt[index] = GetValueFromString(str);
                 }));
             }
 
             Find.WindowStack.Add(new FloatMenu(list));
         }
+
+        private int GetValueFromString(string str) { return values.FirstIndexOf(fetch => fetch == str); }
     }
 }
