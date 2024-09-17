@@ -7,7 +7,7 @@ namespace GameServer
     {
         private static readonly double baseActivityTimer = 3600000;
 
-        public static void ParseOfflineActivityPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableOfflineActivities)
             {

@@ -14,6 +14,6 @@ namespace GameServer
 
         public bool AutomaticDeletion = true;
 
-        public int Amount = 14;
+        public int Amount = 3;
     }
 }

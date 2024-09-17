@@ -40,22 +40,6 @@ namespace GameServer
 
         public static string backupUsersPath;
 
-        public static string modsPath;
-
-        public static string requiredModsPath;
-
-        public static string optionalModsPath;
-
-        public static string forbiddenModsPath;
-
-        //Lists
-
-        public static List<string> loadedRequiredMods = new List<string>();
-
-        public static List<string> loadedOptionalMods = new List<string>();
-
-        public static List<string> loadedForbiddenMods = new List<string>();
-
         //References
 
         public static MarketValuesFile marketValues;
@@ -77,6 +61,8 @@ namespace GameServer
         public static DiscordConfigFile discordConfig;
 
         public static BackupConfigFile backupConfig;
+
+        public static ModConfigFile modConfig;
 
         //Booleans
 

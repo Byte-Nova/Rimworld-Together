@@ -9,7 +9,7 @@ namespace GameServer
 
         private static string worldFilePath = Path.Combine(Master.corePath, worldFileName);
 
-        public static void ParseWorldPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             WorldData worldData = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
 

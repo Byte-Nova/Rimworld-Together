@@ -44,7 +44,7 @@ namespace GameClient
             DialogManager.dialogMarketListing = this;
 
             title = "RTGlobalMarket".Translate();
-            description = "RTAvailableSilver".Translate(RimworldManager.GetSilverInMap(settlementMap));
+            description = "RTAvailableSilver".Translate(RimworldManager.GetSpecificThingCountInMap(ThingDefOf.Silver, settlementMap));
 
             this.elements = elements;
             this.actionClick = actionClick;

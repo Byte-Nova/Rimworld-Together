@@ -15,7 +15,7 @@ namespace Shared
 
         public LoginResponse _tryResponse;
 
-        public string[] _runningMods;
+        public ModConfigFile _runningMods;
 
         public List<string> _extraDetails = new List<string>();
     }

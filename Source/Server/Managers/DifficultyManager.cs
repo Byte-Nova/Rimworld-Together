@@ -5,7 +5,7 @@ namespace GameServer
 {
     public static class DifficultyManager
     {
-        public static void ParseDifficultyPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             SetCustomDifficulty(client, Serializer.ConvertBytesToObject<DifficultyData>(packet.contents));
         }

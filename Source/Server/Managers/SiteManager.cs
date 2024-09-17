@@ -9,7 +9,7 @@ namespace GameServer
 
         private static readonly double taskDelayMS = 1800000;
 
-        public static void ParseSitePacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableSites)
             {
@@ -53,7 +53,7 @@ namespace GameServer
 
             foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
             {
-                siteData._goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
+                siteData._siteFile.Goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
 
                 cClient.listener.EnqueuePacket(packet);
