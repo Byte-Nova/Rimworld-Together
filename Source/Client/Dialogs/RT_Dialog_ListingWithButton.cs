@@ -10,23 +10,25 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(400f, 400f);
 
-        public string title;
+        public readonly string title;
 
-        public string description;
+        public readonly string description;
 
-        public string[] elements;
+        public readonly string[] elements;
 
-        private Action actionClick;
+        private readonly Action actionClick;
 
-        private Action actionCancel;
+        private readonly Action actionCancel;
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        private float buttonX = 150f;
-        private float buttonY = 38f;
+        private readonly float buttonX = 150f;
 
-        private float selectButtonX = 47f;
-        private float selectButtonY = 25f;
+        private readonly float buttonY = 38f;
+
+        private readonly float selectButtonX = 47f;
+
+        private readonly float selectButtonY = 25f;
 
         public RT_Dialog_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
         {
@@ -59,15 +61,14 @@ namespace GameClient
             Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
-
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
             Text.Font = GameFont.Medium;
-
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
+            Text.Font = GameFont.Small;
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close"))
             {
                 if (actionCancel != null) actionCancel.Invoke();

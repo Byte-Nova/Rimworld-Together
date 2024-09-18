@@ -6,7 +6,8 @@ namespace Shared
     [Serializable]
     public class CaravanData
     {
-        public CaravanStepMode stepMode;
-        public CaravanDetails details;
+        public CaravanStepMode _stepMode;
+
+        public CaravanFile _caravanFile;
     }
 }

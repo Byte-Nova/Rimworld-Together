@@ -7,20 +7,10 @@ namespace Shared
     [Serializable]
     public class SiteData
     {
-        public SiteStepMode siteStepMode;
+        public SiteStepMode _stepMode;
 
-        public int tile;
+        public SiteFile _siteFile = new SiteFile();
 
-        public int type;
-
-        public string owner;
-
-        public byte[] workerData;
-
-        public Goodwill goodwill;
-
-        public bool isFromFaction;
-
-        public List<int> sitesWithRewards = new List<int>();
+        public List<int> _sitesWithRewards = new List<int>();
     }
 }

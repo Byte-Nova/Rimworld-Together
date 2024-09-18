@@ -25,12 +25,7 @@ namespace GameClient
         private static void SendMapToServerSingle(Map map)
         {
             MapData mapData = ParseMap(map, true, true, true, true);
-
-            MapFileData mapFileData = new MapFileData();
-            mapFileData.mapTile = mapData.mapTile;
-            mapFileData.mapData = mapData;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MapPacket), mapFileData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MapPacket), mapData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -39,9 +34,7 @@ namespace GameClient
         public static MapData ParseMap(Map map, bool includeThings, bool includeHumans, bool includeAnimals, bool includeMods)
         {
             MapData mapData = MapScribeManager.MapToString(map, includeThings, includeThings, includeHumans, includeHumans, includeAnimals, includeAnimals);
-
-            if (includeMods) mapData.mapMods = ModManager.GetRunningModList();
-
+            if (includeMods) mapData._mapMods = ModManagerHelper.GetRunningModList().UnsortedMods;
             return mapData;
         }
     }

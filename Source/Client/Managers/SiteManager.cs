@@ -20,7 +20,7 @@ namespace GameClient
 
         public static ThingDef[] siteRewardDefNames;
 
-        public static void SetSiteData(ServerGlobalData serverGlobalData)
+        public static void SetValues(ServerGlobalData serverGlobalData)
         {
             siteRewardDefNames = new ThingDef[]
             {
@@ -37,15 +37,15 @@ namespace GameClient
 
             siteRewardCount = new int[]
             {
-                serverGlobalData.siteValues.FarmlandRewardCount,
-                serverGlobalData.siteValues.QuarryRewardCount,
-                serverGlobalData.siteValues.SawmillRewardCount,
-                serverGlobalData.siteValues.BankRewardCount,
-                serverGlobalData.siteValues.LaboratoryRewardCount,
-                serverGlobalData.siteValues.RefineryRewardCount,
-                serverGlobalData.siteValues.HerbalWorkshopRewardCount,
-                serverGlobalData.siteValues.TextileFactoryRewardCount,
-                serverGlobalData.siteValues.FoodProcessorRewardCount
+                serverGlobalData._siteValues.FarmlandRewardCount,
+                serverGlobalData._siteValues.QuarryRewardCount,
+                serverGlobalData._siteValues.SawmillRewardCount,
+                serverGlobalData._siteValues.BankRewardCount,
+                serverGlobalData._siteValues.LaboratoryRewardCount,
+                serverGlobalData._siteValues.RefineryRewardCount,
+                serverGlobalData._siteValues.HerbalWorkshopRewardCount,
+                serverGlobalData._siteValues.TextileFactoryRewardCount,
+                serverGlobalData._siteValues.FoodProcessorRewardCount
             };
 
             PersonalSiteManager.SetSiteData(serverGlobalData);
@@ -86,18 +86,18 @@ namespace GameClient
         {
             SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
 
-            switch(siteData.siteStepMode)
+            switch(siteData._stepMode)
             {
                 case SiteStepMode.Accept:
                     OnSiteAccept();
                     break;
 
                 case SiteStepMode.Build:
-                    PlayerSiteManager.SpawnSingleSite(siteData);
+                    PlayerSiteManager.SpawnSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Destroy:
-                    PlayerSiteManager.RemoveSingleSite(siteData);
+                    PlayerSiteManager.RemoveSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Info:
@@ -135,8 +135,8 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site information"));
 
             SiteData siteData = new SiteData();
-            siteData.tile = ClientValues.chosenSite.Tile;
-            siteData.siteStepMode = SiteStepMode.Info;
+            siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
+            siteData._stepMode = SiteStepMode.Info;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
@@ -146,7 +146,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            if (siteData.workerData == null)
+            if (siteData._siteFile.WorkerData == null)
             {
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
                     delegate { PrepareSendPawnScreen(); }, null);
@@ -167,7 +167,7 @@ namespace GameClient
         {
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site worker"));
 
-            siteData.siteStepMode = SiteStepMode.Retrieve;
+            siteData._stepMode = SiteStepMode.Retrieve;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
@@ -179,9 +179,9 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanData>(siteData.workerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanDataFile>(siteData._siteFile.WorkerData));
 
-                RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, ClientValues.chosenCaravan);
+                RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, SessionValues.chosenCaravan);
 
                 SaveManager.ForceSave();
             };
@@ -191,7 +191,7 @@ namespace GameClient
 
         private static void PrepareSendPawnScreen()
         {
-            List<Pawn> pawns = ClientValues.chosenCaravan.PawnsListForReading;
+            List<Pawn> pawns = SessionValues.chosenCaravan.PawnsListForReading;
             List<string> pawnNames = new List<string>();
             foreach (Pawn pawn in pawns)
             {
@@ -206,7 +206,7 @@ namespace GameClient
 
         public static void SendPawnToSite()
         {
-            List<Pawn> caravanPawns = ClientValues.chosenCaravan.PawnsListForReading;
+            List<Pawn> caravanPawns = SessionValues.chosenCaravan.PawnsListForReading;
             List<Pawn> caravanHumans = new List<Pawn>();
             foreach (Pawn pawn in caravanPawns)
             {
@@ -214,17 +214,17 @@ namespace GameClient
             }
 
             Pawn pawnToSend = caravanHumans[DialogManager.dialogButtonListingResultInt];
-            ClientValues.chosenCaravan.RemovePawn(pawnToSend);
+            SessionValues.chosenCaravan.RemovePawn(pawnToSend);
 
             SiteData siteData = new SiteData();
-            siteData.tile = ClientValues.chosenSite.Tile;
-            siteData.siteStepMode = SiteStepMode.Deposit;
-            siteData.workerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
+            siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
+            siteData._stepMode = SiteStepMode.Deposit;
+            siteData._siteFile.WorkerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
             Network.listener.EnqueuePacket(packet);
 
-            if (caravanHumans.Count == 1) ClientValues.chosenCaravan.Destroy();
+            if (caravanHumans.Count == 1) SessionValues.chosenCaravan.Destroy();
 
             SaveManager.ForceSave();
         }
@@ -234,8 +234,8 @@ namespace GameClient
             Action r1 = delegate
             {
                 SiteData siteData = new SiteData();
-                siteData.tile = ClientValues.chosenSite.Tile;
-                siteData.siteStepMode = SiteStepMode.Destroy;
+                siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
+                siteData._stepMode = SiteStepMode.Destroy;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);
@@ -259,7 +259,7 @@ namespace GameClient
 
                 foreach (Site site in sites)
                 {
-                    if (siteData.sitesWithRewards.Contains(site.Tile)) rewardedSites.Add(site);
+                    if (siteData._sitesWithRewards.Contains(site.Tile)) rewardedSites.Add(site);
                 }
 
                 Thing[] rewards = GetSiteRewards(rewardedSites.ToArray());
@@ -282,11 +282,11 @@ namespace GameClient
                 {
                     if (site.MainSitePartDef == siteDefs[i])
                     {
-                        ThingData thingData = new ThingData();
-                        thingData.defName = siteRewardDefNames[i].defName;
-                        thingData.quantity = siteRewardCount[i];
-                        thingData.quality = 0;
-                        thingData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
+                        ThingDataFile thingData = new ThingDataFile();
+                        thingData.DefName = siteRewardDefNames[i].defName;
+                        thingData.Quantity = siteRewardCount[i];
+                        thingData.Quality = 0;
+                        thingData.Hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
 
                         if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(thingData));
 
@@ -307,15 +307,15 @@ namespace GameClient
         {
             sitePrices = new int[]
             {
-                serverGlobalData.siteValues.PersonalFarmlandCost,
-                serverGlobalData.siteValues.PersonalQuarryCost,
-                serverGlobalData.siteValues.PersonalSawmillCost,
-                serverGlobalData.siteValues.PersonalBankCost,
-                serverGlobalData.siteValues.PersonalLaboratoryCost,
-                serverGlobalData.siteValues.PersonalRefineryCost,
-                serverGlobalData.siteValues.PersonalHerbalWorkshopCost,
-                serverGlobalData.siteValues.PersonalTextileFactoryCost,
-                serverGlobalData.siteValues.PersonalFoodProcessorCost
+                serverGlobalData._siteValues.PersonalFarmlandCost,
+                serverGlobalData._siteValues.PersonalQuarryCost,
+                serverGlobalData._siteValues.PersonalSawmillCost,
+                serverGlobalData._siteValues.PersonalBankCost,
+                serverGlobalData._siteValues.PersonalLaboratoryCost,
+                serverGlobalData._siteValues.PersonalRefineryCost,
+                serverGlobalData._siteValues.PersonalHerbalWorkshopCost,
+                serverGlobalData._siteValues.PersonalTextileFactoryCost,
+                serverGlobalData._siteValues.PersonalFoodProcessorCost
             };
         }
 
@@ -331,20 +331,19 @@ namespace GameClient
         {
             DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
+                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
-                siteData.siteStepMode = SiteStepMode.Build;
-                siteData.tile = ClientValues.chosenCaravan.Tile;
-                siteData.type = DialogManager.selectedScrollButton;
-                siteData.isFromFaction = false;
+                siteData._stepMode = SiteStepMode.Build;
+                siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
+                siteData._siteFile.Type = DialogManager.selectedScrollButton;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);
@@ -362,15 +361,15 @@ namespace GameClient
         {
             sitePrices = new int[]
             {
-                serverGlobalData.siteValues.FactionFarmlandCost,
-                serverGlobalData.siteValues.FactionQuarryCost,
-                serverGlobalData.siteValues.FactionSawmillCost,
-                serverGlobalData.siteValues.FactionBankCost,
-                serverGlobalData.siteValues.FactionLaboratoryCost,
-                serverGlobalData.siteValues.FactionRefineryCost ,
-                serverGlobalData.siteValues.FactionHerbalWorkshopCost,
-                serverGlobalData.siteValues.FactionTextileFactoryCost,
-                serverGlobalData.siteValues.FactionFoodProcessorCost
+                serverGlobalData._siteValues.FactionFarmlandCost,
+                serverGlobalData._siteValues.FactionQuarryCost,
+                serverGlobalData._siteValues.FactionSawmillCost,
+                serverGlobalData._siteValues.FactionBankCost,
+                serverGlobalData._siteValues.FactionLaboratoryCost,
+                serverGlobalData._siteValues.FactionRefineryCost ,
+                serverGlobalData._siteValues.FactionHerbalWorkshopCost,
+                serverGlobalData._siteValues.FactionTextileFactoryCost,
+                serverGlobalData._siteValues.FactionFoodProcessorCost
             };
         }
 
@@ -386,20 +385,20 @@ namespace GameClient
         {
             DialogManager.PopDialog(DialogManager.dialogScrollButtons);
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(ClientValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
+            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], ClientValues.chosenCaravan);
+                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
-                siteData.siteStepMode = SiteStepMode.Build;
-                siteData.tile = ClientValues.chosenCaravan.Tile;
-                siteData.type = DialogManager.selectedScrollButton;
-                siteData.isFromFaction = true;
+                siteData._stepMode = SiteStepMode.Build;
+                siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
+                siteData._siteFile.Type = DialogManager.selectedScrollButton;
+                siteData._siteFile.FactionFile = new FactionFile();
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);

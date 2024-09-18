@@ -16,22 +16,18 @@ namespace GameClient
             if (File.Exists(Master.connectionDataPath)) newConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
             else newConnectionData = new ConnectionDataFile();
 
-            newConnectionData.ip = ip;
-            newConnectionData.port = port;
+            newConnectionData.IP = ip;
+            newConnectionData.Port = port;
 
             Serializer.SerializeToFile(Master.connectionDataPath, newConnectionData);
         }
 
         //Loads the connection data
 
-        public static string[] LoadConnectionData()
+        public static ConnectionDataFile LoadConnectionData()
         {
-            if (File.Exists(Master.connectionDataPath))
-            {
-                ConnectionDataFile previousConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
-                return new string[] { previousConnectionData.ip, previousConnectionData.port };
-            }
-            else return new string[] { "", "" };
+            if (File.Exists(Master.connectionDataPath)) return Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
+            else return new ConnectionDataFile();
         }
 
         //Saves the login data
@@ -42,22 +38,18 @@ namespace GameClient
             if (File.Exists(Master.loginDataPath)) newLoginData = Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
             else newLoginData = new LoginDataFile();
 
-            newLoginData.username = username;
-            newLoginData.password = password;
+            newLoginData.Username = username;
+            newLoginData.Password = password;
 
             Serializer.SerializeToFile(Master.loginDataPath, newLoginData);
         }
 
         //Loads the login data
 
-        public static string[] LoadLoginData()
+        public static LoginDataFile LoadLoginData()
         {
-            if (File.Exists(Master.loginDataPath))
-            {
-                LoginDataFile previousLoginData = Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
-                return new string[] { previousLoginData.username, previousLoginData.password };
-            }
-            else return new string[] { "", "" };
+            if (File.Exists(Master.loginDataPath)) return Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
+            else return new LoginDataFile();
         }
 
         //Saves the client preferences

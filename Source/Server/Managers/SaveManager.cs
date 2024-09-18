@@ -21,13 +21,13 @@ namespace GameServer
             if (client.listener.downloadManager == null)
             {
                 client.listener.downloadManager = new DownloadManager();
-                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferData.fileParts);
+                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferData._fileParts);
             }
 
-            client.listener.downloadManager.WriteFilePart(fileTransferData.fileBytes);
+            client.listener.downloadManager.WriteFilePart(fileTransferData._fileBytes);
 
             //if this is the last packet
-            if (fileTransferData.isLastPart)
+            if (fileTransferData._isLastPart)
             {
                 client.listener.downloadManager.FinishFileWrite();
                 client.listener.downloadManager = null;
@@ -61,11 +61,11 @@ namespace GameServer
             }
 
             FileTransferData fileTransferData = new FileTransferData();
-            fileTransferData.fileSize = client.listener.uploadManager.fileSize;
-            fileTransferData.fileParts = client.listener.uploadManager.fileParts;
-            fileTransferData.fileBytes = client.listener.uploadManager.ReadFilePart();
-            fileTransferData.isLastPart = client.listener.uploadManager.isLastPart;
-            if(!Master.serverConfig.SyncLocalSave) fileTransferData.instructions = (int)SaveMode.Strict;
+            fileTransferData._fileSize = client.listener.uploadManager.fileSize;
+            fileTransferData._fileParts = client.listener.uploadManager.fileParts;
+            fileTransferData._fileBytes = client.listener.uploadManager.ReadFilePart();
+            fileTransferData._isLastPart = client.listener.uploadManager.isLastPart;
+            if(!Master.serverConfig.SyncLocalSave) fileTransferData._instructions = (int)SaveMode.Strict;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
             client.listener.EnqueuePacket(packet);
@@ -77,7 +77,7 @@ namespace GameServer
 
         private static void OnUserSave(ServerClient client, FileTransferData fileTransferData)
         {
-            if (fileTransferData.instructions == (int)SaveMode.Disconnect)
+            if (fileTransferData._instructions == (int)SaveMode.Disconnect)
             {
                 client.listener.disconnectFlag = true;
                 Logger.Message($"[Save game] > {client.userFile.Username} > Disconnect");
@@ -118,56 +118,13 @@ namespace GameServer
             }
             client.listener.disconnectFlag = true;
 
-            //Locate and make sure there's no other backup save in the server
-            string playerArchivedSavePath = Path.Combine(Master.backupUsersPath, client.userFile.Username);
-            if (Directory.Exists(playerArchivedSavePath)) Directory.Delete(playerArchivedSavePath,true);
-            Directory.CreateDirectory(playerArchivedSavePath);
-
-            //Assign save paths to the backup files
-            string mapsArchivePath = Path.Combine(playerArchivedSavePath, "Maps");
-            string savesArchivePath = Path.Combine(playerArchivedSavePath, "Saves");
-            string sitesArchivePath = Path.Combine(playerArchivedSavePath, "Sites");
-            string settlementsArchivePath = Path.Combine(playerArchivedSavePath, "Settlements");
-
-            //Create directories for the backup files
-            Directory.CreateDirectory(mapsArchivePath);
-            Directory.CreateDirectory(savesArchivePath);
-            Directory.CreateDirectory(sitesArchivePath);
-            Directory.CreateDirectory(settlementsArchivePath);
-
-            //Copy save file to archive
-            try { File.Copy(Path.Combine(Master.savesPath, client.userFile.Username + fileExtension), Path.Combine(savesArchivePath , client.userFile.Username + fileExtension)); }
-            catch { Logger.Warning($"Failed to find {client.userFile.Username}'s save"); }
-
-            //Copy map files to archive
-            MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(client.userFile.Username);
-            foreach (MapFileData map in userMaps)
-            {
-                File.Copy(Path.Combine(Master.mapsPath, map.mapTile + MapManager.fileExtension), 
-                    Path.Combine(mapsArchivePath, map.mapTile + MapManager.fileExtension));
-            }
-
-            //Copy site files to archive
-            SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(client.userFile.Username);
-            foreach (SiteFile site in playerSites)
-            {
-                File.Copy(Path.Combine(Master.sitesPath, site.tile + SiteManager.fileExtension), 
-                    Path.Combine(sitesArchivePath, site.tile + SiteManager.fileExtension));
-            }
-
-            //Copy settlement files to archive
-            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(client.userFile.Username);
-            foreach (SettlementFile settlementFile in playerSettlements)
-            {
-                File.Copy(Path.Combine(Master.settlementsPath, settlementFile.tile + SettlementManager.fileExtension), 
-                    Path.Combine(settlementsArchivePath, settlementFile.tile + SettlementManager.fileExtension));
-            }
-
             ResetPlayerData(client, client.userFile.Username);
         }
 
         public static void ResetPlayerData(ServerClient client, string username)
         {
+            BackupManager.BackupUser(username);
+
             if (client != null) client.listener.disconnectFlag = true;
 
             //Delete save file
@@ -175,20 +132,20 @@ namespace GameServer
             catch { Logger.Warning($"Failed to find {username}'s save"); }
 
             //Delete map files
-            MapFileData[] userMaps = MapManager.GetAllMapsFromUsername(username);
-            foreach (MapFileData map in userMaps) MapManager.DeleteMap(map);
+            MapData[] userMaps = MapManager.GetAllMapsFromUsername(username);
+            foreach (MapData map in userMaps) MapManager.DeleteMap(map);
 
             //Delete site files
-            SiteFile[] playerSites = SiteManager.GetAllSitesFromUsername(username);
+            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
             foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
 
             //Delete settlement files
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
-                SettlementData settlementData = new SettlementData();
-                settlementData.tile = settlementFile.tile;
-                settlementData.owner = settlementFile.owner;
+                PlayerSettlementData settlementData = new PlayerSettlementData();
+                settlementData._settlementData.Tile = settlementFile.Tile;
+                settlementData._settlementData.Owner = settlementFile.Owner;
 
                 SettlementManager.RemoveSettlement(client, settlementData);
             }

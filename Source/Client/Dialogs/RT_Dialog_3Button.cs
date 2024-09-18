@@ -9,20 +9,27 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(350f, 285f);
 
-        private string title = "";
-        private string description = "";
+        private readonly string title = "";
 
-        private float buttonX = 250f;
-        private float buttonY = 38f;
+        private readonly string description = "";
 
-        private Action actionOne;
-        private Action actionTwo;
-        private Action actionThree;
-        private Action actionCancel;
+        private readonly float buttonX = 250f;
 
-        private string actionOneName;
-        private string actionTwoName;
-        private string actionThreeName;
+        private readonly float buttonY = 38f;
+
+        private readonly Action actionOne;
+
+        private readonly Action actionTwo;
+
+        private readonly Action actionThree;
+
+        private readonly Action actionCancel;
+
+        private readonly string actionOneName;
+
+        private readonly string actionTwoName;
+
+        private readonly string actionThreeName;
 
         public RT_Dialog_3Button(string title, string description, string actionOneName, string actionTwoName, string actionThreeName, Action actionOne, Action actionTwo, Action actionThree, Action actionCancel)
         {

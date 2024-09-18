@@ -10,11 +10,7 @@ namespace GameServer
         public string Password;
 
         public string Uid;
-
-        public string FactionName;
-
-        public bool HasFaction;
-
+        
         public bool IsAdmin;
 
         public bool IsBanned;
@@ -27,84 +23,64 @@ namespace GameServer
 
         public double AidProtectionTime;
 
-        public List<string> RunningMods = new List<string>();
+        public string[] RunningMods;
 
-        public List<string> AllyPlayers = new List<string>();
+        public UserRelationshipsFile Relationships = new UserRelationshipsFile();
 
-        public List<string> EnemyPlayers = new List<string>();
+        public FactionFile FactionFile;
 
-        [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
+        [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
 
         public void SetLoginDetails(LoginData data)
         {
             //Don't force save in this function because it wouldn't server any purpose
 
-            Username = data.username;
-            Password = data.password;
+            Username = data._username;
+            Password = data._password;
             Uid = Hasher.GetHashFromString(Username);
         }
 
-        public void UpdateFaction(string updatedFactionName)
+        public void UpdateFaction(FactionFile toUpdateWith)
         {
-            if (string.IsNullOrWhiteSpace(updatedFactionName))
-            {
-                HasFaction = false;
-                FactionName = null;
-            }
+            FactionFile = toUpdateWith;
 
-            else
-            {
-                HasFaction = true;
-                FactionName = updatedFactionName;
-            }
-
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateEventTime()
         {
             EventProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateAidTime()
         {
             AidProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateActivityTime()
         {
             ActivityProtectionTime = TimeConverter.CurrentTimeToEpoch();
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateAdmin(bool mode)
         {
             IsAdmin = mode;
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
         public void UpdateBan(bool mode)
         {
             IsBanned = mode;
-            SaveUserFile();
+            UserManagerHelper.SaveUserFile(this);
         }
 
-        public void UpdateMods(List<string> mods)
+        public void UpdateMods(string[] mods)
         {
             RunningMods = mods;
-            SaveUserFile();
-        }
-
-        public void SaveUserFile()
-        {
-            savingSemaphore.WaitOne();
-
-            string savePath = Path.Combine(Master.usersPath, Username + UserManager.fileExtension);
-            Serializer.SerializeToFile(savePath, this);
-
-            savingSemaphore.Release();
+            UserManagerHelper.SaveUserFile(this);
         }
     }
 }

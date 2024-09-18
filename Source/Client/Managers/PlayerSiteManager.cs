@@ -12,82 +12,70 @@ namespace GameClient
     {
         public static List<Site> playerSites = new List<Site>();
 
-        public static void AddSites(OnlineSiteFile[] sites)
+        public static void AddSites(SiteFile[] sites)
         {
-            if (sites == null) return;
-
-            for (int i = 0; i < PlayerSiteManagerHelper.tempSites.Count(); i++)
+            foreach (SiteFile toAdd in sites)
             {
-                OnlineSiteFile siteFile = PlayerSiteManagerHelper.tempSites[i];
-
-                try
-                {
-                    SitePartDef siteDef = SiteManager.GetDefForNewSite(siteFile.type, siteFile.fromFaction);
-                    Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: siteFile.tile,
-                        threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(siteFile.goodwill));
-
-                    playerSites.Add(site);
-                    Find.WorldObjects.Add(site);
-                }
-                catch (Exception e) { Logger.Error($"Failed to spawn site at {siteFile.tile}. Reason: {e}"); }
+                SpawnSingleSite(toAdd);
             }
         }
 
         public static void ClearAllSites()
         {
-            playerSites.Clear();
+            Site[] sites = Find.WorldObjects.Sites.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction) || 
+                fetch.Faction == Faction.OfPlayer).ToArray();
 
-            Site[] sites = Find.WorldObjects.Sites.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction)).ToArray();
-            foreach (Site site in sites) Find.WorldObjects.Remove(site);
-
-            sites = Find.WorldObjects.Sites.Where(fetch => fetch.Faction == Faction.OfPlayer).ToArray();
-            foreach (Site site in sites) Find.WorldObjects.Remove(site);
+            foreach (Site toRemove in sites)
+            {
+                SiteFile siteFile = new SiteFile();
+                siteFile.Tile = toRemove.Tile;
+                RemoveSingleSite(siteFile);
+            }
         }
 
-        public static void SpawnSingleSite(SiteData siteData)
+        public static void SpawnSingleSite(SiteFile toAdd)
         {
-            if (ClientValues.isReadyToPlay)
+            if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
+            else
             {
                 try
                 {
-                    SitePartDef siteDef = SiteManager.GetDefForNewSite(siteData.type, siteData.isFromFaction);
+                    SitePartDef siteDef = SiteManager.GetDefForNewSite(toAdd.Type, toAdd.FactionFile != null);
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: siteData.tile,
+                        tile: toAdd.Tile,
                         threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(siteData.goodwill));
+                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
 
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn site at {siteData.tile}. Reason: {e}"); }
+                catch (Exception e) { Logger.Error($"Failed to spawn site at {toAdd.Tile}. Reason: {e}"); }
             }
         }
 
-        public static void RemoveSingleSite(SiteData siteData)
+        public static void RemoveSingleSite(SiteFile toRemove)
         {
-            if (ClientValues.isReadyToPlay)
+            try
             {
-                try
+                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
+                if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
-                    Site toGet = playerSites.Find(x => x.Tile == siteData.tile);
-
-                    playerSites.Remove(toGet);
+                    if (playerSites.Contains(toGet)) playerSites.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                catch (Exception e) { Logger.Message($"Failed to remove site at {siteData.tile}. Reason: {e}"); }
+                else Logger.Warning($"Ignored removal of site at {toGet.Tile} because player was inside");
             }
+            catch (Exception e) { Logger.Error($"Failed to remove site at {toRemove.Tile}. Reason: {e}"); }
         }
     }
 
     public static class PlayerSiteManagerHelper
     {
-        public static OnlineSiteFile[] tempSites;
+        public static SiteFile[] tempSites;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            tempSites = serverGlobalData.playerSites;
+            tempSites = serverGlobalData._playerSites;
         }
     }
 }

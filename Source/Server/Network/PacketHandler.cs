@@ -30,12 +30,12 @@ namespace GameServer
 
         public static void LoginClientPacket(ServerClient client, Packet packet)
         {
-            UserLogin.TryLoginUser(client, packet);
+            UserManager.LoginUser(client, packet);
         }
 
         public static void RegisterClientPacket(ServerClient client, Packet packet)
         {
-            UserRegister.TryRegisterUser(client, packet);
+            UserManager.RegisterUser(client, packet);
         }
 
         public static void RequestSavePartPacket(ServerClient client, Packet packet)
@@ -55,12 +55,12 @@ namespace GameServer
 
         public static void TransferPacket(ServerClient client, Packet packet)
         {
-            TransferManager.ParseTransferPacket(client, packet);
+            TransferManager.ParsePacket(client, packet);
         }
 
         public static void MarketPacket(ServerClient client, Packet packet)
         {
-            MarketManager.ParseMarketPacket(client, packet);
+            MarketManager.ParsePacket(client, packet);
         }
 
         public static void AidPacket(ServerClient client, Packet packet)
@@ -70,7 +70,7 @@ namespace GameServer
 
         public static void SitePacket(ServerClient client, Packet packet)
         {
-            SiteManager.ParseSitePacket(client, packet);
+            SiteManager.ParsePacket(client, packet);
         }
 
         public static void RoadPacket(ServerClient client, Packet packet)
@@ -85,12 +85,12 @@ namespace GameServer
 
         public static void OnlineActivityPacket(ServerClient client, Packet packet)
         {
-            OnlineActivityManager.ParseOnlineActivityPacket(client, packet);
+            OnlineActivityManager.ParsePacket(client, packet);
         }
 
         public static void OfflineActivityPacket(ServerClient client, Packet packet)
         {
-            OfflineActivityManager.ParseOfflineActivityPacket(client, packet);
+            OfflineActivityManager.ParsePacket(client, packet);
         }
 
         public static void ChatPacket(ServerClient client, Packet packet)
@@ -100,7 +100,7 @@ namespace GameServer
 
         public static void FactionPacket(ServerClient client, Packet packet)
         {
-            FactionManager.ParseFactionPacket(client, packet);
+            FactionManager.ParsePacket(client, packet);
         }
 
         public static void MapPacket(ServerClient client, Packet packet)
@@ -110,7 +110,7 @@ namespace GameServer
 
         public static void SettlementPacket(ServerClient client, Packet packet)
         {
-            SettlementManager.ParseSettlementPacket(client, packet);
+            SettlementManager.ParsePacket(client, packet);
         }
 
         public static void NPCSettlementPacket(ServerClient client, Packet packet)
@@ -120,17 +120,22 @@ namespace GameServer
 
         public static void EventPacket(ServerClient client, Packet packet)
         {
-            EventManager.ParseEventPacket(client, packet);
+            EventManager.ParsePacket(client, packet);
+        }
+
+        public static void ModPacket(ServerClient client, Packet packet)
+        {
+            ModManager.ParsePacket(client, packet);
         }
 
         public static void WorldPacket(ServerClient client, Packet packet)
         {
-            WorldManager.ParseWorldPacket(client, packet);
+            WorldManager.ParsePacket(client, packet);
         }
 
         public static void CustomDifficultyPacket(ServerClient client, Packet packet)
         {
-            CustomDifficultyManager.ParseDifficultyPacket(client, packet);
+            DifficultyManager.ParsePacket(client, packet);
         }
 
         public static void ResetSavePacket(ServerClient client, Packet packet)
@@ -140,44 +145,20 @@ namespace GameServer
 
         //Empty functions
 
-        public static void KeepAlivePacket(ServerClient client, Packet packet)
-        {
-            //Empty
-        }
+        public static void KeepAlivePacket(ServerClient client, Packet packet) { }
 
-        public static void UserUnavailablePacket()
-        {
-            //Empty
-        }
+        public static void UserUnavailablePacket(ServerClient client, Packet packet) { }
 
-        public static void IllegalActionPacket()
-        {
-            //Empty
-        }
+        public static void IllegalActionPacket(ServerClient client, Packet packet) { }
 
-        public static void BreakPacket()
-        {
-            //Empty
-        }
+        public static void BreakPacket(ServerClient client, Packet packet) { }
 
-        public static void PlayerRecountPacket()
-        {
-            //Empty
-        }
+        public static void PlayerRecountPacket(ServerClient client, Packet packet) { }
 
-        public static void ServerValuesPacket()
-        {
-            //Empty
-        }
+        public static void ServerValuesPacket(ServerClient client, Packet packet) { }
 
-        public static void CommandPacket()
-        {
-            //Empty
-        }
+        public static void CommandPacket(ServerClient client, Packet packet) { }
 
-        public static void LoginResponsePacket()
-        {
-            //Empty
-        }
+        public static void LoginResponsePacket(ServerClient client, Packet packet) { }
     }
 }

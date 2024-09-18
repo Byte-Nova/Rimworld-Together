@@ -45,7 +45,7 @@ namespace GameClient
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            tempPollutionDetails = serverGlobalData.pollutedTiles;
+            tempPollutionDetails = serverGlobalData._pollutedTiles;
         }
 
         public static PollutionDetails[] GetPlanetPollutedTiles()

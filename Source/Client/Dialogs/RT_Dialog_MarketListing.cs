@@ -18,29 +18,33 @@ namespace GameClient
         private Vector2 scrollPosition = Vector2.zero;
 
         private readonly string title;
+
         private readonly string description;
 
         private readonly Action actionClick;
+
         private readonly Action actionCancel;
 
         private readonly float buttonX = 100f;
+
         private readonly float buttonY = 38f;
 
         private readonly float selectButtonX = 47f;
+
         private readonly float selectButtonY = 25f;
 
         //Variables
 
-        private readonly ThingData[] elements;
+        private readonly ThingDataFile[] elements;
 
         private readonly Map settlementMap;
 
-        public RT_Dialog_MarketListing(ThingData[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
+        public RT_Dialog_MarketListing(ThingDataFile[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
         {
             DialogManager.dialogMarketListing = this;
 
             title = "Global Market";
-            description = $"Silver available for trade: {RimworldManager.GetSilverInMap(settlementMap)}";
+            description = $"Silver available for trade: {RimworldManager.GetSpecificThingCountInMap(ThingDefOf.Silver, settlementMap)}";
 
             this.elements = elements;
             this.actionClick = actionClick;
@@ -96,6 +100,8 @@ namespace GameClient
             {
                 DialogManager.dialogMarketListing = null;
                 ClientValues.ToggleTransfer(false);
+                
+                if (actionCancel != null) actionCancel.Invoke();
                 Close(); 
             }
         }

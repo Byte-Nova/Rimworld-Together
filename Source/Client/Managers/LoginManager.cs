@@ -13,7 +13,7 @@ namespace GameClient
         {
             LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
 
-            switch(loginData.tryResponse)
+            switch(loginData._tryResponse)
             {
                 case LoginResponse.InvalidLogin:
                     DialogManager.PushNewDialog(new RT_Dialog_Error("Login details are invalid! Please try again!"));
@@ -36,7 +36,7 @@ namespace GameClient
                     break;
 
                 case LoginResponse.WrongMods:
-                    ModManager.GetConflictingMods(packet);
+                    ModManagerHelper.GetConflictingMods(packet);
                     break;
 
                 case LoginResponse.ServerFull:
@@ -48,7 +48,7 @@ namespace GameClient
                     break;
 
                 case LoginResponse.WrongVersion:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginData.extraDetails[0]}"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version {loginData._extraDetails[0]}"));
                     break;
 
                 case LoginResponse.NoWorld:

@@ -1,79 +1,54 @@
 ﻿using Shared;
-using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
     public static class CommandManager
     {
-        public static void ParseCommand(Packet packet)
-        {
-            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
+        public static string[] commandParameters;
 
-            switch (commandData.commandMode)
+        public static void ParseServerCommands(string parsedString)
+        {
+            string parsedPrefix = parsedString.Split(' ')[0].ToLower();
+            int parsedParameters = parsedString.Split(' ').Count() - 1;
+            commandParameters = parsedString.Replace(parsedPrefix + " ", "").Split(" ");
+
+            try
             {
-                case CommandMode.Op:
-                    //Do nothing
-                    break;
+                ServerCommand commandToFetch = CommandStorage.serverCommands.ToList().Find(x => x.prefix == parsedPrefix);
+                if (commandToFetch == null) Logger.Warning($"Command '{parsedPrefix}' was not found");
+                else
+                {
+                    if (commandToFetch.parameters != parsedParameters && commandToFetch.parameters != -1)
+                    {
+                        Logger.Warning($"Command '{commandToFetch.prefix}' wanted [{commandToFetch.parameters}] parameters "
+                            + $"but was passed [{parsedParameters}]");
+                    }
 
-                case CommandMode.Deop:
-                    //Do nothing
-                    break;
+                    else
+                    {
+                        if (commandToFetch.commandAction != null) commandToFetch.commandAction.Invoke();
 
-                case CommandMode.Broadcast:
-                    //Do nothing
-                    break;
+                        else Logger.Warning($"Command '{commandToFetch.prefix}' didn't have any action built in");
+                    }
+                }
             }
+            catch (Exception e) { Logger.Error($"Couldn't parse command '{parsedPrefix}'. Reason: {e}"); }
         }
 
-        public static void SendOpCommand(ServerClient client)
+        public static void ListenForServerCommands()
         {
-            CommandData commandData = new CommandData();
-            commandData.commandMode = CommandMode.Op;
+            bool interactiveConsole = false;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
-            client.listener.EnqueuePacket(packet);
-        }
+            try { interactiveConsole = Console.In.Peek() != -1 ? true : false; }
+            catch { Logger.Warning($"Couldn't find interactive console, disabling commands"); }
 
-        public static void SendDeOpCommand(ServerClient client)
-        {
-            CommandData commandData = new CommandData();
-            commandData.commandMode = CommandMode.Deop;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
-            client.listener.EnqueuePacket(packet);
-
-        }
-
-        public static void SendEventCommand(ServerClient client, int eventID)
-        {
-            EventData eventData = new EventData();
-            eventData.eventStepMode = EventStepMode.Receive;
-            eventData.eventID = eventID;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
-            client.listener.EnqueuePacket(packet);
-        }
-
-        public static void SendBroadcastCommand(string str)
-        {
-            CommandData commandData = new CommandData();
-            commandData.commandMode = CommandMode.Broadcast;
-            commandData.commandDetails = str;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
-            foreach (ServerClient client in Network.connectedClients.ToArray())
+            if (interactiveConsole)
             {
-                client.listener.EnqueuePacket(packet);
+                while (true)
+                {
+                    ParseServerCommands(Console.ReadLine());
+                }
             }
-        }
-
-        public static void SendForceSaveCommand(ServerClient client)
-        {
-            CommandData commandData = new CommandData();
-            commandData.commandMode = CommandMode.ForceSave;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
-            client.listener.EnqueuePacket(packet);
         }
     }
 }
