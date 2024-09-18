@@ -30,7 +30,6 @@ namespace GameClient
                     case "Site":
                         break;
                     default:
-                        Logger.Message($"{o.def.defName}");
                         break;
                 }
             } 
@@ -42,7 +41,7 @@ namespace GameClient
 
         public static void WorldObjectRemoved(WorldObject o) 
         {
-            if (o.questTags != null)
+            if (!(WorldObjectManagerHelper.lastWorldObjectRemoved == o.Tile))
             {
                 switch (o.def.defName)
                 {
@@ -52,13 +51,12 @@ namespace GameClient
                     case "Site":
                         break;
                     default:
-                        Logger.Message($"{o.def.defName}");
                         break;
                 }
             }
             else
             {
-                // We ignore it because quest settlements are most likely not going to work properly for now.
+
             }
         }
 
