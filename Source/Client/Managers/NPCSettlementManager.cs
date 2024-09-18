@@ -19,7 +19,7 @@ namespace GameClient
             switch (data._stepMode)
             {
                 case SettlementStepMode.Add:
-                    SpawnSettlement(data._settlementData);
+                    SpawnSingleSettlement(data._settlementData);
                     break;
 
                 case SettlementStepMode.Remove:
@@ -66,8 +66,7 @@ namespace GameClient
 
             foreach (Settlement settlement in settlements)
             {
-                RemoveSettlement(settlement, null);
-                NPCSettlementManagerHelper.lastSettlements.Add(settlement.Tile);
+                RemoveSingleSettlement(settlement, null);
             }
 
             DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !FactionValues.playerFactions.Contains(fetch.Faction) &&
@@ -85,7 +84,7 @@ namespace GameClient
                 fetch.Faction != Faction.OfPlayer);
             try
             {
-                if (toRemove != null) RemoveSettlement(toRemove, null);
+                if (toRemove != null) RemoveSingleSettlement(toRemove, null);
                 WorldObjectManagerHelper.lastWorldObjectRemoved = data.tile;
             }
             catch (Exception ex) { Logger.Error(ex.ToString()); }
@@ -99,7 +98,7 @@ namespace GameClient
                 {
                     if (!RimworldManager.CheckIfMapHasPlayerPawns(settlement.Map))
                     {
-                        NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
+                        WorldObjectManagerHelper.lastWorldObjectRemoved = settlement.Tile;
                         Find.WorldObjects.Remove(settlement);
                     }
                     else Logger.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
@@ -176,8 +175,6 @@ namespace GameClient
     public static class NPCSettlementManagerHelper
     {
         public static PlanetNPCSettlement[] tempNPCSettlements;
-
-        public static List<int> lastSettlements = new List<int>();
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
             tempNPCSettlements = serverGlobalData._npcSettlements;
