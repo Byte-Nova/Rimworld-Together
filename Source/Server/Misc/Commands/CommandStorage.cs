@@ -703,8 +703,17 @@ namespace GameServer
                 }
 
                 BackupManager.BackupServer();
-                File.Delete($"{Master.corePath + Path.DirectorySeparatorChar}WorldValues.json");
-
+                Directory.Delete($"{Master.caravansPath}",true);
+                Directory.Delete($"{Master.corePath}", true);
+                Directory.Delete($"{Master.eventsPath}", true);
+                Directory.Delete($"{Master.factionsPath}", true);
+                Directory.Delete($"{Master.logsPath}", true);
+                Directory.Delete($"{Master.mapsPath}", true);
+                Directory.Delete($"{Master.savesPath}", true);
+                Directory.Delete($"{Master.settlementsPath}", true);
+                Directory.Delete($"{Master.sitesPath}", true);
+                Directory.Delete($"{Master.usersPath}", true);
+                Main_.SetPaths();
                 Logger.Warning("World has been successfully reset");
                 foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) client.listener.disconnectFlag = true;
         }
