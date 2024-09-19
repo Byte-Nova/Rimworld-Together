@@ -95,6 +95,11 @@ namespace GameClient
             SiteManager.ParseSitePacket(packet);
         }
 
+        public static void SiteRewardPacket(Packet packet) 
+        {
+            RewardManager.ParseRewardPacket(packet);
+        }
+
         public static void RoadPacket(Packet packet)
         {
             RoadManager.ParsePacket(packet);

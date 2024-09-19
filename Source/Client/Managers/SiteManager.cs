@@ -14,72 +14,44 @@ namespace GameClient
     {
         public static SitePartDef[] siteDefs;
 
-        public static string[] siteDefLabels;
+        public static SiteConfigFile[] siteData;
 
-        public static int[] siteRewardCount;
-
-        public static ThingDef[] siteRewardDefNames;
-
+        public static float interval;
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            siteRewardDefNames = new ThingDef[]
+            siteData = serverGlobalData._siteValues.SiteIdendityFiles;
+            foreach(SiteConfigFile site in serverGlobalData._siteValues.SiteIdendityFiles) 
             {
-                ThingDefOf.RawPotatoes,
-                ThingDefOf.Steel,
-                ThingDefOf.WoodLog,
-                ThingDefOf.Silver,
-                ThingDefOf.ComponentIndustrial,
-                ThingDefOf.Chemfuel,
-                ThingDefOf.MedicineHerbal,
-                ThingDefOf.Cloth,
-                ThingDefOf.MealSimple
-            };
-
-            siteRewardCount = new int[]
-            {
-                serverGlobalData._siteValues.FarmlandRewardCount,
-                serverGlobalData._siteValues.QuarryRewardCount,
-                serverGlobalData._siteValues.SawmillRewardCount,
-                serverGlobalData._siteValues.BankRewardCount,
-                serverGlobalData._siteValues.LaboratoryRewardCount,
-                serverGlobalData._siteValues.RefineryRewardCount,
-                serverGlobalData._siteValues.HerbalWorkshopRewardCount,
-                serverGlobalData._siteValues.TextileFactoryRewardCount,
-                serverGlobalData._siteValues.FoodProcessorRewardCount
-            };
-
-            PersonalSiteManager.SetSiteData(serverGlobalData);
-            FactionSiteManager.SetSiteData(serverGlobalData);
+                if(site.overrideDescription != "") 
+                {
+                    siteDefs.Where(S => S.defName == site.DefName).FirstOrDefault().description = site.overrideDescription;
+                }
+                if (site.overrideName != "")
+                {
+                    siteDefs.Where(S => S.defName == site.DefName).FirstOrDefault().label = site.overrideName;
+                }
+            }
+            interval = serverGlobalData._siteValues.TimeIntervalMinute;
         }
 
         public static void SetSiteDefs()
         {
             List<SitePartDef> defs = new List<SitePartDef>();
-            foreach (SitePartDef def in DefDatabase<SitePartDef>.AllDefs)
-            {
-                if (def.defName == "RTFarmland") defs.Add(def);
-                else if (def.defName == "RTQuarry") defs.Add(def);
-                else if (def.defName == "RTSawmill") defs.Add(def);
-                else if (def.defName == "RTBank") defs.Add(def);
-                else if (def.defName == "RTLaboratory") defs.Add(def);
-                else if (def.defName == "RTRefinery") defs.Add(def);
-                else if (def.defName == "RTHerbalWorkshop") defs.Add(def);
-                else if (def.defName == "RTTextileFactory") defs.Add(def);
-                else if (def.defName == "RTFoodProcessor") defs.Add(def);
-            }
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTFarmland"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTQuarry"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTSawmill"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTBank"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTLaboratory"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTRefinery"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTHerbalWorkshop"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTTextileFactory"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTFoodProcessor"));
             siteDefs = defs.ToArray();
-
-            List<string> siteNames = new List<string>();
-            foreach(SitePartDef def in siteDefs)
-            {
-                siteNames.Add(def.label);
-            }
-            siteDefLabels = siteNames.ToArray();
         }
 
-        public static SitePartDef GetDefForNewSite(int siteTypeID, bool isFromFaction)
+        public static SitePartDef GetDefForNewSite(string siteDef)
         {
-            return siteDefs[siteTypeID];
+            return siteDefs.Where(S => S.defName == siteDef).First();
         }
 
         public static void ParseSitePacket(Packet packet)
@@ -93,138 +65,18 @@ namespace GameClient
                     break;
 
                 case SiteStepMode.Build:
-                    PlayerSiteManager.SpawnSingleSite(siteData._siteFile);
+                    SpawnSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Destroy:
-                    PlayerSiteManager.RemoveSingleSite(siteData._siteFile);
-                    break;
-
-                case SiteStepMode.Info:
-                    OnSimpleSiteOpen(siteData);
-                    break;
-
-                case SiteStepMode.Deposit:
-                    //Nothing goes here
-                    break;
-
-                case SiteStepMode.Retrieve:
-                    OnWorkerRetrieval(siteData);
-                    break;
-
-                case SiteStepMode.Reward:
-                    ReceiveSitesRewards(siteData);
-                    break;
-
-                case SiteStepMode.WorkerError:
-                    OnWorkerError();
+                    RemoveSingleSite(siteData._siteFile);
                     break;
             }
         }
-
         private static void OnSiteAccept()
         {
             DialogManager.PopWaitDialog();
             DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
-
-            SaveManager.ForceSave();
-        }
-
-        public static void OnSimpleSiteRequest()
-        {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site information"));
-
-            SiteData siteData = new SiteData();
-            siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
-            siteData._stepMode = SiteStepMode.Info;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
-            Network.listener.EnqueuePacket(packet);
-        }
-
-        public static void OnSimpleSiteOpen(SiteData siteData)
-        {
-            DialogManager.PopWaitDialog();
-
-            if (siteData._siteFile.WorkerData == null)
-            {
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
-                    delegate { PrepareSendPawnScreen(); }, null);
-
-                DialogManager.PushNewDialog(d1);
-            }
-
-            else
-            {
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You have a worker on this site, retrieve?",
-                    delegate { RequestWorkerRetrieval(siteData); }, null);
-
-                DialogManager.PushNewDialog(d1);
-            }
-        }
-
-        private static void RequestWorkerRetrieval(SiteData siteData)
-        {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site worker"));
-
-            siteData._stepMode = SiteStepMode.Retrieve;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
-            Network.listener.EnqueuePacket(packet);
-        }
-
-        private static void OnWorkerRetrieval(SiteData siteData)
-        {
-            DialogManager.PopWaitDialog();
-
-            Action r1 = delegate
-            {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanDataFile>(siteData._siteFile.WorkerData));
-
-                RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, SessionValues.chosenCaravan);
-
-                SaveManager.ForceSave();
-            };
-
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Worker have been recovered", r1));
-        }
-
-        private static void PrepareSendPawnScreen()
-        {
-            List<Pawn> pawns = SessionValues.chosenCaravan.PawnsListForReading;
-            List<string> pawnNames = new List<string>();
-            foreach (Pawn pawn in pawns)
-            {
-                if (DeepScribeHelper.CheckIfThingIsHuman(pawn)) pawnNames.Add(pawn.Label);
-            }
-
-            RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Pawn Selection", "Select the pawn you wish to send", 
-                pawnNames.ToArray(), SendPawnToSite);
-
-            DialogManager.PushNewDialog(d1);
-        }
-
-        public static void SendPawnToSite()
-        {
-            List<Pawn> caravanPawns = SessionValues.chosenCaravan.PawnsListForReading;
-            List<Pawn> caravanHumans = new List<Pawn>();
-            foreach (Pawn pawn in caravanPawns)
-            {
-                if (DeepScribeHelper.CheckIfThingIsHuman(pawn)) caravanHumans.Add(pawn);
-            }
-
-            Pawn pawnToSend = caravanHumans[DialogManager.dialogButtonListingResultInt];
-            SessionValues.chosenCaravan.RemovePawn(pawnToSend);
-
-            SiteData siteData = new SiteData();
-            siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
-            siteData._stepMode = SiteStepMode.Deposit;
-            siteData._siteFile.WorkerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
-            Network.listener.EnqueuePacket(packet);
-
-            if (caravanHumans.Count == 1) SessionValues.chosenCaravan.Destroy();
 
             SaveManager.ForceSave();
         }
@@ -245,161 +97,84 @@ namespace GameClient
             DialogManager.PushNewDialog(d1);
         }
 
-        private static void OnWorkerError()
-        {
-            DialogManager.PushNewDialog(new RT_Dialog_Error("The site has a worker inside!"));
-        }
+        public static List<Site> playerSites = new List<Site>();
 
-        private static void ReceiveSitesRewards(SiteData siteData)
+        public static void AddSites(SiteIdendity[] sites)
         {
-            if (ClientValues.isReadyToPlay && !ClientValues.rejectSiteRewardsBool && RimworldManager.CheckIfPlayerHasMap())
+            foreach (SiteIdendity toAdd in sites)
             {
-                Site[] sites = Find.WorldObjects.Sites.ToArray();
-                List<Site> rewardedSites = new List<Site>();
-
-                foreach (Site site in sites)
-                {
-                    if (siteData._sitesWithRewards.Contains(site.Tile)) rewardedSites.Add(site);
-                }
-
-                Thing[] rewards = GetSiteRewards(rewardedSites.ToArray());
-
-                if (rewards.Count() > 0)
-                {
-                    TransferManager.GetTransferedItemsToSettlement(rewards, true, false, false);
-
-                    RimworldManager.GenerateLetter("Site Rewards", "You have received site rewards!", LetterDefOf.PositiveEvent);
-                }
+                SpawnSingleSite(toAdd);
             }
         }
 
-        private static Thing[] GetSiteRewards(Site[] sites)
+        public static void ClearAllSites()
         {
-            List<Thing> thingsToGet = new List<Thing>();
-            foreach (Site site in sites)
+            Site[] sites = Find.WorldObjects.Sites.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction) ||
+                fetch.Faction == Faction.OfPlayer).ToArray();
+
+            foreach (Site toRemove in sites)
             {
-                for (int i = 0; i < siteDefs.Count(); i++)
-                {
-                    if (site.MainSitePartDef == siteDefs[i])
-                    {
-                        ThingDataFile thingData = new ThingDataFile();
-                        thingData.DefName = siteRewardDefNames[i].defName;
-                        thingData.Quantity = siteRewardCount[i];
-                        thingData.Quality = 0;
-                        thingData.Hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
-
-                        if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(thingData));
-
-                        break;
-                    }
-                }
+                SiteIdendity siteFile = new SiteIdendity();
+                siteFile.Tile = toRemove.Tile;
+                RemoveSingleSite(siteFile);
             }
-
-            return thingsToGet.ToArray();
-        }
-    }
-
-    public static class PersonalSiteManager
-    {
-        public static int[] sitePrices;
-
-        public static void SetSiteData(ServerGlobalData serverGlobalData)
-        {
-            sitePrices = new int[]
-            {
-                serverGlobalData._siteValues.PersonalFarmlandCost,
-                serverGlobalData._siteValues.PersonalQuarryCost,
-                serverGlobalData._siteValues.PersonalSawmillCost,
-                serverGlobalData._siteValues.PersonalBankCost,
-                serverGlobalData._siteValues.PersonalLaboratoryCost,
-                serverGlobalData._siteValues.PersonalRefineryCost,
-                serverGlobalData._siteValues.PersonalHerbalWorkshopCost,
-                serverGlobalData._siteValues.PersonalTextileFactoryCost,
-                serverGlobalData._siteValues.PersonalFoodProcessorCost
-            };
         }
 
-        public static void PushConfirmSiteDialog()
+        public static void SpawnSingleSite(SiteIdendity toAdd)
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", RequestSiteBuild, null);
-
-            DialogManager.PushNewDialog(d1);
-        }
-
-        public static void RequestSiteBuild()
-        {
-            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
-
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
-            }
-
+            if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
             else
             {
-                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
+                try
+                {
+                    SitePartDef siteDef = SiteManager.GetDefForNewSite(toAdd.Type.DefName);
+                    Site site = SiteMaker.MakeSite(sitePart: siteDef,
+                        tile: toAdd.Tile,
+                        threatPoints: 1000,
+                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
+
+                    playerSites.Add(site);
+                    Find.WorldObjects.Add(site);
+                }
+                catch (Exception e) { Logger.Error($"Failed to spawn site at {toAdd.Tile}. Reason: {e}"); }
+            }
+        }
+
+        public static void RemoveSingleSite(SiteIdendity toRemove)
+        {
+            try
+            {
+                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
+                if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
+                {
+                    if (playerSites.Contains(toGet)) playerSites.Remove(toGet);
+                    Find.WorldObjects.Remove(toGet);
+                }
+                else Logger.Warning($"Ignored removal of site at {toGet.Tile} because player was inside");
+            }
+            catch (Exception e) { Logger.Error($"Failed to remove site at {toRemove.Tile}. Reason: {e}"); }
+        }
+
+        public static void RequestSiteBuild(SiteConfigFile configFile)
+        {
+            bool shouldCancel = false;
+            for (int i = 0;i < configFile.DefNameCost.Length;i++) {
+                if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.chosenCaravan, configFile.DefNameCost[i], configFile.Cost[i]))
+                {
+                    shouldCancel = true;
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                }
+            }
+            if(!shouldCancel)
+            {
+                for (int i = 0; i < configFile.DefNameCost.Length; i++) 
+                    RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, DefDatabase<ThingDef>.GetNamed(configFile.DefNameCost[i]), configFile.Cost[i]);
 
                 SiteData siteData = new SiteData();
                 siteData._stepMode = SiteStepMode.Build;
                 siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
-                siteData._siteFile.Type = DialogManager.selectedScrollButton;
-
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
-                Network.listener.EnqueuePacket(packet);
-
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
-            }
-        }
-    }
-
-    public static class FactionSiteManager
-    {
-        public static int[] sitePrices;
-
-        public static void SetSiteData(ServerGlobalData serverGlobalData)
-        {
-            sitePrices = new int[]
-            {
-                serverGlobalData._siteValues.FactionFarmlandCost,
-                serverGlobalData._siteValues.FactionQuarryCost,
-                serverGlobalData._siteValues.FactionSawmillCost,
-                serverGlobalData._siteValues.FactionBankCost,
-                serverGlobalData._siteValues.FactionLaboratoryCost,
-                serverGlobalData._siteValues.FactionRefineryCost ,
-                serverGlobalData._siteValues.FactionHerbalWorkshopCost,
-                serverGlobalData._siteValues.FactionTextileFactoryCost,
-                serverGlobalData._siteValues.FactionFoodProcessorCost
-            };
-        }
-
-        public static void PushConfirmSiteDialog()
-        {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", RequestSiteBuild, null);
-
-            DialogManager.PushNewDialog(d1);
-        }
-
-        public static void RequestSiteBuild()
-        {
-            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
-
-            if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
-            }
-
-            else
-            {
-                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
-
-                SiteData siteData = new SiteData();
-                siteData._stepMode = SiteStepMode.Build;
-                siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
-                siteData._siteFile.Type = DialogManager.selectedScrollButton;
-                siteData._siteFile.FactionFile = new FactionFile();
-
+                siteData._siteFile.Type.DefName = configFile.DefName;
+                if (ServerValues.hasFaction) siteData._siteFile.FactionFile = new FactionFile();
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
                 Network.listener.EnqueuePacket(packet);
 
@@ -408,3 +183,15 @@ namespace GameClient
         }
     }
 }
+
+public static class PlayerSiteManagerHelper
+{
+    public static SiteIdendity[] tempSites;
+
+    public static void SetValues(ServerGlobalData serverGlobalData)
+    {
+        tempSites = serverGlobalData._playerSites;
+    }
+}
+
+

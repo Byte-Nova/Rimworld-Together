@@ -9,7 +9,7 @@ namespace GameServer
         {
             FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionGoodwillData._tile);
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(factionGoodwillData._tile);
+            SiteIdendity siteFile = SiteManagerHelper.GetSiteFileFromTile(factionGoodwillData._tile);
 
             if (settlementFile != null) factionGoodwillData._owner = settlementFile.Owner;
             else factionGoodwillData._owner = siteFile.Owner;
@@ -54,8 +54,8 @@ namespace GameServer
             factionGoodwillData._settlementGoodwills = tempSettlementList.ToArray();
 
             List<Goodwill> tempSiteList = new List<Goodwill>();
-            SiteFile[] sites = SiteManagerHelper.GetAllSites();
-            foreach (SiteFile site in sites)
+            SiteIdendity[] sites = SiteManagerHelper.GetAllSites();
+            foreach (SiteIdendity site in sites)
             {
                 //Check if site owner is the one we are looking for
 
@@ -76,7 +76,7 @@ namespace GameServer
         public static Goodwill GetGoodwillFromTile(ServerClient client, int tileToCheck)
         {
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(tileToCheck);
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(tileToCheck);
+            SiteIdendity siteFile = SiteManagerHelper.GetSiteFileFromTile(tileToCheck);
 
             string usernameToCheck;
             if (settlementFile != null) usernameToCheck = settlementFile.Owner;
@@ -107,7 +107,7 @@ namespace GameServer
             else return Goodwill.Neutral;
         }
 
-        public static Goodwill GetSiteGoodwill(ServerClient client, SiteFile site)
+        public static Goodwill GetSiteGoodwill(ServerClient client, SiteIdendity site)
         {
             if (site.FactionFile != null)
             {
@@ -204,7 +204,7 @@ namespace GameServer
         {
             SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
-            SiteFile[] sites = SiteManagerHelper.GetAllSites();
+            SiteIdendity[] sites = SiteManagerHelper.GetAllSites();
 
             List<Goodwill> tempList = new List<Goodwill>();
             foreach (SettlementFile settlement in settlements)
@@ -217,7 +217,7 @@ namespace GameServer
             factionGoodwillData._settlementGoodwills = tempList.ToArray();
 
             tempList = new List<Goodwill>();
-            foreach (SiteFile site in sites)
+            foreach (SiteIdendity site in sites)
             {
                 factionGoodwillData._siteTiles.Add(site.Tile);
                 tempList.Add(GetSiteGoodwill(client, site));

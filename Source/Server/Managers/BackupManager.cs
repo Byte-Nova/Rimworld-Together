@@ -87,8 +87,8 @@ namespace GameServer
                 MapData[] userMaps = MapManager.GetAllMapsFromUsername(username);
                 foreach (MapData map in userMaps) toArchive.Add(Path.Combine(Master.mapsPath, map._mapTile + MapManager.fileExtension));
 
-                SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-                foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
+                SiteIdendity[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+                foreach (SiteIdendity site in playerSites) toArchive.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
 
                 SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
                 foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));

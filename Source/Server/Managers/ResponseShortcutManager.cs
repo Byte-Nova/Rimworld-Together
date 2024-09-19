@@ -40,11 +40,7 @@ namespace GameServer
 
         public static void SendWorkerInsidePacket(ServerClient client)
         {
-            SiteData siteData = new SiteData();
-            siteData._stepMode = SiteStepMode.WorkerError;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
-            client.listener.EnqueuePacket(packet);
         }
     }
 }

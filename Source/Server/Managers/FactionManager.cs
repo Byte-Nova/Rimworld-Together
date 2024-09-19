@@ -60,7 +60,6 @@ namespace GameServer
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
                 client.listener.EnqueuePacket(packet);
             }
-
             else
             {
                 factionManifest._stepMode = FactionStepMode.Create;
@@ -70,7 +69,10 @@ namespace GameServer
                 factionFile.CurrentMembers.Add(client.userFile.Username);
                 factionFile.CurrentRanks.Add((int)FactionRanks.Admin);
                 FactionManagerHelper.SaveFactionFile(factionFile);
-
+                foreach (SiteIdendity site in SiteManagerHelper.GetAllSitesFromUsername(client.userFile.Username))
+                {
+                    site.FactionFile = factionFile;
+                }
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
                 client.listener.EnqueuePacket(packet);
 
@@ -105,9 +107,12 @@ namespace GameServer
                         GoodwillManager.UpdateClientGoodwills(toUpdateConnected);
                     }
 
-                    SiteFile[] factionSites = FactionManagerHelper.GetFactionSites(factionFile);
-                    foreach(SiteFile site in factionSites) SiteManager.DestroySiteFromFile(site);
-
+                    SiteIdendity[] factionSites = FactionManagerHelper.GetFactionSites(factionFile);
+                    foreach (SiteIdendity site in factionSites)
+                    {
+                        site.FactionFile = null;
+                        SiteManagerHelper.SaveSite(site);
+                    }
                     File.Delete(Path.Combine(Master.factionsPath, factionFile.Name + FactionManagerHelper.fileExtension));
                     Logger.Warning($"[Deleted Faction] > {client.userFile.Username} > {factionFile.Name}");
                 }
@@ -330,8 +335,8 @@ namespace GameServer
                     toUpdateOffline?.UpdateFaction(factionFile);
                 }
 
-                SiteFile[] factionSites = GetFactionSites(factionFile);
-                foreach(SiteFile site in factionSites) SiteManagerHelper.UpdateFaction(site, factionFile);
+                SiteIdendity[] factionSites = GetFactionSites(factionFile);
+                foreach(SiteIdendity site in factionSites) SiteManagerHelper.UpdateFaction(site, factionFile);
             }
             catch (Exception e) { Logger.Error(e.ToString()); }
 
@@ -392,7 +397,7 @@ namespace GameServer
             return FactionRanks.Member;
         }
 
-        public static SiteFile[] GetFactionSites(FactionFile factionFile)
+        public static SiteIdendity[] GetFactionSites(FactionFile factionFile)
         {
             return SiteManagerHelper.GetAllSites().Where(fetch => fetch.FactionFile != null && 
                 fetch.FactionFile.Name == factionFile.Name).ToArray();

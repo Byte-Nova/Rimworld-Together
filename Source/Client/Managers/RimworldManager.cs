@@ -49,6 +49,19 @@ namespace GameClient
             else return false;
         }
 
+        public static bool CheckIfHasEnoughItemInCaravan(Caravan caravan, string defName, int quantity) 
+        {
+            if(quantity == 0) return true;
+
+            List<Thing> caravanItems = CaravanInventoryUtility.AllInventoryItems(caravan).FindAll(x => x.def.defName == defName);
+            int totalItem = 0;
+
+            foreach (Thing itemStack in caravanItems) totalItem += itemStack.stackCount;
+            if(totalItem >= quantity) return true;
+
+            return false;
+        }
+
         public static Thing[] GetAllThingsInMap(Map map)
         {
             return map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item 

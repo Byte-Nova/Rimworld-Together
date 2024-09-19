@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameClient.Dialogs;
+using System;
 using UnityEngine;
 using Verse;
 
@@ -22,6 +23,7 @@ namespace GameClient
 
         public static RT_Dialog_Error_Loop dialogErrorLoop;
 
+        public static RT_Dialog_SiteMenu dialogSiteMenu;
 
         public static RT_Dialog_1Input dialog1Input;
 

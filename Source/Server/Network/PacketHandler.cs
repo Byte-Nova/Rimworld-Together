@@ -145,6 +145,8 @@ namespace GameServer
 
         //Empty functions
 
+        public static void SiteRewardPacket(ServerClient client, Packet packet) { }
+
         public static void KeepAlivePacket(ServerClient client, Packet packet) { }
 
         public static void UserUnavailablePacket(ServerClient client, Packet packet) { }

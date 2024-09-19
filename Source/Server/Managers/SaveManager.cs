@@ -136,8 +136,8 @@ namespace GameServer
             foreach (MapData map in userMaps) MapManager.DeleteMap(map);
 
             //Delete site files
-            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-            foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
+            SiteIdendity[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+            foreach (SiteIdendity site in playerSites) SiteManager.DestroySiteFromFile(site);
 
             //Delete settlement files
             SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
