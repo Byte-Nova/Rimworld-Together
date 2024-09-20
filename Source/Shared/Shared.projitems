@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
-    <Compile Include="..\Shared\Files\Groups\Sites\SiteConfigFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Groups\Sites\SiteConfigFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SettlementFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />
@@ -32,7 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\OfflineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\OnlineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\RoadData.cs" />
-    <Compile Include="..\Shared\packetdata\RewardData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\RewardData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CaravanData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\CreationOrderData.cs" />
@@ -74,10 +74,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\BookData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\GenepackData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\PlantData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ThingRewardFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
-    <Compile Include="..\Shared\Files\ThingRewardFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
