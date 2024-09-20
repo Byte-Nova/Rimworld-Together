@@ -132,7 +132,7 @@ namespace GameClient
                         tile: toAdd.Tile,
                         threatPoints: 1000,
                         faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
-
+                    
                     playerSites.Add(site);
                     Find.WorldObjects.Add(site);
                 }
@@ -144,7 +144,7 @@ namespace GameClient
         {
             try
             {
-                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
+                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile);
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
                     if (playerSites.Contains(toGet)) playerSites.Remove(toGet);

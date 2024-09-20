@@ -111,7 +111,7 @@ namespace GameServer
         {
             if (site.FactionFile != null)
             {
-                if (client.userFile.FactionFile != null && client.userFile.FactionFile.Name == site.FactionFile.Name) return Goodwill.Faction;
+                if (client.userFile.FactionFile != null && client.userFile.FactionFile.Name == site.FactionFile.Name) return Goodwill.Personal;
 
                 else if (client.userFile.Relationships.EnemyPlayers.Contains(site.Owner)) return Goodwill.Enemy;
 

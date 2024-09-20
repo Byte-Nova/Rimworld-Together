@@ -133,7 +133,7 @@ namespace GameServer
                 try { SiteRewardTick(); }
                 catch (Exception e) { Logger.Error($"Site tick failed, this should never happen. Exception > {e}"); }
 
-                await Task.Delay(TimeSpan.FromMilliseconds(taskDelayMS));
+                await Task.Delay(TimeSpan.FromMinutes(Master.siteValues.TimeIntervalMinute));
             }
         }
 
@@ -147,13 +147,13 @@ namespace GameServer
 
                 //Get player specific sites
 
-                List<SiteIdendity> playerSites = sites.ToList().FindAll(fetch => fetch.FactionFile == null && fetch.Owner == client.userFile.Username);
-                foreach (SiteIdendity site in playerSites) data.Add(site.Type.Rewards);
+                List<SiteIdendity> sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Username);
+                sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile.Name == client.userFile.FactionFile.Name));
+                foreach (SiteIdendity site in sitesToAdd) data.Add(site.Type.Rewards);
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SiteRewardPacket), new RewardData() {_rewardData = data.ToArray()});
                 client.listener.EnqueuePacket(packet);
             }
-
             Logger.Warning($"[Site tick]");
         }
     }

@@ -18,8 +18,8 @@ namespace Shared
                 Cost = new int[]{500},
                 Rewards = new RewardFile()
                 {
-                    RewardDefs = new string[]{"RawRice"},
-                    RewardAmount = new int[] {50}
+                    RewardDefs = new string[]{"RawRice", "RawCorn"},
+                    RewardAmount = new int[] {50, 50}
                 }
             },
             new SiteConfigFile()
