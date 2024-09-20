@@ -156,6 +156,22 @@ namespace GameServer
             }
             Logger.Warning($"[Site tick]");
         }
+
+        public static void UpdateAllSiteInfo() 
+        {
+            foreach (SiteIdendity site in SiteManagerHelper.GetAllSites())
+            {
+                foreach(SiteConfigFile config in Master.siteValues.SiteIdendityFiles) 
+                {
+                    if (config.DefName == site.Type.DefName)
+                    {
+                        site.Type = config.Clone();
+                        SiteManagerHelper.SaveSite(site);
+                    }
+                }
+            }
+            Logger.Warning("Sites now synced with new site configs");
+        }
     }
 
     public static class SiteManagerHelper
