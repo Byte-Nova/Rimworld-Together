@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading;
+﻿using Shared;
 using static Shared.CommonEnumerators;
 
-namespace Shared
+namespace GameServer.Updater
 {
     [Serializable]
-    public class SiteIdendity
+    public class SiteFile
     {
         public int Tile;
 
@@ -13,7 +12,9 @@ namespace Shared
 
         public Goodwill Goodwill;
 
-        public SiteConfigFile Type = new SiteConfigFile();
+        public int Type;
+
+        public byte[] WorkerData;
 
         public FactionFile FactionFile;
 

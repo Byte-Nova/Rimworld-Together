@@ -153,6 +153,10 @@ namespace GameServer
             "Allows a player to change mod configuration for the server",
             ShowModManagerCommandAction);
 
+        private static readonly ServerCommand updateCommand = new ServerCommand("update", 0,
+            "Updates your server to the newest version. Do not use if you aren't told directly to do so, as it can very well BREAK things",
+            UpdateCommand
+            );
         public static readonly ServerCommand[] serverCommands = new ServerCommand[]
         {
             backupCommand,
@@ -191,7 +195,8 @@ namespace GameServer
             whitelistCommand,
             whitelistRemoveCommand,
             whitelistToggleCommand,
-            showModManagerCommand
+            showModManagerCommand,
+            updateCommand
         };
 
         private static void HelpCommandAction()
@@ -756,6 +761,25 @@ namespace GameServer
 
                     Logger.Warning("Command sent sucessfully");
                 }
+            }
+        }
+
+        private static void UpdateCommand() 
+        {
+            //Make sure the user wants to update the server
+            Logger.Warning("Are you sure you want to reset the world? You should only do so if you are told to, as this may break things.");
+            Logger.Warning("Please type 'YES' or 'NO'");
+
+        UpdateWorldQuestion:
+            string response = Console.ReadLine();
+
+            if (response == "NO") return;
+            else if (response == "YES")
+                GameServer.Updater.UpdateManager.UpdateServer();
+            else 
+            {
+                Logger.Error($"{response} is not a valid option; The options must be capitalized");
+                goto UpdateWorldQuestion;
             }
         }
     }

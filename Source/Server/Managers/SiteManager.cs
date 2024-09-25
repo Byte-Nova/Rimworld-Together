@@ -67,19 +67,6 @@ namespace GameServer
             {
                 SiteIdendity siteFile = new SiteIdendity();
 
-                if (siteData._siteFile.FactionFile != null)
-                {
-                    FactionFile factionFile = client.userFile.FactionFile;
-                    if (FactionManagerHelper.GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member)
-                    {
-                        ResponseShortcutManager.SendNoPowerPacket(client, new PlayerFactionData());
-                        return;
-                    }
-                    else
-                    {
-                        siteFile.FactionFile = factionFile;
-                    }
-                }
                 siteFile.Tile = siteData._siteFile.Tile;
                 siteFile.Owner = client.userFile.Username;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._siteFile.Type.DefName);
@@ -204,7 +191,7 @@ namespace GameServer
                 if (!site.EndsWith(fileExtension)) continue;
 
                 SiteIdendity siteFile = Serializer.SerializeFromFile<SiteIdendity>(site);
-                if (siteFile.FactionFile == null && siteFile.Owner == username) sitesList.Add(siteFile);
+                if (siteFile.Owner == username) sitesList.Add(siteFile);
             }
 
             return sitesList.ToArray();
@@ -236,14 +223,15 @@ namespace GameServer
         public static SiteIdendity[] GetAllSites()
         {
             List<SiteIdendity> sitesList = new List<SiteIdendity>();
-
-            string[] sites = Directory.GetFiles(Master.sitesPath);
-            foreach (string site in sites)
+            try
             {
-                if (!site.EndsWith(fileExtension)) continue;
-                sitesList.Add(Serializer.SerializeFromFile<SiteIdendity>(site));
-            }
-
+                string[] sites = Directory.GetFiles(Master.sitesPath);
+                foreach (string site in sites)
+                {
+                    if (!site.EndsWith(fileExtension)) continue;
+                    sitesList.Add(Serializer.SerializeFromFile<SiteIdendity>(site));
+                }
+            } catch(Exception ex) { Logger.Error($"Sites could not be loaded, either your formatting is wrong in the file 'SiteValues.json' or you have not updated your sites to the newest version ('Update' command).\n\n{ex.ToString()}"); }
             return sitesList.ToArray();
         }
 

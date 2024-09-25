@@ -2,7 +2,7 @@
   <SitePartDef>
     <defName>RTFarmland</defName>
     <label>Farmland</label>
-    <description>Online Site</description>
+    <description>A simple farmland, typically used to grow crops such as corn and rice.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Farmland</expandingIconTexture>
@@ -13,7 +13,7 @@
   <SitePartDef>
     <defName>RTQuarry</defName>
     <label>Quarry</label>
-    <description>Online Site</description>
+    <description>This glorified hole in the ground is used to extract the most precious of rocks and stones, such as granite and marble. </description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Quarry</expandingIconTexture>
@@ -24,7 +24,7 @@
   <SitePartDef>
     <defName>RTSawmill</defName>
     <label>Sawmill</label>
-    <description>Online Site</description>
+    <description>A simple site capable of giving you large amount of wood.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Sawmill</expandingIconTexture>
@@ -35,7 +35,7 @@
   <SitePartDef>
     <defName>RTBank</defName>
     <label>Bank</label>
-    <description>Online Site</description>
+    <description>Your pawns worked on hard on this one. Banks are capable of magically generating silver and other precious metals out of mid air. Fancy that!</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Bank</expandingIconTexture>
@@ -46,7 +46,7 @@
 <SitePartDef>
     <defName>RTLaboratory</defName>
     <label>Laboratory</label>
-    <description>Online Site</description>
+    <description>Where the brightest live. Your scientist and engineers work hard to make components here.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Laboratory</expandingIconTexture>
@@ -56,7 +56,7 @@
 
 <SitePartDef>
     <defName>RTRefinery</defName>
-    <label>Refinery</label>
+    <label>A fully automated refinery, capable of outputting chemfuel.</label>
     <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
@@ -67,7 +67,7 @@
 
 <SitePartDef>
     <defName>RTHerbalWorkshop</defName>
-    <label>Herbal workshop</label>
+    <label>A simple medicine workshop, simple as that.</label>
     <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
@@ -78,7 +78,7 @@
 
 <SitePartDef>
     <defName>RTTextileFactory</defName>
-    <label>Textile factory</label>
+    <label>The textile factory outputs the finest fabric, none of that peasant stuff.</label>
     <description>Online Site</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
@@ -90,7 +90,7 @@
 <SitePartDef>
     <defName>RTFoodProcessor</defName>
     <label>Food Processor</label>
-    <description>Online Site</description>
+    <description>Tired of cooking? This site does it for you! Food poisoning included.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/FoodProcessor</expandingIconTexture>

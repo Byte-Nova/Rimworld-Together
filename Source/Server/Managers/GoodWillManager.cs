@@ -1,4 +1,5 @@
 ﻿using Shared;
+using System.Linq;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -109,17 +110,15 @@ namespace GameServer
 
         public static Goodwill GetSiteGoodwill(ServerClient client, SiteIdendity site)
         {
+            if (client.userFile.Username == site.Owner) return Goodwill.Personal; //We check if the players is the owner
+
             if (site.FactionFile != null)
             {
-                if (client.userFile.FactionFile != null && client.userFile.FactionFile.Name == site.FactionFile.Name) return Goodwill.Personal;
-
-                else if (client.userFile.Relationships.EnemyPlayers.Contains(site.Owner)) return Goodwill.Enemy;
-
-                else if (client.userFile.Relationships.AllyPlayers.Contains(site.Owner)) return Goodwill.Ally;
-
                 FactionFile factionFile = FactionManagerHelper.GetFactionFromFactionName(site.FactionFile.Name);
 
-                foreach(string str in client.userFile.Relationships.EnemyPlayers)
+                if (client.userFile.FactionFile != null && client.userFile.FactionFile.Name == factionFile.Name) return Goodwill.Faction; // We check if the player is in the faction
+
+                foreach (string str in client.userFile.Relationships.EnemyPlayers) // We check if the player is enemy with the faction
                 {
                     if (FactionManagerHelper.CheckIfUserIsInFaction(factionFile, str))
                     {
@@ -127,24 +126,21 @@ namespace GameServer
                     }
                 }
 
-                foreach (string str in client.userFile.Relationships.AllyPlayers)
+                foreach (string str in client.userFile.Relationships.AllyPlayers) // We check if the player is allied with the faction
                 {
                     if (FactionManagerHelper.CheckIfUserIsInFaction(factionFile, str))
                     {
                         return Goodwill.Ally;
                     }
                 }
-
-                return Goodwill.Neutral;
-            }
-
-            else
+            } 
+            else 
             {
-                if (site.Owner == client.userFile.Username) return Goodwill.Personal;
-                else if (client.userFile.Relationships.EnemyPlayers.Contains(site.Owner)) return Goodwill.Enemy;
-                else if (client.userFile.Relationships.AllyPlayers.Contains(site.Owner)) return Goodwill.Ally;
-                else return Goodwill.Neutral;
+                if (client.userFile.Relationships.EnemyPlayers.Contains(site.Owner)) return Goodwill.Enemy; //We check if the player is enemy of the owner
+
+                else if (client.userFile.Relationships.AllyPlayers.Contains(site.Owner)) return Goodwill.Ally; // We check if the player is allied to the owner
             }
+            return Goodwill.Neutral;
         }
 
         public static void ClearAllFactionMemberGoodwills(FactionFile factionFile)
