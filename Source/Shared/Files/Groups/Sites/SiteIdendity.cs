@@ -13,7 +13,9 @@ namespace Shared
 
         public Goodwill Goodwill;
 
-        public SiteConfigFile Type = new SiteConfigFile();
+        public string ChosenReward;
+
+        public SiteInfoFile Type = new SiteInfoFile();
 
         public FactionFile FactionFile;
 

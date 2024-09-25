@@ -28,7 +28,6 @@ namespace GameClient
             listingStandard.Begin(inRect);
 
             listingStandard.Label("Running version: " + CommonValues.executableVersion);
-            if (listingStandard.ButtonTextLabeled("Test", "Test")) Find.WindowStack.Add(new RT_Dialog_SiteMenu());
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");

@@ -32,6 +32,10 @@ namespace GameServer
                 case SiteStepMode.Info:
                     SiteManagerHelper.GetSiteInfo(client, siteData);
                     break;
+                case SiteStepMode.Config:
+                    SiteManager.ChangeUserSiteConfig(client, siteData._siteFile);
+                    break;
+
             }
         }
 
@@ -148,7 +152,7 @@ namespace GameServer
         {
             foreach (SiteIdendity site in SiteManagerHelper.GetAllSites())
             {
-                foreach(SiteConfigFile config in Master.siteValues.SiteIdendityFiles) 
+                foreach(SiteInfoFile config in Master.siteValues.SiteInfoFiles) 
                 {
                     if (config.DefName == site.Type.DefName)
                     {
@@ -158,6 +162,28 @@ namespace GameServer
                 }
             }
             Logger.Warning("Sites now synced with new site configs");
+        }
+
+        public static void ChangeUserSiteConfig(ServerClient client, SiteIdendity site) 
+        {
+            UpdateUserSiteWithDefault(client);
+            client.userFile.SiteConfigs.Where(S => S._DefName == site.Type.DefName).First()._RewardDefName = site.ChosenReward;
+            UserManagerHelper.SaveUserFile(client.userFile);
+        }
+
+        public static void UpdateUserSiteWithDefault(ServerClient client) 
+        {
+            client.userFile.SiteConfigs = new SiteConfigFile[Master.siteValues.SiteInfoFiles.Length];
+
+            for (int i = 0; i < Master.siteValues.SiteInfoFiles.Length; i++)
+            {
+                if (client.userFile.SiteConfigs.Any(S => S != null && S._DefName == Master.siteValues.SiteInfoFiles[i].DefName))
+                {
+                    continue;
+                }
+
+                client.userFile.SiteConfigs[i] = new SiteConfigFile(Master.siteValues.SiteInfoFiles[i].DefName, Master.siteValues.SiteInfoFiles[i].Rewards.RewardDefs.First());
+            }
         }
     }
 
@@ -249,9 +275,11 @@ namespace GameServer
             return false;
         }
 
-        public static SiteConfigFile GetTypeFromDef(string defName) 
+        public static SiteInfoFile GetTypeFromDef(string defName) 
         {
-            return Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == defName).FirstOrDefault();
+            SiteInfoFile site = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == defName).FirstOrDefault();
+            if(site != null) return site;
+            return null;
         }
     }
 }

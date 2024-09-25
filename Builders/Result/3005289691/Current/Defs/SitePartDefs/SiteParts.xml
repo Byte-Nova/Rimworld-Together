@@ -13,7 +13,7 @@
   <SitePartDef>
     <defName>RTQuarry</defName>
     <label>Quarry</label>
-    <description>This glorified hole in the ground is used to extract the most precious of rocks and stones, such as granite and marble. </description>
+    <description>This glorified hole in the ground is used to extract the most precious of rocks and stones, such as granite and marble.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Quarry</expandingIconTexture>
@@ -56,8 +56,8 @@
 
 <SitePartDef>
     <defName>RTRefinery</defName>
-    <label>A fully automated refinery, capable of outputting chemfuel.</label>
-    <description>Online Site</description>
+    <label>Refinery</label>
+    <description>A fully automated refinery, capable of outputting chemfuel.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Refinery</expandingIconTexture>
@@ -67,8 +67,8 @@
 
 <SitePartDef>
     <defName>RTHerbalWorkshop</defName>
-    <label>A simple medicine workshop, simple as that.</label>
-    <description>Online Site</description>
+    <label>Herbal Workshop</label>
+    <description>A simple medicine workshop, simple as that.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/HerbalWorkshop</expandingIconTexture>
@@ -78,8 +78,8 @@
 
 <SitePartDef>
     <defName>RTTextileFactory</defName>
-    <label>The textile factory outputs the finest fabric, none of that peasant stuff.</label>
-    <description>Online Site</description>
+    <label>Textile Factory</label>
+    <description>The textile factory outputs the finest fabric, none of that peasant stuff.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/TextileFactory</expandingIconTexture>

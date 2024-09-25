@@ -450,7 +450,7 @@ namespace GameClient
                 if (presentSettlement == null && presentSite == null)
                 {
 
-                    Command_Action Command_BuildFactionSite = new Command_Action
+                    Command_Action Command_BuildSite = new Command_Action
                     {
                         defaultLabel = "Build a Site",
                         defaultDesc = "Build an utility site for your faction",
@@ -461,13 +461,27 @@ namespace GameClient
 
                             if (SessionValues.actionValues.EnableSites)
                             {
-                                DialogManager.PushNewDialog(new RT_Dialog_SiteMenu());
+                                DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(false));
                             }
                             else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };
-
-                    gizmoList.Add(Command_BuildFactionSite);
+                    Command_Action Command_ConfigureSite = new Command_Action
+                    {
+                        defaultLabel = "Configure sites",
+                        defaultDesc = "Configure your site's rewards",
+                        icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
+                        action = delegate
+                        {
+                            if (SessionValues.actionValues.EnableSites)
+                            {
+                                DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                            }
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                        }
+                    };
+                    gizmoList.Add(Command_BuildSite);
+                    gizmoList.Add(Command_ConfigureSite);
                 }
 
                 else if (presentSite != null)

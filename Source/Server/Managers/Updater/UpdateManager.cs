@@ -30,31 +30,31 @@ namespace GameServer.Updater
                     switch (site.Type)
                     {
                         case 0:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTFarmland").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTFarmland").First();
                             break;
                         case 1:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTQuarry").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTQuarry").First();
                             break;
                         case 2:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTSawmill").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTSawmill").First();
                             break;
                         case 3:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTBank").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTBank").First();
                             break;
                         case 4:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTLaboratory").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTLaboratory").First();
                             break;
                         case 5:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTRefinery").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTRefinery").First();
                             break;
                         case 6:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTHerbalWorkshop").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTHerbalWorkshop").First();
                             break;
                         case 7:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTTextileFactory").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTTextileFactory").First();
                             break;
                         case 8:
-                            newSite.Type = Master.siteValues.SiteIdendityFiles.Where(S => S.DefName == "RTFoodProcessor").First();
+                            newSite.Type = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == "RTFoodProcessor").First();
                             break;
                     }
                     Serializer.SerializeToFile(file, newSite);

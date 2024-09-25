@@ -9,9 +9,9 @@ namespace Shared
     public class SiteValuesFile
     {
         public float TimeIntervalMinute = 30f;
-        public SiteConfigFile[] SiteIdendityFiles = new SiteConfigFile[]
+        public SiteInfoFile[] SiteInfoFiles = new SiteInfoFile[]
         {
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTFarmland",
                 DefNameCost = new string[]{"Silver"},
@@ -22,7 +22,7 @@ namespace Shared
                     RewardAmount = new int[] {50, 50}
                 }
             },
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTQuarry",
                 DefNameCost = new string[]{"Silver"},
@@ -33,7 +33,7 @@ namespace Shared
                     RewardAmount = new int[] {50, 50}
                 }
             },
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTSawmill",
                 DefNameCost = new string[]{"Silver"},
@@ -44,7 +44,7 @@ namespace Shared
                     RewardAmount = new int[] {50}
                 }
             },
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTBank",
                 DefNameCost = new string[]{"Silver"},
@@ -55,7 +55,7 @@ namespace Shared
                     RewardAmount = new int[] {25, 10}
                 }
             },
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTLaboratory",
                 DefNameCost = new string[]{"Silver"},
@@ -66,7 +66,7 @@ namespace Shared
                     RewardAmount = new int[] {4}
                 }
             },
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTRefinery",
                 DefNameCost = new string[]{"Silver"},
@@ -77,7 +77,7 @@ namespace Shared
                     RewardAmount = new int[] {75}
                 }
             },
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTHerbalWorkshop",
                 DefNameCost = new string[]{"Silver"},
@@ -88,7 +88,7 @@ namespace Shared
                     RewardAmount = new int[] {50}
                 }
             },
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTTextileFactory",
                 DefNameCost = new string[]{"Silver"},
@@ -99,7 +99,7 @@ namespace Shared
                     RewardAmount = new int[] {50}
                 }
             },
-            new SiteConfigFile()
+            new SiteInfoFile()
             {
                 DefName = "RTFoodProcessor",
                 DefNameCost = new string[]{"Silver"},

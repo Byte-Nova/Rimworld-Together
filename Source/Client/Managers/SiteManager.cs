@@ -14,13 +14,13 @@ namespace GameClient
     {
         public static SitePartDef[] siteDefs;
 
-        public static SiteConfigFile[] siteData;
+        public static SiteInfoFile[] siteData;
 
         public static float interval;
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            siteData = serverGlobalData._siteValues.SiteIdendityFiles;
-            foreach(SiteConfigFile site in serverGlobalData._siteValues.SiteIdendityFiles) 
+            siteData = serverGlobalData._siteValues.SiteInfoFiles;
+            foreach(SiteInfoFile site in serverGlobalData._siteValues.SiteInfoFiles) 
             {
                 if(site.overrideDescription != "") 
                 {
@@ -155,7 +155,7 @@ namespace GameClient
             catch (Exception e) { Logger.Error($"Failed to remove site at {toRemove.Tile}. Reason: {e}"); }
         }
 
-        public static void RequestSiteBuild(SiteConfigFile configFile)
+        public static void RequestSiteBuild(SiteInfoFile configFile)
         {
             bool shouldCancel = false;
             for (int i = 0;i < configFile.DefNameCost.Length;i++) {
@@ -180,6 +180,16 @@ namespace GameClient
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
             }
+        }
+
+        public static void ChangeConfig(SiteInfoFile config, string reward) 
+        {
+            SiteData siteData = new SiteData();
+            siteData._stepMode = SiteStepMode.Config;
+            siteData._siteFile.ChosenReward = reward;
+            siteData._siteFile.Type = config;
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Network.listener.EnqueuePacket(packet);
         }
     }
 }
