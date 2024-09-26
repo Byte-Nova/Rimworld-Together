@@ -3,8 +3,8 @@ namespace Shared
     public class SiteInfoFile 
     {
         public string DefName;
-        public string overrideName = "";
-        public string overrideDescription = "";
+        public string OverrideName = "";
+        public string OverrideDescription = "";
 
         public string[] DefNameCost;
         public int[] Cost;
