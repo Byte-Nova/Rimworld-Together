@@ -139,9 +139,24 @@ namespace GameServer
                 //Get player specific sites
 
                 List<SiteIdendity> sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Username);
-                sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile.Name == client.userFile.FactionFile.Name));
-                foreach (SiteIdendity site in sitesToAdd) data.Add(site.Type.Rewards);
-
+                sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile !=null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
+                foreach (SiteIdendity site in sitesToAdd)
+                {
+                    RewardFile rewardFile = new RewardFile();
+                    foreach (RewardFile reward in site.Type.Rewards) 
+                    {
+                        if (client.userFile.SiteConfigs.Any(S => S._RewardDefName == reward.RewardDef))
+                        {
+                            rewardFile.RewardDef = reward.RewardDef;
+                            rewardFile.RewardAmount = reward.RewardAmount;
+                        }
+                    }
+                    if(rewardFile.RewardDef == "") 
+                    {
+                        rewardFile = site.Type.Rewards.First();
+                    }
+                    data.Add(rewardFile);
+                }
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SiteRewardPacket), new RewardData() {_rewardData = data.ToArray()});
                 client.listener.EnqueuePacket(packet);
             }
@@ -182,7 +197,7 @@ namespace GameServer
                     continue;
                 }
 
-                client.userFile.SiteConfigs[i] = new SiteConfigFile(Master.siteValues.SiteInfoFiles[i].DefName, Master.siteValues.SiteInfoFiles[i].Rewards.RewardDefs.First());
+                client.userFile.SiteConfigs[i] = new SiteConfigFile(Master.siteValues.SiteInfoFiles[i].DefName, Master.siteValues.SiteInfoFiles[i].Rewards.First().RewardDef);
             }
         }
     }

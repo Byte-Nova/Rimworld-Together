@@ -16,10 +16,26 @@ namespace Shared
                 DefName = "RTFarmland",
                 DefNameCost = new string[]{"Silver"},
                 Cost = new int[]{500},
-                Rewards = new RewardFile()
-                {
-                    RewardDefs = new string[]{"RawRice", "RawCorn"},
-                    RewardAmount = new int[] {50, 50}
+                Rewards = new RewardFile[]
+                {new RewardFile()
+                    {
+                        RewardDef = "RawRice",
+                        RewardAmount = 50
+                    },new RewardFile()
+                    {
+                        RewardDef = "RawCorn",
+                        RewardAmount = 50
+                    }
+                    ,new RewardFile()
+                    {
+                        RewardDef = "SmokeleafLeaves",
+                        RewardAmount = 15
+                    }
+                    ,new RewardFile()
+                    {
+                        RewardDef = "PsychoidLeaves",
+                        RewardAmount = 15
+                    }
                 }
             },
             new SiteInfoFile()
@@ -27,32 +43,61 @@ namespace Shared
                 DefName = "RTQuarry",
                 DefNameCost = new string[]{"Silver"},
                 Cost = new int[]{500},
-                Rewards = new RewardFile()
+                Rewards = new RewardFile[]
                 {
-                    RewardDefs = new string[]{"BlocksGranite", "BlocksMarble"},
-                    RewardAmount = new int[] {50, 50}
+                    new RewardFile()
+                    {
+                        RewardDef = "BlocksGranite",
+                        RewardAmount = 50
+                    },
+                    new RewardFile()
+                    {
+                        RewardDef = "BlocksMarble",
+                        RewardAmount = 50
+                    },
+                    new RewardFile()
+                    {
+                        RewardDef = "Steel",
+                        RewardAmount = 30
+                    },
+                    new RewardFile()
+                    {
+                        RewardDef = "Plasteel",
+                        RewardAmount = 10
+                    }
                 }
             },
             new SiteInfoFile()
             {
                 DefName = "RTSawmill",
                 DefNameCost = new string[]{"Silver"},
-                Cost = new int[]{500},
-                Rewards = new RewardFile()
+                Cost = new int[]{300},
+                Rewards = new RewardFile[]
                 {
-                    RewardDefs = new string[]{"WoodLog"},
-                    RewardAmount = new int[] {50}
+                    new RewardFile()
+                    {
+                        RewardDef = "WoodLog",
+                        RewardAmount = 50
+                    }
                 }
             },
             new SiteInfoFile()
             {
                 DefName = "RTBank",
                 DefNameCost = new string[]{"Silver"},
-                Cost = new int[]{500},
-                Rewards = new RewardFile()
+                Cost = new int[]{750},
+                Rewards = new RewardFile[]
                 {
-                    RewardDefs = new string[]{"Silver", "Gold"},
-                    RewardAmount = new int[] {25, 10}
+                    new RewardFile()
+                    {
+                        RewardDef = "Silver",
+                        RewardAmount = 50
+                    },
+                    new RewardFile()
+                    {
+                        RewardDef = "Gold",
+                        RewardAmount = 15
+                    }
                 }
             },
             new SiteInfoFile()
@@ -60,10 +105,18 @@ namespace Shared
                 DefName = "RTLaboratory",
                 DefNameCost = new string[]{"Silver"},
                 Cost = new int[]{750},
-                Rewards = new RewardFile()
+                Rewards = new RewardFile[]
                 {
-                    RewardDefs = new string[]{"ComponentIndustrial"},
-                    RewardAmount = new int[] {4}
+                    new RewardFile()
+                    {
+                        RewardDef = "ComponentIndustrial",
+                        RewardAmount = 10
+                    },
+                    new RewardFile()
+                    {
+                        RewardDef = "ComponentSpacer",
+                        RewardAmount = 10
+                    },
                 }
             },
             new SiteInfoFile()
@@ -71,10 +124,13 @@ namespace Shared
                 DefName = "RTRefinery",
                 DefNameCost = new string[]{"Silver"},
                 Cost = new int[]{750},
-                Rewards = new RewardFile()
+                Rewards = new RewardFile[]
                 {
-                    RewardDefs = new string[]{"Chemfuel"},
-                    RewardAmount = new int[] {75}
+                    new RewardFile()
+                    {
+                        RewardDef = "Chemfuel",
+                        RewardAmount = 50
+                    }
                 }
             },
             new SiteInfoFile()
@@ -82,10 +138,18 @@ namespace Shared
                 DefName = "RTHerbalWorkshop",
                 DefNameCost = new string[]{"Silver"},
                 Cost = new int[]{750},
-                Rewards = new RewardFile()
+                Rewards = new RewardFile[]
                 {
-                    RewardDefs = new string[]{"Cloth"},
-                    RewardAmount = new int[] {50}
+                    new RewardFile()
+                    {
+                        RewardDef = "MedicineHerbal",
+                        RewardAmount = 10
+                    },
+                    new RewardFile()
+                    {
+                        RewardDef = "MedicineIndustrial",
+                        RewardAmount = 2
+                    }
                 }
             },
             new SiteInfoFile()
@@ -93,10 +157,18 @@ namespace Shared
                 DefName = "RTTextileFactory",
                 DefNameCost = new string[]{"Silver"},
                 Cost = new int[]{750},
-                Rewards = new RewardFile()
+                Rewards = new RewardFile[]
                 {
-                    RewardDefs = new string[]{"Cloth"},
-                    RewardAmount = new int[] {50}
+                    new RewardFile()
+                    {
+                        RewardDef = "Cloth",
+                        RewardAmount = 50
+                    },
+                    new RewardFile()
+                    {
+                        RewardDef = "DevilStrandCloth",
+                        RewardAmount = 30
+                    }
                 }
             },
             new SiteInfoFile()
@@ -104,10 +176,18 @@ namespace Shared
                 DefName = "RTFoodProcessor",
                 DefNameCost = new string[]{"Silver"},
                 Cost = new int[]{750},
-                Rewards = new RewardFile()
+                Rewards = new RewardFile[]
                 {
-                    RewardDefs = new string[]{"MealSurvivalPack"},
-                    RewardAmount = new int[] {10}
+                    new RewardFile()
+                    {
+                        RewardDef = "MealSurvivalPack",
+                        RewardAmount = 10
+                    },
+                    new RewardFile()
+                    {
+                        RewardDef = "MealNutrientPaste",
+                        RewardAmount = 30
+                    }
                 }
             }
         };

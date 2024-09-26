@@ -22,15 +22,12 @@ namespace GameClient
             List<Thing> rewards = new List<Thing>();
             foreach (RewardFile reward in siteData._rewardData)
             {
-                for (int i = 0; reward.RewardDefs.Length > i; i++)
-                {
-                    ThingDataFile thingData = new ThingDataFile();
-                    thingData.DefName = reward.RewardDefs[i];
-                    thingData.Quantity = reward.RewardAmount[i];
-                    thingData.Quality = 0;
-                    thingData.Hitpoints = DefDatabase<ThingDef>.GetNamed(thingData.DefName).BaseMaxHitPoints;
-                    rewards.Add(ThingScribeManager.StringToItem(thingData));
-                }
+                ThingDataFile thingData = new ThingDataFile();
+                thingData.DefName = reward.RewardDef;
+                thingData.Quantity = reward.RewardAmount;
+                thingData.Quality = 0;
+                thingData.Hitpoints = DefDatabase<ThingDef>.GetNamed(thingData.DefName).BaseMaxHitPoints;
+                rewards.Add(ThingScribeManager.StringToItem(thingData));
             }
             if (rewards.Count > 0)
             {

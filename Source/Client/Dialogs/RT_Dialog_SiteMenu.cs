@@ -24,6 +24,7 @@ namespace GameClient.Dialogs
         public RT_Dialog_SiteMenu(bool configMode) 
         {
             isInConfigMode = configMode;
+            DialogManager.dialogSiteMenu = this;
         }
 
         public override void DoWindowContents(Rect rect)
@@ -109,10 +110,11 @@ namespace GameClient.Dialogs
             {
                 costThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.DefNameCost[i]), configFile.Cost[i]);
             }
-            for (int i = 0; i < configFile.Rewards.RewardDefs.Length; i++) 
+            for (int i = 0; i < configFile.Rewards.Length; i++) 
             {
-                rewardThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.Rewards.RewardDefs[i]), configFile.Rewards.RewardAmount[i]);
+                rewardThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.Rewards[i].RewardDef), configFile.Rewards[i].RewardAmount);
             }
+            DialogManager.dialogSiteMenuInfo = this;
         }
 
         public override void DoWindowContents(Rect mainRect)
@@ -156,7 +158,12 @@ namespace GameClient.Dialogs
                 num += 25;
             }
             Widgets.EndScrollView();
-            if (Widgets.ButtonText(new Rect(rightColumn.x + 5f, rightColumn.yMax, rightColumn.width - 10f, 40f), "Buy")) SiteManager.RequestSiteBuild(configFile); //Call function here to place site
+            if (Widgets.ButtonText(new Rect(rightColumn.x + 5f, rightColumn.yMax, rightColumn.width - 10f, 40f), "Buy"))
+            {
+                SiteManager.RequestSiteBuild(configFile);
+                DialogManager.dialogSiteMenu.Close();
+                DialogManager.dialogSiteMenuInfo.Close();
+            }
         }
     }
 
@@ -186,10 +193,11 @@ namespace GameClient.Dialogs
             {
                 costThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.DefNameCost[i]), configFile.Cost[i]);
             }
-            for (int i = 0; i < configFile.Rewards.RewardDefs.Length; i++)
+            for (int i = 0; i < configFile.Rewards.Length; i++)
             {
-                rewardThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.Rewards.RewardDefs[i]), configFile.Rewards.RewardAmount[i]);
+                rewardThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.Rewards[i].RewardDef), configFile.Rewards[i].RewardAmount);
             }
+            DialogManager.dialogSiteMenuConfig = this;
         }
 
         public override void DoWindowContents(Rect mainRect)
@@ -223,7 +231,12 @@ namespace GameClient.Dialogs
             foreach (ThingDef thing in rewardThing.Keys)
             {
                 Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25f), $"- {thing.label} {rewardThing[thing].ToString()} ");
-                if (Widgets.ButtonText(new Rect(viewRightColumn.width + 210f, num, viewRightColumn.width - 210f, 25f), "Choose")) SiteManager.ChangeConfig(configFile, thing.defName);
+                if (Widgets.ButtonText(new Rect(viewRightColumn.width + 210f, num, viewRightColumn.width - 210f, 25f), "Choose"))
+                {
+                    SiteManager.ChangeConfig(configFile, thing.defName);
+                    DialogManager.dialogSiteMenu.Close();
+                    DialogManager.dialogSiteMenuConfig.Close();
+                }
                 num += 25;
             }
             Widgets.EndScrollView();

@@ -25,6 +25,10 @@ namespace GameClient
 
         public static RT_Dialog_SiteMenu dialogSiteMenu;
 
+        public static RT_Dialog_SiteMenu_Config dialogSiteMenuConfig;
+
+        public static RT_Dialog_SiteMenu_Info dialogSiteMenuInfo;
+
         public static RT_Dialog_1Input dialog1Input;
 
         public static string dialog1ResultOne;

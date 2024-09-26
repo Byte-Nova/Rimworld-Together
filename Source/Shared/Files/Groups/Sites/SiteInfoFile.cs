@@ -9,7 +9,7 @@ namespace Shared
         public string[] DefNameCost;
         public int[] Cost;
 
-        public RewardFile Rewards = new RewardFile();
+        public RewardFile[] Rewards;
 
         public SiteInfoFile Clone() 
         {

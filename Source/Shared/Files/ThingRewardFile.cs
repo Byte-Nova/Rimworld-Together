@@ -2,7 +2,7 @@ namespace Shared
 {
     public class RewardFile
     {
-        public string[] RewardDefs;
-        public int[] RewardAmount;
+        public string RewardDef = "";
+        public int RewardAmount;
     }
 }
