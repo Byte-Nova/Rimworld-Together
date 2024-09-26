@@ -10,8 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)files\groups\sites\SiteConfigFile.cs" />
-    <Compile Include="..\Shared\Files\Groups\Sites\SiteInfoFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\groups\sites\SiteConfigFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Groups\Sites\SiteInfoFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SettlementFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />

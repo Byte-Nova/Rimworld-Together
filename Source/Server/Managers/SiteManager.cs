@@ -74,6 +74,7 @@ namespace GameServer
                 siteFile.Tile = siteData._siteFile.Tile;
                 siteFile.Owner = client.userFile.Username;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._siteFile.Type.DefName);
+                if(client.userFile.FactionFile != null) siteFile.FactionFile = client.userFile.FactionFile;
                 ConfirmNewSite(client, siteFile);
             }
         }
@@ -139,7 +140,7 @@ namespace GameServer
                 //Get player specific sites
 
                 List<SiteIdendity> sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Username);
-                sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile !=null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
+                if(client.userFile.FactionFile != null) sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile !=null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
                 foreach (SiteIdendity site in sitesToAdd)
                 {
                     RewardFile rewardFile = new RewardFile();
