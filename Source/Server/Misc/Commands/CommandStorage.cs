@@ -698,11 +698,12 @@ namespace GameServer
                 if (response == "NO") return;
                 else if (response != "YES")
                 {
-                    Logger.Error($"{response} is not a valid option; The options must be capitalized");
+                    Logger.Error($"{response} is not a valid option. The answer must be capitalized");
                     goto DeleteWorldQuestion;
                 }
 
                 BackupManager.BackupServer();
+
                 Directory.Delete($"{Master.caravansPath}",true);
                 Directory.Delete($"{Master.corePath}", true);
                 Directory.Delete($"{Master.eventsPath}", true);
@@ -713,9 +714,8 @@ namespace GameServer
                 Directory.Delete($"{Master.settlementsPath}", true);
                 Directory.Delete($"{Master.sitesPath}", true);
                 Directory.Delete($"{Master.usersPath}", true);
-                Main_.SetPaths();
-                Logger.Warning("World has been successfully reset");
-                foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) client.listener.disconnectFlag = true;
+
+                Environment.Exit(0);
         }
 
         private static void QuitCommandAction()
