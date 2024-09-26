@@ -13,7 +13,7 @@ namespace GameServer
 
         //Parses received market packets into something usable
 
-        public static void ParseMarketPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableMarket)
             {

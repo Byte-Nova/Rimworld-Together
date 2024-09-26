@@ -36,7 +36,7 @@ namespace GameClient
                     break;
 
                 case LoginResponse.WrongMods:
-                    ModManager.GetConflictingMods(packet);
+                    ModManagerHelper.GetConflictingMods(packet);
                     break;
 
                 case LoginResponse.ServerFull:

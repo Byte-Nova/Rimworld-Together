@@ -37,7 +37,7 @@ namespace GameClient
         {
             MapFile mapFile = MapScribeManager.MapToString(map, includeThings, includeThings, includeHumans, includeHumans, includeAnimals, includeAnimals);
 
-            if (includeMods) mapFile.Mods = ModManager.GetRunningModList();
+            if (includeMods) mapFile.Mods = ModManagerHelper.GetRunningModList();
 
             return mapFile;
         }

@@ -54,7 +54,7 @@ namespace GameClient
 
                     else
                     {
-                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, SessionValues.actionValues.SpyCost, SessionValues.chosenCaravan);
+                        RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, SessionValues.actionValues.SpyCost);
                         SendRequest();
                     }
                 };
@@ -123,7 +123,7 @@ namespace GameClient
                 PrepareMapForOfflineActivity(offlineVisitData._mapFile); 
             };
 
-            if (ModManager.CheckIfMapHasConflictingMods(offlineVisitData._mapFile))
+            if (ModManagerHelper.CheckIfMapHasConflictingMods(offlineVisitData._mapFile))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }

@@ -44,7 +44,7 @@ namespace GameClient
             DialogManager.dialogMarketListing = this;
 
             title = "Global Market";
-            description = $"Silver available for trade: {RimworldManager.GetSilverInMap(settlementMap)}";
+            description = $"Silver available for trade: {RimworldManager.GetSpecificThingCountInMap(ThingDefOf.Silver, settlementMap)}";
 
             this.elements = elements;
             this.actionClick = actionClick;

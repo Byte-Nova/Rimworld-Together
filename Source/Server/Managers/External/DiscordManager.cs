@@ -1,6 +1,7 @@
 using System.Text;
 using Discord;
 using Discord.WebSocket;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -47,12 +48,8 @@ namespace GameServer
 
         private static Task LogAsync(LogMessage log)
         {
-            if (!Master.serverConfig.VerboseLogs) return Task.CompletedTask;
-            else
-            {
-                Logger.Outsider("[Discord Integration] > " + log.ToString());
-                return Task.CompletedTask;
-            }
+            Logger.Outsider("[Discord Integration] > " + log.ToString(), LogImportanceMode.Verbose);
+            return Task.CompletedTask;
         }
 
         private static Task MessageReceivedAsync(SocketMessage message)
@@ -73,7 +70,7 @@ namespace GameServer
             else if (message.Channel.Id == Master.discordConfig.ConsoleChannelId)
             {
                 Logger.Outsider($"[Discord Command] > {message.CleanContent}");
-                ConsoleCommandManager.ParseServerCommands(message.CleanContent);
+                CommandManager.ParseServerCommands(message.CleanContent);
             }
 
             return Task.CompletedTask;

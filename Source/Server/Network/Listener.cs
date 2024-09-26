@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Net.Sockets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -63,7 +64,7 @@ namespace GameServer
         {
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(1);
 
@@ -75,7 +76,13 @@ namespace GameServer
                     }
                 }
             }
-            catch { disconnectFlag = true; }
+
+            catch (Exception e)
+            { 
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
+
+                disconnectFlag = true; 
+            }
         }
 
         //Runs in a separate thread and listens for any kind of information being sent through the connection
@@ -84,19 +91,23 @@ namespace GameServer
         {
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
-                    PacketHandler.HandlePacket(targetClient, receivedPacket);
+                    if (string.IsNullOrWhiteSpace(data)) disconnectFlag = true;
+                    else
+                    {
+                        Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
+                        PacketHandler.HandlePacket(targetClient, receivedPacket);
+                    }
                 }
             }
 
             catch (Exception e)
             {
-                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }
@@ -106,16 +117,13 @@ namespace GameServer
 
         public void CheckConnectionHealth()
         {
-            try
+            try { while (!disconnectFlag) Thread.Sleep(1); }
+            catch (Exception e)
             {
-                while (true)
-                {
-                    Thread.Sleep(1);
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
-                    if (disconnectFlag) break;
-                }
+                disconnectFlag = true;
             }
-            catch { }
 
             Thread.Sleep(1000);
 
@@ -130,7 +138,7 @@ namespace GameServer
 
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(int.Parse(Master.serverConfig.MaxTimeoutInMS));
 
@@ -138,7 +146,7 @@ namespace GameServer
                     else break;
                 }
             }
-            catch { }
+            catch (Exception e) { Logger.Warning(e.ToString(), LogImportanceMode.Verbose); }
 
             disconnectFlag = true;
         }
