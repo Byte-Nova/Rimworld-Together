@@ -83,7 +83,7 @@ namespace GameClient
         {
             Map map = Find.World.worldObjects.SettlementAt(data._toTile).Map;
             Pawn pawn = HumanScribeManager.StringToHuman(data._humanData);
-            RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
+            RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true, true);
 
             data._stepMode = AidStepMode.Accept;
             Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
