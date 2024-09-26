@@ -70,9 +70,9 @@ namespace GameClient
             {
                 QueuePlayerSettlementToServer(settlement, stepMode);
             }
-            else//NPC settlement, should sync if admin
+            else//NPC settlement, should sync if allowed
             {
-                if (ServerValues.isAdmin)QueueNPCSettlementToServer(settlement, stepMode);
+                if (ServerValues.isNPCModificationAllowed)QueueNPCSettlementToServer(settlement, stepMode);
             }
         }
         // Queue a player settlement to be modified

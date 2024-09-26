@@ -9,6 +9,10 @@ namespace Shared
 
         public bool _isClientFactionMember;
 
+        public bool _isNPCModificationAllowed;
+
+        public bool _isNPCModificaitonAllowedForEveryone;
+
         public SiteValuesFile _siteValues;
 
         public MarketValuesFile _marketValues;

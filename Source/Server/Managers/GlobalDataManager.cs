@@ -8,6 +8,10 @@ namespace GameServer
         {
             ServerGlobalData globalData = new ServerGlobalData();
 
+            globalData._isNPCModificationAllowed = Master.serverConfig.AllowNPCModifications;
+
+            globalData._isNPCModificaitonAllowedForEveryone = Master.serverConfig.AllowNPCModificationsForNonAdmin;
+
             globalData = GlobalDataManagerHelper.GetClientValues(client, globalData);
 
             globalData = GlobalDataManagerHelper.GetServerValues(globalData);

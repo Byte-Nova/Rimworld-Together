@@ -23,6 +23,8 @@
 
         public bool AllowNPCModifications = false;
 
+        public bool AllowNPCModificationsForNonAdmin = false;
+
         public bool TemporalActivityProtection = true;
 
         public bool TemporalEventProtection = true;

@@ -10,7 +10,7 @@ namespace GameServer
             NewWorldObjects newWorldObjects = Serializer.ConvertBytesToObject<NewWorldObjects>(packet.contents);
             if (Master.serverConfig.AllowNPCModifications)
             {
-                if (!client.userFile.IsAdmin && newWorldObjects._npcSettlements.Count() == 0)
+                if ((!client.userFile.IsAdmin && newWorldObjects._npcSettlements.Count() > 0 && !Master.serverConfig.AllowNPCModifications) || !Master.serverConfig.AllowNPCModificationsForNonAdmin)
                 {
                     Logger.Warning($"User {client.userFile.Username} tried changing settlements. but they are not an admin");
                 }
