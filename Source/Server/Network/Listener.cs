@@ -63,7 +63,7 @@ namespace GameServer
         {
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(1);
 
@@ -75,7 +75,13 @@ namespace GameServer
                     }
                 }
             }
-            catch { disconnectFlag = true; }
+
+            catch (Exception e)
+            { 
+                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
+
+                disconnectFlag = true; 
+            }
         }
 
         //Runs in a separate thread and listens for any kind of information being sent through the connection
@@ -84,13 +90,17 @@ namespace GameServer
         {
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
-                    PacketHandler.HandlePacket(targetClient, receivedPacket);
+                    if (string.IsNullOrWhiteSpace(data)) disconnectFlag = true;
+                    else
+                    {
+                        Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
+                        PacketHandler.HandlePacket(targetClient, receivedPacket);
+                    }
                 }
             }
 
@@ -106,16 +116,13 @@ namespace GameServer
 
         public void CheckConnectionHealth()
         {
-            try
+            try { while (!disconnectFlag) Thread.Sleep(1); }
+            catch (Exception e)
             {
-                while (true)
-                {
-                    Thread.Sleep(1);
+                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
 
-                    if (disconnectFlag) break;
-                }
+                disconnectFlag = true;
             }
-            catch { }
 
             Thread.Sleep(1000);
 
@@ -130,7 +137,7 @@ namespace GameServer
 
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(int.Parse(Master.serverConfig.MaxTimeoutInMS));
 
@@ -138,7 +145,7 @@ namespace GameServer
                     else break;
                 }
             }
-            catch { }
+            catch (Exception e) { if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString()); }
 
             disconnectFlag = true;
         }
