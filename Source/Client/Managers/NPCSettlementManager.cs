@@ -131,7 +131,7 @@ namespace GameClient
             data.name = faction.Name;
             data.color = new float[] { faction.Color.r, faction.Color.g, faction.Color.b, faction.Color.a };
             newFactions.Add(data);
-            if (ClientValues.verboseBool) Logger.Message("Sending new faction to server");
+            Logger.Message("Sending new faction to server", LogImportanceMode.Verbose);
         }
         public static bool DoesFactionExist(string def)
         {

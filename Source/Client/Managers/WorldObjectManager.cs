@@ -82,7 +82,7 @@ namespace GameClient
             data._settlementData.Tile = settlement.Tile;
             data._stepMode = stepMode;
             newPlayerSettlements.Add(data);
-            if (ClientValues.verboseBool) Logger.Message("Sending new player settlement to server");
+            Logger.Message("Sending new player settlement to server", LogImportanceMode.Verbose);
         }
         // Queue a settlement to be modified
         private static void QueueNPCSettlementToServer(Settlement settlement, SettlementStepMode stepMode)
@@ -94,7 +94,7 @@ namespace GameClient
             data._settlementData.defName = settlement.Faction.def.defName;
             data._stepMode = stepMode;
             newNPCSettlements.Add(data);
-            if (ClientValues.verboseBool) Logger.Message("Sending new npc settlement to server");
+            Logger.Message("Sending new npc settlement to server", LogImportanceMode.Verbose);
         }
         // Send data to the server if it changed
         private static void SendDataToServer() 

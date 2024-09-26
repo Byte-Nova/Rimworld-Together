@@ -36,7 +36,7 @@ namespace GameServer
             } 
             else 
             {
-                if(Master.serverConfig.VerboseLogs) Logger.Message($"User {client.userFile.Username} tried modifying NPC data, consider turning on npc modifications in the settings.");
+                Logger.Message($"User {client.userFile.Username} tried modifying NPC data, consider turning on npc modifications in the settings.", LogImportanceMode.Verbose);
             }
             foreach (PlayerSettlementData settlement in newWorldObjects._playerSettlements)
             {
