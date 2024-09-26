@@ -106,14 +106,14 @@ namespace GameClient
         {
             string[] currentMods = GetRunningModList().UnsortedMods;
 
-            foreach (string mod in mapFile.Mods)
+            foreach (string mod in mapFile.Mods.UnsortedMods)
             {
                 if (!currentMods.Contains(mod)) return true;
             }
 
             foreach (string mod in currentMods)
             {
-                if (!mapFile.Mods.Contains(mod)) return true;
+                if (!mapFile.Mods.UnsortedMods.Contains(mod)) return true;
             }
 
             return false;

@@ -8,9 +8,9 @@ namespace Shared
 
         public string Owner;
 
-        public string[] Mods;
-
         public string CurWeatherDefName;
+
+        public ModConfigFile Mods;
 
         public TileComponent[] Tiles = new TileComponent[0];
 
