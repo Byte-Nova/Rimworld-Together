@@ -18,6 +18,10 @@ namespace Shared
 
         public bool IsMinified;
 
+        public string ThingID;
+
+        public int ThingIDNumber;
+
         public TransformComponent Transform = new TransformComponent();
 
         public GenepackComponent GenepackComponent = new GenepackComponent();

@@ -1036,6 +1036,8 @@ namespace GameClient
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
+            GetItemID(toUse, thingData);
+
             GetItemName(toUse, thingData);
 
             GetItemMaterial(toUse, thingData);
@@ -1057,6 +1059,8 @@ namespace GameClient
         {
             Thing thing = SetItem(thingData);
 
+            //SetItemID(thing, thingData);
+
             SetItemQuantity(thing, thingData);
 
             SetItemQuality(thing, thingData);
@@ -1071,6 +1075,16 @@ namespace GameClient
         }
 
         //Getters
+
+        private static void GetItemID(Thing thing, ThingFile thingData)
+        {
+            try
+            {
+                thingData.ThingID = thing.ThingID;
+                thingData.ThingIDNumber = thing.thingIDNumber;
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
 
         private static void GetItemName(Thing thing, ThingFile thingData)
         {
@@ -1200,6 +1214,16 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
             return null;
+        }
+
+        private static void SetItemID(Thing thing, ThingFile thingData)
+        {
+            try
+            {
+                thing.ThingID = thingData.ThingID;
+                thing.thingIDNumber = thing.thingIDNumber;
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
         private static void SetItemQuantity(Thing thing, ThingFile thingData)
