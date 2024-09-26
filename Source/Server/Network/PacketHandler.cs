@@ -114,6 +114,11 @@ namespace GameServer
             SettlementManager.ParsePacket(client, packet);
         }
 
+        public static void NewWorldObjectData(ServerClient client, Packet packet) 
+        {
+            WorldObjectManager.ParseNewWorldObjectsPacket(client, packet);
+        }
+
         public static void NPCSettlementPacket(ServerClient client, Packet packet)
         {
             NPCSettlementManager.ParsePacket(client, packet);
@@ -161,5 +166,7 @@ namespace GameServer
         public static void CommandPacket(ServerClient client, Packet packet) { }
 
         public static void LoginResponsePacket(ServerClient client, Packet packet) { }
+
+        public static void NPCFactionPacket(ServerClient client, Packet packet) { }
     }
 }

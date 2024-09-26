@@ -300,7 +300,6 @@ namespace GameClient
                     PlanetNPCSettlement.tile = settlement.Tile;
                     PlanetNPCSettlement.defName = settlement.Faction.def.defName;
                     PlanetNPCSettlement.name = settlement.Name;
-
                     npcSettlements.Add(PlanetNPCSettlement);
                 }
                 catch (Exception e) { Logger.Warning($"Failed to get NPC settlement '{settlement.Tile}' to populate. Reason: {e}"); }

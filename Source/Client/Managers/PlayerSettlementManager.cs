@@ -61,6 +61,7 @@ namespace GameClient
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
 
                     playerSettlements.Add(settlement);
+                    WorldObjectManagerHelper.lastWorldObjectAdded = settlement.Tile;
                     Find.WorldObjects.Add(settlement);
                 }
                 catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
@@ -74,6 +75,9 @@ namespace GameClient
                 Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
+                    toGet = playerSettlements.Find(x => x.Tile == toRemove.Tile);
+                    playerSettlements.Remove(toGet);
+                    WorldObjectManagerHelper.lastWorldObjectAdded = toGet.Tile;
                     if (playerSettlements.Contains(toGet)) playerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }

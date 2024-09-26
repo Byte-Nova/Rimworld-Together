@@ -21,7 +21,9 @@
 
         public bool SyncLocalSave = true;
 
-        public bool AllowNPCDestruction = false;
+        public bool AllowNPCModifications = false;
+
+        public bool AllowNPCModificationsForNonAdmin = false;
 
         public bool TemporalActivityProtection = true;
 
