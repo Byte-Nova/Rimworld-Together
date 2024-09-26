@@ -129,6 +129,10 @@ namespace GameServer
             "toggles verbose logs to be true or false",
             ToggleVerboseLogsCommandAction);
 
+        private static readonly ServerCommand toggleExtremeVerboseLogsCommand = new ServerCommand("toggleextremeverboselogs", 0,
+            "toggles extreme verbose logs to be true or false",
+            ToggleExtremeVerboseLogsCommandAction);
+
         private static readonly ServerCommand toggleSyncLocalSaveCommand = new ServerCommand("togglesynclocalsave", 0,
             "toggles allowing local saves to sync with server to be true or false",
             ToggleSyncLocalSaveCommandAction);
@@ -187,6 +191,7 @@ namespace GameServer
             toggleSyncLocalSaveCommand,
             toggleUPnPCommand,
             toggleVerboseLogsCommand,
+            toggleExtremeVerboseLogsCommand,
             whitelistAddCommand,
             whitelistCommand,
             whitelistRemoveCommand,
@@ -676,6 +681,13 @@ namespace GameServer
         {
             Master.serverConfig.VerboseLogs = !Master.serverConfig.VerboseLogs;
             Logger.Warning($"Verbose Logs set to {Master.serverConfig.VerboseLogs}");
+            Main_.SaveValueFile(ServerFileMode.Configs);
+        }
+
+        private static void ToggleExtremeVerboseLogsCommandAction()
+        {
+            Master.serverConfig.ExtremeVerboseLogs = !Master.serverConfig.ExtremeVerboseLogs;
+            Logger.Warning($"Extreme verbose Logs set to {Master.serverConfig.ExtremeVerboseLogs}");
             Main_.SaveValueFile(ServerFileMode.Configs);
         }
 

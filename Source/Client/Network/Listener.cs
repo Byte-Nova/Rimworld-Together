@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Threading;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -74,7 +75,7 @@ namespace GameClient
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Logger.Warning(e.ToString());
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }
@@ -102,7 +103,7 @@ namespace GameClient
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Logger.Warning(e.ToString());
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }
@@ -115,7 +116,7 @@ namespace GameClient
             try { while (!disconnectFlag) Thread.Sleep(1); }
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Logger.Warning(e.ToString());
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }
@@ -143,7 +144,7 @@ namespace GameClient
 
             catch (Exception e)
             {
-                if (ClientValues.verboseBool)  Logger.Warning($"{e}");
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -6,33 +7,50 @@ namespace GameClient
 {
     public static class Logger
     {
-        public static void Message(string message) { WriteToConsole(message, LogMode.Message); }
+        //Functions to write logs in different colors
 
-        public static void Warning(string message) { WriteToConsole(message, LogMode.Warning); }
+        public static void Message(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Message, importance); }
 
-        public static void Error(string message) { WriteToConsole(message, LogMode.Error); }
+        public static void Warning(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Warning, importance); }
 
-        private static void WriteToConsole(string text, LogMode mode = LogMode.Message)
+        public static void Error(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Error, importance); }
+
+        //Actual function that writes the logs
+
+        private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance)
         {
-            string toWrite = $"[RT] > {text}";
-
-            switch(mode)
+            if (CheckIfShouldPrint(importance))
             {
-                case LogMode.Message:
-                    Log.Message(toWrite);
-                    break;
+                string toWrite = $"[RT] > {text}";
 
-                case LogMode.Warning:
-                    Log.Warning(toWrite);
-                    break;
+                switch(mode)
+                {
+                    case LogMode.Message:
+                        Log.Message(toWrite);
+                        break;
 
-                case LogMode.Error:
-                    Log.Error(toWrite);
-                    break;
+                    case LogMode.Warning:
+                        Log.Warning(toWrite);
+                        break;
 
-                default:
-                    throw new Exception($"[RT] > Logger was passed invalid arguments");
+                    case LogMode.Error:
+                        Log.Error(toWrite);
+                        break;
+
+                    default:
+                        throw new Exception($"[RT] > Logger was passed invalid arguments");
+                }
             }
+        }
+
+        //Checks if the importance of the log has been enabled
+
+        private static bool CheckIfShouldPrint(LogImportanceMode importance)
+        {
+            if (importance == LogImportanceMode.Normal) return true;
+            else if (importance == LogImportanceMode.Verbose && ClientValues.verboseBool) return true;
+            else if (importance == LogImportanceMode.Extreme && ClientValues.extremeVerboseBool) return true;
+            else return false;
         }
     }
 }

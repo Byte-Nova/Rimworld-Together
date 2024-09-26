@@ -8,6 +8,8 @@ namespace Shared
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
+        public enum LogImportanceMode { Normal, Verbose, Extreme }
+
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
         public enum EventStepMode { Send, Receive, Recover }

@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Net.Sockets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -78,7 +79,7 @@ namespace GameServer
 
             catch (Exception e)
             { 
-                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true; 
             }
@@ -106,7 +107,7 @@ namespace GameServer
 
             catch (Exception e)
             {
-                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }
@@ -119,7 +120,7 @@ namespace GameServer
             try { while (!disconnectFlag) Thread.Sleep(1); }
             catch (Exception e)
             {
-                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }
@@ -145,7 +146,7 @@ namespace GameServer
                     else break;
                 }
             }
-            catch (Exception e) { if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString()); }
+            catch (Exception e) { Logger.Warning(e.ToString(), LogImportanceMode.Verbose); }
 
             disconnectFlag = true;
         }
