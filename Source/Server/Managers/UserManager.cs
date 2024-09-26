@@ -27,7 +27,10 @@ namespace GameServer
 
             if (!UserManagerHelper.CheckWhitelist(client)) return;
 
-            if (ModManager.CheckIfModConflict(client, loginData)) return;
+            if (WorldManager.CheckIfWorldExists())
+            {
+                if (ModManager.CheckIfModConflict(client, loginData)) return;
+            }
 
             RemoveOldClientIfAny(client);
 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -72,7 +73,7 @@ namespace GameServer
                     else
                     {
                         File.Delete(playerArchivedSavePath);
-                        if (Master.serverConfig.VerboseLogs) Logger.Warning($"Deleting backup of {username} because he already had one.");
+                        Logger.Warning($"Deleting backup of {username} because he already had one.", LogImportanceMode.Verbose);
                     }
                 }
 
@@ -124,7 +125,7 @@ namespace GameServer
             while (Directory.GetFiles(Master.backupServerPath).Length > Master.backupConfig.Amount)
             {
                 FileSystemInfo fileInfo = new DirectoryInfo(Master.backupServerPath).GetFileSystemInfos().OrderBy(file => file.CreationTime).First();
-                if (Master.serverConfig.VerboseLogs) Logger.Warning($"Deleting backup {fileInfo.Name} because we've reached the limit of {Master.backupConfig.Amount}");
+                Logger.Warning($"Deleting backup {fileInfo.Name} because we've reached the limit of {Master.backupConfig.Amount}", LogImportanceMode.Verbose);
                 fileInfo.Delete();
             }
         }

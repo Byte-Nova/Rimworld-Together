@@ -134,16 +134,31 @@ namespace GameClient
                 .ToArray();
         }
 
-        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false)
+        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false, bool byDropPod = false)
         {
             IntVec3 positionToPlaceAt = IntVec3.Zero;
             if (useSpot) positionToPlaceAt = TransferManagerHelper.GetTransferLocationInMap(map);
             else positionToPlaceAt = thing.Position;
 
-            if (thing is Pawn) GenSpawn.Spawn(thing, positionToPlaceAt, map, thing.Rotation);
-            else GenPlace.TryPlaceThing(thing, positionToPlaceAt, map, placeMode, rot: thing.Rotation);
+            if (byDropPod) TradeUtility.SpawnDropPod(FindVectorNear(positionToPlaceAt, map), map, thing);
+            else
+            {
+                if (thing is Pawn) GenSpawn.Spawn(thing, positionToPlaceAt, map, thing.Rotation);
+                else GenPlace.TryPlaceThing(thing, positionToPlaceAt, map, placeMode, rot: thing.Rotation);
+            }
         }
 
+        private static IntVec3 FindVectorNear(IntVec3 center, Map map)
+        {
+            if (!DropCellFinder.TryFindDropSpotNear(center, map, out IntVec3 vectorForUse, false, true))
+            {
+                Logger.Warning("Couldn't find any good drop spot near " + center + "Will use random valid location instead.");
+                vectorForUse = CellFinderLoose.RandomCellWith((Predicate<IntVec3>)(c => c.Standable(map) && !c.Fogged(map)), map);
+            }
+            
+            return vectorForUse;
+        }
+        
         public static void PlaceThingIntoCaravan(Thing thing, Caravan caravan)
         {
             if (thing is Pawn)

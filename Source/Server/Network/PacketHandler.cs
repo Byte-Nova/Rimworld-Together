@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Reflection;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -19,8 +20,8 @@ namespace GameServer
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[H] > {packet.header}");
-            else if (Master.serverConfig.ExtremeVerboseLogs) Logger.Message($"[H] > {packet.header}");
+            if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[H] > {packet.header}", LogImportanceMode.Verbose);
+            else Logger.Message($"[H] > {packet.header}", LogImportanceMode.Extreme);
 
             client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);
