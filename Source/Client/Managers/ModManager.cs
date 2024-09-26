@@ -87,7 +87,8 @@ namespace GameClient
             List<string> loadedMods = new List<string>();
             ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
             foreach (ModContentPack mod in runningMods) loadedMods.Add(mod.PackageId);
-            
+            loadedMods.Sort();
+
             ModConfigFile configFile = new ModConfigFile();
             configFile.UnsortedMods = loadedMods.ToArray();
             return configFile;
