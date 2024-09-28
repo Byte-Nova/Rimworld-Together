@@ -11,6 +11,17 @@
   </SitePartDef>
 
   <SitePartDef>
+    <defName>RTHunterCamp</defName>
+    <label>Hunting Camp</label>
+    <description>This hunting camp is capable of providing leather and meat.</description>
+    <workerClass>SitePartWorker_Outpost</workerClass>
+    <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
+    <expandingIconTexture>Sites/HuntingCamp</expandingIconTexture>
+    <applyFactionColorToSiteTexture>true</applyFactionColorToSiteTexture>
+    <minThreatPoints>5000</minThreatPoints>
+  </SitePartDef>
+
+  <SitePartDef>
     <defName>RTQuarry</defName>
     <label>Quarry</label>
     <description>This glorified hole in the ground is used to extract the most precious of rocks and stones, such as granite and marble.</description>

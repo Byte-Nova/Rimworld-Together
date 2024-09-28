@@ -74,6 +74,10 @@ namespace GameServer
             SiteManager.ParsePacket(client, packet);
         }
 
+        public static void SiteRewardConfigPacket(ServerClient client, Packet packet) 
+        {
+            SiteManager.ChangeUserSiteConfig(client, packet);
+        }
         public static void RoadPacket(ServerClient client, Packet packet)
         {
             RoadManager.ParsePacket(client, packet);

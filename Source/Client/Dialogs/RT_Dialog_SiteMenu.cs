@@ -211,9 +211,9 @@ namespace GameClient.Dialogs
             Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, mainRect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
 
             Rect leftColumn = new Rect(mainRect.x, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 20f);
-            Widgets.DrawTextureFitted(leftColumn, sitePartDef.ExpandingIconTexture, 1f); // Icon of the site
+            Widgets.DrawTextureFitted(leftColumn, sitePartDef.ExpandingIconTexture, 1f);
 
-            Rect rightColumn = new Rect(mainRect.width / 2, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 70f);
+            Rect rightColumn = new Rect(mainRect.width / 2, mainRect.y + 30f, mainRect.width / 2, mainRect.height);
             float heightDesc = Text.CalcHeight(sitePartDef.description, rightColumn.width - 16f) / 2 +9f;
             float height = 40f + (float)rewardThing.Count() * 25f + heightDesc;
             Rect viewRightColumn = new Rect(rightColumn.x, rightColumn.y, rightColumn.width - 16f, height);
@@ -222,7 +222,7 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Small;
             float num = viewRightColumn.y;
 
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), sitePartDef.description); // Description of site
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), sitePartDef.description);
             num += heightDesc;
 
             Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), ($"Produces every {SiteManager.interval.ToString()} minutes:"));

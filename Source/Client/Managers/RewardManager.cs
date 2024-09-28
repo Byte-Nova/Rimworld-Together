@@ -28,6 +28,7 @@ namespace GameClient
                 thingData.Quality = 0;
                 thingData.Hitpoints = DefDatabase<ThingDef>.GetNamed(thingData.DefName).BaseMaxHitPoints;
                 rewards.Add(ThingScribeManager.StringToItem(thingData));
+                Logger.Message($"Received {reward.RewardAmount} of {reward.RewardDef}",CommonEnumerators.LogImportanceMode.Verbose);
             }
             if (rewards.Count > 0)
             {

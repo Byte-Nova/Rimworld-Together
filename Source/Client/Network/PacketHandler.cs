@@ -193,5 +193,7 @@ namespace GameClient
         public static void LoginClientPacket(Packet packet) { }
 
         public static void CustomDifficultyPacket(Packet packet) { }
+
+        public static void SiteRewardConfigPacket(Packet packet) { }
     }
 }

@@ -32,9 +32,6 @@ namespace GameServer
                 case SiteStepMode.Info:
                     SiteManagerHelper.GetSiteInfo(client, siteData);
                     break;
-                case SiteStepMode.Config:
-                    SiteManager.ChangeUserSiteConfig(client, siteData._siteFile);
-                    break;
 
             }
         }
@@ -138,9 +135,9 @@ namespace GameServer
                 List<RewardFile> data = new List<RewardFile>();
 
                 //Get player specific sites
-
-                List<SiteIdendity> sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Username);
-                if(client.userFile.FactionFile != null) sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile !=null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
+                List<SiteIdendity> sitesToAdd = new List<SiteIdendity>();
+                if (client.userFile.FactionFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Username);
+                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile !=null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
                 foreach (SiteIdendity site in sitesToAdd)
                 {
                     RewardFile rewardFile = new RewardFile();
@@ -180,13 +177,19 @@ namespace GameServer
             Logger.Warning("Sites now synced with new site configs");
         }
 
-        public static void ChangeUserSiteConfig(ServerClient client, SiteIdendity site) 
+        public static void ChangeUserSiteConfig(ServerClient client, SiteRewardConfig config) 
         {
             UpdateUserSiteWithDefault(client);
-            client.userFile.SiteConfigs.Where(S => S._DefName == site.Type.DefName).First()._RewardDefName = site.ChosenReward;
+            client.userFile.SiteConfigs.Where(S => S._DefName == config._siteDef).First()._RewardDefName = config._rewardDef;
             UserManagerHelper.SaveUserFile(client.userFile);
         }
-
+        public static void ChangeUserSiteConfig(ServerClient client, Packet packet)
+        {
+            SiteRewardConfig config = Serializer.ConvertBytesToObject<SiteRewardConfig>(packet.contents);
+            UpdateUserSiteWithDefault(client);
+            client.userFile.SiteConfigs.Where(S => S._DefName == config._siteDef).First()._RewardDefName = config._rewardDef;
+            UserManagerHelper.SaveUserFile(client.userFile);
+        }
         public static void UpdateUserSiteWithDefault(ServerClient client) 
         {
             client.userFile.SiteConfigs = new SiteConfigFile[Master.siteValues.SiteInfoFiles.Length];

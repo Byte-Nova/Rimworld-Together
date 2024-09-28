@@ -22,13 +22,13 @@ namespace GameClient
             siteData = serverGlobalData._siteValues.SiteInfoFiles;
             foreach(SiteInfoFile site in serverGlobalData._siteValues.SiteInfoFiles) 
             {
-                if(site.overrideDescription != "") 
+                if(site.OverrideDescription != "") 
                 {
-                    siteDefs.Where(S => S.defName == site.DefName).FirstOrDefault().description = site.overrideDescription;
+                    siteDefs.Where(S => S.defName == site.DefName).FirstOrDefault().description = site.OverrideDescription;
                 }
-                if (site.overrideName != "")
+                if (site.OverrideName != "")
                 {
-                    siteDefs.Where(S => S.defName == site.DefName).FirstOrDefault().label = site.overrideName;
+                    siteDefs.Where(S => S.defName == site.DefName).FirstOrDefault().label = site.OverrideName;
                 }
             }
             interval = serverGlobalData._siteValues.TimeIntervalMinute;
@@ -38,6 +38,7 @@ namespace GameClient
         {
             List<SitePartDef> defs = new List<SitePartDef>();
             defs.Add(DefDatabase<SitePartDef>.GetNamed("RTFarmland"));
+            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTHunterCamp"));
             defs.Add(DefDatabase<SitePartDef>.GetNamed("RTQuarry"));
             defs.Add(DefDatabase<SitePartDef>.GetNamed("RTSawmill"));
             defs.Add(DefDatabase<SitePartDef>.GetNamed("RTBank"));
@@ -184,11 +185,10 @@ namespace GameClient
 
         public static void ChangeConfig(SiteInfoFile config, string reward) 
         {
-            SiteData siteData = new SiteData();
-            siteData._stepMode = SiteStepMode.Config;
-            siteData._siteFile.ChosenReward = reward;
-            siteData._siteFile.Type = config;
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            SiteRewardConfig rewardConfig = new SiteRewardConfig();
+            rewardConfig._rewardDef = reward;
+            rewardConfig._siteDef = config.DefName;
+            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SiteRewardConfigPacket), rewardConfig);
             Network.listener.EnqueuePacket(packet);
         }
     }

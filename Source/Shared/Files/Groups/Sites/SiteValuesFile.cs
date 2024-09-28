@@ -29,13 +29,39 @@ namespace Shared
                     ,new RewardFile()
                     {
                         RewardDef = "SmokeleafLeaves",
-                        RewardAmount = 15
+                        RewardAmount = 25
                     }
                     ,new RewardFile()
                     {
                         RewardDef = "PsychoidLeaves",
-                        RewardAmount = 15
+                        RewardAmount = 25
                     }
+                }
+            },
+            new SiteInfoFile()
+            {
+                DefName = "RTHunterCamp",
+                DefNameCost = new string[]{"Silver"},
+                Cost = new int[]{500},
+                Rewards = new RewardFile[]
+                {new RewardFile()
+                    {
+                        RewardDef = "Meat_Muffalo",
+                        RewardAmount = 125
+                    },new RewardFile()
+                    {
+                        RewardDef = "Meat_Human",
+                        RewardAmount = 125
+                    },new RewardFile()
+                    {
+                        RewardDef = "Leather_Chinchilla",
+                        RewardAmount = 60
+                    }
+                    ,new RewardFile()
+                    {
+                        RewardDef = "Leather_Bear",
+                        RewardAmount = 60
+                    },
                 }
             },
             new SiteInfoFile()
@@ -77,7 +103,7 @@ namespace Shared
                     new RewardFile()
                     {
                         RewardDef = "WoodLog",
-                        RewardAmount = 50
+                        RewardAmount = 100
                     }
                 }
             },
@@ -115,7 +141,7 @@ namespace Shared
                     new RewardFile()
                     {
                         RewardDef = "ComponentSpacer",
-                        RewardAmount = 10
+                        RewardAmount = 2
                     },
                 }
             },
@@ -166,7 +192,7 @@ namespace Shared
                     },
                     new RewardFile()
                     {
-                        RewardDef = "DevilStrandCloth",
+                        RewardDef = "DevilstrandCloth",
                         RewardAmount = 30
                     }
                 }

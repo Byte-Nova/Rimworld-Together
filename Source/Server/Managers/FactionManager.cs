@@ -71,7 +71,7 @@ namespace GameServer
                 FactionManagerHelper.SaveFactionFile(factionFile);
                 foreach (SiteIdendity site in SiteManagerHelper.GetAllSitesFromUsername(client.userFile.Username))
                 {
-                    SiteManagerHelper.UpdateFaction(site, null);
+                    SiteManagerHelper.UpdateFaction(site, factionFile);
                 }
                 Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
                 client.listener.EnqueuePacket(packet);
