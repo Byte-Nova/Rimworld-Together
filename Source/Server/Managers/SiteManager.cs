@@ -80,25 +80,16 @@ namespace GameServer
         {
             SiteIdendity siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
-            if (siteFile.FactionFile != null)
+            if (siteFile.Owner == client.userFile.Username && siteFile.FactionFile.Name == client.userFile.FactionFile.Name)
             {
-                if (siteFile.FactionFile.Name != client.userFile.FactionFile.Name)
-                {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but player wasn't a part of faction {siteFile.FactionFile.Name}");
-                }
-
-                else
-                {
-                    FactionFile factionFile = client.userFile.FactionFile;
-                    if (FactionManagerHelper.GetMemberRank(factionFile, client.userFile.Username) != FactionRanks.Member) DestroySiteFromFile(siteFile);
-                    else ResponseShortcutManager.SendNoPowerPacket(client, new PlayerFactionData());
-                }
+                FactionFile factionFile = client.userFile.FactionFile;
+                if (FactionManagerHelper.GetMemberRank(factionFile, client.userFile.Username) != FactionRanks.Member) DestroySiteFromFile(siteFile);
+                else ResponseShortcutManager.SendNoPowerPacket(client, new PlayerFactionData());
             }
 
             else
             {
-                if (siteFile.Owner != client.userFile.Username) ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but the player {siteFile.Owner} owns it");
-                else DestroySiteFromFile(siteFile);
+                ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but {siteFile.Owner} owns it");
             }
         }
 
