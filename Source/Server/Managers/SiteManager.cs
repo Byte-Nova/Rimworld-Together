@@ -80,7 +80,7 @@ namespace GameServer
         {
             SiteIdendity siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
-            if (siteFile.Owner == client.userFile.Username && siteFile.FactionFile.Name == client.userFile.FactionFile.Name)
+            if (siteFile.Owner == client.userFile.Username)
             {
                 FactionFile factionFile = client.userFile.FactionFile;
                 if (FactionManagerHelper.GetMemberRank(factionFile, client.userFile.Username) != FactionRanks.Member) DestroySiteFromFile(siteFile);
