@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -21,8 +22,8 @@ namespace GameClient
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}");
-            else if (ClientValues.extremeVerboseBool) Logger.Message($"[N] > {packet.header}");
+            if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
+            else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
 
             Action toDo = delegate
             {

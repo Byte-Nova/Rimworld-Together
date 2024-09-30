@@ -37,13 +37,15 @@ namespace GameClient
 
                 Logger.Message($"Connected to server");
                 state = ClientNetworkState.Connected;
-                return;
             }
 
-            DialogManager.PopWaitDialog();
-            RT_Dialog_Error d1 = new RT_Dialog_Error("RTServerDidntResponded".Translate());
-            DialogManager.PushNewDialog(d1);
-            DisconnectFromServer();
+            else
+            {
+                DialogManager.PopWaitDialog();
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RTServerDidntResponded".Translate());
+                DialogManager.PushNewDialog(d1);
+                DisconnectFromServer();
+            }
         }
 
         //Tries to connect into the specified server

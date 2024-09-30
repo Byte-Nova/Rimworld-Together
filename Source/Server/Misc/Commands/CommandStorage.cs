@@ -129,6 +129,10 @@ namespace GameServer
             "toggles verbose logs to be true or false",
             ToggleVerboseLogsCommandAction);
 
+        private static readonly ServerCommand toggleExtremeVerboseLogsCommand = new ServerCommand("toggleextremeverboselogs", 0,
+            "toggles extreme verbose logs to be true or false",
+            ToggleExtremeVerboseLogsCommandAction);
+
         private static readonly ServerCommand toggleSyncLocalSaveCommand = new ServerCommand("togglesynclocalsave", 0,
             "toggles allowing local saves to sync with server to be true or false",
             ToggleSyncLocalSaveCommandAction);
@@ -187,6 +191,7 @@ namespace GameServer
             toggleSyncLocalSaveCommand,
             toggleUPnPCommand,
             toggleVerboseLogsCommand,
+            toggleExtremeVerboseLogsCommand,
             whitelistAddCommand,
             whitelistCommand,
             whitelistRemoveCommand,
@@ -679,6 +684,13 @@ namespace GameServer
             Main_.SaveValueFile(ServerFileMode.Configs);
         }
 
+        private static void ToggleExtremeVerboseLogsCommandAction()
+        {
+            Master.serverConfig.ExtremeVerboseLogs = !Master.serverConfig.ExtremeVerboseLogs;
+            Logger.Warning($"Extreme verbose Logs set to {Master.serverConfig.ExtremeVerboseLogs}");
+            Main_.SaveValueFile(ServerFileMode.Configs);
+        }
+
         private static void ToggleSyncLocalSaveCommandAction()
         {
             Master.serverConfig.SyncLocalSave = !Master.serverConfig.SyncLocalSave;
@@ -698,15 +710,24 @@ namespace GameServer
                 if (response == "NO") return;
                 else if (response != "YES")
                 {
-                    Logger.Error($"{response} is not a valid option; The options must be capitalized");
+                    Logger.Error($"{response} is not a valid option. The answer must be capitalized");
                     goto DeleteWorldQuestion;
                 }
 
                 BackupManager.BackupServer();
-                File.Delete($"{Master.corePath + Path.DirectorySeparatorChar}WorldValues.json");
 
-                Logger.Warning("World has been successfully reset");
-                foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) client.listener.disconnectFlag = true;
+                Directory.Delete($"{Master.caravansPath}",true);
+                Directory.Delete($"{Master.corePath}", true);
+                Directory.Delete($"{Master.eventsPath}", true);
+                Directory.Delete($"{Master.factionsPath}", true);
+                Directory.Delete($"{Master.logsPath}", true);
+                Directory.Delete($"{Master.mapsPath}", true);
+                Directory.Delete($"{Master.savesPath}", true);
+                Directory.Delete($"{Master.settlementsPath}", true);
+                Directory.Delete($"{Master.sitesPath}", true);
+                Directory.Delete($"{Master.usersPath}", true);
+
+                Environment.Exit(0);
         }
 
         private static void QuitCommandAction()
