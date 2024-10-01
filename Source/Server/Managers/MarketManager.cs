@@ -55,7 +55,7 @@ namespace GameServer
             NetworkHelper.SendPacketToAllClients(packet, client);
         }
 
-        private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
+        private static void RemoveFromMarket(ServerClient client, MarketData marketData)
         {
             if (marketData._quantityToManage == 0)
             {
@@ -82,7 +82,7 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
             marketData._stepMode = MarketStepMode.Reload;
             marketData._transferThings = Master.marketValues.MarketStock;
-            
+
             packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
             NetworkHelper.SendPacketToAllClients(packet, client);
 
@@ -99,21 +99,23 @@ namespace GameServer
 
         private static void TryCombineStackIfAvailable(ServerClient client, ThingDataFile thingData)
         {
+            Logger.Warning(thingData.BookData.title);
             if (thingData.Quantity <= 0)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
                 return;
             }
-
-            foreach (ThingDataFile stockedItem in Master.marketValues.MarketStock.ToArray())
+            if (thingData.BookData.title == "null")
             {
-                if (stockedItem.DefName == thingData.DefName && stockedItem.MaterialDefName == thingData.MaterialDefName)
+                foreach (ThingDataFile stockedItem in Master.marketValues.MarketStock.ToArray())
                 {
-                    stockedItem.Quantity += thingData.Quantity;
-                    return;
+                    if (stockedItem.DefName == thingData.DefName && stockedItem.MaterialDefName == thingData.MaterialDefName)
+                    {
+                        stockedItem.Quantity += thingData.Quantity;
+                        return;
+                    }
                 }
             }
-
             Master.marketValues.MarketStock.Add(thingData);
         }
     }

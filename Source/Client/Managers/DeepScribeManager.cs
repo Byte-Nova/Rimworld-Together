@@ -983,7 +983,7 @@ namespace GameClient
         public static ThingDataFile ItemToString(Thing thing, int thingCount)
         {
             ThingDataFile thingData = new ThingDataFile();
-
+            Logger.Message(thing.def.defName);
             Thing toUse = null;
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
@@ -1143,6 +1143,7 @@ namespace GameClient
                 }
 
                 thingData.BookData = bookData;
+                Logger.Warning(bookData.title);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1754,8 +1755,6 @@ namespace GameClient
 
         public static bool CheckIfThingIsBook(Thing thing)
         {
-            if (!ModsConfig.AnomalyActive) return false;
-
             if (thing.def.defName == ThingDefOf.TextBook.defName) return true;
             else if (thing.def.defName == ThingDefOf.Schematic.defName) return true;
             else if (thing.def.defName == ThingDefOf.Tome.defName) return true;
