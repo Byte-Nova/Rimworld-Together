@@ -68,7 +68,7 @@ namespace GameClient
             chatData._username = ClientValues.username;
             chatData._message = messageToSend;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
             Network.listener.EnqueuePacket(packet);
         }
 

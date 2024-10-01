@@ -24,7 +24,7 @@ namespace GameClient
         public static GameCondition queuedGameCondition;
         public static TimeSpeed maximumAllowedTimeSpeed = TimeSpeed.Fast;
 
-        public static void ParseOnlineActivityPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             OnlineActivityData data = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 
@@ -116,7 +116,7 @@ namespace GameClient
                 data._caravanHumans = OnlineManagerHelper.GetActivityHumans();
                 data._caravanAnimals = OnlineManagerHelper.GetActivityAnimals();
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -126,7 +126,7 @@ namespace GameClient
             OnlineActivityData data = new OnlineActivityData();
             data._stepMode = OnlineActivityStepMode.Stop;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -153,7 +153,7 @@ namespace GameClient
             data._timeSpeedOrder = OnlineManagerHelper.CreateTimeSpeedOrder();
             data._mapData = MapManager.ParseMap(onlineMap, true, false, false, true);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -179,7 +179,7 @@ namespace GameClient
             Action r2 = delegate
             {
                 data._stepMode = OnlineActivityStepMode.Reject;
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                 Network.listener.EnqueuePacket(packet);
             };
 

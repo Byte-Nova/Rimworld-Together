@@ -54,13 +54,13 @@ namespace GameServer
             foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
             {
                 siteData._siteFile.Goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
 
                 cClient.listener.EnqueuePacket(packet);
             }
 
             siteData._stepMode = SiteStepMode.Accept;
-            Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet rPacket = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(rPacket);
 
             Logger.Warning($"[Created site] > {client.userFile.Username}");
@@ -68,7 +68,7 @@ namespace GameServer
 
         private static void AddNewSite(ServerClient client, SiteData siteData)
         {
-            if (SettlementManager.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a settlement");
+            if (PlayerSettlementManager.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a settlement");
             else if (SiteManagerHelper.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a site");
             else
             {
@@ -139,7 +139,7 @@ namespace GameServer
             siteData._stepMode = SiteStepMode.Destroy;
             siteData._siteFile = siteFile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.Tile + SiteManagerHelper.fileExtension));
@@ -202,7 +202,7 @@ namespace GameServer
                     siteFile.WorkerData = null;
                     SiteManagerHelper.SaveSite(siteFile);
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                     client.listener.EnqueuePacket(packet);
                 }
             }
@@ -254,7 +254,7 @@ namespace GameServer
 
                 if (siteData._sitesWithRewards.Count() > 0)
                 {
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                     client.listener.EnqueuePacket(packet);
                 }
             }
@@ -318,7 +318,7 @@ namespace GameServer
             SiteFile siteFile = GetSiteFileFromTile(siteData._siteFile.Tile);
             siteData._siteFile = siteFile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(packet);
         }
 

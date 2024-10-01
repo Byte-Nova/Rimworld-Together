@@ -2,9 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using static Shared.CommonEnumerators;
+using static Shared.CommonValues;
 
 namespace GameClient
 {
@@ -93,11 +96,7 @@ namespace GameClient
 
                     string data = streamReader.ReadLine();
                     if (string.IsNullOrWhiteSpace(data)) disconnectFlag = true;
-                    else
-                    {
-                        Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
-                        PacketHandler.HandlePacket(receivedPacket);
-                    }
+                    else HandlePacket(Serializer.SerializeFromString<Packet>(data));
                 }
             }
 
@@ -107,6 +106,18 @@ namespace GameClient
 
                 disconnectFlag = true;
             }
+        }
+
+        //Function that opens handles the action that the packet should do, then sends it to the correct one below
+
+        public void HandlePacket(Packet packet)
+        {
+            if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
+            else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
+            
+            Action toDo = delegate { MethodManager.ExecuteOwnedMethod(packet.header, defaultParserMethodName, new object[] { packet }); };
+            if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
+            else toDo();
         }
 
         //Runs in a separate thread and checks if the connection should still be up
@@ -137,7 +148,7 @@ namespace GameClient
                     Thread.Sleep(1000);
 
                     KeepAliveData keepAliveData = new KeepAliveData();
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.KeepAlivePacket), keepAliveData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(KeepAliveManager), keepAliveData);
                     EnqueuePacket(packet);
                 }
             }

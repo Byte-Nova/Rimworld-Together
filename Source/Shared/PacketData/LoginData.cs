@@ -18,5 +18,7 @@ namespace Shared
         public ModConfigFile _runningMods;
 
         public List<string> _extraDetails = new List<string>();
+
+        public JoinType joinType;
     }
 }

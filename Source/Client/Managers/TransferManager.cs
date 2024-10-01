@@ -17,7 +17,7 @@ namespace GameClient
     {
         //Parses the packet into useful orders
 
-        public static void ParseTransferPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
@@ -120,7 +120,7 @@ namespace GameClient
             {
                 SessionValues.outgoingManifest._stepMode = TransferStepMode.TradeRequest;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -128,7 +128,7 @@ namespace GameClient
             {
                 SessionValues.outgoingManifest._stepMode = TransferStepMode.TradeReRequest;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -136,7 +136,7 @@ namespace GameClient
             {
                 SessionValues.outgoingManifest._stepMode = TransferStepMode.TradeRequest;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -146,7 +146,7 @@ namespace GameClient
                 marketData._stepMode = MarketStepMode.Add;
                 marketData._transferThings = SessionValues.outgoingManifest._things;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -340,7 +340,7 @@ namespace GameClient
             {
                 SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReject;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -353,7 +353,7 @@ namespace GameClient
             {
                 SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReReject;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
 
                 RecoverTradeItems(TransferLocation.Caravan);
