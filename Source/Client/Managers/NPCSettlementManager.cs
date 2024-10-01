@@ -46,7 +46,7 @@ namespace GameClient
                 List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName);
                 if (factions.Count == 0)
                 {
-                    Logger.Warning($"Could not find faction for settlement at tile {toAdd.tile} with faction {toAdd.factionName}");
+                    Logger.Warning($"Could not find faction for settlement at tile {toAdd.tile} with faction {toAdd.defName}");
                     return;
                 }
                 if (factions.Count > 1)
