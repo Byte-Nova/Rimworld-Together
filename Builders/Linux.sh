@@ -4,6 +4,7 @@
 BASEBUILDERPATH=""
 BASEBUILDPATH=""
 BUILDRESULTPATH=""
+BUILDCONTENTPATH=""
 RIMWORLDPATH=""
 MODFOLDERPATH=""
 FILEWITHGAMEPATH="RimWorldFolderPath.txt"
@@ -24,17 +25,24 @@ RIMWORLDPATH=$(cat $FILEWITHGAMEPATH)
 MODFOLDERPATH="$RIMWORLDPATH/Mods/3005289691"
 echo "RimWorld path is set to $RIMWORLDPATH"
 echo "RimWorld mod path is set to $MODFOLDERPATH"
+echo "Base builder path is set to $BASEBUILDERPATH"
 echo
 
-#Setting the BUILDRESULTPATH variable
+#Setting the more variables
 cd Result
 cd 3005289691
+BUILDCONTENTPATH=$(pwd)
+echo "Build result path is set to $BUILDRESULTPATH"
+
 cd Current
+mkdir "Assemblies"
 cd Assemblies
 BUILDRESULTPATH=$(pwd)
+echo "Build result path is set to $BUILDRESULTPATH"
+echo
 
 #Deleting old assemblies
-rm -rf $(pwd)/*
+rm -rf $BUILDRESULTPATH/*
 
 #Go and build the client
 cd $BASEBUILDERPATH
@@ -51,11 +59,8 @@ cp GameClient.dll $BUILDRESULTPATH
 cp Newtonsoft.Json.dll $BUILDRESULTPATH
 
 #Go and copy files to RimWorld folder
-cd $BUILDRESULTPATH
-cd ..
-cd ..
 rm -rf $MODFOLDERPATH
-cp -r $(pwd) $MODFOLDERPATH
+cp -r $BUILDCONTENTPATH $MODFOLDERPATH
 
 #Ask if boot
 cd $RIMWORLDPATH
