@@ -5,7 +5,7 @@ namespace GameServer
 {
     public static class FactionManager
     {
-        public static void ParseFactionPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableFactions)
             {

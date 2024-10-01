@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -21,8 +22,8 @@ namespace GameClient
 
         public static void HandlePacket(Packet packet)
         {
-            if (ClientValues.verboseBool && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}");
-            else if (ClientValues.extremeVerboseBool) Logger.Message($"[N] > {packet.header}");
+            if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
+            else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
 
             Action toDo = delegate
             {
@@ -116,7 +117,7 @@ namespace GameClient
 
         public static void WorldPacket(Packet packet)
         {
-            PlanetGeneratorManager.ParseWorldPacket(packet);
+            PlanetGeneratorManager.ParsePacket(packet);
         }
 
         public static void BreakPacket(Packet packet)
@@ -160,6 +161,11 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
             DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+        }
+
+        public static void ModPacket(Packet packet)
+        {
+            ModManager.ParsePacket(packet);
         }
 
         public static void ServerValuesPacket(Packet packet)

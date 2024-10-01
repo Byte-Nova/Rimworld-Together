@@ -9,7 +9,7 @@ namespace GameServer
 
         public readonly static string fileExtension = ".mpsettlement";
 
-        public static void ParseSettlementPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
 

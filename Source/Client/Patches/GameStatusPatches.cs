@@ -17,7 +17,6 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    ClientValues.ManageDevOptions();
                     DifficultyManager.EnforceCustomDifficulty();
                     if (!GameClient.SOS2.SOS2SendData.IsMapShip(__instance.CurrentMap).Result)
                     {
@@ -48,7 +47,6 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    ClientValues.ManageDevOptions();
                     DifficultyManager.EnforceCustomDifficulty();
 
                     PlanetManager.BuildPlanet();

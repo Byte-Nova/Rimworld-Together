@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Reflection;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -19,8 +20,8 @@ namespace GameServer
 
         public static void HandlePacket(ServerClient client, Packet packet)
         {
-            if (Master.serverConfig.VerboseLogs && !ignoreLogPackets.Contains(packet.header)) Logger.Message($"[H] > {packet.header}");
-            else if (Master.serverConfig.ExtremeVerboseLogs) Logger.Message($"[H] > {packet.header}");
+            if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[H] > {packet.header}", LogImportanceMode.Verbose);
+            else Logger.Message($"[H] > {packet.header}", LogImportanceMode.Extreme);
 
             client.listener.KAFlag = true;
             Type toUse = typeof(PacketHandler);
@@ -55,12 +56,12 @@ namespace GameServer
 
         public static void TransferPacket(ServerClient client, Packet packet)
         {
-            TransferManager.ParseTransferPacket(client, packet);
+            TransferManager.ParsePacket(client, packet);
         }
 
         public static void MarketPacket(ServerClient client, Packet packet)
         {
-            MarketManager.ParseMarketPacket(client, packet);
+            MarketManager.ParsePacket(client, packet);
         }
 
         public static void AidPacket(ServerClient client, Packet packet)
@@ -70,7 +71,7 @@ namespace GameServer
 
         public static void SitePacket(ServerClient client, Packet packet)
         {
-            SiteManager.ParseSitePacket(client, packet);
+            SiteManager.ParsePacket(client, packet);
         }
 
         public static void RoadPacket(ServerClient client, Packet packet)
@@ -85,12 +86,12 @@ namespace GameServer
 
         public static void OnlineActivityPacket(ServerClient client, Packet packet)
         {
-            OnlineActivityManager.ParseOnlineActivityPacket(client, packet);
+            OnlineActivityManager.ParsePacket(client, packet);
         }
 
         public static void OfflineActivityPacket(ServerClient client, Packet packet)
         {
-            OfflineActivityManager.ParseOfflineActivityPacket(client, packet);
+            OfflineActivityManager.ParsePacket(client, packet);
         }
 
         public static void ChatPacket(ServerClient client, Packet packet)
@@ -100,7 +101,7 @@ namespace GameServer
 
         public static void FactionPacket(ServerClient client, Packet packet)
         {
-            FactionManager.ParseFactionPacket(client, packet);
+            FactionManager.ParsePacket(client, packet);
         }
 
         public static void MapPacket(ServerClient client, Packet packet)
@@ -110,7 +111,7 @@ namespace GameServer
 
         public static void SettlementPacket(ServerClient client, Packet packet)
         {
-            SettlementManager.ParseSettlementPacket(client, packet);
+            SettlementManager.ParsePacket(client, packet);
         }
 
         public static void SpaceSettlementPacket(ServerClient client, Packet packet)
@@ -129,17 +130,22 @@ namespace GameServer
 
         public static void EventPacket(ServerClient client, Packet packet)
         {
-            EventManager.ParseEventPacket(client, packet);
+            EventManager.ParsePacket(client, packet);
+        }
+
+        public static void ModPacket(ServerClient client, Packet packet)
+        {
+            ModManager.ParsePacket(client, packet);
         }
 
         public static void WorldPacket(ServerClient client, Packet packet)
         {
-            WorldManager.ParseWorldPacket(client, packet);
+            WorldManager.ParsePacket(client, packet);
         }
 
         public static void CustomDifficultyPacket(ServerClient client, Packet packet)
         {
-            DifficultyManager.ParseDifficultyPacket(client, packet);
+            DifficultyManager.ParsePacket(client, packet);
         }
 
         public static void ResetSavePacket(ServerClient client, Packet packet)

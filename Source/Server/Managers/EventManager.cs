@@ -5,7 +5,7 @@ namespace GameServer
 {
     public static class EventManager
     {
-        public static void ParseEventPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableEvents)
             {
