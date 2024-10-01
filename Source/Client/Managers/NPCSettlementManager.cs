@@ -5,6 +5,7 @@ using System.Linq;
 using Verse;
 using Shared;
 using static Shared.CommonEnumerators;
+using System.Collections.Generic;
 
 namespace GameClient
 {
@@ -38,20 +39,27 @@ namespace GameClient
             if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.tile) != null) return;
             else
             {
-                try
+                Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                settlement.Tile = toAdd.tile;
+                settlement.Name = toAdd.name;
+
+                List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName);
+                if (factions.Count == 0)
                 {
-                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = toAdd.tile;
-                    settlement.Name = toAdd.name;
-
-                    //TODO
-                    //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
-                    //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
-                    settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName));
-
-                    Find.WorldObjects.Add(settlement);
+                    Logger.Warning($"Could not find faction for settlement at tile {toAdd.tile} with faction {toAdd.defName}");
+                    return;
                 }
-                catch (Exception e) { Logger.Warning($"Failed to build NPC settlement at {toAdd.tile}. Reason: {e}"); }
+                if (factions.Count > 1)
+                {
+                    foreach (Faction faction in factions)  if(faction.Name == toAdd.factionName) settlement.SetFaction(faction);
+                    if(settlement.Faction == null) settlement.SetFaction(factions.First());
+                } else 
+                {
+                    settlement.SetFaction(factions.First());
+                }
+                Logger.Warning(factions.Count.ToString());
+                Logger.Warning(settlement.Faction.ToString());
+                Find.WorldObjects.Add(settlement);
             }
         }
 
