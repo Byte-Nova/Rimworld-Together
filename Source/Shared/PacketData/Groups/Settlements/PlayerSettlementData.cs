@@ -10,4 +10,10 @@ namespace Shared
 
         public SettlementFile _settlementData = new SettlementFile();
     }
+    public class PlayerShipData : PlayerSettlementData 
+    {
+        public float _theta;
+        public float _radius;
+        public float _phi;
+    }
 }

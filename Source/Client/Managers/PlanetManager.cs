@@ -22,6 +22,7 @@ namespace GameClient
             else
             {
                 PlayerSettlementManager.ClearAllSettlements();
+                GameClient.SOS2.PlayerShipManager.ClearAllSettlements();
                 PlayerSettlementManager.AddSettlements(PlayerSettlementManagerHelper.tempSettlements);
 
                 PlayerSiteManager.ClearAllSites();

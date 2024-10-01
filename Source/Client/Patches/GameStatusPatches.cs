@@ -18,15 +18,17 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     DifficultyManager.EnforceCustomDifficulty();
+                    if (!GameClient.SOS2.SOS2SendData.IsMapShip(__instance.CurrentMap).Result)
+                    {
+                        PlayerSettlementData settlementData = new PlayerSettlementData();
+                        settlementData._settlementData.Tile = __instance.CurrentMap.Tile;
+                        settlementData._stepMode = SettlementStepMode.Add;
 
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = __instance.CurrentMap.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Network.listener.EnqueuePacket(packet);
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
-
-                    SaveManager.ForceSave();
+                        SaveManager.ForceSave();
+                    } 
 
                     if (ClientValues.isGeneratingFreshWorld)
                     {
@@ -81,14 +83,17 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = map.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
+                    if (!GameClient.SOS2.SOS2SendData.IsMapShip(map).Result)
+                    {
+                        PlayerSettlementData settlementData = new PlayerSettlementData();
+                        settlementData._settlementData.Tile = map.Tile;
+                        settlementData._stepMode = SettlementStepMode.Add;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Network.listener.EnqueuePacket(packet);
 
-                    SaveManager.ForceSave();
+                        SaveManager.ForceSave();
+                    }
                 }
             }
         }
@@ -125,7 +130,7 @@ namespace GameClient
 
                     if (__instance.Faction == Faction.OfPlayer) return;
                     else if (FactionValues.playerFactions.Contains(__instance.Faction)) return;
-                    else if (NPCSettlementManagerHelper.lastRemovedSettlement != __instance) NPCSettlementManager.RequestSettlementRemoval(__instance);
+                    else NPCSettlementManager.RequestSettlementRemoval(__instance);
                 }
             }
         }

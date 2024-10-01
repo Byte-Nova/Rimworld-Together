@@ -1,0 +1,2 @@
+These projects do not need to be built at every release except if you are actively tinkering with them, feel free to not build them.
+Further more, they are currently not compatible with the current builder.

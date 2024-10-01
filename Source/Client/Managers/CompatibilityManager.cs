@@ -1,8 +1,10 @@
-﻿using System;
+﻿using GameClient.SOS2;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Verse;
 
 namespace GameClient
@@ -11,23 +13,24 @@ namespace GameClient
     {
         public static void LoadAllPatchedAssemblies()
         {
-            string[] allCompatibilitiesToLoad = CompatibilityManagerHelper.GetAllPatchedMods();
+            string[] allCompatibilitiesToLoad = CompatibilityManagerHelper.GetAllPatchedMods(); // We get all patches by their names
             
             foreach (string compatibility in allCompatibilitiesToLoad)
             {
                 string compatibilityName = Path.GetFileNameWithoutExtension(compatibility);
 
-                if (LoadedModManager.RunningModsListForReading.Any(mod => mod.Name == compatibilityName))
+                if (LoadedModManager.RunningModsListForReading.Any(mod => mod.PackageId == compatibilityName)) // Looks if the dll name matches the name of any mod ids loaded.
                 {
                     try
                     {
                         Assembly assembly = Assembly.LoadFrom(compatibility);
                         Type toUse = typeof(CompatibilityManager);
-
-                        MethodInfo methodInfo = toUse.GetMethod(compatibilityName, BindingFlags.NonPublic | BindingFlags.Static);
-                        methodInfo.Invoke(compatibilityName, null);
-
+                        string toFind = Regex.Replace(compatibilityName, @"[^a-zA-Z0-9]", ""); // Makes the name C# friendly
+                        Logger.Warning(toFind);
+                        MethodInfo methodInfo = toUse.GetMethod(toFind, BindingFlags.NonPublic | BindingFlags.Static); // We try to find a function with the same name as the mod id
                         Master.loadedCompatibilityPatches.Add(compatibilityName, assembly);
+                        methodInfo.Invoke(toFind, null);
+
                         Logger.Message($"Loaded patch for '{compatibilityName}'");
                     }
                     catch (Exception ex){ Logger.Error($"Failed to load patch for '{compatibilityName}' because :\n{ex}"); }
@@ -35,11 +38,11 @@ namespace GameClient
             }
         }
 
-        //Entry point for the soon-to-come SOS2 patch
+        //Entry point for the SOS2 patch
 
-        private static void SOS2Patch()
+        private static void kentingtonsaveourship2()
         {
-            Logger.Warning("Loaded!");
+            SOS2SendData.StartSOS2();
         }
     }
 

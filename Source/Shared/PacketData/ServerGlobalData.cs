@@ -27,6 +27,10 @@ namespace Shared
 
         public SiteFile[] _playerSites;
 
+        public SpaceSettlementFile[] playerSpaceSettlements;
+
+        public SiteFile[] playerSites;
+        
         public CaravanFile[] _playerCaravans;
 
         public RoadDetails[] _roads;

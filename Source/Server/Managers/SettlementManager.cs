@@ -13,15 +13,32 @@ namespace GameServer
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
 
-            switch (settlementData._stepMode)
+            if (settlementData._settlementData.isShip)
             {
-                case SettlementStepMode.Add:
-                    AddSettlement(client, settlementData);
-                    break;
+                PlayerShipData data = Serializer.ConvertBytesToObject<PlayerShipData>(packet.contents);
+                switch (settlementData._stepMode)
+                {
+                    case SettlementStepMode.Add:
+                        SpaceAddSettlement(client, data);
+                        break;
 
-                case SettlementStepMode.Remove:
-                    RemoveSettlement(client, settlementData);
-                    break;
+                    case SettlementStepMode.Remove:
+                        RemoveSettlement(client, data);
+                        break;
+                }
+            }
+            else
+            {
+                switch (settlementData._stepMode)
+                {
+                    case SettlementStepMode.Add:
+                        AddSettlement(client, settlementData);
+                        break;
+
+                    case SettlementStepMode.Remove:
+                        RemoveSettlement(client, settlementData);
+                        break;
+                }
             }
         }
 
@@ -35,6 +52,7 @@ namespace GameServer
                 SettlementFile settlementFile = new SettlementFile();
                 settlementFile.Tile = settlementData._settlementData.Tile;
                 settlementFile.Owner = client.userFile.Username;
+                settlementFile.isShip = settlementData._settlementData.isShip;
                 Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.Tile + fileExtension), settlementFile);
 
                 settlementData._stepMode = SettlementStepMode.Add;
@@ -114,7 +132,17 @@ namespace GameServer
                 if (!settlement.EndsWith(fileExtension)) continue;
 
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
-                if (settlementFile.Tile == tileToGet) return settlementFile;
+                if (settlementFile.Tile == tileToGet)
+                {
+                    if (settlementFile.isShip)
+                    {
+                        SpaceSettlementFile fileData = Serializer.SerializeFromFile<SpaceSettlementFile>(settlement);
+                        return fileData;
+                    } else 
+                    {
+                        return settlementFile;
+                    }
+                }
             }
 
             return null;
@@ -128,7 +156,18 @@ namespace GameServer
                 if (!settlement.EndsWith(fileExtension)) continue;
 
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
-                if (settlementFile.Owner == usernameToGet) return settlementFile;
+                if (settlementFile.Owner == usernameToGet)
+                {
+                    if (settlementFile.isShip)
+                    {
+                        SpaceSettlementFile fileData = Serializer.SerializeFromFile<SpaceSettlementFile>(settlement);
+                        return fileData;
+                    }
+                    else
+                    {
+                        return settlementFile;
+                    }
+                }
             }
 
             return null;
@@ -139,10 +178,15 @@ namespace GameServer
             List<SettlementFile> settlementList = new List<SettlementFile>();
 
             string[] settlements = Directory.GetFiles(Master.settlementsPath);
-            foreach (string settlement in settlements)
+            foreach (string settlementFile in settlements)
             {
-                if (!settlement.EndsWith(fileExtension)) continue;
-                settlementList.Add(Serializer.SerializeFromFile<SettlementFile>(settlement));
+                if (!settlementFile.EndsWith(fileExtension)) continue;
+                SettlementFile settlement = Serializer.SerializeFromFile<SettlementFile>(settlementFile);
+                if (settlement.isShip) 
+                {
+                    settlement = Serializer.SerializeFromFile<SpaceSettlementFile>(settlementFile);
+                }
+                settlementList.Add(settlement);
             }
 
             return settlementList.ToArray();
@@ -163,5 +207,40 @@ namespace GameServer
 
             return settlementList.ToArray();
         }
+
+        //SOS2
+        public static void SpaceAddSettlement(ServerClient client, PlayerShipData settlementData)
+        {
+            if (CheckIfTileIsInUse(settlementData._settlementData.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"[SOS2]Player {client.userFile.Username} attempted to add a ship at tile {settlementData._settlementData.Tile}, but that tile already has a settlement");
+            else
+            {
+                settlementData._settlementData.Owner = client.userFile.Username;
+
+                SpaceSettlementFile settlementFile = new SpaceSettlementFile();
+                settlementFile.Tile = settlementData._settlementData.Tile;
+                settlementFile.Owner = client.userFile.Username;
+                settlementFile.phi = settlementData._phi;
+                settlementFile.radius = settlementData._radius;
+                settlementFile.theta = settlementData._theta;
+                settlementFile.isShip = settlementData._settlementData.isShip;
+                Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.Tile + fileExtension), settlementFile);
+
+                settlementData._stepMode = SettlementStepMode.Add;
+                foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
+                {
+                    if (cClient == client) continue;
+                    else
+                    {
+                        settlementData._settlementData.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
+
+                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SpaceSettlementPacket), settlementData);
+                        cClient.listener.EnqueuePacket(rPacket);
+                    }
+                }
+
+                Logger.Warning($"[SOS2][Added space settlement] > {settlementFile.Tile} > {client.userFile.Username}");
+            }
+        }
     }
+
 }

@@ -16,16 +16,32 @@ namespace GameClient
         public static void ParsePacket(Packet packet)
         {
             PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
-
-            switch (settlementData._stepMode)
+            if (settlementData._settlementData.isShip)
             {
-                case SettlementStepMode.Add:
-                    SpawnSingleSettlement(settlementData._settlementData);
-                    break;
+                switch (settlementData._stepMode)
+                {
+                    case SettlementStepMode.Add:
+                        PlayerShipData data = (PlayerShipData)settlementData;
+                        GameClient.SOS2.PlayerShipManager.SpawnSingleSettlement(data);
+                        break;
 
-                case SettlementStepMode.Remove:
-                    RemoveSingleSettlement(settlementData._settlementData);
-                    break;
+                    case SettlementStepMode.Remove:
+                        RemoveSingleSettlement(settlementData._settlementData);
+                        break;
+                }
+            }
+            else
+            {
+                switch (settlementData._stepMode)
+                {
+                    case SettlementStepMode.Add:
+                        SpawnSingleSettlement(settlementData._settlementData);
+                        break;
+
+                    case SettlementStepMode.Remove:
+                        RemoveSingleSettlement(settlementData._settlementData);
+                        break;
+                }
             }
         }
 
@@ -34,6 +50,14 @@ namespace GameClient
             foreach (SettlementFile toAdd in settlements)
             {
                 SpawnSingleSettlement(toAdd);
+            }
+            foreach (SpaceSettlementFile settlementFile in PlayerSettlementManagerHelper.tempSpaceSettlements)
+            {
+                try
+                {
+                    GameClient.SOS2.PlayerShipManager.AddSettlementFromFile(settlementFile);
+                }
+                catch (Exception e) { Logger.Error($"Failed to build ship at {settlementFile.Tile}. Reason: {e}"); }
             }
         }
 
@@ -74,21 +98,52 @@ namespace GameClient
                 Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
-                    if (playerSettlements.Contains(toGet)) playerSettlements.Remove(toGet);
-                    Find.WorldObjects.Remove(toGet);
+                    if(!toRemove.isShip) {
+                        toGet = playerSettlements.Find(x => x.Tile == toRemove.Tile);
+
+                        playerSettlements.Remove(toGet);
+                        Find.WorldObjects.Remove(toGet);
+                    } else 
+                    {
+                        GameClient.SOS2.PlayerShipManager.RemoveFromTile(toRemove.Tile);
+                    }
                 }
                 else Logger.Warning($"Ignored removal of settlement at {toGet.Tile} because player was inside");
             }
             catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.Tile}. Reason: {e}"); }
+        }
+
+        public static WorldObject GetWorldObjectFromTile(int tile)
+        {
+            try
+            {
+                WorldObject toGet = Find.WorldObjects.AllWorldObjects.Where(x => x.Tile == tile).FirstOrDefault();
+                if (toGet != null)
+                {
+                    if (toGet.def.defName == "RT_Ship" || toGet.def.defName == "RT_ShipEnemy" || toGet.def.defName == "RT_ShipNeutral")
+                    {
+                        return (WorldObjectFakeOrbitingShip)toGet;
+                    }
+                    else
+                    {
+                        return (Settlement)toGet;
+                    }
+                }
+                return null;
+            }
+            catch (Exception e) { GameClient.Logger.Error($"Failed to find WorldObject at {tile}. Reason: {e}"); }
+            return null;
         }
     }
 
     public static class PlayerSettlementManagerHelper
     {
         public static SettlementFile[] tempSettlements;
+        public static SpaceSettlementFile[] tempSpaceSettlements;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
+            tempSpaceSettlements = serverGlobalData.playerSpaceSettlements;
             tempSettlements = serverGlobalData._playerSettlements;
         }
     }

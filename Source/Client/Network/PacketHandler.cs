@@ -86,6 +86,15 @@ namespace GameClient
             PlayerSettlementManager.ParsePacket(packet);
         }
 
+        public static void SpaceSettlementPacket(Packet packet) 
+        {
+            GameClient.SOS2.PlayerShipManager.SpawnSingleSettlement(Serializer.ConvertBytesToObject<PlayerShipData>(packet.contents));
+        }
+        public static void ShipMovementPacket(Packet packet) 
+        {
+            GameClient.SOS2.MovementManager.MoveShipFromTile(packet);
+        }
+
         public static void NPCSettlementPacket(Packet packet)
         {
             NPCSettlementManager.ParsePacket(packet);
