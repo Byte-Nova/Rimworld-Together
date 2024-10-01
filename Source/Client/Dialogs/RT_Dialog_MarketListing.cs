@@ -50,17 +50,13 @@ namespace GameClient
             List<Thing> things = new List<Thing>();
             foreach (var element in elements)
             {
-                Logger.Warning(element.DefName);
                 Thing thing = null;
                 try { thing = ThingScribeManager.StringToItem(element); } catch{ continue; }
                 if (thing != null)
                 {
-                    Logger.Warning(thing.def.defName);
                     things.Add(thing);
                 }
-                Logger.Error("-------------");
             }
-            Logger.Error(things.Count().ToString());
             this.elements = things.ToArray();
             this.actionClick = actionClick;
             this.actionCancel = actionCancel;
@@ -142,7 +138,7 @@ namespace GameClient
                         if (elements[i].MarketValue > 0) DrawCustomRow(rect, elements[i], num4);
                         else continue;
                     }
-                    catch { Logger.Message(elements[i].def.defName); continue; }
+                    catch {; continue; }
                 }
 
                 num += 30f;
