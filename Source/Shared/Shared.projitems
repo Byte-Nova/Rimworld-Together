@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteRewardConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\groups\sites\SiteConfigFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Groups\Sites\SiteConfigFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Groups\Sites\SiteInfoFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SettlementFile.cs" />
