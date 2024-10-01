@@ -105,7 +105,7 @@ namespace GameServer
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
                 return;
             }
-            if (thingData.BookData.title == "null")
+            if (thingData.BookData.title == "null" && thingData.GenepackData.genepackDefs.Count == 0)
             {
                 foreach (ThingDataFile stockedItem in Master.marketValues.MarketStock.ToArray())
                 {

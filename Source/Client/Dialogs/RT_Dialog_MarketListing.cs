@@ -50,9 +50,17 @@ namespace GameClient
             List<Thing> things = new List<Thing>();
             foreach (var element in elements)
             {
-                Thing thing = ThingScribeManager.StringToItem(element);
-                things.Add(thing);
+                Logger.Warning(element.DefName);
+                Thing thing = null;
+                try { thing = ThingScribeManager.StringToItem(element); } catch{ continue; }
+                if (thing != null)
+                {
+                    Logger.Warning(thing.def.defName);
+                    things.Add(thing);
+                }
+                Logger.Error("-------------");
             }
+            Logger.Error(things.Count().ToString());
             this.elements = things.ToArray();
             this.actionClick = actionClick;
             this.actionCancel = actionCancel;
@@ -134,7 +142,7 @@ namespace GameClient
                         if (elements[i].MarketValue > 0) DrawCustomRow(rect, elements[i], num4);
                         else continue;
                     }
-                    catch { continue; }
+                    catch { Logger.Message(elements[i].def.defName); continue; }
                 }
 
                 num += 30f;
@@ -153,7 +161,6 @@ namespace GameClient
             string[] names = GetDisplayNames(toDisplay);
             string displayName = names[0];
             string displaySimple = names[1];
-            Logger.Warning(displayName);
             Widgets.Label(fixedRect, $"{displayName.CapitalizeFirst()}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
             {
@@ -182,7 +189,7 @@ namespace GameClient
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
                     }
                 };
-                DialogManager.PushNewDialog(new RT_Dialog_1Input($"{displaySimple} to request", $"Type the quantity you want to request\nCost per unit:{toDisplay.MarketValue} | Amount available:{toDisplay.stackCount}", toDo, null));
+                DialogManager.PushNewDialog(new RT_Dialog_1Input($"{displaySimple} request", $"Type the quantity you want to request\nCost per unit:{toDisplay.MarketValue} | Amount available:{toDisplay.stackCount}", toDo, null));
             }
         }
 
@@ -198,7 +205,7 @@ namespace GameClient
             {
                 case "TextBook":
                     Book book = (Book)thing;
-                    text = book.def.defName + " ";
+                    text = book.def.defName + ": ";
                     book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp xp);
                     if (xp != null)
                     {
@@ -211,7 +218,7 @@ namespace GameClient
                     break;
                 case "Schematic":
                     book = (Book)thing;
-                    text = book.def.defName + " ";
+                    text = book.def.defName + ": ";
                     book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out research);
                     if (research != null)
                     {
@@ -227,7 +234,7 @@ namespace GameClient
                     break;
                 case "Novel":
                     book = (Book)thing;
-                    text = book.def.defName + " ";
+                    text = book.def.defName + ": ";
                     type = book.GetType();
                     fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
                     text += (float)fieldInfo.GetValue(book) * 100 + "% recreation, ";
@@ -238,7 +245,7 @@ namespace GameClient
                     break;
                 case "Tome":
                     book = (Book)thing;
-                    text = book.def.defName + " ";
+                    text = book.def.defName + ": ";
                     book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out research);
                     if (research != null)
                     {
@@ -254,6 +261,14 @@ namespace GameClient
                         text += QualityUtility.GetLabel(qc);
 
                         textSimple = thing.def.defName + " ";
+                    }
+                    break;
+                case "Genepack":
+                    Genepack pack = (Genepack)thing;
+                    text = pack.def.defName + ": ";
+                    foreach (GeneDef gene in pack.GeneSet.GenesListForReading)
+                    {
+                        text += $"{gene.label}, ";
                     }
                     break;
             }

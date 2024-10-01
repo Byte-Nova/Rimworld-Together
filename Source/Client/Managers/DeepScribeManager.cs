@@ -1009,6 +1009,7 @@ namespace GameClient
 
         public static Thing StringToItem(ThingDataFile thingData)
         {
+
             Thing thing = SetItem(thingData);
 
             SetItemQuantity(thing, thingData);
@@ -1024,7 +1025,9 @@ namespace GameClient
             SetItemMinified(thing, thingData);
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
-            else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
+
+            if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
+
             return thing;
         }
 
@@ -1755,11 +1758,13 @@ namespace GameClient
 
         public static bool CheckIfThingIsBook(Thing thing)
         {
+
             if (thing.def.defName == ThingDefOf.TextBook.defName) return true;
             else if (thing.def.defName == ThingDefOf.Schematic.defName) return true;
-            else if (thing.def.defName == ThingDefOf.Tome.defName) return true;
             else if (thing.def.defName == ThingDefOf.Novel.defName) return true;
-            else return false;
+            if (!ModsConfig.AnomalyActive) return false;
+            if (thing.def.defName == ThingDefOf.Tome.defName) return true;
+            return false;
         }
 
         public static bool CheckIfThingIsGenepack(Thing thing)
@@ -1767,7 +1772,7 @@ namespace GameClient
             if (!ModsConfig.BiotechActive) return false;
 
             if (thing.def.defName == ThingDefOf.Genepack.defName) return true;
-            else return false;
+            return false;
         }
     }
 }
