@@ -27,6 +27,7 @@ namespace GameClient
             if (TryConnectToServer())
             {
                 SiteManager.SetSiteDefs();
+                ClientValues.ManageDevOptions();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
                 Threader.GenerateThread(Threader.Mode.Sender);

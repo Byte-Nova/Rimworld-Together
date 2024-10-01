@@ -44,21 +44,28 @@ namespace GameClient
                 settlement.Name = toAdd.name;
 
                 List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName);
+
                 if (factions.Count == 0)
                 {
                     Logger.Warning($"Could not find faction for settlement at tile {toAdd.tile} with faction {toAdd.defName}");
                     return;
                 }
-                if (factions.Count > 1)
-                {
-                    foreach (Faction faction in factions)  if(faction.Name == toAdd.factionName) settlement.SetFaction(faction);
-                    if(settlement.Faction == null) settlement.SetFaction(factions.First());
-                } else 
+
+                else if (factions.Count == 1)
                 {
                     settlement.SetFaction(factions.First());
                 }
-                Logger.Warning(factions.Count.ToString());
-                Logger.Warning(settlement.Faction.ToString());
+
+                else if (factions.Count > 1)
+                {
+                    foreach (Faction faction in factions)
+                    {
+                        if(faction.Name == toAdd.factionName) settlement.SetFaction(faction);
+                    }
+
+                    if(settlement.Faction == null) settlement.SetFaction(factions.First());
+                } 
+
                 Find.WorldObjects.Add(settlement);
             }
         }
@@ -68,18 +75,12 @@ namespace GameClient
             Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !FactionValues.playerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
-            foreach (Settlement settlement in settlements)
-            {
-                RemoveSingleSettlement(settlement, null);
-            }
+            foreach (Settlement settlement in settlements) RemoveSingleSettlement(settlement, null);
 
             DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !FactionValues.playerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
-            foreach (DestroyedSettlement settlement in destroyedSettlements)
-            {
-                RemoveSingleSettlement(null, settlement);
-            }
+            foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
         }
 
         public static void RemoveNPCSettlementFromPacket(PlanetNPCSettlement data)

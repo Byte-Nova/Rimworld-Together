@@ -17,7 +17,6 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    ClientValues.ManageDevOptions();
                     DifficultyManager.EnforceCustomDifficulty();
 
                     PlayerSettlementData settlementData = new PlayerSettlementData();
@@ -46,7 +45,6 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    ClientValues.ManageDevOptions();
                     DifficultyManager.EnforceCustomDifficulty();
 
                     PlanetManager.BuildPlanet();

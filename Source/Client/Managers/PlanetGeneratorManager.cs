@@ -255,7 +255,8 @@ namespace GameClient
                 FactionDef newFaction = DefDatabase<FactionDef>.GetNamedSilentFail(faction.defName);
                 if (newFaction == null)
                 {
-                    Logger.Warning($"Failed get FactionDef '{faction.defName}' from server.");
+                    Logger.Warning($"Failed to get FactionDef '{faction.defName}' from server.", LogImportanceMode.Verbose);
+
                     switch (faction.defName) 
                     {
                         case "OutlanderRoughPig":
@@ -263,44 +264,60 @@ namespace GameClient
                             defList.Add(newFaction);
                             serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.OutlanderRough.defName, color = faction.color, name = faction.name} );
                             break;
+
                         case "PirateYttakin":
                             newFaction = FactionDefOf.Pirate;
                             defList.Add(newFaction);
                             serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.Pirate.defName, color = faction.color, name = faction.name });
                             break;
+
                         case "PirateWaster":
                             newFaction = FactionDefOf.Pirate;
                             defList.Add(newFaction);
                             serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.Pirate.defName, color = faction.color, name = faction.name });
                             break;
+
                         case "TribeRoughNeanderthal":
                             newFaction = FactionDefOf.TribeRough;
                             defList.Add(newFaction);
                             serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.TribeRough.defName, color = faction.color, name = faction.name });
                             break;
+
                         case "TribeSavageImpid":
                             newFaction = FactionDefOf.TribeRough;
                             defList.Add(newFaction);
                             serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.TribeRough.defName, color = faction.color, name = faction.name });
                             break;
+
+                        case "TribeCannibal":
+                            newFaction = FactionDefOf.TribeRough;
+                            defList.Add(newFaction);
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.TribeRough.defName, color = faction.color, name = faction.name });
+                            break;
+                            
                         case "Empire":
                             newFaction = FactionDefOf.OutlanderCivil;
                             defList.Add(newFaction);
                             serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.OutlanderCivil.defName, color = faction.color, name = faction.name });
                             break;
+
                         default:
                             break;
                     }
-                    if(newFaction != null) Logger.Warning($"Replaced {faction.defName} with {newFaction.defName}");
+
+                    if(newFaction != null) Logger.Warning($"Replaced {faction.defName} with {newFaction.defName}", LogImportanceMode.Verbose);
                     serverFactions.Remove(faction);
                 }
+
                 else
                 {
                     defList.Add(newFaction);
-                    if (ClientValues.verboseBool) Logger.Warning($"Loaded {newFaction.defName}");
+                    Logger.Warning($"Loaded {newFaction.defName}", LogImportanceMode.Verbose);
                 }
+
                 PlanetGeneratorManager.cachedWorldValues.NPCFactions = serverFactions.ToArray();
             }
+
             return defList;
         }
 
