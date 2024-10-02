@@ -16,7 +16,7 @@ namespace Shared
             else throw new NotImplementedException();
         }
 
-        public static void ExecuteOwnedMethod(string typeName, string methodName, object[] parameters)
+        public static void ExecuteMethod(string typeName, string methodName, object[] parameters)
         {
             try
             {

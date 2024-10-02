@@ -115,7 +115,7 @@ namespace GameClient
             if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
             
-            Action toDo = delegate { MethodManager.ExecuteOwnedMethod(packet.header, defaultParserMethodName, new object[] { packet }); };
+            Action toDo = delegate { MethodManager.ExecuteMethod(packet.header, defaultParserMethodName, new object[] { packet }); };
             if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
             else toDo();
         }

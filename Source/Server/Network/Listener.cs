@@ -115,7 +115,7 @@ namespace GameServer
             if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
             
-            MethodManager.ExecuteOwnedMethod(packet.header, defaultParserMethodName, new object[] { targetClient, packet });
+            MethodManager.ExecuteMethod(packet.header, defaultParserMethodName, new object[] { targetClient, packet });
         }
 
         //Runs in a separate thread and checks if the connection should still be up
