@@ -25,7 +25,7 @@ namespace GameClient
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
                         if (Network.state != ClientNetworkState.Disconnected) return true;
-                        DialogShortcuts.ShowConnectDialogs();
+                        ConnectionManager.ShowConnectDialogs();
                     }
 
                     buttonSize = new Vector2(45f, 45f);
@@ -107,7 +107,7 @@ namespace GameClient
                             data._version = CommonValues.executableVersion;
                             data._runningMods = ModManagerHelper.GetRunningModList();
 
-                            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), data);
+                            Packet packet = Packet.CreatePacketFromObject(nameof(LoginManager), data);
                             Network.listener.EnqueuePacket(packet);
                         }
                     });

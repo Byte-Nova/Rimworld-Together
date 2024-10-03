@@ -31,7 +31,7 @@ namespace GameClient
                 data._configFile = new ModConfigFile();
                 SortModsIntoCategories(data._configFile, DialogManager.dialogTupleListingResultString, DialogManager.dialogTupleListingResultInt);
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ModPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(ModManager), data);
                 Network.listener.EnqueuePacket(packet);
 
                 if (isFirstEdit)

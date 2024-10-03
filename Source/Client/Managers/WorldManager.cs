@@ -11,7 +11,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
-    public static class PlanetGeneratorManager
+    public static class WorldManager
     {
         public static WorldValuesFile cachedWorldValues;
 
@@ -74,7 +74,7 @@ namespace GameClient
             cachedWorldValues.Temperature = (int)temperature;
             cachedWorldValues.Population = (int)population;
             cachedWorldValues.Pollution = pollution;
-            cachedWorldValues.NPCFactions = PlanetGeneratorManagerHelper.GetNPCFactionsFromDef(factions.ToArray());
+            cachedWorldValues.NPCFactions = WorldManagerHelper.GetNPCFactionsFromDef(factions.ToArray());
         }
 
         public static void SetValuesFromServer(WorldData worldData) { cachedWorldValues = worldData._worldValuesFile; }
@@ -107,7 +107,7 @@ namespace GameClient
             Current.CreatingWorld.info.overallTemperature = (OverallTemperature)cachedWorldValues.Temperature;
             Current.CreatingWorld.info.overallPopulation = (OverallPopulation)cachedWorldValues.Population;
             Current.CreatingWorld.info.name = NameGenerator.GenerateName(RulePackDefOf.NamerWorld);
-            Current.CreatingWorld.info.factions = PlanetGeneratorManagerHelper.GetFactionDefsFromNPCFaction(cachedWorldValues.NPCFactions).ToList();
+            Current.CreatingWorld.info.factions = WorldManagerHelper.GetFactionDefsFromNPCFaction(cachedWorldValues.NPCFactions);
             Current.CreatingWorld.info.pollution = cachedWorldValues.Pollution;
 
             WorldGenStepDef[] worldGenSteps = GenStepsInOrder.ToArray();
@@ -160,9 +160,9 @@ namespace GameClient
         {
             WorldData worldData = new WorldData();
             worldData._stepMode = WorldStepMode.Required;
-            worldData._worldValuesFile = PlanetGeneratorManagerHelper.PopulateWorldValues();
+            worldData._worldValuesFile = WorldManagerHelper.PopulateWorldValues();
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(WorldManager), worldData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -217,17 +217,17 @@ namespace GameClient
         }
     }
 
-    public static class PlanetGeneratorManagerHelper
+    public static class WorldManagerHelper
     {
         public static WorldValuesFile PopulateWorldValues()
         {
-            PlanetGeneratorManager.cachedWorldValues.Features = GetPlanetFeatures();
-            PlanetGeneratorManager.cachedWorldValues.Roads = RoadManagerHelper.GetPlanetRoads();
-            PlanetGeneratorManager.cachedWorldValues.Rivers = RiverManagerHelper.GetPlanetRivers();
-            PlanetGeneratorManager.cachedWorldValues.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
-            PlanetGeneratorManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
-            PlanetGeneratorManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
-            return PlanetGeneratorManager.cachedWorldValues;
+            WorldManager.cachedWorldValues.Features = GetPlanetFeatures();
+            WorldManager.cachedWorldValues.Roads = RoadManagerHelper.GetPlanetRoads();
+            WorldManager.cachedWorldValues.Rivers = RiverManagerHelper.GetPlanetRivers();
+            WorldManager.cachedWorldValues.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
+            WorldManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
+            WorldManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
+            return WorldManager.cachedWorldValues;
         }
 
         public static PlanetNPCFaction[] GetNPCFactionsFromDef(FactionDef[] factionDefs)
@@ -246,15 +246,79 @@ namespace GameClient
             return npcFactions.ToArray();
         }
 
-        public static FactionDef[] GetFactionDefsFromNPCFaction(PlanetNPCFaction[] factions)
+        public static List<FactionDef> GetFactionDefsFromNPCFaction(PlanetNPCFaction[] factions)
         {
             List<FactionDef> defList = new List<FactionDef>();
+            List<PlanetNPCFaction> serverFactions = factions.ToList();
             foreach (PlanetNPCFaction faction in factions)
             {
-                try { defList.Add(DefDatabase<FactionDef>.AllDefs.First(fetch => fetch.defName == faction.defName)); }
-                catch (Exception e) { Logger.Warning($"Failed to get FactionDef '{faction.defName}' from server. Reason: {e}"); }
+                FactionDef newFaction = DefDatabase<FactionDef>.GetNamedSilentFail(faction.defName);
+                if (newFaction == null)
+                {
+                    Logger.Warning($"Failed to get FactionDef '{faction.defName}' from server.", LogImportanceMode.Verbose);
+
+                    switch (faction.defName) 
+                    {
+                        case "OutlanderRoughPig":
+                            newFaction = FactionDefOf.OutlanderRough;
+                            defList.Add(newFaction);
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.OutlanderRough.defName, color = faction.color, name = faction.name} );
+                            break;
+
+                        case "PirateYttakin":
+                            newFaction = FactionDefOf.Pirate;
+                            defList.Add(newFaction);
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.Pirate.defName, color = faction.color, name = faction.name });
+                            break;
+
+                        case "PirateWaster":
+                            newFaction = FactionDefOf.Pirate;
+                            defList.Add(newFaction);
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.Pirate.defName, color = faction.color, name = faction.name });
+                            break;
+
+                        case "TribeRoughNeanderthal":
+                            newFaction = FactionDefOf.TribeRough;
+                            defList.Add(newFaction);
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.TribeRough.defName, color = faction.color, name = faction.name });
+                            break;
+
+                        case "TribeSavageImpid":
+                            newFaction = FactionDefOf.TribeRough;
+                            defList.Add(newFaction);
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.TribeRough.defName, color = faction.color, name = faction.name });
+                            break;
+
+                        case "TribeCannibal":
+                            newFaction = FactionDefOf.TribeRough;
+                            defList.Add(newFaction);
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.TribeRough.defName, color = faction.color, name = faction.name });
+                            break;
+                            
+                        case "Empire":
+                            newFaction = FactionDefOf.OutlanderCivil;
+                            defList.Add(newFaction);
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.OutlanderCivil.defName, color = faction.color, name = faction.name });
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    if(newFaction != null) Logger.Warning($"Replaced {faction.defName} with {newFaction.defName}", LogImportanceMode.Verbose);
+                    serverFactions.Remove(faction);
+                }
+
+                else
+                {
+                    defList.Add(newFaction);
+                    Logger.Warning($"Loaded {newFaction.defName}", LogImportanceMode.Verbose);
+                }
+
+                WorldManager.cachedWorldValues.NPCFactions = serverFactions.ToArray();
             }
-            return defList.ToArray();
+
+            return defList;
         }
 
         public static PlanetNPCFaction[] GetPlanetNPCFactions()
@@ -300,7 +364,7 @@ namespace GameClient
                     PlanetNPCSettlement.tile = settlement.Tile;
                     PlanetNPCSettlement.defName = settlement.Faction.def.defName;
                     PlanetNPCSettlement.name = settlement.Name;
-
+                    PlanetNPCSettlement.factionName = settlement.Faction.Name;
                     npcSettlements.Add(PlanetNPCSettlement);
                 }
                 catch (Exception e) { Logger.Warning($"Failed to get NPC settlement '{settlement.Tile}' to populate. Reason: {e}"); }

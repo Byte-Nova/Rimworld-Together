@@ -8,26 +8,34 @@ namespace GameServer
         //Variables
 
         public readonly static string fileExtension = ".mpsave";
+
         private readonly static string tempFileExtension = ".mpsavetemp";
 
-        public static void ReceiveSavePartFromClient(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
+        {
+            SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.contents);
+            if (data._stepMode == SaveStepMode.Receive) ReceiveSavePartFromClient(client, data);
+            else if (data._stepMode == SaveStepMode.Send) SendSavePartToClient(client);
+            else if (data._stepMode == SaveStepMode.Reset) ResetClientSave(client);
+            else ResponseShortcutManager.SendIllegalPacket(client, "Received invalid step mode");
+        }
+
+        public static void ReceiveSavePartFromClient(ServerClient client, SaveData data)
         {
             string baseClientSavePath = Path.Combine(Master.savesPath, client.userFile.Username + fileExtension);
             string tempClientSavePath = Path.Combine(Master.savesPath, client.userFile.Username + tempFileExtension);
-
-            FileTransferData fileTransferData = Serializer.ConvertBytesToObject<FileTransferData>(packet.contents);
 
             //if this is the first packet
             if (client.listener.downloadManager == null)
             {
                 client.listener.downloadManager = new DownloadManager();
-                client.listener.downloadManager.PrepareDownload(tempClientSavePath, fileTransferData._fileParts);
+                client.listener.downloadManager.PrepareDownload(tempClientSavePath, data._fileParts);
             }
 
-            client.listener.downloadManager.WriteFilePart(fileTransferData._fileBytes);
+            client.listener.downloadManager.WriteFilePart(data._fileBytes);
 
             //if this is the last packet
-            if (fileTransferData._isLastPart)
+            if (data._isLastPart)
             {
                 client.listener.downloadManager.FinishFileWrite();
                 client.listener.downloadManager = null;
@@ -36,12 +44,15 @@ namespace GameServer
                 File.WriteAllBytes(baseClientSavePath, completedSave);
                 File.Delete(tempClientSavePath);
 
-                OnUserSave(client, fileTransferData);
+                OnUserSave(client, data);
             }
 
             else
             {
-                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.RequestSavePartPacket));
+                SaveData rData = new SaveData();
+                rData._stepMode = SaveStepMode.Send;
+
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(SaveManager), rData);
                 client.listener.EnqueuePacket(rPacket);
             }
         }
@@ -60,14 +71,15 @@ namespace GameServer
                 client.listener.uploadManager.PrepareUpload(baseClientSavePath);
             }
 
-            FileTransferData fileTransferData = new FileTransferData();
-            fileTransferData._fileSize = client.listener.uploadManager.fileSize;
-            fileTransferData._fileParts = client.listener.uploadManager.fileParts;
-            fileTransferData._fileBytes = client.listener.uploadManager.ReadFilePart();
-            fileTransferData._isLastPart = client.listener.uploadManager.isLastPart;
-            if(!Master.serverConfig.SyncLocalSave) fileTransferData._instructions = (int)SaveMode.Strict;
+            SaveData data = new SaveData();
+            data._fileSize = client.listener.uploadManager.fileSize;
+            data._fileParts = client.listener.uploadManager.fileParts;
+            data._fileBytes = client.listener.uploadManager.ReadFilePart();
+            data._isLastPart = client.listener.uploadManager.isLastPart;
+            data._stepMode = SaveStepMode.Receive;
+            if(!Master.serverConfig.SyncLocalSave) data._instructions = (int)SaveMode.Strict;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SaveManager), data);
             client.listener.EnqueuePacket(packet);
 
             //if this is the last packet
@@ -75,7 +87,7 @@ namespace GameServer
                 client.listener.uploadManager = null;
         }
 
-        private static void OnUserSave(ServerClient client, FileTransferData fileTransferData)
+        private static void OnUserSave(ServerClient client, SaveData fileTransferData)
         {
             if (fileTransferData._instructions == (int)SaveMode.Disconnect)
             {
@@ -140,14 +152,14 @@ namespace GameServer
             foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
 
             //Delete settlement files
-            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
+            SettlementFile[] playerSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in playerSettlements)
             {
                 PlayerSettlementData settlementData = new PlayerSettlementData();
                 settlementData._settlementData.Tile = settlementFile.Tile;
                 settlementData._settlementData.Owner = settlementFile.Owner;
 
-                SettlementManager.RemoveSettlement(client, settlementData);
+                PlayerSettlementManager.RemoveSettlement(client, settlementData);
             }
 
             Logger.Warning($"[Reseted player data] > {username}");

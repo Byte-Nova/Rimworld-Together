@@ -82,7 +82,7 @@ namespace GameClient
             return siteDefs[siteTypeID];
         }
 
-        public static void ParseSitePacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
 
@@ -138,7 +138,7 @@ namespace GameClient
             siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
             siteData._stepMode = SiteStepMode.Info;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -169,7 +169,7 @@ namespace GameClient
 
             siteData._stepMode = SiteStepMode.Retrieve;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -186,7 +186,7 @@ namespace GameClient
                 SaveManager.ForceSave();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Worker have been recovered", r1));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("Worker has been recovered", r1));
         }
 
         private static void PrepareSendPawnScreen()
@@ -221,7 +221,7 @@ namespace GameClient
             siteData._stepMode = SiteStepMode.Deposit;
             siteData._siteFile.WorkerData = HumanScribeManager.HumanToString(pawnToSend);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
 
             if (caravanHumans.Count == 1) SessionValues.chosenCaravan.Destroy();
@@ -237,7 +237,7 @@ namespace GameClient
                 siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -345,7 +345,7 @@ namespace GameClient
                 siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
                 siteData._siteFile.Type = DialogManager.selectedScrollButton;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
@@ -400,7 +400,7 @@ namespace GameClient
                 siteData._siteFile.Type = DialogManager.selectedScrollButton;
                 siteData._siteFile.FactionFile = new FactionFile();
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));

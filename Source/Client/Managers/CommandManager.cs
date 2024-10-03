@@ -10,7 +10,7 @@ namespace GameClient
     {
         //Parses the received packet into a command to execute
 
-        public static void ParseCommand(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
 
