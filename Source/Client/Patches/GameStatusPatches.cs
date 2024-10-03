@@ -17,20 +17,13 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
+                    PlayerSettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
                     DifficultyManager.EnforceCustomDifficulty();
-
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = __instance.CurrentMap.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
-                    Network.listener.EnqueuePacket(packet);
-
                     SaveManager.ForceSave();
 
                     if (ClientValues.isGeneratingFreshWorld)
                     {
-                        PlanetGeneratorManager.SendWorldToServer();
+                        WorldManager.SendWorldToServer();
                         ClientValues.ToggleGenerateWorld(false);
                     }
                 }
@@ -45,10 +38,9 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    DifficultyManager.EnforceCustomDifficulty();
-
                     PlanetManager.BuildPlanet();
                     ClientValues.ToggleReadyToPlay(true);
+                    DifficultyManager.EnforceCustomDifficulty();
                 }
             }
         }
@@ -65,7 +57,7 @@ namespace GameClient
                     settlementData._settlementData.Tile = caravan.Tile;
                     settlementData._stepMode = SettlementStepMode.Add;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -85,7 +77,7 @@ namespace GameClient
                     settlementData._settlementData.Tile = map.Tile;
                     settlementData._stepMode = SettlementStepMode.Add;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -105,7 +97,7 @@ namespace GameClient
                     settlementData._settlementData.Tile = settlement.Tile;
                     settlementData._stepMode = SettlementStepMode.Remove;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();

@@ -64,7 +64,7 @@ namespace GameServer
             chatData._usernameColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
             chatData._messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             WriteToLogs(client.userFile.Username, message);
@@ -81,7 +81,7 @@ namespace GameServer
             chatData._usernameColor = UserColor.Discord;
             chatData._messageColor = MessageColor.Discord;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             WriteToLogs(client, message);
@@ -96,7 +96,7 @@ namespace GameServer
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData._username, message);
@@ -113,7 +113,7 @@ namespace GameServer
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -243,12 +243,12 @@ namespace GameServer
 
                             //Send to sender
                             chatData._username = $">> {toFind.userFile.Username}";
-                            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+                            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
                             targetClient.listener.EnqueuePacket(packet);
 
                             //Send to recipient
                             chatData._username = $"<< {targetClient.userFile.Username}";
-                            packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ChatPacket), chatData);
+                            packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
                             toFind.listener.EnqueuePacket(packet);
 
                             ChatManagerHelper.ShowChatInConsole(chatData._username, message);

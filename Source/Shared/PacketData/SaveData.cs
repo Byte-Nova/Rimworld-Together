@@ -1,10 +1,13 @@
 ﻿using System;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     [Serializable]
-    public class FileTransferData
+    public class SaveData
     {
+        public SaveStepMode _stepMode;
+
         public double _fileSize;
 
         public double _fileParts;

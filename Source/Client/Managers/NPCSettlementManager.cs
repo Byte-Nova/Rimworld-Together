@@ -127,7 +127,7 @@ namespace GameClient
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData.tile = settlement.Tile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(NPCSettlementManager), data);
             Network.listener.EnqueuePacket(packet);
         }
     }

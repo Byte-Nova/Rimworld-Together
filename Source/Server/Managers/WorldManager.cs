@@ -33,7 +33,7 @@ namespace GameServer
             WorldData worldData = new WorldData();
             worldData._stepMode = WorldStepMode.Required;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(WorldManager), worldData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -43,7 +43,7 @@ namespace GameServer
             worldData._stepMode = WorldStepMode.Existing;
             worldData._worldValuesFile = Master.worldValues;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.WorldPacket), worldData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(WorldManager), worldData);
             client.listener.EnqueuePacket(packet);
         }
     }

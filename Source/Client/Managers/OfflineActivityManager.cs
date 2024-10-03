@@ -11,7 +11,7 @@ namespace GameClient
 {
     public static class OfflineActivityManager
     {
-        public static void ParseOfflineActivityPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             OfflineActivityData offlineVisitData = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
@@ -73,7 +73,7 @@ namespace GameClient
             data._stepMode = OfflineActivityStepMode.Request;
             data._targetTile = SessionValues.chosenSettlement.Tile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
