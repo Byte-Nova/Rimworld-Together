@@ -9,8 +9,6 @@ namespace Shared
         public readonly static string serverAssemblyName = "GameServer";
 
         public static readonly string defaultParserMethodName = "ParsePacket";
-        
-        public static readonly string defaultKeepAlivePacketName = "KeepAliveManager";
 
         public static readonly string[] ignoredLogPackets =
         {
