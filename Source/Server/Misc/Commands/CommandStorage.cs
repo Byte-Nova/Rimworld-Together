@@ -282,7 +282,7 @@ namespace GameServer
                     CommandData commandData = new CommandData();
                     commandData._commandMode = CommandMode.Op;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
                     toFind.listener.EnqueuePacket(packet);
 
                     Logger.Warning($"User '{CommandManager.commandParameters[0]}' has now admin privileges");
@@ -316,7 +316,7 @@ namespace GameServer
                     CommandData commandData = new CommandData();
                     commandData._commandMode = CommandMode.Deop;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
                     toFind.listener.EnqueuePacket(packet);
 
                     Logger.Warning($"User '{toFind.userFile.Username}' is no longer an admin");
@@ -470,7 +470,7 @@ namespace GameServer
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                     client.listener.EnqueuePacket(packet);
 
                     Logger.Title($"Sent event '{CommandManager.commandParameters[1]}' to '{CommandManager.commandParameters[0]}'");
@@ -493,7 +493,7 @@ namespace GameServer
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -519,7 +519,7 @@ namespace GameServer
             commandData._commandMode = CommandMode.Broadcast;
             commandData._details = fullText;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             Logger.Title($"Sent broadcast: '{fullText}'");
@@ -605,7 +605,7 @@ namespace GameServer
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
                 toFind.listener.EnqueuePacket(packet);
 
                 Logger.Warning($"User '{CommandManager.commandParameters[0]}' has been forced to save");
@@ -746,7 +746,7 @@ namespace GameServer
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
                 client.listener.EnqueuePacket(packet);
             }
 
@@ -777,7 +777,7 @@ namespace GameServer
                     data._stepMode = ModConfigStepMode.Ask;
                     data._configFile = Master.modConfig;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ModPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(ModManager), data);
                     toFind.listener.EnqueuePacket(packet);
 
                     Logger.Warning("Command sent sucessfully");

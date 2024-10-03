@@ -27,13 +27,14 @@ namespace GameClient
             if (TryConnectToServer())
             {
                 SiteManager.SetSiteDefs();
+                ClientValues.ManageDevOptions();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
                 Threader.GenerateThread(Threader.Mode.Sender);
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                if (!ClientValues.isQuickConnecting) DialogShortcuts.ShowLoginOrRegisterDialogs();
+                if (!ClientValues.isQuickConnecting) LoginManager.ShowLoginOrRegisterDialogs();
 
                 Logger.Message($"Connected to server");
                 state = ClientNetworkState.Connected;

@@ -56,7 +56,7 @@ namespace GameServer
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData = settlement;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(NPCSettlementManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
         }
     }

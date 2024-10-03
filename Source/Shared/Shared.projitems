@@ -48,10 +48,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ChatData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CommandData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\DifficultyData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PacketData\FileTransferData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\SaveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\KeepAliveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\LoginData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\MapData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\ResponseShortcutData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ModConfigData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\TimeSpeedOrderData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\WeatherOrderData.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\MethodManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />

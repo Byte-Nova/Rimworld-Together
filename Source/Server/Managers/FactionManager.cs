@@ -57,7 +57,7 @@ namespace GameServer
             {
                 factionManifest._stepMode = FactionStepMode.NameInUse;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
                 client.listener.EnqueuePacket(packet);
             }
             else
@@ -120,7 +120,7 @@ namespace GameServer
         private static void AddMemberToFaction(ServerClient client, PlayerFactionData factionManifest)
         {
             FactionFile factionFile = client.userFile.FactionFile;
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
+            SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
             ServerClient toAdd = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
 
             if (factionFile == null) return;
@@ -136,7 +136,7 @@ namespace GameServer
                     else
                     {
                         factionManifest._factionFile.Name = factionFile.Name;
-                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
                         toAdd.listener.EnqueuePacket(packet);
                     }
                 }
@@ -172,7 +172,7 @@ namespace GameServer
         private static void RemoveMemberFromFaction(ServerClient client, PlayerFactionData factionManifest)
         {
             FactionFile factionFile = client.userFile.FactionFile;
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
+            SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
             UserFile toUpdateOffline = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
             ServerClient toRemoveConnected = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
 
@@ -200,7 +200,7 @@ namespace GameServer
                 if (settlementFile.Owner == client.userFile.Username)
                 {
                     factionManifest._stepMode = FactionStepMode.AdminProtection;
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
                     client.listener.EnqueuePacket(packet);
                 }
                 else RemoveFromFaction();
@@ -219,7 +219,7 @@ namespace GameServer
                             SiteManagerHelper.UpdateFaction(site, null);
                         }
 
-                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
                         toRemoveConnected.listener.EnqueuePacket(packet);
                         GoodwillManager.UpdateClientGoodwills(toRemoveConnected);
                     }
@@ -251,7 +251,7 @@ namespace GameServer
 
         private static void PromoteMember(ServerClient client, PlayerFactionData factionManifest)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
+            SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
             UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
             FactionFile factionFile = client.userFile.FactionFile;
 
@@ -285,7 +285,7 @@ namespace GameServer
 
         private static void DemoteMember(ServerClient client, PlayerFactionData factionManifest)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
+            SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
             UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
             FactionFile factionFile = client.userFile.FactionFile;
 
@@ -315,7 +315,7 @@ namespace GameServer
         private static void SendFactionMemberList(ServerClient client, PlayerFactionData factionManifest)
         {
             factionManifest._factionFile = client.userFile.FactionFile;
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+            Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
             client.listener.EnqueuePacket(packet);
         }
     }

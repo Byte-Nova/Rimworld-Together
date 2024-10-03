@@ -55,7 +55,7 @@ namespace GameClient
             return siteDefs.Where(S => S.defName == siteDef).First();
         }
 
-        public static void ParseSitePacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
 
@@ -90,7 +90,7 @@ namespace GameClient
                 siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
             };
 

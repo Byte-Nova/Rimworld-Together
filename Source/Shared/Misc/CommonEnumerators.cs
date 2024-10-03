@@ -4,6 +4,14 @@ namespace Shared
     {
         public enum ClientNetworkState { Disconnected, Connecting, Connected }
 
+        public enum AssemblyType { Client, Server }
+
+        public enum JoinType { Login, Register }
+
+        public enum ResponseStepMode { IllegalAction, UserUnavailable, Pop }
+
+        public enum SaveStepMode { Send, Receive, Reset }
+
         public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }

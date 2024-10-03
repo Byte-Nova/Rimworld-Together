@@ -150,7 +150,7 @@ namespace GameClient
                 {
                     SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);

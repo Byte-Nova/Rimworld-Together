@@ -39,10 +39,10 @@ namespace GameServer
 
         private static void SendAidRequest(ServerClient client, AidData data) 
         {
-            if (!SettlementManager.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data._toTile}, but it has no settlement");
+            if (!PlayerSettlementManager.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data._toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._toTile);
+                SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._toTile);
                 if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
                     ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
@@ -50,14 +50,14 @@ namespace GameServer
                     if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, baseAidTimer))
                     {
                         data._stepMode = AidStepMode.Reject;
-                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                         client.listener.EnqueuePacket(packet);
                     }
 
                     else
                     {
                         data._stepMode = AidStepMode.Receive;
-                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                         target.listener.EnqueuePacket(packet);
                     }
                 }
@@ -65,7 +65,7 @@ namespace GameServer
                 else
                 {
                     data._stepMode = AidStepMode.Reject;
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                     client.listener.EnqueuePacket(packet);
                 }
             }
@@ -73,16 +73,16 @@ namespace GameServer
 
         private static void SendAidAccept(ServerClient client, AidData data)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
+            if (!PlayerSettlementManager.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._fromTile);
+                SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
                     client.userFile.UpdateAidTime();
 
                     ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                     target.listener.EnqueuePacket(packet);
                 }
 
@@ -91,7 +91,7 @@ namespace GameServer
                 else
                 {
                     data._stepMode = AidStepMode.Reject;
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                     client.listener.EnqueuePacket(packet);
                 }
             }
@@ -99,14 +99,14 @@ namespace GameServer
 
         private static void SendAidReject(ServerClient client, AidData data) 
         {
-            if (!SettlementManager.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
+            if (!PlayerSettlementManager.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._fromTile);
+                SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
                     ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                     target.listener.EnqueuePacket(packet);
                 }
 
@@ -114,7 +114,7 @@ namespace GameServer
 
                 else
                 {
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                     client.listener.EnqueuePacket(packet);
                 }
             }

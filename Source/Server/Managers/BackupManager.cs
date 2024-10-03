@@ -91,8 +91,8 @@ namespace GameServer
                 SiteIdendity[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
                 foreach (SiteIdendity site in playerSites) toArchive.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
 
-                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
-                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
+                SettlementFile[] playerSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(username);
+                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + PlayerSettlementManager.fileExtension));
 
                 CaravanFile[] playerCaravans = CaravanManagerHelper.GetCaravansFromOwner(username);
                 foreach (CaravanFile caravanFile in playerCaravans) toArchive.Add(Path.Combine(Master.caravansPath, caravanFile.ID + CaravanManager.fileExtension));

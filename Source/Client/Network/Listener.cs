@@ -2,9 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using static Shared.CommonEnumerators;
+using static Shared.CommonValues;
 
 namespace GameClient
 {
@@ -93,11 +96,7 @@ namespace GameClient
 
                     string data = streamReader.ReadLine();
                     if (string.IsNullOrWhiteSpace(data)) disconnectFlag = true;
-                    else
-                    {
-                        Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
-                        PacketHandler.HandlePacket(receivedPacket);
-                    }
+                    else HandlePacket(Serializer.SerializeFromString<Packet>(data));
                 }
             }
 
@@ -107,6 +106,28 @@ namespace GameClient
 
                 disconnectFlag = true;
             }
+        }
+
+        //Function that opens handles the action that the packet should do, then sends it to the correct one below
+
+        public void HandlePacket(Packet packet)
+        {
+            if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
+            else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
+            
+            Action toDo = delegate 
+            { 
+                //If method manager failed to execute the packet we assume corrupted data
+                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
+                {
+                    Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
+                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                    disconnectFlag = true;
+                }
+            };
+
+            if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
+            else toDo();
         }
 
         //Runs in a separate thread and checks if the connection should still be up
@@ -137,7 +158,7 @@ namespace GameClient
                     Thread.Sleep(1000);
 
                     KeepAliveData keepAliveData = new KeepAliveData();
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.KeepAlivePacket), keepAliveData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(KeepAliveManager), keepAliveData);
                     EnqueuePacket(packet);
                 }
             }
