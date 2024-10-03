@@ -137,6 +137,10 @@ namespace GameServer
             "toggles allowing local saves to sync with server to be true or false",
             ToggleSyncLocalSaveCommandAction);
 
+        private static readonly ServerCommand setGameSpeedCommand = new ServerCommand("setgamespeed", 1,
+            "Changes the enforced game speed for all players",
+            SetGameSpeedCommandAction);
+
         private static readonly ServerCommand resetWorldCommand = new ServerCommand("resetworld", 0,
             "Resets all the world related data and stores a backup of it",
             ResetWorldCommandAction);
@@ -170,6 +174,7 @@ namespace GameServer
             doSiteRewards,
             eventAllCommand,
             eventCommand,
+            setGameSpeedCommand,
             eventListCommand,
             forceQuitCommand,
             forceSaveCommand,
@@ -440,6 +445,19 @@ namespace GameServer
             Logger.Title("----------------------------------------");
             foreach (string str in Master.modConfig.ForbiddenMods) Logger.Warning($"{str}");
             Logger.Title("----------------------------------------");
+        }
+
+        private static void SetGameSpeedCommandAction()
+        {
+            int desiredSpeed = int.Parse(CommandManager.commandParameters[0]);
+            if (desiredSpeed < 0 || desiredSpeed > 4) Logger.Error("Tried to set invalid game speed, specify 0-4");
+            else
+            {
+                Master.actionValues.EnforcedGameSpeed = int.Parse(CommandManager.commandParameters[0]);
+                Main_.SaveValueFile(ServerFileMode.Actions);
+
+                Logger.Warning($"Enforced game speed to '{Master.actionValues.EnforcedGameSpeed}'");
+            }
         }
 
         private static void DoSiteRewardsCommandAction()

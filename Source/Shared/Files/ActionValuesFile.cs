@@ -25,6 +25,8 @@ namespace Shared
 
         public bool EnableCustomScenarios = true;
 
+        public int EnforcedGameSpeed = 0;
+
         public int SpyCost = 100;
     }
 }
