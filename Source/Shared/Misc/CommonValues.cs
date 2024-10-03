@@ -12,7 +12,7 @@ namespace Shared
         
         public static readonly string defaultKeepAlivePacketName = "KeepAliveManager";
 
-        public static readonly string[] ignoreLogPackets =
+        public static readonly string[] ignoredLogPackets =
         {
             "KeepAlivePacket",
             "OnlineActivityPacket"

@@ -112,10 +112,20 @@ namespace GameClient
 
         public void HandlePacket(Packet packet)
         {
-            if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
+            if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
             
-            Action toDo = delegate { MethodManager.ExecuteMethod(packet.header, defaultParserMethodName, new object[] { packet }); };
+            Action toDo = delegate 
+            { 
+                //If method manager failed to execute the packet we assume corrupted data
+                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
+                {
+                    Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
+                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                    disconnectFlag = true;
+                }
+            };
+
             if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
             else toDo();
         }
