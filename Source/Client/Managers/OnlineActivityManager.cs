@@ -49,7 +49,7 @@ namespace GameClient
             onlineActivityData._guestHumans = OnlineActivityManagerHelper.GetActivityHumans();
             onlineActivityData._guestAnimals = OnlineActivityManagerHelper.GetActivityAnimals();
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), onlineActivityData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), onlineActivityData);
             Network.listener.EnqueuePacket(packet);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
@@ -64,7 +64,7 @@ namespace GameClient
                 Map toGet = Find.WorldObjects.Settlements.First(fetch => fetch.Tile == data._toTile && fetch.Faction == Faction.OfPlayer).Map;
                 data._mapFile = MapScribeManager.MapToString(toGet, true, true, true, true, true, true);
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
@@ -73,7 +73,7 @@ namespace GameClient
             Action r2 = delegate
             {
                 data._stepMode = OnlineActivityStepMode.Reject;
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OnlineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                 Network.listener.EnqueuePacket(packet);
             };
 

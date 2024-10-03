@@ -8,14 +8,19 @@ namespace GameServer
 
         public readonly static string fileExtension = ".mpmap";
 
-        public static void SaveUserMap(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
-            MapData mapData = Serializer.ConvertBytesToObject<MapData>(packet.contents);
-            mapData._mapFile.Owner = client.userFile.Username;
+            MapData data = Serializer.ConvertBytesToObject<MapData>(packet.contents);
+            SaveUserMap(client, data);
+        }
 
-            Serializer.SerializeToFile(Path.Combine(Master.mapsPath, mapData._mapFile.Tile + fileExtension), mapData._mapFile);
+        public static void SaveUserMap(ServerClient client, MapData data)
+        {
+            data._mapFile.Owner = client.userFile.Username;
 
-            Logger.Message($"[Save map] > {client.userFile.Username} > {mapData._mapFile.Tile}");
+            Serializer.SerializeToFile(Path.Combine(Master.mapsPath, data._mapFile.Tile + fileExtension), data._mapFile);
+
+            Logger.Message($"[Save map] > {client.userFile.Username} > {data._mapFile.Tile}");
         }
 
         public static void DeleteMap(MapFile mapFile)
@@ -59,7 +64,7 @@ namespace GameServer
         {
             List<MapFile> userMaps = new List<MapFile>();
 
-            SettlementFile[] userSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
+            SettlementFile[] userSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlementFile in userSettlements)
             {
                 MapFile mapFile = GetUserMapFromTile(settlementFile.Tile);

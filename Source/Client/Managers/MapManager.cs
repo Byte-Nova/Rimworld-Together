@@ -27,7 +27,7 @@ namespace GameClient
             MapData mapData = new MapData();
             mapData._mapFile = ParseMap(map, true, true, true, true);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MapPacket), mapData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(MapManager), mapData);
             Network.listener.EnqueuePacket(packet);
         }
 

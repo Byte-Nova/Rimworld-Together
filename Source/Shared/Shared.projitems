@@ -89,6 +89,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\XenogeneComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\XenotypeComponent.cs" />
 
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\MethodManager.cs" />
+
     <Compile Include="$(MSBuildThisFileDirectory)Files\MapFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Map\TileComponent.cs" />
   </ItemGroup>
