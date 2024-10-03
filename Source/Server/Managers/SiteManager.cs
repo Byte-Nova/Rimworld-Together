@@ -165,6 +165,18 @@ namespace GameServer
                     }
                 }
             }
+            foreach (UserFile file in UserManagerHelper.GetAllUserFiles())
+            {
+                foreach (SiteConfigFile config in file.SiteConfigs) 
+                {
+                    if(!Master.siteValues.SiteInfoFiles.Any(S => S.Rewards.Any(R => R.RewardDef == config._RewardDefName))) 
+                    {
+                        Logger.Warning($"{file.Username}'s config was outdated for site {config._DefName}. Updating to new default config.");
+                        config._RewardDefName = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == config._DefName).First().Rewards.First().RewardDef;
+                        UserManagerHelper.SaveUserFile(file);
+                    }
+                }
+            }
             Logger.Warning("Sites now synced with new site configs");
         }
 

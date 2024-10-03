@@ -101,6 +101,8 @@ namespace GameClient.Dialogs
 
         private Vector2 scrollPosition = Vector2.zero;
 
+        private bool invalid;
+
         public RT_Dialog_SiteMenu_Info(SitePartDef thingChosen) //Send chosen site over
         {
             sitePartDef = thingChosen;
@@ -108,17 +110,36 @@ namespace GameClient.Dialogs
             configFile = SiteManager.siteData.Where(f => f.DefName == thingChosen.defName).First();
             for (int i = 0; i < configFile.DefNameCost.Length; i++)
             {
-                costThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.DefNameCost[i]), configFile.Cost[i]);
+                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(configFile.DefNameCost[i]);
+                if (toAdd != null) costThing.Add(toAdd, configFile.Cost[i]);
+                else Logger.Warning($"{configFile.DefNameCost[i]} could not be found and won't be added to the list. Double check the def exists.");
             }
             for (int i = 0; i < configFile.Rewards.Length; i++) 
             {
-                rewardThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.Rewards[i].RewardDef), configFile.Rewards[i].RewardAmount);
+                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(configFile.Rewards[i].RewardDef);
+                if (toAdd != null) rewardThing.Add(toAdd, configFile.Rewards[i].RewardAmount);
+                else Logger.Warning($"{configFile.Rewards[i].RewardDef} could not be found and won't be added to the list. Double check the def exists.");
+            }
+            if (rewardThing.Keys.Count == 0)
+            {
+                Logger.Error($"Could not load any rewards for the sites. Please double check your configs to make sure they are valid");
+                invalid = true; // Apparently you can't "this.Close() in the constructor
+            }
+            if (costThing.Keys.Count == 0)
+            {
+                Logger.Error($"Could not load any cost for the sites. Please double check your configs to make sure they are valid");
+                invalid = true; // Apparently you can't "this.Close() in the constructor
             }
             DialogManager.dialogSiteMenuInfo = this;
         }
 
         public override void DoWindowContents(Rect mainRect)
         {
+            if (invalid) 
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("Site could not be loaded because of invalid configuration"));
+                this.Close();
+            }
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.yMax + 1, mainRect.width);
 
@@ -184,6 +205,8 @@ namespace GameClient.Dialogs
 
         private Vector2 scrollPosition = Vector2.zero;
 
+        private bool invalid;
+
         public RT_Dialog_SiteMenu_Config(SitePartDef thingChosen) //Send chosen site over
         {
             sitePartDef = thingChosen;
@@ -191,17 +214,36 @@ namespace GameClient.Dialogs
             configFile = SiteManager.siteData.Where(f => f.DefName == thingChosen.defName).First();
             for (int i = 0; i < configFile.DefNameCost.Length; i++)
             {
-                costThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.DefNameCost[i]), configFile.Cost[i]);
+                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(configFile.DefNameCost[i]);
+                if (toAdd != null) costThing.Add(toAdd, configFile.Cost[i]);
+                else Logger.Warning($"{configFile.DefNameCost[i]} could not be found and won't be added to the list. Double check the def exists.");
             }
             for (int i = 0; i < configFile.Rewards.Length; i++)
             {
-                rewardThing.Add(DefDatabase<ThingDef>.GetNamed(configFile.Rewards[i].RewardDef), configFile.Rewards[i].RewardAmount);
+                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(configFile.Rewards[i].RewardDef);
+                if (toAdd != null) rewardThing.Add(toAdd, configFile.Rewards[i].RewardAmount);
+                else Logger.Warning($"{configFile.Rewards[i].RewardDef} could not be found and won't be added to the list. Double check the def exists.");
+            }
+            if (rewardThing.Keys.Count == 0)
+            {
+                Logger.Error($"Could not load any rewards for the sites. Please double check your configs to make sure they are valid");
+                invalid = true; // Apparently you can't "this.Close() in the constructor
+            }
+            if (costThing.Keys.Count == 0)
+            {
+                Logger.Error($"Could not load any cost for the sites. Please double check your configs to make sure they are valid");
+                invalid = true; // Apparently you can't "this.Close() in the constructor
             }
             DialogManager.dialogSiteMenuConfig = this;
         }
 
         public override void DoWindowContents(Rect mainRect)
         {
+            if (invalid)
+            {
+                DialogManager.PushNewDialog(new RT_Dialog_Error("Site could not be loaded because of invalid configuration"));
+                this.Close();
+            }
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.yMax + 1, mainRect.width);
 

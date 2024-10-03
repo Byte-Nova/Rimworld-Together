@@ -22,13 +22,19 @@ namespace GameClient
             List<Thing> rewards = new List<Thing>();
             foreach (RewardFile reward in siteData._rewardData)
             {
-                ThingDataFile thingData = new ThingDataFile();
-                thingData.DefName = reward.RewardDef;
-                thingData.Quantity = reward.RewardAmount;
-                thingData.Quality = 0;
-                thingData.Hitpoints = DefDatabase<ThingDef>.GetNamed(thingData.DefName).BaseMaxHitPoints;
-                rewards.Add(ThingScribeManager.StringToItem(thingData));
-                Logger.Message($"Received {reward.RewardAmount} of {reward.RewardDef}",CommonEnumerators.LogImportanceMode.Verbose);
+                if (DefDatabase<ThingDef>.GetNamedSilentFail(reward.RewardDef) != null)
+                {
+                    ThingDataFile thingData = new ThingDataFile();
+                    thingData.DefName = reward.RewardDef;
+                    thingData.Quantity = reward.RewardAmount;
+                    thingData.Quality = 0;
+                    thingData.Hitpoints = DefDatabase<ThingDef>.GetNamed(thingData.DefName).BaseMaxHitPoints;
+                    rewards.Add(ThingScribeManager.StringToItem(thingData));
+                    Logger.Message($"Received {reward.RewardAmount} of {reward.RewardDef}", CommonEnumerators.LogImportanceMode.Verbose);
+                } else 
+                {
+                    Logger.Warning($"Rewards couldn't be delivered with def {reward.RewardDef}. Double check if the def exist.");
+                }
             }
             if (rewards.Count > 0)
             {
