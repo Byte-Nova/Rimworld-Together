@@ -118,7 +118,7 @@ namespace GameServer
         {
             FactionFile factionFile = client.userFile.FactionFile;
             SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
-            ServerClient toAdd = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
+            ServerClient toAdd = NetworkHelper.GetConnectedClientFromUsername(settlementFile.Owner);
 
             if (factionFile == null) return;
             if (toAdd == null) return;
@@ -166,7 +166,7 @@ namespace GameServer
             FactionFile factionFile = client.userFile.FactionFile;
             SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
             UserFile toUpdateOffline = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
-            ServerClient toRemoveConnected = UserManagerHelper.GetConnectedClientFromUsername(settlementFile.Owner);
+            ServerClient toRemoveConnected = NetworkHelper.GetConnectedClientFromUsername(settlementFile.Owner);
 
             if (FactionManagerHelper.GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member)
             {
@@ -323,7 +323,7 @@ namespace GameServer
 
                 foreach (string str in factionFile.CurrentMembers)
                 {
-                    ServerClient toUpdateConnected = UserManagerHelper.GetConnectedClientFromUsername(str);
+                    ServerClient toUpdateConnected = NetworkHelper.GetConnectedClientFromUsername(str);
                     toUpdateConnected?.userFile.UpdateFaction(factionFile);
 
                     UserFile toUpdateOffline = UserManagerHelper.GetUserFileFromName(str);

@@ -12,18 +12,17 @@ namespace GameServer
 
         public static void SetCustomDifficulty(ServerClient client, DifficultyData difficultyData)
         {
-            if (!client.userFile.IsAdmin)
+            if (!client.userFile.IsAdmin) 
             {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to set the custom difficulty while not being an admin");
+                UserManager.BanPlayerFromName(client.userFile.Username);
+                Logger.Warning($"Player {client.userFile.Username} attempted to set the custom difficulty while not being an admin");
             }
             
             else 
             {
                 Master.difficultyValues = difficultyData._values;
-
+                Main_.SaveValueFile(ServerFileMode.Difficulty, true);
                 Logger.Warning($"[Set difficulty] > {client.userFile.Username}");
-
-                Main_.SaveValueFile(ServerFileMode.Difficulty);
             }
         }
     }

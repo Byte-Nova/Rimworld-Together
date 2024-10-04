@@ -348,47 +348,6 @@ namespace GameServer
             }
         }
 
-        private static void BanCommandAction()
-        {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == CommandManager.commandParameters[0]);
-            if (toFind == null)
-            {
-                UserFile userFile = UserManagerHelper.GetUserFileFromName(CommandManager.commandParameters[0]);
-                if (userFile == null) Logger.Warning($"User '{CommandManager.commandParameters[0]}' was not found");
-
-                else
-                {
-                    if (CheckIfIsAlready(userFile)) return;
-                    else
-                    {
-                        toFind.userFile.UpdateBan(true);
-
-                        Logger.Warning($"User '{CommandManager.commandParameters[0]}' has been banned from the server");
-                    }
-                }
-            }
-
-            else
-            {
-                toFind.listener.disconnectFlag = true;
-
-                toFind.userFile.UpdateBan(true);
-
-                Logger.Warning($"User '{CommandManager.commandParameters[0]}' has been banned from the server");
-            }
-
-            bool CheckIfIsAlready(UserFile userFile)
-            {
-                if (userFile.IsBanned)
-                {
-                    Logger.Warning($"User '{CommandManager.commandParameters[0]}' was already banned from the server");
-                    return true;
-                }
-
-                else return false;
-            }
-        }
-
         private static void BanListCommandAction()
         {
             List<UserFile> userFiles = UserManagerHelper.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
@@ -399,33 +358,9 @@ namespace GameServer
             Logger.Title("----------------------------------------");
         }
 
-        private static void PardonCommandAction()
-        {
-            UserFile userFile = UserManagerHelper.GetUserFileFromName(CommandManager.commandParameters[0]);
-            if (userFile == null) Logger.Warning($"User '{CommandManager.commandParameters[0]}' was not found");
+        private static void BanCommandAction() { UserManager.BanPlayerFromName(CommandManager.commandParameters[0]); }
 
-            else
-            {
-                if (CheckIfIsAlready(userFile)) return;
-                else
-                {
-                    userFile.UpdateBan(false);
-
-                    Logger.Warning($"User '{CommandManager.commandParameters[0]}' is no longer banned from the server");
-                }
-            }
-
-            bool CheckIfIsAlready(UserFile userFile)
-            {
-                if (!userFile.IsBanned)
-                {
-                    Logger.Warning($"User '{CommandManager.commandParameters[0]}' was not banned from the server");
-                    return true;
-                }
-
-                else return false;
-            }
-        }
+        private static void PardonCommandAction() { UserManager.PardonPlayerFromName(CommandManager.commandParameters[0]); }
 
         private static void ReloadCommandAction() { Main_.LoadResources(); }
         
@@ -628,7 +563,7 @@ namespace GameServer
         private static void ResetPlayerCommandAction()
         {
             UserFile userFile = UserManagerHelper.GetUserFileFromName(CommandManager.commandParameters[0]);
-            ServerClient toFind = UserManagerHelper.GetConnectedClientFromUsername(userFile.Username);
+            ServerClient toFind = NetworkHelper.GetConnectedClientFromUsername(userFile.Username);
 
             if (userFile == null) Logger.Warning($"User '{CommandManager.commandParameters[0]}' was not found");
             else SaveManager.ResetPlayerData(toFind, userFile.Username);
@@ -779,7 +714,7 @@ namespace GameServer
 
         private static void ShowModManagerCommandAction()
         {
-            ServerClient toFind = UserManagerHelper.GetConnectedClientFromUsername(CommandManager.commandParameters[0]);
+            ServerClient toFind = NetworkHelper.GetConnectedClientFromUsername(CommandManager.commandParameters[0]);
             if (toFind == null) Logger.Error($"Player '{CommandManager.commandParameters[0]}' was not found");
             else
             {

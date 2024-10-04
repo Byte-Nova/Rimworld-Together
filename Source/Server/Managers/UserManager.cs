@@ -14,6 +14,38 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromObject(nameof(PlayerRecountManager), playerRecountData);
             NetworkHelper.SendPacketToAllClients(packet);
         }
+
+        public static void BanPlayerFromName(string userName)
+        {
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(userName);
+            ServerClient client = NetworkHelper.GetConnectedClientFromUsername(userName);
+            if (userFile == null || client == null) Logger.Warning($"User '{userName}' couldn't be found");
+            else
+            {
+                if (userFile.IsBanned) Logger.Warning($"User '{userName}' is already banned from the server");
+                else
+                {
+                    userFile.UpdateBan(true);
+                    client.listener.disconnectFlag = true;
+                    Logger.Warning($"User '{userName}' has been banned from the server");
+                }
+            }
+        }
+
+        public static void PardonPlayerFromName(string userName)
+        {
+            UserFile userFile = UserManagerHelper.GetUserFileFromName(userName);
+            if (userFile == null) Logger.Warning($"User '{userName}' couldn't be found");
+            else
+            {
+                if (!userFile.IsBanned) Logger.Warning($"User '{userName}' is not banned from the server");
+                else
+                {
+                    userFile.UpdateBan(false);
+                    Logger.Warning($"User '{userName}' has been pardoned from the server");
+                }         
+            }
+        }
     }
 
     public static class UserManagerHelper
@@ -74,12 +106,6 @@ namespace GameServer
             else return false;
         }
 
-        public static ServerClient GetConnectedClientFromUsername(string username)
-        {
-            List<ServerClient> connectedClients = Network.connectedClients.ToList();
-            return connectedClients.Find(x => x.userFile.Username == username);
-        }
-
         public static bool CheckIfUserExists(ServerClient client, LoginData data, LoginMode mode)
         {
             string[] existingUsers = Directory.GetFiles(Master.usersPath);
@@ -124,6 +150,7 @@ namespace GameServer
             if (!client.userFile.IsBanned) return false;
             else
             {
+                Logger.Message($"Banned user '{client.userFile.Username}' tried to join the server");
                 LoginManager.SendLoginResponse(client, LoginResponse.BannedLogin);
                 return true;
             }

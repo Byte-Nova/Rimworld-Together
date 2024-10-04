@@ -102,6 +102,11 @@ namespace GameServer
             else return Network.connectedClients.ToArray();
         }
 
+        public static ServerClient GetConnectedClientFromUsername(string username)
+        {
+            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Username == username);
+        }
+
         public static void SendPacketToAllClients(Packet packet, ServerClient toExclude = null)
         {
             foreach (ServerClient client in GetConnectedClientsSafe(toExclude))
