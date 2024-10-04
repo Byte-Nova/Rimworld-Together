@@ -1095,15 +1095,7 @@ namespace GameClient
             try
             {
                 Genepack genepack = (Genepack)thing;
-
-                Type type = genepack.GetType();
-                FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
-                GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
-
-                type = geneSet.GetType();
-                fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
-                List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
-                foreach (GeneDef gene in geneList) thingData.GenepackData.genepackDefs.Add(gene.defName);
+                foreach (GeneDef gene in genepack.GeneSet.GenesListForReading) thingData.GenepackData.genepackDefs.Add(gene.defName);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
