@@ -175,7 +175,7 @@ namespace GameServer
 
         public static int[] GetUserStructuresTilesFromUsername(string username)
         {
-            SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.Owner == username).ToArray();
+            SettlementFile[] settlements = PlayerSettlementManager.GetAllSettlements().ToList().FindAll(x => x.Owner == username).ToArray();
             SiteIdendity[] sites = SiteManagerHelper.GetAllSites().ToList().FindAll(x => x.Owner == username).ToArray();
 
             List<int> tilesToExclude = new List<int>();

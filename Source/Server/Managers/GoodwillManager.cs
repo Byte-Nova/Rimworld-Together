@@ -8,14 +8,14 @@ namespace GameServer
     {
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionGoodwillData._tile);
-            SiteIdendity siteFile = SiteManagerHelper.GetSiteFileFromTile(factionGoodwillData._tile);
+            FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
+            ChangeUserGoodwills(client, data);
 
+        }
         public static void ChangeUserGoodwills(ServerClient client, FactionGoodwillData data)
         {
             SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._tile);
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(data._tile);
+            SiteIdendity siteFile = SiteManagerHelper.GetSiteFileFromTile(data._tile);
 
             if (settlementFile != null) data._owner = settlementFile.Owner;
             else data._owner = siteFile.Owner;
@@ -81,7 +81,7 @@ namespace GameServer
 
         public static Goodwill GetGoodwillFromTile(ServerClient client, int tileToCheck)
         {
-            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(tileToCheck);
+            SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(tileToCheck);
             SiteIdendity siteFile = SiteManagerHelper.GetSiteFileFromTile(tileToCheck);
 
             string usernameToCheck;
@@ -138,8 +138,8 @@ namespace GameServer
                         return Goodwill.Ally;
                     }
                 }
-            } 
-            else 
+            }
+            else
             {
                 if (client.userFile.Relationships.EnemyPlayers.Contains(site.Owner)) return Goodwill.Enemy; //We check if the player is enemy of the owner
 
@@ -204,6 +204,7 @@ namespace GameServer
         public static void UpdateClientGoodwills(ServerClient client)
         {
             SettlementFile[] settlements = PlayerSettlementManager.GetAllSettlements();
+
             FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
             SiteIdendity[] sites = SiteManagerHelper.GetAllSites();
 

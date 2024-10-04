@@ -10,5 +10,7 @@ namespace Shared
         public SiteStepMode _stepMode;
 
         public SiteIdendity _siteFile = new SiteIdendity();
+
+        public SiteRewardConfig _siteConfigFile;
     }
 }

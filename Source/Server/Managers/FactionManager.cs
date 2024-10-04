@@ -73,7 +73,7 @@ namespace GameServer
                 {
                     SiteManagerHelper.UpdateFaction(site, factionFile);
                 }
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
                 client.listener.EnqueuePacket(packet);
 
                 Logger.Warning($"[Created faction] > {client.userFile.Username} > {factionFile.Name}");
@@ -99,7 +99,7 @@ namespace GameServer
                     UserFile[] toUpdateOffline = FactionManagerHelper.GetUsersFromFactionMembers(factionFile);
                     foreach (UserFile userFile in toUpdateOffline) userFile.UpdateFaction(null);
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
                     SiteIdendity[] factionSites = FactionManagerHelper.GetFactionSites(factionFile);
                     foreach (SiteIdendity site in factionSites)
                     {

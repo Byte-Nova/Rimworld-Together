@@ -176,7 +176,7 @@ namespace GameClient
                 siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
                 siteData._siteFile.Type.DefName = configFile.DefName;
                 if (ServerValues.hasFaction) siteData._siteFile.FactionFile = new FactionFile();
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
@@ -185,10 +185,13 @@ namespace GameClient
 
         public static void ChangeConfig(SiteInfoFile config, string reward) 
         {
+            SiteData packetData = new SiteData();
+            packetData._stepMode = SiteStepMode.Config;
             SiteRewardConfig rewardConfig = new SiteRewardConfig();
-            rewardConfig._rewardDef = reward;
             rewardConfig._siteDef = config.DefName;
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SiteRewardConfigPacket), rewardConfig);
+            rewardConfig._rewardDef = reward;
+            packetData._siteConfigFile = rewardConfig;
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), packetData);
             Network.listener.EnqueuePacket(packet);
         }
     }

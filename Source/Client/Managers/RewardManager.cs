@@ -11,7 +11,7 @@ namespace GameClient
 {
     public static class RewardManager
     {
-        public static void ParseRewardPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             RewardData siteData = Serializer.ConvertBytesToObject<RewardData>(packet.contents);
             ReceiveRewards(siteData);

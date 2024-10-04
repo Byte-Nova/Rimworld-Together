@@ -18,7 +18,6 @@ namespace GameServer
             }
 
             SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
-
             switch(siteData._stepMode)
             {
                 case SiteStepMode.Build:
@@ -31,6 +30,9 @@ namespace GameServer
 
                 case SiteStepMode.Info:
                     SiteManagerHelper.GetSiteInfo(client, siteData);
+                    break;
+                case SiteStepMode.Config:
+                    ChangeUserSiteConfig(client, siteData);
                     break;
 
             }
@@ -48,7 +50,7 @@ namespace GameServer
             {
                 siteData._siteFile.Goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
                 Logger.Warning(((int)(siteData._siteFile.Goodwill)).ToString());
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
 
                 cClient.listener.EnqueuePacket(packet);
             }
@@ -146,7 +148,7 @@ namespace GameServer
                     }
                     data.Add(rewardFile);
                 }
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SiteRewardPacket), new RewardData() {_rewardData = data.ToArray()});
+                Packet packet = Packet.CreatePacketFromObject(nameof(RewardManager), new RewardData() {_rewardData = data.ToArray()});
                 client.listener.EnqueuePacket(packet);
             }
             Logger.Warning($"[Site tick]");
@@ -180,8 +182,9 @@ namespace GameServer
             Logger.Warning("Sites now synced with new site configs");
         }
 
-        public static void ChangeUserSiteConfig(ServerClient client, SiteRewardConfig config) 
+        public static void ChangeUserSiteConfig(ServerClient client, SiteData data) 
         {
+            SiteRewardConfig config = data._siteConfigFile;
             UpdateUserSiteWithDefault(client);
             client.userFile.SiteConfigs.Where(S => S._DefName == config._siteDef).First()._RewardDefName = config._rewardDef;
             UserManagerHelper.SaveUserFile(client.userFile);
@@ -195,15 +198,15 @@ namespace GameServer
         }
         public static void UpdateUserSiteWithDefault(ServerClient client) 
         {
-            client.userFile.SiteConfigs = new SiteConfigFile[Master.siteValues.SiteInfoFiles.Length];
+            SiteConfigFile[] newConfigs = new SiteConfigFile[Master.siteValues.SiteInfoFiles.Length];
 
             for (int i = 0; i < Master.siteValues.SiteInfoFiles.Length; i++)
             {
                 if (client.userFile.SiteConfigs.Any(S => S != null && S._DefName == Master.siteValues.SiteInfoFiles[i].DefName))
                 {
+                    newConfigs[i] = client.userFile.SiteConfigs[i];
                     continue;
                 }
-
                 client.userFile.SiteConfigs[i] = new SiteConfigFile(Master.siteValues.SiteInfoFiles[i].DefName, Master.siteValues.SiteInfoFiles[i].Rewards.First().RewardDef);
             }
         }
