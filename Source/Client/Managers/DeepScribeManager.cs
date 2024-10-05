@@ -983,8 +983,8 @@ namespace GameClient
         public static ThingDataFile ItemToString(Thing thing, int thingCount)
         {
             ThingDataFile thingData = new ThingDataFile();
-            Logger.Message(thing.def.defName);
             Thing toUse = null;
+            
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 

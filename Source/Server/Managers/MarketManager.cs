@@ -99,24 +99,38 @@ namespace GameServer
 
         private static void TryCombineStackIfAvailable(ServerClient client, ThingDataFile thingData)
         {
-            Logger.Warning(thingData.BookData.title);
-            if (thingData.Quantity <= 0)
+            if (thingData.Quantity <= 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
-                return;
-            }
-            if (thingData.BookData.title == "null" && thingData.GenepackData.genepackDefs.Count == 0)
-            {
-                foreach (ThingDataFile stockedItem in Master.marketValues.MarketStock.ToArray())
+                //Check if thing is book to handle differently
+                if (thingData.BookData.title != "null") Master.marketValues.MarketStock.Add(thingData);
+
+                //Check if thing is genepack to handle differently
+                else if (thingData.GenepackData.genepackDefs.Count != 0) Master.marketValues.MarketStock.Add(thingData);
+
+                //Act as if normal thing
+                else
                 {
-                    if (stockedItem.DefName == thingData.DefName && stockedItem.MaterialDefName == thingData.MaterialDefName)
+                    foreach (ThingDataFile stockedItem in MarketManagerHelper.GetMarketStockSafe())
                     {
-                        stockedItem.Quantity += thingData.Quantity;
-                        return;
+                        if (stockedItem.DefName == thingData.DefName && stockedItem.MaterialDefName == thingData.MaterialDefName)
+                        {
+                            stockedItem.Quantity += thingData.Quantity;
+                            return;
+                        }
                     }
+
+                    Master.marketValues.MarketStock.Add(thingData);
                 }
             }
-            Master.marketValues.MarketStock.Add(thingData);
+        }
+    }
+
+    public static class MarketManagerHelper
+    {
+        public static ThingDataFile[] GetMarketStockSafe()
+        {
+            return Master.marketValues.MarketStock.ToArray();
         }
     }
 }

@@ -185,18 +185,25 @@ namespace GameClient
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
                     }
                 };
-                DialogManager.PushNewDialog(new RT_Dialog_1Input($"{displaySimple} request", $"Type the quantity you want to request\nCost per unit:{toDisplay.MarketValue} | Amount available:{toDisplay.stackCount}", toDo, null));
+
+                string title = $"{displaySimple} request";
+                string description = $"Max ammount to request: {toDisplay.stackCount} | Price per unit: {toDisplay.MarketValue}";
+                DialogManager.PushNewDialog(new RT_Dialog_1Input(title, description, toDo, null));
             }
         }
 
         private string[] GetDisplayNames(Thing thing) 
         {
-            string text = thing.LabelCapNoCount.CapitalizeFirst() + " ";
+            string text = thing.LabelCapNoCount.CapitalizeFirst() + $" x{thing.stackCount} ";
             string textSimple = thing.LabelCapNoCount.CapitalizeFirst();
+
             Type type;
             FieldInfo fieldInfo;
             ReadingOutcomeDoerGainResearch research;
             QualityCategory qc;
+
+            //Exceptions of things that must be handled differently
+
             switch (thing.def.defName)
             {
                 case "TextBook":
@@ -208,10 +215,11 @@ namespace GameClient
                         foreach (KeyValuePair<SkillDef, float> pair in xp.Values) text += $"{pair.Key.defName}, ";
                     }
                     thing.TryGetQuality(out qc);
-                    text += QualityUtility.GetLabelShort(qc);
 
+                    text += QualityUtility.GetLabelShort(qc);
                     textSimple = thing.def.defName + " ";
                     break;
+
                 case "Schematic":
                     book = (Book)thing;
                     text = book.def.defName + ": ";
@@ -224,10 +232,11 @@ namespace GameClient
                         foreach (ResearchProjectDef key in researchDict.Keys) text += $"{key.defName}, ";
                     }
                     thing.TryGetQuality(out qc);
-                    text += QualityUtility.GetLabelShort(qc);
 
+                    text += QualityUtility.GetLabelShort(qc);
                     textSimple = thing.def.defName + " ";
                     break;
+
                 case "Novel":
                     book = (Book)thing;
                     text = book.def.defName + ": ";
@@ -235,10 +244,11 @@ namespace GameClient
                     fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
                     text += (float)fieldInfo.GetValue(book) * 100 + "% recreation, ";
                     thing.TryGetQuality(out qc);
-                    text += QualityUtility.GetLabelShort(qc);
 
+                    text += QualityUtility.GetLabelShort(qc);
                     textSimple = thing.def.defName + " ";
                     break;
+
                 case "Tome":
                     book = (Book)thing;
                     text = book.def.defName + ": ";
@@ -254,21 +264,20 @@ namespace GameClient
                         fieldInfo = type.GetField("mentalBreakChancePerHour", BindingFlags.NonPublic | BindingFlags.Instance);
                         text += "mental break:"+ ((float)fieldInfo.GetValue(book) * 100).ToStringDecimalIfSmall() +"% ";
                         thing.TryGetQuality(out qc);
-                        text += QualityUtility.GetLabel(qc);
 
+                        text += QualityUtility.GetLabel(qc);
                         textSimple = thing.def.defName + " ";
                     }
                     break;
+
                 case "Genepack":
                     Genepack pack = (Genepack)thing;
                     text = pack.def.defName + ": ";
-                    foreach (GeneDef gene in pack.GeneSet.GenesListForReading)
-                    {
-                        text += $"{gene.label}, ";
-                    }
+                    foreach (GeneDef gene in pack.GeneSet.GenesListForReading) text += $"{gene.label}, ";
                     break;
             }
-            return new string[] {text,textSimple};
+
+            return new string[] {text, textSimple};
         }
     }
 }
