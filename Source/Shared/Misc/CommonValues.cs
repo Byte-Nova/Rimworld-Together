@@ -12,8 +12,8 @@ namespace Shared
 
         public static readonly string[] ignoredLogPackets =
         {
-            "KeepAlivePacket",
-            "OnlineActivityPacket"
+            "KeepAliveManager",
+            "OnlineActivityManager"
         };
     }
 }
