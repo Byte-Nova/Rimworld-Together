@@ -18,7 +18,7 @@ namespace GameServer
             }
 
             SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
-            switch(siteData._stepMode)
+            switch (siteData._stepMode)
             {
                 case SiteStepMode.Build:
                     AddNewSite(client, siteData);
@@ -72,7 +72,7 @@ namespace GameServer
                 siteFile.Tile = siteData._siteFile.Tile;
                 siteFile.Owner = client.userFile.Username;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._siteFile.Type.DefName);
-                if(client.userFile.FactionFile != null) siteFile.FactionFile = client.userFile.FactionFile;
+                if (client.userFile.FactionFile != null) siteFile.FactionFile = client.userFile.FactionFile;
                 ConfirmNewSite(client, siteFile);
             }
         }
@@ -129,11 +129,11 @@ namespace GameServer
                 //Get player specific sites
                 List<SiteIdendity> sitesToAdd = new List<SiteIdendity>();
                 if (client.userFile.FactionFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Username);
-                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile !=null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
+                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
                 foreach (SiteIdendity site in sitesToAdd)
                 {
                     RewardFile rewardFile = new RewardFile();
-                    foreach (RewardFile reward in site.Type.Rewards) 
+                    foreach (RewardFile reward in site.Type.Rewards)
                     {
                         if (client.userFile.SiteConfigs.Any(S => S._RewardDefName == reward.RewardDef))
                         {
@@ -141,23 +141,23 @@ namespace GameServer
                             rewardFile.RewardAmount = reward.RewardAmount;
                         }
                     }
-                    if(rewardFile.RewardDef == "") 
+                    if (rewardFile.RewardDef == "")
                     {
                         rewardFile = site.Type.Rewards.First();
                     }
                     data.Add(rewardFile);
                 }
-                Packet packet = Packet.CreatePacketFromObject(nameof(RewardManager), new RewardData() {_rewardData = data.ToArray()});
+                Packet packet = Packet.CreatePacketFromObject(nameof(RewardManager), new RewardData() { _rewardData = data.ToArray() });
                 client.listener.EnqueuePacket(packet);
             }
             Logger.Warning($"[Site tick]");
         }
 
-        public static void UpdateAllSiteInfo() 
+        public static void UpdateAllSiteInfo()
         {
             foreach (SiteIdendity site in SiteManagerHelper.GetAllSites())
             {
-                foreach(SiteInfoFile config in Master.siteValues.SiteInfoFiles) 
+                foreach (SiteInfoFile config in Master.siteValues.SiteInfoFiles)
                 {
                     if (config.DefName == site.Type.DefName)
                     {
@@ -168,9 +168,9 @@ namespace GameServer
             }
             foreach (UserFile file in UserManagerHelper.GetAllUserFiles())
             {
-                foreach (SiteConfigFile config in file.SiteConfigs) 
+                foreach (SiteConfigFile config in file.SiteConfigs)
                 {
-                    if(!Master.siteValues.SiteInfoFiles.Any(S => S.Rewards.Any(R => R.RewardDef == config._RewardDefName))) 
+                    if (!Master.siteValues.SiteInfoFiles.Any(S => S.Rewards.Any(R => R.RewardDef == config._RewardDefName)))
                     {
                         Logger.Warning($"{file.Username}'s config was outdated for site {config._DefName}. Updating to new default config.");
                         config._RewardDefName = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == config._DefName).First().Rewards.First().RewardDef;
@@ -181,7 +181,7 @@ namespace GameServer
             Logger.Warning("Sites now synced with new site configs");
         }
 
-        public static void ChangeUserSiteConfig(ServerClient client, SiteData data) 
+        public static void ChangeUserSiteConfig(ServerClient client, SiteData data)
         {
             SiteRewardConfig config = data._siteConfigFile;
             UpdateUserSiteWithDefault(client);
@@ -195,10 +195,23 @@ namespace GameServer
             client.userFile.SiteConfigs.Where(S => S._DefName == config._siteDef).First()._RewardDefName = config._rewardDef;
             UserManagerHelper.SaveUserFile(client.userFile);
         }
-        public static void UpdateUserSiteWithDefault(ServerClient client) 
+        public static void UpdateUserSiteWithDefault(ServerClient client)
         {
-            SiteConfigFile[] newConfigs = new SiteConfigFile[Master.siteValues.SiteInfoFiles.Length];
+            SiteConfigFile[] newConfigs = new SiteConfigFile[Master.siteValues.SiteInfoFiles.Length]; ;
 
+            if (client.userFile.SiteConfigs.Length < newConfigs.Length)
+            {
+                SiteConfigFile[] currentConfigs = new SiteConfigFile[Master.siteValues.SiteInfoFiles.Length];
+                for (int i = 0; i < client.userFile.SiteConfigs.Length; i++)
+                {
+                    currentConfigs[i] = client.userFile.SiteConfigs[i];
+                }
+                for (int j = currentConfigs.Length; j < Master.siteValues.SiteInfoFiles.Length; j++)
+                {
+                    currentConfigs[j] = new SiteConfigFile(Master.siteValues.SiteInfoFiles[j].DefName, Master.siteValues.SiteInfoFiles[j].Rewards.First().RewardDef);
+                }
+                client.userFile.SiteConfigs = newConfigs;
+            }
             for (int i = 0; i < Master.siteValues.SiteInfoFiles.Length; i++)
             {
                 if (client.userFile.SiteConfigs.Any(S => S != null && S._DefName == Master.siteValues.SiteInfoFiles[i].DefName))
