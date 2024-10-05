@@ -79,14 +79,14 @@ namespace GameServer
             GlobalDataManager.SendServerGlobalData(client);
 
             foreach(string str in ChatManager.defaultJoinMessages) ChatManager.SendSystemMessage(client, str);
-
-            if (Master.chatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} has logged in!");
             
             if (Master.chatConfig.EnableMoTD)
             {
                 foreach (string str in ChatManager.MOTD) 
                     ChatManager.SendSystemMessage(client, str);
             }
+            
+            if (Master.chatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} has logged in!");
 
             if (WorldManager.CheckIfWorldExists())
             {
