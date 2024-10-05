@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient.Dialogs;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -401,8 +402,7 @@ namespace GameClient
                         DialogManager.PushNewDialog(d1);
                     }
                 };
-
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
+                if (__instance.Faction != FactionValues.yourOnlineFaction || __instance.Faction != Faction.OfPlayer) gizmoList.Add(command_Goodwill);
 
                 __result = gizmoList;
             }
@@ -448,29 +448,10 @@ namespace GameClient
 
                 if (presentSettlement == null && presentSite == null)
                 {
+
                     Command_Action Command_BuildSite = new Command_Action
                     {
-                        defaultLabel = "Build Personal Site",
-                        defaultDesc = "Build an utility site for your convenience",
-                        icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
-                        action = delegate
-                        {
-                            SessionValues.chosenCaravan = __instance;
-                            
-                            if (SessionValues.actionValues.EnableSites)
-                            {
-                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Personal Sites", "Available sites to build",
-                                    SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, null);
-
-                                DialogManager.PushNewDialog(d1);
-                            }
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
-                        }
-                    };
-
-                    Command_Action Command_BuildFactionSite = new Command_Action
-                    {
-                        defaultLabel = "Build Faction Site",
+                        defaultLabel = "Build a Site",
                         defaultDesc = "Build an utility site for your faction",
                         icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
                         action = delegate
@@ -479,36 +460,16 @@ namespace GameClient
 
                             if (SessionValues.actionValues.EnableSites)
                             {
-                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Faction Sites", "Available sites to build",
-                                    SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, null);
-
-                                DialogManager.PushNewDialog(d1);
+                                DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(false));
                             }
                             else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };
-
                     gizmoList.Add(Command_BuildSite);
-                    if (ServerValues.hasFaction) gizmoList.Add(Command_BuildFactionSite);
                 }
 
                 else if (presentSite != null)
                 {
-                    Command_Action command_AccessPersonalSite = new Command_Action
-                    {
-                        defaultLabel = "Access Personal Site",
-                        defaultDesc = "Access your personal site",
-                        icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
-                        action = delegate
-                        {
-                            SessionValues.chosenCaravan = __instance;
-                            SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
-
-                            if (SessionValues.actionValues.EnableSites) SiteManager.OnSimpleSiteRequest();
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
-                        }
-                    };
-
                     Command_Action command_DestroySite = new Command_Action
                     {
                         defaultLabel = "Destroy Site",
@@ -523,10 +484,21 @@ namespace GameClient
                             else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };
+                    Command_Action command_Config = new Command_Action
+                    {
+                        defaultLabel = "Change site configs",
+                        defaultDesc = "Change the configuration of your sites. These settings affect all sites currently under your control.",
+                        icon = ContentFinder<Texture2D>.Get("Commands/SiteConfig"),
+                        action = delegate
+                        {
+                            if (SessionValues.actionValues.EnableSites) DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                        }
+                    };
+                    gizmoList.Add(command_Config);
 
                     if (presentSite.Faction == Faction.OfPlayer)
                     {
-                        gizmoList.Add(command_AccessPersonalSite);
                         gizmoList.Add(command_DestroySite);
                     }
                     else if (presentSite.Faction == FactionValues.yourOnlineFaction)

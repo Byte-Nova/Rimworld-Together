@@ -20,6 +20,7 @@ namespace GameServer
 
             if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
             if (Master.backupConfig.AutomaticBackups) BackupManager.AutoBackup();
+            SiteManager.UpdateAllSiteInfo();
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
 

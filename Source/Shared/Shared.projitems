@@ -10,14 +10,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\XenoGermData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\SiteRewardConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Groups\Sites\SiteConfigFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Groups\Sites\SiteInfoFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SettlementFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Groups\Sites\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\EventFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\SiteFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Groups\Sites\SiteIdendity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\FactionFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\CaravanFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\MarketValuesFile.cs" />
@@ -32,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\OfflineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\OnlineActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\RoadData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\RewardData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\CaravanData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\CreationOrderData.cs" />
@@ -74,6 +77,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\BookData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\GenepackData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\PlantData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\XenoGermData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ThingRewardFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\DownloadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\UploadManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />

@@ -5,7 +5,7 @@ using static Shared.CommonEnumerators;
 namespace Shared
 {
     [Serializable]
-    public class SiteFile
+    public class SiteIdendity
     {
         public int Tile;
 
@@ -13,9 +13,7 @@ namespace Shared
 
         public Goodwill Goodwill;
 
-        public int Type;
-
-        public byte[] WorkerData;
+        public SiteInfoFile Type = new SiteInfoFile();
 
         public FactionFile FactionFile;
 

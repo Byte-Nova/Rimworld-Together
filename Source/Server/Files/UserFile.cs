@@ -29,6 +29,8 @@ namespace GameServer
 
         public FactionFile FactionFile;
 
+        public SiteConfigFile[] SiteConfigs = new SiteConfigFile[0];
+
         [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
 
         public void SetLoginDetails(LoginData data)

@@ -2,7 +2,7 @@
   <SitePartDef>
     <defName>RTFarmland</defName>
     <label>Farmland</label>
-    <description>Online Site</description>
+    <description>The Farmland is primarly used in growing crops, such as rice or potatoes.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Farmland</expandingIconTexture>
@@ -13,7 +13,7 @@
   <SitePartDef>
     <defName>RTQuarry</defName>
     <label>Quarry</label>
-    <description>Online Site</description>
+    <description>The Quarry is where stones and various ores are collected.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Quarry</expandingIconTexture>
@@ -24,7 +24,7 @@
   <SitePartDef>
     <defName>RTSawmill</defName>
     <label>Sawmill</label>
-    <description>Online Site</description>
+    <description>The Sawmill has one job and it does it very well, collect as much wood as possible.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Sawmill</expandingIconTexture>
@@ -35,7 +35,7 @@
   <SitePartDef>
     <defName>RTBank</defName>
     <label>Bank</label>
-    <description>Online Site</description>
+    <description>The Bank simply produces silver and other exotic resources, simple as that.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Bank</expandingIconTexture>
@@ -46,7 +46,7 @@
 <SitePartDef>
     <defName>RTLaboratory</defName>
     <label>Laboratory</label>
-    <description>Online Site</description>
+    <description>The Laboratory is where your expert team of researcher can craft components and other goods.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Laboratory</expandingIconTexture>
@@ -57,7 +57,7 @@
 <SitePartDef>
     <defName>RTRefinery</defName>
     <label>Refinery</label>
-    <description>Online Site</description>
+    <description>The Refinery is where you can create products such as chemfuel.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/Refinery</expandingIconTexture>
@@ -68,7 +68,7 @@
 <SitePartDef>
     <defName>RTHerbalWorkshop</defName>
     <label>Herbal workshop</label>
-    <description>Online Site</description>
+    <description>The herbal workshop is a simple site capable of creating basic medicine.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/HerbalWorkshop</expandingIconTexture>
@@ -79,7 +79,7 @@
 <SitePartDef>
     <defName>RTTextileFactory</defName>
     <label>Textile factory</label>
-    <description>Online Site</description>
+    <description>The textile factory lets you produce large amount of cloth and other textiles.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/TextileFactory</expandingIconTexture>
@@ -90,7 +90,7 @@
 <SitePartDef>
     <defName>RTFoodProcessor</defName>
     <label>Food Processor</label>
-    <description>Online Site</description>
+    <description>The food processor is basically a giant nutrient paste dispenser, letting you cook a variety of meals.</description>
     <workerClass>SitePartWorker_Outpost</workerClass>
     <siteTexture>World/WorldObjects/DefaultSettlement</siteTexture>
     <expandingIconTexture>Sites/FoodProcessor</expandingIconTexture>
