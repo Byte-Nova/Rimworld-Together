@@ -983,8 +983,8 @@ namespace GameClient
         public static ThingDataFile ItemToString(Thing thing, int thingCount)
         {
             ThingDataFile thingData = new ThingDataFile();
-
             Thing toUse = null;
+            
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
@@ -1010,6 +1010,7 @@ namespace GameClient
 
         public static Thing StringToItem(ThingDataFile thingData)
         {
+
             Thing thing = SetItem(thingData);
 
             SetItemQuantity(thing, thingData);
@@ -1137,6 +1138,7 @@ namespace GameClient
                 }
 
                 thingData.BookData = bookData;
+                Logger.Warning(bookData.title);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1769,13 +1771,13 @@ namespace GameClient
 
         public static bool CheckIfThingIsBook(Thing thing)
         {
-            if (!ModsConfig.AnomalyActive) return false;
 
             if (thing.def.defName == ThingDefOf.TextBook.defName) return true;
             else if (thing.def.defName == ThingDefOf.Schematic.defName) return true;
-            else if (thing.def.defName == ThingDefOf.Tome.defName) return true;
             else if (thing.def.defName == ThingDefOf.Novel.defName) return true;
-            else return false;
+            if (!ModsConfig.AnomalyActive) return false;
+            if (thing.def.defName == ThingDefOf.Tome.defName) return true;
+            return false;
         }
 
         public static bool CheckIfThingIsGenepack(Thing thing)
@@ -1783,7 +1785,7 @@ namespace GameClient
             if (!ModsConfig.BiotechActive) return false;
 
             if (thing.def.defName == ThingDefOf.Genepack.defName) return true;
-            else return false;
+            return false;
         }
 
         public static bool CheckIfThingIsXenoGerm(Thing thing) 
