@@ -25,6 +25,8 @@ namespace GameServer
             "HTML color inside brackets - Followed by the text you want to [ff0000]change color"
         };
 
+        public static readonly string[] MOTD = Master.chatConfig.MessageOfTheDay.Split("[n]");
+
         public static void ParsePacket(ServerClient client, Packet packet)
         {
             ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);

@@ -301,7 +301,19 @@ namespace GameServer
                         Serializer.SerializeToFile(pathToLoad, Master.modConfig);
                     }
                     break;
+                
+                case ServerFileMode.Chat:
+                    pathToLoad = Path.Combine(Master.corePath, "ChatConfig.json");
+                    if (File.Exists(pathToLoad)) Master.chatConfig = Serializer.SerializeFromFile<ChatConfigFile>(pathToLoad);
+                    else
+                    {
+                        Master.chatConfig = new ChatConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.chatConfig);
+                    }
+                    break;
             }
+            
+            
 
             if (broadcast) Logger.Warning($"Loaded > '{pathToLoad}'");
         }

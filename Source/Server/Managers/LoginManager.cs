@@ -77,8 +77,16 @@ namespace GameServer
             UserManager.SendPlayerRecount();
 
             GlobalDataManager.SendServerGlobalData(client);
+            
+            if (Master.chatConfig.LoginNotifications) ChatManager.BroadcastServerMessage($"{client.userFile.Username} has logged in!");
 
             foreach(string str in ChatManager.defaultJoinMessages) ChatManager.SendSystemMessage(client, str);
+
+            if (Master.chatConfig.EnableMoTD)
+            {
+                foreach (string str in ChatManager.MOTD) 
+                    ChatManager.SendSystemMessage(client, str);
+            }
 
             if (WorldManager.CheckIfWorldExists())
             {
