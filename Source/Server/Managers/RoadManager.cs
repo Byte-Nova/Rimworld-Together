@@ -39,7 +39,7 @@ namespace GameServer
 
             SaveRoad(data._details, client);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
         }
 
@@ -72,7 +72,7 @@ namespace GameServer
 
             void BroadcastDeletion(RoadDetails toRemove)
             {
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
                 NetworkHelper.SendPacketToAllClients(packet);
             }
         }

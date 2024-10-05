@@ -1,6 +1,7 @@
 ﻿using Shared;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
+using static Shared.CommonValues;
 
 namespace GameServer
 {
@@ -85,8 +86,6 @@ namespace GameServer
             }
         }
 
-        //Runs in a separate thread and listens for any kind of information being sent through the connection
-
         public void Listen()
         {
             try
@@ -97,11 +96,7 @@ namespace GameServer
 
                     string data = streamReader.ReadLine();
                     if (string.IsNullOrWhiteSpace(data)) disconnectFlag = true;
-                    else
-                    {
-                        Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
-                        PacketHandler.HandlePacket(targetClient, receivedPacket);
-                    }
+                    else HandlePacket(Serializer.SerializeFromString<Packet>(data));
                 }
             }
 
@@ -109,6 +104,22 @@ namespace GameServer
             {
                 Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
+                disconnectFlag = true;
+            }
+        }
+
+        //Function that opens handles the action that the packet should do, then sends it to the correct one below
+
+        public void HandlePacket(Packet packet)
+        {
+            if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
+            else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
+            
+            //If method manager failed to execute the packet we assume corrupted data
+            if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
+            {                
+                Logger.Error($"Forcefully disconnecting player '{targetClient.userFile.Username}' with ip '{targetClient.userFile.SavedIP}' due to MethodManager exception");
+                Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
                 disconnectFlag = true;
             }
         }

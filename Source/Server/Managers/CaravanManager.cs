@@ -38,7 +38,7 @@ namespace GameServer
             data._caravanFile.ID = CaravanManagerHelper.GetNewCaravanID();
             RefreshCaravanTimer(data._caravanFile);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
 
             Logger.Message($"[Add Caravan] > {data._caravanFile.ID} > {client.userFile.Username}");
@@ -52,7 +52,7 @@ namespace GameServer
             {
                 DeleteCaravan(data._caravanFile);
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                 NetworkHelper.SendPacketToAllClients(packet);
 
                 Logger.Message($"[Remove Caravan] > {data._caravanFile.ID} > {client.userFile.Username}");
@@ -68,7 +68,7 @@ namespace GameServer
                 UpdateCaravan(toMove, data._caravanFile);
                 RefreshCaravanTimer(data._caravanFile);
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                 NetworkHelper.SendPacketToAllClients(packet, client);
             }
         }
@@ -118,7 +118,7 @@ namespace GameServer
                     data._stepMode = CaravanStepMode.Remove;
                     data._caravanFile = caravans;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                     NetworkHelper.SendPacketToAllClients(packet);
                 }
             }

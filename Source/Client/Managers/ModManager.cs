@@ -17,12 +17,12 @@ namespace GameClient
             switch (data._stepMode)
             {
                 case ModConfigStepMode.Ask:
-                    OpenModManagerMenu(false, data._configFile);
+                    OpenModManagerMenu(false);
                     break;
             }
         }
 
-        public static void OpenModManagerMenu(bool isFirstEdit, ModConfigFile configFile = null)
+        public static void OpenModManagerMenu(bool isFirstEdit)
         {
             Action toDo = delegate
             {
@@ -31,7 +31,7 @@ namespace GameClient
                 data._configFile = new ModConfigFile();
                 SortModsIntoCategories(data._configFile, DialogManager.dialogTupleListingResultString, DialogManager.dialogTupleListingResultInt);
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ModPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(ModManager), data);
                 Network.listener.EnqueuePacket(packet);
 
                 if (isFirstEdit)

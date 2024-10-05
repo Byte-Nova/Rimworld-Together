@@ -45,13 +45,13 @@ namespace GameServer
 
             Main_.SaveValueFile(ServerFileMode.Market);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
             client.listener.EnqueuePacket(packet);
 
             marketData._stepMode = MarketStepMode.Reload;
             marketData._transferThings = Master.marketValues.MarketStock;
 
-            packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+            packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
             NetworkHelper.SendPacketToAllClients(packet, client);
         }
 
@@ -68,7 +68,7 @@ namespace GameServer
             toGet.Quantity = marketData._quantityToManage;
             marketData._transferThings = new List<ThingDataFile>() { toGet };
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
 
             toGet.Quantity = reservedQuantity;
             if (toGet.Quantity > marketData._quantityToManage) toGet.Quantity -= marketData._quantityToManage;
@@ -82,8 +82,8 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
             marketData._stepMode = MarketStepMode.Reload;
             marketData._transferThings = Master.marketValues.MarketStock;
-
-            packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+            
+            packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
             NetworkHelper.SendPacketToAllClients(packet, client);
 
             Main_.SaveValueFile(ServerFileMode.Market);
@@ -93,7 +93,7 @@ namespace GameServer
         {
             marketData._transferThings = Master.marketValues.MarketStock;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
             client.listener.EnqueuePacket(packet);
         }
 

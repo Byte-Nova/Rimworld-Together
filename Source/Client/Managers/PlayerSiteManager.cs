@@ -57,7 +57,7 @@ namespace GameClient
         {
             try
             {
-                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
+                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile && (FactionValues.playerFactions.Contains(fetch.Faction) || fetch.Faction == Faction.OfPlayer));
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
                     if (playerSites.Contains(toGet)) playerSites.Remove(toGet);
