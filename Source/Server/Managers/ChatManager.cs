@@ -10,6 +10,7 @@ namespace GameServer
         private static readonly Semaphore commandSemaphore = new Semaphore(1, 1);
         
         private static readonly string systemName = "CONSOLE";
+        private static readonly string notificationName = "SERVER";
 
         public static readonly string[] defaultJoinMessages = new string[]
         {
@@ -97,6 +98,23 @@ namespace GameServer
             chatData._message = message;
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
+            NetworkHelper.SendPacketToAllClients(packet);
+
+            if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData._username, message);
+
+            WriteToLogs(chatData._username, message);
+            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
+        }
+
+        public static void BroadcastServerNotification(string message)
+        {
+            ChatData chatData = new ChatData();
+            chatData._username = notificationName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Server;
+            chatData._messageColor = MessageColor.Server;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
