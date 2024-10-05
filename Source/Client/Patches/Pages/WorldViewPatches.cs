@@ -486,15 +486,12 @@ namespace GameClient
                     };
                     Command_Action command_Config = new Command_Action
                     {
-                        defaultLabel = "Change the site configs",
-                        defaultDesc = "Change the configs of your sites. THese settings affect all sites currently under your control.",
+                        defaultLabel = "Change site configs",
+                        defaultDesc = "Change the configuration of your sites. These settings affect all sites currently under your control.",
                         icon = ContentFinder<Texture2D>.Get("Commands/SiteConfig"),
                         action = delegate
                         {
-                            if (SessionValues.actionValues.EnableSites)
-                            {
-                                DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(true));
-                            }
+                            if (SessionValues.actionValues.EnableSites) DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(true));
                             else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };

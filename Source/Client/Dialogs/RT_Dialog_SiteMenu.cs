@@ -13,6 +13,7 @@ namespace GameClient.Dialogs
         public List<SiteInfoFile> SiteInfoFileList = new List<SiteInfoFile>();
 
         public Vector2 initialSize = new Vector2(700f, 450);
+        
         public override Vector2 InitialSize => initialSize;
 
         public string title = "Choose a site";
