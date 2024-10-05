@@ -256,7 +256,7 @@ namespace GameClient.Dialogs
             Rect leftColumn = new Rect(mainRect.x, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 20f);
             Widgets.DrawTextureFitted(leftColumn, sitePartDef.ExpandingIconTexture, 1f);
 
-            Rect rightColumn = new Rect(mainRect.width / 2, mainRect.y + 30f, mainRect.width / 2, mainRect.height);
+            Rect rightColumn = new Rect(mainRect.width / 2, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 20f);
             float heightDesc = Text.CalcHeight(sitePartDef.description, rightColumn.width - 16f) / 2 +9f;
             float height = 40f + (float)rewardThing.Count() * 25f + heightDesc;
             Rect viewRightColumn = new Rect(rightColumn.x, rightColumn.y, rightColumn.width - 16f, height);
