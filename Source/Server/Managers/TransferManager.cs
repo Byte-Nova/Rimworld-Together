@@ -80,7 +80,7 @@ namespace GameServer
                     transferData._stepMode = TransferStepMode.TradeRequest;
                     string[] contents2 = new string[] { Serializer.SerializeToString(transferData) };
                     Packet rPacket2 = Packet.CreatePacketFromObject(nameof(TransferManager), transferData);
-                    UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket2);
+                    NetworkHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket2);
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace GameServer
             {
                 transferData._stepMode = TransferStepMode.TradeReject;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(TransferManager), transferData);
-                UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
+                NetworkHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
             }
         }
 
@@ -121,7 +121,7 @@ namespace GameServer
             {
                 transferData._stepMode = TransferStepMode.TradeReRequest;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(TransferManager), transferData);
-                UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
+                NetworkHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
             }
         }
 
@@ -141,7 +141,7 @@ namespace GameServer
             {
                 transferData._stepMode = TransferStepMode.TradeReAccept;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(TransferManager), transferData);
-                UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
+                NetworkHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
             }
         }
 
@@ -161,7 +161,7 @@ namespace GameServer
             {
                 transferData._stepMode = TransferStepMode.TradeReReject;
                 Packet rPacket = Packet.CreatePacketFromObject(nameof(TransferManager), transferData);
-                UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
+                NetworkHelper.GetConnectedClientFromUsername(settlement.Owner).listener.EnqueuePacket(rPacket);
             }
         }
     }

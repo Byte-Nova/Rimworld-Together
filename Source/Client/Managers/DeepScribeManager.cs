@@ -983,8 +983,8 @@ namespace GameClient
         public static ThingDataFile ItemToString(Thing thing, int thingCount)
         {
             ThingDataFile thingData = new ThingDataFile();
-
             Thing toUse = null;
+            
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
@@ -1004,11 +1004,13 @@ namespace GameClient
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
             return thingData;
         }
 
         public static Thing StringToItem(ThingDataFile thingData)
         {
+
             Thing thing = SetItem(thingData);
 
             SetItemQuantity(thing, thingData);
@@ -1025,6 +1027,7 @@ namespace GameClient
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsXenoGerm(thing)) SetXenoGermDetails(thing, thingData);
             return thing;
         }
 
@@ -1093,15 +1096,7 @@ namespace GameClient
             try
             {
                 Genepack genepack = (Genepack)thing;
-
-                Type type = genepack.GetType();
-                FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
-                GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
-
-                type = geneSet.GetType();
-                fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
-                List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
-                foreach (GeneDef gene in geneList) thingData.GenepackData.genepackDefs.Add(gene.defName);
+                foreach (GeneDef gene in genepack.GeneSet.GenesListForReading) thingData.GenepackData.genepackDefs.Add(gene.defName);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1143,8 +1138,20 @@ namespace GameClient
                 }
 
                 thingData.BookData = bookData;
+                Logger.Warning(bookData.title);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void GetXenoGermDetails(Thing thing, ThingDataFile thingDataFile) 
+        {
+            try 
+            {
+                Xenogerm germData = (Xenogerm)thing;
+                foreach (GeneDef gene in germData.GeneSet.GenesListForReading) thingDataFile.XenoGermData.geneDefs.Add(gene.defName);
+                thingDataFile.XenoGermData.xenoTypeName = germData.xenotypeName;
+                thingDataFile.XenoGermData.iconDef = germData.iconDef.defName;
+            } catch (Exception e ) { Logger.Warning(e.ToString()); } 
         }
 
         //Setters
@@ -1218,22 +1225,13 @@ namespace GameClient
             try
             {
                 Genepack genepack = (Genepack)thing;
-
-                Type type = genepack.GetType();
-                FieldInfo fieldInfo = type.GetField("geneSet", BindingFlags.NonPublic | BindingFlags.Instance);
-                GeneSet geneSet = (GeneSet)fieldInfo.GetValue(genepack);
-
-                type = geneSet.GetType();
-                fieldInfo = type.GetField("genes", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                List<GeneDef> geneList = (List<GeneDef>)fieldInfo.GetValue(geneSet);
-                geneList.Clear();
+                List<GeneDef> geneDefs = new List<GeneDef>();
                 foreach (string str in thingData.GenepackData.genepackDefs)
                 {
                     GeneDef gene = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
-                    geneList.Add(gene);
+                    geneDefs.Add(gene);
                 }
-                geneSet.GenerateName();
+                genepack.Initialize(geneDefs);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1291,6 +1289,25 @@ namespace GameClient
 
                     fieldInfo.SetValue(doerResearch, researchDict);
                 }
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void SetXenoGermDetails(Thing thing, ThingDataFile thingDataFile)
+        {
+            try
+            {
+                Xenogerm germData = (Xenogerm)thing;
+                List<Genepack> genePacks = new List<Genepack>();
+                foreach (string genepacks in thingDataFile.XenoGermData.geneDefs) 
+                {
+                    Genepack genepack = new Genepack();
+                    List<GeneDef> geneDefs = new List<GeneDef>();
+                    geneDefs.Add(DefDatabase<GeneDef>.GetNamed(genepacks));
+                    genepack.Initialize(geneDefs);
+                    genePacks.Add(genepack);
+                }
+                germData.Initialize(genePacks, thingDataFile.XenoGermData.xenoTypeName, DefDatabase<XenotypeIconDef>.GetNamed(thingDataFile.XenoGermData.iconDef));
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1754,13 +1771,13 @@ namespace GameClient
 
         public static bool CheckIfThingIsBook(Thing thing)
         {
-            if (!ModsConfig.AnomalyActive) return false;
 
             if (thing.def.defName == ThingDefOf.TextBook.defName) return true;
             else if (thing.def.defName == ThingDefOf.Schematic.defName) return true;
-            else if (thing.def.defName == ThingDefOf.Tome.defName) return true;
             else if (thing.def.defName == ThingDefOf.Novel.defName) return true;
-            else return false;
+            if (!ModsConfig.AnomalyActive) return false;
+            if (thing.def.defName == ThingDefOf.Tome.defName) return true;
+            return false;
         }
 
         public static bool CheckIfThingIsGenepack(Thing thing)
@@ -1768,6 +1785,14 @@ namespace GameClient
             if (!ModsConfig.BiotechActive) return false;
 
             if (thing.def.defName == ThingDefOf.Genepack.defName) return true;
+            return false;
+        }
+
+        public static bool CheckIfThingIsXenoGerm(Thing thing) 
+        {
+            if(!ModsConfig.BiotechActive) return false;
+
+            if (thing.def.defName == ThingDefOf.Xenogerm.defName) return true;
             else return false;
         }
     }
