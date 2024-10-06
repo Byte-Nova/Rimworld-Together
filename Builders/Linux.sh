@@ -38,7 +38,7 @@ SetAllNeededVariables()
     echo "Build result path is set to $BUILDRESULTPATH";
 
     cd Current;
-    mkdir "Assemblies";
+    mkdir "Assemblies" >/dev/null;
     cd Assemblies;
     BUILDRESULTPATH=$(pwd);
     echo "Build result path is set to $BUILDRESULTPATH";
