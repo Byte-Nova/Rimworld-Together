@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTChillSpot.label>Точка Відпочинку</RTChillSpot.label>
+    <RTChillSpot.description>Визначає місце де колоністи будуть відпочивати в режимі офлайн. Застосовується тільки при відвідинах гравців!</RTChillSpot.description>
+</LanguageData>

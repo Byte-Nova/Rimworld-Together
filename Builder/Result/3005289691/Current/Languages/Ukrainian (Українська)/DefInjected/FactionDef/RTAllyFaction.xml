@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<RTAlly.label>Поселення Союзних Гравців</RTAlly.label>
+	<RTAlly.description>Онлайн фракція</RTAlly.description>
+	<RTAlly.fixedName>Поселення Союзних Гравців</RTAlly.fixedName>
+	<RTAlly.leaderTitle>лідер</RTAlly.leaderTitle>
+	<RTAlly.pawnSingular>колоніст</RTAlly.pawnSingular>
+	<RTAlly.pawnsPlural>колоністів</RTAlly.pawnsPlural>
+</LanguageData>

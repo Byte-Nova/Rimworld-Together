@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTTransferSpot.label>Точка Для Товарів</RTTransferSpot.label>
+    <RTTransferSpot.description>Визначає місце для доставлення товарів. Застосовується тільки при торгівлі з гравцями!</RTTransferSpot.description>
+</LanguageData>
