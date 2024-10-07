@@ -7,12 +7,12 @@ namespace Shared
     [Serializable]
     public class FactionFile
     {
-        public string name;
+        public string Name;
 
-        public List<string> currentMembers = new List<string>();
+        public List<string> CurrentMembers = new List<string>();
 
-        public List<int> currentRanks = new List<int>();
+        public List<int> CurrentRanks = new List<int>();
 
-        [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
+        [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
     }
 }

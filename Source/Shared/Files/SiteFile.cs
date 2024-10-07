@@ -19,6 +19,6 @@ namespace Shared
 
         public FactionFile FactionFile;
 
-        [NonSerialized] public Semaphore savingSemaphore = new Semaphore(1, 1);
+        [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
     }
 }

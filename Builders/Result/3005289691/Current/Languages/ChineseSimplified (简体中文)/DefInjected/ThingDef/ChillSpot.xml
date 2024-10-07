@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTChillSpot.label>休闲点</RTChillSpot.label>
+    <RTChillSpot.description>指定一个休闲点供棋子在离线时放松。仅适用于玩家访问！</RTChillSpot.description>
+</LanguageData>

@@ -7,7 +7,7 @@ namespace GameServer
     {
         private static readonly double baseActivityTimer = 3600000;
 
-        public static void ParseOfflineActivityPacket(ServerClient client, Packet packet)
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableOfflineActivities)
             {
@@ -34,18 +34,18 @@ namespace GameServer
             if (!MapManager.CheckIfMapExists(data._targetTile))
             {
                 data._stepMode = OfflineActivityStepMode.Unavailable;
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
                 client.listener.EnqueuePacket(packet);
             }
 
             else
             {
-                SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._targetTile);
+                SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._targetTile);
 
                 if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
                 {
                     data._stepMode = OfflineActivityStepMode.Deny;
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -56,7 +56,7 @@ namespace GameServer
                     if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
                     {
                         data._stepMode = OfflineActivityStepMode.Deny;
-                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
                         client.listener.EnqueuePacket(packet);
                     }
 
@@ -65,7 +65,7 @@ namespace GameServer
                         userFile.UpdateActivityTime();
 
                         data._mapData = MapManager.GetUserMapFromTile(data._targetTile);
-                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
                         client.listener.EnqueuePacket(packet);
                     }
                 }

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -29,12 +31,11 @@ namespace GameClient
             if (playerNegotiator != null) return true;
             else return false;
         }
-
         public static bool CheckIfHasEnoughSilverInMap(Map map, int requiredQuantity)
         {
             if (requiredQuantity == 0) return true;
 
-            int silverInMap = GetSilverInMap(map);
+            int silverInMap = GetSpecificThingCountInMap(ThingDefOf.Silver, map);
             if (silverInMap >= requiredQuantity) return true;
             else return false;
         }
@@ -48,24 +49,29 @@ namespace GameClient
             else return false;
         }
 
-        public static int GetSilverInMap(Map map)
+        public static Thing[] GetAllThingsInMap(Map map)
         {
-            List<Thing> silverInMap = new List<Thing>();
-            foreach (Zone zone in map.zoneManager.AllZones)
+            return map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item 
+                && fetch.IsInAnyStorage() && fetch.def.category == ThingCategory.Item && !fetch.Position.Fogged(map)).ToArray();
+        }
+
+        public static Thing[] GetSpecificThingInMap(ThingDef thingDef, Map map)
+        {
+            return map.listerThings.AllThings.Where(fetch => fetch.def == thingDef && !fetch.Position.Fogged(map)).ToArray();
+        }
+
+        public static int GetSpecificThingCountInMap(ThingDef thingDef, Map map)
+        {
+            int totalCount = 0;
+
+            Thing[] allFetchedThings = map.listerThings.AllThings.Where(fetch => fetch.def == thingDef && !fetch.Position.Fogged(map)).ToArray();
+
+            foreach (Thing thing in allFetchedThings)
             {
-                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
-                {
-                    if (thing.def == ThingDefOf.Silver && !thing.Position.Fogged(map))
-                    {
-                        silverInMap.Add(thing);
-                    }
-                }
+                totalCount += thing.stackCount;
             }
 
-            int totalSilver = 0;
-            foreach (Thing silverStack in silverInMap) totalSilver += silverStack.stackCount;
-
-            return totalSilver;
+            return totalCount;
         }
 
         public static int GetSilverInCaravan(Caravan caravan)
@@ -115,16 +121,31 @@ namespace GameClient
                 .ToArray();
         }
 
-        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false)
+        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false, bool byDropPod = false)
         {
             IntVec3 positionToPlaceAt = IntVec3.Zero;
             if (useSpot) positionToPlaceAt = TransferManagerHelper.GetTransferLocationInMap(map);
             else positionToPlaceAt = thing.Position;
 
-            if (thing is Pawn) GenSpawn.Spawn(thing, positionToPlaceAt, map, thing.Rotation);
-            else GenPlace.TryPlaceThing(thing, positionToPlaceAt, map, placeMode, rot: thing.Rotation);
+            if (byDropPod) TradeUtility.SpawnDropPod(FindVectorNear(positionToPlaceAt, map), map, thing);
+            else
+            {
+                if (thing is Pawn) GenSpawn.Spawn(thing, positionToPlaceAt, map, thing.Rotation);
+                else GenPlace.TryPlaceThing(thing, positionToPlaceAt, map, placeMode, rot: thing.Rotation);
+            }
         }
 
+        private static IntVec3 FindVectorNear(IntVec3 center, Map map)
+        {
+            if (!DropCellFinder.TryFindDropSpotNear(center, map, out IntVec3 vectorForUse, false, true))
+            {
+                Logger.Warning("Couldn't find any good drop spot near " + center + "Will use random valid location instead.");
+                vectorForUse = CellFinderLoose.RandomCellWith((Predicate<IntVec3>)(c => c.Standable(map) && !c.Fogged(map)), map);
+            }
+            
+            return vectorForUse;
+        }
+        
         public static void PlaceThingIntoCaravan(Thing thing, Caravan caravan)
         {
             if (thing is Pawn)
@@ -144,7 +165,7 @@ namespace GameClient
             }
         }
 
-        public static void RemoveThingFromCaravan(ThingDef thingDef, int requiredQuantity, Caravan caravan)
+        public static void RemoveThingFromCaravan(Caravan caravan, ThingDef thingDef, int requiredQuantity)
         {
             if (requiredQuantity == 0) return;
 
@@ -170,47 +191,18 @@ namespace GameClient
 
         public static void RemoveThingFromSettlement(Map map, ThingDef thingDef, int requiredQuantity)
         {
-            if (requiredQuantity == 0) return;
-
-            List<Thing> thingsInMap = new List<Thing>();
-            foreach (Zone zone in map.zoneManager.AllZones)
+            while (requiredQuantity > 0)
             {
-                foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                List<Thing> things = map.listerThings.ThingsOfDef(thingDef).Where(fetch => fetch.IsInAnyStorage())
+                    .ToList();
+
+                while (requiredQuantity > 0)
                 {
-                    if (thing.def == thingDef && !thing.Position.Fogged(map))
-                    {
-                        thingsInMap.Add(thing);
-                    }
-                }
-            }
-
-            int takenQuantity = 0;
-            foreach (Thing thing in thingsInMap)
-            {
-                if (takenQuantity == requiredQuantity) return;
-
-                else if (takenQuantity + thing.stackCount == requiredQuantity)
-                {
-                    takenQuantity = requiredQuantity;
-                    thing.Destroy();
-                    break;
-                }
-
-                else if (takenQuantity + thing.stackCount > requiredQuantity)
-                {
-                    int missingQuantity = requiredQuantity - takenQuantity;
-
-                    takenQuantity += missingQuantity;
-                    thing.stackCount -= missingQuantity;
-                    if (thing.stackCount <= 0) thing.Destroy();
-                    break;
-                }
-
-                else if (takenQuantity + thing.stackCount < requiredQuantity)
-                {
-                    takenQuantity += thing.stackCount;
-                    thing.Destroy();
-                    continue;
+                    Thing thing = things.First();
+                    int stackDeleting = Mathf.Min(requiredQuantity, thing.stackCount);
+                    thing.SplitOff(stackDeleting);
+                    requiredQuantity -= stackDeleting;
+                    things.Remove(thing);
                 }
             }
         }
@@ -236,8 +228,19 @@ namespace GameClient
 
         public static Pawn[] GetPawnsFromMap(Map map, Faction faction, bool includeAnimals)
         {
-            if (includeAnimals) return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction).ToArray();
-            else return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction && !DeepScribeHelper.CheckIfThingIsAnimal(fetch)).ToArray();
+            if (map == null || map.mapPawns == null) return new Pawn[0];
+            else
+            {
+                if (includeAnimals) return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction).ToArray();
+                else return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction && !DeepScribeHelper.CheckIfThingIsAnimal(fetch)).ToArray();
+            }
+        }
+
+        public static bool CheckIfMapHasPlayerPawns(Map map)
+        {
+            if (map == null || map.mapPawns == null) return false;
+            else if (map.mapPawns.AllPawns.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer) != null) return true;
+            else return false;
         }
     }
 }

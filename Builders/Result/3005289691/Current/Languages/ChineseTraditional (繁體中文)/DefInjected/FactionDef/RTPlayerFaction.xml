@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTFaction.label>派系玩家定居點</RTFaction.label>
+    <RTFaction.description>一個線上派系</RTFaction.description>
+    <RTFaction.fixedName>派系玩家定居點</RTFaction.fixedName>
+    <RTFaction.leaderTitle>領袖</RTFaction.leaderTitle>
+    <RTFaction.pawnSingular>殖民者</RTFaction.pawnSingular>
+    <RTFaction.pawnsPlural>殖民者們</RTFaction.pawnsPlural>
+</LanguageData>

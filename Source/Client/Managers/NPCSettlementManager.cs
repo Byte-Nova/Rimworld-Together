@@ -5,6 +5,7 @@ using System.Linq;
 using Verse;
 using Shared;
 using static Shared.CommonEnumerators;
+using System.Collections.Generic;
 
 namespace GameClient
 {
@@ -14,43 +15,59 @@ namespace GameClient
         {
             NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
-                case SettlementStepMode.Add:                    
+                case SettlementStepMode.Add:
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveNPCSettlementFromPacket(data.settlementData);
+                    RemoveNPCSettlementFromPacket(data._settlementData);
                     break;
             }
         }
 
         public static void AddSettlements(PlanetNPCSettlement[] settlements)
         {
-            if (settlements == null) return;
-
-            foreach(PlanetNPCSettlement settlement in NPCSettlementManagerHelper.tempNPCSettlements)
+            foreach(PlanetNPCSettlement settlement in settlements)
             {
-                SpawnSettlement(settlement);
+                SpawnSingleSettlement(settlement);
             }
         }
 
-        public static void SpawnSettlement(PlanetNPCSettlement toAdd)
+        public static void SpawnSingleSettlement(PlanetNPCSettlement toAdd)
         {
-            try
+            if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.tile) != null) return;
+            else
             {
                 Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                 settlement.Tile = toAdd.tile;
                 settlement.Name = toAdd.name;
 
-                //TODO
-                //THIS FUNCTION WILL ALWAYS ASSIGN ALL SETTLEMENTS TO THE FIRST INSTANCE OF A FACTION IF THERE'S MORE OF ONE OF THE SAME TIME
-                //HAVING MULTIPLE GENTLE TRIBES WILL SYNC ALL THE SETTLEMENTS OF THE GENTLE TRIBES TO THE FIRST ONE. FIX!!
-                settlement.SetFaction(PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName));
+                List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName);
+
+                if (factions.Count == 0)
+                {
+                    Logger.Warning($"Could not find faction for settlement at tile {toAdd.tile} with faction {toAdd.defName}");
+                    return;
+                }
+
+                else if (factions.Count == 1)
+                {
+                    settlement.SetFaction(factions.First());
+                }
+
+                else if (factions.Count > 1)
+                {
+                    foreach (Faction faction in factions)
+                    {
+                        if(faction.Name == toAdd.factionName) settlement.SetFaction(faction);
+                    }
+
+                    if(settlement.Faction == null) settlement.SetFaction(factions.First());
+                } 
 
                 Find.WorldObjects.Add(settlement);
             }
-            catch (Exception e) { Logger.Error($"Failed to build NPC settlement at {toAdd.tile}. Reason: {e}"); }
         }
 
         public static void ClearAllSettlements()
@@ -58,18 +75,12 @@ namespace GameClient
             Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !FactionValues.playerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
-            foreach (Settlement settlement in settlements)
-            {
-                RemoveSettlement(settlement, null);
-            }
+            foreach (Settlement settlement in settlements) RemoveSingleSettlement(settlement, null);
 
             DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !FactionValues.playerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
-            foreach (DestroyedSettlement settlement in destroyedSettlements)
-            {
-                RemoveSettlement(null, settlement);
-            }
+            foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
         }
 
         public static void RemoveNPCSettlementFromPacket(PlanetNPCSettlement data)
@@ -77,26 +88,46 @@ namespace GameClient
             Settlement toRemove = Find.World.worldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data.tile &&
                 fetch.Faction != Faction.OfPlayer);
 
-            if (toRemove != null) RemoveSettlement(toRemove, null);
+            if (toRemove != null) RemoveSingleSettlement(toRemove, null);
         }
 
-        public static void RemoveSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
+        public static void RemoveSingleSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
         {
             if (settlement != null)
             {
-                NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
-                Find.WorldObjects.Remove(settlement);
+                try
+                {
+                    if (!RimworldManager.CheckIfMapHasPlayerPawns(settlement.Map))
+                    {
+                        NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
+                        Find.WorldObjects.Remove(settlement);
+                    }
+                    else Logger.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
+                }
+                catch (Exception e) { Logger.Warning($"Failed to remove NPC settlement at {settlement.Tile}. Reason: {e}"); }
             }
-            else if (destroyedSettlement != null) Find.WorldObjects.Remove(destroyedSettlement);
+
+            else if (destroyedSettlement != null)
+            {
+                try
+                {
+                    if (!RimworldManager.CheckIfMapHasPlayerPawns(destroyedSettlement.Map))
+                    {
+                        Find.WorldObjects.Remove(destroyedSettlement);
+                    }
+                    else Logger.Warning($"Ignored removal of settlement at {destroyedSettlement.Tile} because player was inside");
+                }
+                catch (Exception e) { Logger.Warning($"Failed to remove NPC settlement at {destroyedSettlement.Tile}. Reason: {e}"); }       
+            }
         }
 
         public static void RequestSettlementRemoval(Settlement settlement)
         {
             NPCSettlementData data = new NPCSettlementData();
-            data.stepMode = SettlementStepMode.Remove;
-            data.settlementData.tile = settlement.Tile;
+            data._stepMode = SettlementStepMode.Remove;
+            data._settlementData.tile = settlement.Tile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(NPCSettlementManager), data);
             Network.listener.EnqueuePacket(packet);
         }
     }

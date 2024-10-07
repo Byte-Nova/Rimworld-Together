@@ -16,8 +16,10 @@ namespace GameServer
             ChangeTitle();
             TryDisableQuickEdit();
 
-            if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
+            Logger.Title($"----------------------------------------");
 
+            if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
+            if (Master.backupConfig.AutomaticBackups) BackupManager.AutoBackup();
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
 
@@ -52,12 +54,7 @@ namespace GameServer
 
             Master.backupsPath = Path.Combine(Master.mainPath, "Backups");
             Master.backupUsersPath = Path.Combine(Master.backupsPath, "Users");
-            Master.backupWorldPath = Path.Combine(Master.backupsPath, "Worlds");
-
-            Master.modsPath = Path.Combine(Master.mainPath, "Mods");
-            Master.requiredModsPath = Path.Combine(Master.modsPath, "Required");
-            Master.optionalModsPath = Path.Combine(Master.modsPath, "Optional");
-            Master.forbiddenModsPath = Path.Combine(Master.modsPath, "Forbidden");
+            Master.backupServerPath = Path.Combine(Master.backupsPath, "Servers");
 
             if (!Directory.Exists(Master.corePath)) Directory.CreateDirectory(Master.corePath);
             if (!Directory.Exists(Master.usersPath)) Directory.CreateDirectory(Master.usersPath);
@@ -74,12 +71,7 @@ namespace GameServer
 
             if (!Directory.Exists(Master.backupsPath)) Directory.CreateDirectory(Master.backupsPath);
             if (!Directory.Exists(Master.backupUsersPath)) Directory.CreateDirectory(Master.backupUsersPath);
-            if (!Directory.Exists(Master.backupWorldPath)) Directory.CreateDirectory(Master.backupWorldPath);
-
-            if (!Directory.Exists(Master.modsPath)) Directory.CreateDirectory(Master.modsPath);
-            if (!Directory.Exists(Master.requiredModsPath)) Directory.CreateDirectory(Master.requiredModsPath);
-            if (!Directory.Exists(Master.optionalModsPath)) Directory.CreateDirectory(Master.optionalModsPath);
-            if (!Directory.Exists(Master.forbiddenModsPath)) Directory.CreateDirectory(Master.forbiddenModsPath);
+            if (!Directory.Exists(Master.backupServerPath)) Directory.CreateDirectory(Master.backupServerPath);
         }
 
         private static void SetCulture()
@@ -122,13 +114,15 @@ namespace GameServer
             LoadValueFile(ServerFileMode.Discord);
             SaveValueFile(ServerFileMode.Discord, false);
 
+            LoadValueFile(ServerFileMode.Backup);
+            SaveValueFile(ServerFileMode.Backup, false);
+
+            LoadValueFile(ServerFileMode.Mods);
+            SaveValueFile(ServerFileMode.Mods, true);
+
             LoadValueFile(ServerFileMode.World);
 
-            ModManager.LoadMods();
-
             EventManager.LoadEvents();
-
-            Logger.Title($"----------------------------------------");
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)
@@ -180,6 +174,16 @@ namespace GameServer
                 case ServerFileMode.Discord:
                     pathToSave = Path.Combine(Master.corePath, "DiscordConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.discordConfig);
+                    break;
+
+                case ServerFileMode.Backup:
+                    pathToSave = Path.Combine(Master.corePath, "BackupConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.backupConfig);
+                    break;
+
+                case ServerFileMode.Mods:
+                    pathToSave = Path.Combine(Master.corePath, "ModConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.modConfig);
                     break;
             }
 
@@ -275,6 +279,26 @@ namespace GameServer
                     {
                         Master.discordConfig = new DiscordConfigFile();
                         Serializer.SerializeToFile(pathToLoad, Master.discordConfig);
+                    }
+                    break;
+
+                case ServerFileMode.Backup:
+                    pathToLoad = Path.Combine(Master.corePath, "BackupConfig.json");
+                    if (File.Exists(pathToLoad)) Master.backupConfig = Serializer.SerializeFromFile<BackupConfigFile>(pathToLoad);
+                    else
+                    {
+                        Master.backupConfig = new BackupConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.backupConfig);
+                    }
+                    break;
+
+                case ServerFileMode.Mods:
+                    pathToLoad = Path.Combine(Master.corePath, "ModConfig.json");
+                    if (File.Exists(pathToLoad)) Master.modConfig = Serializer.SerializeFromFile<ModConfigFile>(pathToLoad);
+                    else
+                    {
+                        Master.modConfig = new ModConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.modConfig);
                     }
                     break;
             }

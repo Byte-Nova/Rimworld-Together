@@ -11,7 +11,7 @@ namespace GameClient
 {
     public static class OfflineActivityManager
     {
-        public static void ParseOfflineActivityPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             OfflineActivityData offlineVisitData = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
@@ -54,7 +54,7 @@ namespace GameClient
 
                     else
                     {
-                        RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, SessionValues.actionValues.SpyCost, SessionValues.chosenCaravan);
+                        RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, SessionValues.actionValues.SpyCost);
                         SendRequest();
                     }
                 };
@@ -73,7 +73,7 @@ namespace GameClient
             data._stepMode = OfflineActivityStepMode.Request;
             data._targetTile = SessionValues.chosenSettlement.Tile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -125,7 +125,7 @@ namespace GameClient
                 PrepareMapForOfflineActivity(mapData); 
             };
 
-            if (ModManager.CheckIfMapHasConflictingMods(mapData))
+            if (ModManagerHelper.CheckIfMapHasConflictingMods(mapData))
             {
                 DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
             }

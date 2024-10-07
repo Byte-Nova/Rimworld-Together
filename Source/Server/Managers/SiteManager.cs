@@ -7,7 +7,9 @@ namespace GameServer
     {
         //Variables
 
-        public static void ParseSitePacket(ServerClient client, Packet packet)
+        private static readonly double taskDelayMS = 1800000;
+
+        public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableSites)
             {
@@ -51,14 +53,14 @@ namespace GameServer
 
             foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
             {
-                siteData._goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                siteData._siteFile.Goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
 
                 cClient.listener.EnqueuePacket(packet);
             }
 
             siteData._stepMode = SiteStepMode.Accept;
-            Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet rPacket = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(rPacket);
 
             Logger.Warning($"[Created site] > {client.userFile.Username}");
@@ -66,7 +68,7 @@ namespace GameServer
 
         private static void AddNewSite(ServerClient client, SiteData siteData)
         {
-            if (SettlementManager.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a settlement");
+            if (PlayerSettlementManager.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a settlement");
             else if (SiteManagerHelper.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a site");
             else
             {
@@ -110,9 +112,9 @@ namespace GameServer
 
             if (siteFile.FactionFile != null)
             {
-                if (siteFile.FactionFile.name != client.userFile.FactionFile.name)
+                if (siteFile.FactionFile.Name != client.userFile.FactionFile.Name)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but player wasn't a part of faction {siteFile.FactionFile.name}");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but player wasn't a part of faction {siteFile.FactionFile.Name}");
                 }
 
                 else
@@ -137,7 +139,7 @@ namespace GameServer
             siteData._stepMode = SiteStepMode.Destroy;
             siteData._siteFile = siteFile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.Tile + SiteManagerHelper.fileExtension));
@@ -186,7 +188,7 @@ namespace GameServer
             {
                 if (siteFile.Owner != client.userFile.Username)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData._siteFile.Tile}, but the player {siteFile.Owner} of faction {siteFile.FactionFile.name} owns it");
+                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData._siteFile.Tile}, but the player {siteFile.Owner} of faction {siteFile.FactionFile.Name} owns it");
                 }
 
                 else if (siteFile.WorkerData == null)
@@ -200,20 +202,20 @@ namespace GameServer
                     siteFile.WorkerData = null;
                     SiteManagerHelper.SaveSite(siteFile);
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                     client.listener.EnqueuePacket(packet);
                 }
             }
         }
 
-        public static void StartSiteTicker()
+        public static async Task StartSiteTicker()
         {
             while (true)
             {
-                Thread.Sleep(1800000);
-
                 try { SiteRewardTick(); }
                 catch (Exception e) { Logger.Error($"Site tick failed, this should never happen. Exception > {e}"); }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(taskDelayMS));
             }
         }
 
@@ -243,7 +245,7 @@ namespace GameServer
 
                 if (client.userFile.FactionFile != null)
                 {
-                    List<SiteFile> factionSites = sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.name == client.userFile.FactionFile.name);
+                    List<SiteFile> factionSites = sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.Name == client.userFile.FactionFile.Name);
                     foreach (SiteFile site in factionSites)
                     {
                         if (site.FactionFile != null) siteData._sitesWithRewards.Add(site.Tile);
@@ -252,12 +254,12 @@ namespace GameServer
 
                 if (siteData._sitesWithRewards.Count() > 0)
                 {
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                     client.listener.EnqueuePacket(packet);
                 }
             }
 
-            Logger.Message($"[Site tick]");
+            Logger.Warning($"[Site tick]");
         }
     }
 
@@ -267,12 +269,12 @@ namespace GameServer
 
         public static void SaveSite(SiteFile siteFile)
         {
-            siteFile.savingSemaphore.WaitOne();
+            siteFile.SavingSemaphore.WaitOne();
 
             try { Serializer.SerializeToFile(Path.Combine(Master.sitesPath, siteFile.Tile + fileExtension), siteFile); }
             catch (Exception e) { Logger.Error(e.ToString()); }
             
-            siteFile.savingSemaphore.Release();
+            siteFile.SavingSemaphore.Release();
         }
 
         public static void UpdateFaction(SiteFile siteFile, FactionFile toUpdateWith)
@@ -316,7 +318,7 @@ namespace GameServer
             SiteFile siteFile = GetSiteFileFromTile(siteData._siteFile.Tile);
             siteData._siteFile = siteFile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(packet);
         }
 

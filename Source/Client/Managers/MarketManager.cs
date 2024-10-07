@@ -13,7 +13,7 @@ namespace GameClient
     {
         //Parses received market packets into something usable
 
-        public static void ParseMarketPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             MarketData marketData = Serializer.ConvertBytesToObject<MarketData>(packet.contents);
 
@@ -76,7 +76,7 @@ namespace GameClient
             data._indexToManage = marketIndex;
             data._quantityToManage = quantity;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -98,13 +98,13 @@ namespace GameClient
 
         public static void RequestReloadStock()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingData[] { }, SessionValues.chosenSettlement.Map, null, null));
+            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingDataFile[] { }, SessionValues.chosenSettlement.Map, null, null));
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData marketData = new MarketData();
             marketData._stepMode = MarketStepMode.Reload;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
             Network.listener.EnqueuePacket(packet);
         }
 

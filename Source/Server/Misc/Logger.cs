@@ -7,9 +7,9 @@ namespace GameServer
     {
         //Variables
 
-        public static Semaphore semaphore = new Semaphore(1, 1);
+        private static readonly Semaphore semaphore = new Semaphore(1, 1);
 
-        private static Dictionary<LogMode, ConsoleColor> colorDictionary = new Dictionary<LogMode, ConsoleColor>
+        private static readonly Dictionary<LogMode, ConsoleColor> colorDictionary = new Dictionary<LogMode, ConsoleColor>
         {
             { LogMode.Message, ConsoleColor.White },
             { LogMode.Warning, ConsoleColor.Yellow },
@@ -18,39 +18,38 @@ namespace GameServer
             { LogMode.Outsider, ConsoleColor.Magenta}
         };
 
-        //Wrapper to write log in white color
+        //Functions to write logs in different colors
 
-        public static void Message(string message) { WriteToConsole(message, LogMode.Message); }
+        public static void Message(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Message, importance); }
 
-        //Wrapper to write log in yellow color
+        public static void Warning(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Warning, importance); }
 
-        public static void Warning(string message) { WriteToConsole(message, LogMode.Warning); }
+        public static void Error(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Error, importance); }
 
-        //Wrapper to write log in red color
+        public static void Title(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Title, importance); }
 
-        public static void Error(string message) { WriteToConsole(message, LogMode.Error); }
+        public static void Outsider(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Outsider, importance); }
 
-        //Wrapper to write log in green color
+        //Actual function that writes the logs
 
-        public static void Title(string message) { WriteToConsole(message, LogMode.Title); }
-
-        //Wrapper to write log in X color
-
-        public static void Outsider(string message) { WriteToConsole(message, LogMode.Outsider); }
-
-        //Actual function that writes to the console
-
-        private static void WriteToConsole(string text, LogMode mode = LogMode.Message, bool writeToLogs = true)
+        private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
         {
-            semaphore.WaitOne();
+            semaphore.WaitOne();           
 
-            if (writeToLogs) WriteToLogs(text);
+            try
+            {
+                if (CheckIfShouldPrint(importance))
+                {
+                    if (writeToLogs) WriteToLogs(text);
 
-            Console.ForegroundColor = colorDictionary[mode];
-            Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
-            Console.ForegroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = colorDictionary[mode];
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
+                    Console.ForegroundColor = ConsoleColor.White;
 
-            if (Master.discordConfig != null && Master.discordConfig.Enabled) DiscordManager.SendMessageToConsoleChannelBuffer(text);
+                    if (Master.discordConfig != null && Master.discordConfig.Enabled) DiscordManager.SendMessageToConsoleChannelBuffer(text);
+                }
+            }
+            catch { throw new Exception($"Logger encountered an error. This should never happen"); }
 
             semaphore.Release();
         }
@@ -69,6 +68,16 @@ namespace GameServer
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
+        }
+
+        //Checks if the importance of the log has been enabled
+
+        private static bool CheckIfShouldPrint(LogImportanceMode importance)
+        {
+            if (importance == LogImportanceMode.Normal) return true;
+            else if (importance == LogImportanceMode.Verbose && Master.serverConfig.VerboseLogs) return true;
+            else if (importance == LogImportanceMode.Extreme && Master.serverConfig.ExtremeVerboseLogs) return true;
+            else return false;
         }
     }
 }

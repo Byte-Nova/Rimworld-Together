@@ -61,15 +61,14 @@ namespace GameClient
             Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
-
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
             Text.Font = GameFont.Medium;
-
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
+            Text.Font = GameFont.Small;
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close"))
             {
                 if (actionCancel != null) actionCancel.Invoke();

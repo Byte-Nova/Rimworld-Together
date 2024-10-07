@@ -9,14 +9,14 @@ namespace GameServer
         {
             NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.contents);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case SettlementStepMode.Add:
                     ResponseShortcutManager.SendIllegalPacket(client, "Tried to execute unimplemented action");
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveNPCSettlement(client, data.settlementData);
+                    RemoveNPCSettlement(client, data._settlementData);
                     break;
             }
         }
@@ -53,10 +53,10 @@ namespace GameServer
         private static void BroadcastSettlementDeletion(PlanetNPCSettlement settlement)
         {
             NPCSettlementData data = new NPCSettlementData();
-            data.stepMode = SettlementStepMode.Remove;
-            data.settlementData = settlement;
+            data._stepMode = SettlementStepMode.Remove;
+            data._settlementData = settlement;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.NPCSettlementPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(NPCSettlementManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
         }
     }

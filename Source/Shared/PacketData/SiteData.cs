@@ -11,8 +11,6 @@ namespace Shared
 
         public SiteFile _siteFile = new SiteFile();
 
-        public Goodwill _goodwill;
-
         public List<int> _sitesWithRewards = new List<int>();
     }
 }
