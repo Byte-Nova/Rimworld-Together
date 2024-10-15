@@ -36,17 +36,19 @@ namespace GameClient
 
         public static void SetSiteDefs()
         {
-            List<SitePartDef> defs = new List<SitePartDef>();
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTFarmland"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTHunterCamp"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTQuarry"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTSawmill"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTBank"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTLaboratory"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTRefinery"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTHerbalWorkshop"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTTextileFactory"));
-            defs.Add(DefDatabase<SitePartDef>.GetNamed("RTFoodProcessor"));
+            List<SitePartDef> defs = new List<SitePartDef>
+            {
+                RTSitePartDefOf.RTFarmland,
+                RTSitePartDefOf.RTHunterCamp,
+                RTSitePartDefOf.RTQuarry,
+                RTSitePartDefOf.RTSawmill,
+                RTSitePartDefOf.RTBank,
+                RTSitePartDefOf.RTLaboratory,
+                RTSitePartDefOf.RTRefinery,
+                RTSitePartDefOf.RTHerbalWorkshop,
+                RTSitePartDefOf.RTTextileFactory,
+                RTSitePartDefOf.RTFoodProcessor
+            };
             siteDefs = defs.ToArray();
         }
 
