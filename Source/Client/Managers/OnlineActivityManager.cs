@@ -93,14 +93,14 @@ namespace GameClient
             if (OnlineActivityManagerHelper.isHost) CameraJumper.TryJump(OnlineActivityManagerHelper.nonFactionPawns[0].Position, OnlineActivityManagerHelper.activityMap);
             else OnlineActivityManagerHelper.JoinActivityMap(data._activityType);
 
-            Logger.Warning($"My pawns > {OnlineActivityManagerHelper.factionPawns.Length}");
+            Logger.Warning($"My pawns > {OnlineActivityManagerHelper.factionPawns.Count}");
             foreach(Pawn pawn in OnlineActivityManagerHelper.factionPawns) Logger.Warning(pawn.def.defName);
 
-            Logger.Warning($"Other pawns > {OnlineActivityManagerHelper.nonFactionPawns.Length}");
+            Logger.Warning($"Other pawns > {OnlineActivityManagerHelper.nonFactionPawns.Count}");
             foreach(Pawn pawn in OnlineActivityManagerHelper.nonFactionPawns) Logger.Warning(pawn.def.defName);
 
             Logger.Warning($"Map things > {OnlineActivityManagerHelper.activityMapThings.Count}");
-            foreach(ThingDataFile thingData in OnlineActivityManagerHelper.activityMapThings) Logger.Warning(thingData.Hash);
+            //foreach(ThingDataFile thingData in OnlineActivityManagerHelper.activityMapThings) Logger.Warning(thingData.Hash);
 
             DialogManager.PopWaitDialog();
             DialogManager.PushNewDialog(new RT_Dialog_OK($"Should start {OnlineActivityManagerHelper.isHost}"));
@@ -135,9 +135,9 @@ namespace GameClient
 
         public static List<ThingDataFile> activityMapThings = new List<ThingDataFile>();
 
-        public static Pawn[] factionPawns = new Pawn[0];
+        public static List<Pawn> factionPawns = new List<Pawn>();
 
-        public static Pawn[] nonFactionPawns = new Pawn[0];
+        public static List<Pawn> nonFactionPawns = new List<Pawn>();
 
         public static void SetActivityHost(OnlineActivityData data)
         {
@@ -147,8 +147,8 @@ namespace GameClient
 
         public static void SetActivityPawns()
         {
-            if (isHost) factionPawns = activityMap.mapPawns.AllPawns.ToArray();
-            else factionPawns = SessionValues.chosenCaravan.PawnsListForReading.ToArray();
+            if (isHost) factionPawns = activityMap.mapPawns.AllPawns.ToList();
+            else factionPawns = SessionValues.chosenCaravan.PawnsListForReading.ToList();
         }
 
         public static void SetOtherSidePawns(OnlineActivityData data)
@@ -184,7 +184,7 @@ namespace GameClient
                 }
             }
 
-            nonFactionPawns = toSet.ToArray();
+            nonFactionPawns = toSet.ToList();
         }
 
         public static void SetOtherSidePawnsFaction()
