@@ -83,11 +83,8 @@ namespace GameServer
 
             if (siteFile.Owner == client.userFile.Username)
             {
-                FactionFile factionFile = client.userFile.FactionFile;
-                if (FactionManagerHelper.GetMemberRank(factionFile, client.userFile.Username) != FactionRanks.Member) DestroySiteFromFile(siteFile);
-                else ResponseShortcutManager.SendNoPowerPacket(client, new PlayerFactionData());
+                DestroySiteFromFile(siteFile);
             }
-
             else
             {
                 ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but {siteFile.Owner} owns it");
