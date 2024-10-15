@@ -136,6 +136,17 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
             client.listener.EnqueuePacket(packet);
         }
+        public static void SendBroadcastMessage(ServerClient client, string message)
+        {
+            ChatData chatData = new ChatData();
+            chatData._username = notificationName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Server;
+            chatData._messageColor = MessageColor.Server;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
+            client.listener.EnqueuePacket(packet);
+        }
 
         private static void WriteToLogs(string username, string message)
         {

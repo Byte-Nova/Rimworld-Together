@@ -83,7 +83,7 @@ namespace GameServer
             if (Master.chatConfig.EnableMoTD)
             {
                 foreach (string str in ChatManager.MOTD) 
-                    ChatManager.SendSystemMessage(client, str);
+                    ChatManager.SendBroadcastMessage(client, str);
             }
             
             if (Master.chatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} has logged in!");
