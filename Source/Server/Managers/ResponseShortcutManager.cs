@@ -7,7 +7,10 @@ namespace GameServer
     {
         public static void SendIllegalPacket(ServerClient client, string message, bool shouldBroadcast = true)
         {
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.IllegalActionPacket));
+            ResponseShortcutData data = new ResponseShortcutData();
+            data.stepMode = ResponseStepMode.IllegalAction;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(ResponseShortcutManager), data);
             client.listener.EnqueuePacket(packet);
             client.listener.disconnectFlag = true;
 
@@ -20,13 +23,19 @@ namespace GameServer
 
         public static void SendUnavailablePacket(ServerClient client)
         {
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.UserUnavailablePacket));
+            ResponseShortcutData data = new ResponseShortcutData();
+            data.stepMode = ResponseStepMode.UserUnavailable;
+            
+            Packet packet = Packet.CreatePacketFromObject(nameof(ResponseShortcutManager), data);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendBreakPacket(ServerClient client)
         {
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.BreakPacket));
+            ResponseShortcutData data = new ResponseShortcutData();
+            data.stepMode = ResponseStepMode.Pop;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(ResponseShortcutManager), data);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -34,7 +43,7 @@ namespace GameServer
         {
             data._stepMode = FactionStepMode.NoPower;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), data);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -43,7 +52,7 @@ namespace GameServer
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.WorkerError;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(packet);
         }
     }

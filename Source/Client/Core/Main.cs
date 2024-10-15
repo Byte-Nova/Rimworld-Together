@@ -28,6 +28,10 @@ namespace GameClient
                 FactionValues.SetPlayerFactionDefs();
                 CaravanManagerHelper.SetCaravanDefs();
                 PreferenceManager.LoadClientPreferences();
+
+                //FIXME
+                //Causes issues to load sometimes
+                //CompatibilityManager.LoadAllPatchedAssemblies();
             }
         }
 
@@ -55,7 +59,16 @@ namespace GameClient
             Master.loginDataPath = Path.Combine(Master.modFolderPath, "LoginData.json");
             Master.savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
+            //FIXME
+            //Causes issues to load sometimes            
+            // Master.modAssemblyPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
+            // Master.compatibilityPatchesFolderPath = Path.Combine(Master.modAssemblyPath, "Patches");
+
             if (!Directory.Exists(Master.modFolderPath)) Directory.CreateDirectory(Master.modFolderPath);
+
+            //FIXME
+            //Causes issues to load sometimes
+            // if (!Directory.Exists(Master.compatibilityPatchesFolderPath)) Directory.CreateDirectory(Master.compatibilityPatchesFolderPath);
         }
 
         public static void CreateUnityDispatcher()

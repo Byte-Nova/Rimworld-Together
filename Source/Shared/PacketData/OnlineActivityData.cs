@@ -15,13 +15,13 @@ namespace Shared
 
         public MapData _mapData;
 
-        public List<HumanData> _mapHumans = new List<HumanData>();
+        public List<HumanDataFile> _mapHumans = new List<HumanDataFile>();
 
-        public List<AnimalData> _mapAnimals = new List<AnimalData>();
+        public List<AnimalDataFile> _mapAnimals = new List<AnimalDataFile>();
 
-        public List<HumanData> _caravanHumans = new List<HumanData>();
+        public List<HumanDataFile> _caravanHumans = new List<HumanDataFile>();
 
-        public List<AnimalData> _caravanAnimals = new List<AnimalData>();
+        public List<AnimalDataFile> _caravanAnimals = new List<AnimalDataFile>();
 
         //Misc
 
@@ -33,22 +33,22 @@ namespace Shared
 
         //Orders
 
-        public PawnOrder _pawnOrder;
+        public PawnOrderData _pawnOrder;
 
-        public CreationOrder _creationOrder;
+        public CreationOrderData _creationOrder;
 
-        public DestructionOrder _destructionOrder;
+        public DestructionOrderData _destructionOrder;
 
-        public DamageOrder _damageOrder;
+        public DamageOrderData _damageOrder;
 
-        public HediffOrder _hediffOrder;
+        public HediffOrderData _hediffOrder;
 
-        public TimeSpeedOrder _timeSpeedOrder;
+        public TimeSpeedOrderData _timeSpeedOrder;
 
-        public GameConditionOrder _gameConditionOrder;
+        public GameConditionOrderData _gameConditionOrder;
 
-        public WeatherOrder _weatherOrder;
+        public WeatherOrderData _weatherOrder;
 
-        public KillOrder _killOrder;
+        public KillOrderData _killOrder;
     }
 }

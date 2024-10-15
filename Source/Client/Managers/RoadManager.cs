@@ -38,7 +38,7 @@ namespace GameClient
             data._details.toTile = tileBID;
             data._details.roadDefName = roadDef.defName;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -51,7 +51,7 @@ namespace GameClient
             data._details.fromTile = tileAID;
             data._details.toTile = tileBID;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -229,8 +229,8 @@ namespace GameClient
         {
             if (hasRoadOnTile)
             {
-                RT_Dialog_2Button d1 = new RT_Dialog_2Button("Road manager", "Select the action you want to do",
-                    "Build", "Destroy", delegate { ShowRoadBuildDialog(neighborTiles); }, delegate { ShowRoadDestroyDialog(neighborTiles); }, null);
+                RT_Dialog_2Button d1 = new RT_Dialog_2Button("RTRoadManager".Translate(), "RTRoadManagerDesc".Translate(),
+                    "RTRoadBuild".Translate(), "RTRoadDestroy".Translate(), delegate { ShowRoadBuildDialog(neighborTiles); }, delegate { ShowRoadDestroyDialog(neighborTiles); }, null);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -249,7 +249,7 @@ namespace GameClient
                 else
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
-                    string toDisplay = $"Tile at {vector.y.ToStringLatitude()} - {vector.x.ToStringLongitude()}";
+                    string toDisplay = "RTRoadTile".Translate(vector.y.ToStringLatitude(), vector.x.ToStringLongitude());
                     selectableTileLabels.Add(toDisplay);
                     selectableTiles.Add(tileID);
                 }
@@ -259,7 +259,7 @@ namespace GameClient
             {
                 int selectedTile = selectableTiles[DialogManager.dialogButtonListingResultInt];
 
-                RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Road builder", "Select road type to use",
+                RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("RTRoadManager".Translate(), "RTRoadBuilding".Translate(),
                     GetAvailableRoadLabels(true),
                     delegate
                     {
@@ -267,17 +267,17 @@ namespace GameClient
 
                         if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, allowedRoadCosts[selectedIndex]))
                         {
-                            RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, allowedRoadCosts[selectedIndex], SessionValues.chosenCaravan);
+                            RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, allowedRoadCosts[selectedIndex]);
                             RoadManager.SendRoadAddRequest(SessionValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             SaveManager.ForceSave();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
                     });
 
                 DialogManager.PushNewDialog(d1);
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road builder", "Select a tile to connect with",
+            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("RTRoadManager".Translate(), "RTRoadTileToConnect".Translate(),
                 selectableTileLabels.ToArray(), r1));
         }
 
@@ -291,7 +291,7 @@ namespace GameClient
                 if (CheckIfTwoTilesAreConnected(SessionValues.chosenCaravan.Tile, tileID))
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
-                    string toDisplay = $"Tile at {vector.y.ToStringLatitude()} - {vector.x.ToStringLongitude()}";
+                    string toDisplay = "RTRoadTile".Translate(vector.y.ToStringLatitude(), vector.x.ToStringLongitude());
                     selectableTilesLabels.Add(toDisplay);
                     selectableTiles.Add(tileID);
                 }
@@ -304,7 +304,7 @@ namespace GameClient
                 RoadManager.SendRoadRemoveRequest(SessionValues.chosenCaravan.Tile, selectedTile);
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road destroyer", "Select a tile to disconnect from",
+            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("RTRoadDestroyer".Translate(), "RTRoadDestroyerDesc".Translate(),
                 selectableTilesLabels.ToArray(), r1));
         }
 

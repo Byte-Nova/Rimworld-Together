@@ -1,70 +1,113 @@
-#!/bin/bash
+# !/bin/bash
 
-#Declaration of all variables
+# Declaration of all variables
 BASEBUILDERPATH=""
 BASEBUILDPATH=""
 BUILDRESULTPATH=""
+BUILDCONTENTPATH=""
 RIMWORLDPATH=""
 MODFOLDERPATH=""
 FILEWITHGAMEPATH="RimWorldFolderPath.txt"
 
-#Check if txt file with path is present
-if [ -f "$FILEWITHGAMEPATH" ]; then
-    echo "$FILEWITHGAMEPATH exists, continuing operation"
-    echo
-else
-    echo Put/Your/Path/To/Your/Game/In/Here > $FILEWITHGAMEPATH
-    echo "$FILEWITHGAMEPATH was just created, make sure to add your RimWorld path to it before you continue"
-    read
-fi
+CheckIfFileWithPathIsPresent()
+{
+    if [ -f "$FILEWITHGAMEPATH" ]; then
+        echo "$FILEWITHGAMEPATH exists, continuing operation";
+        echo;
+    else
+        echo Put/Your/Path/To/Your/Game/In/Here > $FILEWITHGAMEPATH;
+        echo "$FILEWITHGAMEPATH was just created, make sure to add your RimWorld path to it before you continue";
+        read;
+    fi
+}
+export -f CheckIfFileWithPathIsPresent;
 
-#Setting variables
-BASEBUILDERPATH=$(pwd)
-RIMWORLDPATH=$(cat $FILEWITHGAMEPATH)
-MODFOLDERPATH="$RIMWORLDPATH/Mods/3005289691"
-echo "RimWorld path is set to $RIMWORLDPATH"
-echo "RimWorld mod path is set to $MODFOLDERPATH"
-echo
+SetAllNeededVariables()
+{
+    BASEBUILDERPATH=$(pwd);
+    RIMWORLDPATH=$(cat $FILEWITHGAMEPATH);
+    MODFOLDERPATH="$RIMWORLDPATH/Mods/3005289691";
+    echo "RimWorld path is set to $RIMWORLDPATH";
+    echo "RimWorld mod path is set to $MODFOLDERPATH";
+    echo "Base builder path is set to $BASEBUILDERPATH";
+    echo;
 
-#Setting the BUILDRESULTPATH variable
-cd Result
-cd 3005289691
-cd Current
-cd Assemblies
-BUILDRESULTPATH=$(pwd)
+    cd Result;
+    cd 3005289691;
+    BUILDCONTENTPATH=$(pwd);
+    echo "Build result path is set to $BUILDRESULTPATH";
 
-#Deleting old assemblies
-rm -rf $(pwd)/*
+    cd Current;
+    mkdir "Assemblies" >/dev/null;
+    cd Assemblies;
+    BUILDRESULTPATH=$(pwd);
+    echo "Build result path is set to $BUILDRESULTPATH";
+    echo;
+}
+export -f SetAllNeededVariables;
 
-#Go and build the client
-cd $BASEBUILDERPATH
-cd ..
-cd Source
-cd Client
-sudo dotnet build GameClient.csproj --configuration Release
+DeleteOldAssemblies()
+{
+    rm -rf $BUILDRESULTPATH/*
+}
+export -f DeleteOldAssemblies
 
-#Go and copy files to the result folder
-cd bin
-cd Release
-cd net472
-cp GameClient.dll $BUILDRESULTPATH
-cp Newtonsoft.Json.dll $BUILDRESULTPATH
+BuildClient()
+{
+    cd $BASEBUILDERPATH
+    cd ..
+    cd Source
+    cd Client
+    sudo dotnet build GameClient.csproj --configuration Release
 
-#Go and copy files to RimWorld folder
-cd $BUILDRESULTPATH
-cd ..
-cd ..
-rm -rf $MODFOLDERPATH
-cp -r $(pwd) $MODFOLDERPATH
+    # Go and copy files to the result folder
+    cd bin
+    cd Release
+    cd net472
+    cp GameClient.dll $BUILDRESULTPATH
+    cp Newtonsoft.Json.dll $BUILDRESULTPATH
 
-#Ask if boot
-cd $RIMWORLDPATH
-echo
-while true; do
-    read -p "Boot RimWorld? (Yy/Nn)" yn
-    case $yn in
-        [Yy]* ) echo; "./RimWorldLinux"; break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer Yy or Nn.";;
-    esac
-done
+    # Go and copy files to RimWorld folder
+    rm -rf $MODFOLDERPATH
+    cp -r $BUILDCONTENTPATH $MODFOLDERPATH
+}
+export -f BuildClient;
+
+DisplayEndingOptions()
+{
+    echo "Please enter your choice:";
+    echo;
+    options=("Start RimWorld" "Multi-start RimWorld" "Exit")
+    select opt in "${options[@]}"
+    do
+        case $opt in
+            "Start RimWorld") StartGame; break;;
+            "Multi-start RimWorld") MultiStartGame; break;;
+            "Exit") exit; break;;
+            *) echo "invalid option '$REPLY'";;
+        esac
+    done
+}
+export -f DisplayEndingOptions;
+
+StartGame()
+{
+    echo;
+    cd $RIMWORLDPATH;
+    sh -c "./RimWorldLinux";
+}
+export -f StartGame;
+
+MultiStartGame()
+{
+    echo;
+    cd $RIMWORLDPATH
+    sh -c "./RimWorldLinux & ./RimWorldLinux";
+}
+export -f MultiStartGame;
+
+CheckIfFileWithPathIsPresent;
+SetAllNeededVariables;
+DeleteOldAssemblies;
+BuildClient;
+DisplayEndingOptions;

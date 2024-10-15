@@ -10,7 +10,7 @@ namespace GameClient
 {
     public static class EventManager
     {
-        public static void ParseEventPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
@@ -38,13 +38,11 @@ namespace GameClient
 
             Action a1 = delegate
             {
-                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost} " +
-                    $"silver, continue?", SendEvent, null);
-
+                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("RTEventSend".Translate(EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost), SendEvent, null);
                 DialogManager.PushNewDialog(d2);
             };
 
-            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
+            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("RTEventSelector".Translate(), "RTEventSelectorDesc".Translate(),
                 eventNames.ToArray(), a1.Invoke, null);
 
             DialogManager.PushNewDialog(d1);
@@ -60,7 +58,7 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RTEventNotEnoughSilver".Translate()));
             }
 
             else
@@ -73,17 +71,17 @@ namespace GameClient
                 eventData._toTile = SessionValues.chosenSettlement.Tile;
                 eventData._eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTEventWait".Translate()));
             }
         }
 
         public static void TriggerEvent(IncidentDef eventToTrigger, Map targetMap)
         {
             IncidentParms parms = StorytellerUtility.DefaultParmsNow(eventToTrigger.category, targetMap);
-            parms.customLetterLabel = $"Event - {eventToTrigger.LabelCap}";
+            parms.customLetterLabel = "RTEventLetter".Translate(eventToTrigger.LabelCap);
             parms.faction = FactionValues.neutralPlayer;
             parms.target = targetMap;
 
@@ -109,7 +107,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent!", 
+            RimworldManager.GenerateLetter("RTEventSended".Translate(), "RTEventSendedDesc".Translate(), 
                 LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();
@@ -128,7 +126,7 @@ namespace GameClient
 
             RimworldManager.PlaceThingIntoMap(silverToReturn, toReturnTo, ThingPlaceMode.Near, true);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
         }
     }
 

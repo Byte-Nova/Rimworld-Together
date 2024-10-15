@@ -9,8 +9,7 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(500f, 150f);
 
-        private readonly string title = "MESSAGE";
-
+        private readonly string title = "RTDialogMessage".Translate();
         private string descriptionDummy;
 
         private readonly string[] descriptionLoop;
@@ -55,7 +54,7 @@ namespace GameClient
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(descriptionDummy).x / 2, windowDescriptionDif, Text.CalcSize(descriptionDummy).x, Text.CalcSize(descriptionDummy).y), descriptionDummy);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogOK".Translate()))
             {
                 if (currentDescriptionIndex < descriptionLoop.Length - 1)
                 {

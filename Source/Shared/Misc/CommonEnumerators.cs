@@ -4,9 +4,19 @@ namespace Shared
     {
         public enum ClientNetworkState { Disconnected, Connecting, Connected }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord }
+        public enum AssemblyType { Client, Server }
+
+        public enum JoinType { Login, Register }
+
+        public enum ResponseStepMode { IllegalAction, UserUnavailable, Pop }
+
+        public enum SaveStepMode { Send, Receive, Reset }
+
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
+
+        public enum LogImportanceMode { Normal, Verbose, Extreme }
 
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
@@ -19,6 +29,8 @@ namespace Shared
         public enum CaravanStepMode { Add, Remove, Move }
 
         public enum RoadStepMode { Add, Remove }
+
+        public enum ModConfigStepMode { Send, Ask }
 
         public enum FactionStepMode { Create, Delete, NameInUse, NoPower, AddMember, RemoveMember, AcceptInvite, Promote, Demote, AdminProtection, MemberList }
 
@@ -63,6 +75,8 @@ namespace Shared
         public enum MessageColor { Normal, Admin, Console, Private, Discord }
 
         public enum LoginMode { Login, Register }
+
+        public enum ModType { Required, Optional, Forbidden };
 
         public enum LoginResponse { InvalidLogin, BannedLogin, RegisterInUse, RegisterError, ExtraLogin, WrongMods, WrongVersion, ServerFull, Whitelist, NoWorld }
     }

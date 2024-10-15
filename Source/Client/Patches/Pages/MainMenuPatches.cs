@@ -12,6 +12,23 @@ namespace GameClient
 {
     public class MainMenuPatches
     {
+        [HarmonyPatch(typeof(VersionControl), nameof(VersionControl.DrawInfoInCorner))]
+        private static class VersionControl_DrawInfoInCorner_Patch
+        {
+            private static void Postfix()
+            {
+                string toDisplay = $"RimWorld Together v{CommonValues.executableVersion}";
+                Vector2 size = Text.CalcSize(toDisplay);
+                Rect rect = new Rect(10f, 73f, size.x, size.y);
+
+                Text.Font = GameFont.Small;
+
+                GUI.color = Color.white.ToTransparent(0.5f);
+                Widgets.Label(rect, toDisplay);
+                GUI.color = Color.white;
+            }
+        }
+
         [HarmonyPatch(typeof(MainMenuDrawer), "DoMainMenuControls")]
         public static class PatchButton
         {
@@ -25,7 +42,7 @@ namespace GameClient
                     if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                     {
                         if (Network.state != ClientNetworkState.Disconnected) return true;
-                        DialogShortcuts.ShowConnectDialogs();
+                        ConnectionManager.ShowConnectDialogs();
                     }
 
                     buttonSize = new Vector2(45f, 45f);
@@ -41,7 +58,7 @@ namespace GameClient
                         if (string.IsNullOrWhiteSpace(Network.port)) isInvalid = true;
                         if (string.IsNullOrWhiteSpace(ClientValues.username)) isInvalid = true;
 
-                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
+                        if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_OK("RTFastJoinUnAvailable".Translate()));
                         else ShowQuickConnectFloatMenu();
                     }
                 }
@@ -56,7 +73,7 @@ namespace GameClient
                 {
                     Vector2 buttonSize = new Vector2(170f, 45f);
                     Vector2 buttonLocation = new Vector2(rect.x, rect.y + 0.5f);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Play Together"))
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "RTMainMenuButton".Translate()))
                     {
 
                     }
@@ -85,7 +102,7 @@ namespace GameClient
                 List<FloatMenuOption> list = new List<FloatMenuOption>();
                 List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
                 {
-                    Tuple.Create($"Join '{Network.ip}:{Network.port}' as '{ClientValues.username}'", 0),
+                    Tuple.Create((string)"RTFastJoin".Translate(Network.ip, Network.port, ClientValues.username), 0),
                 };
 
                 foreach (Tuple<string, int> tuple in quickConnectTuples)
@@ -94,7 +111,7 @@ namespace GameClient
                     {
                         ClientValues.ToggleQuickConnecting(true);
 
-                        DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Wait("RTTryingToConnect".Translate()));
                         Network.StartConnection();
 
                         if (Network.state == ClientNetworkState.Connected)
@@ -105,9 +122,9 @@ namespace GameClient
                             data._username = loginData.Username;
                             data._password = Hasher.GetHashFromString(loginData.Password);
                             data._version = CommonValues.executableVersion;
-                            data._runningMods = ModManager.GetRunningModList();
+                            data._runningMods = ModManagerHelper.GetRunningModList();
 
-                            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.LoginClientPacket), data);
+                            Packet packet = Packet.CreatePacketFromObject(nameof(LoginManager), data);
                             Network.listener.EnqueuePacket(packet);
                         }
                     });

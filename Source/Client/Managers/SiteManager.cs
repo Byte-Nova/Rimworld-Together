@@ -82,7 +82,7 @@ namespace GameClient
             return siteDefs[siteTypeID];
         }
 
-        public static void ParseSitePacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
 
@@ -93,11 +93,11 @@ namespace GameClient
                     break;
 
                 case SiteStepMode.Build:
-                    PlayerSiteManager.SpawnSingleSite(siteData);
+                    PlayerSiteManager.SpawnSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Destroy:
-                    PlayerSiteManager.RemoveSingleSite(siteData);
+                    PlayerSiteManager.RemoveSingleSite(siteData._siteFile);
                     break;
 
                 case SiteStepMode.Info:
@@ -125,20 +125,20 @@ namespace GameClient
         private static void OnSiteAccept()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RTSiteBuilt".Translate()));
 
             SaveManager.ForceSave();
         }
 
         public static void OnSimpleSiteRequest()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site information"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTWaitSiteInfo".Translate()));
 
             SiteData siteData = new SiteData();
             siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
             siteData._stepMode = SiteStepMode.Info;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -148,7 +148,7 @@ namespace GameClient
 
             if (siteData._siteFile.WorkerData == null)
             {
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("There is no current worker on this site, send?", 
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTSiteNoCurrentWorker".Translate(), 
                     delegate { PrepareSendPawnScreen(); }, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -156,7 +156,7 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You have a worker on this site, retrieve?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTSiteHasWorker".Translate(),
                     delegate { RequestWorkerRetrieval(siteData); }, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -165,11 +165,11 @@ namespace GameClient
 
         private static void RequestWorkerRetrieval(SiteData siteData)
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for site worker"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTSiteWaitingWorker".Translate()));
 
             siteData._stepMode = SiteStepMode.Retrieve;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -179,14 +179,14 @@ namespace GameClient
 
             Action r1 = delegate
             {
-                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanData>(siteData._siteFile.WorkerData));
+                Pawn pawnToRetrieve = HumanScribeManager.StringToHuman(Serializer.ConvertBytesToObject<HumanDataFile>(siteData._siteFile.WorkerData));
 
                 RimworldManager.PlaceThingIntoCaravan(pawnToRetrieve, SessionValues.chosenCaravan);
 
                 SaveManager.ForceSave();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_OK("Worker have been recovered", r1));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RTSiteWorkerRecovered".Translate(), r1));
         }
 
         private static void PrepareSendPawnScreen()
@@ -198,7 +198,7 @@ namespace GameClient
                 if (DeepScribeHelper.CheckIfThingIsHuman(pawn)) pawnNames.Add(pawn.Label);
             }
 
-            RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Pawn Selection", "Select the pawn you wish to send", 
+            RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("RTSitePawnSelectionMenu".Translate(), "RTSitePawnSelectionMenuDesc".Translate(), 
                 pawnNames.ToArray(), SendPawnToSite);
 
             DialogManager.PushNewDialog(d1);
@@ -221,7 +221,7 @@ namespace GameClient
             siteData._stepMode = SiteStepMode.Deposit;
             siteData._siteFile.WorkerData = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString(pawnToSend));
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
 
             if (caravanHumans.Count == 1) SessionValues.chosenCaravan.Destroy();
@@ -237,17 +237,17 @@ namespace GameClient
                 siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTSiteDestroySure".Translate(), r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
         private static void OnWorkerError()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Error("The site has a worker inside!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Error("RTSiteWorkerInside".Translate()));
         }
 
         private static void ReceiveSitesRewards(SiteData siteData)
@@ -268,7 +268,7 @@ namespace GameClient
                 {
                     TransferManager.GetTransferedItemsToSettlement(rewards, true, false, false);
 
-                    RimworldManager.GenerateLetter("Site Rewards", "You have received site rewards!", LetterDefOf.PositiveEvent);
+                    RimworldManager.GenerateLetter("RTSiteRewards".Translate(), "RTSiteRewardsDesc".Translate(), LetterDefOf.PositiveEvent);
                 }
             }
         }
@@ -282,11 +282,11 @@ namespace GameClient
                 {
                     if (site.MainSitePartDef == siteDefs[i])
                     {
-                        ThingData thingData = new ThingData();
-                        thingData.defName = siteRewardDefNames[i].defName;
-                        thingData.quantity = siteRewardCount[i];
-                        thingData.quality = 0;
-                        thingData.hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
+                        ThingDataFile thingData = new ThingDataFile();
+                        thingData.DefName = siteRewardDefNames[i].defName;
+                        thingData.Quantity = siteRewardCount[i];
+                        thingData.Quality = 0;
+                        thingData.Hitpoints = siteRewardDefNames[i].BaseMaxHitPoints;
 
                         if (siteRewardCount[i] > 0) thingsToGet.Add(ThingScribeManager.StringToItem(thingData));
 
@@ -321,8 +321,7 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", RequestSiteBuild, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTSiteCost".Translate(sitePrices[DialogManager.selectedScrollButton]), RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -333,22 +332,22 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], SessionValues.chosenCaravan);
+                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
                 siteData._stepMode = SiteStepMode.Build;
                 siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
                 siteData._siteFile.Type = DialogManager.selectedScrollButton;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTSiteBuildingWait".Translate()));
             }
         }
     }
@@ -375,8 +374,7 @@ namespace GameClient
 
         public static void PushConfirmSiteDialog()
         {
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"This site will cost you {sitePrices[DialogManager.selectedScrollButton]} " +
-                $"silver, continue?", RequestSiteBuild, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTSiteCost".Translate(sitePrices[DialogManager.selectedScrollButton]), RequestSiteBuild, null);
 
             DialogManager.PushNewDialog(d1);
         }
@@ -387,12 +385,12 @@ namespace GameClient
 
             if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, sitePrices[DialogManager.selectedScrollButton]))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromCaravan(ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton], SessionValues.chosenCaravan);
+                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, sitePrices[DialogManager.selectedScrollButton]);
 
                 SiteData siteData = new SiteData();
                 siteData._stepMode = SiteStepMode.Build;
@@ -400,10 +398,10 @@ namespace GameClient
                 siteData._siteFile.Type = DialogManager.selectedScrollButton;
                 siteData._siteFile.FactionFile = new FactionFile();
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SitePacket), siteData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("RTSiteBuildingWait".Translate()));
             }
         }
     }

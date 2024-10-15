@@ -18,9 +18,9 @@ namespace GameClient
 
         private Vector2 scrollPosition = Vector2.zero;
 
-        public readonly string title = "Transfer Menu";
+        public readonly string title = "RTTransferMenu".Translate();
 
-        public readonly string description = "Select the items you wish to transfer";
+        public readonly string description = "RTTransferDesc".Translate();
 
         private readonly float buttonX = 100f;
 
@@ -91,9 +91,9 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 55f, rect.width, rect.height - buttonY - 65));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept")) OnAccept();
-            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reset")) OnReset();
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel")) OnCancel();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogAccept".Translate())) OnAccept();
+            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogReset".Translate())) OnReset();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogCancel".Translate())) OnCancel();
         }
 
         private void FillMainRect(Rect mainRect)
@@ -140,10 +140,10 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_2Button d2 = new RT_Dialog_2Button("Transfer Type", "Please choose the transfer type to use",
-                    "Gift", "Trade", r1, r2, null);
+                RT_Dialog_2Button d2 = new RT_Dialog_2Button("RTTransferType".Translate(), "RTTransferTypeDesc".Translate(),
+                    "RTTransferGift".Translate(), "RTTransferTrade".Translate(), r1, r2, null);
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTTransferContinue".Translate(),
                     delegate { DialogManager.PushNewDialog(d2); }, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -158,7 +158,7 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTTransferContinue".Translate(),
                     r1, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -173,7 +173,7 @@ namespace GameClient
                     postChoosing();
                 };
 
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
+                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("RTTransferContinue".Translate(),
                     r1, null);
 
                 DialogManager.PushNewDialog(d1);
@@ -203,7 +203,7 @@ namespace GameClient
 
             if (transferLocation == TransferLocation.Settlement)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
+                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferCancelSure".Translate(),
                     r1, null));
             }
             else r1.Invoke();
@@ -354,17 +354,7 @@ namespace GameClient
                 List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
 
-                List<Thing> thingsInMap = new List<Thing>();
-                foreach(Zone zone in map.zoneManager.AllZones)
-                {
-                    foreach(Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
-                    {
-                        if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
-                        {
-                            thingsInMap.Add(thing);
-                        }
-                    }
-                }
+                Thing[] thingsInMap = RimworldManager.GetAllThingsInMap(map);
 
                 if (allowItems)
                 {
@@ -418,14 +408,11 @@ namespace GameClient
                 pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
 
                 List<Thing> thingsInMap = new List<Thing>();
-                foreach (Zone zone in map.zoneManager.AllZones)
+                foreach (Thing thing in map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item && fetch.IsInAnyStorage()))
                 {
-                    foreach (Thing thing in zone.AllContainedThings.Where(fetch => fetch.def.category == ThingCategory.Item))
+                    if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
                     {
-                        if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
-                        {
-                            thingsInMap.Add(thing);
-                        }
+                        thingsInMap.Add(thing);
                     }
                 }
 

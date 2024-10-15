@@ -40,9 +40,8 @@ namespace GameClient
 
             soundAppear = SoundDefOf.CommsWindow_Open;
             
-
             closeOnAccept = false;
-            closeOnCancel = false;
+            closeOnCancel = true;
         }
 
         public override void DoWindowContents(Rect rect)
@@ -66,7 +65,7 @@ namespace GameClient
 
             GenerateList(new Rect(rect.x, rect.yMax - buttonY * 5 - 40, rect.width, 175f), buttonNames);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogCancel".Translate()))
             {
                 OnCancel();
             }
@@ -81,16 +80,14 @@ namespace GameClient
 
         private void GenerateList(Rect mainRect, string[] buttons)
         {
-            float height = 6f + buttons.Count() * buttonY;
-
-            Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
-
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
-
             float yPadding = 0;
             float extraLenght = 32f;
             float num2 = scrollPosition.y - 30f;
             float num3 = scrollPosition.y + mainRect.height;
+            float height = 6f + buttons.Count() * buttonY;
+
+            Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
+            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
 
             int index = 0;
             foreach (string str in buttons)
@@ -120,7 +117,8 @@ namespace GameClient
                     if (buttonNames[i] == buttonName)
                     {
                         DialogManager.selectedScrollButton = i;
-                        actionSelect.Invoke();
+                        actionSelect?.Invoke();
+                        Close();
                     }
                 }
             }

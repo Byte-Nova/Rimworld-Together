@@ -19,14 +19,14 @@ namespace GameClient
         public SitesUI()
         {
             size = WinSize;
-            labelKey = "Sites";
+            labelKey = "RTSitesMenu".Translate();
         }
 
         protected override void FillTab()
         {
             if (Network.state == ClientNetworkState.Connected)
             {
-                tabTitle = $"Player Sites [{PlayerSiteManager.playerSites.Count()}]";
+                tabTitle = "RTPlayerSites".Translate(PlayerSiteManager.playerSites.Count());
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -79,7 +79,7 @@ namespace GameClient
             float buttonX = 47f;
             float buttonY = 30f;
             Widgets.Label(fixedRect, $"{playerSite.Label} - {playerSite.Tile}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.y), new Vector2(buttonX, buttonY)), "Focus"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.y), new Vector2(buttonX, buttonY)), "RTFocus".Translate()))
             {
                 foreach (Site site in Find.World.worldObjects.Sites)
                 {

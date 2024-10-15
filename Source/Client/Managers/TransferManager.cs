@@ -17,7 +17,7 @@ namespace GameClient
     {
         //Parses the packet into useful orders
 
-        public static void ParseTransferPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.contents);
 
@@ -29,14 +29,14 @@ namespace GameClient
 
                 case TransferStepMode.TradeAccept:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferSuccess".Translate()));
                     if (transferData._transferMode == TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
                 case TransferStepMode.TradeReject:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferPlayerRejected".Translate()));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
@@ -52,13 +52,13 @@ namespace GameClient
 
                 case TransferStepMode.TradeReReject:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player rejected the trade!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferPlayerRejected".Translate()));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
                 case TransferStepMode.Recover:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
             }
@@ -114,13 +114,13 @@ namespace GameClient
 
         public static void SendTransferRequestToServer(TransferLocation transferLocation)
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for transfer response"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTTransferResponseWait".Translate()));
 
             if (transferLocation == TransferLocation.Caravan)
             {
                 SessionValues.outgoingManifest._stepMode = TransferStepMode.TradeRequest;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -128,7 +128,7 @@ namespace GameClient
             {
                 SessionValues.outgoingManifest._stepMode = TransferStepMode.TradeReRequest;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -136,7 +136,7 @@ namespace GameClient
             {
                 SessionValues.outgoingManifest._stepMode = TransferStepMode.TradeRequest;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.outgoingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -146,7 +146,7 @@ namespace GameClient
                 marketData._stepMode = MarketStepMode.Add;
                 marketData._transferThings = SessionValues.outgoingManifest._things;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.MarketPacket), marketData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -198,7 +198,7 @@ namespace GameClient
                 foreach (Thing thing in things)
                 {
                     if (thing.def.CanHaveFaction) thing.SetFactionDirect(Faction.OfPlayer);
-                    RimworldManager.PlaceThingIntoMap(thing, map, ThingPlaceMode.Near, true);
+                    RimworldManager.PlaceThingIntoMap(thing, map, ThingPlaceMode.Near, true, success);
                 }
 
                 FinishTransfer(success);
@@ -206,8 +206,8 @@ namespace GameClient
 
             if (invokeMessage)
             {
-                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!", r1));
-                else DialogManager.PushNewDialog(new RT_Dialog_Error("Transfer was cancelled!", r1));
+                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferSuccess".Translate(), r1));
+                else DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferCancelled".Translate(), r1));
             }
             else r1.Invoke();
         }
@@ -225,8 +225,8 @@ namespace GameClient
 
             if (invokeMessage)
             {
-                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("Transfer was a success!", r1));
-                else DialogManager.PushNewDialog(new RT_Dialog_Error("Transfer was cancelled!", r1));
+                if (success) DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferSuccess".Translate(), r1));
+                else DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferCancelled".Translate(), r1));
             }
             else r1.Invoke();
         }
@@ -280,17 +280,17 @@ namespace GameClient
 
                     if (transferData._transferMode == TransferMode.Gift)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferGiftReceived".Translate(), r1));
                     }
 
                     else if (transferData._transferMode == TransferMode.Trade)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a trade request", r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferTradeReceived".Translate(), r1));
                     }
 
                     else if (transferData._transferMode == TransferMode.Pod)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("You are receiving a gift request", r1));
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("RTTransferGiftReceived".Translate(), r1));
                     }
                 }
             }
@@ -340,7 +340,7 @@ namespace GameClient
             {
                 SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReject;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
 
@@ -353,7 +353,7 @@ namespace GameClient
             {
                 SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReReject;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.incomingManifest);
                 Network.listener.EnqueuePacket(packet);
 
                 RecoverTradeItems(TransferLocation.Caravan);
@@ -408,9 +408,9 @@ namespace GameClient
             if (tradingSpot != null) return tradingSpot.Position;
             else
             {
-                RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are missing a transfer spot!",
-                    "Received things will appear in the center of the map",
-                    "Build a trading spot to change the drop location!"});
+                RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "RTDialogNoTransferSpot1".Translate(),
+                    "RTDialogNoTransferSpot2".Translate(),
+                    "RTDialogNoTransferSpot3".Translate()});
 
                 DialogManager.PushNewDialog(d1);
 

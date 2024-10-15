@@ -13,6 +13,13 @@ namespace GameClient
 
     public static class GoodwillManager
     {
+        public static void ParsePacket(Packet packet)
+        {
+            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
+            ChangeStructureGoodwill(factionGoodwillData);
+            DialogManager.PopWaitDialog();
+        }
+
         //Tries to request a goodwill change depending on the values given
 
         public static void TryRequestGoodwill(Goodwill type, GoodwillTarget target)
@@ -29,7 +36,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.enemyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as enemy!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RTGoodWillAlreadyEnemy".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Enemy);
@@ -39,7 +46,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.neutralPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as neutral!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RTGoodWillAlreadyNeutral".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Neutral);
@@ -49,7 +56,7 @@ namespace GameClient
             {
                 if (factionToUse == FactionValues.allyPlayer)
                 {
-                    RT_Dialog_Error d1 = new RT_Dialog_Error("Chosen settlement is already marked as ally!");
+                    RT_Dialog_Error d1 = new RT_Dialog_Error("RTGoodWillAlreadyAlly".Translate());
                     DialogManager.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Ally);
@@ -64,20 +71,19 @@ namespace GameClient
             factionGoodwillData._tile = structureTile;
             factionGoodwillData._goodwill = goodwill;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(GoodwillManager), factionGoodwillData);
             Network.listener.EnqueuePacket(packet);
 
-            RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
+            RT_Dialog_Wait d1 = new RT_Dialog_Wait("RTGoodWillChanging".Translate());
             DialogManager.PushNewDialog(d1);
         }
 
         //Changes a structure goodwill from a packet
 
-        public static void ChangeStructureGoodwill(Packet packet)
+        public static void ChangeStructureGoodwill(FactionGoodwillData data)
         {
-            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
-            ChangeSettlementGoodwills(factionGoodwillData);
-            ChangeSiteGoodwills(factionGoodwillData);
+            ChangeSettlementGoodwills(data);
+            ChangeSiteGoodwills(data);
         }
 
         //Changes a settlement goodwill from a request

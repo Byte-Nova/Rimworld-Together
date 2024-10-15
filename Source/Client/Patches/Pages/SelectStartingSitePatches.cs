@@ -64,7 +64,7 @@ namespace GameClient
 
                 float num6 = rect.xMin + 10f;
                 float num7 = rect.yMin + 10f;
-                if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "Disconnect") || KeyBindingDefOf.Cancel.KeyDownEvent) { }
+                if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "RTDisconnect".Translate()) || KeyBindingDefOf.Cancel.KeyDownEvent) { }
             }
         }
 
@@ -79,8 +79,8 @@ namespace GameClient
                 //Only done once per save
                 if (!ClientValues.isGeneratingFreshWorld)
                 {
-                    PlanetGeneratorManager.SetPlanetFeatures();
-                    PlanetGeneratorManager.SetPlanetFactions();
+                    WorldManager.SetPlanetFeatures();
+                    WorldManager.SetPlanetFactions();
                     RiverManager.SetPlanetRivers();
                 }
 

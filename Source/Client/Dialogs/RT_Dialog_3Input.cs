@@ -96,7 +96,7 @@ namespace GameClient
 
             DrawInputThree(centeredX, inputThreeLabelDif, inputThreeDif);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogConfirm".Translate()))
             {
                 DialogManager.dialog3ResultOne = inputOneResult;
                 DialogManager.dialog3ResultTwo = inputTwoResult;
@@ -106,7 +106,7 @@ namespace GameClient
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogCancel".Translate()))
             {
                 if (actionCancel != null) actionCancel.Invoke();
                 Close();
@@ -128,7 +128,7 @@ namespace GameClient
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
-                    inputOneCensoredResult = new string('█', inputOne.Length);
+                    inputOneCensoredResult = new string('\u2588', inputOne.Length);
                     Text.Font = GameFont.Small;
                 }
             }
@@ -149,7 +149,7 @@ namespace GameClient
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
-                    inputTwoCensoredResult = new string('█', inputTwo.Length);
+                    inputTwoCensoredResult = new string('\u2588', inputTwo.Length);
                     Text.Font = GameFont.Small;
                 }
             }
@@ -170,7 +170,7 @@ namespace GameClient
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
-                    inputThreeCensoredResult = new string('█', inputThree.Length);
+                    inputThreeCensoredResult = new string('\u2588', inputThree.Length);
                     Text.Font = GameFont.Small;
                 }
             }

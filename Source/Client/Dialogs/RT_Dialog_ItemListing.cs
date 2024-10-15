@@ -12,7 +12,7 @@ namespace GameClient
     {
         public override Vector2 InitialSize => new Vector2(350f, 512f);
 
-        public readonly string title = "Item Listing";
+        public readonly string title = "RTDialogItemListing".Translate();
 
         private readonly int startAcceptingInputAtFrame;
 
@@ -53,12 +53,12 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - buttonY - 45));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogAccept".Translate()))
             {
                 OnAccept();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogCancel".Translate()))
             {
                 OnReject();
             }
@@ -136,7 +136,7 @@ namespace GameClient
 
                     else
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferError".Translate()));
                         TransferManager.RejectRequest(transferMode);
                     }
                 }
@@ -150,7 +150,7 @@ namespace GameClient
                 {
                     SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
@@ -159,7 +159,7 @@ namespace GameClient
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferAcceptSure".Translate(),
                 r1, null));
         }
 
@@ -172,7 +172,7 @@ namespace GameClient
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferCancelSure".Translate(),
                 r1, null));
         }
     }

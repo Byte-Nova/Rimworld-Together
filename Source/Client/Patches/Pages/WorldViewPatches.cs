@@ -77,8 +77,8 @@ namespace GameClient
 
                 Command_Action command_Goodwill = new Command_Action
                 {
-                    defaultLabel = "Change Goodwill",
-                    defaultDesc = "Change the goodwill of this settlement",
+                    defaultLabel = "RTGoodWillMenu".Translate(),
+                    defaultDesc = "RTGoodWillSettlementButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                     action = delegate
                     {
@@ -93,8 +93,8 @@ namespace GameClient
                         Action r3 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
                             GoodwillTarget.Settlement); };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("RTGoodWillMenu".Translate(), "RTGoodWillSettlementMenuDesc".Translate(),
+                            "RTEnemy".Translate(), "RTNeutral".Translate(), "RTAlly".Translate(), r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -102,8 +102,8 @@ namespace GameClient
 
                 Command_Action command_FactionMenu = new Command_Action
                 {
-                    defaultLabel = "Faction Menu",
-                    defaultDesc = "Access your faction menu",
+                    defaultLabel = "RTFactionMenu".Translate(),
+                    defaultDesc = "RTFactionMenuButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                     action = delegate
                     {
@@ -114,14 +114,14 @@ namespace GameClient
                             if (SessionValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
                             else FactionManager.OnFactionOpenOnNonMember();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                     }
                 };
 
                 Command_Action command_Caravan = new Command_Action
                 {
-                    defaultLabel = "Form Caravan",
-                    defaultDesc = "Form a new caravan",
+                    defaultLabel = "CommandFormCaravan".Translate(),
+                    defaultDesc = "RTFormCaravan".Translate(),
                     icon = ContentFinder<Texture2D>.Get("UI/Commands/FormCaravan"),
                     action = delegate
                     {
@@ -134,8 +134,8 @@ namespace GameClient
 
                 Command_Action command_Aid = new Command_Action
                 {
-                    defaultLabel = "Aid",
-                    defaultDesc = "Send aid to this settlement",
+                    defaultLabel = "RTAidButton".Translate(),
+                    defaultDesc = "RTAidButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Aid"),
                     action = delegate
                     {
@@ -145,24 +145,24 @@ namespace GameClient
                         {
                             List<string> pawnNames = new List<string>();
                             foreach (Pawn pawn in RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
-                            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Aid menu", "Select the pawn you want to send for aid", 
+                            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("RTAidMenu".Translate(), "RTAidMenuDesc".Translate(), 
                                 pawnNames.ToArray(), AidManager.SendAidRequest));
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                     }
                 };
 
                 Command_Action command_Event = new Command_Action
                 {
-                    defaultLabel = "Send Event",
-                    defaultDesc = "Send an event to this settlement",
+                    defaultLabel = "RTEventMenu".Translate(),
+                    defaultDesc = "RTEventMenuDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Event"),
                     action = delegate
                     {
                         SessionValues.chosenSettlement = __instance;
 
                         if (SessionValues.actionValues.EnableEvents) EventManager.ShowEventMenu();
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                     }
                 };
 
@@ -180,8 +180,8 @@ namespace GameClient
 
                 Command_Action command_FactionMenu = new Command_Action
                 {
-                    defaultLabel = "Faction Menu",
-                    defaultDesc = "Access your faction menu",
+                    defaultLabel = "RTFactionMenu".Translate(),
+                    defaultDesc = "RTFactionMenuButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                     action = delegate
                     {
@@ -192,14 +192,14 @@ namespace GameClient
                             if (ServerValues.hasFaction) FactionManager.OnFactionOpen();
                             else FactionManager.OnNoFactionOpen();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                     }
                 };
 
                 Command_Action command_GlobalMarketMenu = new Command_Action
                 {
-                    defaultLabel = "Global Market Menu",
-                    defaultDesc = "Access the global market",
+                    defaultLabel = "RTGlobalMarketMenu".Translate(),
+                    defaultDesc = "RTGlobalMarketMenuDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
                     action = delegate 
                     {
@@ -208,9 +208,9 @@ namespace GameClient
                         if (SessionValues.actionValues.EnableMarket)
                         {
                             if (RimworldManager.CheckIfPlayerHasConsoleInMap(SessionValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("RTGlobalMarketRequirement".Translate()));
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                     }
                 };
 
@@ -244,8 +244,8 @@ namespace GameClient
 
                 Command_Action command_Spy = new Command_Action
                 {
-                    defaultLabel = "Spy Settlement",
-                    defaultDesc = "Spy this settlement",
+                    defaultLabel = "RTSpyMenu".Translate(),
+                    defaultDesc = "RTSpyMenuDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Spy"),
                     action = delegate
                     {
@@ -258,16 +258,16 @@ namespace GameClient
 
                 Command_Action command_Raid = new Command_Action
                 {
-                    defaultLabel = "Raid Settlement",
-                    defaultDesc = "Raid this settlement",
+                    defaultLabel = "RTRaidButton".Translate(),
+                    defaultDesc = "RTRaidButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Raid"),
                     action = delegate
                     {
                         SessionValues.chosenSettlement = __instance;
                         SessionValues.chosenCaravan = caravan;
 
-                        RT_Dialog_2Button d1 = new RT_Dialog_2Button("Raid Mode", "Please choose your raid mode",
-                            "[BETA] Online", "Offline",
+                        RT_Dialog_2Button d1 = new RT_Dialog_2Button("RTRaidMenu".Translate(), "RTRaidMenuDesc".Translate(),
+                            "RTOnline".Translate(), "RTOffline".Translate(),
                             delegate { OnlineActivityManager.RequestOnlineActivity(OnlineActivityType.Raid); },
                             delegate { OfflineActivityManager.RequestOfflineActivity(OfflineActivityType.Raid); },
                             null);
@@ -278,16 +278,16 @@ namespace GameClient
 
                 Command_Action command_Visit = new Command_Action
                 {
-                    defaultLabel = "Visit Settlement",
-                    defaultDesc = "Visit this settlement",
+                    defaultLabel = "RTVisitSettlementButton".Translate(),
+                    defaultDesc = "RTVisitSettlementButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Visit"),
                     action = delegate
                     {
                         SessionValues.chosenSettlement = __instance;
                         SessionValues.chosenCaravan = caravan;
 
-                        RT_Dialog_2Button d1 = new RT_Dialog_2Button("Visit Mode", "Please choose your visit mode",
-                            "[BETA] Online", "Offline",
+                        RT_Dialog_2Button d1 = new RT_Dialog_2Button("RTVisitSettlementMenu".Translate(), "RTVisitSettlementMenuDesc".Translate(),
+                            "RTOnline".Translate(), "RTOffline".Translate(),
                             delegate { OnlineActivityManager.RequestOnlineActivity(OnlineActivityType.Visit); },
                             delegate { OfflineActivityManager.RequestOfflineActivity(OfflineActivityType.Visit); },
                             null);
@@ -298,8 +298,8 @@ namespace GameClient
 
                 Command_Action command_Transfer = new Command_Action
                 {
-                    defaultLabel = "Transfer Items",
-                    defaultDesc = "Transfer items between settlements",
+                    defaultLabel = "RTTransferMenuButton".Translate(),
+                    defaultDesc = "RTTransferMenuButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Transfer"),
                     action = delegate
                     {
@@ -308,7 +308,7 @@ namespace GameClient
 
                         if (!SessionValues.actionValues.EnableTrading)
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                            DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                             return;
                         }
 
@@ -318,7 +318,7 @@ namespace GameClient
                             {
                                 DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
                             }
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have any pawn capable of trading!"));
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("RTTransferError".Translate()));
                         }
                     }
                 };
@@ -379,8 +379,8 @@ namespace GameClient
 
                 Command_Action command_Goodwill = new Command_Action
                 {
-                    defaultLabel = "Change Goodwill",
-                    defaultDesc = "Change the goodwill of this site",
+                    defaultLabel = "RTGoodWillMenu".Translate(),
+                    defaultDesc = "RTGoodWillSiteButtonDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                     action = delegate
                     {
@@ -395,8 +395,8 @@ namespace GameClient
                         Action r3 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
                             GoodwillTarget.Site); };
 
-                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
-                            "Enemy", "Neutral", "Ally", r1, r2, r3, null);
+                        RT_Dialog_3Button d1 = new RT_Dialog_3Button("RTGoodWillMenu".Translate(), "RTGoodWillSiteMenuDesc".Translate(),
+                            "RTEnemy".Translate(), "RTNeutral".Translate(), "RTAlly".Translate(), r1, r2, r3, null);
 
                         DialogManager.PushNewDialog(d1);
                     }
@@ -450,8 +450,8 @@ namespace GameClient
                 {
                     Command_Action Command_BuildSite = new Command_Action
                     {
-                        defaultLabel = "Build Personal Site",
-                        defaultDesc = "Build an utility site for your convenience",
+                        defaultLabel = "RTBuildPersonalSite".Translate(),
+                        defaultDesc = "RTBuildPersonalSiteDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
                         action = delegate
                         {
@@ -459,19 +459,19 @@ namespace GameClient
                             
                             if (SessionValues.actionValues.EnableSites)
                             {
-                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Personal Sites", "Available sites to build",
+                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("RTBuildablePersonalSites".Translate(), "RTAvailableToBuildSites".Translate(),
                                     SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, null);
 
                                 DialogManager.PushNewDialog(d1);
                             }
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                         }
                     };
 
                     Command_Action Command_BuildFactionSite = new Command_Action
                     {
-                        defaultLabel = "Build Faction Site",
-                        defaultDesc = "Build an utility site for your faction",
+                        defaultLabel = "RTBuildFactionSite".Translate(),
+                        defaultDesc = "RTBuildFactionSiteDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
                         action = delegate
                         {
@@ -479,12 +479,12 @@ namespace GameClient
 
                             if (SessionValues.actionValues.EnableSites)
                             {
-                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Faction Sites", "Available sites to build",
+                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("RTBuildableFactionSites".Translate(), "RTAvailableToBuildSites".Translate() ,
                                     SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, null);
 
                                 DialogManager.PushNewDialog(d1);
                             }
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                         }
                     };
 
@@ -496,8 +496,8 @@ namespace GameClient
                 {
                     Command_Action command_AccessPersonalSite = new Command_Action
                     {
-                        defaultLabel = "Access Personal Site",
-                        defaultDesc = "Access your personal site",
+                        defaultLabel = "RTPersonalSiteAccess".Translate(),
+                        defaultDesc = "RTPersonalSiteAccessDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
                         action = delegate
                         {
@@ -505,14 +505,14 @@ namespace GameClient
                             SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                             if (SessionValues.actionValues.EnableSites) SiteManager.OnSimpleSiteRequest();
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                         }
                     };
 
                     Command_Action command_DestroySite = new Command_Action
                     {
-                        defaultLabel = "Destroy Site",
-                        defaultDesc = "Destroy this site",
+                        defaultLabel = "RTSiteDestroy".Translate(),
+                        defaultDesc = "RTSiteDestroyDesc".Translate(),
                         icon = ContentFinder<Texture2D>.Get("Commands/DestroySite"),
                         action = delegate
                         {
@@ -520,7 +520,7 @@ namespace GameClient
                             SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                             if (SessionValues.actionValues.EnableSites) SiteManager.RequestDestroySite();
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                            else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                         }
                     };
 
@@ -537,8 +537,8 @@ namespace GameClient
 
                 Command_Action Command_BuildRoad = new Command_Action
                 {
-                    defaultLabel = "Road Builder",
-                    defaultDesc = "Build and destroy roads",
+                    defaultLabel = "RTRoadBuilder".Translate(),
+                    defaultDesc = "RTRoadBuilderDesc".Translate(),
                     icon = ContentFinder<Texture2D>.Get("Commands/Road"),
                     action = delegate
                     {
@@ -550,7 +550,7 @@ namespace GameClient
                             Find.WorldGrid.GetTileNeighbors(SessionValues.chosenCaravan.Tile, neighborTiles);
                             RoadManagerHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), Find.WorldGrid[__instance.Tile].Roads != null);
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTFeatureDisabled".Translate()));
                     }
                 };
 
@@ -577,7 +577,7 @@ namespace GameClient
                     SessionValues.chosenSettlement = settlement;
                     SessionValues.chosendPods = representative;
 
-                    string optionLabel = $"Transfer things to {settlement.Name}";
+                    string optionLabel = "RTTransfering".Translate(settlement.Name);
                     Action toDo = delegate
                     {
                         TransferManager.TakeTransferItemsFromPods(SessionValues.chosendPods);

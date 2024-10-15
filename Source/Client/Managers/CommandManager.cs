@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using Shared;
 using static Shared.CommonEnumerators;
+using Verse;
 
 namespace GameClient
 {
@@ -10,7 +11,7 @@ namespace GameClient
     {
         //Parses the received packet into a command to execute
 
-        public static void ParseCommand(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
 
@@ -40,19 +41,19 @@ namespace GameClient
         {
             ServerValues.isAdmin = true;
             ClientValues.ManageDevOptions();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("You are now an admin!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RTCommandOPPlayer".Translate()));
         }
 
         private static void OnDeopCommand()
         {
             ServerValues.isAdmin = false;
             ClientValues.ManageDevOptions();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("You are no longer an admin!"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK("RTCommandDEOPPlayer".Translate()));
         }
 
         private static void OnBroadcastCommand(CommandData commandData)
         {
-            RimworldManager.GenerateLetter("Server Broadcast", ChatManagerHelper.ParseMessage(commandData._details, true), LetterDefOf.PositiveEvent);
+            RimworldManager.GenerateLetter("RTCommandServerBroadcast".Translate(), ChatManagerHelper.ParseMessage(commandData._details, true), LetterDefOf.PositiveEvent);
         }
 
         private static void OnForceSaveCommand()

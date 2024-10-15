@@ -24,7 +24,7 @@ namespace GameServer
 
             globalData = GlobalDataManagerHelper.GetServerPolution(globalData);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ServerValuesPacket), globalData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(GlobalDataManager), globalData);
             client.listener.EnqueuePacket(packet);
         }
     }
@@ -53,7 +53,7 @@ namespace GameServer
         public static ServerGlobalData GetServerSettlements(ServerClient client, ServerGlobalData globalData)
         {
             List<SettlementFile> tempList = new List<SettlementFile>();
-            SettlementFile[] settlements = SettlementManager.GetAllSettlements();
+            SettlementFile[] settlements = PlayerSettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
             {
                 SettlementFile file = new SettlementFile();
@@ -105,7 +105,7 @@ namespace GameServer
 
         public static ServerGlobalData GetServerCaravans(ServerGlobalData globalData)
         {
-            globalData._playerCaravans = CaravanManager.GetActiveCaravans();
+            globalData._playerCaravans = CaravanManagerHelper.GetActiveCaravans();
             return globalData;
         }
 

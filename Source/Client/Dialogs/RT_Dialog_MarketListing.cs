@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RimWorld;
 using Shared;
 using UnityEngine;
@@ -13,7 +15,7 @@ namespace GameClient
     {
         //UI
 
-        public override Vector2 InitialSize => new Vector2(400f, 400f);
+        public override Vector2 InitialSize => new Vector2(600f, 400f);
 
         private Vector2 scrollPosition = Vector2.zero;
 
@@ -35,18 +37,27 @@ namespace GameClient
 
         //Variables
 
-        private readonly ThingData[] elements;
+        private readonly Thing[] elements;
 
         private readonly Map settlementMap;
 
-        public RT_Dialog_MarketListing(ThingData[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
+        public RT_Dialog_MarketListing(ThingDataFile[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
         {
             DialogManager.dialogMarketListing = this;
 
-            title = "Global Market";
-            description = $"Silver available for trade: {RimworldManager.GetSilverInMap(settlementMap)}";
-
-            this.elements = elements;
+            title = "RTGlobalMarket".Translate();
+            description = "RTAvailableSilver".Translate(RimworldManager.GetSpecificThingCountInMap(ThingDefOf.Silver, settlementMap));
+            List<Thing> things = new List<Thing>();
+            foreach (var element in elements)
+            {
+                Thing thing = null;
+                try { thing = ThingScribeManager.StringToItem(element); } catch{ continue; }
+                if (thing != null)
+                {
+                    things.Add(thing);
+                }
+            }
+            this.elements = things.ToArray();
             this.actionClick = actionClick;
             this.actionCancel = actionCancel;
             this.settlementMap = settlementMap;
@@ -79,11 +90,11 @@ namespace GameClient
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "New"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogNew".Translate()))
             {
                 if (Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction)) == null)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("There's no one in the server to trade with!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Error("RTNoOneToTrade".Translate()));
                 }
                 else { MarketManager.RequestAddStock(); }
 
@@ -91,12 +102,12 @@ namespace GameClient
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reload"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogReload".Translate()))
             {
                 MarketManager.RequestReloadStock();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Close")) 
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogClose".Translate())) 
             {
                 DialogManager.dialogMarketListing = null;
                 ClientValues.ToggleTransfer(false);
@@ -124,11 +135,10 @@ namespace GameClient
 
                     try
                     {
-                        Thing thing = ThingScribeManager.StringToItem(elements[i]);
-                        if (thing.MarketValue > 0) DrawCustomRow(rect, thing, num4);
+                        if (elements[i].MarketValue > 0) DrawCustomRow(rect, elements[i], num4);
                         else continue;
                     }
-                    catch { continue; }
+                    catch {; continue; }
                 }
 
                 num += 30f;
@@ -143,9 +153,12 @@ namespace GameClient
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
-            
-            Widgets.Label(fixedRect, $"{toDisplay.Label.CapitalizeFirst()} > ${toDisplay.MarketValue}/u");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "Select"))
+
+            string[] names = GetDisplayNames(toDisplay);
+            string displayName = names[0];
+            string displaySimple = names[1];
+            Widgets.Label(fixedRect, $"{displayName.CapitalizeFirst()}");
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButtonX, rect.yMax - selectButtonY), new Vector2(selectButtonX, selectButtonY)), "RTDialogSelect".Translate()))
             {
                 DialogManager.dialogMarketListingResult = index;
 
@@ -153,12 +166,12 @@ namespace GameClient
                 {
                     if (int.Parse(DialogManager.dialog1ResultOne) <= 0)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You are trying to request an invalid quantity!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTTradeQuantityError".Translate()));
                     }
 
                     else if (toDisplay.stackCount < int.Parse(DialogManager.dialog1ResultOne))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Error("You are trying to request more than is available!"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Error("RTTradeTooMuch".Translate()));
                     }
 
                     else
@@ -169,11 +182,102 @@ namespace GameClient
                             actionClick?.Invoke();
                             Close();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("RTNotEnoughSilver".Translate()));
                     }
                 };
-                DialogManager.PushNewDialog(new RT_Dialog_1Input("Quantity to request", "Type the quantity you want to request", toDo, null));
+
+                string title = "RTRequest".Translate(displaySimple);
+                string description = "RTRequestDesc".Translate(toDisplay.stackCount, toDisplay.MarketValue);
+                DialogManager.PushNewDialog(new RT_Dialog_1Input(title, description, toDo, null));
             }
+        }
+
+        private string[] GetDisplayNames(Thing thing) 
+        {
+            string text = thing.LabelCapNoCount.CapitalizeFirst() + $" x{thing.stackCount} ";
+            string textSimple = thing.LabelCapNoCount.CapitalizeFirst();
+
+            Type type;
+            FieldInfo fieldInfo;
+            ReadingOutcomeDoerGainResearch research;
+            QualityCategory qc;
+
+            //Exceptions of things that must be handled differently
+
+            switch (thing.def.defName)
+            {
+                case "TextBook":
+                    Book book = (Book)thing;
+                    text = book.def.defName + ": ";
+                    book.BookComp.TryGetDoer<BookOutcomeDoerGainSkillExp>(out BookOutcomeDoerGainSkillExp xp);
+                    if (xp != null)
+                    {
+                        foreach (KeyValuePair<SkillDef, float> pair in xp.Values) text += $"{pair.Key.defName}, ";
+                    }
+                    thing.TryGetQuality(out qc);
+
+                    text += QualityUtility.GetLabelShort(qc);
+                    textSimple = thing.def.defName + " ";
+                    break;
+
+                case "Schematic":
+                    book = (Book)thing;
+                    text = book.def.defName + ": ";
+                    book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out research);
+                    if (research != null)
+                    {
+                        type = research.GetType();
+                        fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
+                        Dictionary<ResearchProjectDef, float> researchDict = (Dictionary<ResearchProjectDef, float>)fieldInfo.GetValue(research);
+                        foreach (ResearchProjectDef key in researchDict.Keys) text += $"{key.defName}, ";
+                    }
+                    thing.TryGetQuality(out qc);
+
+                    text += QualityUtility.GetLabelShort(qc);
+                    textSimple = thing.def.defName + " ";
+                    break;
+
+                case "Novel":
+                    book = (Book)thing;
+                    text = book.def.defName + ": ";
+                    type = book.GetType();
+                    fieldInfo = type.GetField("joyFactor", BindingFlags.NonPublic | BindingFlags.Instance);
+                    text += "RTMarketBookRecreation".Translate(((float)fieldInfo.GetValue(book) * 100))+ ", ";
+                    thing.TryGetQuality(out qc);
+
+                    text += QualityUtility.GetLabelShort(qc);
+                    textSimple = thing.def.defName + " ";
+                    break;
+
+                case "Tome":
+                    book = (Book)thing;
+                    text = book.def.defName + ": ";
+                    book.BookComp.TryGetDoer<ReadingOutcomeDoerGainResearch>(out research);
+                    if (research != null)
+                    {
+                        type = research.GetType();
+                        fieldInfo = type.GetField("values", BindingFlags.NonPublic | BindingFlags.Instance);
+                        Dictionary<ResearchProjectDef, float> researchDict = (Dictionary<ResearchProjectDef, float>)fieldInfo.GetValue(research);
+                        foreach (ResearchProjectDef key in researchDict.Keys) text += $"{key.defName}, ";
+
+                        type = book.GetType();
+                        fieldInfo = type.GetField("mentalBreakChancePerHour", BindingFlags.NonPublic | BindingFlags.Instance);
+                        text += "RTMarketBookMentalBreak".Translate(((float)fieldInfo.GetValue(book) * 100).ToStringDecimalIfSmall());
+                        thing.TryGetQuality(out qc);
+
+                        text += QualityUtility.GetLabel(qc);
+                        textSimple = thing.def.defName + " ";
+                    }
+                    break;
+
+                case "Genepack":
+                    Genepack pack = (Genepack)thing;
+                    text = pack.def.defName + ": ";
+                    foreach (GeneDef gene in pack.GeneSet.GenesListForReading) text += $"{gene.label}, ";
+                    break;
+            }
+
+            return new string[] {text, textSimple};
         }
     }
 }
