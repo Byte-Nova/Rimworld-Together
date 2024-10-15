@@ -14,9 +14,9 @@ namespace Shared
 
         public TileComponent[] Tiles = new TileComponent[0];
 
-        public ThingFile[] FactionThings;
+        public ThingDataFile[] FactionThings;
 
-        public ThingFile[] NonFactionThings;
+        public ThingDataFile[] NonFactionThings;
 
         public HumanFile[] FactionHumans;
 

@@ -349,7 +349,7 @@ namespace GameClient
                 {
                     try
                     {
-                        ThingFile thingData = ThingScribeManager.ItemToString(ap, 1);
+                        ThingDataFile thingData = ThingScribeManager.ItemToString(ap, 1);
                         ApparelComponent component = new ApparelComponent();
                         component.EquippedApparel = thingData;
                         component.WornByCorpse = ap.WornByCorpse;
@@ -370,7 +370,7 @@ namespace GameClient
                 try
                 {
                     ThingWithComps weapon = pawn.equipment.Primary;
-                    ThingFile thingData = ThingScribeManager.ItemToString(weapon, weapon.stackCount);
+                    ThingDataFile thingData = ThingScribeManager.ItemToString(weapon, weapon.stackCount);
                     humanData.Weapon = thingData;
                 }
                 catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -387,7 +387,7 @@ namespace GameClient
                 {
                     try
                     {
-                        ThingFile thingData = ThingScribeManager.ItemToString(thing, thing.stackCount);
+                        ThingDataFile thingData = ThingScribeManager.ItemToString(thing, thing.stackCount);
                         ItemComponent component = new ItemComponent();
                         component.Item = thingData;
 
@@ -1028,15 +1028,13 @@ namespace GameClient
             return things.ToArray();
         }
 
-        public static ThingFile ItemToString(Thing thing, int thingCount)
+        public static ThingDataFile ItemToString(Thing thing, int thingCount)
         {
             ThingDataFile thingData = new ThingDataFile();
             Thing toUse = null;
             
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
-
-            GetItemID(toUse, thingData);
 
             GetItemName(toUse, thingData);
 
@@ -1056,7 +1054,7 @@ namespace GameClient
             return thingData;
         }
 
-        public static Thing StringToItem(ThingFile thingData)
+        public static Thing StringToItem(ThingDataFile thingData)
         {
 
             Thing thing = SetItem(thingData);
@@ -1079,23 +1077,13 @@ namespace GameClient
 
         //Getters
 
-        private static void GetItemID(Thing thing, ThingFile thingData)
-        {
-            try
-            {
-                thingData.ThingID = thing.ThingID;
-                thingData.ThingIDNumber = thing.thingIDNumber;
-            }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
-        }
-
-        private static void GetItemName(Thing thing, ThingFile thingData)
+        private static void GetItemName(Thing thing, ThingDataFile thingData)
         {
             try { thingData.DefName = thing.def.defName; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetItemMaterial(Thing thing, ThingFile thingData)
+        private static void GetItemMaterial(Thing thing, ThingDataFile thingData)
         {
             try
             {
@@ -1105,35 +1093,35 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetItemQuantity(Thing thing, ThingFile thingData, int thingCount)
+        private static void GetItemQuantity(Thing thing, ThingDataFile thingData, int thingCount)
         {
             try { thingData.Quantity = thingCount; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetItemQuality(Thing thing, ThingFile thingData)
+        private static void GetItemQuality(Thing thing, ThingDataFile thingData)
         {
             try { thingData.Quality = DeepScribeHelper.GetThingQuality(thing); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetItemHitpoints(Thing thing, ThingFile thingData)
+        private static void GetItemHitpoints(Thing thing, ThingDataFile thingData)
         {
             try { thingData.Hitpoints = thing.HitPoints; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetItemTransform(Thing thing, ThingFile thingData)
+        private static void GetItemTransform(Thing thing, ThingDataFile thingData)
         {
             try
             {
-                thingData.Transform.Position = new int[] { thing.Position.x, thing.Position.y, thing.Position.z };
-                thingData.Transform.Rotation = thing.Rotation.AsInt;
+                thingData.TransformComponent.Position = new int[] { thing.Position.x, thing.Position.y, thing.Position.z };
+                thingData.TransformComponent.Rotation = thing.Rotation.AsInt;
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static bool GetItemMinified(Thing thing, ThingFile thingData)
+        private static bool GetItemMinified(Thing thing, ThingDataFile thingData)
         {
             try
             {
@@ -1145,17 +1133,17 @@ namespace GameClient
             return false;
         }
 
-        private static void GetGenepackDetails(Thing thing, ThingFile thingData)
+        private static void GetGenepackDetails(Thing thing, ThingDataFile thingData)
         {
             try
             {
                 Genepack genepack = (Genepack)thing;
-                foreach (GeneDef gene in genepack.GeneSet.GenesListForReading) thingData.GenepackData.genepackDefs.Add(gene.defName);
+                foreach (GeneDef gene in genepack.GeneSet.GenesListForReading) thingData.GenepackComponent.GenepackDefs.Add(gene.defName);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetBookDetails(Thing thing, ThingFile thingData)
+        private static void GetBookDetails(Thing thing, ThingDataFile thingData)
         {
             try
             {
@@ -1191,8 +1179,8 @@ namespace GameClient
                     foreach (ResearchProjectDef key in researchDict.Keys) bookData.ResearchData.Add(key.defName, researchDict[key]);
                 }
 
-                thingData.BookData = bookData;
-                Logger.Warning(bookData.title);
+                thingData.BookComponent = bookData;
+                Logger.Warning(bookData.Title);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1202,15 +1190,15 @@ namespace GameClient
             try 
             {
                 Xenogerm germData = (Xenogerm)thing;
-                foreach (GeneDef gene in germData.GeneSet.GenesListForReading) thingDataFile.XenoGermData.geneDefs.Add(gene.defName);
-                thingDataFile.XenoGermData.xenoTypeName = germData.xenotypeName;
-                thingDataFile.XenoGermData.iconDef = germData.iconDef.defName;
+                foreach (GeneDef gene in germData.GeneSet.GenesListForReading) thingDataFile.XenogermComponent.geneDefs.Add(gene.defName);
+                thingDataFile.XenogermComponent.xenoTypeName = germData.xenotypeName;
+                thingDataFile.XenogermComponent.iconDef = germData.iconDef.defName;
             } catch (Exception e ) { Logger.Warning(e.ToString()); } 
         }
 
         //Setters
 
-        private static Thing SetItem(ThingFile thingData)
+        private static Thing SetItem(ThingDataFile thingData)
         {
             try
             {
@@ -1223,23 +1211,13 @@ namespace GameClient
             return null;
         }
 
-        private static void SetItemID(Thing thing, ThingFile thingData)
-        {
-            try
-            {
-                thing.ThingID = thingData.ThingID;
-                thing.thingIDNumber = thing.thingIDNumber;
-            }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
-        }
-
-        private static void SetItemQuantity(Thing thing, ThingFile thingData)
+        private static void SetItemQuantity(Thing thing, ThingDataFile thingData)
         {
             try { thing.stackCount = thingData.Quantity; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetItemQuality(Thing thing, ThingFile thingData)
+        private static void SetItemQuality(Thing thing, ThingDataFile thingData)
         {
             if (thingData.Quality != -1)
             {
@@ -1256,29 +1234,29 @@ namespace GameClient
             }
         }
 
-        private static void SetItemHitpoints(Thing thing, ThingFile thingData)
+        private static void SetItemHitpoints(Thing thing, ThingDataFile thingData)
         {
             try { thing.HitPoints = thingData.Hitpoints; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetItemTransform(Thing thing, ThingFile thingData)
+        private static void SetItemTransform(Thing thing, ThingDataFile thingData)
         {
             try
             { 
-                thing.Position = new IntVec3(thingData.Transform.Position[0], thingData.Transform.Position[1], thingData.Transform.Position[2]);
-                thing.Rotation = new Rot4(thingData.Transform.Rotation);
+                thing.Position = new IntVec3(thingData.TransformComponent.Position[0], thingData.TransformComponent.Position[1], thingData.TransformComponent.Position[2]);
+                thing.Rotation = new Rot4(thingData.TransformComponent.Rotation);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetGenepackDetails(Thing thing, ThingFile thingData)
+        private static void SetGenepackDetails(Thing thing, ThingDataFile thingData)
         {
             try
             {
                 Genepack genepack = (Genepack)thing;
                 List<GeneDef> geneDefs = new List<GeneDef>();
-                foreach (string str in thingData.GenepackData.genepackDefs)
+                foreach (string str in thingData.GenepackComponent.GenepackDefs)
                 {
                     GeneDef gene = DefDatabase<GeneDef>.AllDefs.First(fetch => fetch.defName == str);
                     geneDefs.Add(gene);
@@ -1288,7 +1266,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetBookDetails(Thing thing, ThingFile thingData)
+        private static void SetBookDetails(Thing thing, ThingDataFile thingData)
         {
             try
             {
@@ -1351,7 +1329,7 @@ namespace GameClient
             {
                 Xenogerm germData = (Xenogerm)thing;
                 List<Genepack> genePacks = new List<Genepack>();
-                foreach (string genepacks in thingDataFile.XenoGermData.geneDefs) 
+                foreach (string genepacks in thingDataFile.XenogermComponent.geneDefs) 
                 {
                     Genepack genepack = new Genepack();
                     List<GeneDef> geneDefs = new List<GeneDef>();
@@ -1359,7 +1337,7 @@ namespace GameClient
                     genepack.Initialize(geneDefs);
                     genePacks.Add(genepack);
                 }
-                germData.Initialize(genePacks, thingDataFile.XenoGermData.xenoTypeName, DefDatabase<XenotypeIconDef>.GetNamed(thingDataFile.XenoGermData.iconDef));
+                germData.Initialize(genePacks, thingDataFile.XenogermComponent.xenoTypeName, DefDatabase<XenotypeIconDef>.GetNamed(thingDataFile.XenogermComponent.iconDef));
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1458,14 +1436,14 @@ namespace GameClient
         {
             try 
             {
-                List<ThingFile> tempFactionThings = new List<ThingFile>();
-                List<ThingFile> tempNonFactionThings = new List<ThingFile>();
+                List<ThingDataFile> tempFactionThings = new List<ThingDataFile>();
+                List<ThingDataFile> tempNonFactionThings = new List<ThingDataFile>();
 
                 foreach (Thing thing in map.listerThings.AllThings)
                 {
                     if (!DeepScribeHelper.CheckIfThingIsHuman(thing) && !DeepScribeHelper.CheckIfThingIsAnimal(thing))
                     {
-                        ThingFile thingData = ThingScribeManager.ItemToString(thing, thing.stackCount);
+                        ThingDataFile thingData = ThingScribeManager.ItemToString(thing, thing.stackCount);
 
                         if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(thingData);
                         else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(thingData);
@@ -1600,7 +1578,7 @@ namespace GameClient
                 {
                     Random rnd = new Random();
 
-                    foreach (ThingFile item in mapFile.FactionThings)
+                    foreach (ThingDataFile item in mapFile.FactionThings)
                     {
                         try
                         {
@@ -1625,7 +1603,7 @@ namespace GameClient
 
                 if (nonFactionThings)
                 {
-                    foreach (ThingFile item in mapFile.NonFactionThings)
+                    foreach (ThingDataFile item in mapFile.NonFactionThings)
                     {
                         try
                         {

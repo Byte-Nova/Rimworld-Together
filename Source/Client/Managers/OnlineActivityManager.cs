@@ -11,7 +11,7 @@ namespace GameClient
 {
     public static class OnlineActivityManager
     {
-        public static void ParseOnlineActivityPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             OnlineActivityData data = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
 

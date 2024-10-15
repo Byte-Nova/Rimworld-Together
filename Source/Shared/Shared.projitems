@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\XenoGermData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\XenogermComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SettlementFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />
@@ -69,7 +69,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\PlanetGenerator\PlanetNPCSettlement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\HumanFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\AnimalFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\ThingFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ThingDataFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\ModConfigFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\BookComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\GenepackComponent.cs" />

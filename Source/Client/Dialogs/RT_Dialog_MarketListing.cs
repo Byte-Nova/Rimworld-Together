@@ -41,7 +41,7 @@ namespace GameClient
 
         private readonly Map settlementMap;
 
-        public RT_Dialog_MarketListing(ThingFile[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
+        public RT_Dialog_MarketListing(ThingDataFile[] elements, Map settlementMap, Action actionClick = null, Action actionCancel = null)
         {
             DialogManager.dialogMarketListing = this;
 

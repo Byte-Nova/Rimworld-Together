@@ -98,7 +98,7 @@ namespace GameClient
 
         public static void RequestReloadStock()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingFile[] { }, SessionValues.chosenSettlement.Map, null, null));
+            DialogManager.PushNewDialog(new RT_Dialog_MarketListing(new ThingDataFile[] { }, SessionValues.chosenSettlement.Map, null, null));
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for market response"));
 
             MarketData marketData = new MarketData();

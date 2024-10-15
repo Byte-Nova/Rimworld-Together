@@ -2,7 +2,7 @@ namespace Shared
 {
     public class ApparelComponent
     {
-        public ThingFile EquippedApparel = new ThingFile();
+        public ThingDataFile EquippedApparel = new ThingDataFile();
 
         public bool WornByCorpse;
     }

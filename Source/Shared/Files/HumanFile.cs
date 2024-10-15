@@ -57,7 +57,7 @@ namespace Shared
 
         public TraitComponent[] Traits  = new TraitComponent[0];
 
-        public ThingFile Weapon = new ThingFile();
+        public ThingDataFile Weapon = new ThingDataFile();
 
         public ApparelComponent[] Apparel  = new ApparelComponent[0];
 

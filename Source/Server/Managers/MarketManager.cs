@@ -41,7 +41,7 @@ namespace GameServer
 
         private static void AddToMarket(ServerClient client, MarketData marketData)
         {
-            foreach (ThingFile item in marketData._transferThings) TryCombineStackIfAvailable(client, item);
+            foreach (ThingDataFile item in marketData._transferThings) TryCombineStackIfAvailable(client, item);
 
             Main_.SaveValueFile(ServerFileMode.Market);
 
@@ -63,10 +63,10 @@ namespace GameServer
                 return;
             }
 
-            ThingFile toGet = Master.marketValues.MarketStock[marketData._indexToManage];
+            ThingDataFile toGet = Master.marketValues.MarketStock[marketData._indexToManage];
             int reservedQuantity = toGet.Quantity;
             toGet.Quantity = marketData._quantityToManage;
-            marketData._transferThings = new List<ThingFile>() { toGet };
+            marketData._transferThings = new List<ThingDataFile>() { toGet };
 
             Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
 
@@ -97,16 +97,16 @@ namespace GameServer
             client.listener.EnqueuePacket(packet);
         }
 
-        private static void TryCombineStackIfAvailable(ServerClient client, ThingFile thingData)
+        private static void TryCombineStackIfAvailable(ServerClient client, ThingDataFile thingData)
         {
             if (thingData.Quantity <= 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
             else
             {
                 //Check if thing is book to handle differently
-                if (thingData.BookData.title != "null") Master.marketValues.MarketStock.Add(thingData);
+                if (thingData.BookComponent.Title != "null") Master.marketValues.MarketStock.Add(thingData);
 
                 //Check if thing is genepack to handle differently
-                else if (thingData.GenepackData.genepackDefs.Count != 0) Master.marketValues.MarketStock.Add(thingData);
+                else if (thingData.GenepackComponent.GenepackDefs.Count != 0) Master.marketValues.MarketStock.Add(thingData);
 
                 //Act as if normal thing
                 else

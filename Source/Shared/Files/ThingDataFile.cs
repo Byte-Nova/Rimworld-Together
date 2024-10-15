@@ -4,7 +4,7 @@ namespace Shared
 {
     [Serializable]
 
-    public class ThingFile
+    public class ThingDataFile
     {
         public string DefName;
 
@@ -18,15 +18,15 @@ namespace Shared
 
         public bool IsMinified;
 
-        public string ThingID;
+        //Complex data
 
-        public int ThingIDNumber;
-
-        public TransformComponent Transform = new TransformComponent();
+        public TransformComponent TransformComponent = new TransformComponent();
 
         public GenepackComponent GenepackComponent = new GenepackComponent();
 
         public BookComponent BookComponent = new BookComponent();
+
+        public XenogermComponent XenogermComponent = new XenogermComponent();
 
         public PlantComponent PlantComponent = new PlantComponent();
     }

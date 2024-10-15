@@ -13,6 +13,6 @@ namespace Shared
 
         public int _indexToManage;
 
-        public List<ThingFile> _transferThings;
+        public List<ThingDataFile> _transferThings;
     }
 }

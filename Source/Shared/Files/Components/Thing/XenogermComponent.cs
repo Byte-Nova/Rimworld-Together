@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Shared 
 {
-    public class XenoGermData 
+    public class XenogermComponent 
     {
         public List<string> geneDefs = new List<string>();
 
