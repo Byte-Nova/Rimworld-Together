@@ -54,7 +54,7 @@ namespace GameServer
 
                 else
                 {
-                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner);
+                    ServerClient target = NetworkHelper.GetConnectedClientFromUsername(settlement.Owner);
 
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
                     {

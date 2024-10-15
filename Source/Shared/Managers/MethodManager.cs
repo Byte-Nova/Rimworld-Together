@@ -7,25 +7,19 @@ namespace Shared
 {
     public static class MethodManager
     {
-        public static AssemblyType GetAssemblyType()
-        {
-            string assemblyName = GetExecutingAssemblyName();
-
-            if (assemblyName == CommonValues.serverAssemblyName) return AssemblyType.Server;
-            else if (assemblyName == CommonValues.clientAssemblyName) return AssemblyType.Client;
-            else throw new NotImplementedException();
-        }
-
-        public static void ExecuteMethod(string typeName, string methodName, object[] parameters)
+        public static bool TryExecuteMethod(string methodName, string typeName, object[] parameters)
         {
             try
             {
                 Type fullType = GetTypeFromName(typeName);
                 MethodInfo methodInfo = GetMethodFromName(fullType, methodName);
-
                 methodInfo.Invoke(methodInfo.Name, parameters);
+
+                return true;
             }
-            catch(System.Exception e) { Debug.WriteLine(e); }
+            catch (Exception e) { Debug.WriteLine(e); }
+
+            return false;
         }
 
         public static string GetExecutingAssemblyName()

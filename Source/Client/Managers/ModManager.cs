@@ -17,12 +17,12 @@ namespace GameClient
             switch (data._stepMode)
             {
                 case ModConfigStepMode.Ask:
-                    OpenModManagerMenu(false, data._configFile);
+                    OpenModManagerMenu(false);
                     break;
             }
         }
 
-        public static void OpenModManagerMenu(bool isFirstEdit, ModConfigFile configFile = null)
+        public static void OpenModManagerMenu(bool isFirstEdit)
         {
             Action toDo = delegate
             {

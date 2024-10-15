@@ -55,7 +55,7 @@ namespace GameServer
             NetworkHelper.SendPacketToAllClients(packet, client);
         }
 
-        private static void RemoveFromMarket(ServerClient client, MarketData marketData) 
+        private static void RemoveFromMarket(ServerClient client, MarketData marketData)
         {
             if (marketData._quantityToManage == 0)
             {
@@ -99,22 +99,38 @@ namespace GameServer
 
         private static void TryCombineStackIfAvailable(ServerClient client, ThingFile thingData)
         {
-            if (thingData.Quantity <= 0)
+            if (thingData.Quantity <= 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to sell illegal quantity at market");
-                return;
-            }
+                //Check if thing is book to handle differently
+                if (thingData.BookData.title != "null") Master.marketValues.MarketStock.Add(thingData);
 
-            foreach (ThingFile stockedItem in Master.marketValues.MarketStock.ToArray())
-            {
-                if (stockedItem.DefName == thingData.DefName && stockedItem.MaterialDefName == thingData.MaterialDefName)
+                //Check if thing is genepack to handle differently
+                else if (thingData.GenepackData.genepackDefs.Count != 0) Master.marketValues.MarketStock.Add(thingData);
+
+                //Act as if normal thing
+                else
                 {
-                    stockedItem.Quantity += thingData.Quantity;
-                    return;
+                    foreach (ThingDataFile stockedItem in MarketManagerHelper.GetMarketStockSafe())
+                    {
+                        if (stockedItem.DefName == thingData.DefName && stockedItem.MaterialDefName == thingData.MaterialDefName)
+                        {
+                            stockedItem.Quantity += thingData.Quantity;
+                            return;
+                        }
+                    }
+
+                    Master.marketValues.MarketStock.Add(thingData);
                 }
             }
+        }
+    }
 
-            Master.marketValues.MarketStock.Add(thingData);
+    public static class MarketManagerHelper
+    {
+        public static ThingDataFile[] GetMarketStockSafe()
+        {
+            return Master.marketValues.MarketStock.ToArray();
         }
     }
 }

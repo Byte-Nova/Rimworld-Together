@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using RimWorld;
+using Shared;
 using Verse;
 
 namespace GameClient
@@ -190,6 +191,12 @@ namespace GameClient
 
                 Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor = difficultyValues.WastepackInfestationChanceFactor;
             }
+        }
+
+        public static void OpenDifficultyMenu()
+        {
+            Page_SelectStorytellerInGame d1 = new Page_SelectStorytellerInGame();
+            DialogManager.PushNewDialog(d1);
         }
     }
 }

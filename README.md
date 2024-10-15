@@ -10,6 +10,11 @@ Welcome to the repository for `RimWorld Together`! Here you will find everything
 ## Server Prerequisites:
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
 
+## Server Installation:
+Download the latest server files at [here](https://github.com/Byte-Nova/Rimworld-Together/releases/latest). Then extract somewhere in your system and execute the executable file.
+>[!WARNING]
+> When extracting the server files somewhere, be mindful on where this location might be, avoid installing it at privileged locations (where admin permissions are needed) to prevent your antivirus/system kicking off.
+
 ## Container-based Deployment:
 We provide helper scripts to build and run the official RimWorld-Together Container with [buildah](https://github.com/containers/buildah) and [podman](https://github.com/containers/podman)
 
@@ -23,15 +28,8 @@ make build-container
 make run-container
 ```
 
-## Deployments:
-To access our documentation and deployment examples, please run the following command:
-```sh
-git submodule update --init --recursive
-```
-This will clone (or update) our [Guide](https://github.com/RimworldTogether/Guide) and Deployments project. You can also use the `--recurse-submodules` flag on your initial clone to automatically pull the documentation at the same time.
-
 ## Contributing
-Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!
+Interested? Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!
 
 ## Other Questions?
 Please don't hesitate to create an issue on Github if you have any questions/issues with the mod. We are here for you! You can also contact us via our Discord server (see top of this page).

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTEnemy.label>敌方玩家定居点</RTEnemy.label>
+    <RTEnemy.description>一个在线派系</RTEnemy.description>
+    <RTEnemy.fixedName>敌方玩家定居点</RTEnemy.fixedName>
+    <RTEnemy.leaderTitle>领袖</RTEnemy.leaderTitle>
+    <RTEnemy.pawnSingular>殖民者</RTEnemy.pawnSingular>
+    <RTEnemy.pawnsPlural>殖民者们</RTEnemy.pawnsPlural>
+</LanguageData>

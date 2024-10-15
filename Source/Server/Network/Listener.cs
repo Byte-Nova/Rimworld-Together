@@ -112,10 +112,16 @@ namespace GameServer
 
         public void HandlePacket(Packet packet)
         {
-            if (!ignoreLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
+            if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
             
-            MethodManager.ExecuteMethod(packet.header, defaultParserMethodName, new object[] { targetClient, packet });
+            //If method manager failed to execute the packet we assume corrupted data
+            if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
+            {                
+                Logger.Error($"Forcefully disconnecting player '{targetClient.userFile.Username}' with ip '{targetClient.userFile.SavedIP}' due to MethodManager exception");
+                Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
+                disconnectFlag = true;
+            }
         }
 
         //Runs in a separate thread and checks if the connection should still be up

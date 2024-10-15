@@ -30,7 +30,7 @@ namespace GameServer
             connection = new TcpListener(localAddress, port);
             connection.Start();
 
-            Logger.Warning("Server launched");  
+            Logger.Warning("Server launched");
             Logger.Warning($"Listening for users at {localAddress}:{port}");            
             Logger.Warning("Type 'help' to get a list of available commands");
 
@@ -100,6 +100,11 @@ namespace GameServer
         {
             if (toExclude != null) return Network.connectedClients.Where(fetch => fetch.userFile.Username != toExclude.userFile.Username).ToArray();
             else return Network.connectedClients.ToArray();
+        }
+
+        public static ServerClient GetConnectedClientFromUsername(string username)
+        {
+            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Username == username);
         }
 
         public static void SendPacketToAllClients(Packet packet, ServerClient toExclude = null)
