@@ -6,6 +6,8 @@ namespace Shared
 
     public class ThingDataFile
     {
+        public string Hash;
+
         public string DefName;
 
         public string MaterialDefName;

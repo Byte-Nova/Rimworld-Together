@@ -142,10 +142,14 @@ namespace GameClient
 
         private static void GetPawnFaction(Pawn pawn, HumanFile humanData)
         {
-            if (pawn.Faction == null) return;
-
             try { humanData.FactionDef = pawn.Faction.def.defName; }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
+            catch (Exception e) 
+            { 
+                Logger.Warning(e.ToString()); 
+
+                // In case it has no apparent faction;
+                humanData.FactionDef = Faction.OfPlayer.def.defName;
+            }
         }
 
         private static void GetPawnHediffs(Pawn pawn, HumanFile humanData)
@@ -428,12 +432,14 @@ namespace GameClient
 
         private static Faction SetPawnFaction(HumanFile humanData)
         {
-            if (humanData.FactionDef == null) return null;
-
             try { return Find.FactionManager.AllFactions.First(fetch => fetch.def.defName == humanData.FactionDef); }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
+            catch (Exception e) 
+            { 
+                Logger.Warning(e.ToString());
 
-            return null;
+                // If faction is missing after parsing
+                return Faction.OfPlayer;
+            }
         }
 
         private static Pawn SetPawn(PawnKindDef kind, Faction faction, HumanFile humanData)
@@ -830,10 +836,14 @@ namespace GameClient
 
         private static void GetAnimalFaction(Pawn animal, AnimalFile animalData)
         {
-            if (animal.Faction == null) return;
-
             try { animalData.FactionDef = animal.Faction.def.defName; }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
+            catch (Exception e) 
+            { 
+                Logger.Warning(e.ToString()); 
+
+                // In case it has no apparent faction;
+                animalData.FactionDef = Faction.OfPlayer.def.defName;
+            }
         }
 
         private static void GetAnimalHediffs(Pawn animal, AnimalFile animalData)
@@ -910,12 +920,14 @@ namespace GameClient
 
         private static Faction SetAnimalFaction(AnimalFile animalData)
         {
-            if (animalData.FactionDef == null) return null;
-
             try { return Find.FactionManager.AllFactions.First(fetch => fetch.def.defName == animalData.FactionDef); }
-            catch (Exception e) { Logger.Warning(e.ToString()); }
+            catch (Exception e) 
+            { 
+                Logger.Warning(e.ToString());
 
-            return null;
+                // If faction is missing after parsing
+                return Faction.OfPlayer;
+            }
         }
 
         private static Pawn SetAnimal(PawnKindDef kind, Faction faction, AnimalFile animalData)
@@ -1036,6 +1048,8 @@ namespace GameClient
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
+            GetItemHash(toUse, thingData);
+
             GetItemName(toUse, thingData);
 
             GetItemMaterial(toUse, thingData);
@@ -1056,10 +1070,7 @@ namespace GameClient
 
         public static Thing StringToItem(ThingDataFile thingData)
         {
-
             Thing thing = SetItem(thingData);
-
-            //SetItemID(thing, thingData);
 
             SetItemQuantity(thing, thingData);
 
@@ -1076,6 +1087,12 @@ namespace GameClient
         }
 
         //Getters
+
+        private static void GetItemHash(Thing thing, ThingDataFile thingData)
+        {
+            try { thingData.Hash = Hasher.GetHashFromString(thing.ThingID); }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
 
         private static void GetItemName(Thing thing, ThingDataFile thingData)
         {
