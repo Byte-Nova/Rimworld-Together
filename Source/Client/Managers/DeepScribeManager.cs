@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -1005,6 +1006,7 @@ namespace GameClient
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(toUse)) GetBladelinkWeaponDetails(toUse, thingData);
             return thingData;
         }
 
@@ -1028,6 +1030,7 @@ namespace GameClient
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(thing)) SetXenoGermDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(thing)) SetBladelinkWeaponDetails(thing, thingData);
             return thing;
         }
 
@@ -1154,6 +1157,21 @@ namespace GameClient
             } catch (Exception e ) { Logger.Warning(e.ToString()); } 
         }
 
+        private static void GetBladelinkWeaponDetails(Thing thing, ThingDataFile thingDataFile)
+        {
+            try
+            {
+                ThingWithComps personaData = (ThingWithComps)thing;
+                List<string> defnames = new List<string>();
+                CompBladelinkWeapon comp = personaData.GetComp<CompBladelinkWeapon>();
+                thingDataFile.BladelinkWeaponData.label = thing.LabelShort;
+                Logger.Warning(thingDataFile.BladelinkWeaponData.label);
+                foreach(WeaponTraitDef trait in comp.TraitsListForReading)
+                    defnames.Add(trait.defName);
+                thingDataFile.BladelinkWeaponData.traitdefs = defnames.ToArray();
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
         //Setters
 
         private static Thing SetItem(ThingDataFile thingData)
@@ -1308,6 +1326,26 @@ namespace GameClient
                     genePacks.Add(genepack);
                 }
                 germData.Initialize(genePacks, thingDataFile.XenoGermData.xenoTypeName, DefDatabase<XenotypeIconDef>.GetNamed(thingDataFile.XenoGermData.iconDef));
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void SetBladelinkWeaponDetails(Thing thing, ThingDataFile thingDataFile)
+        {
+            try
+            {
+                ThingWithComps personaWeapon = (ThingWithComps)thing;
+                CompBladelinkWeapon comp = personaWeapon.GetComp<CompBladelinkWeapon>();
+                List<WeaponTraitDef> traitList = new List<WeaponTraitDef>();
+                foreach (string trait in thingDataFile.BladelinkWeaponData.traitdefs) 
+                {
+                    WeaponTraitDef traitDef = DefDatabase<WeaponTraitDef>.GetNamedSilentFail(trait);
+                    traitList.Add(traitDef);
+                }
+                Type type = thing.GetType();
+                FieldInfo field = type.GetField("LabelShort", BindingFlags.Instance | BindingFlags.NonPublic);
+                field.SetValue(comp, thingDataFile.BladelinkWeaponData.label);
+                Logger.Warning(thingDataFile.BladelinkWeaponData.label);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1793,6 +1831,14 @@ namespace GameClient
             if(!ModsConfig.BiotechActive) return false;
 
             if (thing.def.defName == ThingDefOf.Xenogerm.defName) return true;
+            else return false;
+        }
+
+        public static bool CheckIfThingIsBladelinkWeapon(Thing thing)
+        {
+            if (!ModsConfig.RoyaltyActive) return false;
+
+            if (thing.TryGetComp<CompBladelinkWeapon>() != null) return true;
             else return false;
         }
     }
