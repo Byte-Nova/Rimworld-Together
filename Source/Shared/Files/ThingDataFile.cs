@@ -28,6 +28,8 @@ namespace Shared
 
         public BookData BookData = new BookData();
 
+        public XenoGermData XenoGermData = new XenoGermData();
+
         public PlantData PlantData = new PlantData();
     }
 }

@@ -25,13 +25,19 @@ namespace GameClient
         //ModStuff values go below. Do not change manually
 
         public static bool verboseBool;
+        
         public static bool extremeVerboseBool;
+
         public static bool muteSoundBool;
+
         public static bool rejectTransferBool;
+
         public static bool rejectSiteRewardsBool;
 
         public static float autosaveDays = 1.0f;
+
         public static float autosaveCurrentTicks;
+
         public static float autosaveInternalTicks = autosaveDays * 60000f;
 
         public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }

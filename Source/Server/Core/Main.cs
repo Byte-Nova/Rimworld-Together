@@ -118,7 +118,7 @@ namespace GameServer
             SaveValueFile(ServerFileMode.Backup, false);
 
             LoadValueFile(ServerFileMode.Mods);
-            SaveValueFile(ServerFileMode.Mods, true);
+            SaveValueFile(ServerFileMode.Mods, false);
 
             LoadValueFile(ServerFileMode.World);
 

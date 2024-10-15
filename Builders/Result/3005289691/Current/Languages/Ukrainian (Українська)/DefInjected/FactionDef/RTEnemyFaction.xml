@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<RTEnemy.label>Поселення Ворожих Гравців</RTEnemy.label>
+	<RTEnemy.description>Онлайн фракція</RTEnemy.description>
+	<RTEnemy.fixedName>Поселення Ворожих Гравців</RTEnemy.fixedName>
+	<RTEnemy.leaderTitle>лідер</RTEnemy.leaderTitle>
+	<RTEnemy.pawnSingular>колоніст</RTEnemy.pawnSingular>
+	<RTEnemy.pawnsPlural>колоністів</RTEnemy.pawnsPlural>
+</LanguageData>

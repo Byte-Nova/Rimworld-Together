@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -83,9 +84,56 @@ namespace GameClient
 
         //Returns an npc faction depending on the value
 
-        public static Faction GetNPCFactionFromDefName(string defName)
+        public static List<Faction> GetNPCFactionFromDefName(string defName)
         {
-            return Find.World.factionManager.AllFactions.First(fetch => fetch.def.defName == defName);
+            List<Faction> factions = new List<Faction>();
+            foreach (Faction faction in Find.World.factionManager.AllFactions)
+            {
+                if (faction.def.defName == defName)
+                {
+                    factions.Add(faction);
+                }
+            }
+
+            if(factions.Count >= 1) return factions;
+            else
+            {
+                switch (defName) // If missing factions from missing dlcs.
+                {
+                    case "OutlanderRoughPig":
+                        factions.AddRange(GetNPCFactionFromDefName(FactionDefOf.OutlanderRough.defName));
+                        break;
+
+                    case "PirateYttakin":
+                        factions.AddRange(GetNPCFactionFromDefName(FactionDefOf.Pirate.defName));
+                        break;
+
+                    case "PirateWaster":
+                        factions.AddRange(GetNPCFactionFromDefName(FactionDefOf.Pirate.defName));
+                        break;
+
+                    case "TribeRoughNeanderthal":
+                        factions.AddRange(GetNPCFactionFromDefName(FactionDefOf.TribeRough.defName));
+                        break;
+
+                    case "TribeSavageImpid":
+                        factions.AddRange(GetNPCFactionFromDefName(FactionDefOf.TribeRough.defName));
+                        break;
+
+                    case "TribeCannibal":
+                        factions.AddRange(GetNPCFactionFromDefName(FactionDefOf.TribeRough.defName));
+                        break;
+
+                    case "Empire":
+                        factions.AddRange(GetNPCFactionFromDefName(FactionDefOf.OutlanderCivil.defName));
+                        break;
+                        
+                    default:
+                        break;
+                }
+
+                return factions;
+            }
         }
 
         //Gets the default generator for the map builder

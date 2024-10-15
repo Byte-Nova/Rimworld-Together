@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<RTNeutral.label>Поселення Нейтральних Гравців</RTNeutral.label>
+	<RTNeutral.description>Онлайн фракція</RTNeutral.description>
+	<RTNeutral.fixedName>Поселення Ворожих Гравців</RTNeutral.fixedName>
+	<RTNeutral.leaderTitle>лідер</RTNeutral.leaderTitle>
+	<RTNeutral.pawnSingular>колоніст</RTNeutral.pawnSingular>
+	<RTNeutral.pawnsPlural>колоністів</RTNeutral.pawnsPlural>
+</LanguageData>

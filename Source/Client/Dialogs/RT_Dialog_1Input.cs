@@ -2,6 +2,7 @@
 using RimWorld;
 using UnityEngine;
 using Verse;
+using static GameClient.DialogManagerHelper;
 
 namespace GameClient
 {
@@ -54,7 +55,7 @@ namespace GameClient
             float horizontalLineDif = Text.CalcSize(title).y + StandardMargin / 2;
 
             float inputOneLabelDif = Text.CalcSize(inputOneLabel).y + StandardMargin;
-            float inputOneDif = inputOneLabelDif + 30f;
+            float inputOneDif = inputOneLabelDif + 28f;
 
             Text.Font = GameFont.Medium;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
@@ -62,17 +63,16 @@ namespace GameClient
 
             DrawInputOne(centeredX, inputOneLabelDif, inputOneDif);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogConfirm".Translate()))
+            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomLeft), "RTDialogConfirm".Translate()))
             {
                 DialogManager.dialog1ResultOne = inputOneResult;
-
-                if (actionYes != null) actionYes.Invoke();
+                actionYes?.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "RTDialogCancel".Translate()))
+            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomRight), "RTDialogCancel".Translate()))
             {
-                if (actionNo != null) actionNo.Invoke();
+                actionNo?.Invoke();
                 Close();
             }
         }

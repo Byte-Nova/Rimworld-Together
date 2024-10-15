@@ -8,15 +8,27 @@ using static Shared.CommonEnumerators;
 using static GameClient.DisconnectionManager;
 using System.Xml;
 using System.Xml.XPath;
+using System;
 
 namespace GameClient
 {
     public static class SaveManager
     {
         public static string customSaveName => $"Server - {Network.ip} - {ClientValues.username}";
+
         private static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
+
         private static string tempSaveFilePath => saveFilePath + ".mpsave";
+
         private static string serverSaveFilePath => saveFilePath + ".rws.temp";
+
+        public static void ParsePacket(Packet packet)
+        {
+            SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.contents);
+            if (data._stepMode == SaveStepMode.Receive) ReceiveSavePartFromServer(data);
+            else if (data._stepMode == SaveStepMode.Send) SendSavePartToServer();
+            else throw new System.Exception();
+        }
 
         public static void ForceSave()
         {
@@ -28,23 +40,30 @@ namespace GameClient
             GameDataSaveLoader.SaveGame(customSaveName);
         }
 
-        public static void ReceiveSavePartFromServer(Packet packet)
+        public static void RequestResetSave()
         {
-            FileTransferData fileTransferData = Serializer.ConvertBytesToObject<FileTransferData>(packet.contents);
+            SaveData data = new SaveData();
+            data._stepMode = SaveStepMode.Reset;
 
+            Packet packet = Packet.CreatePacketFromObject(nameof(SaveManager), data);
+            Network.listener.EnqueuePacket(packet);
+        }
+
+        public static void ReceiveSavePartFromServer(SaveData data)
+        {
             //If this is the first packet
             if (Network.listener.downloadManager == null)
             {
                 Logger.Message($"Receiving save from server");
 
                 Network.listener.downloadManager = new DownloadManager();
-                Network.listener.downloadManager.PrepareDownload(tempSaveFilePath, fileTransferData._fileParts);
+                Network.listener.downloadManager.PrepareDownload(tempSaveFilePath, data._fileParts);
             }
 
-            Network.listener.downloadManager.WriteFilePart(fileTransferData._fileBytes);
+            Network.listener.downloadManager.WriteFilePart(data._fileBytes);
 
             //If this is the last packet
-            if (fileTransferData._isLastPart)
+            if (data._isLastPart)
             {
                 Network.listener.downloadManager.FinishFileWrite();
                 Network.listener.downloadManager = null;
@@ -55,7 +74,7 @@ namespace GameClient
                 File.WriteAllBytes(serverSaveFilePath, fileBytes);
                 File.Delete(tempSaveFilePath);
 
-                if(fileTransferData._instructions != (int)SaveMode.Strict && File.Exists(saveFilePath)) 
+                if(data._instructions != (int)SaveMode.Strict && File.Exists(saveFilePath)) 
                 { 
                     if (GetRealPlayTimeInteractingFromSave(serverSaveFilePath) >= GetRealPlayTimeInteractingFromSave(saveFilePath))
                     {
@@ -82,7 +101,10 @@ namespace GameClient
 
             else
             {
-                Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.RequestSavePartPacket));
+                SaveData rData = new SaveData();
+                rData._stepMode = SaveStepMode.Send;
+
+                Packet rPacket = Packet.CreatePacketFromObject(nameof(SaveManager), rData);
                 Network.listener.EnqueuePacket(rPacket);
             }
         }
@@ -118,20 +140,21 @@ namespace GameClient
             }
 
             //Create a new file part packet
-            FileTransferData fileTransferData = new FileTransferData();
-            fileTransferData._fileSize = Network.listener.uploadManager.fileSize;
-            fileTransferData._fileParts = Network.listener.uploadManager.fileParts;
-            fileTransferData._fileBytes = Network.listener.uploadManager.ReadFilePart();
-            fileTransferData._isLastPart = Network.listener.uploadManager.isLastPart;
+            SaveData data = new SaveData();
+            data._fileSize = Network.listener.uploadManager.fileSize;
+            data._fileParts = Network.listener.uploadManager.fileParts;
+            data._fileBytes = Network.listener.uploadManager.ReadFilePart();
+            data._isLastPart = Network.listener.uploadManager.isLastPart;
+            data._stepMode = SaveStepMode.Receive;
 
             //Set the instructions of the packet
             if (isIntentionalDisconnect && (intentionalDisconnectReason == DCReason.SaveQuitToMenu || intentionalDisconnectReason == DCReason.SaveQuitToOS))
             {
-                fileTransferData._instructions = (int)SaveMode.Disconnect;
+                data._instructions = (int)SaveMode.Disconnect;
             }
-            else fileTransferData._instructions = (int)SaveMode.Autosave;
+            else data._instructions = (int)SaveMode.Autosave;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ReceiveSavePartPacket), fileTransferData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(SaveManager), data);
             Network.listener.EnqueuePacket(packet);
 
             //if this is the last packet

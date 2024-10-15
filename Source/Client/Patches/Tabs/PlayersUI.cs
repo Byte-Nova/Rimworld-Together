@@ -27,7 +27,7 @@ namespace GameClient
         {
             if (Network.state == ClientNetworkState.Connected)
             {
-                tabTitle = "RTOnlinePlayers".Translate(ServerValues.currentPlayers);
+                tabTitle = "RTOnlinePlayers".Translate(PlayerRecountManager.currentPlayers);
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -43,7 +43,7 @@ namespace GameClient
 
         private void GenerateList(Rect mainRect)
         {
-            List<string> orderedList = ServerValues.currentPlayerNames;
+            List<string> orderedList = PlayerRecountManager.currentPlayerNames;
             orderedList.Sort();
 
             float height = 6f + (float)orderedList.Count() * 30f;

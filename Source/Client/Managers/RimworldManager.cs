@@ -228,18 +228,19 @@ namespace GameClient
 
         public static Pawn[] GetPawnsFromMap(Map map, Faction faction, bool includeAnimals)
         {
-            if (includeAnimals) return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction).ToArray();
-            else return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction && !DeepScribeHelper.CheckIfThingIsAnimal(fetch)).ToArray();
+            if (map == null || map.mapPawns == null) return new Pawn[0];
+            else
+            {
+                if (includeAnimals) return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction).ToArray();
+                else return map.mapPawns.AllPawns.Where(fetch => fetch.Faction == faction && !DeepScribeHelper.CheckIfThingIsAnimal(fetch)).ToArray();
+            }
         }
 
         public static bool CheckIfMapHasPlayerPawns(Map map)
         {
-            if (map == null) return false;
-            else
-            {
-                if (map.mapPawns.AllPawns.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer) != null) return true;
-                else return false;
-            }
+            if (map == null || map.mapPawns == null) return false;
+            else if (map.mapPawns.AllPawns.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer) != null) return true;
+            else return false;
         }
     }
 }

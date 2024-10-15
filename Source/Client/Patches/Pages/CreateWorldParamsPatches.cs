@@ -30,10 +30,10 @@ namespace GameClient
                     ___factions.Add(FactionValues.enemyPlayerDef);
                     ___factions.Add(FactionValues.yourOnlineFactionDef);
 
-                    PlanetGeneratorManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall, 
+                    WorldManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall, 
                         ___temperature, ___population, ___factions, ___pollution);
 
-                    PlanetGeneratorManager.GeneratePatchedWorld();
+                    WorldManager.GeneratePatchedWorld();
                 }
 
                 return true;
@@ -51,7 +51,7 @@ namespace GameClient
 
                 __instance.Close();
 
-                PlanetGeneratorManager.GeneratePatchedWorld();
+                WorldManager.GeneratePatchedWorld();
 
                 return false;
             }

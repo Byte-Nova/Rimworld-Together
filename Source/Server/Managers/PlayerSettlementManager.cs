@@ -3,7 +3,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
-    public static class SettlementManager
+    public static class PlayerSettlementManager
     {
         //Variables
 
@@ -45,7 +45,7 @@ namespace GameServer
                     {
                         settlementData._settlementData.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
 
-                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
                         cClient.listener.EnqueuePacket(rPacket);
                     }
                 }
@@ -87,7 +87,7 @@ namespace GameServer
             {
                 settlementData._stepMode = SettlementStepMode.Remove;
                 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.SettlementPacket), settlementData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
                 NetworkHelper.SendPacketToAllClients(packet, client);
             }
         }

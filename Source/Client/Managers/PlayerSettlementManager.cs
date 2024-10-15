@@ -81,6 +81,16 @@ namespace GameClient
             }
             catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.Tile}. Reason: {e}"); }
         }
+
+        public static void SendNewPlayerSettlement(int settlementTile)
+        {
+            PlayerSettlementData settlementData = new PlayerSettlementData();
+            settlementData._settlementData.Tile = settlementTile;
+            settlementData._stepMode = SettlementStepMode.Add;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
+            Network.listener.EnqueuePacket(packet);
+        }
     }
 
     public static class PlayerSettlementManagerHelper

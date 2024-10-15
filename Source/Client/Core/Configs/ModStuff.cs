@@ -47,7 +47,7 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("RTExternalSources".Translate());
-            if (listingStandard.ButtonTextLabeled("RTWikiOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://rimworldtogether.github.io/Guide");
+            if (listingStandard.ButtonTextLabeled("RTWikiOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/RimworldTogether/Rimworld-Together/wiki");
             if (listingStandard.ButtonTextLabeled("RTGithubOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/RimworldTogether/Rimworld-Together");
             if (listingStandard.ButtonTextLabeled("RTIncompatibilityOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/RimworldTogether/Rimworld-Together/blob/development/IncompatibilityList.md");
             if (listingStandard.ButtonTextLabeled("RTDiscordOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://discord.gg/yUF2ec8Vt8");

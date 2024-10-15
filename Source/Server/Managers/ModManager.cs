@@ -21,13 +21,15 @@ namespace GameServer
         {
             if (Master.worldValues != null && !client.userFile.IsAdmin)
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to change mod config without being admin");
+                UserManager.BanPlayerFromName(client.userFile.Username);
+                Logger.Warning($"Player {client.userFile.Username} tried to change mod config without being admin");
             }
 
             else
             {
                 Master.modConfig = file;
                 Main_.SaveValueFile(ServerFileMode.Mods, true);
+                Logger.Warning($"[Set mods] > {client.userFile.Username}");
             }
         }
 
@@ -100,7 +102,7 @@ namespace GameServer
                 else
                 {
                     Logger.Warning($"[Mod Mismatch] > {client.userFile.Username}");
-                    UserManager.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
+                    LoginManager.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }
             }

@@ -122,7 +122,7 @@ namespace GameClient
             data._caravanFile.Tile = caravan.Tile;
             data._caravanFile.Owner = ClientValues.username;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -138,7 +138,7 @@ namespace GameClient
                 data._stepMode = CaravanStepMode.Remove;
                 data._caravanFile = details;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -155,7 +155,7 @@ namespace GameClient
                 data._stepMode = CaravanStepMode.Move;
                 data._caravanFile = details;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
