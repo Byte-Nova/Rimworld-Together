@@ -85,6 +85,7 @@ namespace GameClient
             SessionValues.ToggleOnlineActivity(data._activityType);
             OnlineActivityManagerHelper.SetActivityHost(data);
             OnlineActivityManagerHelper.SetActivityMap(data);
+            OnlineActivityManagerHelper.SetActivityMapThings(data);
             OnlineActivityManagerHelper.SetActivityPawns();
             OnlineActivityManagerHelper.SetOtherSidePawns(data);
             OnlineActivityManagerHelper.SetOtherSidePawnsFaction();
@@ -97,6 +98,9 @@ namespace GameClient
 
             Logger.Warning($"Other pawns > {OnlineActivityManagerHelper.nonFactionPawns.Length}");
             foreach(Pawn pawn in OnlineActivityManagerHelper.nonFactionPawns) Logger.Warning(pawn.def.defName);
+
+            Logger.Warning($"Map things > {OnlineActivityManagerHelper.activityMapThings.Count}");
+            foreach(ThingDataFile thingData in OnlineActivityManagerHelper.activityMapThings) Logger.Warning(thingData.Hash);
 
             DialogManager.PopWaitDialog();
             DialogManager.PushNewDialog(new RT_Dialog_OK($"Should start {OnlineActivityManagerHelper.isHost}"));
@@ -128,6 +132,8 @@ namespace GameClient
         public static bool isHost;
 
         public static Map activityMap = new Map();
+
+        public static List<ThingDataFile> activityMapThings = new List<ThingDataFile>();
 
         public static Pawn[] factionPawns = new Pawn[0];
 
@@ -194,6 +200,15 @@ namespace GameClient
         {
             if (isHost) activityMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data._toTile && fetch.Faction == Faction.OfPlayer).Map;
             else activityMap = MapScribeManager.StringToMap(data._mapFile, true, true, true, true, true, true);
+        }
+
+        public static void SetActivityMapThings(OnlineActivityData data)
+        {
+            List<ThingDataFile> things = new List<ThingDataFile>();
+            things.AddRange(data._mapFile.FactionThings);
+            things.AddRange(data._mapFile.NonFactionThings);
+
+            activityMapThings = things;
         }
 
         public static void JoinActivityMap(OnlineActivityType activityType)
