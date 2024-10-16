@@ -127,4 +127,52 @@ namespace GameClient
             }
         }
     }
+
+    [HarmonyPatch(typeof(Thing), nameof(Thing.TakeDamage))]
+    public static class PatchApplyDamage
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(DamageInfo dinfo, Thing __instance, ref DamageWorker.DamageResult __result)
+        {
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (!OnlineActivityManagerHelper.isActivityReady) return true;
+
+            if (!OnlineActivityManagerHelper.CheckIfShouldPatch(__instance, true, true, true)) return true;
+            else
+            {
+                if (OnlineActivityManagerHelper.isHost)
+                {
+                    OnlineActivityData onlineActivityData = new OnlineActivityData();
+                    onlineActivityData._stepMode = OnlineActivityStepMode.Damage;
+                    onlineActivityData._damageOrder = OnlineManagerOrders.CreateDamageOrder(dinfo, __instance);
+
+                    Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), onlineActivityData);
+                    Network.listener.EnqueuePacket(packet);
+                    return true;
+                }
+
+                else
+                {
+                    //IF COMING FROM HOST
+
+                    if (OnlineActivityManagerHelper.queuedThing == __instance)
+                    {
+                        OnlineActivityManagerHelper.SetThingQueue(null);
+                        return true;
+                    }
+
+                    //IF PLAYER ASKING FOR
+
+                    else
+                    {
+                        //Create empty DamageWorker.DamageResult so the functions expecting it don't freak out
+                        __result = new DamageWorker.DamageResult();
+                        __result.totalDamageDealt = 0f;
+                        return false;
+                    }
+                }
+            }
+        }
+    }
 }

@@ -40,6 +40,10 @@ namespace GameServer
                 case OnlineActivityStepMode.Destroy:
                     SendActions(client, data);
                     break;
+
+                case OnlineActivityStepMode.Damage:
+                    SendActions(client, data);
+                    break;
             }
         }
 

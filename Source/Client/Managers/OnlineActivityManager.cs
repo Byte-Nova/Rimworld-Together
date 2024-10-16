@@ -44,6 +44,10 @@ namespace GameClient
                 case OnlineActivityStepMode.Destroy:
                     OnlineManagerOrders.ReceiveDestructionOrder(data);
                     break;
+
+                case OnlineActivityStepMode.Damage:
+                    OnlineManagerOrders.ReceiveDamageOrder(data);
+                    break;
             }
         }
 
@@ -403,6 +407,20 @@ namespace GameClient
             return destructionOrder;
         }
 
+        public static DamageOrderData CreateDamageOrder(DamageInfo damageInfo, Thing affectedThing)
+        {
+            DamageOrderData damageOrder = new DamageOrderData();
+            damageOrder._defName = damageInfo.Def.defName;
+            damageOrder._damageAmount = damageInfo.Amount;
+            damageOrder._ignoreArmor = damageInfo.IgnoreArmor;
+            damageOrder._armorPenetration = damageInfo.ArmorPenetrationInt;
+            damageOrder.targetHash = OnlineActivityManagerHelper.GetHashFromThing(affectedThing);
+            if (damageInfo.Weapon != null) damageOrder._weaponDefName = damageInfo.Weapon.defName;
+            if (damageInfo.HitPart != null) damageOrder._hitPartDefName = damageInfo.HitPart.def.defName;
+
+            return damageOrder;
+        }
+
         public static void ReceiveCreationOrder(OnlineActivityData data)
         {
             if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
@@ -433,8 +451,8 @@ namespace GameClient
             // If we receive a hash that doesn't exist or we are host we ignore it
             if (toCreate != null && !OnlineActivityManagerHelper.isHost)
             {
-                OnlineActivityManagerHelper.SetThingQueue(toCreate);
                 OnlineActivityManagerHelper.SetHashQueue(data._creationOrder._thingHash);
+                OnlineActivityManagerHelper.SetThingQueue(toCreate);
                 RimworldManager.PlaceThingIntoMap(toCreate, OnlineActivityManagerHelper.activityMap, ThingPlaceMode.Direct, false);
             }
         }
@@ -448,10 +466,38 @@ namespace GameClient
             Thing toDestroy = OnlineActivityManagerHelper.GetThingFromHash(data._destructionOrder._thingHash);
             if (toDestroy != null && !OnlineActivityManagerHelper.isHost)
             {
+                OnlineActivityManagerHelper.SetHashQueue(data._destructionOrder._thingHash);
                 OnlineActivityManagerHelper.SetThingQueue(toDestroy);
                 toDestroy.Destroy(DestroyMode.Vanish);
             }
         }
 
+        public static void ReceiveDamageOrder(OnlineActivityData data)
+        {
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (!OnlineActivityManagerHelper.isActivityReady) return;
+
+            try
+            {
+                BodyPartRecord bodyPartRecord = new BodyPartRecord();
+                bodyPartRecord.def = DefDatabase<BodyPartDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data._damageOrder._hitPartDefName);
+
+                DamageDef damageDef = DefDatabase<DamageDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data._damageOrder._defName);
+                ThingDef thingDef = DefDatabase<ThingDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == data._damageOrder._weaponDefName);
+
+                DamageInfo damageInfo = new DamageInfo(damageDef, data._damageOrder._damageAmount, data._damageOrder._armorPenetration, -1, null, bodyPartRecord, thingDef);
+                damageInfo.SetIgnoreArmor(data._damageOrder._ignoreArmor);
+
+                // If we receive a hash that doesn't exist or we are host we ignore it
+                Thing toApplyTo = OnlineActivityManagerHelper.GetThingFromHash(data._damageOrder.targetHash);
+                if (toApplyTo != null && !OnlineActivityManagerHelper.isHost)
+                {
+                    OnlineActivityManagerHelper.SetHashQueue(data._damageOrder.targetHash);
+                    OnlineActivityManagerHelper.SetThingQueue(toApplyTo);
+                    toApplyTo.TakeDamage(damageInfo);
+                }   
+            }
+            catch (Exception e) { Logger.Warning($"Couldn't apply damage order. Reason: {e}"); }
+        }
     }
 }
