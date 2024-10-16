@@ -3,6 +3,6 @@ namespace Shared
     public class BladelinkWeaponData 
     {
         public string[] traitdefs;
-        public string label;
+        public string name;
     }
 }

@@ -1164,11 +1164,13 @@ namespace GameClient
                 ThingWithComps personaData = (ThingWithComps)thing;
                 List<string> defnames = new List<string>();
                 CompBladelinkWeapon comp = personaData.GetComp<CompBladelinkWeapon>();
-                thingDataFile.BladelinkWeaponData.label = thing.LabelShort;
-                Logger.Warning(thingDataFile.BladelinkWeaponData.label);
-                foreach(WeaponTraitDef trait in comp.TraitsListForReading)
+
+                foreach (WeaponTraitDef trait in comp.TraitsListForReading)
                     defnames.Add(trait.defName);
                 thingDataFile.BladelinkWeaponData.traitdefs = defnames.ToArray();
+
+                CompGeneratedNames name = personaData.TryGetComp<CompGeneratedNames>();
+                thingDataFile.BladelinkWeaponData.name = name.Name;
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1342,10 +1344,11 @@ namespace GameClient
                     WeaponTraitDef traitDef = DefDatabase<WeaponTraitDef>.GetNamedSilentFail(trait);
                     traitList.Add(traitDef);
                 }
-                Type type = thing.GetType();
-                FieldInfo field = type.GetField("LabelShort", BindingFlags.Instance | BindingFlags.NonPublic);
-                field.SetValue(comp, thingDataFile.BladelinkWeaponData.label);
-                Logger.Warning(thingDataFile.BladelinkWeaponData.label);
+
+                CompGeneratedNames name = personaWeapon.GetComp<CompGeneratedNames>();
+                Type type = name.GetType();
+                FieldInfo field = type.GetField("name", BindingFlags.NonPublic | BindingFlags.Instance);
+                field.SetValue(name, thingDataFile.BladelinkWeaponData.name);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
