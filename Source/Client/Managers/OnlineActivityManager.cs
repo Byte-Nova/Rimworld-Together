@@ -36,6 +36,14 @@ namespace GameClient
                 case OnlineActivityStepMode.Stop:
                     OnActivityStop(data);
                     break;
+
+                case OnlineActivityStepMode.Create:
+                    OnlineManagerOrders.ReceiveCreationOrder(data);
+                    break;
+
+                case OnlineActivityStepMode.Destroy:
+                    OnlineManagerOrders.ReceiveDestructionOrder(data);
+                    break;
             }
         }
 
@@ -89,15 +97,16 @@ namespace GameClient
             OnlineActivityManagerHelper.SetActivityPawns();
             OnlineActivityManagerHelper.SetOtherSidePawns(data);
             OnlineActivityManagerHelper.SetOtherSidePawnsFaction();
+            OnlineActivityManagerHelper.SetActivityReady(true);
 
             if (OnlineActivityManagerHelper.isHost) CameraJumper.TryJump(OnlineActivityManagerHelper.nonFactionPawns[0].Position, OnlineActivityManagerHelper.activityMap);
             else OnlineActivityManagerHelper.JoinActivityMap(data._activityType);
 
-            Logger.Warning($"My pawns > {OnlineActivityManagerHelper.factionPawns.Count}");
-            foreach(Pawn pawn in OnlineActivityManagerHelper.factionPawns) Logger.Warning(pawn.def.defName);
+            //Logger.Warning($"My pawns > {OnlineActivityManagerHelper.factionPawns.Count}");
+            //(Pawn pawn in OnlineActivityManagerHelper.factionPawns) Logger.Warning(pawn.def.defName);
 
-            Logger.Warning($"Other pawns > {OnlineActivityManagerHelper.nonFactionPawns.Count}");
-            foreach(Pawn pawn in OnlineActivityManagerHelper.nonFactionPawns) Logger.Warning(pawn.def.defName);
+            //Logger.Warning($"Other pawns > {OnlineActivityManagerHelper.nonFactionPawns.Count}");
+            //foreach(Pawn pawn in OnlineActivityManagerHelper.nonFactionPawns) Logger.Warning(pawn.def.defName);
 
             Logger.Warning($"Map things > {OnlineActivityManagerHelper.activityMapThings.Count}");
             //foreach(ThingDataFile thingData in OnlineActivityManagerHelper.activityMapThings) Logger.Warning(thingData.Hash);
@@ -131,13 +140,44 @@ namespace GameClient
     {
         public static bool isHost;
 
+        public static bool isActivityReady;
+
         public static Map activityMap = new Map();
 
-        public static List<ThingDataFile> activityMapThings = new List<ThingDataFile>();
+        public static Dictionary<string, Thing> activityMapThings = new Dictionary<string, Thing>();
 
         public static List<Pawn> factionPawns = new List<Pawn>();
 
         public static List<Pawn> nonFactionPawns = new List<Pawn>();
+
+        // Queues
+
+        public static string queuedHash;
+
+        public static Thing queuedThing;
+
+        public static void SetThingQueue(Thing toSetTo) { queuedThing = toSetTo; }
+
+        public static void SetHashQueue(string toSetTo) { queuedHash = toSetTo; }
+
+        public static void SetActivityReady(bool value) { isActivityReady = value; }
+
+        // Stuff
+
+        public static void AddThingToMap(Thing toAdd, string thingHash) 
+        { 
+            activityMapThings.Add(thingHash, toAdd);
+            SetThingQueue(null);
+            SetHashQueue(null);
+        }
+
+        public static void RemoveThingFromMap(Thing toRemove)
+        {
+            KeyValuePair<string, Thing> pair = activityMapThings.First(fetch => fetch.Value == toRemove);
+            activityMapThings.Remove(pair.Key);
+            SetThingQueue(null);
+            SetHashQueue(null);
+        }
 
         public static void SetActivityHost(OnlineActivityData data)
         {
@@ -204,11 +244,71 @@ namespace GameClient
 
         public static void SetActivityMapThings(OnlineActivityData data)
         {
-            List<ThingDataFile> things = new List<ThingDataFile>();
-            things.AddRange(data._mapFile.FactionThings);
-            things.AddRange(data._mapFile.NonFactionThings);
+            List<ThingDataFile> thingDatas = new List<ThingDataFile>();
+            thingDatas.AddRange(data._mapFile.FactionThings);
+            thingDatas.AddRange(data._mapFile.NonFactionThings);
 
-            activityMapThings = things;
+            foreach(ThingDataFile thingData in thingDatas)
+            {
+                Thing toGet = GetThingFromData(thingData);
+                activityMapThings.Add(thingData.Hash, toGet);
+            }
+        }
+
+        public static Thing GetThingFromData(ThingDataFile data)
+        {
+            IntVec3 suggestedPosition = new IntVec3(data.TransformComponent.Position[0], data.TransformComponent.Position[1], data.TransformComponent.Position[2]);
+            Rot4 suggestedRotation = new Rot4(data.TransformComponent.Rotation);
+
+            return activityMap.listerThings.AllThings.Find(fetch => 
+                fetch.Position == suggestedPosition && 
+                fetch.Rotation == suggestedRotation && 
+                fetch.def.defName == data.DefName);
+        }
+
+        public static string GetHashFromThing(Thing thing)
+        {
+            foreach(KeyValuePair<string, Thing> pair in activityMapThings)
+            {
+                if (pair.Value == thing) return pair.Key;
+            }
+
+            return null;
+        }
+
+        public static Thing GetThingFromHash(string hash)
+        {
+            foreach(KeyValuePair<string, Thing> pair in activityMapThings)
+            {
+                if (pair.Key == hash) return pair.Value;
+            }
+
+            return null;
+        }
+
+        public static bool CheckIfIgnoreThingSync(Thing toCheck)
+        {
+            if (toCheck is Projectile) return true;
+            else if (toCheck is Mote) return true;
+            else return false;
+        }
+
+        public static bool CheckIfShouldPatch(Thing toPatch, bool checkFactionPawns, bool checkNonFactionPawns, bool checkMapThings)
+        {
+            if (checkFactionPawns && factionPawns.Contains(toPatch)) return true;
+            else if (checkNonFactionPawns && nonFactionPawns.Contains(toPatch)) return true;
+            else if (checkMapThings && activityMapThings.Values.Contains(toPatch)) return true;
+            else return false;
+        }
+
+        public static bool CheckInverseIfShouldPatch(Thing toPatch, bool checkFactionPawns, bool checkNonFactionPawns, bool checkMapThings)
+        {
+            bool shouldPatch = true;
+            if (checkFactionPawns && factionPawns.Contains(toPatch)) shouldPatch = false;
+            else if (checkNonFactionPawns && nonFactionPawns.Contains(toPatch)) shouldPatch = false;
+            else if (checkMapThings && activityMapThings.Values.Contains(toPatch)) shouldPatch = false;
+            
+            return shouldPatch;
         }
 
         public static void JoinActivityMap(OnlineActivityType activityType)
@@ -272,5 +372,86 @@ namespace GameClient
 
             return toGet.ToArray();
         }
+    }
+
+    public static class OnlineManagerOrders
+    {
+        public static CreationOrderData CreateCreationOrder(Thing thing)
+        {
+            CreationOrderData creationOrder = new CreationOrderData();
+
+            if (DeepScribeHelper.CheckIfThingIsHuman(thing)) creationOrder._creationType = CreationType.Human;
+            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing)) creationOrder._creationType = CreationType.Animal;
+            else creationOrder._creationType = CreationType.Thing;
+
+            //Modify position based on center cell because RimWorld doesn't store it by default
+            thing.Position = thing.OccupiedRect().CenterCell;
+            creationOrder._thingHash = Hasher.GetHashFromString(thing.ThingID);
+
+            if (creationOrder._creationType == CreationType.Human) creationOrder._dataToCreate = Serializer.ConvertObjectToBytes(HumanScribeManager.HumanToString((Pawn)thing));
+            else if (creationOrder._creationType == CreationType.Animal) creationOrder._dataToCreate = Serializer.ConvertObjectToBytes(AnimalScribeManager.AnimalToString((Pawn)thing));
+            else if (creationOrder._creationType == CreationType.Thing) creationOrder._dataToCreate = Serializer.ConvertObjectToBytes(ThingScribeManager.ItemToString(thing, thing.stackCount));
+
+            return creationOrder;
+        }
+
+        public static DestructionOrderData CreateDestructionOrder(Thing thing)
+        {
+            DestructionOrderData destructionOrder = new DestructionOrderData();
+            destructionOrder._thingHash = OnlineActivityManagerHelper.GetHashFromThing(thing);
+            
+            return destructionOrder;
+        }
+
+        public static void ReceiveCreationOrder(OnlineActivityData data)
+        {
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (!OnlineActivityManagerHelper.isActivityReady) return;
+
+            Thing toCreate = null;
+
+            switch(data._creationOrder._creationType)
+            {
+                case CreationType.Human:
+                    HumanFile humanData = Serializer.ConvertBytesToObject<HumanFile>(data._creationOrder._dataToCreate);
+                    toCreate = HumanScribeManager.StringToHuman(humanData);
+                    toCreate.SetFaction(FactionValues.allyPlayer);
+                    break;
+
+                case CreationType.Animal:
+                    AnimalFile animalData = Serializer.ConvertBytesToObject<AnimalFile>(data._creationOrder._dataToCreate);
+                    toCreate = AnimalScribeManager.StringToAnimal(animalData);
+                    toCreate.SetFaction(FactionValues.allyPlayer);
+                    break;
+
+                case CreationType.Thing:
+                    ThingDataFile thingData = Serializer.ConvertBytesToObject<ThingDataFile>(data._creationOrder._dataToCreate);
+                    toCreate = ThingScribeManager.StringToItem(thingData);
+                    break;
+            }
+
+            // If we receive a hash that doesn't exist or we are host we ignore it
+            if (toCreate != null && !OnlineActivityManagerHelper.isHost)
+            {
+                OnlineActivityManagerHelper.SetThingQueue(toCreate);
+                OnlineActivityManagerHelper.SetHashQueue(data._creationOrder._thingHash);
+                RimworldManager.PlaceThingIntoMap(toCreate, OnlineActivityManagerHelper.activityMap, ThingPlaceMode.Direct, false);
+            }
+        }
+
+        public static void ReceiveDestructionOrder(OnlineActivityData data)
+        {
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return;
+            if (!OnlineActivityManagerHelper.isActivityReady) return;
+
+            // If we receive a hash that doesn't exist or we are host we ignore it
+            Thing toDestroy = OnlineActivityManagerHelper.GetThingFromHash(data._destructionOrder._thingHash);
+            if (toDestroy != null && !OnlineActivityManagerHelper.isHost)
+            {
+                OnlineActivityManagerHelper.SetThingQueue(toDestroy);
+                toDestroy.Destroy(DestroyMode.Vanish);
+            }
+        }
+
     }
 }

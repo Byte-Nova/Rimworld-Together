@@ -48,7 +48,7 @@ namespace Shared
 
         public enum OfflineActivityStepMode { Request, Deny, Unavailable }
 
-        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Stop }
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Stop, Create, Destroy }
 
         public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 

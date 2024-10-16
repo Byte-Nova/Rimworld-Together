@@ -1,9 +1,5 @@
 ﻿using HarmonyLib;
-using RimWorld;
-using RimWorld.Planet;
 using Shared;
-using System.Collections.Generic;
-using System.Linq;
 using Verse;
 using Verse.AI;
 using static Shared.CommonEnumerators;
@@ -39,6 +35,94 @@ namespace GameClient
                     //This is not our pawn and we shouldn't handle him from here
 
                     return false;
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Thing), nameof(Thing.SpawnSetup))]
+    public static class PatchCreateThing
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Map map, Thing __instance)
+        {
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (!OnlineActivityManagerHelper.isActivityReady) return true;
+            if (OnlineActivityManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
+
+            if (!OnlineActivityManagerHelper.CheckInverseIfShouldPatch(__instance, true, true, true)) return true;
+            else
+            {
+                if (OnlineActivityManagerHelper.isHost)
+                {
+                    OnlineActivityData OnlineActivityData = new OnlineActivityData();
+                    OnlineActivityData._stepMode = OnlineActivityStepMode.Create;
+                    OnlineActivityData._creationOrder = OnlineManagerOrders.CreateCreationOrder(__instance);
+
+                    Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), OnlineActivityData);
+                    Network.listener.EnqueuePacket(packet);
+
+                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+                    OnlineActivityManagerHelper.AddThingToMap(__instance, Hasher.GetHashFromString(__instance.ThingID));
+                    return true;
+                }
+
+                else
+                {
+                    // IF COMING FROM HOST
+                    if (OnlineActivityManagerHelper.queuedThing == __instance)
+                    {
+                        OnlineActivityManagerHelper.AddThingToMap(__instance, OnlineActivityManagerHelper.queuedHash);
+                        return true;
+                    }
+
+                    // IF PLAYER ASKING FOR
+                    else return false;
+                }
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Thing), nameof(Thing.Destroy))]
+    public static class PatchDestroyThing
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Thing __instance)
+        {
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return true;
+            if (!OnlineActivityManagerHelper.isActivityReady) return true;
+            if (OnlineActivityManagerHelper.CheckIfIgnoreThingSync(__instance)) return true;
+
+            if (!OnlineActivityManagerHelper.CheckIfShouldPatch(__instance, true, true, true)) return true;
+            else
+            {
+                if (OnlineActivityManagerHelper.isHost)
+                {
+                    OnlineActivityData onlineActivityData = new OnlineActivityData();
+                    onlineActivityData._stepMode = OnlineActivityStepMode.Destroy;
+                    onlineActivityData._destructionOrder = OnlineManagerOrders.CreateDestructionOrder(__instance);
+
+                    Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), onlineActivityData);
+                    Network.listener.EnqueuePacket(packet);
+
+                    //KEEP ALWAYS AS AT THE BOTTOM AS POSSIBLE
+                    OnlineActivityManagerHelper.RemoveThingFromMap(__instance);
+                    return true;
+                }
+
+                else
+                {
+                    // IF COMING FROM HOST
+                    if (OnlineActivityManagerHelper.queuedThing == __instance)
+                    {
+                        OnlineActivityManagerHelper.RemoveThingFromMap(__instance);
+                        return true;
+                    }
+
+                    // IF PLAYER ASKING FOR
+                    else return false;
                 }
             }
         }

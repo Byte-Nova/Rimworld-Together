@@ -32,6 +32,14 @@ namespace GameServer
                 case OnlineActivityStepMode.Stop:
                     StopActivity(client);
                     break;
+
+                case OnlineActivityStepMode.Create:
+                    SendActions(client, data);
+                    break;
+
+                case OnlineActivityStepMode.Destroy:
+                    SendActions(client, data);
+                    break;
             }
         }
 
