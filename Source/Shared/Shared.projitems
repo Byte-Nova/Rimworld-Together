@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)files\components\thing\EggData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\EggData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\XenoGermData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SettlementFile.cs" />
