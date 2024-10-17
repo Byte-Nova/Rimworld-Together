@@ -1189,10 +1189,9 @@ namespace GameClient
             {
                 ThingWithComps personaData = (ThingWithComps)thing;
                 List<string> defnames = new List<string>();
+                
                 CompBladelinkWeapon comp = personaData.GetComp<CompBladelinkWeapon>();
-
-                foreach (WeaponTraitDef trait in comp.TraitsListForReading)
-                    defnames.Add(trait.defName);
+                foreach (WeaponTraitDef trait in comp.TraitsListForReading) defnames.Add(trait.defName);
                 thingDataFile.BladelinkWeaponData.traitdefs = defnames.ToArray();
 
                 CompGeneratedNames name = personaData.TryGetComp<CompGeneratedNames>();
@@ -1386,6 +1385,7 @@ namespace GameClient
             {
                 ThingWithComps personaWeapon = (ThingWithComps)thing;
                 CompBladelinkWeapon comp = personaWeapon.GetComp<CompBladelinkWeapon>();
+
                 List<WeaponTraitDef> traitList = new List<WeaponTraitDef>();
                 foreach (string trait in thingDataFile.BladelinkWeaponData.traitdefs) 
                 {
@@ -1393,6 +1393,7 @@ namespace GameClient
                     traitList.Add(traitDef);
                 }
                 AccessTools.Field(comp.GetType(), "traits").SetValue(comp, traitList);
+                
                 CompGeneratedNames name = personaWeapon.GetComp<CompGeneratedNames>();
                 Type type = name.GetType();
                 FieldInfo field = type.GetField("name", BindingFlags.NonPublic | BindingFlags.Instance);
