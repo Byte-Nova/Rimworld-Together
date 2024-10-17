@@ -18,7 +18,7 @@ namespace GameClient
             if (SessionValues.actionValues.EnforcedGameSpeed == 0) return true;
 
             //Check if in activity
-            if (SessionValues.currentRealTimeEvent != OnlineActivityType.None) return true;
+            if (SessionValues.currentRealTimeActivity != OnlineActivityType.None) return true;
 
             //Check if required speed is valid
             if (SessionValues.actionValues.EnforcedGameSpeed < 0 || SessionValues.actionValues.EnforcedGameSpeed > 4) return true;

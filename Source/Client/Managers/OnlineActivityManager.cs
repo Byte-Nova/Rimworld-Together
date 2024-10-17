@@ -179,13 +179,13 @@ namespace GameClient
             //foreach(ThingDataFile thingData in OnlineActivityManagerHelper.activityMapThings) Logger.Warning(thingData.Hash);
 
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK($"Should start {SessionValues.isActivityHost}"));
+            Logger.Warning($"Started online activity of type > {SessionValues.currentRealTimeActivity}", LogImportanceMode.Verbose);
         }
 
         private static void OnActivityReject()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK($"Should cancel"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK($"This user has rejected the activity!"));
         }
 
         private static void OnActivityUnavailable()
@@ -272,7 +272,7 @@ namespace GameClient
             // We set the faction of the other side depending on the activity type
             foreach (Pawn pawn in OnlineActivityManager.nonFactionPawns)
             {
-                if (SessionValues.currentRealTimeEvent == OnlineActivityType.Visit) pawn.SetFactionDirect(FactionValues.allyPlayer);
+                if (SessionValues.currentRealTimeActivity == OnlineActivityType.Visit) pawn.SetFactionDirect(FactionValues.allyPlayer);
                 else pawn.SetFactionDirect(FactionValues.enemyPlayer);
             }
         }
@@ -402,7 +402,7 @@ namespace GameClient
     {
         public static async Task StartJobsTicker()
         {
-            while (SessionValues.currentRealTimeEvent != OnlineActivityType.None)
+            while (SessionValues.currentRealTimeActivity != OnlineActivityType.None)
             {
                 try { GetPawnJobs(); }
                 catch (Exception e) { Logger.Error($"Jobs tick failed, this should never happen. Exception > {e}"); }
@@ -647,7 +647,6 @@ namespace GameClient
             if (jobA == null) return false;
             else if (jobA.def.defName != jobB.def.defName) return false;
             else if (jobA.targetA != jobB.targetA) return false;
-            else if (jobA.globalTarget != jobB.globalTarget) return false;
             else return true;
         }
     }
@@ -656,7 +655,7 @@ namespace GameClient
     {
         private static bool CheckIfCanExecuteOrder()
         {
-            if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return false;
+            if (SessionValues.currentRealTimeActivity == OnlineActivityType.None) return false;
             else if (!SessionValues.isActivityReady) return false;
             else return true; 
         }
@@ -971,7 +970,7 @@ namespace GameClient
         public static bool CheckIfCanExecutePatch(Map map)
         {
             if (Network.state == ClientNetworkState.Disconnected) return false;
-            else if (SessionValues.currentRealTimeEvent == OnlineActivityType.None) return false;
+            else if (SessionValues.currentRealTimeActivity == OnlineActivityType.None) return false;
             else if (!SessionValues.isActivityReady) return false;
             else if (map != null && OnlineActivityManager.activityMap != map) return false;
             else return true;

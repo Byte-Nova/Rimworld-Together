@@ -8,7 +8,7 @@ namespace GameClient
 {
     public static class SessionValues
     {
-        public static OnlineActivityType currentRealTimeEvent;
+        public static OnlineActivityType currentRealTimeActivity;
 
         public static OfflineActivityType latestOfflineActivity;
 
@@ -37,7 +37,7 @@ namespace GameClient
             actionValues = serverGlobalData._actionValues;
         }
 
-        public static void ToggleOnlineActivity(OnlineActivityType type) { currentRealTimeEvent = type; }
+        public static void ToggleOnlineActivity(OnlineActivityType type) { currentRealTimeActivity = type; }
 
         public static void ToggleOfflineActivity(OfflineActivityType type) { latestOfflineActivity = type; }
 

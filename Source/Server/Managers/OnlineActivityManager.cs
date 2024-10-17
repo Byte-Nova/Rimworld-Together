@@ -134,7 +134,6 @@ namespace GameServer
                 else
                 {
                     Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
-                    client.listener.EnqueuePacket(packet);
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
