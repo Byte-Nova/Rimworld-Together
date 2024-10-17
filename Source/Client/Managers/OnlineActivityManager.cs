@@ -146,8 +146,10 @@ namespace GameClient
             {
                 CameraJumper.TryJump(nonFactionPawns[0].Position, activityMap);
 
+                data._mapFile = null;
                 data._stepMode = OnlineActivityStepMode.TimeSpeed;
                 data._timeSpeedOrder = OnlineActivityOrders.CreateTimeSpeedOrder();
+
                 Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                 Network.listener.EnqueuePacket(packet);
             }
@@ -157,7 +159,9 @@ namespace GameClient
             {
                 OnlineActivityManagerHelper.JoinActivityMap(data._activityType);
 
-                data._stepMode = OnlineActivityStepMode.Ready;
+                data._mapFile = null;
+                data._stepMode = OnlineActivityStepMode.Ready;            
+
                 Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                 Network.listener.EnqueuePacket(packet);
             }
@@ -723,7 +727,7 @@ namespace GameClient
             if (hediff.Part != null)
             {
                 hediffOrder._hediffComponent.PartDefName = hediff.Part.def.defName;
-                hediffOrder._hediffComponent.PartLabel = hediff.Part.def.label;
+                hediffOrder._hediffComponent.PartLabel = hediff.Part.Label;
             }
 
             return hediffOrder;
@@ -851,7 +855,7 @@ namespace GameClient
                     OnlineActivityQueues.SetThingQueue(toTarget);
 
                     BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data._hediffOrder._hediffComponent.PartDefName &&
-                        fetch.def.label == data._hediffOrder._hediffComponent.PartLabel);
+                        fetch.Label == data._hediffOrder._hediffComponent.PartLabel);
 
                     if (data._hediffOrder._applyMode == OnlineActivityApplyMode.Add)
                     {

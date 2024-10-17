@@ -180,7 +180,7 @@ namespace GameClient
                         if (hd.Part != null)
                         {
                             component.PartDefName = hd.Part.def.defName;
-                            component.PartLabel = hd.Part.def.label;
+                            component.PartLabel = hd.Part.Label;
                         }
 
                         if (hd.def.CompProps<HediffCompProperties_Immunizable>() != null) component.Immunity = pawn.health.immunity.GetImmunity(hd.def);
@@ -526,7 +526,7 @@ namespace GameClient
                         HediffComponent component = humanData.Hediffs[i];
                         HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.DefName);
                         BodyPartRecord bodyPart = pawn.RaceProps.body.AllParts.FirstOrDefault(x => x.def.defName == component.PartDefName && 
-                            x.def.label == component.PartLabel);
+                            x.Label == component.PartLabel);
 
                         Hediff hediff = HediffMaker.MakeHediff(hediffDef, pawn);
                         hediff.Severity = component.Severity;
@@ -890,7 +890,7 @@ namespace GameClient
                         if (hd.Part != null)
                         {
                             component.PartDefName = hd.Part.def.defName;
-                            component.PartLabel = hd.Part.def.label;
+                            component.PartLabel = hd.Part.Label;
                         }
 
                         component.Severity = hd.Severity;
@@ -1007,7 +1007,7 @@ namespace GameClient
                         HediffComponent component = animalData.Hediffs[i];
                         HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.DefName);
                         BodyPartRecord bodyPart = animal.RaceProps.body.AllParts.ToList().Find(x => x.def.defName == component.PartDefName &&
-                            x.def.label == component.PartLabel);
+                            x.Label == component.PartLabel);
 
                         Hediff hediff = HediffMaker.MakeHediff(hediffDef, animal, bodyPart);
                         hediff.Severity = component.Severity;

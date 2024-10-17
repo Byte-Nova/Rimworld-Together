@@ -405,7 +405,7 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(WildAnimalSpawner), nameof(WildAnimalSpawner.WildAnimalSpawnerTick))]
+    [HarmonyPatch(typeof(WildAnimalSpawner), nameof(WildAnimalSpawner.SpawnRandomWildAnimalAt))]
     public static class PatchWildAnimalSpawn
     {
         [HarmonyPrefix]
