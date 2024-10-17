@@ -118,7 +118,9 @@ namespace GameServer
             SaveValueFile(ServerFileMode.Backup, false);
 
             LoadValueFile(ServerFileMode.Mods);
-            SaveValueFile(ServerFileMode.Mods, false);
+            
+            LoadValueFile(ServerFileMode.Chat);
+            SaveValueFile(ServerFileMode.Chat, false);
 
             LoadValueFile(ServerFileMode.World);
 
@@ -184,6 +186,10 @@ namespace GameServer
                 case ServerFileMode.Mods:
                     pathToSave = Path.Combine(Master.corePath, "ModConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.modConfig);
+                    break;
+                case ServerFileMode.Chat:
+                    pathToSave = Path.Combine(Master.corePath, "ChatConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.chatConfig);
                     break;
             }
 
@@ -301,8 +307,17 @@ namespace GameServer
                         Serializer.SerializeToFile(pathToLoad, Master.modConfig);
                     }
                     break;
+                
+                case ServerFileMode.Chat:
+                    pathToLoad = Path.Combine(Master.corePath, "ChatConfig.json");
+                    if (File.Exists(pathToLoad)) Master.chatConfig = Serializer.SerializeFromFile<ChatConfigFile>(pathToLoad);
+                    else
+                    {
+                        Master.chatConfig = new ChatConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.chatConfig);
+                    }
+                    break;
             }
-
             if (broadcast) Logger.Warning($"Loaded > '{pathToLoad}'");
         }
 

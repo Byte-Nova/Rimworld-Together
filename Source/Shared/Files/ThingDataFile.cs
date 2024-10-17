@@ -22,6 +22,10 @@ namespace Shared
 
         public int Rotation;
 
+        public float RotProgress;
+
+        public float[] Color = new float[4];
+
         //Complex data
 
         public GenepackData GenepackData = new GenepackData();
@@ -31,5 +35,9 @@ namespace Shared
         public XenoGermData XenoGermData = new XenoGermData();
 
         public PlantData PlantData = new PlantData();
+
+        public BladelinkWeaponData BladelinkWeaponData = new BladelinkWeaponData();
+        
+        public EggData EggData = new EggData();
     }
 }
