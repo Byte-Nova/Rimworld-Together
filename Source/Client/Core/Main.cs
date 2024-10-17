@@ -20,7 +20,6 @@ namespace GameClient
             static RimworldTogether() 
             {
                 ApplyHarmonyPathches();
-
                 PrepareCulture();
                 PreparePaths();
                 CreateUnityDispatcher();
@@ -28,7 +27,6 @@ namespace GameClient
                 FactionValues.SetPlayerFactionDefs();
                 CaravanManagerHelper.SetCaravanDefs();
                 PreferenceManager.LoadClientPreferences();
-
                 CompatibilityManager.LoadAllPatchedAssemblies();
             }
         }
@@ -60,11 +58,7 @@ namespace GameClient
             Master.loginDataPath = Path.Combine(Master.modFolderPath, "LoginData.json");
             Master.savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
-            Master.modAssemblyPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
-            Master.compatibilityPatchesFolderPath = Path.Combine(Master.modAssemblyPath, "Patches");
-
             if (!Directory.Exists(Master.modFolderPath)) Directory.CreateDirectory(Master.modFolderPath);
-
             if (!Directory.Exists(Master.compatibilityPatchesFolderPath)) Directory.CreateDirectory(Master.compatibilityPatchesFolderPath);
         }
 
@@ -78,14 +72,6 @@ namespace GameClient
 
                 Logger.Message($"Created dispatcher for version {CommonValues.executableVersion}");
             }
-        }
-
-
-        public class Mod : Verse.Mod // This is used to get the mod folder, safe to ignore or throw in another file or class.
-        {
-            public Mod(ModContentPack content) : base(content){}
-
-            public override void DoSettingsWindowContents(Rect inRect){base.DoSettingsWindowContents(inRect);}
         }
     }
 }
