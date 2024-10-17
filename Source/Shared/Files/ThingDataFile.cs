@@ -33,5 +33,7 @@ namespace Shared
         public XenoGermData XenoGermData = new XenoGermData();
 
         public PlantData PlantData = new PlantData();
+
+        public EggData EggData = new EggData();
     }
 }
