@@ -24,9 +24,12 @@ namespace Shared
         public bool EnableTrading = true;
 
         public bool EnableCustomScenarios = true;
+        
+        public bool HardcoreMode = false;
 
         public int EnforcedGameSpeed = 0;
 
         public int SpyCost = 100;
+        
     }
 }

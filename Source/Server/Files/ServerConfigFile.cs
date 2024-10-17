@@ -28,5 +28,6 @@
         public bool TemporalEventProtection = true;
 
         public bool TemporalAidProtection = false;
+        
     }
 }
