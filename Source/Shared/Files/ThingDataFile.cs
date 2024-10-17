@@ -22,6 +22,8 @@ namespace Shared
 
         public int Rotation;
 
+        public float[] Color = new float[4];
+
         //Complex data
 
         public GenepackData GenepackData = new GenepackData();
