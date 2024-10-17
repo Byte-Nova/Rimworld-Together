@@ -1392,7 +1392,7 @@ namespace GameClient
                     WeaponTraitDef traitDef = DefDatabase<WeaponTraitDef>.GetNamedSilentFail(trait);
                     traitList.Add(traitDef);
                 }
-
+                AccessTools.Field(comp.GetType(), "traits").SetValue(comp, traitList);
                 CompGeneratedNames name = personaWeapon.GetComp<CompGeneratedNames>();
                 Type type = name.GetType();
                 FieldInfo field = type.GetField("name", BindingFlags.NonPublic | BindingFlags.Instance);
