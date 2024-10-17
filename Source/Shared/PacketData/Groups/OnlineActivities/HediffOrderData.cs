@@ -10,7 +10,7 @@ namespace Shared
 
         public OnlineActivityApplyMode _applyMode;
 
-        public int _hediffTargetIndex;
+        public string _hediffTargetHash;
 
         public string _hediffDefName;
 

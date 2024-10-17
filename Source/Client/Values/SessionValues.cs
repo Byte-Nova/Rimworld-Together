@@ -12,6 +12,10 @@ namespace GameClient
 
         public static OfflineActivityType latestOfflineActivity;
 
+        public static bool isActivityHost;
+
+        public static bool isActivityReady;
+
         public static Settlement chosenSettlement;
 
         public static Caravan chosenCaravan;
@@ -36,11 +40,17 @@ namespace GameClient
         public static void ToggleOnlineActivity(OnlineActivityType type) { currentRealTimeEvent = type; }
 
         public static void ToggleOfflineActivity(OfflineActivityType type) { latestOfflineActivity = type; }
+
+        public static void ToggleOnlineActivityHost(bool type) { isActivityHost = type; }
+
+        public static void ToggleOnlineActivityReady(bool type) { isActivityReady = type; }
         
         public static void CleanValues()
         {
             ToggleOnlineActivity(OnlineActivityType.None);
             ToggleOfflineActivity(OfflineActivityType.None);
+            ToggleOnlineActivityHost(false);
+            ToggleOnlineActivityReady(false);
 
             chosenSettlement = null;
             chosenCaravan = null;

@@ -30,6 +30,8 @@ namespace GameClient
         {
             HumanFile humanData = new HumanFile();
 
+            GetPawnHash(pawn, humanData);
+
             GetPawnBioDetails(pawn, humanData);
 
             GetPawnKind(pawn, humanData);
@@ -76,6 +78,8 @@ namespace GameClient
 
             Pawn pawn = SetPawn(kind, faction, humanData);
 
+            SetPawnHash(pawn, humanData);
+
             SetPawnHediffs(pawn, humanData);
 
             if (ModsConfig.BiotechActive)
@@ -112,6 +116,12 @@ namespace GameClient
 
         //Getters
 
+        private static void GetPawnHash(Pawn human, HumanFile humanData)
+        {
+            try { humanData.Hash = ExtensionManager.GetThingHash(human); }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
         private static void GetPawnBioDetails(Pawn pawn, HumanFile humanData)
         {
             try
@@ -145,7 +155,8 @@ namespace GameClient
             try { humanData.FactionDef = pawn.Faction.def.defName; }
             catch (Exception e) 
             { 
-                Logger.Warning(e.ToString()); 
+                //FIXME
+                //Logger.Warning(e.ToString()); 
 
                 // In case it has no apparent faction;
                 humanData.FactionDef = Faction.OfPlayer.def.defName;
@@ -435,7 +446,8 @@ namespace GameClient
             try { return Find.FactionManager.AllFactions.First(fetch => fetch.def.defName == humanData.FactionDef); }
             catch (Exception e) 
             { 
-                Logger.Warning(e.ToString());
+                //FIXME
+                //Logger.Warning(e.ToString());
 
                 // If faction is missing after parsing
                 return Faction.OfPlayer;
@@ -448,6 +460,11 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
             return null;
+        }
+
+        private static void SetPawnHash(Pawn pawn, HumanFile humanData)
+        {
+            ExtensionManager.SetThingHash(pawn, humanData.Hash);
         }
 
         private static void SetPawnBioDetails(Pawn pawn, HumanFile humanData)
@@ -779,6 +796,8 @@ namespace GameClient
         {
             AnimalFile animalData = new AnimalFile();
 
+            GetAnimalHash(animal, animalData);
+
             GetAnimalBioDetails(animal, animalData);
 
             GetAnimalKind(animal, animalData);
@@ -802,6 +821,8 @@ namespace GameClient
 
             Pawn animal = SetAnimal(kind, faction, animalData);
 
+            SetAnimalHash(animal, animalData);
+
             SetAnimalBioDetails(animal, animalData);
 
             SetAnimalHediffs(animal, animalData);
@@ -814,6 +835,13 @@ namespace GameClient
         }
 
         //Getters
+
+        private static void GetAnimalHash(Pawn animal, AnimalFile animalData)
+        {
+            try { animalData.Hash = ExtensionManager.GetThingHash(animal); }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
 
         private static void GetAnimalBioDetails(Pawn animal, AnimalFile animalData)
         {
@@ -839,7 +867,8 @@ namespace GameClient
             try { animalData.FactionDef = animal.Faction.def.defName; }
             catch (Exception e) 
             { 
-                Logger.Warning(e.ToString()); 
+                //FIXME
+                //Logger.Warning(e.ToString()); 
 
                 // In case it has no apparent faction;
                 animalData.FactionDef = Faction.OfPlayer.def.defName;
@@ -923,7 +952,8 @@ namespace GameClient
             try { return Find.FactionManager.AllFactions.First(fetch => fetch.def.defName == animalData.FactionDef); }
             catch (Exception e) 
             { 
-                Logger.Warning(e.ToString());
+                //FIXME
+                //Logger.Warning(e.ToString());
 
                 // If faction is missing after parsing
                 return Faction.OfPlayer;
@@ -936,6 +966,11 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
             return null;
+        }
+
+        private static void SetAnimalHash(Pawn animal, AnimalFile animalData)
+        {
+            ExtensionManager.SetThingHash(animal, animalData.Hash);
         }
 
         private static void SetAnimalBioDetails(Pawn animal, AnimalFile animalData)
@@ -1072,6 +1107,8 @@ namespace GameClient
         {
             Thing thing = SetItem(thingData);
 
+            SetItemHash(thing, thingData);
+
             SetItemQuantity(thing, thingData);
 
             SetItemQuality(thing, thingData);
@@ -1090,7 +1127,7 @@ namespace GameClient
 
         private static void GetItemHash(Thing thing, ThingDataFile thingData)
         {
-            try { thingData.Hash = Hasher.GetHashFromString(thing.ThingID); }
+            try { thingData.Hash = ExtensionManager.GetThingHash(thing); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
@@ -1226,6 +1263,11 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
             return null;
+        }
+
+        private static void SetItemHash(Thing thing, ThingDataFile thingData)
+        {
+            ExtensionManager.SetThingHash(thing, thingData.Hash);
         }
 
         private static void SetItemQuantity(Thing thing, ThingDataFile thingData)

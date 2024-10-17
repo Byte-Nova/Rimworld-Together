@@ -44,6 +44,22 @@ namespace GameServer
                 case OnlineActivityStepMode.Damage:
                     SendActions(client, data);
                     break;
+
+                case OnlineActivityStepMode.Hediff:
+                    SendActions(client, data);
+                    break;
+
+                case OnlineActivityStepMode.GameCondition:
+                    SendActions(client, data);
+                    break;
+
+                case OnlineActivityStepMode.Weather:
+                    SendActions(client, data);
+                    break;
+
+                case OnlineActivityStepMode.TimeSpeed:
+                    SendActions(client, data);
+                    break;
             }
         }
 

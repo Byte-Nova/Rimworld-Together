@@ -6,8 +6,6 @@ namespace Shared
     [Serializable]
     public class CreationOrderData
     {
-        public string _thingHash;
-
         public byte[] _dataToCreate;
         
         public CreationType _creationType;
