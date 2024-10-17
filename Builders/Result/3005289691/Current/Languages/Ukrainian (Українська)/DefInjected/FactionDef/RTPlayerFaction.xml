@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<RTFaction.label>Поселення Учасника Фракції</RTFaction.label>
+	<RTFaction.description>Онлайн фракція</RTFaction.description>
+	<RTFaction.fixedName>Поселення Учасника Фракції</RTFaction.fixedName>
+	<RTFaction.leaderTitle>лідер</RTFaction.leaderTitle>
+	<RTFaction.pawnSingular>колоніст</RTFaction.pawnSingular>
+	<RTFaction.pawnsPlural>колоністів</RTFaction.pawnsPlural>
+</LanguageData>

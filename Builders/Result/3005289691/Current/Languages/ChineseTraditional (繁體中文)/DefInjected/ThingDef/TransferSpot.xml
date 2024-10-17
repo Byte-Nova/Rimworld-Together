@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTTransferSpot.label>物資轉移點</RTTransferSpot.label>
+    <RTTransferSpot.description>指定一個物資著陸點。僅適用於玩家交易！</RTTransferSpot.description>
+</LanguageData>

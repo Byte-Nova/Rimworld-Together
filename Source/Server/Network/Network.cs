@@ -30,7 +30,7 @@ namespace GameServer
             connection = new TcpListener(localAddress, port);
             connection.Start();
 
-            Logger.Warning("Server launched");  
+            Logger.Warning("Server launched");
             Logger.Warning($"Listening for users at {localAddress}:{port}");            
             Logger.Warning("Type 'help' to get a list of available commands");
 

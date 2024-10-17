@@ -118,7 +118,6 @@ namespace GameServer
             SaveValueFile(ServerFileMode.Backup, false);
 
             LoadValueFile(ServerFileMode.Mods);
-            SaveValueFile(ServerFileMode.Mods, true);
             
             LoadValueFile(ServerFileMode.Chat);
             SaveValueFile(ServerFileMode.Chat, false);

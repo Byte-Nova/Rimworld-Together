@@ -51,7 +51,7 @@ namespace GameClient
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
-                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 4, buttonSize.x, buttonSize.y), ""))
+                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 5, buttonSize.x, buttonSize.y), ""))
                 {
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     AdminMenuManager.ShowAdminMenu();
@@ -68,7 +68,9 @@ namespace GameClient
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
                 
-                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 4, buttonSize.x, buttonSize.y), "Admin menu")) { }
+                GUI.color = Color.red;
+                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 5, buttonSize.x, buttonSize.y), "Admin menu")) { }
+                GUI.color = Color.white;
             }
 
             return;
