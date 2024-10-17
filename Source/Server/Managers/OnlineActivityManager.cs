@@ -33,6 +33,10 @@ namespace GameServer
                     StopActivity(client);
                     break;
 
+                case OnlineActivityStepMode.Jobs:
+                    SendActions(client, data);
+                    break;
+
                 case OnlineActivityStepMode.Create:
                     SendActions(client, data);
                     break;

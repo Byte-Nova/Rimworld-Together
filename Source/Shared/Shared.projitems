@@ -53,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\ModConfigData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\TimeSpeedOrderData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\WeatherOrderData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\PawnOrderComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Pollution\PollutionDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Rivers\RiverDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Roads\RoadDetails.cs" />

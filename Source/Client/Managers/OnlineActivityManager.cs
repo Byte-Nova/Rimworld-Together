@@ -6,6 +6,7 @@ using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GameClient
 {
@@ -43,6 +44,10 @@ namespace GameClient
 
                 case OnlineActivityStepMode.Stop:
                     OnActivityStop();
+                    break;
+
+                case OnlineActivityStepMode.Jobs:
+                    //Nothing yet
                     break;
 
                 case OnlineActivityStepMode.Create:
@@ -129,6 +134,7 @@ namespace GameClient
             else OnlineActivityManagerHelper.JoinActivityMap(data._activityType);
 
             SessionValues.ToggleOnlineActivityReady(true);
+            Threader.GenerateThread(Threader.Mode.Activity);
 
             Logger.Warning($"My pawns > {factionPawns.Count}");
             //foreach(Pawn pawn in OnlineActivityManagerHelper.factionPawns) Logger.Warning(pawn.def.defName);
@@ -353,6 +359,41 @@ namespace GameClient
             }
 
             return toGet.ToArray();
+        }
+    }
+
+    public static class OnlineActivityManagerJobs
+    {
+        private static readonly float taskDelayMS = 1000f;
+
+        public static async Task StartJobsTicker()
+        {
+            while (SessionValues.currentRealTimeEvent != OnlineActivityType.None)
+            {
+                try { JobsTick(); }
+                catch (Exception e) { Logger.Error($"Jobs tick failed, this should never happen. Exception > {e}"); }
+
+                await Task.Delay(TimeSpan.FromMilliseconds(taskDelayMS));
+            }
+        }
+
+        public static void JobsTick()
+        {
+            PawnOrderData pawnOrderData = new PawnOrderData();
+            List<PawnOrderComponent> pawnOrders = new List<PawnOrderComponent>();
+            foreach (Pawn pawn in OnlineActivityManager.factionPawns.ToArray()) pawnOrders.Add(GetPawnJob(pawn));
+
+            OnlineActivityData onlineActivityData = new OnlineActivityData();
+            onlineActivityData._stepMode = OnlineActivityStepMode.Jobs;
+            onlineActivityData._pawnOrder = pawnOrderData;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), onlineActivityData);
+            Network.listener.EnqueuePacket(packet);
+        }
+
+        public static PawnOrderComponent GetPawnJob(Pawn pawn)
+        {
+            return new PawnOrderComponent();
         }
     }
 
@@ -690,6 +731,7 @@ namespace GameClient
         {
             if (toCheck is Projectile) return true;
             else if (toCheck is Mote) return true;
+            else if (toCheck is Filth) return true;
             else return false;
         }
     }
