@@ -21,6 +21,8 @@ namespace GameClient
 
         public static List<Pawn> nonFactionPawns = new List<Pawn>();
 
+        public static int gameTicksBeforeActivity;
+
         public static void ParsePacket(Packet packet)
         {
             OnlineActivityData data = Serializer.ConvertBytesToObject<OnlineActivityData>(packet.contents);
@@ -29,6 +31,10 @@ namespace GameClient
             {
                 case OnlineActivityStepMode.Request:
                     OnActivityRequest(data);
+                    break;
+
+                case OnlineActivityStepMode.Ready:
+                    OnActivityAccept(data);
                     break;
 
                 case OnlineActivityStepMode.Accept:
@@ -48,35 +54,35 @@ namespace GameClient
                     break;
 
                 case OnlineActivityStepMode.Jobs:
-                    OnlineActivityManagerOrders.ReceiveJobOrder(data);
+                    OnlineActivityOrders.ReceiveJobOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Create:
-                    OnlineActivityManagerOrders.ReceiveCreationOrder(data);
+                    OnlineActivityOrders.ReceiveCreationOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Destroy:
-                    OnlineActivityManagerOrders.ReceiveDestructionOrder(data);
+                    OnlineActivityOrders.ReceiveDestructionOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Damage:
-                    OnlineActivityManagerOrders.ReceiveDamageOrder(data);
+                    OnlineActivityOrders.ReceiveDamageOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Hediff:
-                    OnlineActivityManagerOrders.ReceiveHediffOrder(data);
+                    OnlineActivityOrders.ReceiveHediffOrder(data);
                     break;
 
                 case OnlineActivityStepMode.GameCondition:
-                    OnlineActivityManagerOrders.ReceiveGameConditionOrder(data);
+                    OnlineActivityOrders.ReceiveGameConditionOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Weather:
-                    OnlineActivityManagerOrders.ReceiveWeatherOrder(data);
+                    OnlineActivityOrders.ReceiveWeatherOrder(data);
                     break;
 
                 case OnlineActivityStepMode.TimeSpeed:
-                    OnlineActivityManagerOrders.ReceiveTimeSpeedOrder(data);
+                    OnlineActivityOrders.ReceiveTimeSpeedOrder(data);
                     break;
             }
         }
@@ -124,15 +130,37 @@ namespace GameClient
 
         private static void OnActivityAccept(OnlineActivityData data)
         {
+            // We pause by default to allow the host to resume when ready
+            RimworldManager.SetGameSpeed(TimeSpeed.Paused);
+
             SessionValues.ToggleOnlineActivity(data._activityType);
             OnlineActivityManagerHelper.SetActivityHost(data);
             OnlineActivityManagerHelper.SetActivityMap(data);
             OnlineActivityManagerHelper.SetActivityMapThings();
             OnlineActivityManagerHelper.SetFactionPawnsForActivity();
             OnlineActivityManagerHelper.SetNonFactionPawnsForActivity(data);
+            gameTicksBeforeActivity = RimworldManager.GetGameTicks();
 
-            if (SessionValues.isActivityHost) CameraJumper.TryJump(nonFactionPawns[0].Position, activityMap);
-            else OnlineActivityManagerHelper.JoinActivityMap(data._activityType);
+            // Sync current time with visitor and jump to it
+            if (SessionValues.isActivityHost)
+            {
+                CameraJumper.TryJump(nonFactionPawns[0].Position, activityMap);
+
+                data._stepMode = OnlineActivityStepMode.TimeSpeed;
+                data._timeSpeedOrder = OnlineActivityOrders.CreateTimeSpeedOrder();
+                Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
+                Network.listener.EnqueuePacket(packet);
+            }
+
+            // Send it back to host to let them know the visitor is ready and join map
+            else
+            {
+                OnlineActivityManagerHelper.JoinActivityMap(data._activityType);
+
+                data._stepMode = OnlineActivityStepMode.Ready;
+                Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
+                Network.listener.EnqueuePacket(packet);
+            }
 
             SessionValues.ToggleOnlineActivityReady(true);
             Threader.GenerateThread(Threader.Mode.Activity);
@@ -153,7 +181,7 @@ namespace GameClient
         private static void OnActivityReject()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK($"Should cancel {SessionValues.isActivityHost}"));
+            DialogManager.PushNewDialog(new RT_Dialog_OK($"Should cancel"));
         }
 
         private static void OnActivityUnavailable()
@@ -177,6 +205,8 @@ namespace GameClient
 
             if (!SessionValues.isActivityHost)
             {
+                RimworldManager.SetGameTicks(gameTicksBeforeActivity);
+
                 CaravanExitMapUtility.ExitMapAndCreateCaravan(factionPawns, 
                     Faction.OfPlayer, activityMap.Tile, Direction8Way.North, 
                     activityMap.Tile);
@@ -289,15 +319,16 @@ namespace GameClient
             OnlineActivityManager.activityMapThings = OnlineActivityManager.activityMap.listerThings.AllThings;
         }
 
-        public static Thing GetThingFromHash(string hash)
+        public static Thing GetThingFromID(string id)
         {
-            return OnlineActivityManager.activityMapThings.First(fetch => ExtensionManager.GetThingHash(fetch) == hash);
+            return OnlineActivityManager.activityMapThings.FirstOrDefault(fetch => fetch.ThingID == id);
         }
 
-        public static Pawn GetPawnFromHash(string hash, bool isFromFaction)
+        public static Pawn GetPawnFromID(string id, OnlineActivityTargetFaction targetFaction)
         {
-            if (isFromFaction) return OnlineActivityManager.factionPawns.First(fetch => ExtensionManager.GetThingHash(fetch) == hash);
-            else return OnlineActivityManager.nonFactionPawns.First(fetch => ExtensionManager.GetThingHash(fetch) == hash);
+            if (targetFaction == OnlineActivityTargetFaction.Faction) return OnlineActivityManager.factionPawns.FirstOrDefault(fetch => fetch.ThingID == id);
+            else if (targetFaction == OnlineActivityTargetFaction.NonFaction) return OnlineActivityManager.nonFactionPawns.FirstOrDefault(fetch => fetch.ThingID == id);
+            else throw new IndexOutOfRangeException();
         }
 
         public static void JoinActivityMap(OnlineActivityType activityType)
@@ -363,10 +394,8 @@ namespace GameClient
         }
     }
 
-    public static class OnlineActivityManagerJobs
+    public static class OnlineActivityJobs
     {
-        private static readonly float taskDelayMS = 1000f;
-
         public static async Task StartJobsTicker()
         {
             while (SessionValues.currentRealTimeEvent != OnlineActivityType.None)
@@ -374,7 +403,7 @@ namespace GameClient
                 try { GetPawnJobs(); }
                 catch (Exception e) { Logger.Error($"Jobs tick failed, this should never happen. Exception > {e}"); }
 
-                await Task.Delay(TimeSpan.FromMilliseconds(taskDelayMS));
+                await Task.Delay(TimeSpan.FromMilliseconds(SessionValues.actionValues.OnlineActivityTickMS));
             }
         }
 
@@ -401,20 +430,19 @@ namespace GameClient
         {
             foreach(PawnOrderComponent component in data._pawnOrder._pawnOrders)
             {
-                Pawn pawn = OnlineActivityManagerHelper.GetPawnFromHash(component._pawnHash, false);
+                Pawn pawn = OnlineActivityManagerHelper.GetPawnFromID(component._pawnId, OnlineActivityTargetFaction.NonFaction);
                 IntVec3 jobPosition = ValueParser.ArrayToIntVec3(component._updatedPosition);
                 Rot4 jobRotation = ValueParser.IntToRot4(component._updatedRotation);
 
                 try
                 {
                     JobDef jobDef = RimworldManager.GetJobFromDef(component._jobDefName);
-                    LocalTargetInfo[] allTargets = SetActionTargetsFromString(component);
-                    LocalTargetInfo targetA = allTargets[0];
-                    LocalTargetInfo targetB = allTargets[1];
-                    LocalTargetInfo targetC = allTargets[2];
+                    LocalTargetInfo targetA = SetActionTargetsFromString(component, 0);
+                    LocalTargetInfo targetB = SetActionTargetsFromString(component, 1);
+                    LocalTargetInfo targetC = SetActionTargetsFromString(component, 2);
 
                     Job newJob = RimworldManager.SetJobFromDef(jobDef, targetA, targetB, targetC);
-                    newJob.count = component._targetComponent.targets.Length;
+                    newJob.count = component._jobThingCount;
 
                     if (CheckIfJobsAreTheSame(pawn.CurJob, newJob)) continue;
                     else
@@ -440,25 +468,19 @@ namespace GameClient
         public static PawnOrderComponent GetPawnJob(Pawn pawn)
         {
             PawnOrderComponent pawnOrder = new PawnOrderComponent();
-            pawnOrder._pawnHash = ExtensionManager.GetThingHash(pawn);
+            pawnOrder._pawnId = pawn.ThingID;
 
             Job pawnJob = pawn.CurJob;
             if (pawnJob == null) return null;
 
             pawnOrder._jobDefName = pawnJob.def.defName;
+            pawnOrder._jobThingCount = pawnJob.count;
             pawnOrder._targetComponent.targets = GetActionTargets(pawnJob);
             pawnOrder._targetComponent.targetTypes = GetActionTypes(pawnJob);
             pawnOrder._targetComponent.targetFactions = GetActionTargetFactions(pawnJob);
 
-            // pawnOrder._queueTargetsA = GetQueuedActionTargets(newJob, 0);
-            // pawnOrder._queueTargetIndexesA = GetQueuedActionIndexes(newJob, 0);
-            // pawnOrder._queueTargetTypesA = GetQueuedActionTypes(newJob, 0);
-            // pawnOrder._queueTargetFactionsA = GetQueuedActionTargetFactions(newJob, 0);
-
-            // pawnOrder._queueTargetsB = GetQueuedActionTargets(newJob, 1);
-            // pawnOrder._queueTargetIndexesB = GetQueuedActionIndexes(newJob, 1);
-            // pawnOrder._queueTargetTypesB = GetQueuedActionTypes(newJob, 1);
-            // pawnOrder._queueTargetFactionsB = GetQueuedActionTargetFactions(newJob, 1);
+            if (pawnJob.targetQueueA != null) Logger.Warning($"Queue A > {pawnJob.targetQueueA.Count}");
+            if (pawnJob.targetQueueB != null) Logger.Warning($"Queue B > {pawnJob.targetQueueB.Count}");
 
             pawnOrder._isDrafted = GetPawnDraftState(pawn);
             pawnOrder._updatedPosition = ValueParser.IntVec3ToArray(pawn.Position);
@@ -481,7 +503,7 @@ namespace GameClient
                 try
                 {
                     if (target.Thing == null) targetInfoList.Add(ValueParser.Vector3ToString(target.Cell));
-                    else targetInfoList.Add(ExtensionManager.GetThingHash(target.Thing));
+                    else targetInfoList.Add(target.Thing.ThingID);
                 }
                 catch { Logger.Error($"failed to parse {target}"); }
             }
@@ -569,37 +591,30 @@ namespace GameClient
             catch (Exception e) { Logger.Warning($"Couldn't apply pawn draft state for {pawn.Label}. Reason: {e}"); }
         }
 
-        public static LocalTargetInfo[] SetActionTargetsFromString(PawnOrderComponent pawnOrder)
+        public static LocalTargetInfo SetActionTargetsFromString(PawnOrderComponent pawnOrder, int index)
         {
-            List<LocalTargetInfo> toGet = new List<LocalTargetInfo>();
-
             try
             {
-                for (int i = 0; i < pawnOrder._targetComponent.targets.Length; i++)
+                switch (pawnOrder._targetComponent.targetTypes[index])
                 {
-                    switch (pawnOrder._targetComponent.targetTypes[i])
-                    {
-                        case ActionTargetType.Thing:
-                            toGet.Add(new LocalTargetInfo(OnlineActivityManagerHelper.GetThingFromHash(pawnOrder._targetComponent.targets[i])));
-                            break;
+                    case ActionTargetType.Thing:
+                        return new LocalTargetInfo(OnlineActivityManagerHelper.GetThingFromID(pawnOrder._targetComponent.targets[index]));
 
-                        case ActionTargetType.Human:
-                            toGet.Add(new LocalTargetInfo(OnlineActivityManagerHelper.GetPawnFromHash(pawnOrder._targetComponent.targets[i], false)));
-                            break;
+                    case ActionTargetType.Human:
+                        return new LocalTargetInfo(OnlineActivityManagerHelper.GetPawnFromID(pawnOrder._targetComponent.targets[index], 
+                            pawnOrder._targetComponent.targetFactions[index]));
 
-                        case ActionTargetType.Animal:
-                            toGet.Add(new LocalTargetInfo(OnlineActivityManagerHelper.GetPawnFromHash(pawnOrder._targetComponent.targets[i], false)));
-                            break;
+                    case ActionTargetType.Animal:
+                        return new LocalTargetInfo(OnlineActivityManagerHelper.GetPawnFromID(pawnOrder._targetComponent.targets[index], 
+                            pawnOrder._targetComponent.targetFactions[index]));
 
-                        case ActionTargetType.Cell:
-                            toGet.Add(new LocalTargetInfo(ValueParser.StringToVector3(pawnOrder._targetComponent.targets[i])));
-                            break;
-                    }
+                    case ActionTargetType.Cell:
+                        return new LocalTargetInfo(ValueParser.StringToVector3(pawnOrder._targetComponent.targets[index]));
                 }
             }
             catch (Exception e) { Logger.Error(e.ToString()); }
 
-            return toGet.ToArray();
+            throw new IndexOutOfRangeException();
         }
 
         public static void ChangeCurrentJob(Pawn pawn, Job newJob)
@@ -619,6 +634,8 @@ namespace GameClient
         {
             if (job.def == JobDefOf.GotoWander) job.locomotionUrgency = LocomotionUrgency.Walk;
             else if (job.def == JobDefOf.Wait_Wander) job.locomotionUrgency = LocomotionUrgency.Walk;
+            else if (job.def == JobDefOf.GotoSafeTemperature) job.locomotionUrgency = LocomotionUrgency.Walk;
+            else if (job.def == JobDefOf.GotoAndBeSociallyActive) job.locomotionUrgency = LocomotionUrgency.Walk;
         }
 
         public static bool CheckIfJobsAreTheSame(Job jobA, Job jobB)
@@ -631,7 +648,7 @@ namespace GameClient
         }
     }
 
-    public static class OnlineActivityManagerOrders
+    public static class OnlineActivityOrders
     {
         private static bool CheckIfCanExecuteOrder()
         {
@@ -661,7 +678,7 @@ namespace GameClient
         public static DestructionOrderData CreateDestructionOrder(Thing thing)
         {
             DestructionOrderData destructionOrder = new DestructionOrderData();
-            destructionOrder._thingHash = ExtensionManager.GetThingHash(thing);
+            destructionOrder._thingHash = thing.ThingID;
             
             return destructionOrder;
         }
@@ -673,7 +690,7 @@ namespace GameClient
             damageOrder._damageAmount = damageInfo.Amount;
             damageOrder._ignoreArmor = damageInfo.IgnoreArmor;
             damageOrder._armorPenetration = damageInfo.ArmorPenetrationInt;
-            damageOrder.targetHash = ExtensionManager.GetThingHash(affectedThing);
+            damageOrder.targetHash = affectedThing.ThingID;
             if (damageInfo.Weapon != null) damageOrder._weaponDefName = damageInfo.Weapon.defName;
             if (damageInfo.HitPart != null) damageOrder._hitPartDefName = damageInfo.HitPart.def.defName;
 
@@ -690,20 +707,24 @@ namespace GameClient
             if (OnlineActivityManager.factionPawns.Contains(pawn))
             {
                 hediffOrder._pawnFaction = OnlineActivityTargetFaction.NonFaction;
-                hediffOrder._hediffTargetHash = ExtensionManager.GetThingHash(pawn);
+                hediffOrder.targetID = pawn.ThingID;
             }
 
             else
             {
                 hediffOrder._pawnFaction = OnlineActivityTargetFaction.Faction;
-                hediffOrder._hediffTargetHash = ExtensionManager.GetThingHash(pawn);
+                hediffOrder.targetID = pawn.ThingID;
             }
 
-            hediffOrder._hediffDefName = hediff.def.defName;
-            if (hediff.Part != null) hediffOrder._hediffPartDefName = hediff.Part.def.defName;
-            if (hediff.sourceDef != null) hediffOrder._hediffWeaponDefName = hediff.sourceDef.defName;
-            hediffOrder._hediffSeverity = hediff.Severity;
-            hediffOrder._hediffPermanent = hediff.IsPermanent();
+            hediffOrder._hediffComponent.DefName = hediff.def.defName;
+            hediffOrder._hediffComponent.Severity = hediff.Severity;
+            hediffOrder._hediffComponent.IsPermanent = hediff.IsPermanent();
+            if (hediff.sourceDef != null) hediffOrder._hediffComponent.WeaponDefName = hediff.sourceDef.defName;
+            if (hediff.Part != null)
+            {
+                hediffOrder._hediffComponent.PartDefName = hediff.Part.def.defName;
+                hediffOrder._hediffComponent.PartLabel = hediff.Part.def.label;
+            }
 
             return hediffOrder;
         }
@@ -738,7 +759,7 @@ namespace GameClient
         public static void ReceiveJobOrder(OnlineActivityData data)
         {
             if (!CheckIfCanExecuteOrder()) return;
-            else OnlineActivityManagerJobs.SetPawnJobs(data);
+            else OnlineActivityJobs.SetPawnJobs(data);
         }
 
         public static void ReceiveCreationOrder(OnlineActivityData data)
@@ -780,7 +801,7 @@ namespace GameClient
             if (!CheckIfCanExecuteOrder()) return;
 
             // If we receive a hash that doesn't exist or we are host we ignore it
-            Thing toDestroy = OnlineActivityManagerHelper.GetThingFromHash(data._destructionOrder._thingHash);
+            Thing toDestroy = OnlineActivityManagerHelper.GetThingFromID(data._destructionOrder._thingHash);
             if (toDestroy != null && !SessionValues.isActivityHost)
             {
                 OnlineActivityQueues.SetThingQueue(toDestroy);
@@ -804,7 +825,7 @@ namespace GameClient
                 damageInfo.SetIgnoreArmor(data._damageOrder._ignoreArmor);
 
                 // If we receive a hash that doesn't exist or we are host we ignore it
-                Thing toApplyTo = OnlineActivityManagerHelper.GetThingFromHash(data._damageOrder.targetHash);
+                Thing toApplyTo = OnlineActivityManagerHelper.GetThingFromID(data._damageOrder.targetHash);
                 if (toApplyTo != null && !SessionValues.isActivityHost)
                 {
                     OnlineActivityQueues.SetThingQueue(toApplyTo);
@@ -821,31 +842,32 @@ namespace GameClient
             try
             {
                 Pawn toTarget = null;
-                if (data._hediffOrder._pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineActivityManagerHelper.GetPawnFromHash(data._hediffOrder._hediffTargetHash, true);
-                else toTarget = OnlineActivityManagerHelper.GetPawnFromHash(data._hediffOrder._hediffTargetHash, false);
+                if (data._hediffOrder._pawnFaction == OnlineActivityTargetFaction.Faction) toTarget = OnlineActivityManagerHelper.GetPawnFromID(data._hediffOrder.targetID, OnlineActivityTargetFaction.Faction);
+                else toTarget = OnlineActivityManagerHelper.GetPawnFromID(data._hediffOrder.targetID, OnlineActivityTargetFaction.NonFaction);
 
                 // If we receive a hash that doesn't exist or we are host we ignore it
                 if (toTarget != null && !SessionValues.isActivityHost)
                 {
                     OnlineActivityQueues.SetThingQueue(toTarget);
 
-                    BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data._hediffOrder._hediffPartDefName);
+                    BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data._hediffOrder._hediffComponent.PartDefName &&
+                        fetch.def.label == data._hediffOrder._hediffComponent.PartLabel);
 
                     if (data._hediffOrder._applyMode == OnlineActivityApplyMode.Add)
                     {
-                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.First(fetch => fetch.defName == data._hediffOrder._hediffDefName);
+                        HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.First(fetch => fetch.defName == data._hediffOrder._hediffComponent.DefName);
                         Hediff toMake = HediffMaker.MakeHediff(hediffDef, toTarget, bodyPartRecord);
                         
-                        if (data._hediffOrder._hediffWeaponDefName != null)
+                        if (data._hediffOrder._hediffComponent.WeaponDefName != null)
                         {
-                            ThingDef source = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == data._hediffOrder._hediffWeaponDefName);
+                            ThingDef source = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == data._hediffOrder._hediffComponent.WeaponDefName);
                             toMake.sourceDef = source;
                             toMake.sourceLabel = source.label;
                         }
 
-                        toMake.Severity = data._hediffOrder._hediffSeverity;
+                        toMake.Severity = data._hediffOrder._hediffComponent.Severity;
 
-                        if (data._hediffOrder._hediffPermanent)
+                        if (data._hediffOrder._hediffComponent.IsPermanent)
                         {
                             HediffComp_GetsPermanent hediffComp = toMake.TryGetComp<HediffComp_GetsPermanent>();
                             hediffComp.IsPermanent = true;
@@ -856,7 +878,7 @@ namespace GameClient
 
                     else if (data._hediffOrder._applyMode == OnlineActivityApplyMode.Remove)
                     {
-                        Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data._hediffOrder._hediffDefName &&
+                        Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data._hediffOrder._hediffComponent.DefName &&
                             fetch.Part.def.defName == bodyPartRecord.def.defName);
 
                         toTarget.health.RemoveHediff(hediff);

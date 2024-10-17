@@ -6,7 +6,9 @@ namespace Shared
     {
         public string _jobDefName;
 
-        public string _pawnHash;
+        public int _jobThingCount;
+
+        public string _pawnId;
 
         public bool _isDrafted;
 
@@ -15,11 +17,5 @@ namespace Shared
         public int _updatedRotation;
 
         public PawnTargetComponent _targetComponent = new PawnTargetComponent();
-
-        public PawnTargetComponent _globalTargetComponent = new PawnTargetComponent();
-
-        public PawnTargetComponent[] _queuedTargetComponentsA = new PawnTargetComponent[0];
-
-        public PawnTargetComponent[] _queuedTargetComponentsB = new PawnTargetComponent[0];
     }
 }

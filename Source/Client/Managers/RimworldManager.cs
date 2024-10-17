@@ -242,5 +242,7 @@ namespace GameClient
             else if (map.mapPawns.AllPawns.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer) != null) return true;
             else return false;
         }
+
+        public static void SetGameSpeed(TimeSpeed timeSpeed) { Find.TickManager.CurTimeSpeed = timeSpeed; }
     }
 }

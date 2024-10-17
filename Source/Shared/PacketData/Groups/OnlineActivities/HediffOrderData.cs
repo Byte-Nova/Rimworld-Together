@@ -10,16 +10,8 @@ namespace Shared
 
         public OnlineActivityApplyMode _applyMode;
 
-        public string _hediffTargetHash;
+        public HediffComponent _hediffComponent = new HediffComponent();
 
-        public string _hediffDefName;
-
-        public string _hediffPartDefName;
-
-        public string _hediffWeaponDefName;
-
-        public float _hediffSeverity;
-        
-        public bool _hediffPermanent;
+        public string targetID;
     }
 }

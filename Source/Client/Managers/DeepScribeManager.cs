@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using ICSharpCode.SharpZipLib;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -30,99 +31,99 @@ namespace GameClient
         {
             HumanFile humanData = new HumanFile();
 
-            GetPawnHash(pawn, humanData);
+            GetHumanID(pawn, humanData);
 
-            GetPawnBioDetails(pawn, humanData);
+            GetHumanBioDetails(pawn, humanData);
 
-            GetPawnKind(pawn, humanData);
+            GetHumanKind(pawn, humanData);
 
-            GetPawnFaction(pawn, humanData);
+            GetHumanFaction(pawn, humanData);
 
-            GetPawnHediffs(pawn, humanData);
+            GetHumanHediffs(pawn, humanData);
 
             if (ModsConfig.BiotechActive)
             {
-                GetPawnChildState(pawn, humanData);
+                GetHumanChildState(pawn, humanData);
 
-                GetPawnXenotype(pawn, humanData);
+                GetHumanXenotype(pawn, humanData);
 
-                GetPawnXenogenes(pawn, humanData);
+                GetHumanXenogenes(pawn, humanData);
 
-                GetPawnEndogenes(pawn, humanData);
+                GetHumanEndogenes(pawn, humanData);
             }
 
-            GetPawnStory(pawn, humanData);
+            GetHumanStory(pawn, humanData);
 
-            GetPawnSkills(pawn, humanData);
+            GetHumanSkills(pawn, humanData);
 
-            GetPawnTraits(pawn, humanData);
+            GetHumanTraits(pawn, humanData);
 
-            GetPawnApparel(pawn, humanData);
+            GetHumanApparel(pawn, humanData);
 
-            GetPawnEquipment(pawn, humanData);
+            GetHumanEquipment(pawn, humanData);
 
-            if (passInventory) GetPawnInventory(pawn, humanData);
+            if (passInventory) GetHumanInventory(pawn, humanData);
 
-            GetPawnFavoriteColor(pawn, humanData);
+            GetHumanFavoriteColor(pawn, humanData);
 
-            GetPawnTransform(pawn, humanData);
+            GetHumanTransform(pawn, humanData);
 
             return humanData;
         }
 
         public static Pawn StringToHuman(HumanFile humanData)
         {
-            PawnKindDef kind = SetPawnKind(humanData);
+            PawnKindDef kind = SetHumanKind(humanData);
 
-            Faction faction = SetPawnFaction(humanData);
+            Faction faction = SetHumanFaction(humanData);
 
-            Pawn pawn = SetPawn(kind, faction, humanData);
+            Pawn pawn = SetHuman(kind, faction, humanData);
 
-            SetPawnHash(pawn, humanData);
+            SetHumanID(pawn, humanData);
 
-            SetPawnHediffs(pawn, humanData);
+            SetHumanHediffs(pawn, humanData);
 
             if (ModsConfig.BiotechActive)
             {
-                SetPawnChildState(pawn, humanData);
+                SetHumanChildState(pawn, humanData);
 
-                SetPawnXenotype(pawn, humanData);
+                SetHumanXenotype(pawn, humanData);
 
-                SetPawnXenogenes(pawn, humanData);
+                SetHumanXenogenes(pawn, humanData);
 
-                SetPawnEndogenes(pawn, humanData);
+                SetHumanEndogenes(pawn, humanData);
             }
 
-            SetPawnBioDetails(pawn, humanData);
+            SetHumanBioDetails(pawn, humanData);
 
-            SetPawnStory(pawn, humanData);
+            SetHumanStory(pawn, humanData);
 
-            SetPawnSkills(pawn, humanData);
+            SetHumanSkills(pawn, humanData);
 
-            SetPawnTraits(pawn, humanData);
+            SetHumanTraits(pawn, humanData);
 
-            SetPawnApparel(pawn, humanData);
+            SetHumanApparel(pawn, humanData);
 
-            SetPawnEquipment(pawn, humanData);
+            SetHumanEquipment(pawn, humanData);
 
-            SetPawnInventory(pawn, humanData);
+            SetHumanInventory(pawn, humanData);
 
-            SetPawnFavoriteColor(pawn, humanData);
+            SetHumanFavoriteColor(pawn, humanData);
 
-            SetPawnTransform(pawn, humanData);
+            SetHumanTransform(pawn, humanData);
 
             return pawn;
         }
 
         //Getters
 
-        private static void GetPawnHash(Pawn human, HumanFile humanData)
+        private static void GetHumanID(Pawn human, HumanFile humanData)
         {
-            try { humanData.Hash = ExtensionManager.GetThingHash(human); }
+            try { humanData.ID = human.ThingID; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetPawnBioDetails(Pawn pawn, HumanFile humanData)
+        private static void GetHumanBioDetails(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -144,13 +145,13 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetPawnKind(Pawn pawn, HumanFile humanData)
+        private static void GetHumanKind(Pawn pawn, HumanFile humanData)
         {
             try { humanData.KindDef = pawn.kindDef.defName; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetPawnFaction(Pawn pawn, HumanFile humanData)
+        private static void GetHumanFaction(Pawn pawn, HumanFile humanData)
         {
             try { humanData.FactionDef = pawn.Faction.def.defName; }
             catch (Exception e) 
@@ -163,7 +164,7 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnHediffs(Pawn pawn, HumanFile humanData)
+        private static void GetHumanHediffs(Pawn pawn, HumanFile humanData)
         {
             if (pawn.health.hediffSet.hediffs.Count() > 0)
             {
@@ -176,8 +177,11 @@ namespace GameClient
                         HediffComponent component = new HediffComponent();
                         component.DefName = hd.def.defName;
 
-                        if (hd.Part != null) component.PartDefName = hd.Part.def.defName;
-                        else component.PartDefName = "null";
+                        if (hd.Part != null)
+                        {
+                            component.PartDefName = hd.Part.def.defName;
+                            component.PartLabel = hd.Part.def.label;
+                        }
 
                         if (hd.def.CompProps<HediffCompProperties_Immunizable>() != null) component.Immunity = pawn.health.immunity.GetImmunity(hd.def);
                         else component.Immunity = -1f;
@@ -225,13 +229,13 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnChildState(Pawn pawn, HumanFile humanData)
+        private static void GetHumanChildState(Pawn pawn, HumanFile humanData)
         {
             try { humanData.GrowthPoints = pawn.ageTracker.growthPoints; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetPawnXenotype(Pawn pawn, HumanFile humanData)
+        private static void GetHumanXenotype(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -244,7 +248,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetPawnXenogenes(Pawn pawn, HumanFile humanData)
+        private static void GetHumanXenogenes(Pawn pawn, HumanFile humanData)
         {
             if (pawn.genes.Xenogenes.Count() > 0)
             {
@@ -266,7 +270,7 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnEndogenes(Pawn pawn, HumanFile humanData)
+        private static void GetHumanEndogenes(Pawn pawn, HumanFile humanData)
         {
             if (pawn.genes.Endogenes.Count() > 0)
             {
@@ -288,13 +292,13 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnFavoriteColor(Pawn pawn, HumanFile humanData)
+        private static void GetHumanFavoriteColor(Pawn pawn, HumanFile humanData)
         {
             try { humanData.FavoriteColor = pawn.story.favoriteColor.ToString(); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetPawnStory(Pawn pawn, HumanFile humanData)
+        private static void GetHumanStory(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -307,7 +311,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetPawnSkills(Pawn pawn, HumanFile humanData)
+        private static void GetHumanSkills(Pawn pawn, HumanFile humanData)
         {
             if (pawn.skills.skills.Count() > 0)
             {
@@ -331,7 +335,7 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnTraits(Pawn pawn, HumanFile humanData)
+        private static void GetHumanTraits(Pawn pawn, HumanFile humanData)
         {
             if (pawn.story.traits.allTraits.Count() > 0)
             {
@@ -354,7 +358,7 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnApparel(Pawn pawn, HumanFile humanData)
+        private static void GetHumanApparel(Pawn pawn, HumanFile humanData)
         {
             if (pawn.apparel.WornApparel.Count() > 0)
             {
@@ -378,7 +382,7 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnEquipment(Pawn pawn, HumanFile humanData)
+        private static void GetHumanEquipment(Pawn pawn, HumanFile humanData)
         {
             if (pawn.equipment.Primary != null)
             {
@@ -392,7 +396,7 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnInventory(Pawn pawn, HumanFile humanData)
+        private static void GetHumanInventory(Pawn pawn, HumanFile humanData)
         {
             if (pawn.inventory.innerContainer.Count() != 0)
             {
@@ -415,7 +419,7 @@ namespace GameClient
             }
         }
 
-        private static void GetPawnTransform(Pawn pawn, HumanFile humanData)
+        private static void GetHumanTransform(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -433,7 +437,7 @@ namespace GameClient
 
         //Setters
 
-        private static PawnKindDef SetPawnKind(HumanFile humanData)
+        private static PawnKindDef SetHumanKind(HumanFile humanData)
         {
             try { return DefDatabase<PawnKindDef>.AllDefs.First(fetch => fetch.defName == humanData.KindDef); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -441,7 +445,7 @@ namespace GameClient
             return null;
         }
 
-        private static Faction SetPawnFaction(HumanFile humanData)
+        private static Faction SetHumanFaction(HumanFile humanData)
         {
             try { return Find.FactionManager.AllFactions.First(fetch => fetch.def.defName == humanData.FactionDef); }
             catch (Exception e) 
@@ -454,7 +458,7 @@ namespace GameClient
             }
         }
 
-        private static Pawn SetPawn(PawnKindDef kind, Faction faction, HumanFile humanData)
+        private static Pawn SetHuman(PawnKindDef kind, Faction faction, HumanFile humanData)
         {
             try { return PawnGenerator.GeneratePawn(kind, faction); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -462,12 +466,12 @@ namespace GameClient
             return null;
         }
 
-        private static void SetPawnHash(Pawn pawn, HumanFile humanData)
+        private static void SetHumanID(Pawn pawn, HumanFile humanData)
         {
-            ExtensionManager.SetThingHash(pawn, humanData.Hash);
+            pawn.ThingID = humanData.ID;
         }
 
-        private static void SetPawnBioDetails(Pawn pawn, HumanFile humanData)
+        private static void SetHumanBioDetails(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -504,7 +508,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetPawnHediffs(Pawn pawn, HumanFile humanData)
+        private static void SetHumanHediffs(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -521,13 +525,8 @@ namespace GameClient
                     {
                         HediffComponent component = humanData.Hediffs[i];
                         HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.DefName);
-                        BodyPartRecord bodyPart = null;
-
-                        if (component.PartDefName != "null")
-                        {
-                            bodyPart = pawn.RaceProps.body.AllParts.ToList().Find(x =>
-                                x.def.defName == component.PartDefName);
-                        }
+                        BodyPartRecord bodyPart = pawn.RaceProps.body.AllParts.FirstOrDefault(x => x.def.defName == component.PartDefName && 
+                            x.def.label == component.PartLabel);
 
                         Hediff hediff = HediffMaker.MakeHediff(hediffDef, pawn);
                         hediff.Severity = component.Severity;
@@ -566,13 +565,13 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnChildState(Pawn pawn, HumanFile humanData)
+        private static void SetHumanChildState(Pawn pawn, HumanFile humanData)
         {
             try { pawn.ageTracker.growthPoints = humanData.GrowthPoints; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetPawnXenotype(Pawn pawn, HumanFile humanData)
+        private static void SetHumanXenotype(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -589,7 +588,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetPawnXenogenes(Pawn pawn, HumanFile humanData)
+        private static void SetHumanXenogenes(Pawn pawn, HumanFile humanData)
         {
             try { pawn.genes.Xenogenes.Clear(); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -609,7 +608,7 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnEndogenes(Pawn pawn, HumanFile humanData)
+        private static void SetHumanEndogenes(Pawn pawn, HumanFile humanData)
         {
             try { pawn.genes.Endogenes.Clear(); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -629,7 +628,7 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnFavoriteColor(Pawn pawn, HumanFile humanData)
+        private static void SetHumanFavoriteColor(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -649,7 +648,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetPawnStory(Pawn pawn, HumanFile humanData)
+        private static void SetHumanStory(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -666,7 +665,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetPawnSkills(Pawn pawn, HumanFile humanData)
+        private static void SetHumanSkills(Pawn pawn, HumanFile humanData)
         {
             if (humanData.Skills.Length > 0)
             {
@@ -685,7 +684,7 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnTraits(Pawn pawn, HumanFile humanData)
+        private static void SetHumanTraits(Pawn pawn, HumanFile humanData)
         {
             try { pawn.story.traits.allTraits.Clear(); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -706,7 +705,7 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnApparel(Pawn pawn, HumanFile humanData)
+        private static void SetHumanApparel(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -733,7 +732,7 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnEquipment(Pawn pawn, HumanFile humanData)
+        private static void SetHumanEquipment(Pawn pawn, HumanFile humanData)
         {
             try { pawn.equipment.DestroyAllEquipment(); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
@@ -749,7 +748,7 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnInventory(Pawn pawn, HumanFile humanData)
+        private static void SetHumanInventory(Pawn pawn, HumanFile humanData)
         {
             if (humanData.Items.Length > 0)
             {
@@ -766,7 +765,7 @@ namespace GameClient
             }
         }
 
-        private static void SetPawnTransform(Pawn pawn, HumanFile humanData)
+        private static void SetHumanTransform(Pawn pawn, HumanFile humanData)
         {
             try
             {
@@ -796,7 +795,7 @@ namespace GameClient
         {
             AnimalFile animalData = new AnimalFile();
 
-            GetAnimalHash(animal, animalData);
+            GetAnimalID(animal, animalData);
 
             GetAnimalBioDetails(animal, animalData);
 
@@ -821,7 +820,7 @@ namespace GameClient
 
             Pawn animal = SetAnimal(kind, faction, animalData);
 
-            SetAnimalHash(animal, animalData);
+            SetAnimalID(animal, animalData);
 
             SetAnimalBioDetails(animal, animalData);
 
@@ -836,9 +835,9 @@ namespace GameClient
 
         //Getters
 
-        private static void GetAnimalHash(Pawn animal, AnimalFile animalData)
+        private static void GetAnimalID(Pawn animal, AnimalFile animalData)
         {
-            try { animalData.Hash = ExtensionManager.GetThingHash(animal); }
+            try { animalData.ID = animal.ThingID; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
@@ -888,8 +887,11 @@ namespace GameClient
                         HediffComponent component = new HediffComponent();
                         component.DefName = hd.def.defName;
 
-                        if (hd.Part != null) component.PartDefName = hd.Part.def.defName;
-                        else component.PartDefName = "null";
+                        if (hd.Part != null)
+                        {
+                            component.PartDefName = hd.Part.def.defName;
+                            component.PartLabel = hd.Part.def.label;
+                        }
 
                         component.Severity = hd.Severity;
                         component.IsPermanent = hd.IsPermanent();
@@ -968,9 +970,9 @@ namespace GameClient
             return null;
         }
 
-        private static void SetAnimalHash(Pawn animal, AnimalFile animalData)
+        private static void SetAnimalID(Pawn animal, AnimalFile animalData)
         {
-            ExtensionManager.SetThingHash(animal, animalData.Hash);
+            animal.ThingID = animalData.ID;
         }
 
         private static void SetAnimalBioDetails(Pawn animal, AnimalFile animalData)
@@ -1004,13 +1006,8 @@ namespace GameClient
                     {
                         HediffComponent component = animalData.Hediffs[i];
                         HediffDef hediffDef = DefDatabase<HediffDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.DefName);
-                        BodyPartRecord bodyPart = null;
-
-                        if (component.PartDefName != "null")
-                        {
-                            bodyPart = animal.RaceProps.body.AllParts.ToList().Find(x =>
-                                x.def.defName == component.PartDefName);
-                        }
+                        BodyPartRecord bodyPart = animal.RaceProps.body.AllParts.ToList().Find(x => x.def.defName == component.PartDefName &&
+                            x.def.label == component.PartLabel);
 
                         Hediff hediff = HediffMaker.MakeHediff(hediffDef, animal, bodyPart);
                         hediff.Severity = component.Severity;
@@ -1083,7 +1080,7 @@ namespace GameClient
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
-            GetItemHash(toUse, thingData);
+            GetItemID(toUse, thingData);
 
             GetItemName(toUse, thingData);
 
@@ -1107,7 +1104,7 @@ namespace GameClient
         {
             Thing thing = SetItem(thingData);
 
-            SetItemHash(thing, thingData);
+            SetItemID(thing, thingData);
 
             SetItemQuantity(thing, thingData);
 
@@ -1125,9 +1122,9 @@ namespace GameClient
 
         //Getters
 
-        private static void GetItemHash(Thing thing, ThingDataFile thingData)
+        private static void GetItemID(Thing thing, ThingDataFile thingData)
         {
-            try { thingData.Hash = ExtensionManager.GetThingHash(thing); }
+            try { thingData.ID = thing.ThingID; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
@@ -1262,12 +1259,12 @@ namespace GameClient
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
-            return null;
+            throw new ValueOutOfRangeException(thingData.ToString());
         }
 
-        private static void SetItemHash(Thing thing, ThingDataFile thingData)
+        private static void SetItemID(Thing thing, ThingDataFile thingData)
         {
-            ExtensionManager.SetThingHash(thing, thingData.Hash);
+            thing.ThingID = thingData.ID;
         }
 
         private static void SetItemQuantity(Thing thing, ThingDataFile thingData)

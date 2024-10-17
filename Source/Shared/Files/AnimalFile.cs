@@ -7,7 +7,7 @@ namespace Shared
 
     public class AnimalFile
     {
-        public string Hash;
+        public string ID;
 
         public string DefName;
 

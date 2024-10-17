@@ -29,6 +29,10 @@ namespace GameServer
                     RejectActivity(client, data);
                     break;
 
+                case OnlineActivityStepMode.Ready:
+                    ReadyActivity(client, data);
+                    break;
+
                 case OnlineActivityStepMode.Stop:
                     StopActivity(client);
                     break;
@@ -114,7 +118,6 @@ namespace GameServer
                     toGet.activityPartner = client;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
-                    client.listener.EnqueuePacket(packet);
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
@@ -135,6 +138,13 @@ namespace GameServer
                     toGet.listener.EnqueuePacket(packet);
                 }
             }
+        }
+
+        private static void ReadyActivity(ServerClient client, OnlineActivityData data)
+        {
+            ServerClient toSendTo = client.activityPartner;
+            Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
+            toSendTo.listener.EnqueuePacket(packet);
         }
 
         private static void SendActions(ServerClient client, OnlineActivityData data)

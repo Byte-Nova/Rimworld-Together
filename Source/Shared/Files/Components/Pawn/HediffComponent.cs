@@ -6,6 +6,10 @@ namespace Shared
 
         public string PartDefName;
 
+        public string PartLabel;
+
+        public string WeaponDefName;
+
         public float Severity;
 
         public float Immunity;

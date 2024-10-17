@@ -7,7 +7,7 @@ namespace Shared
 
     public class HumanFile
     {
-        public string Hash;
+        public string ID;
 
         public string DefName;
 

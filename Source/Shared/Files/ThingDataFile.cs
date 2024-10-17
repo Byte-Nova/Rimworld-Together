@@ -6,7 +6,7 @@ namespace Shared
 
     public class ThingDataFile
     {
-        public string Hash;
+        public string ID;
 
         public string DefName;
 
