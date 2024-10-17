@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -1002,6 +1003,7 @@ namespace GameClient
 
             GetItemRotation(toUse, thingData);
 
+            GetItemEggData(toUse, thingData);
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
@@ -1024,6 +1026,8 @@ namespace GameClient
             SetItemRotation(thing, thingData);
 
             SetItemMinified(thing, thingData);
+
+            SetItemEggData(thing, thingData);
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
@@ -1077,6 +1081,16 @@ namespace GameClient
         {
             try { thingData.Rotation = thing.Rotation.AsInt; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void GetItemEggData(Thing thing, ThingDataFile thingData) 
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            if (comp != null)
+            {
+                thingData.EggData.ruinedPercent = (float)AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").GetValue(thing.TryGetComp<CompTemperatureRuinable>());
+                thingData.EggData.gestateProgress = (float)AccessTools.Field(typeof(CompHatcher), "gestateProgress").GetValue(comp);
+            }
         }
 
         private static bool GetItemMinified(Thing thing, ThingDataFile thingData)
@@ -1208,6 +1222,16 @@ namespace GameClient
         {
             try { thing.Rotation = new Rot4(thingData.Rotation); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void SetItemEggData(Thing thing, ThingDataFile thingData)
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            if (comp != null)
+            {
+                AccessTools.Field(typeof(CompHatcher), "gestateProgress").SetValue(comp, thingData.EggData.gestateProgress);
+                AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").SetValue(thing.TryGetComp<CompTemperatureRuinable>(), thingData.EggData.ruinedPercent);
+            }
         }
 
         private static void SetItemMinified(Thing thing, ThingDataFile thingData)
