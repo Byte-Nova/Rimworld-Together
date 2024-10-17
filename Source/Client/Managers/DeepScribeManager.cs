@@ -984,8 +984,8 @@ namespace GameClient
         public static ThingDataFile ItemToString(Thing thing, int thingCount)
         {
             ThingDataFile thingData = new ThingDataFile();
+
             Thing toUse = null;
-            
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
@@ -1002,17 +1002,19 @@ namespace GameClient
             GetItemPosition(toUse, thingData);
 
             GetItemRotation(toUse, thingData);
-
+            
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(toUse)) GetBladelinkWeaponDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsEgg(toUse)) GetEggDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsRottable(toUse)) GetRotDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingHasColor(thing)) GetColorDetails(toUse, thingData);;
             return thingData;
         }
 
         public static Thing StringToItem(ThingDataFile thingData)
         {
-
             Thing thing = SetItem(thingData);
 
             SetItemQuantity(thing, thingData);
@@ -1031,6 +1033,9 @@ namespace GameClient
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(thing)) SetXenoGermDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(thing)) SetBladelinkWeaponDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsEgg(thing)) SetEggDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsRottable(thing)) SetRotDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingHasColor(thing)) SetColorDetails(thing, thingData);
             return thing;
         }
 
@@ -1082,6 +1087,19 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
+        private static void GetRotDetails(Thing thing, ThingDataFile thingData) 
+        {
+            CompRottable comp = thing.TryGetComp<CompRottable>();
+            thingData.RotProgress = comp.RotProgress;
+        }
+        
+        private static void GetEggDetails(Thing thing, ThingDataFile thingData) 
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            thingData.EggData.ruinedPercent = (float)AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").GetValue(thing.TryGetComp<CompTemperatureRuinable>());
+            thingData.EggData.gestateProgress = (float)AccessTools.Field(typeof(CompHatcher), "gestateProgress").GetValue(comp);
+        }
+
         private static bool GetItemMinified(Thing thing, ThingDataFile thingData)
         {
             try
@@ -1092,6 +1110,14 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
             return false;
+        }
+
+        private static void GetColorDetails(Thing thing, ThingDataFile thingData) 
+        {
+            thingData.Color[0] = thing.DrawColor.r;
+            thingData.Color[1] = thing.DrawColor.g;
+            thingData.Color[2] = thing.DrawColor.b;
+            thingData.Color[3] = thing.DrawColor.a;
         }
 
         private static void GetGenepackDetails(Thing thing, ThingDataFile thingData)
@@ -1228,6 +1254,28 @@ namespace GameClient
         {
             try { thing.Rotation = new Rot4(thingData.Rotation); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void SetRotDetails(Thing thing, ThingDataFile thingData) 
+        {
+            CompRottable comp = thing.TryGetComp<CompRottable>();
+            comp.RotProgress = thingData.RotProgress;
+        }
+
+        private static void SetColorDetails(Thing thing, ThingDataFile thingData) 
+        {
+            thing.SetColor(new UnityEngine.Color(
+                thingData.Color[0],
+                thingData.Color[1],
+                thingData.Color[2],
+                thingData.Color[3]));
+        }
+        
+        private static void SetEggDetails(Thing thing, ThingDataFile thingData)
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            AccessTools.Field(typeof(CompHatcher), "gestateProgress").SetValue(comp, thingData.EggData.gestateProgress);
+            AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").SetValue(thing.TryGetComp<CompTemperatureRuinable>(), thingData.EggData.ruinedPercent);
         }
 
         private static void SetItemMinified(Thing thing, ThingDataFile thingData)
@@ -1842,6 +1890,24 @@ namespace GameClient
             if (!ModsConfig.RoyaltyActive) return false;
 
             if (thing.TryGetComp<CompBladelinkWeapon>() != null) return true;
+            else return false;
+        }
+        
+        public static bool CheckIfThingIsEgg(Thing thing)
+        {
+            if (thing.TryGetComp<CompHatcher>() != null) return true;
+            else return false;
+        }
+
+        internal static bool CheckIfThingIsRottable(Thing thing)
+        {
+            if (thing.TryGetComp<CompRottable>() != null) return true;
+            else return false;
+        }
+
+        internal static bool CheckIfThingHasColor(Thing thing)
+        {
+            if (thing.TryGetComp<CompColorable>() != null) return true;
             else return false;
         }
     }
