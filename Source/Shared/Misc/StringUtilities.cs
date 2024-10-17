@@ -1,11 +1,19 @@
 using System.Reflection;
 using System;
 using System.Collections;
-
 namespace Shared
 {
+    /// <summary>
+    /// Class to convert objects into strings for debugging purposes. Only use it with <see cref="CommonEnumerators.LogImportanceMode.Verbose"/>.
+    /// </summary>
     public static class StringUtilities
     {
+        /// <summary>
+        /// This function processes an object and return every field as a string. Only use it with <see cref="CommonEnumerators.LogImportanceMode.Verbose"/>.
+        /// </summary>
+        /// <param name="obj">The object to convert to a string.</param>
+        /// <param name="tabbing">The number of tab levels for indentation. 0 by default</param>
+        /// <returns>A string representing the object's fields and values.</returns>
         public static string ToString(object obj, int tabbing = 0)
         {
             string str = "";
