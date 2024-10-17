@@ -63,6 +63,8 @@ namespace GameServer
         public static BackupConfigFile backupConfig;
 
         public static ModConfigFile modConfig;
+        
+        public static ChatConfigFile chatConfig;
 
         //Booleans
 
