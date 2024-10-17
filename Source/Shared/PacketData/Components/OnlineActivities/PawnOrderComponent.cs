@@ -4,42 +4,22 @@ namespace Shared
 {
     public class PawnOrderComponent
     {
-        public string _defName;
+        public string _jobDefName;
 
-        public int _pawnIndex;
-
-        public int _targetCount;
-
-        public int[] _queueTargetCounts;
-
-        public string[] _targets;
-
-        public int[] _targetIndexes;
-
-        public ActionTargetType[] _targetTypes;
-
-        public OnlineActivityTargetFaction[] _targetFactions;
-
-        public string[] _queueTargetsA;
-
-        public int[] _queueTargetIndexesA;
-
-        public ActionTargetType[] _queueTargetTypesA;
-
-        public OnlineActivityTargetFaction[] _queueTargetFactionsA;
-
-        public string[] _queueTargetsB;
-
-        public int[] _queueTargetIndexesB;
-
-        public ActionTargetType[] _queueTargetTypesB;
-
-        public OnlineActivityTargetFaction[] _queueTargetFactionsB;
+        public string _pawnHash;
 
         public bool _isDrafted;
 
         public int[] _updatedPosition;
         
         public int _updatedRotation;
+
+        public PawnTargetComponent _targetComponent = new PawnTargetComponent();
+
+        public PawnTargetComponent _globalTargetComponent = new PawnTargetComponent();
+
+        public PawnTargetComponent[] _queuedTargetComponentsA = new PawnTargetComponent[0];
+
+        public PawnTargetComponent[] _queuedTargetComponentsB = new PawnTargetComponent[0];
     }
 }

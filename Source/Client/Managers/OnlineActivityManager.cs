@@ -7,6 +7,7 @@ using RimWorld;
 using RimWorld.Planet;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Verse.AI;
 
 namespace GameClient
 {
@@ -47,7 +48,7 @@ namespace GameClient
                     break;
 
                 case OnlineActivityStepMode.Jobs:
-                    //Nothing yet
+                    OnlineActivityManagerOrders.ReceiveJobOrder(data);
                     break;
 
                 case OnlineActivityStepMode.Create:
@@ -370,18 +371,23 @@ namespace GameClient
         {
             while (SessionValues.currentRealTimeEvent != OnlineActivityType.None)
             {
-                try { JobsTick(); }
+                try { GetPawnJobs(); }
                 catch (Exception e) { Logger.Error($"Jobs tick failed, this should never happen. Exception > {e}"); }
 
                 await Task.Delay(TimeSpan.FromMilliseconds(taskDelayMS));
             }
         }
 
-        public static void JobsTick()
+        public static void GetPawnJobs()
         {
             PawnOrderData pawnOrderData = new PawnOrderData();
-            List<PawnOrderComponent> pawnOrders = new List<PawnOrderComponent>();
-            foreach (Pawn pawn in OnlineActivityManager.factionPawns.ToArray()) pawnOrders.Add(GetPawnJob(pawn));
+            List<PawnOrderComponent> ordersToGet = new List<PawnOrderComponent>();
+            foreach (Pawn pawn in OnlineActivityManager.factionPawns.ToArray())
+            {
+                PawnOrderComponent toGet = GetPawnJob(pawn);
+                if (toGet != null) ordersToGet.Add(GetPawnJob(pawn));    
+            }
+            pawnOrderData._pawnOrders = ordersToGet.ToArray();
 
             OnlineActivityData onlineActivityData = new OnlineActivityData();
             onlineActivityData._stepMode = OnlineActivityStepMode.Jobs;
@@ -391,9 +397,237 @@ namespace GameClient
             Network.listener.EnqueuePacket(packet);
         }
 
+        public static void SetPawnJobs(OnlineActivityData data)
+        {
+            foreach(PawnOrderComponent component in data._pawnOrder._pawnOrders)
+            {
+                Pawn pawn = OnlineActivityManagerHelper.GetPawnFromHash(component._pawnHash, false);
+                IntVec3 jobPosition = ValueParser.ArrayToIntVec3(component._updatedPosition);
+                Rot4 jobRotation = ValueParser.IntToRot4(component._updatedRotation);
+
+                try
+                {
+                    JobDef jobDef = RimworldManager.GetJobFromDef(component._jobDefName);
+                    LocalTargetInfo[] allTargets = SetActionTargetsFromString(component);
+                    LocalTargetInfo targetA = allTargets[0];
+                    LocalTargetInfo targetB = allTargets[1];
+                    LocalTargetInfo targetC = allTargets[2];
+
+                    Job newJob = RimworldManager.SetJobFromDef(jobDef, targetA, targetB, targetC);
+                    newJob.count = component._targetComponent.targets.Length;
+
+                    if (CheckIfJobsAreTheSame(pawn.CurJob, newJob)) continue;
+                    else
+                    {
+                        SetPawnTransform(pawn, jobPosition, jobRotation);
+                        SetPawnDraftState(pawn, component._isDrafted);
+
+                        OnlineActivityQueues.SetThingQueue(pawn);
+                        ChangeCurrentJob(pawn, newJob);
+                        ChangeJobSpeedIfNeeded(newJob);
+                    }
+                }
+
+                // If the job fails to parse we still want to move the pawn around
+                catch
+                {
+                    SetPawnTransform(pawn, jobPosition, jobRotation);
+                    SetPawnDraftState(pawn, component._isDrafted);
+                }   
+            }
+        }
+
         public static PawnOrderComponent GetPawnJob(Pawn pawn)
         {
-            return new PawnOrderComponent();
+            PawnOrderComponent pawnOrder = new PawnOrderComponent();
+            pawnOrder._pawnHash = ExtensionManager.GetThingHash(pawn);
+
+            Job pawnJob = pawn.CurJob;
+            if (pawnJob == null) return null;
+
+            pawnOrder._jobDefName = pawnJob.def.defName;
+            pawnOrder._targetComponent.targets = GetActionTargets(pawnJob);
+            pawnOrder._targetComponent.targetTypes = GetActionTypes(pawnJob);
+            pawnOrder._targetComponent.targetFactions = GetActionTargetFactions(pawnJob);
+
+            // pawnOrder._queueTargetsA = GetQueuedActionTargets(newJob, 0);
+            // pawnOrder._queueTargetIndexesA = GetQueuedActionIndexes(newJob, 0);
+            // pawnOrder._queueTargetTypesA = GetQueuedActionTypes(newJob, 0);
+            // pawnOrder._queueTargetFactionsA = GetQueuedActionTargetFactions(newJob, 0);
+
+            // pawnOrder._queueTargetsB = GetQueuedActionTargets(newJob, 1);
+            // pawnOrder._queueTargetIndexesB = GetQueuedActionIndexes(newJob, 1);
+            // pawnOrder._queueTargetTypesB = GetQueuedActionTypes(newJob, 1);
+            // pawnOrder._queueTargetFactionsB = GetQueuedActionTargetFactions(newJob, 1);
+
+            pawnOrder._isDrafted = GetPawnDraftState(pawn);
+            pawnOrder._updatedPosition = ValueParser.IntVec3ToArray(pawn.Position);
+            pawnOrder._updatedRotation = ValueParser.Rot4ToInt(pawn.Rotation);
+
+            return pawnOrder;
+        }
+
+        public static string[] GetActionTargets(Job job)
+        {
+            List<string> targetInfoList = new List<string>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                LocalTargetInfo target = null;
+                if (i == 0) target = job.targetA;
+                else if (i == 1) target = job.targetB;
+                else if (i == 2) target = job.targetC;
+
+                try
+                {
+                    if (target.Thing == null) targetInfoList.Add(ValueParser.Vector3ToString(target.Cell));
+                    else targetInfoList.Add(ExtensionManager.GetThingHash(target.Thing));
+                }
+                catch { Logger.Error($"failed to parse {target}"); }
+            }
+
+            return targetInfoList.ToArray();
+        }
+
+        public static ActionTargetType[] GetActionTypes(Job job)
+        {
+            List<ActionTargetType> targetTypeList = new List<ActionTargetType>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                LocalTargetInfo target = null;
+                if (i == 0) target = job.targetA;
+                else if (i == 1) target = job.targetB;
+                else if (i == 2) target = job.targetC;
+
+                try
+                {
+                    if (target.Thing == null) targetTypeList.Add(ActionTargetType.Cell);
+                    else
+                    {
+                        if (DeepScribeHelper.CheckIfThingIsHuman(target.Thing)) targetTypeList.Add(ActionTargetType.Human);
+                        else if (DeepScribeHelper.CheckIfThingIsAnimal(target.Thing)) targetTypeList.Add(ActionTargetType.Animal);
+                        else targetTypeList.Add(ActionTargetType.Thing);
+                    }
+                }
+                catch { Logger.Error($"failed to parse {target}"); }
+            }
+
+            return targetTypeList.ToArray();
+        }
+
+        public static OnlineActivityTargetFaction[] GetActionTargetFactions(Job job)
+        {
+            List<OnlineActivityTargetFaction> targetFactions = new List<OnlineActivityTargetFaction>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                LocalTargetInfo target = null;
+                if (i == 0) target = job.targetA;
+                else if (i == 1) target = job.targetB;
+                else if (i == 2) target = job.targetC;
+
+                try
+                {
+                    if (target.Thing == null) targetFactions.Add(OnlineActivityTargetFaction.None);
+                    else
+                    {
+                        // Faction and non-faction pawns get inverted in here to send into the other side
+                        if (OnlineActivityManager.factionPawns.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.NonFaction);
+                        else if (OnlineActivityManager.nonFactionPawns.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.Faction);
+                        else if (OnlineActivityManager.activityMapThings.Contains(target.Thing)) targetFactions.Add(OnlineActivityTargetFaction.None);
+                    }
+                }
+                catch { Logger.Error($"failed to parse {target}"); }
+            }
+
+            return targetFactions.ToArray();
+        }
+
+        public static bool GetPawnDraftState(Pawn pawn)
+        {
+            if (pawn.drafter == null) return false;
+            else return pawn.drafter.Drafted;
+        }
+
+        public static void SetPawnTransform(Pawn pawn, IntVec3 pawnPosition, Rot4 pawnRotation)
+        {
+            pawn.Position = pawnPosition;
+            pawn.Rotation = pawnRotation;
+            pawn.pather.Notify_Teleported_Int();
+        }
+
+        public static void SetPawnDraftState(Pawn pawn, bool isDrafted)
+        {
+            try
+            {
+                pawn.drafter ??= new Pawn_DraftController(pawn);
+
+                if (isDrafted) pawn.drafter.Drafted = true;
+                else { pawn.drafter.Drafted = false; }
+            }
+            catch (Exception e) { Logger.Warning($"Couldn't apply pawn draft state for {pawn.Label}. Reason: {e}"); }
+        }
+
+        public static LocalTargetInfo[] SetActionTargetsFromString(PawnOrderComponent pawnOrder)
+        {
+            List<LocalTargetInfo> toGet = new List<LocalTargetInfo>();
+
+            try
+            {
+                for (int i = 0; i < pawnOrder._targetComponent.targets.Length; i++)
+                {
+                    switch (pawnOrder._targetComponent.targetTypes[i])
+                    {
+                        case ActionTargetType.Thing:
+                            toGet.Add(new LocalTargetInfo(OnlineActivityManagerHelper.GetThingFromHash(pawnOrder._targetComponent.targets[i])));
+                            break;
+
+                        case ActionTargetType.Human:
+                            toGet.Add(new LocalTargetInfo(OnlineActivityManagerHelper.GetPawnFromHash(pawnOrder._targetComponent.targets[i], false)));
+                            break;
+
+                        case ActionTargetType.Animal:
+                            toGet.Add(new LocalTargetInfo(OnlineActivityManagerHelper.GetPawnFromHash(pawnOrder._targetComponent.targets[i], false)));
+                            break;
+
+                        case ActionTargetType.Cell:
+                            toGet.Add(new LocalTargetInfo(ValueParser.StringToVector3(pawnOrder._targetComponent.targets[i])));
+                            break;
+                    }
+                }
+            }
+            catch (Exception e) { Logger.Error(e.ToString()); }
+
+            return toGet.ToArray();
+        }
+
+        public static void ChangeCurrentJob(Pawn pawn, Job newJob)
+        {
+            pawn.jobs.ClearQueuedJobs();
+            if (pawn.jobs.curJob != null) pawn.jobs.EndCurrentJob(JobCondition.InterruptForced, false);
+
+            // TODO
+            // Investigate if this can be implemented
+            // pawn.Reserve(newJob.targetA, newJob);
+
+            newJob.TryMakePreToilReservations(pawn, false);
+            pawn.jobs.StartJob(newJob);
+        }
+
+        public static void ChangeJobSpeedIfNeeded(Job job)
+        {
+            if (job.def == JobDefOf.GotoWander) job.locomotionUrgency = LocomotionUrgency.Walk;
+            else if (job.def == JobDefOf.Wait_Wander) job.locomotionUrgency = LocomotionUrgency.Walk;
+        }
+
+        public static bool CheckIfJobsAreTheSame(Job jobA, Job jobB)
+        {
+            if (jobA == null) return false;
+            else if (jobA.def.defName != jobB.def.defName) return false;
+            else if (jobA.targetA != jobB.targetA) return false;
+            else if (jobA.globalTarget != jobB.globalTarget) return false;
+            else return true;
         }
     }
 
@@ -499,6 +733,12 @@ namespace GameClient
             timeSpeedOrder._targetMapTicks = RimworldManager.GetGameTicks();
 
             return timeSpeedOrder;
+        }
+
+        public static void ReceiveJobOrder(OnlineActivityData data)
+        {
+            if (!CheckIfCanExecuteOrder()) return;
+            else OnlineActivityManagerJobs.SetPawnJobs(data);
         }
 
         public static void ReceiveCreationOrder(OnlineActivityData data)

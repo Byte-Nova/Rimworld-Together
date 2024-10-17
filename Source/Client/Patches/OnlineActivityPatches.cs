@@ -18,18 +18,19 @@ namespace GameClient
             else if (!OnlineActivityPatches.CheckIfShouldExecutePatch(___pawn, true, true, false)) return true;
             else
             {
-                if (OnlineActivityManager.factionPawns.Contains(___pawn))
-                {
-                    //This is our pawn and we prepare the packet for the other player
-
-                    return true;
-                }
-
+                // We ignore jobs from here if it's from our faction since it's handled from the job clock
+                if (OnlineActivityManager.factionPawns.Contains(___pawn)) return true;
                 else
                 {
-                    //This is not our pawn and we shouldn't handle him from here
+                    // IF COMING FROM HOST
+                    if (OnlineActivityQueues.queuedThing == ___pawn)
+                    {
+                        OnlineActivityQueues.SetThingQueue(null);
+                        return true;
+                    }
 
-                    return false;
+                    // IF PLAYER ASKING FOR
+                    else return false;
                 }
             }
         }
