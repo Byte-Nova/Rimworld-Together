@@ -27,6 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)misc\StringUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\AidData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\EventData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\OfflineActivityData.cs" />
