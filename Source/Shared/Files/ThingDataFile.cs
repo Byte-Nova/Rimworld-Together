@@ -20,6 +20,10 @@ namespace Shared
 
         public bool IsMinified;
 
+        public float RotProgress;
+
+        public float[] Color = new float[4];
+
         //Complex data
 
         public TransformComponent TransformComponent = new TransformComponent();
@@ -31,5 +35,9 @@ namespace Shared
         public XenogermComponent XenogermComponent = new XenogermComponent();
 
         public PlantComponent PlantComponent = new PlantComponent();
+
+        public BladelinkWeaponData BladelinkWeaponData = new BladelinkWeaponData();
+        
+        public EggData EggData = new EggData();
     }
 }

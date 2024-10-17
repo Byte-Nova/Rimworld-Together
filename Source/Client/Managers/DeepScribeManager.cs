@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using ICSharpCode.SharpZipLib;
+using HarmonyLib;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -1075,8 +1076,8 @@ namespace GameClient
         public static ThingDataFile ItemToString(Thing thing, int thingCount)
         {
             ThingDataFile thingData = new ThingDataFile();
+
             Thing toUse = null;
-            
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
@@ -1097,6 +1098,10 @@ namespace GameClient
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(toUse)) GetBladelinkWeaponDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsEgg(toUse)) GetEggDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsRottable(toUse)) GetRotDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingHasColor(thing)) GetColorDetails(toUse, thingData);;
             return thingData;
         }
 
@@ -1117,6 +1122,10 @@ namespace GameClient
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(thing)) SetXenoGermDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(thing)) SetBladelinkWeaponDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsEgg(thing)) SetEggDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsRottable(thing)) SetRotDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingHasColor(thing)) SetColorDetails(thing, thingData);
             return thing;
         }
 
@@ -1172,6 +1181,19 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
+        private static void GetRotDetails(Thing thing, ThingDataFile thingData) 
+        {
+            CompRottable comp = thing.TryGetComp<CompRottable>();
+            thingData.RotProgress = comp.RotProgress;
+        }
+        
+        private static void GetEggDetails(Thing thing, ThingDataFile thingData) 
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            thingData.EggData.ruinedPercent = (float)AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").GetValue(thing.TryGetComp<CompTemperatureRuinable>());
+            thingData.EggData.gestateProgress = (float)AccessTools.Field(typeof(CompHatcher), "gestateProgress").GetValue(comp);
+        }
+
         private static bool GetItemMinified(Thing thing, ThingDataFile thingData)
         {
             try
@@ -1182,6 +1204,14 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
             return false;
+        }
+
+        private static void GetColorDetails(Thing thing, ThingDataFile thingData) 
+        {
+            thingData.Color[0] = thing.DrawColor.r;
+            thingData.Color[1] = thing.DrawColor.g;
+            thingData.Color[2] = thing.DrawColor.b;
+            thingData.Color[3] = thing.DrawColor.a;
         }
 
         private static void GetGenepackDetails(Thing thing, ThingDataFile thingData)
@@ -1247,6 +1277,22 @@ namespace GameClient
             } catch (Exception e ) { Logger.Warning(e.ToString()); } 
         }
 
+        private static void GetBladelinkWeaponDetails(Thing thing, ThingDataFile thingDataFile)
+        {
+            try
+            {
+                ThingWithComps personaData = (ThingWithComps)thing;
+                List<string> defnames = new List<string>();
+                
+                CompBladelinkWeapon comp = personaData.GetComp<CompBladelinkWeapon>();
+                foreach (WeaponTraitDef trait in comp.TraitsListForReading) defnames.Add(trait.defName);
+                thingDataFile.BladelinkWeaponData.traitdefs = defnames.ToArray();
+
+                CompGeneratedNames name = personaData.TryGetComp<CompGeneratedNames>();
+                thingDataFile.BladelinkWeaponData.name = name.Name;
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
         //Setters
 
         private static Thing SetItem(ThingDataFile thingData)
@@ -1304,6 +1350,28 @@ namespace GameClient
                 thing.Rotation = new Rot4(thingData.TransformComponent.Rotation);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void SetRotDetails(Thing thing, ThingDataFile thingData) 
+        {
+            CompRottable comp = thing.TryGetComp<CompRottable>();
+            comp.RotProgress = thingData.RotProgress;
+        }
+
+        private static void SetColorDetails(Thing thing, ThingDataFile thingData) 
+        {
+            thing.SetColor(new UnityEngine.Color(
+                thingData.Color[0],
+                thingData.Color[1],
+                thingData.Color[2],
+                thingData.Color[3]));
+        }
+        
+        private static void SetEggDetails(Thing thing, ThingDataFile thingData)
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            AccessTools.Field(typeof(CompHatcher), "gestateProgress").SetValue(comp, thingData.EggData.gestateProgress);
+            AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").SetValue(thing.TryGetComp<CompTemperatureRuinable>(), thingData.EggData.ruinedPercent);
         }
 
         private static void SetGenepackDetails(Thing thing, ThingDataFile thingData)
@@ -1394,6 +1462,29 @@ namespace GameClient
                     genePacks.Add(genepack);
                 }
                 germData.Initialize(genePacks, thingDataFile.XenogermComponent.xenoTypeName, DefDatabase<XenotypeIconDef>.GetNamed(thingDataFile.XenogermComponent.iconDef));
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void SetBladelinkWeaponDetails(Thing thing, ThingDataFile thingDataFile)
+        {
+            try
+            {
+                ThingWithComps personaWeapon = (ThingWithComps)thing;
+                CompBladelinkWeapon comp = personaWeapon.GetComp<CompBladelinkWeapon>();
+
+                List<WeaponTraitDef> traitList = new List<WeaponTraitDef>();
+                foreach (string trait in thingDataFile.BladelinkWeaponData.traitdefs) 
+                {
+                    WeaponTraitDef traitDef = DefDatabase<WeaponTraitDef>.GetNamedSilentFail(trait);
+                    traitList.Add(traitDef);
+                }
+                AccessTools.Field(comp.GetType(), "traits").SetValue(comp, traitList);
+                
+                CompGeneratedNames name = personaWeapon.GetComp<CompGeneratedNames>();
+                Type type = name.GetType();
+                FieldInfo field = type.GetField("name", BindingFlags.NonPublic | BindingFlags.Instance);
+                field.SetValue(name, thingDataFile.BladelinkWeaponData.name);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1873,6 +1964,32 @@ namespace GameClient
             if(!ModsConfig.BiotechActive) return false;
 
             if (thing.def.defName == ThingDefOf.Xenogerm.defName) return true;
+            else return false;
+        }
+
+        public static bool CheckIfThingIsBladelinkWeapon(Thing thing)
+        {
+            if (!ModsConfig.RoyaltyActive) return false;
+
+            if (thing.TryGetComp<CompBladelinkWeapon>() != null) return true;
+            else return false;
+        }
+        
+        public static bool CheckIfThingIsEgg(Thing thing)
+        {
+            if (thing.TryGetComp<CompHatcher>() != null) return true;
+            else return false;
+        }
+
+        internal static bool CheckIfThingIsRottable(Thing thing)
+        {
+            if (thing.TryGetComp<CompRottable>() != null) return true;
+            else return false;
+        }
+
+        internal static bool CheckIfThingHasColor(Thing thing)
+        {
+            if (thing.TryGetComp<CompColorable>() != null) return true;
             else return false;
         }
     }

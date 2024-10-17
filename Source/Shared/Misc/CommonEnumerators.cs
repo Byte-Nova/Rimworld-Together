@@ -12,7 +12,7 @@ namespace Shared
 
         public enum SaveStepMode { Send, Receive, Reset }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods, Chat }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
@@ -70,9 +70,9 @@ namespace Shared
 
         public enum SaveMode { Disconnect, Autosave, Strict }
 
-        public enum UserColor { Normal, Admin, Console, Private, Discord }
+        public enum UserColor { Normal, Admin, Console, Private, Discord, Server }
 
-        public enum MessageColor { Normal, Admin, Console, Private, Discord }
+        public enum MessageColor { Normal, Admin, Console, Private, Discord, Server }
 
         public enum LoginMode { Login, Register }
 

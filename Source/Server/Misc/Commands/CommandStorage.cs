@@ -482,7 +482,7 @@ namespace GameServer
             }
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
-            ChatManager.BroadcastServerMessage(fullText);
+            ChatManager.BroadcastConsoleMessage(fullText);
 
             Logger.Title($"Sent chat: '{fullText}'");
         }
