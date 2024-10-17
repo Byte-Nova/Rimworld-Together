@@ -1097,7 +1097,7 @@ namespace GameClient
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
-            else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsXenogerm(toUse)) GetXenogermDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(toUse)) GetBladelinkWeaponDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsEgg(toUse)) GetEggDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsRottable(toUse)) GetRotDetails(thing, thingData);
@@ -1121,7 +1121,7 @@ namespace GameClient
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
-            else if (DeepScribeHelper.CheckIfThingIsXenoGerm(thing)) SetXenoGermDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsXenogerm(thing)) SetXenogermDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(thing)) SetBladelinkWeaponDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsEgg(thing)) SetEggDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsRottable(thing)) SetRotDetails(thing, thingData);
@@ -1266,7 +1266,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetXenoGermDetails(Thing thing, ThingDataFile thingDataFile) 
+        private static void GetXenogermDetails(Thing thing, ThingDataFile thingDataFile) 
         {
             try 
             {
@@ -1447,7 +1447,7 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetXenoGermDetails(Thing thing, ThingDataFile thingDataFile)
+        private static void SetXenogermDetails(Thing thing, ThingDataFile thingDataFile)
         {
             try
             {
@@ -1959,7 +1959,7 @@ namespace GameClient
             return false;
         }
 
-        public static bool CheckIfThingIsXenoGerm(Thing thing) 
+        public static bool CheckIfThingIsXenogerm(Thing thing) 
         {
             if(!ModsConfig.BiotechActive) return false;
 
