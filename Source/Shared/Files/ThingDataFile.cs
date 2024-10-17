@@ -36,6 +36,8 @@ namespace Shared
 
         public PlantData PlantData = new PlantData();
 
+        public BladelinkWeaponData BladelinkWeaponData = new BladelinkWeaponData();
+        
         public EggData EggData = new EggData();
     }
 }

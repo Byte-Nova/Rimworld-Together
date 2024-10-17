@@ -1006,6 +1006,7 @@ namespace GameClient
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(toUse)) GetBladelinkWeaponDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsEgg(toUse)) GetEggDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsRottable(toUse)) GetRotDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingHasColor(thing)) GetColorDetails(toUse, thingData);;
@@ -1031,6 +1032,7 @@ namespace GameClient
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(thing)) SetXenoGermDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsBladelinkWeapon(thing)) SetBladelinkWeaponDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsEgg(thing)) SetEggDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsRottable(thing)) SetRotDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingHasColor(thing)) SetColorDetails(thing, thingData);
@@ -1181,6 +1183,22 @@ namespace GameClient
             } catch (Exception e ) { Logger.Warning(e.ToString()); } 
         }
 
+        private static void GetBladelinkWeaponDetails(Thing thing, ThingDataFile thingDataFile)
+        {
+            try
+            {
+                ThingWithComps personaData = (ThingWithComps)thing;
+                List<string> defnames = new List<string>();
+                
+                CompBladelinkWeapon comp = personaData.GetComp<CompBladelinkWeapon>();
+                foreach (WeaponTraitDef trait in comp.TraitsListForReading) defnames.Add(trait.defName);
+                thingDataFile.BladelinkWeaponData.traitdefs = defnames.ToArray();
+
+                CompGeneratedNames name = personaData.TryGetComp<CompGeneratedNames>();
+                thingDataFile.BladelinkWeaponData.name = name.Name;
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
         //Setters
 
         private static Thing SetItem(ThingDataFile thingData)
@@ -1357,6 +1375,29 @@ namespace GameClient
                     genePacks.Add(genepack);
                 }
                 germData.Initialize(genePacks, thingDataFile.XenoGermData.xenoTypeName, DefDatabase<XenotypeIconDef>.GetNamed(thingDataFile.XenoGermData.iconDef));
+            }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void SetBladelinkWeaponDetails(Thing thing, ThingDataFile thingDataFile)
+        {
+            try
+            {
+                ThingWithComps personaWeapon = (ThingWithComps)thing;
+                CompBladelinkWeapon comp = personaWeapon.GetComp<CompBladelinkWeapon>();
+
+                List<WeaponTraitDef> traitList = new List<WeaponTraitDef>();
+                foreach (string trait in thingDataFile.BladelinkWeaponData.traitdefs) 
+                {
+                    WeaponTraitDef traitDef = DefDatabase<WeaponTraitDef>.GetNamedSilentFail(trait);
+                    traitList.Add(traitDef);
+                }
+                AccessTools.Field(comp.GetType(), "traits").SetValue(comp, traitList);
+                
+                CompGeneratedNames name = personaWeapon.GetComp<CompGeneratedNames>();
+                Type type = name.GetType();
+                FieldInfo field = type.GetField("name", BindingFlags.NonPublic | BindingFlags.Instance);
+                field.SetValue(name, thingDataFile.BladelinkWeaponData.name);
             }
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
@@ -1845,6 +1886,14 @@ namespace GameClient
             else return false;
         }
 
+        public static bool CheckIfThingIsBladelinkWeapon(Thing thing)
+        {
+            if (!ModsConfig.RoyaltyActive) return false;
+
+            if (thing.TryGetComp<CompBladelinkWeapon>() != null) return true;
+            else return false;
+        }
+        
         public static bool CheckIfThingIsEgg(Thing thing)
         {
             if (thing.TryGetComp<CompHatcher>() != null) return true;
