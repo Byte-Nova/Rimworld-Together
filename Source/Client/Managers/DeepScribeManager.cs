@@ -1003,6 +1003,8 @@ namespace GameClient
 
             GetItemRotation(toUse, thingData);
 
+            GetItemColor(toUse, thingData);
+
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
@@ -1025,6 +1027,8 @@ namespace GameClient
             SetItemRotation(thing, thingData);
 
             SetItemMinified(thing, thingData);
+
+            SetItemColor(thing, thingData);
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
@@ -1098,6 +1102,14 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
             return false;
+        }
+
+        private static void GetItemColor(Thing thing, ThingDataFile thingData) 
+        {
+            thingData.Color[0] = thing.DrawColor.r;
+            thingData.Color[1] = thing.DrawColor.g;
+            thingData.Color[2] = thing.DrawColor.b;
+            thingData.Color[3] = thing.DrawColor.a;
         }
 
         private static void GetGenepackDetails(Thing thing, ThingDataFile thingData)
@@ -1219,6 +1231,15 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
+        private static void SetItemColor(Thing thing, ThingDataFile thingData) 
+        {
+            thing.SetColor(new UnityEngine.Color(
+                thingData.Color[0],
+                thingData.Color[1],
+                thingData.Color[2],
+                thingData.Color[3]));
+        }
+        
         private static void SetEggDetails(Thing thing, ThingDataFile thingData)
         {
             CompHatcher comp = thing.TryGetComp<CompHatcher>();
