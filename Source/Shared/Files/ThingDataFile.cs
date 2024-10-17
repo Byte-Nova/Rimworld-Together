@@ -22,6 +22,8 @@ namespace Shared
 
         public int Rotation;
 
+        public float RotProgressInt;
+
         //Complex data
 
         public GenepackData GenepackData = new GenepackData();

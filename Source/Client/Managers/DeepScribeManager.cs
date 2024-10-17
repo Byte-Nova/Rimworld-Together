@@ -1002,6 +1002,8 @@ namespace GameClient
 
             GetItemRotation(toUse, thingData);
 
+            GetItemRottable(toUse, thingData);
+
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
@@ -1024,6 +1026,8 @@ namespace GameClient
             SetItemRotation(thing, thingData);
 
             SetItemMinified(thing, thingData);
+
+            SetItemRottable(thing, thingData);
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
@@ -1077,6 +1081,15 @@ namespace GameClient
         {
             try { thingData.Rotation = thing.Rotation.AsInt; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void GetItemRottable(Thing thing, ThingDataFile thingData) 
+        {
+            CompRottable comp = thing.TryGetComp<CompRottable>();
+            if(comp != null) 
+            {
+                thingData.RotProgressInt = comp.RotProgress;
+            }
         }
 
         private static bool GetItemMinified(Thing thing, ThingDataFile thingData)
@@ -1210,6 +1223,15 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
+        private static void SetItemRottable(Thing thing, ThingDataFile thingData) 
+        {
+            CompRottable comp = thing.TryGetComp<CompRottable>();
+            if (comp != null)
+            {
+                Logger.Warning(thingData.RotProgressInt.ToString());
+                comp.RotProgress = thingData.RotProgressInt;
+            }
+        }
         private static void SetItemMinified(Thing thing, ThingDataFile thingData)
         {
             if (thingData.IsMinified)
