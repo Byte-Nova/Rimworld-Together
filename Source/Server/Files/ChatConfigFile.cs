@@ -5,7 +5,7 @@
     {
         public bool EnableMoTD = false;
         
-        public string MessageOfTheDay = "";
+        public string MessageOfTheDay = "Remember to drink water";
         
         public bool LoginNotifications = false;
         

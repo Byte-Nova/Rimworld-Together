@@ -89,7 +89,7 @@ namespace GameServer
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
                 Logger.Message($"[Disconnect] > {client.userFile.Username} | {client.userFile.SavedIP}");
-                if (Master.chatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} left the server!");
+                if (Master.chatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} has left the server!");
             }
             catch { Logger.Warning($"Error disconnecting user {client.userFile.Username}, this will cause memory overhead"); }
         }
