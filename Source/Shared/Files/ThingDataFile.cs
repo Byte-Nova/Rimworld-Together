@@ -22,6 +22,8 @@ namespace Shared
 
         public int Rotation;
 
+        public float RotProgress;
+
         public float[] Color = new float[4];
 
         //Complex data
