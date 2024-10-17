@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -1005,12 +1006,12 @@ namespace GameClient
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsEgg(thing)) GetEggDetails(thing, thingData);
             return thingData;
         }
 
         public static Thing StringToItem(ThingDataFile thingData)
         {
-
             Thing thing = SetItem(thingData);
 
             SetItemQuantity(thing, thingData);
@@ -1028,6 +1029,7 @@ namespace GameClient
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(thing)) SetXenoGermDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsEgg(thing)) SetEggDetails(thing, thingData);
             return thing;
         }
 
@@ -1077,6 +1079,13 @@ namespace GameClient
         {
             try { thingData.Rotation = thing.Rotation.AsInt; }
             catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void GetEggDetails(Thing thing, ThingDataFile thingData) 
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            thingData.EggData.ruinedPercent = (float)AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").GetValue(thing.TryGetComp<CompTemperatureRuinable>());
+            thingData.EggData.gestateProgress = (float)AccessTools.Field(typeof(CompHatcher), "gestateProgress").GetValue(comp);
         }
 
         private static bool GetItemMinified(Thing thing, ThingDataFile thingData)
@@ -1208,6 +1217,13 @@ namespace GameClient
         {
             try { thing.Rotation = new Rot4(thingData.Rotation); }
             catch (Exception e) { Logger.Warning(e.ToString()); }
+        }
+
+        private static void SetEggDetails(Thing thing, ThingDataFile thingData)
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            AccessTools.Field(typeof(CompHatcher), "gestateProgress").SetValue(comp, thingData.EggData.gestateProgress);
+            AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").SetValue(thing.TryGetComp<CompTemperatureRuinable>(), thingData.EggData.ruinedPercent);
         }
 
         private static void SetItemMinified(Thing thing, ThingDataFile thingData)
@@ -1793,6 +1809,12 @@ namespace GameClient
             if(!ModsConfig.BiotechActive) return false;
 
             if (thing.def.defName == ThingDefOf.Xenogerm.defName) return true;
+            else return false;
+        }
+
+        public static bool CheckIfThingIsEgg(Thing thing)
+        {
+            if (thing.TryGetComp<CompHatcher>() != null) return true;
             else return false;
         }
     }
