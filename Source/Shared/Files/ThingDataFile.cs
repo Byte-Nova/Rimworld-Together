@@ -22,7 +22,9 @@ namespace Shared
 
         public int Rotation;
 
-        public float RotProgressInt;
+        public float RotProgress;
+
+        public float[] Color = new float[4];
 
         //Complex data
 
@@ -33,5 +35,7 @@ namespace Shared
         public XenoGermData XenoGermData = new XenoGermData();
 
         public PlantData PlantData = new PlantData();
+
+        public EggData EggData = new EggData();
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 using RimWorld;
 using Shared;
 using UnityEngine.Assertions.Must;
@@ -983,8 +984,8 @@ namespace GameClient
         public static ThingDataFile ItemToString(Thing thing, int thingCount)
         {
             ThingDataFile thingData = new ThingDataFile();
-            Thing toUse = null;
             
+            Thing toUse = null;
             if (GetItemMinified(thing, thingData)) toUse = thing.GetInnerIfMinified();
             else toUse = thing;
 
@@ -1001,18 +1002,19 @@ namespace GameClient
             GetItemPosition(toUse, thingData);
 
             GetItemRotation(toUse, thingData);
-
-            GetItemRottable(toUse, thingData);
+            
+            GetItemColor(toUse, thingData);
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(toUse)) GetGenepackDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(toUse)) GetBookDetails(toUse, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(toUse)) GetXenoGermDetails(toUse, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsEgg(toUse)) GetEggDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsRottable(toUse)) GetItemRotDetails(thing, thingData);
             return thingData;
         }
 
         public static Thing StringToItem(ThingDataFile thingData)
         {
-
             Thing thing = SetItem(thingData);
 
             SetItemQuantity(thing, thingData);
@@ -1027,11 +1029,14 @@ namespace GameClient
 
             SetItemMinified(thing, thingData);
 
-            SetItemRottable(thing, thingData);
+            SetItemRotDetails(thing, thingData);
+            
+            SetItemColor(thing, thingData);
 
             if (DeepScribeHelper.CheckIfThingIsGenepack(thing)) SetGenepackDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsBook(thing)) SetBookDetails(thing, thingData);
             else if (DeepScribeHelper.CheckIfThingIsXenoGerm(thing)) SetXenoGermDetails(thing, thingData);
+            else if (DeepScribeHelper.CheckIfThingIsEgg(thing)) SetEggDetails(thing, thingData);
             return thing;
         }
 
@@ -1083,13 +1088,17 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void GetItemRottable(Thing thing, ThingDataFile thingData) 
+        private static void GetItemRotDetails(Thing thing, ThingDataFile thingData) 
         {
             CompRottable comp = thing.TryGetComp<CompRottable>();
-            if(comp != null) 
-            {
-                thingData.RotProgressInt = comp.RotProgress;
-            }
+            thingData.RotProgress = comp.RotProgress;
+        }
+        
+        private static void GetEggDetails(Thing thing, ThingDataFile thingData) 
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            thingData.EggData.ruinedPercent = (float)AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").GetValue(thing.TryGetComp<CompTemperatureRuinable>());
+            thingData.EggData.gestateProgress = (float)AccessTools.Field(typeof(CompHatcher), "gestateProgress").GetValue(comp);
         }
 
         private static bool GetItemMinified(Thing thing, ThingDataFile thingData)
@@ -1102,6 +1111,14 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
 
             return false;
+        }
+
+        private static void GetItemColor(Thing thing, ThingDataFile thingData) 
+        {
+            thingData.Color[0] = thing.DrawColor.r;
+            thingData.Color[1] = thing.DrawColor.g;
+            thingData.Color[2] = thing.DrawColor.b;
+            thingData.Color[3] = thing.DrawColor.a;
         }
 
         private static void GetGenepackDetails(Thing thing, ThingDataFile thingData)
@@ -1223,15 +1240,28 @@ namespace GameClient
             catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
-        private static void SetItemRottable(Thing thing, ThingDataFile thingData) 
+        private static void SetItemRotDetails(Thing thing, ThingDataFile thingData) 
         {
             CompRottable comp = thing.TryGetComp<CompRottable>();
-            if (comp != null)
-            {
-                Logger.Warning(thingData.RotProgressInt.ToString());
-                comp.RotProgress = thingData.RotProgressInt;
-            }
+            comp.RotProgress = thingData.RotProgress;
         }
+
+        private static void SetItemColor(Thing thing, ThingDataFile thingData) 
+        {
+            thing.SetColor(new UnityEngine.Color(
+                thingData.Color[0],
+                thingData.Color[1],
+                thingData.Color[2],
+                thingData.Color[3]));
+        }
+        
+        private static void SetEggDetails(Thing thing, ThingDataFile thingData)
+        {
+            CompHatcher comp = thing.TryGetComp<CompHatcher>();
+            AccessTools.Field(typeof(CompHatcher), "gestateProgress").SetValue(comp, thingData.EggData.gestateProgress);
+            AccessTools.Field(typeof(CompTemperatureRuinable), "ruinedPercent").SetValue(thing.TryGetComp<CompTemperatureRuinable>(), thingData.EggData.ruinedPercent);
+        }
+
         private static void SetItemMinified(Thing thing, ThingDataFile thingData)
         {
             if (thingData.IsMinified)
@@ -1815,6 +1845,18 @@ namespace GameClient
             if(!ModsConfig.BiotechActive) return false;
 
             if (thing.def.defName == ThingDefOf.Xenogerm.defName) return true;
+            else return false;
+        }
+
+        public static bool CheckIfThingIsEgg(Thing thing)
+        {
+            if (thing.TryGetComp<CompHatcher>() != null) return true;
+            else return false;
+        }
+
+        internal static bool CheckIfThingIsRottable(Thing thing)
+        {
+            if (thing.TryGetComp<CompRottable>() != null) return true;
             else return false;
         }
     }
