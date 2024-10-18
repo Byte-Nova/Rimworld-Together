@@ -82,7 +82,7 @@ namespace GameServer
             
             if (Master.chatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.chatConfig.MessageOfTheDay}");
             
-            if (Master.chatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} has logged in!");
+            if (Master.chatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} has joined the server!");
 
             if (WorldManager.CheckIfWorldExists())
             {
