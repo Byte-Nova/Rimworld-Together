@@ -853,8 +853,6 @@ namespace GameClient
                 {
                     OnlineActivityQueues.SetThingQueue(toTarget);
 
-                    // FIX ME
-                    // Currently doesn't target WholeBody
                     BodyPartRecord bodyPartRecord = toTarget.RaceProps.body.AllParts.FirstOrDefault(fetch => fetch.def.defName == data._hediffOrder._hediffComponent.PartDefName &&
                         fetch.Label == data._hediffOrder._hediffComponent.PartLabel);
 
@@ -883,6 +881,9 @@ namespace GameClient
 
                     else if (data._hediffOrder._applyMode == OnlineActivityApplyMode.Remove)
                     {
+                        // FIX ME
+                        // Currently doesn't target WholeBody
+
                         Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data._hediffOrder._hediffComponent.DefName &&
                             fetch.Part.def.defName == bodyPartRecord.def.defName && fetch.Part.Label == bodyPartRecord.Label);
 
