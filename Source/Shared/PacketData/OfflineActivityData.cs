@@ -10,6 +10,6 @@ namespace Shared
 
         public int _targetTile;
         
-        public MapData _mapData;
+        public MapFile _mapFile;
     }
 }

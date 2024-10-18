@@ -78,7 +78,11 @@ namespace GameServer
 
             GlobalDataManager.SendServerGlobalData(client);
 
-            foreach(string str in ChatManager.defaultJoinMessages) ChatManager.SendSystemMessage(client, str);
+            foreach(string str in ChatManager.defaultJoinMessages) ChatManager.SendConsoleMessage(client, str);
+            
+            if (Master.chatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.chatConfig.MessageOfTheDay}");
+            
+            if (Master.chatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} has joined the server!");
 
             if (WorldManager.CheckIfWorldExists())
             {

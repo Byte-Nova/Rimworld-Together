@@ -16,7 +16,7 @@ namespace GameServer
 
         [NonSerialized] public Listener listener;
 
-        [NonSerialized] public ServerClient inVisitWith;
+        [NonSerialized] public ServerClient activityPartner;
 
         public ServerClient(TcpClient tcp)
         {

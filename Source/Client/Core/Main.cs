@@ -20,7 +20,6 @@ namespace GameClient
             static RimworldTogether() 
             {
                 ApplyHarmonyPathches();
-
                 PrepareCulture();
                 PreparePaths();
                 CreateUnityDispatcher();
@@ -28,10 +27,7 @@ namespace GameClient
                 FactionValues.SetPlayerFactionDefs();
                 CaravanManagerHelper.SetCaravanDefs();
                 PreferenceManager.LoadClientPreferences();
-
-                //FIXME
-                //Causes issues to load sometimes
-                //CompatibilityManager.LoadAllPatchedAssemblies();
+                CompatibilityManager.LoadAllPatchedAssemblies();
             }
         }
 
@@ -54,21 +50,16 @@ namespace GameClient
             Master.mainPath = GenFilePaths.SaveDataFolderPath;
             Master.modFolderPath = Path.Combine(Master.mainPath, "RimWorld Together");
 
+            Master.modAssemblyPath = Path.Combine(LoadedModManager.GetMod<Mod>().Content.ModMetaData.RootDir.FullName, "Current", "Assemblies");
+            Master.compatibilityPatchesFolderPath = Path.Combine(Master.modAssemblyPath, "Patches");
+
             Master.connectionDataPath = Path.Combine(Master.modFolderPath, "ConnectionData.json");
             Master.clientPreferencesPath = Path.Combine(Master.modFolderPath, "Preferences.json");
             Master.loginDataPath = Path.Combine(Master.modFolderPath, "LoginData.json");
             Master.savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
-            //FIXME
-            //Causes issues to load sometimes            
-            // Master.modAssemblyPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).ToString();
-            // Master.compatibilityPatchesFolderPath = Path.Combine(Master.modAssemblyPath, "Patches");
-
             if (!Directory.Exists(Master.modFolderPath)) Directory.CreateDirectory(Master.modFolderPath);
-
-            //FIXME
-            //Causes issues to load sometimes
-            // if (!Directory.Exists(Master.compatibilityPatchesFolderPath)) Directory.CreateDirectory(Master.compatibilityPatchesFolderPath);
+            if (!Directory.Exists(Master.compatibilityPatchesFolderPath)) Directory.CreateDirectory(Master.compatibilityPatchesFolderPath);
         }
 
         public static void CreateUnityDispatcher()

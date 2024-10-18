@@ -103,10 +103,10 @@ namespace GameServer
             else
             {
                 //Check if thing is book to handle differently
-                if (thingData.BookData.title != "null") Master.marketValues.MarketStock.Add(thingData);
+                if (thingData.BookComponent.Title != "null") Master.marketValues.MarketStock.Add(thingData);
 
                 //Check if thing is genepack to handle differently
-                else if (thingData.GenepackData.genepackDefs.Count != 0) Master.marketValues.MarketStock.Add(thingData);
+                else if (thingData.GenepackComponent.GenepackDefs.Count != 0) Master.marketValues.MarketStock.Add(thingData);
 
                 //Act as if normal thing
                 else

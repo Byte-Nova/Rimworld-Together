@@ -12,7 +12,7 @@ namespace Shared
 
         public enum SaveStepMode { Send, Receive, Reset }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods, Chat }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
@@ -48,7 +48,7 @@ namespace Shared
 
         public enum OfflineActivityStepMode { Request, Deny, Unavailable }
 
-        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, Kill, TimeSpeed, GameCondition, Weather, Stop }
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Ready, Unavailable, Stop, Jobs, Create, Destroy, Damage, Hediff, GameCondition, Weather, TimeSpeed }
 
         public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 
@@ -70,9 +70,9 @@ namespace Shared
 
         public enum SaveMode { Disconnect, Autosave, Strict }
 
-        public enum UserColor { Normal, Admin, Console, Private, Discord }
+        public enum UserColor { Normal, Admin, Console, Private, Discord, Server }
 
-        public enum MessageColor { Normal, Admin, Console, Private, Discord }
+        public enum MessageColor { Normal, Admin, Console, Private, Discord, Server }
 
         public enum LoginMode { Login, Register }
 

@@ -66,6 +66,7 @@ namespace GameClient
         }
 
         //Disconnects client from the server
+        
         public static void DisconnectFromServer()
         {
             CleanNetworkVariables();
