@@ -8,9 +8,13 @@ namespace GameClient
 {
     public static class SessionValues
     {
-        public static OnlineActivityType currentRealTimeEvent;
+        public static OnlineActivityType currentRealTimeActivity;
 
         public static OfflineActivityType latestOfflineActivity;
+
+        public static bool isActivityHost;
+
+        public static bool isActivityReady;
 
         public static Settlement chosenSettlement;
 
@@ -33,14 +37,20 @@ namespace GameClient
             actionValues = serverGlobalData._actionValues;
         }
 
-        public static void ToggleOnlineFunction(OnlineActivityType type) { currentRealTimeEvent = type; }
+        public static void ToggleOnlineActivity(OnlineActivityType type) { currentRealTimeActivity = type; }
 
-        public static void ToggleOfflineFunction(OfflineActivityType type) { latestOfflineActivity = type; }
+        public static void ToggleOfflineActivity(OfflineActivityType type) { latestOfflineActivity = type; }
+
+        public static void ToggleOnlineActivityHost(bool type) { isActivityHost = type; }
+
+        public static void ToggleOnlineActivityReady(bool type) { isActivityReady = type; }
         
         public static void CleanValues()
         {
-            ToggleOnlineFunction(OnlineActivityType.None);
-            ToggleOfflineFunction(OfflineActivityType.None);
+            ToggleOnlineActivity(OnlineActivityType.None);
+            ToggleOfflineActivity(OfflineActivityType.None);
+            ToggleOnlineActivityHost(false);
+            ToggleOnlineActivityReady(false);
 
             chosenSettlement = null;
             chosenCaravan = null;

@@ -12,12 +12,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Map\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\OnlineActivities\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\PlanetGenerator\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Pollution\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Components\Rivers\*.cs" />

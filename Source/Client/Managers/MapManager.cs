@@ -24,18 +24,22 @@ namespace GameClient
 
         private static void SendMapToServerSingle(Map map)
         {
-            MapData mapData = ParseMap(map, true, true, true, true);
+            MapData mapData = new MapData();
+            mapData._mapFile = ParseMap(map, true, true, true, true);
+
             Packet packet = Packet.CreatePacketFromObject(nameof(MapManager), mapData);
             Network.listener.EnqueuePacket(packet);
         }
 
         //Parses a desired map into an usable mod class
 
-        public static MapData ParseMap(Map map, bool includeThings, bool includeHumans, bool includeAnimals, bool includeMods)
+        public static MapFile ParseMap(Map map, bool includeThings, bool includeHumans, bool includeAnimals, bool includeMods)
         {
-            MapData mapData = MapScribeManager.MapToString(map, includeThings, includeThings, includeHumans, includeHumans, includeAnimals, includeAnimals);
-            if (includeMods) mapData._mapMods = ModManagerHelper.GetRunningModList().UnsortedMods;
-            return mapData;
+            MapFile mapFile = MapScribeManager.MapToString(map, includeThings, includeThings, includeHumans, includeHumans, includeAnimals, includeAnimals);
+
+            if (includeMods) mapFile.Mods = ModManagerHelper.GetRunningModList();
+
+            return mapFile;
         }
     }
 }

@@ -28,5 +28,7 @@ namespace Shared
         public int EnforcedGameSpeed = 0;
 
         public int SpyCost = 100;
+
+        public int OnlineActivityTickMS = 1000;
     }
 }

@@ -6,6 +6,8 @@ namespace Shared
 
     public class ThingDataFile
     {
+        public string ID;
+
         public string DefName;
 
         public string MaterialDefName;
@@ -18,23 +20,21 @@ namespace Shared
 
         public bool IsMinified;
 
-        public float[] Position;
-
-        public int Rotation;
-
         public float RotProgress;
 
         public float[] Color = new float[4];
 
         //Complex data
 
-        public GenepackData GenepackData = new GenepackData();
+        public TransformComponent TransformComponent = new TransformComponent();
 
-        public BookData BookData = new BookData();
+        public GenepackComponent GenepackComponent = new GenepackComponent();
 
-        public XenoGermData XenoGermData = new XenoGermData();
+        public BookComponent BookComponent = new BookComponent();
 
-        public PlantData PlantData = new PlantData();
+        public XenogermComponent XenogermComponent = new XenogermComponent();
+
+        public PlantComponent PlantComponent = new PlantComponent();
 
         public BladelinkWeaponData BladelinkWeaponData = new BladelinkWeaponData();
         

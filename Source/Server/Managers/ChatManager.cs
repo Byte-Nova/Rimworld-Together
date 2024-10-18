@@ -176,27 +176,27 @@ namespace GameServer
 
         private static readonly ChatCommand helpCommand = new ChatCommand("/help", 0,
             "Shows a list of all available commands",
-            ChatHelpCommandAction);
+            HelpCommandAction);
 
         private static readonly ChatCommand toolsCommand = new ChatCommand("/tools", 0,
             "Shows a list of all available chat tools",
-            ChatToolsCommandAction);
+            ToolsCommandAction);
 
         private static readonly ChatCommand pingCommand = new ChatCommand("/ping", 0,
             "Checks if the connection to the server is working",
-            ChatPingCommandAction);
+            PingCommandAction);
 
         private static readonly ChatCommand disconnectCommand = new ChatCommand("/dc", 0,
             "Forcefully disconnects you from the server",
-            ChatDisconnectCommandAction);
+            DisconnectCommandAction);
 
-        private static readonly ChatCommand stopOnlineActivityCommand = new ChatCommand("/sv", 0,
-            "Forcefully disconnects you from a visit",
-            ChatStopOnlineActivityCommandAction);
+        private static readonly ChatCommand stopOnlineActivityCommand = new ChatCommand("/stopactivity", 0,
+            "Forcefully disconnects you from an activity",
+            StopOnlineActivityCommandAction);
         
         private static readonly ChatCommand privateMessage = new ChatCommand("/w", 0,
             "Sends a private message to a specific user",
-            ChatPrivateMessageCommandAction);
+            PrivateMessageCommandAction);
 
         public static readonly ChatCommand[] chatCommands = new ChatCommand[]
         {
@@ -208,7 +208,7 @@ namespace GameServer
             privateMessage
         };
 
-        private static void ChatHelpCommandAction()
+        private static void HelpCommandAction()
         {
             if (targetClient == null) return;
             else
@@ -220,7 +220,7 @@ namespace GameServer
             }
         }
 
-        private static void ChatToolsCommandAction()
+        private static void ToolsCommandAction()
         {
             if (targetClient == null) return;
             else
@@ -232,25 +232,25 @@ namespace GameServer
             }
         }
 
-        private static void ChatPingCommandAction()
+        private static void PingCommandAction()
         {
             if (targetClient == null) return;
             else ChatManager.SendConsoleMessage(targetClient, "Pong!");
         }
 
-        private static void ChatDisconnectCommandAction()
+        private static void DisconnectCommandAction()
         {
             if (targetClient == null) return;
             else targetClient.listener.disconnectFlag = true;
         }
 
-        private static void ChatStopOnlineActivityCommandAction()
+        private static void StopOnlineActivityCommandAction()
         {
             if (targetClient == null) return;
-            else OnlineActivityManager.SendVisitStop(targetClient);
+            else OnlineActivityManager.StopActivity(targetClient);
         }
 
-        private static void ChatPrivateMessageCommandAction()
+        private static void PrivateMessageCommandAction()
         {
             if (targetClient == null) return;
             else

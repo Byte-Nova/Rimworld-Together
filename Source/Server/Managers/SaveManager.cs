@@ -144,8 +144,8 @@ namespace GameServer
             catch { Logger.Warning($"Failed to find {username}'s save"); }
 
             //Delete map files
-            MapData[] userMaps = MapManager.GetAllMapsFromUsername(username);
-            foreach (MapData map in userMaps) MapManager.DeleteMap(map);
+            MapFile[] userMaps = MapManager.GetAllMapsFromUsername(username);
+            foreach (MapFile map in userMaps) MapManager.DeleteMap(map);
 
             //Delete site files
             SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
