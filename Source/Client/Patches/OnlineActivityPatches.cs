@@ -44,8 +44,8 @@ namespace GameClient
         {
             if (!OnlineActivityPatches.CheckIfCanExecutePatch(__instance.Map)) return true;
             else if (OnlineActivityPatches.CheckIfIgnoreThingSync(__instance)) return true;
-            else if (__instance is Corpse) return true;
             else if (!OnlineActivityPatches.CheckInverseIfShouldPatch(__instance, true, true, true)) return true;
+            else if (__instance is Corpse) return true;
             else
             {
                 if (SessionValues.isActivityHost)
