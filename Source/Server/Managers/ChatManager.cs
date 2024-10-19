@@ -1,5 +1,7 @@
+using System.Reflection.Metadata.Ecma335;
 using Shared;
 using System.Text;
+using Discord.Interactions;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -41,13 +43,16 @@ namespace GameServer
         {
             commandSemaphore.WaitOne();
 
-            ChatCommand toFind = ChatManagerHelper.GetCommandFromName(command[0]);
+            ChatCommand toFind = ChatManagerHelper.GetCommandFromPrefix(command[0]);
             if (toFind == null) SendConsoleMessage(client, "Command was not found.");
             else
             {
                 ChatCommandManager.targetClient = client;
                 ChatCommandManager.command = command;
-                toFind.commandAction.Invoke();
+                if (toFind.adminOnly && !client.userFile.IsAdmin)
+                    SendConsoleMessage(client, "You should be a admin to execute this command.");
+                else
+                    toFind.commandAction.Invoke();
             }
 
             string chatCommand = "";
@@ -174,49 +179,93 @@ namespace GameServer
         public static ServerClient? targetClient;
         public static string[]? command;
 
+        private static readonly ChatCommand listCommand = new ChatCommand("/list", 0,
+            "Shows a list of all available commands", false, ListCommandAction);
+
         private static readonly ChatCommand helpCommand = new ChatCommand("/help", 0,
-            "Shows a list of all available commands",
-            HelpCommandAction);
+            "Shows a list of all available commands", false,
+            HelpCommandAction, "{command}");
 
         private static readonly ChatCommand toolsCommand = new ChatCommand("/tools", 0,
-            "Shows a list of all available chat tools",
+            "Shows a list of all available chat tools", false,
             ToolsCommandAction);
 
         private static readonly ChatCommand pingCommand = new ChatCommand("/ping", 0,
-            "Checks if the connection to the server is working",
+            "Checks if the connection to the server is working", false,
             PingCommandAction);
 
         private static readonly ChatCommand disconnectCommand = new ChatCommand("/dc", 0,
-            "Forcefully disconnects you from the server",
+            "Forcefully disconnects you from the server", false,
             DisconnectCommandAction);
 
         private static readonly ChatCommand stopOnlineActivityCommand = new ChatCommand("/stopactivity", 0,
-            "Forcefully disconnects you from an activity",
+            "Forcefully disconnects you from an activity", false,
             StopOnlineActivityCommandAction);
         
         private static readonly ChatCommand privateMessage = new ChatCommand("/w", 0,
-            "Sends a private message to a specific user",
-            PrivateMessageCommandAction);
+            "Sends a private message to a specific user", false,
+            PrivateMessageCommandAction, "{username} {message}");
+        
+        private static readonly ChatCommand kickCommand = new ChatCommand("/kick", 0,
+            "Kicks the selected player from the server", true, KickCommandAction, "{username}");
+        
+        private static readonly ChatCommand banCommand = new ChatCommand("/ban", 0,
+            "Bans the selected player from the server", true, BanCommandAction, "{username}");
+        
+        private static readonly ChatCommand pardonCommand = new ChatCommand("/pardon", 0,
+            "Pardons the selected player from the server", true, PardonCommandAction, "{username}");
 
+        private static readonly ChatCommand doSiteRewardsCommand = new ChatCommand("/siterewards", 0,
+            "Forces site rewards to run", true, DoSiteRewardsAction);
+            
         public static readonly ChatCommand[] chatCommands = new ChatCommand[]
         {
+            listCommand,
             helpCommand,
             toolsCommand,
             pingCommand,
             disconnectCommand,
             stopOnlineActivityCommand,
-            privateMessage
+            privateMessage,
+            kickCommand,
+            banCommand,
+            pardonCommand,
+            doSiteRewardsCommand,
         };
+
+        private static void ListCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                List<string> messagesToSend = new List<string> { "List of available commands:" };
+                foreach (ChatCommand command in chatCommands)
+                {
+                    if (!command.adminOnly)
+                        messagesToSend.Add($"{command.prefix} - {command.description}");
+                    if (targetClient.userFile.IsAdmin && command.adminOnly)
+                        messagesToSend.Add($"{command.prefix} - {command.description}");
+                }
+                foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
+            }
+        }
 
         private static void HelpCommandAction()
         {
             if (targetClient == null) return;
             else
             {
-                List<string> messagesToSend = new List<string> { "List of available commands:" };
-                foreach (ChatCommand command in chatCommands) messagesToSend.Add($"{command.prefix} - {command.description}");
+                ChatCommand toGetCommand = ChatManagerHelper.GetCommandFromName(command[1]);
+                if (toGetCommand == null) ChatManager.SendConsoleMessage(targetClient, "Invalid arguments");
+                else
+                {
+                    List<string> messagesToSend = new List<string> {$"{toGetCommand.prefix}", $"Description: {toGetCommand.description}" };
+                    if (toGetCommand.arguments.Length > 1)
+                        messagesToSend.Add($"Syntax: {toGetCommand.prefix} {toGetCommand.arguments}");
+                    foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
+                }
 
-                foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
+                
             }
         }
 
@@ -290,6 +339,59 @@ namespace GameServer
                 }
             }
         }
+
+        private static void KickCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                ServerClient toFind = ChatManagerHelper.GetUserFromName(targetClient.userFile.Username);
+                if (toFind == null) ChatManager.SendConsoleMessage(targetClient, "User was not found.");
+                else
+                {
+                    toFind.listener.disconnectFlag = true;
+                    ChatManager.SendConsoleMessage(targetClient, $"{toFind.userFile.Username} has been kicked.");
+                }
+            }
+        }
+
+        private static void BanCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                ServerClient toFind = ChatManagerHelper.GetUserFromName(targetClient.userFile.Username);
+                if (toFind == null) ChatManager.SendConsoleMessage(targetClient, "User was not found.");
+                else
+                {
+                    UserManager.BanPlayerFromName(toFind.userFile.Username);
+                    ChatManager.SendConsoleMessage(targetClient, $"{toFind.userFile.Username} has been banned.");
+                }
+            }
+        }
+        private static void PardonCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                ServerClient toFind = ChatManagerHelper.GetUserFromName(targetClient.userFile.Username);
+                if (toFind == null) ChatManager.SendConsoleMessage(targetClient, "User was not found.");
+                else
+                {
+                    UserManager.PardonPlayerFromName(toFind.userFile.Username);
+                    ChatManager.SendConsoleMessage(targetClient, $"{toFind.userFile.Username} has been pardoned.");
+                }
+            }
+        }
+        private static void DoSiteRewardsAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                SiteManager.SiteRewardTick();
+                ChatManager.SendConsoleMessage(targetClient, "Forced Site Rewards.");
+            }
+        }
     }
 
     public static class ChatManagerHelper
@@ -299,9 +401,14 @@ namespace GameServer
             return NetworkHelper.GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Username == username);
         }
 
-        public static ChatCommand GetCommandFromName(string commandName)
+        public static ChatCommand GetCommandFromPrefix(string commandName)
         {
             return ChatCommandManager.chatCommands.ToArray().FirstOrDefault(x => x.prefix == commandName);
+        }
+        
+        public static ChatCommand GetCommandFromName(string commandName)
+        {
+            return ChatCommandManager.chatCommands.ToArray().FirstOrDefault(x => x.prefix == "/" + commandName);
         }
 
         public static string GetUsernameFromMention(string mention)
