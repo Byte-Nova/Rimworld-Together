@@ -25,11 +25,36 @@ namespace GameClient
 
                     Master.loadedCompatibilityPatches.Add(compatibilityName, assembly);
 
-                    string result = MethodManager.TryExecuteMethod(assembly, compatibilityName, "Main");
-                    if (result != "") Logger.Warning($"Fail to find entry point of assembly {compatibility}.\nDebugging info: {result}");
-                    else Logger.Warning($"Loaded patch for '{compatibilityName}'", CommonEnumerators.LogImportanceMode.Verbose);
+                    foreach (Type type in assembly.GetTypes())
+                    {
+                        if (type.Namespace != null && (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")))
+                        {
+                            continue;
+                        }
+                        if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Any())
+                        {
+                            if (type.IsAbstract && type.IsSealed)
+                            {
+                                ConstructorInfo constructor = type.TypeInitializer;
+
+                                if (constructor != null)
+                                {
+                                    System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+                                    Logger.Message($"Succesfully loaded patch {compatibilityName}");
+                                }
+                                else
+                                {
+                                    Logger.Error($"Mod {compatibilityName} has class {type.Name} with attribute 'RTStartup' but no constructor.");
+                                }
+                            }
+                            else
+                            {
+                                Logger.Error($"Mod {compatibilityName} has class {type.Name} with attribute 'RTStartup' but isn't static.");
+                            }
+                        } 
+                    }
                 }
-                catch (Exception ex){ Logger.Error($"Failed to load patch for '{compatibilityName}'\nFull path:{compatibility}\n Debugging info:{ex}"); }
+                catch (Exception ex) { Logger.Error($"Failed to load patch for '{compatibilityName}'\nFull path:{compatibility}\n Debugging info:{ex}"); }
             }
         }
     }
