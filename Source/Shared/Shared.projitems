@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\Settlements\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)packetdata\ModdedData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />

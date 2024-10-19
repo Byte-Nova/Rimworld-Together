@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System.Net.Sockets;
+using System.Reflection;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 
@@ -114,16 +115,28 @@ namespace GameServer
         {
             if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
-            
-            //If method manager failed to execute the packet we assume corrupted data
-            if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
-            {                
+            string result = HandleVanillaPacket(packet);
+            string result2 = ".";
+            if(packet.moddedData != null) result2 = HandleModdedPacket(packet);
+            if (result != "" && result2 != "") //Did not find a method for modded and vanilla, we assume corrupted data
+            {
                 Logger.Error($"Forcefully disconnecting player '{targetClient.userFile.Username}' with ip '{targetClient.userFile.SavedIP}' due to MethodManager exception");
                 Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
+                Logger.Error($"Debugging info bellow:\nVanilla:{result}\nModded{result2}");
                 disconnectFlag = true;
             }
         }
 
+
+        public string HandleVanillaPacket(Packet packet)
+        {
+            return MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]);
+        }
+        public string HandleModdedPacket(Packet packet) 
+        {
+            Assembly assembly = Master.loadedCompatibilityPatches[packet.moddedData._assemblyName];
+            return MethodManager.TryExecuteMethod(assembly, defaultParserMethodName, packet.header, [targetClient, packet]);
+        }
         //Runs in a separate thread and checks if the connection should still be up
 
         public void CheckConnectionHealth()

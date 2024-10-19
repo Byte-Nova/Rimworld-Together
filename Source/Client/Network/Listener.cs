@@ -114,20 +114,25 @@ namespace GameClient
         {
             if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
-            
-            Action toDo = delegate 
-            { 
-                //If method manager failed to execute the packet we assume corrupted data
-                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
-                {
-                    Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
-                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                    disconnectFlag = true;
-                }
-            };
+            string result = HandleVanillaPacket(packet);
+            string result2 = HandleModdedPacket(packet);
+            if (result != "" && result2 != "") //Did not find a method for modded and vanilla, we assume corrupted data
+            {
+                Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
+                Logger.Error($"Debugging info bellow:\nVanilla:{result}\nModded{result2}");
+                disconnectFlag = true;
+            }
+        }
 
-            if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
-            else toDo();
+
+        public string HandleVanillaPacket(Packet packet)
+        {
+            return MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet });
+        }
+        public string HandleModdedPacket(Packet packet) 
+        {
+            Assembly assembly = Master.loadedCompatibilityPatches[packet.moddedData._assemblyName];
+            return MethodManager.TryExecuteMethod(assembly, defaultParserMethodName, packet.header, new object[] { packet });
         }
 
         //Runs in a separate thread and checks if the connection should still be up
