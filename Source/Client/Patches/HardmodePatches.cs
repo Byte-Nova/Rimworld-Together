@@ -35,4 +35,24 @@ namespace GameClient
             }
         }
     }
+
+    [HarmonyPatch(typeof(Pawn_HealthTracker), "MakeDowned")]
+    public static class Downed_Patches
+    {
+        [HarmonyPostfix]
+        public static void DoPost(Pawn_HealthTracker __instance)
+        {
+            if (!SessionValues.actionValues.HardcoreMode) return;
+            foreach (Map map in Find.Maps.Where(map => map.IsPlayerHome))
+            {
+                foreach (Pawn colonist in map.mapPawns.FreeColonists)
+                {
+                    if (!colonist.Downed)
+                        return;
+                }
+
+                SaveManager.ForceSave();
+            }
+        }
+    }
 }
