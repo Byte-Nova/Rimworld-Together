@@ -1,4 +1,5 @@
 ﻿using Shared;
+using System.Reflection;
 
 namespace GameServer
 {
@@ -40,6 +41,8 @@ namespace GameServer
 
         public static string backupUsersPath;
 
+        public static string compatibilityPatchesPath;
+
         //References
 
         public static MarketValuesFile marketValues;
@@ -63,8 +66,10 @@ namespace GameServer
         public static BackupConfigFile backupConfig;
 
         public static ModConfigFile modConfig;
-        
+
         public static ChatConfigFile chatConfig;
+
+        public static Dictionary<string, Assembly> loadedCompatibilityPatches = new Dictionary<string, Assembly>();
 
         //Booleans
 

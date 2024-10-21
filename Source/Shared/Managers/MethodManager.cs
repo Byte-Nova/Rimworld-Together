@@ -7,21 +7,35 @@ namespace Shared
 {
     public static class MethodManager
     {
-        public static bool TryExecuteMethod(string methodName, string typeName, object[] parameters)
+        public static string TryExecuteMethod(string methodName, string typeName, object[] parameters)
         {
+            string exception = "";
             try
             {
                 Type fullType = GetTypeFromName(typeName);
                 MethodInfo methodInfo = GetMethodFromName(fullType, methodName);
                 methodInfo.Invoke(methodInfo.Name, parameters);
-
-                return true;
+                return "";
             }
-            catch (Exception e) { Debug.WriteLine(e); }
+            catch (Exception e) { exception = e.ToString(); }
 
-            return false;
+            return exception;
         }
 
+        public static string TryExecuteMethod(Assembly assembly, string methodName, string typeName, object[] parameters = null)
+        {
+            string exception = "";
+            try
+            {
+                Type fullType = assembly.GetType($"{GetExecutingAssemblyName()}.{typeName}");
+                MethodInfo methodInfo = GetMethodFromName(fullType, methodName);
+                methodInfo.Invoke(methodInfo.Name, parameters);
+                return "";
+            }
+            catch (Exception e) { exception = e.ToString(); }
+
+            return exception;
+        }
         public static string GetExecutingAssemblyName()
         {
             return Assembly.GetExecutingAssembly().GetName().Name;

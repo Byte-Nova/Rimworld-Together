@@ -114,20 +114,42 @@ namespace GameClient
         {
             if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
-            
-            Action toDo = delegate 
-            { 
-                //If method manager failed to execute the packet we assume corrupted data
-                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
-                {
-                    Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
-                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                    disconnectFlag = true;
-                }
-            };
+            string result = HandleVanillaPacket(packet);
+            string result2 = "null";
+            result2 = HandleModdedPacket(packet);
+            if (result != "" && result2 != "") //Did not find a method for modded and vanilla, we assume corrupted data
+            {
+                Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
+                Logger.Error($"Debugging info bellow:\nVanilla: {result}\nModded: {result2}");
+                disconnectFlag = true;
+            }
+        }
 
-            if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
-            else toDo();
+
+        public string HandleVanillaPacket(Packet packet)
+        {
+            return MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet });
+        }
+        public string HandleModdedPacket(Packet packet) 
+        {
+            try
+            {
+                foreach (Assembly assembly in Master.loadedCompatibilityPatches.Values)
+                {
+                    Type type = assembly.GetTypes().FirstOrDefault(t => t.Name == packet.header);
+                    if (type != null)
+                    {
+                        MethodInfo methodInfo = type.GetMethod(defaultParserMethodName);
+                        if (methodInfo != null)
+                        {
+                            methodInfo.Invoke(null, new object[] { packet });
+                            return "";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex) { return $"Error while looking for type {packet.header}, Debugging info :\n{ex}"; }
+            return $"Could not find type {packet.header}";
         }
 
         //Runs in a separate thread and checks if the connection should still be up

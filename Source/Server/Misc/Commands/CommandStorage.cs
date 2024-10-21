@@ -161,7 +161,7 @@ namespace GameServer
             "Allows a player to change mod configuration for the server",
             ShowModManagerCommandAction);
 
-        public static readonly ServerCommand[] serverCommands = new ServerCommand[]
+        public static List<ServerCommand> serverCommands = new List<ServerCommand>
         {
             backupCommand,
             backupUserCommand,
