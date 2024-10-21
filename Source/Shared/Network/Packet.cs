@@ -12,31 +12,20 @@ namespace Shared
         
         public bool requiresMainThread;
 
-        public ModdedData? moddedData;
-
-        public Packet(string header, byte[] contents, bool requiresMainThread, ModdedData? moddedData)
+        public Packet(string header, byte[] contents, bool requiresMainThread)
         {
             this.header = header;
             this.contents = contents;
             this.requiresMainThread = requiresMainThread;
-            this.moddedData = moddedData;
         }
 
-        public static Packet CreatePacketFromObject(string header, object objectToUse = null, bool requiresMainThread = true, ModdedData? moddedData = null)
+        public static Packet CreatePacketFromObject(string header, object objectToUse = null, bool requiresMainThread = true)
         {
-            if (objectToUse == null) return new Packet(header, null, requiresMainThread, moddedData);
+            if (objectToUse == null) return new Packet(header, null, requiresMainThread);
             else
             {
                 byte[] contents = Serializer.ConvertObjectToBytes(objectToUse);
-                if (moddedData == null)
-                {
-                    string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-                    if (assemblyName != CommonValues.serverAssemblyName && assemblyName != CommonValues.clientAssemblyName) 
-                    {
-                        moddedData = new ModdedData(assemblyName);
-                    }
-                }
-                return new Packet(header, contents, requiresMainThread, moddedData);
+                return new Packet(header, contents, requiresMainThread);
             }
         }
     }
