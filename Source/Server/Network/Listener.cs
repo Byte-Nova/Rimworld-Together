@@ -116,44 +116,32 @@ namespace GameServer
         {
             if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
-            string result = HandleVanillaPacket(packet);
-            string result2 = "null";
-            result2 = HandleModdedPacket(packet);
-            if (result != "" && result2 != "") //Did not find a method for modded and vanilla, we assume corrupted data
-            {
-                Logger.Error($"Forcefully disconnecting player '{targetClient.userFile.Username}' with ip '{targetClient.userFile.SavedIP}' due to MethodManager exception");
-                Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
-                Logger.Error($"Debugging info bellow:\nVanilla: {result}\nModded: {result2}");
-                disconnectFlag = true;
-            }
-        }
 
-
-        public string HandleVanillaPacket(Packet packet)
-        {
-            return MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]);
-        }
-        public string HandleModdedPacket(Packet packet) 
-        {
-            try
+            if (packet.isModded)
             {
-                foreach (Assembly assembly in Master.loadedCompatibilityPatches.Values)
+                // If method manager failed to execute the packet we assume corrupted data
+                if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
                 {
-                    Type type = assembly.GetTypes().FirstOrDefault(t => t.Name == packet.header);
-                    if (type != null)
-                    {
-                        MethodInfo methodInfo = type.GetMethod(defaultParserMethodName);
-                        if (methodInfo != null)
-                        {
-                            methodInfo.Invoke(null, new object[] { targetClient, packet });
-                            return "";
-                        }
-                    }
+                    Logger.Error($"Error while trying to execute modded method from type '{packet.header}'");      
+                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                    Logger.Error(MethodManager.latestException);
+                    disconnectFlag = true;
                 }
             }
-            catch (Exception ex) { return $"Error while looking for type {packet.header}, Debugging info :\n{ex}"; }
-            return $"Could not find type {packet.header}";
+            
+            else
+            {
+                // If method manager failed to execute the packet we assume corrupted data
+                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
+                {
+                    Logger.Error($"Error while trying to execute method from type '{packet.header}'");      
+                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                    Logger.Error(MethodManager.latestException);
+                    disconnectFlag = true;
+                }
+            }
         }
+
         //Runs in a separate thread and checks if the connection should still be up
 
         public void CheckConnectionHealth()

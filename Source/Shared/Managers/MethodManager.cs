@@ -1,41 +1,45 @@
 using System.Reflection;
 using System;
-using static Shared.CommonEnumerators;
-using System.Diagnostics;
 
 namespace Shared
 {
     public static class MethodManager
     {
-        public static string TryExecuteMethod(string methodName, string typeName, object[] parameters)
+        public static string latestException;
+
+        public static bool TryExecuteMethod(string methodName, string typeName, object[] parameters)
         {
-            string exception = "";
             try
             {
                 Type fullType = GetTypeFromName(typeName);
                 MethodInfo methodInfo = GetMethodFromName(fullType, methodName);
                 methodInfo.Invoke(methodInfo.Name, parameters);
-                return "";
-            }
-            catch (Exception e) { exception = e.ToString(); }
 
-            return exception;
+                return true;
+            }
+            catch (Exception e) { latestException = e.ToString(); }
+
+            return false;
         }
 
-        public static string TryExecuteMethod(Assembly assembly, string methodName, string typeName, object[] parameters = null)
+        //TODO
+        //MAKE IT SO IT LOOPS THROUGH THE MODDED ASSEMBLIES
+
+        public static bool TryExecuteModdedMethod(string methodName, string typeName, object[] parameters)
         {
-            string exception = "";
-            try
-            {
-                Type fullType = assembly.GetType($"{GetExecutingAssemblyName()}.{typeName}");
-                MethodInfo methodInfo = GetMethodFromName(fullType, methodName);
-                methodInfo.Invoke(methodInfo.Name, parameters);
-                return "";
-            }
-            catch (Exception e) { exception = e.ToString(); }
+            // try
+            // {
+            //     Type fullType = GetTypeFromName(typeName);
+            //     MethodInfo methodInfo = GetMethodFromName(fullType, methodName);
+            //     methodInfo.Invoke(methodInfo.Name, parameters);
 
-            return exception;
+            //     return true;
+            // }
+            // catch (Exception e) { latestException = e.ToString(); }
+
+            return false;
         }
+        
         public static string GetExecutingAssemblyName()
         {
             return Assembly.GetExecutingAssembly().GetName().Name;

@@ -9,23 +9,33 @@ namespace Shared
         public string header;
 
         public byte[] contents;
-        
-        public bool requiresMainThread;
 
-        public Packet(string header, byte[] contents, bool requiresMainThread)
+        public bool isModded;
+
+        public Packet(string header, byte[] contents, bool isModded)
         {
             this.header = header;
             this.contents = contents;
-            this.requiresMainThread = requiresMainThread;
+            this.isModded = isModded;
         }
 
-        public static Packet CreatePacketFromObject(string header, object objectToUse = null, bool requiresMainThread = true)
+        public static Packet CreatePacketFromObject(string header, object objectToUse = null)
         {
-            if (objectToUse == null) return new Packet(header, null, requiresMainThread);
+            if (objectToUse == null) return new Packet(header, null, false);
             else
             {
                 byte[] contents = Serializer.ConvertObjectToBytes(objectToUse);
-                return new Packet(header, contents, requiresMainThread);
+                return new Packet(header, contents, false);
+            }
+        }
+
+        public static Packet CreateModdedPacketFromObject(string header, object objectToUse = null)
+        {
+            if (objectToUse == null) return new Packet(header, null, true);
+            else
+            {
+                byte[] contents = Serializer.ConvertObjectToBytes(objectToUse);
+                return new Packet(header, contents, true);
             }
         }
     }
