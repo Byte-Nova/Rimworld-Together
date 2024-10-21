@@ -22,7 +22,7 @@ namespace GameServer
                     Assembly assembly = Assembly.LoadFrom(compatibility);
 
                     Master.loadedCompatibilityPatches.Add(compatibilityName, assembly);
-
+                    LoadCommandsFromAssembly(assembly);
                     foreach (Type type in assembly.GetTypes())
                     {
                         if (type.Namespace != null && (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")))

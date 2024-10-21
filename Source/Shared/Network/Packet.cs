@@ -31,7 +31,7 @@ namespace Shared
                 if (moddedData == null)
                 {
                     string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-                    if (assemblyName != CommonValues.serverAssemblyName || assemblyName != CommonValues.clientAssemblyName) 
+                    if (assemblyName != CommonValues.serverAssemblyName && assemblyName != CommonValues.clientAssemblyName) 
                     {
                         moddedData = new ModdedData(assemblyName);
                     }

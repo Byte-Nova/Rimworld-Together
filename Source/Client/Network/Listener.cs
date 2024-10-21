@@ -115,7 +115,8 @@ namespace GameClient
             if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
             string result = HandleVanillaPacket(packet);
-            string result2 = HandleModdedPacket(packet);
+            string result2 = "null";
+            if (packet.moddedData != null) result2 = HandleModdedPacket(packet);
             if (result != "" && result2 != "") //Did not find a method for modded and vanilla, we assume corrupted data
             {
                 Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
@@ -131,7 +132,11 @@ namespace GameClient
         }
         public string HandleModdedPacket(Packet packet) 
         {
-            Assembly assembly = Master.loadedCompatibilityPatches[packet.moddedData._assemblyName];
+            Master.loadedCompatibilityPatches.TryGetValue(packet.moddedData._assemblyName, out Assembly assembly);
+            if (assembly == null)
+            {
+                return $"The assembly {packet.moddedData._assemblyName} was not loaded.";
+            }
             return MethodManager.TryExecuteMethod(assembly, defaultParserMethodName, packet.header, new object[] { packet });
         }
 
