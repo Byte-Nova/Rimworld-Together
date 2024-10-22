@@ -18,8 +18,8 @@ namespace GameServer
             string arguments = "")
         {
             this.prefix = prefix;
-            this.parameters = parameters;
             this.description = description;
+            this.parameters = parameters;
             this.arguments = arguments;
             this.adminOnly = adminOnly;
             this.commandAction = commandAction;

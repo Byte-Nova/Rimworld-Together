@@ -1310,7 +1310,8 @@ namespace GameClient
 
         private static void SetItemID(Thing thing, ThingDataFile thingData)
         {
-            thing.ThingID = thingData.ID;
+            try { thing.ThingID = thingData.ID; }
+            catch (Exception e) { Logger.Warning(e.ToString()); }
         }
 
         private static void SetItemQuantity(Thing thing, ThingDataFile thingData)
