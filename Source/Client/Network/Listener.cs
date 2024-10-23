@@ -120,7 +120,10 @@ namespace GameClient
             {
                 toDo = delegate 
                 { 
-                    if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, new object[] { packet })) OnHandleError();
+                    if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, packet.targetPatchName, new object[] { packet }))
+                    {
+                        OnHandleError();
+                    }
                 };
             }
             
@@ -128,7 +131,10 @@ namespace GameClient
             {
                 toDo = delegate 
                 { 
-                    if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet })) OnHandleError();
+                    if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
+                    {
+                        OnHandleError();
+                    }
                 };
             }
 

@@ -12,14 +12,14 @@ namespace Shared
 
         public bool isModded;
 
-        public string modTargetAssembly;
+        public string targetPatchName;
 
-        public Packet(string header, byte[] contents, bool isModded, string modTargetAssembly = "")
+        public Packet(string header, byte[] contents, bool isModded, string targetPatchName = "")
         {
             this.header = header;
             this.contents = contents;
             this.isModded = isModded;
-            this.modTargetAssembly = modTargetAssembly;
+            this.targetPatchName = targetPatchName;
         }
 
         public static Packet CreatePacketFromObject(string header, object objectToUse = null)
@@ -32,13 +32,13 @@ namespace Shared
             }
         }
 
-        public static Packet CreateModdedPacketFromObject(string header, object objectToUse = null)
+        public static Packet CreateModdedPacketFromObject(string header, string targetPatchName, object objectToUse = null)
         {
             if (objectToUse == null) return new Packet(header, null, true);
             else
             {
                 byte[] contents = Serializer.ConvertObjectToBytes(objectToUse);
-                return new Packet(header, contents, true, MethodManager.GetExecutingAssemblyName());
+                return new Packet(header, contents, true, targetPatchName);
             }
         }
     }

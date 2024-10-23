@@ -12,7 +12,7 @@ namespace Shared
         {
             try
             {
-                Type fullType = GetTypeFromName(typeName);
+                Type fullType = GetTypeFromName(Assembly.GetExecutingAssembly(), typeName);
                 MethodInfo methodInfo = GetMethodFromName(fullType, methodName);
                 methodInfo.Invoke(methodInfo.Name, parameters);
 
@@ -23,33 +23,34 @@ namespace Shared
             return false;
         }
 
-        public static bool TryExecuteModdedMethod(string methodName, string typeName, object[] parameters)
+        public static bool TryExecuteModdedMethod(string methodName, string typeName, string assemblyName, object[] parameters)
         {
             try
             {
-                Type fullType = GetTypeFromName("Master");
-                FieldInfo fieldInfo = fullType.GetField("loadedCompatibilityPatches");
-                Assembly[] assemblyArray = (Assembly[])fieldInfo.GetValue(null);
-                Packet packet = (Packet)parameters[1];
+                Type execType = GetTypeFromName(Assembly.GetExecutingAssembly(), "Master");
+                FieldInfo exectField = execType.GetField("loadedCompatibilityPatches");
+                Assembly[] moddedAssemblies = (Assembly[])exectField.GetValue(null);
 
-                Assembly toFind = assemblyArray.First(fetch => fetch.GetName().Name.ToString() == packet.modTargetAssembly);
-                Type moddedType = toFind.GetType(typeName);
-                MethodInfo moddedMethod = GetMethodFromName(fullType, methodName);
+                Assembly toFind = moddedAssemblies.First(fetch => GetAssemblyName(fetch) == assemblyName);
+                Type moddedType = GetTypeFromName(toFind, typeName);
+                MethodInfo moddedMethod = GetMethodFromName(moddedType, methodName);
                 moddedMethod.Invoke(moddedMethod.Name, parameters);
+
+                return true;
             }
             catch (Exception e) { latestException = e.ToString(); }
 
             return false;
         }
-        
-        public static string GetExecutingAssemblyName()
+
+        public static string GetAssemblyName(Assembly assembly)
         {
-            return Assembly.GetExecutingAssembly().GetName().Name;
+            return assembly.GetName().Name;
         }
 
-        public static Type GetTypeFromName(string typeName)
+        public static Type GetTypeFromName(Assembly assembly, string typeName)
         {
-            return Assembly.GetExecutingAssembly().GetType($"{GetExecutingAssemblyName()}.{typeName}");
+            return assembly.GetType($"{GetAssemblyName(assembly)}.{typeName}");
         }
 
         public static MethodInfo GetMethodFromName(Type methodType, string methodName)

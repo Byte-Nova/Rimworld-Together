@@ -13,6 +13,9 @@ namespace GameClient
         
         public static ModConfigs modConfigs = new ModConfigs();
 
+        // DO NOT RENAME 'loadedCompatibilityPatches'
+        // IT HAS A HARDCODED REFERENCE WITH THE METHOD MANAGER
+
         public static Assembly[] loadedCompatibilityPatches;
 
         //Paths

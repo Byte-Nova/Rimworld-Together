@@ -69,6 +69,9 @@ namespace GameServer
 
         public static ChatConfigFile chatConfig;
 
+        // DO NOT RENAME 'loadedCompatibilityPatches'
+        // IT HAS A HARDCODED REFERENCE WITH THE METHOD MANAGER
+
         public static Assembly[] loadedCompatibilityPatches;
 
         //Booleans

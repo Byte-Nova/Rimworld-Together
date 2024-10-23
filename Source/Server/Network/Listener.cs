@@ -119,12 +119,18 @@ namespace GameServer
 
             if (packet.isModded)
             {
-                if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, [targetClient, packet])) OnHandleError();
+                if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, packet.targetPatchName, [targetClient, packet]))
+                {
+                    OnHandleError();
+                }
             }
             
             else
             {  
-                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet])) OnHandleError();
+                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
+                {
+                    OnHandleError();
+                }
             }
 
             // If method manager failed to execute the packet we assume corrupted data
