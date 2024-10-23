@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -56,7 +57,7 @@ namespace GameServer
             Master.backupUsersPath = Path.Combine(Master.backupsPath, "Users");
             Master.backupServerPath = Path.Combine(Master.backupsPath, "Servers");
 
-            Master.compatibilityPatchesPath = Path.Combine(Master.mainPath, "Server Mods");
+            Master.compatibilityPatchesPath = Path.Combine(Master.mainPath, "Patches");
 
             if (!Directory.Exists(Master.corePath)) Directory.CreateDirectory(Master.corePath);
             if (!Directory.Exists(Master.usersPath)) Directory.CreateDirectory(Master.usersPath);
@@ -128,9 +129,9 @@ namespace GameServer
 
             LoadValueFile(ServerFileMode.World);
 
-            CompatibilityManager.LoadAllPatchedAssemblies();
-
             EventManager.LoadEvents();
+
+            CompatibilityManager.LoadAllPatchedAssemblies();
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)

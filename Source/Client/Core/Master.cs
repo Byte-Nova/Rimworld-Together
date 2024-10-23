@@ -13,7 +13,7 @@ namespace GameClient
         
         public static ModConfigs modConfigs = new ModConfigs();
 
-        public static Dictionary<string, Assembly> loadedCompatibilityPatches = new Dictionary<string,Assembly>();
+        public static Assembly[] loadedCompatibilityPatches;
 
         //Paths
 
@@ -23,7 +23,7 @@ namespace GameClient
 
         public static string modAssemblyPath;
 
-        public static string compatibilityPatchesFolderPath;
+        public static string compatibilityPatchesPath;
 
         public static string connectionDataPath;
 

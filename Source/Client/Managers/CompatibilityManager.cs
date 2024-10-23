@@ -1,68 +1,66 @@
-﻿using HarmonyLib;
-using Shared;
+﻿using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Sockets;
 using System.Reflection;
 using Verse;
-using static Shared.CommonEnumerators;
 namespace GameClient
 {
     public static class CompatibilityManager 
     {
         public static void LoadAllPatchedAssemblies()
         {
-            string[] allCompatibilitiesToLoad = CompatibilityManagerHelper.GetAllPatchedMods();
-            
-            foreach (string compatibility in allCompatibilitiesToLoad)
+            List<Assembly> toLoad = new List<Assembly>();
+            foreach (string compatibility in CompatibilityManagerHelper.GetAllPatchedMods())
             {
-                string compatibilityName = Path.GetFileNameWithoutExtension(compatibility);
-                try
-                {
-                    Assembly assembly = Assembly.LoadFrom(compatibility);
-
-                    Master.loadedCompatibilityPatches.Add(compatibilityName, assembly);
-
-                    foreach (Type type in assembly.GetTypes())
-                    {
-                        if (type.Namespace != null && (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")))
-                        {
-                            continue;
-                        }
-                        if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Any())
-                        {
-                            if (type.IsAbstract && type.IsSealed)
-                            {
-                                ConstructorInfo constructor = type.TypeInitializer;
-
-                                if (constructor != null)
-                                {
-                                    System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
-                                    Logger.Message($"Succesfully loaded patch {compatibilityName}");
-                                }
-                                else
-                                {
-                                    Logger.Error($"Mod {compatibilityName} has class {type.Name} with attribute 'RTStartup' but no constructor.");
-                                }
-                            }
-                            else
-                            {
-                                Logger.Error($"Mod {compatibilityName} has class {type.Name} with attribute 'RTStartup' but isn't static.");
-                            }
-                        } 
-                    }
-                }
-                catch (Exception ex) { Logger.Error($"Failed to load patch for '{compatibilityName}'\nFull path:{compatibility}\n Debugging info:{ex}"); }
+                Assembly toAdd = LoadCustomAssembly(compatibility);
+                if (toAdd != null) toLoad.Add(toAdd);    
             }
+            
+            if (toLoad.Count > 0)
+            {
+                Master.loadedCompatibilityPatches = toLoad.ToArray();
+                Logger.Warning($"Loaded > {Master.loadedCompatibilityPatches.Length} patches from '{Master.compatibilityPatchesPath}'");
+                Logger.Warning($"CAUTION > Custom patches aren't created by the mod developers, always use them with care");
+            }
+        }
+
+        private static Assembly LoadCustomAssembly(string assemblyPath)
+        {
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(assemblyPath);
+
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (type.Namespace == null) break;
+                    else if (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")) continue;
+                    else if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Length != 0)
+                    {
+                        if (type.IsAbstract && type.IsSealed)
+                        {
+                            ConstructorInfo constructor = type.TypeInitializer;
+                            if (constructor != null)
+                            {
+                                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+                                return assembly;
+                            }
+                            else Logger.Error($"Mod {assembly.GetName().Name} has class {type.Name} with attribute 'RTStartup' but no constructor.");
+                        }
+                        else Logger.Error($"Mod {assembly.GetName().Name} has class {type.Name} with attribute 'RTStartup' but isn't static.");
+                    } 
+                }
+            }
+            catch (Exception e) { Logger.Error($"Failed to load patch '{assemblyPath}'. {e}"); }
+
+            return null;
         }
     }
 
     public static class CompatibilityManagerHelper
     {
-        public static readonly string fileExtension = ".dll";
         public static readonly string PatchFolderName = "RTPatches";
+
         public static string[] GetAllPatchedMods()
         {
             List<string> results = new List<string>();
@@ -73,6 +71,7 @@ namespace GameClient
                     results.AddRange(Directory.GetFiles(Path.Combine(mod.RootDir, PatchFolderName)));
                 }
             }
+            
             return results.ToArray();
         }
     }

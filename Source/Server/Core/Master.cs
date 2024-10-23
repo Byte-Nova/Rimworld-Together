@@ -69,7 +69,7 @@ namespace GameServer
 
         public static ChatConfigFile chatConfig;
 
-        public static Dictionary<string, Assembly> loadedCompatibilityPatches = new Dictionary<string, Assembly>();
+        public static Assembly[] loadedCompatibilityPatches;
 
         //Booleans
 

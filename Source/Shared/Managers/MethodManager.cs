@@ -1,5 +1,6 @@
 using System.Reflection;
 using System;
+using System.Linq;
 
 namespace Shared
 {
@@ -22,20 +23,21 @@ namespace Shared
             return false;
         }
 
-        //TODO
-        //MAKE IT SO IT LOOPS THROUGH THE MODDED ASSEMBLIES
-
         public static bool TryExecuteModdedMethod(string methodName, string typeName, object[] parameters)
         {
-            // try
-            // {
-            //     Type fullType = GetTypeFromName(typeName);
-            //     MethodInfo methodInfo = GetMethodFromName(fullType, methodName);
-            //     methodInfo.Invoke(methodInfo.Name, parameters);
+            try
+            {
+                Type fullType = GetTypeFromName("Master");
+                FieldInfo fieldInfo = fullType.GetField("loadedCompatibilityPatches");
+                Assembly[] assemblyArray = (Assembly[])fieldInfo.GetValue(null);
+                Packet packet = (Packet)parameters[1];
 
-            //     return true;
-            // }
-            // catch (Exception e) { latestException = e.ToString(); }
+                Assembly toFind = assemblyArray.First(fetch => fetch.GetName().Name.ToString() == packet.modTargetAssembly);
+                Type moddedType = toFind.GetType(typeName);
+                MethodInfo moddedMethod = GetMethodFromName(fullType, methodName);
+                moddedMethod.Invoke(moddedMethod.Name, parameters);
+            }
+            catch (Exception e) { latestException = e.ToString(); }
 
             return false;
         }

@@ -120,14 +120,7 @@ namespace GameClient
             {
                 toDo = delegate 
                 { 
-                    //If method manager failed to execute the packet we assume corrupted data
-                    if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, new object[] { packet }))
-                    {
-                        Logger.Error($"Error while trying to execute modded method from type '{packet.header}'");
-                        Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                        Logger.Error(MethodManager.latestException);
-                        disconnectFlag = true;
-                    }
+                    if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, new object[] { packet })) OnHandleError();
                 };
             }
             
@@ -135,15 +128,18 @@ namespace GameClient
             {
                 toDo = delegate 
                 { 
-                    //If method manager failed to execute the packet we assume corrupted data
-                    if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
-                    {
-                        Logger.Error($"Error while trying to execute method from type '{packet.header}'");
-                        Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                        Logger.Error(MethodManager.latestException);
-                        disconnectFlag = true;
-                    }
+                    if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet })) OnHandleError();
                 };
+            }
+
+            // If method manager failed to execute the packet we assume corrupted data
+
+            void OnHandleError()
+            {
+                Logger.Error($"Error while trying to execute method from type '{packet.header}'");
+                Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                Logger.Error(MethodManager.latestException);
+                disconnectFlag = true;
             }
 
             Master.threadDispatcher.Enqueue(toDo);

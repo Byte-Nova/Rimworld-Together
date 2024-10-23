@@ -119,26 +119,22 @@ namespace GameServer
 
             if (packet.isModded)
             {
-                // If method manager failed to execute the packet we assume corrupted data
-                if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
-                {
-                    Logger.Error($"Error while trying to execute modded method from type '{packet.header}'");      
-                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                    Logger.Error(MethodManager.latestException);
-                    disconnectFlag = true;
-                }
+                if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, [targetClient, packet])) OnHandleError();
             }
             
             else
+            {  
+                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet])) OnHandleError();
+            }
+
+            // If method manager failed to execute the packet we assume corrupted data
+
+            void OnHandleError()
             {
-                // If method manager failed to execute the packet we assume corrupted data
-                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
-                {
-                    Logger.Error($"Error while trying to execute method from type '{packet.header}'");      
-                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                    Logger.Error(MethodManager.latestException);
-                    disconnectFlag = true;
-                }
+                Logger.Error($"Error while trying to execute method from type '{packet.header}'");      
+                Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                Logger.Error(MethodManager.latestException);
+                disconnectFlag = true;
             }
         }
 

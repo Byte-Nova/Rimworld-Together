@@ -1,10 +1,5 @@
 ﻿using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GameServer
 {
@@ -12,57 +7,72 @@ namespace GameServer
     {
         public static void LoadAllPatchedAssemblies()
         {
-            string[] allCompatibilitiesToLoad = CompatibilityManagerHelper.GetAllPatchedMods();
-
-            foreach (string compatibility in allCompatibilitiesToLoad)
+            List<Assembly> toLoad = new List<Assembly>();
+            foreach (string compatibility in CompatibilityManagerHelper.GetAllPatchedMods())
             {
-                string compatibilityName = Path.GetFileNameWithoutExtension(compatibility);
-                try
-                {
-                    Assembly assembly = Assembly.LoadFrom(compatibility);
+                Assembly toAdd = LoadCustomAssembly(compatibility);
+                if (toAdd != null) toLoad.Add(toAdd);    
+            }
 
-                    Master.loadedCompatibilityPatches.Add(compatibilityName, assembly);
-                    LoadCommandsFromAssembly(assembly);
-                    foreach (Type type in assembly.GetTypes())
-                    {
-                        if (type.Namespace != null && (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")))
-                        {
-                            continue;
-                        }
-                        if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Any())
-                        {
-                            if (type.IsAbstract && type.IsSealed)
-                            {
-                                ConstructorInfo constructor = type.TypeInitializer;
-
-                                if (constructor != null)
-                                {
-                                    System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
-                                    Logger.Message($"Succesfully loaded patch {compatibilityName}");
-                                }
-                                else
-                                {
-                                    Logger.Error($"Mod {compatibilityName} has class {type.Name} with attribute 'RTStartup' but no constructor.");
-                                }
-                            }
-                            else
-                            {
-                                Logger.Error($"Mod {compatibilityName} has class {type.Name} with attribute 'RTStartup' but isn't static.");
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex) { Logger.Error($"Failed to load patch for '{compatibilityName}' because :\n{ex}"); }
+            if (toLoad.Count > 0)
+            {
+                Master.loadedCompatibilityPatches = toLoad.ToArray();
+                Logger.Warning($"Loaded > {Master.loadedCompatibilityPatches.Length} patches from '{Master.compatibilityPatchesPath}'");
+                Logger.Warning($"CAUTION > Custom patches aren't created by the mod developers, always use them with care");
             }
         }
-        private static void LoadCommandsFromAssembly(Assembly assembly)
+
+        private static Assembly LoadCustomAssembly(string assemblyPath)
         {
-            Type type = assembly.GetType($"GameServer.CommandStorage");
-            if (type != null)
+            try
             {
-                FieldInfo field = type.GetField("serverCommands", BindingFlags.Static | BindingFlags.Public);
-                CommandStorage.serverCommands.AddRange((List<ServerCommand>)field.GetValue(null));
+                Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                if (!TryLoadCommandsFromAssembly(assembly)) return null;
+
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (type.Namespace == null) break;
+                    else if (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")) continue;
+                    else if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Length != 0)
+                    {
+                        if (type.IsAbstract && type.IsSealed)
+                        {
+                            ConstructorInfo constructor = type.TypeInitializer;
+                            if (constructor != null)
+                            {
+                                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+                                return assembly;
+                            }
+                            else Logger.Error($"Mod {assembly.GetName().Name} has class {type.Name} with attribute 'RTStartup' but no constructor.");
+                        }
+                        else Logger.Error($"Mod {assembly.GetName().Name} has class {type.Name} with attribute 'RTStartup' but isn't static.");
+                    } 
+                }
             }
+            catch (Exception e) { Logger.Error($"Failed to load patch '{assemblyPath}'. {e}"); }
+
+            return null;
+        }
+        
+        private static bool TryLoadCommandsFromAssembly(Assembly assembly)
+        {
+            try
+            {
+                Type type = assembly.GetType($"{assembly.GetName().Name}.CommandStorage");
+                if (type != null)
+                {
+                    FieldInfo field = type.GetField("serverCommands", BindingFlags.Static | BindingFlags.Public);
+                    CommandStorage.serverCommands.AddRange((List<ServerCommand>)field.GetValue(null));
+                }
+            }
+
+            catch 
+            { 
+                Logger.Error($"Failed to load commands from patch '{assembly.GetName().Name}'");
+                return false; 
+            }
+            
+            return true;
         }
     }
     public static class CompatibilityManagerHelper
