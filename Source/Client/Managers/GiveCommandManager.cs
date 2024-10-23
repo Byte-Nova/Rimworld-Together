@@ -1,6 +1,7 @@
 ﻿using Shared;
 using System;
 using Verse;
+using UnityEngine;
 using RimWorld;
 using RimWorld.Planet;
 
@@ -24,11 +25,13 @@ namespace GameClient
                 thingData.Quantity = giveData.Quantity;
                 thingData.Quality = giveData.Quality;
                 Thing thing = ThingScribeManager.StringToItem(thingData);
+                if (thing.HitPoints == 0) thing.HitPoints = thing.MaxHitPoints;
                 Map map = Find.AnyPlayerHomeMap;
                 if (map == null)
                     Logger.Error("Hasn't found any player map");
-                RimworldManager.PlaceThingIntoMap(thing, Find.AnyPlayerHomeMap, ThingPlaceMode.Direct, true, false);
-                RimworldManager.GenerateLetter("Received Thing from Admin", "Admin gave a thing to you", LetterDefOf.PositiveEvent);
+                    RimworldManager.PlaceThingIntoMap(thing, Find.AnyPlayerHomeMap, ThingPlaceMode.Near, true);
+                RimworldManager.GenerateLetter("Admin notification", $"Admin gave you \"{thing.LabelNoCount} x{thingData.Quantity}\"", LetterDefOf.PositiveEvent);
+                
             }
             catch (Exception e)
             {

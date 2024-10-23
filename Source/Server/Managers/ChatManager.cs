@@ -414,15 +414,15 @@ namespace GameServer
                 if (toFind == null) {ChatManager.SendConsoleMessage(targetClient, "User was not found.");
                     return;
                 }
-                if (command.Length <= 3) {ChatManager.SendConsoleMessage(targetClient, $"Def of thing isn't specified");
+                if (command.Length <= 2) {ChatManager.SendConsoleMessage(targetClient, $"Def of thing isn't specified");
                     return;
                 }
                 else
                 {
                     sendedThing.DefName = command[2];
-                    if (command.Length <= 4) sendedThing.Quantity = 1;
+                    if (command.Length <= 3) sendedThing.Quantity = 1;
                     else sendedThing.Quantity = int.Parse(command[3]);
-                    if (command.Length <= 5) sendedThing.Quality = 2;
+                    if (command.Length <= 4) sendedThing.Quality = 2;
                     else sendedThing.Quality = int.Parse(command[4]);
                 }
                     Packet packet = Packet.CreatePacketFromObject(nameof(GiveCommandManager), sendedThing);
