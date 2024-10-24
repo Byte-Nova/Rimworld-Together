@@ -8,6 +8,21 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    [HarmonyPatch(typeof(GenScene), nameof(GenScene.GoToMainMenu))]
+    public static class GenScene_Patch
+    {
+        [HarmonyPrefix]
+        private static bool DoPre()
+        {
+            if (Network.state == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            {
+                ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
+                SaveManager.ForceSave();
+            }
+
+            return true;
+        }
+    }
     [HarmonyPatch(typeof(MainMenuDrawer), "DoMainMenuControls")]
     public static class SaveMenuPatch
     {
