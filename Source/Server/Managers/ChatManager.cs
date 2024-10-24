@@ -192,7 +192,7 @@ namespace GameServer
             "Shows a list of all available commands", false, ListCommandAction);
 
         private static readonly ChatCommand helpCommand = new ChatCommand("/help", 1,
-            "Shows a list of all available commands", false,
+            "Shows a more detailed info about command", false,
             HelpCommandAction, "{command}");
 
         private static readonly ChatCommand toolsCommand = new ChatCommand("/tools", 0,
@@ -228,7 +228,7 @@ namespace GameServer
             "Forces site rewards to run", true, DoSiteRewardsAction);
 
         private static readonly ChatCommand giveCommand = new ChatCommand("/give", 1,
-                "Gives items to player", true, GiveCommandAction);
+                "Gives items to player", true, GiveCommandAction, "{username} {defName} {Quantity} {Quality}");
             
         public static readonly ChatCommand[] chatCommands = new ChatCommand[]
         {
@@ -268,13 +268,11 @@ namespace GameServer
             if (targetClient == null) return;
             else
             {
-                ChatCommand toGetCommand = ChatManagerHelper.GetCommandFromName(command[1]);
+                ChatCommand toGetCommand = ChatManagerHelper.GetCommandFromName("/" + command[1]);
                 if (toGetCommand == null) ChatManager.SendConsoleMessage(targetClient, "Command was not found");
                 else
                 {
-                    List<string> messagesToSend = new List<string> {$"{toGetCommand.prefix}", $"Description: {toGetCommand.description}" };
-                    if (toGetCommand.arguments.Length > 1)
-                        messagesToSend.Add($"Syntax: {toGetCommand.prefix} {toGetCommand.arguments}");
+                    List<string> messagesToSend = new List<string> {$"{toGetCommand.prefix}", $"Description: {toGetCommand.description}", $"Syntax: {toGetCommand.prefix} {toGetCommand.arguments}" };
                     foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
                 }
             }

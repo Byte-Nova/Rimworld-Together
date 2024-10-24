@@ -12,7 +12,6 @@ namespace GameClient
         public static void ParsePacket(Packet packet)
         {
             ThingDataFile giveData = Serializer.ConvertBytesToObject<ThingDataFile>(packet.contents);
-            Logger.Message("Finding things");
             GiveThingToPlayer(giveData);
         }
 
