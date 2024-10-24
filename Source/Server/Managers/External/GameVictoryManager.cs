@@ -6,7 +6,13 @@ public class GameVictoryManager
 {
     public static void ParsePacket(ServerClient client, Packet packet)
     {
-        GameVictoryData chatData = Serializer.ConvertBytesToObject<GameVictoryData>(packet.contents);
-        ChatManager.BroadcastServerNotification($"{chatData._playerName} won the game! Ending: {chatData._ending}");
+        GameVictoryData victoryData = Serializer.ConvertBytesToObject<GameVictoryData>(packet.contents);
+        SendVictoryMessage(victoryData);
+    }
+
+    private static void SendVictoryMessage(GameVictoryData victoryData)
+    {
+        if (!Master.chatConfig.EndGameNotifications) return;
+        ChatManager.BroadcastServerNotification($"{victoryData._playerName} won the game! Ending: {victoryData._ending}");
     }
 }
