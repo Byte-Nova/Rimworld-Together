@@ -32,4 +32,4 @@ make run-container
 Interested? Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!
 
 ## Other Questions?
-Please don't hesitate to create an issue on Github if you have any questions/issues with the mod. We are here for you! You can also contact us via our Discord server (see top of this page).
+Don't hesitate to create an issue on Github if you have any issues with the mod. We are here for you! You can also contact us via our [Discord server](https://discord.gg/yUF2ec8Vt8).
