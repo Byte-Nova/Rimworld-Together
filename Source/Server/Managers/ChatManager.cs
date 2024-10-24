@@ -18,7 +18,7 @@ namespace GameServer
         {
             "Welcome to the global chat!",
             "Please be considerate with others and have fun!",
-            "Use '/help' to check all the available commands."
+            "Use '/list' to check all the available commands."
         };
 
         public static readonly string[] defaultTextTools = new string[]
@@ -33,7 +33,11 @@ namespace GameServer
         {
             ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
 
-            if (chatData._message.StartsWith("/")) ExecuteChatCommand(client, chatData._message.Split(' '));
+            if (chatData._message.StartsWith("/"))
+            {
+                SendConsoleMessage(client, chatData._message);
+                ExecuteChatCommand(client, chatData._message.Split(' '));
+            }
             else BroadcastChatMessage(client, chatData._message);
         }
 
@@ -47,7 +51,17 @@ namespace GameServer
             {
                 ChatCommandManager.targetClient = client;
                 ChatCommandManager.command = command;
-                toFind.commandAction.Invoke();
+                if (toFind.parameters >= command.Length && toFind.parameters >= 0)
+                {
+                    SendConsoleMessage(client, "Invalid arguments.");
+                }
+                else
+                if (toFind.adminOnly && !client.userFile.IsAdmin)
+                {
+                    SendConsoleMessage(client, "You should be a admin to execute this command.");
+                }
+                else 
+                    toFind.commandAction.Invoke();
             }
 
             string chatCommand = "";
@@ -123,7 +137,7 @@ namespace GameServer
             if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData._username, message);
 
             WriteToLogs(chatData._username, message);
-            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
+            ChatManagerHelper.ShowChatInConsole("", message);
         }
 
         public static void SendConsoleMessage(ServerClient client, string message)
@@ -174,49 +188,93 @@ namespace GameServer
         public static ServerClient? targetClient;
         public static string[]? command;
 
-        private static readonly ChatCommand helpCommand = new ChatCommand("/help", 0,
-            "Shows a list of all available commands",
-            HelpCommandAction);
+        private static readonly ChatCommand listCommand = new ChatCommand("/list", 0,
+            "Shows a list of all available commands", false, ListCommandAction);
+
+        private static readonly ChatCommand helpCommand = new ChatCommand("/help", 1,
+            "Shows a more detailed info about command", false,
+            HelpCommandAction, "{command}");
 
         private static readonly ChatCommand toolsCommand = new ChatCommand("/tools", 0,
-            "Shows a list of all available chat tools",
+            "Shows a list of all available chat tools", false,
             ToolsCommandAction);
 
         private static readonly ChatCommand pingCommand = new ChatCommand("/ping", 0,
-            "Checks if the connection to the server is working",
+            "Checks if the connection to the server is working", false,
             PingCommandAction);
 
         private static readonly ChatCommand disconnectCommand = new ChatCommand("/dc", 0,
-            "Forcefully disconnects you from the server",
+            "Forcefully disconnects you from the server", false,
             DisconnectCommandAction);
 
         private static readonly ChatCommand stopOnlineActivityCommand = new ChatCommand("/stopactivity", 0,
-            "Forcefully disconnects you from an activity",
+            "Forcefully disconnects you from an activity", false,
             StopOnlineActivityCommandAction);
         
-        private static readonly ChatCommand privateMessage = new ChatCommand("/w", 0,
-            "Sends a private message to a specific user",
-            PrivateMessageCommandAction);
+        private static readonly ChatCommand privateMessage = new ChatCommand("/w", -1,
+            "Sends a private message to a specific user", false,
+            PrivateMessageCommandAction, "{username} {message}");
+        
+        private static readonly ChatCommand kickCommand = new ChatCommand("/kick", 1,
+            "Kicks the selected player from the server", true, KickCommandAction, "{username}");
+        
+        private static readonly ChatCommand banCommand = new ChatCommand("/ban", 1,
+            "Bans the selected player from the server", true, BanCommandAction, "{username}");
+        
+        private static readonly ChatCommand pardonCommand = new ChatCommand("/pardon", 1,
+            "Pardons the selected player from the server", true, PardonCommandAction, "{username}");
 
+        private static readonly ChatCommand doSiteRewardsCommand = new ChatCommand("/siterewards", 0,
+            "Forces site rewards to run", true, DoSiteRewardsAction);
+
+        private static readonly ChatCommand giveCommand = new ChatCommand("/give", 1,
+                "Gives items to player", true, GiveCommandAction, "{username} {defName} {Quantity} {Quality}");
+            
         public static readonly ChatCommand[] chatCommands = new ChatCommand[]
         {
+            listCommand,
             helpCommand,
             toolsCommand,
             pingCommand,
             disconnectCommand,
             stopOnlineActivityCommand,
-            privateMessage
+            privateMessage,
+            kickCommand,
+            banCommand,
+            pardonCommand,
+            doSiteRewardsCommand,
+            giveCommand
         };
+
+        private static void ListCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                List<string> messagesToSend = new List<string> { "List of available commands:" };
+                foreach (ChatCommand command in chatCommands)
+                {
+                    if (!command.adminOnly)
+                        messagesToSend.Add($"{command.prefix} - {command.description}");
+                    if (targetClient.userFile.IsAdmin && command.adminOnly)
+                        messagesToSend.Add($"{command.prefix} - {command.description}");
+                }
+                foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
+            }
+        }
 
         private static void HelpCommandAction()
         {
             if (targetClient == null) return;
             else
             {
-                List<string> messagesToSend = new List<string> { "List of available commands:" };
-                foreach (ChatCommand command in chatCommands) messagesToSend.Add($"{command.prefix} - {command.description}");
-
-                foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
+                ChatCommand toGetCommand = ChatManagerHelper.GetCommandFromName("/" + command[1]);
+                if (toGetCommand == null) ChatManager.SendConsoleMessage(targetClient, "Command was not found");
+                else
+                {
+                    List<string> messagesToSend = new List<string> {$"{toGetCommand.prefix}", $"Description: {toGetCommand.description}", $"Syntax: {toGetCommand.prefix} {toGetCommand.arguments}" };
+                    foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
+                }
             }
         }
 
@@ -288,6 +346,85 @@ namespace GameServer
                         }
                     }
                 }
+            }
+        }
+
+        private static void KickCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                ServerClient toFind = ChatManagerHelper.GetUserFromName(ChatManagerHelper.GetUsernameFromMention(command[1]));
+                if (toFind == null) ChatManager.SendConsoleMessage(targetClient, "User was not found.");
+                else
+                {
+                    toFind.listener.disconnectFlag = true;
+                    ChatManager.SendConsoleMessage(targetClient, $"{toFind.userFile.Username} has been kicked.");
+                }
+            }
+        }
+
+        private static void BanCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                ServerClient toFind = ChatManagerHelper.GetUserFromName(ChatManagerHelper.GetUsernameFromMention(command[1]));
+                if (toFind == null) ChatManager.SendConsoleMessage(targetClient, "User was not found.");
+                else
+                {
+                    UserManager.BanPlayerFromName(ChatManagerHelper.GetUsernameFromMention(command[1]));
+                    ChatManager.SendConsoleMessage(targetClient, $"{toFind.userFile.Username} has been banned.");
+                }
+            }
+        }
+        private static void PardonCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                ServerClient toFind = ChatManagerHelper.GetUserFromName(ChatManagerHelper.GetUsernameFromMention(command[1]));
+                if (toFind == null) ChatManager.SendConsoleMessage(targetClient, "User was not found.");
+                else
+                {
+                    UserManager.PardonPlayerFromName(toFind.userFile.Username);
+                    ChatManager.SendConsoleMessage(targetClient, $"{toFind.userFile.Username} has been pardoned.");
+                }
+            }
+        }
+        private static void DoSiteRewardsAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                SiteManager.SiteRewardTick();
+                ChatManager.SendConsoleMessage(targetClient, "Forced Site Rewards.");
+            }
+        }
+
+        private static void GiveCommandAction()
+        {
+            if (targetClient == null) return;
+            else
+            {
+                ThingDataFile sendedThing = new ThingDataFile(); 
+                ServerClient toFind = ChatManagerHelper.GetUserFromName(ChatManagerHelper.GetUsernameFromMention(command[1]));
+                if (toFind == null) {ChatManager.SendConsoleMessage(targetClient, "User was not found.");
+                    return;
+                }
+                if (command.Length <= 2) {ChatManager.SendConsoleMessage(targetClient, $"Def of thing isn't specified");
+                    return;
+                }
+                else
+                {
+                    sendedThing.DefName = command[2];
+                    if (command.Length <= 3) sendedThing.Quantity = 1;
+                    else sendedThing.Quantity = int.Parse(command[3]);
+                    if (command.Length <= 4) sendedThing.Quality = 2;
+                    else sendedThing.Quality = int.Parse(command[4]);
+                }
+                    Packet packet = Packet.CreatePacketFromObject(nameof(GiveCommandManager), sendedThing);
+                    toFind.listener.EnqueuePacket(packet);
             }
         }
     }
