@@ -10,4 +10,8 @@
         public bool LoginNotifications = false;
         
         public bool DisconnectNotifications = false;
+        
+        public bool EndGameNotifications = false;
+        
+        public bool BroadcastEndGameNotifications = false;
     }
