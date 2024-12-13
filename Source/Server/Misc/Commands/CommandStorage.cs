@@ -161,7 +161,11 @@ namespace GameServer
             "Allows a player to change mod configuration for the server",
             ShowModManagerCommandAction);
 
-        public static readonly ServerCommand[] serverCommands = new ServerCommand[]
+        private static readonly ServerCommand updateCommand = new ServerCommand("update", 0,
+            "Updates your server to the newest version. Do not use if you aren't told directly to do so, as it can very well BREAK things",
+            UpdateCommandAction);
+
+        public static List<ServerCommand> serverCommands = new List<ServerCommand>
         {
             backupCommand,
             backupUserCommand,
@@ -201,7 +205,8 @@ namespace GameServer
             whitelistCommand,
             whitelistRemoveCommand,
             whitelistToggleCommand,
-            showModManagerCommand
+            showModManagerCommand,
+            updateCommand
         };
 
         private static void HelpCommandAction()
@@ -482,7 +487,7 @@ namespace GameServer
             }
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
-            ChatManager.BroadcastServerMessage(fullText);
+            ChatManager.BroadcastConsoleMessage(fullText);
 
             Logger.Title($"Sent chat: '{fullText}'");
         }
@@ -731,6 +736,23 @@ namespace GameServer
                     Logger.Warning("Command sent sucessfully");
                 }
             }
+        }
+
+        private static void UpdateCommandAction() 
+        {
+            Logger.Warning("Are you sure you want to run the update command? You should only do so if you are told to, as this may break things.");
+            Logger.Warning("Please type 'YES' or 'NO'");
+
+            UpdateCommandQuestion:
+                string response = Console.ReadLine();
+
+                if (response == "NO") return;
+                else if (response == "YES") Updater.UpdateManager.UpdateServer();
+                else 
+                {
+                    Logger.Error($"{response} is not a valid option; The options must be capitalized");
+                    goto UpdateCommandQuestion;
+                }
         }
     }
 }

@@ -25,10 +25,10 @@ namespace GameClient
                 {
                     __instance.Close();
 
-                    ___factions.Add(FactionValues.neutralPlayerDef);
-                    ___factions.Add(FactionValues.allyPlayerDef);
-                    ___factions.Add(FactionValues.enemyPlayerDef);
-                    ___factions.Add(FactionValues.yourOnlineFactionDef);
+                    ___factions.Add(RTFactionDefOf.RTNeutral);
+                    ___factions.Add(RTFactionDefOf.RTAlly);
+                    ___factions.Add(RTFactionDefOf.RTEnemy);
+                    ___factions.Add(RTFactionDefOf.RTFaction);
 
                     WorldManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall, 
                         ___temperature, ___population, ___factions, ___pollution);

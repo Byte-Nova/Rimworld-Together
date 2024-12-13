@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTNeutral.label>Colonie Joueur Neutre</RTNeutral.label>
-	<RTNeutral.description>Une colonie d'une faction d'un joueur neutre.</RTNeutral.description>
-	<RTNeutral.fixedName>Colonie Joueur Neutre</RTNeutral.fixedName>
-	<RTNeutral.leaderTitle>chef</RTNeutral.leaderTitle>
-	<RTNeutral.pawnSingular>colon</RTNeutral.pawnSingular>
-	<RTNeutral.pawnsPlural>colons</RTNeutral.pawnsPlural>
-</LanguageData>

@@ -11,8 +11,6 @@ namespace Shared
 
         public SiteValuesFile _siteValues;
 
-        public MarketValuesFile _marketValues;
-
         public EventFile[] _eventValues;
 
         public ActionValuesFile _actionValues;
@@ -25,7 +23,7 @@ namespace Shared
 
         public SettlementFile[] _playerSettlements;
 
-        public SiteFile[] _playerSites;
+        public SiteIdendityFile[] _playerSites;
 
         public CaravanFile[] _playerCaravans;
 

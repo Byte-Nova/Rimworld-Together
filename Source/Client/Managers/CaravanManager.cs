@@ -14,7 +14,9 @@ namespace GameClient
         //Variables
 
         public static WorldObjectDef onlineCaravanDef;
+
         public static List<CaravanFile> activeCaravans = new List<CaravanFile>();
+
         public static Dictionary<Caravan, int> activePlayerCaravans = new Dictionary<Caravan, int>();
 
         public static void ParsePacket(Packet packet)

@@ -1,4 +1,5 @@
 ﻿using Shared;
+using System.Reflection;
 
 namespace GameServer
 {
@@ -40,9 +41,9 @@ namespace GameServer
 
         public static string backupUsersPath;
 
-        //References
+        public static string compatibilityPatchesPath;
 
-        public static MarketValuesFile marketValues;
+        //References
 
         public static WhitelistFile whitelist;
 
@@ -63,6 +64,13 @@ namespace GameServer
         public static BackupConfigFile backupConfig;
 
         public static ModConfigFile modConfig;
+
+        public static ChatConfigFile chatConfig;
+
+        // DO NOT RENAME 'loadedCompatibilityPatches'
+        // IT HAS A HARDCODED REFERENCE WITH THE METHOD MANAGER
+
+        public static Assembly[] loadedCompatibilityPatches;
 
         //Booleans
 

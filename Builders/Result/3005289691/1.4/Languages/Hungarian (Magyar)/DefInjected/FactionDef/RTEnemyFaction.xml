@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTEnemy.label>Ellenséges Játékosok Települései</RTEnemy.label>
-	<RTEnemy.description>Egy online, ellenséges frakció.</RTEnemy.description>
-	<RTEnemy.fixedName>Ellenséges Játékosok Települései</RTEnemy.fixedName>
-	<RTEnemy.leaderTitle>főnök</RTEnemy.leaderTitle>
-	<RTEnemy.pawnSingular>kolonista</RTEnemy.pawnSingular>
-	<RTEnemy.pawnsPlural>kolonisták</RTEnemy.pawnsPlural>
-</LanguageData>

@@ -1,5 +1,7 @@
-﻿using Shared;
+﻿using Microsoft.VisualBasic;
+using Shared;
 using System.Net.Sockets;
+using System.Reflection;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 
@@ -114,12 +116,30 @@ namespace GameServer
         {
             if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
+
+            if (packet.isModded)
+            {
+                if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, packet.targetPatchName, [targetClient, packet]))
+                {
+                    OnHandleError();
+                }
+            }
             
-            //If method manager failed to execute the packet we assume corrupted data
-            if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
-            {                
-                Logger.Error($"Forcefully disconnecting player '{targetClient.userFile.Username}' with ip '{targetClient.userFile.SavedIP}' due to MethodManager exception");
-                Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
+            else
+            {  
+                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
+                {
+                    OnHandleError();
+                }
+            }
+
+            // If method manager failed to execute the packet we assume corrupted data
+
+            void OnHandleError()
+            {
+                Logger.Error($"Error while trying to execute method from type '{packet.header}'");      
+                Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                Logger.Error(MethodManager.latestException);
                 disconnectFlag = true;
             }
         }
@@ -169,7 +189,7 @@ namespace GameServer
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
-            if (targetClient.inVisitWith != null) OnlineActivityManager.SendVisitStop(targetClient);
+            if (targetClient.activityPartner != null) OnlineActivityManager.StopActivity(targetClient);
         }
     }
 }

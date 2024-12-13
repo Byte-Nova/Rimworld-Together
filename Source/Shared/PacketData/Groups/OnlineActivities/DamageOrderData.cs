@@ -5,7 +5,7 @@ namespace Shared
     [Serializable]
     public class DamageOrderData
     {
-        public int _targetIndex;
+        public string targetHash;
 
         public string _defName;
 

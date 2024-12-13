@@ -26,7 +26,6 @@ namespace GameClient
         {
             if (TryConnectToServer())
             {
-                SiteManager.SetSiteDefs();
                 ClientValues.ManageDevOptions();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
@@ -66,6 +65,7 @@ namespace GameClient
         }
 
         //Disconnects client from the server
+        
         public static void DisconnectFromServer()
         {
             CleanNetworkVariables();

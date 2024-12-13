@@ -139,16 +139,6 @@ namespace GameClient
                 Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.outgoingManifest);
                 Network.listener.EnqueuePacket(packet);
             }
-
-            else if (transferLocation == TransferLocation.Market)
-            {
-                MarketData marketData = new MarketData();
-                marketData._stepMode = MarketStepMode.Add;
-                marketData._transferThings = SessionValues.outgoingManifest._things;
-
-                Packet packet = Packet.CreatePacketFromObject(nameof(MarketManager), marketData);
-                Network.listener.EnqueuePacket(packet);
-            }
         }
 
         //Recovers transfered items when trade fails
@@ -379,25 +369,25 @@ namespace GameClient
 
         public static void AddThingToTransferManifest(Thing thing, int thingCount)
         {
-            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+            if (ScriberHelper.CheckIfThingIsHuman(thing))
             {
                 Pawn pawn = thing as Pawn;
 
-                SessionValues.outgoingManifest._humans.Add(HumanScribeManager.HumanToString(pawn, false));
+                SessionValues.outgoingManifest._humans.Add(HumanScriber.HumanToString(pawn));
 
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
-            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
+            else if (ScriberHelper.CheckIfThingIsAnimal(thing))
             {
                 Pawn pawn = thing as Pawn;
 
-                SessionValues.outgoingManifest._animals.Add(AnimalScribeManager.AnimalToString(pawn));
+                SessionValues.outgoingManifest._animals.Add(AnimalScriber.AnimalToString(pawn));
 
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
-            else SessionValues.outgoingManifest._things.Add(ThingScribeManager.ItemToString(thing, thingCount));
+            else SessionValues.outgoingManifest._things.Add(ThingScriber.ThingToString(thing, thingCount));
         }
 
         //Gets the transfer location in the desired map
@@ -424,11 +414,20 @@ namespace GameClient
         {
             List<Thing> allTransferedItems = new List<Thing>();
 
-            foreach (Pawn pawn in HumanScribeManager.GetHumansFromString(transferData)) allTransferedItems.Add(pawn);
+            foreach (HumanFile file in transferData._humans)
+            {
+                allTransferedItems.Add(HumanScriber.StringtoHuman(file));
+            }
 
-            foreach (Pawn animal in AnimalScribeManager.GetAnimalsFromString(transferData)) allTransferedItems.Add(animal);
+            foreach (AnimalFile file in transferData._animals)
+            {
+                allTransferedItems.Add(AnimalScriber.StringToAnimal(file));
+            }
 
-            foreach (Thing thing in ThingScribeManager.GetItemsFromString(transferData)) allTransferedItems.Add(thing);
+            foreach (ThingFile file in transferData._things)
+            {
+                allTransferedItems.Add(ThingScriber.StringToThing(file));
+            }
 
             return allTransferedItems.ToArray();
         }

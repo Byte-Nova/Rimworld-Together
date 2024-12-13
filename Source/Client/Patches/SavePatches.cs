@@ -16,6 +16,7 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Disconnected) return true;
                 if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
+                if (SessionValues.currentRealTimeActivity != OnlineActivityType.None) return false;
 
                 ClientValues.ToggleSavingGame(true);
                 ClientValues.ForcePermadeath();
@@ -60,8 +61,7 @@ namespace GameClient
         public static bool DoPre()
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-
-            return false;
+            else return false;
         }
     }
 

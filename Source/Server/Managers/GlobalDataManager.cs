@@ -16,8 +16,6 @@ namespace GameServer
 
             globalData = GlobalDataManagerHelper.GetServerSites(client, globalData);
 
-            globalData = GlobalDataManagerHelper.GetServerMarket(globalData);
-
             globalData = GlobalDataManagerHelper.GetServerCaravans(globalData);
 
             globalData = GlobalDataManagerHelper.GetServerRoads(globalData);
@@ -77,11 +75,11 @@ namespace GameServer
 
         public static ServerGlobalData GetServerSites(ServerClient client, ServerGlobalData globalData)
         {
-            List<SiteFile> tempList = new List<SiteFile>();
-            SiteFile[] sites = SiteManagerHelper.GetAllSites();
-            foreach (SiteFile site in sites)
+            List<SiteIdendityFile> tempList = new List<SiteIdendityFile>();
+            SiteIdendityFile[] sites = SiteManagerHelper.GetAllSites();
+            foreach (SiteIdendityFile site in sites)
             {
-                SiteFile file = new SiteFile();
+                SiteIdendityFile file = new SiteIdendityFile();
 
                 file.Tile = site.Tile;
                 file.Owner = site.Owner;
@@ -94,12 +92,6 @@ namespace GameServer
 
             globalData._playerSites = tempList.ToArray();
 
-            return globalData;
-        }
-
-        public static ServerGlobalData GetServerMarket(ServerGlobalData globalData)
-        {
-            globalData._marketValues = Master.marketValues;
             return globalData;
         }
 

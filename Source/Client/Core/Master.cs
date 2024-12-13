@@ -13,7 +13,10 @@ namespace GameClient
         
         public static ModConfigs modConfigs = new ModConfigs();
 
-        public static Dictionary<string, Assembly> loadedCompatibilityPatches = new Dictionary<string,Assembly>();
+        // DO NOT RENAME 'loadedCompatibilityPatches'
+        // IT HAS A HARDCODED REFERENCE WITH THE METHOD MANAGER
+
+        public static Assembly[] loadedCompatibilityPatches;
 
         //Paths
 
@@ -22,8 +25,6 @@ namespace GameClient
         public static string modFolderPath;
 
         public static string modAssemblyPath;
-
-        public static string compatibilityPatchesFolderPath;
 
         public static string connectionDataPath;
 

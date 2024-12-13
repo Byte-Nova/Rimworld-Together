@@ -22,6 +22,11 @@ namespace GameClient
 
         public static RT_Dialog_Error_Loop dialogErrorLoop;
 
+        public static RT_Dialog_SiteMenu dialogSiteMenu;
+
+        public static RT_Dialog_SiteMenu_Config dialogSiteMenuConfig;
+
+        public static RT_Dialog_SiteMenu_Info dialogSiteMenuInfo;
 
         public static RT_Dialog_1Input dialog1Input;
 
@@ -56,10 +61,6 @@ namespace GameClient
         public static int dialogButtonListingResultInt;
 
         public static string dialogButtonListingResultString;
-
-        public static RT_Dialog_MarketListing dialogMarketListing;
-
-        public static int dialogMarketListingResult;
 
         public static RT_Dialog_ListingWithTuple dialogTupleListing;
 

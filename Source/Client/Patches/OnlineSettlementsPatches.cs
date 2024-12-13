@@ -14,8 +14,7 @@ namespace GameClient
         public static bool DoPre(Settlement factionBase)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-
-            if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
+            else if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
             else return true;
         }
     }

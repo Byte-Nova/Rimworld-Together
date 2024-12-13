@@ -12,7 +12,7 @@ namespace Shared
 
         public enum SaveStepMode { Send, Receive, Reset }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Discord, Backup, Mods, Chat }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
@@ -21,8 +21,6 @@ namespace Shared
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
         public enum EventStepMode { Send, Receive, Recover }
-
-        public enum MarketStepMode { Add, Request, Reload }
 
         public enum AidStepMode { Send, Receive, Accept, Reject }
 
@@ -40,15 +38,15 @@ namespace Shared
 
         public enum GoodwillTarget { Settlement, Site }
 
-        public enum TransferMode { Gift, Trade, Rebound, Pod, Market }
+        public enum TransferMode { Gift, Trade, Rebound, Pod }
 
-        public enum TransferLocation { Caravan, Settlement, Pod, Market }
+        public enum TransferLocation { Caravan, Settlement, Pod }
 
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod, Market }
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
 
         public enum OfflineActivityStepMode { Request, Deny, Unavailable }
 
-        public enum OnlineActivityStepMode { Request, Accept, Reject, Unavailable, Action, Create, Destroy, Damage, Hediff, Kill, TimeSpeed, GameCondition, Weather, Stop }
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Ready, Unavailable, Stop, Buffer }
 
         public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 
@@ -60,9 +58,9 @@ namespace Shared
 
         public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
 
-        public enum CreationType { Human, Animal, Thing }
+        public enum CreationType { Human, Animal, Corpse, Thing }
 
-        public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward, WorkerError }
+        public enum SiteStepMode { Accept, Build, Destroy, Info, Config}
 
         public enum SettlementStepMode { Add, Remove }
 
@@ -70,9 +68,9 @@ namespace Shared
 
         public enum SaveMode { Disconnect, Autosave, Strict }
 
-        public enum UserColor { Normal, Admin, Console, Private, Discord }
+        public enum UserColor { Normal, Admin, Console, Private, Discord, Server }
 
-        public enum MessageColor { Normal, Admin, Console, Private, Discord }
+        public enum MessageColor { Normal, Admin, Console, Private, Discord, Server }
 
         public enum LoginMode { Login, Register }
 

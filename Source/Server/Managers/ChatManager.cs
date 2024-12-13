@@ -7,9 +7,12 @@ namespace GameServer
     public static class ChatManager
     {
         private static readonly Semaphore logSemaphore = new Semaphore(1, 1);
+        
         private static readonly Semaphore commandSemaphore = new Semaphore(1, 1);
         
         private static readonly string systemName = "CONSOLE";
+
+        private static readonly string notificationName = "SERVER";
 
         public static readonly string[] defaultJoinMessages = new string[]
         {
@@ -17,6 +20,7 @@ namespace GameServer
             "Please be considerate with others and have fun!",
             "Use '/help' to check all the available commands."
         };
+
         public static readonly string[] defaultTextTools = new string[]
         {
             "List of available text tools:",
@@ -38,7 +42,7 @@ namespace GameServer
             commandSemaphore.WaitOne();
 
             ChatCommand toFind = ChatManagerHelper.GetCommandFromName(command[0]);
-            if (toFind == null) SendSystemMessage(client, "Command was not found.");
+            if (toFind == null) SendConsoleMessage(client, "Command was not found.");
             else
             {
                 ChatCommandManager.targetClient = client;
@@ -88,7 +92,7 @@ namespace GameServer
             ChatManagerHelper.ShowChatInConsole(client, message, true);
         }
 
-        public static void BroadcastServerMessage(string message)
+        public static void BroadcastConsoleMessage(string message)
         {
             ChatData chatData = new ChatData();
             chatData._username = systemName;
@@ -105,13 +109,42 @@ namespace GameServer
             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
         }
 
-        public static void SendSystemMessage(ServerClient client, string message)
+        public static void BroadcastServerNotification(string message)
+        {
+            ChatData chatData = new ChatData();
+            chatData._username = notificationName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Server;
+            chatData._messageColor = MessageColor.Server;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
+            NetworkHelper.SendPacketToAllClients(packet);
+
+            if (Master.discordConfig.Enabled && Master.discordConfig.ChatChannelId != 0) DiscordManager.SendMessageToChatChannel(chatData._username, message);
+
+            WriteToLogs(chatData._username, message);
+            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
+        }
+
+        public static void SendConsoleMessage(ServerClient client, string message)
         {
             ChatData chatData = new ChatData();
             chatData._username = systemName;
             chatData._message = message;
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
+            client.listener.EnqueuePacket(packet);
+        }
+
+        public static void SendServerMessage(ServerClient client, string message)
+        {
+            ChatData chatData = new ChatData();
+            chatData._username = notificationName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Server;
+            chatData._messageColor = MessageColor.Server;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
             client.listener.EnqueuePacket(packet);
@@ -143,27 +176,27 @@ namespace GameServer
 
         private static readonly ChatCommand helpCommand = new ChatCommand("/help", 0,
             "Shows a list of all available commands",
-            ChatHelpCommandAction);
+            HelpCommandAction);
 
         private static readonly ChatCommand toolsCommand = new ChatCommand("/tools", 0,
             "Shows a list of all available chat tools",
-            ChatToolsCommandAction);
+            ToolsCommandAction);
 
         private static readonly ChatCommand pingCommand = new ChatCommand("/ping", 0,
             "Checks if the connection to the server is working",
-            ChatPingCommandAction);
+            PingCommandAction);
 
         private static readonly ChatCommand disconnectCommand = new ChatCommand("/dc", 0,
             "Forcefully disconnects you from the server",
-            ChatDisconnectCommandAction);
+            DisconnectCommandAction);
 
-        private static readonly ChatCommand stopOnlineActivityCommand = new ChatCommand("/sv", 0,
-            "Forcefully disconnects you from a visit",
-            ChatStopOnlineActivityCommandAction);
+        private static readonly ChatCommand stopOnlineActivityCommand = new ChatCommand("/stopactivity", 0,
+            "Forcefully disconnects you from an activity",
+            StopOnlineActivityCommandAction);
         
         private static readonly ChatCommand privateMessage = new ChatCommand("/w", 0,
             "Sends a private message to a specific user",
-            ChatPrivateMessageCommandAction);
+            PrivateMessageCommandAction);
 
         public static readonly ChatCommand[] chatCommands = new ChatCommand[]
         {
@@ -175,7 +208,7 @@ namespace GameServer
             privateMessage
         };
 
-        private static void ChatHelpCommandAction()
+        private static void HelpCommandAction()
         {
             if (targetClient == null) return;
             else
@@ -183,41 +216,41 @@ namespace GameServer
                 List<string> messagesToSend = new List<string> { "List of available commands:" };
                 foreach (ChatCommand command in chatCommands) messagesToSend.Add($"{command.prefix} - {command.description}");
 
-                foreach (string str in messagesToSend) ChatManager.SendSystemMessage(targetClient, str);
+                foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
             }
         }
 
-        private static void ChatToolsCommandAction()
+        private static void ToolsCommandAction()
         {
             if (targetClient == null) return;
             else
             {
                 foreach (string str in ChatManager.defaultTextTools)
                 {
-                    ChatManager.SendSystemMessage(targetClient, str);
+                    ChatManager.SendConsoleMessage(targetClient, str);
                 }
             }
         }
 
-        private static void ChatPingCommandAction()
+        private static void PingCommandAction()
         {
             if (targetClient == null) return;
-            else ChatManager.SendSystemMessage(targetClient, "Pong!");
+            else ChatManager.SendConsoleMessage(targetClient, "Pong!");
         }
 
-        private static void ChatDisconnectCommandAction()
+        private static void DisconnectCommandAction()
         {
             if (targetClient == null) return;
             else targetClient.listener.disconnectFlag = true;
         }
 
-        private static void ChatStopOnlineActivityCommandAction()
+        private static void StopOnlineActivityCommandAction()
         {
             if (targetClient == null) return;
-            else OnlineActivityManager.SendVisitStop(targetClient);
+            else OnlineActivityManager.StopActivity(targetClient);
         }
 
-        private static void ChatPrivateMessageCommandAction()
+        private static void PrivateMessageCommandAction()
         {
             if (targetClient == null) return;
             else
@@ -225,15 +258,15 @@ namespace GameServer
                 string message = "";
                 for (int i = 2; i < command.Length; i++) message += command[i] + " ";
 
-                if (string.IsNullOrWhiteSpace(message)) ChatManager.SendSystemMessage(targetClient, "Message was empty.");
+                if (string.IsNullOrWhiteSpace(message)) ChatManager.SendConsoleMessage(targetClient, "Message was empty.");
                 else
                 {
                     ServerClient toFind = ChatManagerHelper.GetUserFromName(ChatManagerHelper.GetUsernameFromMention(command[1]));
-                    if (toFind == null) ChatManager.SendSystemMessage(targetClient, "User was not found.");
+                    if (toFind == null) ChatManager.SendConsoleMessage(targetClient, "User was not found.");
                     else
                     {
                         //Don't allow players to send wispers to themselves
-                        if (toFind == targetClient) ChatManager.SendSystemMessage(targetClient, "Can't send a whisper to yourself.");
+                        if (toFind == targetClient) ChatManager.SendConsoleMessage(targetClient, "Can't send a whisper to yourself.");
                         else
                         {
                             ChatData chatData = new ChatData();

@@ -54,13 +54,14 @@ namespace GameClient
 
         //Saves the client preferences
 
-        public static void SaveClientPreferences(string autosaveInterval)
+        public static void SaveClientPreferences()
         {
             ClientPreferencesFile newClientPreferences;
             if (File.Exists(Master.clientPreferencesPath)) newClientPreferences = Serializer.SerializeFromFile<ClientPreferencesFile>(Master.clientPreferencesPath);
             else newClientPreferences = new ClientPreferencesFile();
 
-            newClientPreferences.AutosaveInterval = autosaveInterval;
+            newClientPreferences.AutosaveInterval = ClientValues.autosaveDays.ToString();
+            newClientPreferences.VerboseMode = (int)ClientValues.currentVerboseMode;
 
             Serializer.SerializeToFile(Master.clientPreferencesPath, newClientPreferences);
         }
@@ -76,14 +77,16 @@ namespace GameClient
                 newPreferences = Serializer.SerializeFromFile<ClientPreferencesFile>(Master.clientPreferencesPath);
                 ClientValues.autosaveDays = float.Parse(newPreferences.AutosaveInterval);
                 ClientValues.autosaveInternalTicks = Mathf.RoundToInt(ClientValues.autosaveDays * 60000f);
+                ClientValues.currentVerboseMode = (ClientValues.VerboseMode)newPreferences.VerboseMode;
             }
 
             else
             {
                 ClientValues.autosaveDays = 3;
                 ClientValues.autosaveInternalTicks = Mathf.RoundToInt(ClientValues.autosaveDays * 60000f);
+                ClientValues.currentVerboseMode = ClientValues.VerboseMode.None;
 
-                SaveClientPreferences(ClientValues.autosaveDays.ToString());
+                SaveClientPreferences();
             }
         }
     }
