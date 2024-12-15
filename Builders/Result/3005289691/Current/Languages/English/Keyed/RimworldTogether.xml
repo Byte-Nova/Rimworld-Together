@@ -64,14 +64,14 @@
     <RTLoginSelect>Login Select</RTLoginSelect>
     <RTLoginSelectDesc>Choose your login type</RTLoginSelectDesc>
     <RTLoginWait>Waiting for login response</RTLoginWait>
-    <RTPassword>Password</RTPassword>
-    <RTConfirmPassword>Confirm Password</RTConfirmPassword>
+    <RTLoginPassword>Password</RTLoginPassword>
+    <RTLoginConfirmPassword>Confirm Password</RTLoginConfirmPassword>
     <RTConnectionDetails>Connection Details</RTConnectionDetails>
     <RTServerIP>IP</RTServerIP>
     <RTServerPort>Port</RTServerPort>
     <RTTryingToConnect>Trying to connect to server</RTTryingToConnect>
     <RTInvalidServerDetails>Server details are invalid! Please try again!</RTInvalidServerDetails>
-    <RTLoginInvalid>Login details are invalid! Please try again!</RTLoginInvalid>
+    <RTLoginInvalidDetails>Login details are invalid! Please try again!</RTLoginInvalidDetails>
     <RTRegisterWait>Waiting for register response</RTRegisterWait>
     <RTRegisterInvalid>Register details are invalid! Please try again!</RTRegisterInvalid>
     <RTRegisterError>There was an error registering! Please try again!</RTRegisterError>
@@ -111,8 +111,8 @@
     <RTTransferGift>Gift</RTTransferGift>
     <RTTransferTrade>Trade</RTTransferTrade>
     <RTTransferContinue>Are you sure you want to continue with the transfer?</RTTransferContinue>
-    <RTTransferAcceptSure>Are you sure you want to accept?</RTTransferAcceptSure>
-    <RTTransferCancelSure>Are you sure you want to decline?</RTTransferCancelSure>
+    <RTTransferAcceptConfirm>Are you sure you want to accept?</RTTransferAcceptConfirm>
+    <RTTransferCancelConfirm>Are you sure you want to decline?</RTTransferCancelConfirm>
     <RTTransferSuccess>Transfer was a success!</RTTransferSuccess>
     <RTTransferCancelled>Transfer was cancelled!</RTTransferCancelled>
     <RTTransferPlayerRejected>Player rejected the trade!</RTTransferPlayerRejected>
@@ -274,10 +274,10 @@
     <RTOnline>[BETA] Online</RTOnline>
     <RTOffline>Offline</RTOffline>
     <RTAlreadyIRT>You are already in a real time activity!</RTAlreadyIRT>
-    <RTVisitedBy>Visited by {0}, accept?</RTVisitedBy>
+    <RTOnlineActivityReceive>Requested activity from {0}. Accept?</RTOnlineActivityReceive>
     <RTPlayerRejected>Player rejected the activity!</RTPlayerRejected>
     <RTPlayerMustOnline>Player must be online!</RTPlayerMustOnline>
-    <RTOnlineEnded>Online activity ended</RTOnlineEnded>
+    <RTActivityEnded>Activity has ended!</RTActivityEnded>
     
     <RTSpyMenu>Spy Settlement</RTSpyMenu>
     <RTSpyMenuDesc>Spy this settlement</RTSpyMenuDesc>
@@ -312,8 +312,10 @@
     <RTRoadBuild>Build</RTRoadBuild>
     <RTRoadDestroy>Destroy</RTRoadDestroy>
     
-    
+    <!-- TODO -->
+    <!-- Rework -->
     <!-- Sites -->
+    
     <RTBuildPersonalSite>Build Personal Site</RTBuildPersonalSite>
     <RTBuildPersonalSiteDesc>Build an utility site for your convenience</RTBuildPersonalSiteDesc>
     <RTBuildablePersonalSites>Buildable Personal Sites</RTBuildablePersonalSites>
@@ -339,4 +341,13 @@
     <RTSiteRewardsDesc>You have received site rewards!</RTSiteRewardsDesc>
     <RTSiteCost>This site will cost you {0} silver, continue?</RTSiteCost>
     <RTSiteBuildingWait>Waiting for building</RTSiteBuildingWait>
+    
+    <!-- Site Menu-->
+    
+    <RTSiteMenuTitle>Choose a site</RTSiteMenuTitle>
+    <RTSiteMenuInvalidConfig>Site could not be loaded because of invalid configuration</RTSiteMenuInvalidConfig>
+    <RTSiteMenuTimeInterval>Produces every {0} minutes:</RTSiteMenuTimeInterval>
+    <RTSiteMenuChoose>Choose</RTSiteMenuChoose>
+    <RTSiteMenuCost>Cost:</RTSiteMenuCost>
+    <RTSiteMenuBuy>Buy</RTSiteMenuBuy>
 </LanguageData>

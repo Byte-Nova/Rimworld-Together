@@ -31,7 +31,7 @@ namespace GameClient
 
             if (isInvalid)
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("Server details are invalid! Please try again!");
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RTInvalidServerDetails".Translate());
                 DialogManager.PushNewDialog(d1);
             }
 

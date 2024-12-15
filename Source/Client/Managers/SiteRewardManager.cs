@@ -39,7 +39,7 @@ namespace GameClient
             if (rewards.Count > 0)
             {
                 TransferManager.GetTransferedItemsToSettlement(rewards.ToArray(), true, false, false);
-                RimworldManager.GenerateLetter("Site rewards", $"You've received your site rewards", LetterDefOf.PositiveEvent);
+                RimworldManager.GenerateLetter("RTSiteRewards".Translate(), "RTSiteRewardsDesc".Translate(), LetterDefOf.PositiveEvent);
                 Logger.Message("Rewards delivered", LogImportanceMode.Verbose);
             }
         }

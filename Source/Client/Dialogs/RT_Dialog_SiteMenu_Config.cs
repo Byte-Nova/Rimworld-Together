@@ -66,7 +66,7 @@ namespace GameClient
         {
             if (invalid)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Site could not be loaded because of invalid configuration"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RTSiteMenuInvalidConfig".Translate()));
                 this.Close();
             }
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
@@ -92,13 +92,13 @@ namespace GameClient
             Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), sitePartDef.description);
             num += heightDesc;
 
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces every {SiteManager.siteValues.TimeIntervalMinutes.ToString()} minutes:");
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"RTSiteMenuTimeInterval".Translate(SiteManager.siteValues.TimeIntervalMinutes.ToString()));
             num += 20f;
             Text.Font = GameFont.Small;
             foreach (ThingDef thing in rewardThing.Keys)
             {
                 Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25f), $"- {thing.label} {rewardThing[thing].ToString()} ");
-                if (Widgets.ButtonText(new Rect(viewRightColumn.width + 210f, num, viewRightColumn.width - 210f, 25f), "Choose"))
+                if (Widgets.ButtonText(new Rect(viewRightColumn.width + 210f, num, viewRightColumn.width - 210f, 25f), "RTSiteMenuChoose".Translate()))
                 {
                     SiteManager.RequestSiteChangeConfig(configFile, thing.defName);
                     DialogManager.dialogSiteMenu.Close();
