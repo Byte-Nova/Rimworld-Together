@@ -18,6 +18,8 @@ namespace Shared
         public RoadValuesFile _roadValues;
 
         public DifficultyValuesFile _difficultyValues;
+        
+        public HardmodeValuesFile _hardmodeValues;
 
         public PlanetNPCSettlement[] _npcSettlements;
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using RimWorld;
+using Shared;
 using Verse;
 using Verse.AI.Group;
 
@@ -19,7 +20,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost(Pawn __instance)
             {
-                if (!SessionValues.actionValues.HardcoreMode) return;
+                if (!SessionValues.actionValues.HardcoreMode && !HardmodePatchesHelper.hardmodeValues.SaveOnColonistDeath) return;
                 if ((__instance.Faction != null && __instance.Faction.IsPlayer && __instance.RaceProps.Humanlike)|| __instance.IsPrisoner)
                     SaveManager.ForceSave();
             }
@@ -31,7 +32,7 @@ namespace GameClient
             [HarmonyPostfix]
             public static void DoPost(Letter let)
             {
-                if (!SessionValues.actionValues.HardcoreMode) return;
+                if (!SessionValues.actionValues.HardcoreMode && !HardmodePatchesHelper.hardmodeValues.SaveOnThreats) return;
                 if (forceSavedThreats.Contains(let.def.defName))
                     SaveManager.ForceSave();
             }
@@ -44,7 +45,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(Pawn_HealthTracker __instance)
         {
-            if (!SessionValues.actionValues.HardcoreMode) return;
+            if (!SessionValues.actionValues.HardcoreMode && !HardmodePatchesHelper.hardmodeValues.SaveOnDowned) return;
             foreach (Map map in Find.Maps.Where(map => map.IsPlayerHome))
             {
                 foreach (Pawn colonist in map.mapPawns.FreeColonists)
@@ -64,7 +65,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(BossgroupWorker __instance)
         {
-            if (!SessionValues.actionValues.HardcoreMode) return;
+            if (!SessionValues.actionValues.HardcoreMode && !HardmodePatchesHelper.hardmodeValues.SaveOnBiotechBossSpawn) return;
             if (!ModsConfig.BiotechActive) return;
                 SaveManager.ForceSave();
         }
@@ -75,7 +76,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(BossgroupWorker __instance)
         {
-            if (!SessionValues.actionValues.HardcoreMode) return;
+            if (!SessionValues.actionValues.HardcoreMode && !HardmodePatchesHelper.hardmodeValues.SaveOnMonolithLevelUp) return;
             if (!ModsConfig.AnomalyActive) return;
                 SaveManager.ForceSave();
         }
@@ -86,7 +87,7 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost(BossgroupWorker __instance)
         {
-            if (!SessionValues.actionValues.HardcoreMode) return;
+            if (!SessionValues.actionValues.HardcoreMode && !HardmodePatchesHelper.hardmodeValues.SaveOnMonolithLevelUp) return;
             if (!ModsConfig.AnomalyActive) return;
                 SaveManager.ForceSave();
         }
@@ -98,9 +99,17 @@ namespace GameClient
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (!SessionValues.actionValues.HardcoreMode) return;
+            if (!SessionValues.actionValues.HardcoreMode && !HardmodePatchesHelper.hardmodeValues.SaveOnPsychicRituals) return;
             if (!ModsConfig.AnomalyActive) return;
                 SaveManager.ForceSave();
+        }
+    }
+    public class HardmodePatchesHelper
+    {
+        public static HardmodeValuesFile hardmodeValues;
+        public static void SetValues(ServerGlobalData serverGlobalData)
+        {
+            hardmodeValues = serverGlobalData._hardmodeValues;
         }
     }
 }

@@ -18,6 +18,7 @@ namespace GameClient
             CaravanManagerHelper.SetValues(serverGlobalData);
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
+            HardmodePatchesHelper.SetValues(serverGlobalData);
         }
     }
 }
