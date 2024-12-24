@@ -27,7 +27,7 @@ namespace GameClient
             SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.contents);
             if (data._stepMode == SaveStepMode.Receive) ReceiveSavePartFromServer(data);
             else if (data._stepMode == SaveStepMode.Send) SendSavePartToServer();
-            else throw new System.Exception();
+            else throw new Exception();
         }
 
         public static void ForceSave()

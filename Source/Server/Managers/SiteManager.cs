@@ -18,8 +18,7 @@ namespace GameServer
             }
 
             SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
-
-            switch(siteData._stepMode)
+            switch (siteData._stepMode)
             {
                 case SiteStepMode.Build:
                     AddNewSite(client, siteData);
@@ -32,18 +31,15 @@ namespace GameServer
                 case SiteStepMode.Info:
                     SiteManagerHelper.GetSiteInfo(client, siteData);
                     break;
-
-                case SiteStepMode.Deposit:
-                    DepositWorkerIntoSite(client, siteData);
+                    
+                case SiteStepMode.Config:
+                    ChangeUserSiteConfig(client, siteData);
                     break;
 
-                case SiteStepMode.Retrieve:
-                    RetrieveWorkerFromSite(client, siteData);
-                    break;
             }
         }
 
-        public static void ConfirmNewSite(ServerClient client, SiteFile siteFile)
+        public static void ConfirmNewSite(ServerClient client, SiteIdendityFile siteFile)
         {
             SiteManagerHelper.SaveSite(siteFile);
 
@@ -72,68 +68,29 @@ namespace GameServer
             else if (SiteManagerHelper.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a site");
             else
             {
-                SiteFile siteFile = null;
+                SiteIdendityFile siteFile = new SiteIdendityFile();
 
-                if (siteData._siteFile.FactionFile != null)
-                {
-                    FactionFile factionFile = client.userFile.FactionFile;
-
-                    if (FactionManagerHelper.GetMemberRank(factionFile, client.userFile.Username) == FactionRanks.Member)
-                    {
-                        ResponseShortcutManager.SendNoPowerPacket(client, new PlayerFactionData());
-                        return;
-                    }
-
-                    else
-                    {
-                        siteFile = new SiteFile();
-                        siteFile.Tile = siteData._siteFile.Tile;
-                        siteFile.Owner = client.userFile.Username;
-                        siteFile.Type = siteData._siteFile.Type;
-                        siteFile.FactionFile = factionFile;
-                    }
-                }
-
-                else
-                {
-                    siteFile = new SiteFile();
-                    siteFile.Tile = siteData._siteFile.Tile;
-                    siteFile.Owner = client.userFile.Username;
-                    siteFile.Type = siteData._siteFile.Type;
-                }
-
+                siteFile.Tile = siteData._siteFile.Tile;
+                siteFile.Owner = client.userFile.Username;
+                siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._siteFile.Type.DefName);
+                if (client.userFile.FactionFile != null) siteFile.FactionFile = client.userFile.FactionFile;
                 ConfirmNewSite(client, siteFile);
             }
         }
 
         private static void DestroySite(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
+            SiteIdendityFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
-            if (siteFile.FactionFile != null)
-            {
-                if (siteFile.FactionFile.Name != client.userFile.FactionFile.Name)
-                {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but player wasn't a part of faction {siteFile.FactionFile.Name}");
-                }
-
-                else
-                {
-                    FactionFile factionFile = client.userFile.FactionFile;
-                    if (FactionManagerHelper.GetMemberRank(factionFile, client.userFile.Username) != FactionRanks.Member) DestroySiteFromFile(siteFile);
-                    else ResponseShortcutManager.SendNoPowerPacket(client, new PlayerFactionData());
-                }
-            }
-
+            if (siteFile.Owner == client.userFile.Username) DestroySiteFromFile(siteFile);
             else
             {
-                if (siteFile.Owner != client.userFile.Username) ResponseShortcutManager.SendIllegalPacket(client, $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but the player {siteFile.Owner} owns it");
-                else if (siteFile.WorkerData != null) ResponseShortcutManager.SendWorkerInsidePacket(client);
-                else DestroySiteFromFile(siteFile);
+                ResponseShortcutManager.SendIllegalPacket(client, 
+                    $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but {siteFile.Owner} owns it");
             }
         }
 
-        public static void DestroySiteFromFile(SiteFile siteFile)
+        public static void DestroySiteFromFile(SiteIdendityFile siteFile)
         {
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.Destroy;
@@ -146,68 +103,6 @@ namespace GameServer
             Logger.Warning($"[Remove site] > {siteFile.Tile}");
         }
 
-        private static void DepositWorkerIntoSite(ServerClient client, SiteData siteData)
-        {
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
-
-            if (siteFile.FactionFile != null)
-            {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to deposit worker into faction site");
-            }
-
-            else
-            {
-                if (siteFile.Owner != client.userFile.Username)
-                {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to deposit a worker in the site at tile {siteData._siteFile.Tile}, but the player {siteFile.Owner} owns it");
-                }
-
-                else if (siteFile.WorkerData != null)
-                {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to deposit a worker in the site at tile {siteData._siteFile.Tile}, but the site already has a worker");
-                }
-
-                else
-                {
-                    siteFile.WorkerData = siteData._siteFile.WorkerData;
-                    SiteManagerHelper.SaveSite(siteFile);
-                }
-            }
-        }
-
-        private static void RetrieveWorkerFromSite(ServerClient client, SiteData siteData)
-        {
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
-
-            if (siteFile.FactionFile != null)
-            {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to extract worker from faction site");
-            }
-
-            else
-            {
-                if (siteFile.Owner != client.userFile.Username)
-                {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData._siteFile.Tile}, but the player {siteFile.Owner} of faction {siteFile.FactionFile.Name} owns it");
-                }
-
-                else if (siteFile.WorkerData == null)
-                {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to retrieve a worker from the site at tile {siteData._siteFile.Tile}, but it has no workers");
-                }
-
-                else
-                {
-                    siteData._siteFile.WorkerData = siteFile.WorkerData;
-                    siteFile.WorkerData = null;
-                    SiteManagerHelper.SaveSite(siteFile);
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
-                    client.listener.EnqueuePacket(packet);
-                }
-            }
-        }
-
         public static async Task StartSiteTicker()
         {
             while (true)
@@ -215,51 +110,102 @@ namespace GameServer
                 try { SiteRewardTick(); }
                 catch (Exception e) { Logger.Error($"Site tick failed, this should never happen. Exception > {e}"); }
 
-                await Task.Delay(TimeSpan.FromMilliseconds(taskDelayMS));
+                await Task.Delay(TimeSpan.FromMinutes(Master.siteValues.TimeIntervalMinutes));
             }
         }
 
         public static void SiteRewardTick()
         {
-            SiteFile[] sites = SiteManagerHelper.GetAllSites();
-
-            SiteData siteData = new SiteData();
-            siteData._stepMode = SiteStepMode.Reward;
+            SiteIdendityFile[] sites = SiteManagerHelper.GetAllSites();
 
             foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
-                siteData._sitesWithRewards.Clear();
+                List<SiteRewardFile> data = new List<SiteRewardFile>();
 
                 //Get player specific sites
-
-                List<SiteFile> playerSites = sites.ToList().FindAll(fetch => fetch.FactionFile == null && fetch.Owner == client.userFile.Username);
-                foreach (SiteFile site in playerSites)
+                List<SiteIdendityFile> sitesToAdd = new List<SiteIdendityFile>();
+                if (client.userFile.FactionFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Username);
+                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
+                foreach (SiteIdendityFile site in sitesToAdd)
                 {
-                    if (site.WorkerData != null)
+                    SiteRewardFile rewardFile = new SiteRewardFile();
+                    foreach (SiteRewardFile reward in site.Type.Rewards)
                     {
-                        siteData._sitesWithRewards.Add(site.Tile);
+                        if (client.userFile.SiteConfigs.Any(S => S.RewardDefName == reward.RewardDef))
+                        {
+                            rewardFile.RewardDef = reward.RewardDef;
+                            rewardFile.RewardAmount = reward.RewardAmount;
+                        }
                     }
+
+                    if (rewardFile.RewardDef == "") rewardFile = site.Type.Rewards.First();
+
+                    data.Add(rewardFile);
                 }
 
-                //Get faction specific sites
-
-                if (client.userFile.FactionFile != null)
-                {
-                    List<SiteFile> factionSites = sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.Name == client.userFile.FactionFile.Name);
-                    foreach (SiteFile site in factionSites)
-                    {
-                        if (site.FactionFile != null) siteData._sitesWithRewards.Add(site.Tile);
-                    }
-                }
-
-                if (siteData._sitesWithRewards.Count() > 0)
-                {
-                    Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
-                    client.listener.EnqueuePacket(packet);
-                }
+                Packet packet = Packet.CreatePacketFromObject(nameof(SiteRewardManager), new RewardData() { _rewardData = data.ToArray() });
+                client.listener.EnqueuePacket(packet);
             }
 
             Logger.Warning($"[Site tick]");
+        }
+
+        public static void UpdateAllSiteInfo()
+        {
+            foreach (SiteIdendityFile site in SiteManagerHelper.GetAllSites())
+            {
+                foreach (SiteInfoFile config in Master.siteValues.SiteInfoFiles)
+                {
+                    if (config.DefName == site.Type.DefName)
+                    {
+                        site.Type = config.Clone();
+                        SiteManagerHelper.SaveSite(site);
+                    }
+                }
+            }
+
+            foreach (UserFile file in UserManagerHelper.GetAllUserFiles())
+            {
+                foreach (SiteConfigFile config in file.SiteConfigs)
+                {
+                    if (!Master.siteValues.SiteInfoFiles.Any(site => site.Rewards.Any(reward => reward.RewardDef == config.RewardDefName)))
+                    {
+                        Logger.Warning($"{file.Username}'s config was outdated for site {config.DefName}. Updating to new default config.", LogImportanceMode.Verbose);
+                        config.RewardDefName = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == config.DefName).First().Rewards.First().RewardDef;
+                        UserManagerHelper.SaveUserFile(file);
+                    }
+                }
+            }
+        }
+
+        public static void ChangeUserSiteConfig(ServerClient client, SiteData data)
+        {
+            SiteRewardConfigData config = data._siteConfigFile;
+            SiteConfigFile toModify = client.userFile.SiteConfigs.First(fetch => fetch.DefName == config._siteDef);
+            toModify.RewardDefName = config._rewardDef;
+
+            UserManagerHelper.SaveUserFile(client.userFile);
+        }
+
+        public static void SetSiteInfoForClient(ServerClient client)
+        {
+            if (client.userFile.SiteConfigs.Length > 0) return;
+            else
+            {
+                List<SiteConfigFile> configFiles = new List<SiteConfigFile>();
+                for (int i = 0; i < Master.siteValues.SiteInfoFiles.Length; i++)
+                {
+                    SiteConfigFile toAdd = new SiteConfigFile();
+                    toAdd.DefName = Master.siteValues.SiteInfoFiles[i].DefName;
+                    toAdd.RewardDefName = Master.siteValues.SiteInfoFiles[i].Rewards.First().RewardDef;
+
+                    configFiles.Add(toAdd);
+                }
+
+                client.userFile.SiteConfigs = configFiles.ToArray();
+
+                UserManagerHelper.SaveUserFile(client.userFile);
+            }
         }
     }
 
@@ -267,7 +213,7 @@ namespace GameServer
     {
         public readonly static string fileExtension = ".mpsite";
 
-        public static void SaveSite(SiteFile siteFile)
+        public static void SaveSite(SiteIdendityFile siteFile)
         {
             siteFile.SavingSemaphore.WaitOne();
 
@@ -277,36 +223,36 @@ namespace GameServer
             siteFile.SavingSemaphore.Release();
         }
 
-        public static void UpdateFaction(SiteFile siteFile, FactionFile toUpdateWith)
+        public static void UpdateFaction(SiteIdendityFile siteFile, FactionFile toUpdateWith)
         {
             siteFile.FactionFile = toUpdateWith;
             SaveSite(siteFile);
         }
 
-        public static SiteFile[] GetAllSitesFromUsername(string username)
+        public static SiteIdendityFile[] GetAllSitesFromUsername(string username)
         {
-            List<SiteFile> sitesList = new List<SiteFile>();
+            List<SiteIdendityFile> sitesList = new List<SiteIdendityFile>();
 
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
                 if (!site.EndsWith(fileExtension)) continue;
 
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
-                if (siteFile.FactionFile == null && siteFile.Owner == username) sitesList.Add(siteFile);
+                SiteIdendityFile siteFile = Serializer.SerializeFromFile<SiteIdendityFile>(site);
+                if (siteFile.Owner == username) sitesList.Add(siteFile);
             }
 
             return sitesList.ToArray();
         }
 
-        public static SiteFile GetSiteFileFromTile(int tileToGet)
+        public static SiteIdendityFile GetSiteFileFromTile(int tileToGet)
         {
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
                 if (!site.EndsWith(fileExtension)) continue;
 
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
+                SiteIdendityFile siteFile = Serializer.SerializeFromFile<SiteIdendityFile>(site);
                 if (siteFile.Tile == tileToGet) return siteFile;
             }
 
@@ -315,24 +261,25 @@ namespace GameServer
 
         public static void GetSiteInfo(ServerClient client, SiteData siteData)
         {
-            SiteFile siteFile = GetSiteFileFromTile(siteData._siteFile.Tile);
+            SiteIdendityFile siteFile = GetSiteFileFromTile(siteData._siteFile.Tile);
             siteData._siteFile = siteFile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(packet);
         }
 
-        public static SiteFile[] GetAllSites()
+        public static SiteIdendityFile[] GetAllSites()
         {
-            List<SiteFile> sitesList = new List<SiteFile>();
-
-            string[] sites = Directory.GetFiles(Master.sitesPath);
-            foreach (string site in sites)
+            List<SiteIdendityFile> sitesList = new List<SiteIdendityFile>();
+            try
             {
-                if (!site.EndsWith(fileExtension)) continue;
-                sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
-            }
-
+                string[] sites = Directory.GetFiles(Master.sitesPath);
+                foreach (string site in sites)
+                {
+                    if (!site.EndsWith(fileExtension)) continue;
+                    sitesList.Add(Serializer.SerializeFromFile<SiteIdendityFile>(site));
+                }
+            } catch(Exception ex) { Logger.Error($"Sites could not be loaded, either your formatting is wrong in the file 'SiteValues.json' or you have not updated your sites to the newest version ('Update' command).\n\n{ex.ToString()}"); }
             return sitesList.ToArray();
         }
 
@@ -343,11 +290,245 @@ namespace GameServer
             {
                 if (!site.EndsWith(fileExtension)) continue;
 
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
+                SiteIdendityFile siteFile = Serializer.SerializeFromFile<SiteIdendityFile>(site);
                 if (siteFile.Tile == tileToCheck) return true;
             }
 
             return false;
+        }
+
+        public static SiteInfoFile GetTypeFromDef(string defName) 
+        {
+            SiteInfoFile site = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == defName).FirstOrDefault();
+            if(site != null) return site;
+            return null;
+        }
+
+        public static void SetSitePresets()
+        {
+            List<SiteInfoFile> siteInfoFiles = new List<SiteInfoFile>();
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTFarmland",
+                DefNameCost = ["Silver"],
+                Cost = [500],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "RawRice",
+                        RewardAmount = 50
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "RawCorn",
+                        RewardAmount = 50
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "SmokeleafLeaves",
+                        RewardAmount = 25
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "PsychoidLeaves",
+                        RewardAmount = 25
+                    }
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTHunterCamp",
+                DefNameCost = ["Silver"],
+                Cost = [500],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Meat_Muffalo",
+                        RewardAmount = 125
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Meat_Human",
+                        RewardAmount = 125
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Leather_Chinchilla",
+                        RewardAmount = 60
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Leather_Bear",
+                        RewardAmount = 60
+                    },
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTQuarry",
+                DefNameCost = ["Silver"],
+                Cost = [500],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "BlocksGranite",
+                        RewardAmount = 50
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "BlocksMarble",
+                        RewardAmount = 50
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Steel",
+                        RewardAmount = 30
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Plasteel",
+                        RewardAmount = 10
+                    }
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTSawmill",
+                DefNameCost = ["Silver"],
+                Cost = [300],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "WoodLog",
+                        RewardAmount = 100
+                    }
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTBank",
+                DefNameCost = ["Silver"],
+                Cost = [750],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Silver",
+                        RewardAmount = 50
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Gold",
+                        RewardAmount = 15
+                    }
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTLaboratory",
+                DefNameCost = ["Silver"],
+                Cost = [750],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "ComponentIndustrial",
+                        RewardAmount = 10
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "ComponentSpacer",
+                        RewardAmount = 2
+                    },
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTRefinery",
+                DefNameCost = ["Silver"],
+                Cost = [750],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Chemfuel",
+                        RewardAmount = 50
+                    }
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTHerbalWorkshop",
+                DefNameCost = ["Silver"],
+                Cost = [750],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "MedicineHerbal",
+                        RewardAmount = 10
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "MedicineIndustrial",
+                        RewardAmount = 2
+                    }
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTTextileFactory",
+                DefNameCost = ["Silver"],
+                Cost = [750],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "Cloth",
+                        RewardAmount = 50
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "DevilstrandCloth",
+                        RewardAmount = 30
+                    }
+                ]
+            });
+
+            siteInfoFiles.Add(new SiteInfoFile()
+            {
+                DefName = "RTFoodProcessor",
+                DefNameCost = ["Silver"],
+                Cost = [750],
+                Rewards =
+                [
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "MealSurvivalPack",
+                        RewardAmount = 10
+                    },
+                    new SiteRewardFile()
+                    {
+                        RewardDef = "MealNutrientPaste",
+                        RewardAmount = 30
+                    }
+                ]
+            });
+
+            Master.siteValues.SiteInfoFiles = siteInfoFiles.ToArray();
         }
     }
 }

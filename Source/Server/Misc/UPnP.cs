@@ -23,7 +23,6 @@ namespace GameServer
         
         public void TryToMapPort()
         {
-
             NatUtility.StartDiscovery();
 
             for(int i = 0; i < 20; i++)

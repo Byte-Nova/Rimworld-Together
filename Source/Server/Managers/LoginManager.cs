@@ -74,6 +74,8 @@ namespace GameServer
 
         private static void PostLogin(ServerClient client)
         {
+            SiteManager.SetSiteInfoForClient(client);
+
             UserManager.SendPlayerRecount();
 
             GlobalDataManager.SendServerGlobalData(client);

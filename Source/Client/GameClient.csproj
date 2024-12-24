@@ -1,36 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<RootNamespace>GameClient</RootNamespace>
+		<Nullable>enable</Nullable>
+		<LangVersion>9</LangVersion>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <RootNamespace>GameClient</RootNamespace>
-    <Nullable>enable</Nullable>
-    <LangVersion>9</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<DebugType>full</DebugType>
+	</PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugType>full</DebugType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;ENABLE_UNSAFE_MSGPACK;</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<DebugType>full</DebugType>
+		<Optimize>true</Optimize>
+	</PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;ENABLE_UNSAFE_MSGPACK;</DefineConstants>
-  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.4104" />
+		<PackageReference Include="Lib.Harmony" Version="2.3.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.4104" />
-    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="Newtonsoft.Json">
+		<HintPath>Assemblies\Client\Newtonsoft.Json.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-	  <Reference Include="Newtonsoft.Json">
-		<HintPath>..\Shared\Assemblies\Client\Newtonsoft.Json.dll</HintPath>
-	  </Reference>
-  </ItemGroup>
-	
-  <Import Project="..\Shared\Shared.projitems" Label="Shared" />
+	<Import Project="..\Shared\Shared.projitems" Label="Shared" />
 </Project>

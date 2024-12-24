@@ -101,22 +101,5 @@ namespace GameClient
             DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
                 loginData._extraDetails.ToArray()));
         }
-
-        public static bool CheckIfMapHasConflictingMods(MapFile mapFile)
-        {
-            string[] currentMods = GetRunningModList().UnsortedMods;
-
-            foreach (string mod in mapFile.Mods.UnsortedMods)
-            {
-                if (!currentMods.Contains(mod)) return true;
-            }
-
-            foreach (string mod in currentMods)
-            {
-                if (!mapFile.Mods.UnsortedMods.Contains(mod)) return true;
-            }
-
-            return false;
-        }
     }
 }

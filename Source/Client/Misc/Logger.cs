@@ -48,8 +48,8 @@ namespace GameClient
         private static bool CheckIfShouldPrint(LogImportanceMode importance)
         {
             if (importance == LogImportanceMode.Normal) return true;
-            else if (importance == LogImportanceMode.Verbose && ClientValues.verboseBool) return true;
-            else if (importance == LogImportanceMode.Extreme && ClientValues.extremeVerboseBool) return true;
+            else if (importance == LogImportanceMode.Verbose && (int)ClientValues.currentVerboseMode >= (int)ClientValues.VerboseMode.Verbose) return true;
+            else if (importance == LogImportanceMode.Extreme && (int)ClientValues.currentVerboseMode == (int)ClientValues.VerboseMode.Extreme) return true;
             else return false;
         }
     }

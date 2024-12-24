@@ -57,10 +57,10 @@ namespace GameServer
             Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
 
             if (Master.isClosing) newServerClient.listener.disconnectFlag = true;
-            else if (Master.worldValues == null && connectedClients.Count() > 0) LoginManager.SendLoginResponse(newServerClient, LoginResponse.NoWorld);
+            else if (Master.worldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0) LoginManager.SendLoginResponse(newServerClient, LoginResponse.NoWorld);
             else
             {
-                if (connectedClients.ToArray().Count() >= int.Parse(Master.serverConfig.MaxPlayers))
+                if (NetworkHelper.GetConnectedClientsSafe().Length >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
                     LoginManager.SendLoginResponse(newServerClient, LoginResponse.ServerFull);
                     Logger.Warning($"Server Full");

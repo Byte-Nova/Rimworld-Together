@@ -7,6 +7,12 @@ namespace GameServer
     {
         public static void ParsePacket(ServerClient client, Packet packet)
         {
+            if (!Master.actionValues.EnableNPCDestruction)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.contents);
 
             switch (data._stepMode)
@@ -23,22 +29,18 @@ namespace GameServer
 
         public static void RemoveNPCSettlement(ServerClient client, PlanetNPCSettlement settlement)
         {
-            if (!Master.serverConfig.AllowNPCDestruction) return;
+            if (!NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.tile))
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried removing a non-existing NPC settlement");
+            }
+            
             else
             {
-                if (!NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.tile))
-                {
-                    ResponseShortcutManager.SendIllegalPacket(client, "Tried removing a non-existing NPC settlement");
-                }
-                
-                else
-                {
-                    DeleteSettlement(settlement);
+                DeleteSettlement(settlement);
 
-                    BroadcastSettlementDeletion(settlement);
+                BroadcastSettlementDeletion(settlement);
 
-                    Logger.Warning($"[Delete NPC settlement] > {settlement.tile} > {client.userFile.Username}");
-                }
+                Logger.Warning($"[Delete NPC settlement] > {settlement.tile} > {client.userFile.Username}");
             }
         }
 

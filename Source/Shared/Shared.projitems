@@ -15,6 +15,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Map\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Values\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Managers\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\*.cs" />
@@ -28,8 +30,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\Settlements\*.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
   </ItemGroup>
 </Project>

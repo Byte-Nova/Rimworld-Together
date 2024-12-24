@@ -1,4 +1,5 @@
-﻿using Verse;
+﻿using System.IO;
+using Verse;
 
 namespace GameClient
 {
@@ -16,15 +17,15 @@ namespace GameClient
 
         public static bool isInTransfer;
 
-        public static string username;
+        public static bool isUsingScriber;
 
-        public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
+        public static string username;
 
         //ModStuff values go below. Do not change manually
 
-        public static bool verboseBool;
-        
-        public static bool extremeVerboseBool;
+        public enum VerboseMode { None, Verbose, Extreme }
+
+        public static VerboseMode currentVerboseMode;
 
         public static bool muteSoundBool;
 
@@ -66,6 +67,8 @@ namespace GameClient
 
         public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
 
+        public static void ToggleUsingScriber(bool mode) { isUsingScriber = mode; }
+
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
@@ -75,6 +78,7 @@ namespace GameClient
             ToggleSavingGame(false);
             ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);
+            ToggleUsingScriber(false);
         }
     }
 }

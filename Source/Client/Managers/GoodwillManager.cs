@@ -120,7 +120,7 @@ namespace GameClient
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                PlayerSiteManager.playerSites.Remove(toChange[i]);
+                SiteManager.playerSites.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
@@ -128,7 +128,7 @@ namespace GameClient
                             threatPoints: 1000,
                             faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._siteGoodwills[i]));
 
-                PlayerSiteManager.playerSites.Add(newSite);
+                SiteManager.playerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);
             }
         }

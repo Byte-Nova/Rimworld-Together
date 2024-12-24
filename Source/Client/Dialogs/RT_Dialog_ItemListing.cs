@@ -102,12 +102,12 @@ namespace GameClient
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+            if (ScriberHelper.CheckIfThingIsHuman(thing))
             {
                 Widgets.Label(fixedRect, $"[H] {itemName}");
             }
 
-            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
+            else if (ScriberHelper.CheckIfThingIsAnimal(thing))
             {
                 Widgets.Label(fixedRect, $"[A] {itemName}");
             }

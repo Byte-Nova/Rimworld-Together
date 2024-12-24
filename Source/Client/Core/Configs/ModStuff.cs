@@ -27,7 +27,6 @@ namespace GameClient
             listingStandard.Begin(inRect);
 
             listingStandard.Label("Running version: " + CommonValues.executableVersion);
-
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
@@ -42,14 +41,14 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("Experimental");
-            listingStandard.CheckboxLabeled("Use verbose logs", ref modConfigs.verboseBool, "Output more advanced info into the logs");
-            listingStandard.CheckboxLabeled("Use extreme verbose logs", ref modConfigs.extremeVerboseBool, "Output ALL available info into the logs");
+            if (listingStandard.ButtonTextLabeled("Verbose mode", $"{ClientValues.currentVerboseMode}")) ShowVerbosesaveFloatMenu();
 
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
             if (listingStandard.ButtonTextLabeled("Check out the mod's wiki!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/wiki");
             if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
             if (listingStandard.ButtonTextLabeled("Check out the mod's incompatibility list!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/blob/development/IncompatibilityList.md");
+            if (listingStandard.ButtonTextLabeled("Check out the mod's donation page!", "Open")) StartProcess("https://ko-fi.com/rimworldtogether");
             if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/yUF2ec8Vt8");
 
             listingStandard.End();
@@ -79,7 +78,31 @@ namespace GameClient
                     ClientValues.autosaveDays = tuple.Item2;
                     ClientValues.autosaveInternalTicks = Mathf.RoundToInt(tuple.Item2 * 60000f);
 
-                    PreferenceManager.SaveClientPreferences(ClientValues.autosaveDays.ToString());
+                    PreferenceManager.SaveClientPreferences();
+                });
+
+                list.Add(item);
+            }
+
+            Find.WindowStack.Add(new FloatMenu(list));
+        }
+
+        private void ShowVerbosesaveFloatMenu()
+        {
+            List<FloatMenuOption> list = new List<FloatMenuOption>();
+            List<Tuple<string, ClientValues.VerboseMode>> autosaveDays = new List<Tuple<string, ClientValues.VerboseMode>>()
+            {
+                Tuple.Create("None", ClientValues.VerboseMode.None),
+                Tuple.Create("Verbose", ClientValues.VerboseMode.Verbose),
+                Tuple.Create("Extreme", ClientValues.VerboseMode.Extreme)
+            };
+
+            foreach (Tuple<string, ClientValues.VerboseMode> tuple in autosaveDays)
+            {
+                FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
+                {
+                    ClientValues.currentVerboseMode = tuple.Item2;
+                    PreferenceManager.SaveClientPreferences();
                 });
 
                 list.Add(item);

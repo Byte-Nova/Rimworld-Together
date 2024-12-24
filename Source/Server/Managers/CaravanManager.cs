@@ -20,20 +20,20 @@ namespace GameServer
             switch (data._stepMode)
             {
                 case CaravanStepMode.Add:
-                    AddCaravan(client, data);
+                    AddCaravan(client.userFile.Username, data);
                     break;
 
                 case CaravanStepMode.Remove:
-                    RemoveCaravan(client, data);
+                    RemoveCaravan(client.userFile.Username, data._caravanFile);
                     break;
 
                 case CaravanStepMode.Move:
-                    MoveCaravan(client, data);
+                    MoveCaravan(client, data._caravanFile);
                     break;
             }
         }
 
-        private static void AddCaravan(ServerClient client, CaravanData data)
+        private static void AddCaravan(string username, CaravanData data)
         {
             data._caravanFile.ID = CaravanManagerHelper.GetNewCaravanID();
             RefreshCaravanTimer(data._caravanFile);
@@ -41,32 +41,40 @@ namespace GameServer
             Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
 
-            Logger.Message($"[Add Caravan] > {data._caravanFile.ID} > {client.userFile.Username}");
+            Logger.Message($"[Add Caravan] > {data._caravanFile.ID} > {username}");
         }
 
-        private static void RemoveCaravan(ServerClient client, CaravanData data)
+        public static void RemoveCaravan(string username, CaravanFile file)
         {
-            CaravanFile toRemove = CaravanManagerHelper.GetCaravanFromID(client, data._caravanFile.ID);
+            CaravanFile toRemove = CaravanManagerHelper.GetCaravanFromID(username, file.ID);
             if (toRemove == null) return;
             else
             {
-                DeleteCaravan(data._caravanFile);
+                DeleteCaravan(file);
+
+                CaravanData data = new CaravanData();
+                data._stepMode = CaravanStepMode.Remove;
+                data._caravanFile = file;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                 NetworkHelper.SendPacketToAllClients(packet);
 
-                Logger.Message($"[Remove Caravan] > {data._caravanFile.ID} > {client.userFile.Username}");
+                Logger.Message($"[Remove Caravan] > {file.ID} > {username}");
             }
         }
 
-        private static void MoveCaravan(ServerClient client, CaravanData data)
+        private static void MoveCaravan(ServerClient client, CaravanFile file)
         {
-            CaravanFile toMove = CaravanManagerHelper.GetCaravanFromID(client, data._caravanFile.ID);
-            if (toMove == null) return;
+            CaravanFile existingCaravan = CaravanManagerHelper.GetCaravanFromID(client.userFile.Username, file.ID);
+            if (existingCaravan == null) return;
             else
             {
-                UpdateCaravan(toMove, data._caravanFile);
-                RefreshCaravanTimer(data._caravanFile);
+                UpdateCaravan(existingCaravan, file);
+                RefreshCaravanTimer(file);
+
+                CaravanData data = new CaravanData();
+                data._stepMode = CaravanStepMode.Move;
+                data._caravanFile = file;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                 NetworkHelper.SendPacketToAllClients(packet, client);
@@ -140,26 +148,15 @@ namespace GameServer
             return activeCaravans.ToArray();
         }
 
-        public static CaravanFile GetCaravanFromID(ServerClient client, int caravanID)
+        public static CaravanFile GetCaravanFromID(string username, int caravanID)
         {
-            CaravanFile toGet = GetActiveCaravans().FirstOrDefault(fetch => fetch.ID == caravanID &&
-                fetch.Owner == client.userFile.Username);
-
-            if (toGet == null) return null;
-            else return toGet;
+            return GetActiveCaravans().FirstOrDefault(fetch => fetch.ID == caravanID &&
+                fetch.Owner == username);
         }
 
         public static CaravanFile[] GetCaravansFromOwner(string userName)
         {
             CaravanFile[] toGet = GetActiveCaravans().Where(fetch => fetch.Owner == userName).ToArray();
-
-            if (toGet == null) return null;
-            else return toGet;
-        }
-
-        public static CaravanFile GetCaravanFromOwner(string userName)
-        {
-            CaravanFile toGet = GetActiveCaravans().FirstOrDefault(fetch => fetch.Owner == userName);
 
             if (toGet == null) return null;
             else return toGet;

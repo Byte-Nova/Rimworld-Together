@@ -24,8 +24,8 @@ namespace GameClient
                 PlayerSettlementManager.ClearAllSettlements();
                 PlayerSettlementManager.AddSettlements(PlayerSettlementManagerHelper.tempSettlements);
 
-                PlayerSiteManager.ClearAllSites();
-                PlayerSiteManager.AddSites(PlayerSiteManagerHelper.tempSites);
+                SiteManager.ClearAllSites();
+                SiteManager.AddSites(SiteManagerHelper.tempSites);
 
                 NPCSettlementManager.ClearAllSettlements();
                 NPCSettlementManager.AddSettlements(NPCSettlementManagerHelper.tempNPCSettlements);
@@ -55,7 +55,6 @@ namespace GameClient
         public static Faction GetPlayerFactionFromGoodwill(Goodwill goodwill)
         {
             Faction factionToUse = null;
-
             switch (goodwill)
             {
                 case Goodwill.Enemy:
