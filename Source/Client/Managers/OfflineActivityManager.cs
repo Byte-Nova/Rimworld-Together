@@ -123,11 +123,7 @@ namespace GameClient
                 PrepareMapForOfflineActivity(offlineVisitData._mapFile); 
             };
 
-            if (ModManagerHelper.CheckIfMapHasConflictingMods(offlineVisitData._mapFile))
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Map received but contains unknown mod data, continue?", r1, null));
-            }
-            else r1.Invoke();
+            r1.Invoke();
         }
 
         //Prepares a map for the offline visit feature from a request
@@ -138,17 +134,17 @@ namespace GameClient
 
             if (SessionValues.latestOfflineActivity == OfflineActivityType.Visit)
             {
-                map = MapScribeManager.StringToMap(mapFile, false, true, true, true, true, true);
+                map = MapScriber.StringToMap(mapFile, false, true, true, true, true, true);
             }
 
             else if (SessionValues.latestOfflineActivity == OfflineActivityType.Raid)
             {
-                map = MapScribeManager.StringToMap(mapFile, true, true, true, true, true, true, true);
+                map = MapScriber.StringToMap(mapFile, true, true, true, true, true, true, true);
             }
 
             else if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy)
             {
-                map = MapScribeManager.StringToMap(mapFile, false, true, false, true, false, true);
+                map = MapScriber.StringToMap(mapFile, false, true, false, true, false, true);
             }
 
             HandleMapFactions(map);

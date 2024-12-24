@@ -114,20 +114,41 @@ namespace GameClient
         {
             if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
-            
-            Action toDo = delegate 
-            { 
-                //If method manager failed to execute the packet we assume corrupted data
-                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
-                {
-                    Logger.Error($"Error while trying to execute method '{defaultParserMethodName}' from type '{packet.header}'");
-                    Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                    disconnectFlag = true;
-                }
-            };
 
-            if (packet.requiresMainThread) Master.threadDispatcher.Enqueue(toDo);
-            else toDo();
+            Action toDo;
+            if (packet.isModded)
+            {
+                toDo = delegate 
+                { 
+                    if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, packet.targetPatchName, new object[] { packet }))
+                    {
+                        OnHandleError();
+                    }
+                };
+            }
+            
+            else
+            {
+                toDo = delegate 
+                { 
+                    if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
+                    {
+                        OnHandleError();
+                    }
+                };
+            }
+
+            // If method manager failed to execute the packet we assume corrupted data
+
+            void OnHandleError()
+            {
+                Logger.Error($"Error while trying to execute method from type '{packet.header}'");
+                Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                Logger.Error(MethodManager.latestException);
+                disconnectFlag = true;
+            }
+
+            Master.threadDispatcher.Enqueue(toDo);
         }
 
         //Runs in a separate thread and checks if the connection should still be up

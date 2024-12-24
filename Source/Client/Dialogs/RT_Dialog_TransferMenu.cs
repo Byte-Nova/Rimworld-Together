@@ -164,21 +164,6 @@ namespace GameClient
                 DialogManager.PushNewDialog(d1);
             }
 
-            else if (transferLocation == TransferLocation.Market)
-            {
-                Action r1 = delegate
-                {
-                    SessionValues.outgoingManifest._transferMode = TransferMode.Market;
-                    DialogManager.PopDialog(DialogManager.dialogItemListing);
-                    postChoosing();
-                };
-
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    r1, null);
-
-                DialogManager.PushNewDialog(d1);
-            }
-
             void postChoosing()
             {
                 TransferManager.TakeTransferItems(transferLocation);
@@ -228,11 +213,6 @@ namespace GameClient
             {
                 playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
-
-            else if (transferLocation == TransferLocation.Market)
-            {
-                playerNegotiator = SessionValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
-            }
         }
 
         private void SetupTrade()
@@ -246,12 +226,6 @@ namespace GameClient
             {
                 TradeSession.SetupWith(Find.WorldObjects.SettlementAt(SessionValues.incomingManifest._fromTile), 
                     playerNegotiator, true);
-            }
-
-            else if (transferLocation == TransferLocation.Market)
-            {
-                Settlement toUse = Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction));
-                TradeSession.SetupWith(toUse, playerNegotiator, true);
             }
         }
 
@@ -320,7 +294,7 @@ namespace GameClient
                 {
                     foreach (Pawn pawn in SessionValues.chosenCaravan.pawns)
                     {
-                        if (DeepScribeHelper.CheckIfThingIsHuman(pawn))
+                        if (ScriberHelper.CheckIfThingIsHuman(pawn))
                         {
                             if (allowHumans)
                             {
@@ -334,7 +308,7 @@ namespace GameClient
                             }
                         }
 
-                        else if (DeepScribeHelper.CheckIfThingIsAnimal(pawn))
+                        else if (ScriberHelper.CheckIfThingIsAnimal(pawn))
                         {
                             if (allowAnimals)
                             {
@@ -373,68 +347,7 @@ namespace GameClient
                 {
                     foreach (Pawn pawn in pawnsInMap)
                     {
-                        if (DeepScribeHelper.CheckIfThingIsAnimal(pawn))
-                        {
-                            if (allowAnimals)
-                            {
-                                Tradeable tradeable = new Tradeable();
-                                tradeable.AddThing(pawn, Transactor.Colony);
-                                SessionValues.listToShowInTradesMenu.Add(tradeable);
-                            }
-                        }
-
-                        else
-                        {
-                            if (allowHumans)
-                            {
-                                if (pawn == playerNegotiator) continue;
-                                else
-                                {
-                                    Tradeable tradeable = new Tradeable();
-                                    tradeable.AddThing(pawn, Transactor.Colony);
-                                    SessionValues.listToShowInTradesMenu.Add(tradeable);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            else if (transferLocation == TransferLocation.Market)
-            {
-                Map map = SessionValues.chosenSettlement.Map;
-
-                List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
-                pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
-
-                List<Thing> thingsInMap = new List<Thing>();
-                foreach (Thing thing in map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item && fetch.IsInAnyStorage()))
-                {
-                    if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
-                    {
-                        thingsInMap.Add(thing);
-                    }
-                }
-
-                if (allowItems)
-                {
-                    foreach (Thing thing in thingsInMap)
-                    {
-                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
-                        else
-                        {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(thing, Transactor.Colony);
-                            SessionValues.listToShowInTradesMenu.Add(tradeable);
-                        }
-                    }
-                }
-
-                if (allowHumans || allowAnimals)
-                {
-                    foreach (Pawn pawn in pawnsInMap)
-                    {
-                        if (DeepScribeHelper.CheckIfThingIsAnimal(pawn))
+                        if (ScriberHelper.CheckIfThingIsAnimal(pawn))
                         {
                             if (allowAnimals)
                             {

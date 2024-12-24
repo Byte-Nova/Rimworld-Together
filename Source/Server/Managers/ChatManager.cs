@@ -41,12 +41,12 @@ namespace GameServer
         {
             commandSemaphore.WaitOne();
 
-            ChatCommand toFind = ChatManagerHelper.GetCommandFromName(command[0]);
+            BaseChatCommand toFind = ChatManagerHelper.GetCommandFromName(command[0]);
             if (toFind == null) SendConsoleMessage(client, "Command was not found.");
             else
             {
-                ChatCommandManager.targetClient = client;
-                ChatCommandManager.command = command;
+                ChatCommandActions.targetClient = client;
+                ChatCommandActions.command = command;
                 toFind.commandAction.Invoke();
             }
 
@@ -169,139 +169,16 @@ namespace GameServer
         }
     }
 
-    public static class ChatCommandManager
-    {
-        public static ServerClient? targetClient;
-        public static string[]? command;
-
-        private static readonly ChatCommand helpCommand = new ChatCommand("/help", 0,
-            "Shows a list of all available commands",
-            HelpCommandAction);
-
-        private static readonly ChatCommand toolsCommand = new ChatCommand("/tools", 0,
-            "Shows a list of all available chat tools",
-            ToolsCommandAction);
-
-        private static readonly ChatCommand pingCommand = new ChatCommand("/ping", 0,
-            "Checks if the connection to the server is working",
-            PingCommandAction);
-
-        private static readonly ChatCommand disconnectCommand = new ChatCommand("/dc", 0,
-            "Forcefully disconnects you from the server",
-            DisconnectCommandAction);
-
-        private static readonly ChatCommand stopOnlineActivityCommand = new ChatCommand("/stopactivity", 0,
-            "Forcefully disconnects you from an activity",
-            StopOnlineActivityCommandAction);
-        
-        private static readonly ChatCommand privateMessage = new ChatCommand("/w", 0,
-            "Sends a private message to a specific user",
-            PrivateMessageCommandAction);
-
-        public static readonly ChatCommand[] chatCommands = new ChatCommand[]
-        {
-            helpCommand,
-            toolsCommand,
-            pingCommand,
-            disconnectCommand,
-            stopOnlineActivityCommand,
-            privateMessage
-        };
-
-        private static void HelpCommandAction()
-        {
-            if (targetClient == null) return;
-            else
-            {
-                List<string> messagesToSend = new List<string> { "List of available commands:" };
-                foreach (ChatCommand command in chatCommands) messagesToSend.Add($"{command.prefix} - {command.description}");
-
-                foreach (string str in messagesToSend) ChatManager.SendConsoleMessage(targetClient, str);
-            }
-        }
-
-        private static void ToolsCommandAction()
-        {
-            if (targetClient == null) return;
-            else
-            {
-                foreach (string str in ChatManager.defaultTextTools)
-                {
-                    ChatManager.SendConsoleMessage(targetClient, str);
-                }
-            }
-        }
-
-        private static void PingCommandAction()
-        {
-            if (targetClient == null) return;
-            else ChatManager.SendConsoleMessage(targetClient, "Pong!");
-        }
-
-        private static void DisconnectCommandAction()
-        {
-            if (targetClient == null) return;
-            else targetClient.listener.disconnectFlag = true;
-        }
-
-        private static void StopOnlineActivityCommandAction()
-        {
-            if (targetClient == null) return;
-            else OnlineActivityManager.StopActivity(targetClient);
-        }
-
-        private static void PrivateMessageCommandAction()
-        {
-            if (targetClient == null) return;
-            else
-            {
-                string message = "";
-                for (int i = 2; i < command.Length; i++) message += command[i] + " ";
-
-                if (string.IsNullOrWhiteSpace(message)) ChatManager.SendConsoleMessage(targetClient, "Message was empty.");
-                else
-                {
-                    ServerClient toFind = ChatManagerHelper.GetUserFromName(ChatManagerHelper.GetUsernameFromMention(command[1]));
-                    if (toFind == null) ChatManager.SendConsoleMessage(targetClient, "User was not found.");
-                    else
-                    {
-                        //Don't allow players to send wispers to themselves
-                        if (toFind == targetClient) ChatManager.SendConsoleMessage(targetClient, "Can't send a whisper to yourself.");
-                        else
-                        {
-                            ChatData chatData = new ChatData();
-                            chatData._message = message;
-                            chatData._usernameColor = UserColor.Private;
-                            chatData._messageColor = MessageColor.Private;
-
-                            //Send to sender
-                            chatData._username = $">> {toFind.userFile.Username}";
-                            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
-                            targetClient.listener.EnqueuePacket(packet);
-
-                            //Send to recipient
-                            chatData._username = $"<< {targetClient.userFile.Username}";
-                            packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
-                            toFind.listener.EnqueuePacket(packet);
-
-                            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     public static class ChatManagerHelper
     {
         public static ServerClient GetUserFromName(string username)
         {
-            return NetworkHelper.GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Username == username);
+            return NetworkHelper.GetConnectedClientFromUsername(username);
         }
 
-        public static ChatCommand GetCommandFromName(string commandName)
+        public static BaseChatCommand GetCommandFromName(string commandName)
         {
-            return ChatCommandManager.chatCommands.ToArray().FirstOrDefault(x => x.prefix == commandName);
+            return ChatCommands.commands.ToArray().FirstOrDefault(x => x.prefix == commandName);
         }
 
         public static string GetUsernameFromMention(string mention)

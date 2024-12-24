@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -20,6 +21,8 @@ namespace GameServer
 
             if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
             if (Master.backupConfig.AutomaticBackups) BackupManager.AutoBackup();
+            if (Master.actionValues.EnableSites) SiteManager.UpdateAllSiteInfo();
+
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
 
@@ -30,7 +33,7 @@ namespace GameServer
         {
             try
             {
-                QuickEdit quickEdit = new QuickEdit();
+                QuickEditor quickEdit = new QuickEditor();
                 quickEdit.DisableQuickEdit();
             }
             catch { Logger.Warning("Quick edit could not be disabled, ignore this if you are running on Linux"); }
@@ -56,6 +59,8 @@ namespace GameServer
             Master.backupUsersPath = Path.Combine(Master.backupsPath, "Users");
             Master.backupServerPath = Path.Combine(Master.backupsPath, "Servers");
 
+            Master.compatibilityPatchesPath = Path.Combine(Master.mainPath, "Patches");
+
             if (!Directory.Exists(Master.corePath)) Directory.CreateDirectory(Master.corePath);
             if (!Directory.Exists(Master.usersPath)) Directory.CreateDirectory(Master.usersPath);
             if (!Directory.Exists(Master.savesPath)) Directory.CreateDirectory(Master.savesPath);
@@ -72,6 +77,8 @@ namespace GameServer
             if (!Directory.Exists(Master.backupsPath)) Directory.CreateDirectory(Master.backupsPath);
             if (!Directory.Exists(Master.backupUsersPath)) Directory.CreateDirectory(Master.backupUsersPath);
             if (!Directory.Exists(Master.backupServerPath)) Directory.CreateDirectory(Master.backupServerPath);
+
+            if (!Directory.Exists(Master.compatibilityPatchesPath)) Directory.CreateDirectory(Master.compatibilityPatchesPath);
         }
 
         private static void SetCulture()
@@ -108,9 +115,6 @@ namespace GameServer
             LoadValueFile(ServerFileMode.Difficulty);
             SaveValueFile(ServerFileMode.Difficulty, false);
 
-            LoadValueFile(ServerFileMode.Market);
-            SaveValueFile(ServerFileMode.Market, false);
-
             LoadValueFile(ServerFileMode.Discord);
             SaveValueFile(ServerFileMode.Discord, false);
 
@@ -125,6 +129,8 @@ namespace GameServer
             LoadValueFile(ServerFileMode.World);
 
             EventManager.LoadEvents();
+
+            CompatibilityManager.LoadAllPatchedAssemblies();
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)
@@ -166,11 +172,6 @@ namespace GameServer
                 case ServerFileMode.Difficulty:
                     pathToSave = Path.Combine(Master.corePath, "DifficultyValues.json");
                     Serializer.SerializeToFile(pathToSave, Master.difficultyValues);
-                    break;
-
-                case ServerFileMode.Market:
-                    pathToSave = Path.Combine(Master.corePath, "MarketValues.json");
-                    Serializer.SerializeToFile(pathToSave, Master.marketValues);
                     break;
 
                 case ServerFileMode.Discord:
@@ -228,6 +229,7 @@ namespace GameServer
                     else
                     {
                         Master.siteValues = new SiteValuesFile();
+                        SiteManagerHelper.SetSitePresets();
                         Serializer.SerializeToFile(pathToLoad, Master.siteValues);
                     }
                     break;
@@ -265,16 +267,6 @@ namespace GameServer
                     {
                         Master.difficultyValues = new DifficultyValuesFile();
                         Serializer.SerializeToFile(pathToLoad, Master.difficultyValues);
-                    }
-                    break;
-
-                case ServerFileMode.Market:
-                    pathToLoad = Path.Combine(Master.corePath, "MarketValues.json");
-                    if (File.Exists(pathToLoad)) Master.marketValues = Serializer.SerializeFromFile<MarketValuesFile>(pathToLoad);
-                    else
-                    {
-                        Master.marketValues = new MarketValuesFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.marketValues);
                     }
                     break;
 
@@ -324,7 +316,7 @@ namespace GameServer
         public static void ChangeTitle()
         {
             Console.Title = $"RimWorld Together {CommonValues.executableVersion} - " +
-                $"Players [{Network.connectedClients.Count}/{Master.serverConfig.MaxPlayers}]";
+                $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.serverConfig.MaxPlayers}]";
         }
     }
 }

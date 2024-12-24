@@ -409,6 +409,7 @@ Source/buildServer.sh
 Source/publishServer.sh
 
 # Builder variables
+Builders/TestBuilder.bat
 Builders/RimWorldFolderPath.txt
 Builders/Result/3005289691/Current/Assemblies/GameClient.dll
 Builders/Result/3005289691/Current/Assemblies/Newtonsoft.Json.dll

@@ -23,37 +23,37 @@
 
     <ItemGroup>
 	    <Reference Include="Discord.Net.Commands">
-			<HintPath>..\Shared\Assemblies\Server\Discord.Net.Commands.dll</HintPath>
+			<HintPath>Assemblies\Server\Discord.Net.Commands.dll</HintPath>
 			<Private>True</Private>
 	    </Reference>
 
 	    <Reference Include="Discord.Net.Core">
-	      	<HintPath>..\Shared\Assemblies\Server\Discord.Net.Core.dll</HintPath>
+	      	<HintPath>Assemblies\Server\Discord.Net.Core.dll</HintPath>
 			<Private>True</Private>
 	    </Reference>
 
 	    <Reference Include="Discord.Net.Interactions">
-			<HintPath>..\Shared\Assemblies\Server\Discord.Net.Interactions.dll</HintPath>
+			<HintPath>Assemblies\Server\Discord.Net.Interactions.dll</HintPath>
 	      	<Private>True</Private>
 	    </Reference>
 
 	    <Reference Include="Discord.Net.Rest">
-	      	<HintPath>..\Shared\Assemblies\Server\Discord.Net.Rest.dll</HintPath>
+	      	<HintPath>Assemblies\Server\Discord.Net.Rest.dll</HintPath>
 	      	<Private>True</Private>
 	    </Reference>
 
 	    <Reference Include="Discord.Net.Webhook">
-	      	<HintPath>..\Shared\Assemblies\Server\Discord.Net.Webhook.dll</HintPath>
+	      	<HintPath>Assemblies\Server\Discord.Net.Webhook.dll</HintPath>
 	      	<Private>True</Private>
 	    </Reference>
 
 	    <Reference Include="Discord.Net.WebSocket">
-	      	<HintPath>..\Shared\Assemblies\Server\Discord.Net.WebSocket.dll</HintPath>
+	      	<HintPath>Assemblies\Server\Discord.Net.WebSocket.dll</HintPath>
 	      	<Private>True</Private>
 	    </Reference>
 
 	    <Reference Include="Newtonsoft.Json">
-			<HintPath>..\Shared\Assemblies\Server\Newtonsoft.Json.dll</HintPath>
+			<HintPath>Assemblies\Server\Newtonsoft.Json.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 	

@@ -37,35 +37,7 @@ namespace GameServer
                     StopActivity(client);
                     break;
 
-                case OnlineActivityStepMode.Jobs:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Create:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Destroy:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Damage:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Hediff:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.GameCondition:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Weather:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.TimeSpeed:
+                case OnlineActivityStepMode.Buffer:
                     SendActions(client, data);
                     break;
             }

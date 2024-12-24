@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTAlly.label>Szövetséges Játékosok Települései</RTAlly.label>
-	<RTAlly.description>Egy online, szövetséges frakció.</RTAlly.description>
-	<RTAlly.fixedName>Szövetséges Játékosok Települései</RTAlly.fixedName>
-	<RTAlly.leaderTitle>főnök</RTAlly.leaderTitle>
-	<RTAlly.pawnSingular>kolonista</RTAlly.pawnSingular>
-	<RTAlly.pawnsPlural>kolonisták</RTAlly.pawnsPlural>
-</LanguageData>

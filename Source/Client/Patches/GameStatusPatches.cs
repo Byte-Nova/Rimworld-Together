@@ -53,12 +53,7 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = caravan.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
-                    Network.listener.EnqueuePacket(packet);
+                    PlayerSettlementManager.SendNewPlayerSettlement(caravan.Tile);
 
                     SaveManager.ForceSave();
                 }
@@ -73,12 +68,7 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = map.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
-                    Network.listener.EnqueuePacket(packet);
+                    PlayerSettlementManager.SendNewPlayerSettlement(map.Tile);
 
                     SaveManager.ForceSave();
                 }
@@ -114,6 +104,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     if (!ClientValues.isReadyToPlay) return;
+                    if (!SessionValues.actionValues.EnableNPCDestruction) return;
 
                     if (__instance.Faction == Faction.OfPlayer) return;
                     else if (FactionValues.playerFactions.Contains(__instance.Faction)) return;

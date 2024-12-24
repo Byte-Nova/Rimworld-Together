@@ -10,7 +10,7 @@ namespace GameServer
 
             Main_.SaveValueFile(ServerFileMode.Whitelist);
 
-            Logger.Warning($"User '{CommandManager.commandParameters[0]}' has been whitelisted");
+            Logger.Warning($"User '{ConsoleManager.commandParameters[0]}' has been whitelisted");
         }
 
         public static void RemoveUserFromWhitelist(string username)
@@ -19,17 +19,7 @@ namespace GameServer
 
             Main_.SaveValueFile(ServerFileMode.Whitelist);
 
-            Logger.Warning($"User '{CommandManager.commandParameters[0]}' is no longer whitelisted");
-        }
-
-        public static void ToggleWhitelist()
-        {
-            Master.whitelist.UseWhitelist = !Master.whitelist.UseWhitelist;
-
-            Main_.SaveValueFile(ServerFileMode.Whitelist);
-
-            if (Master.whitelist.UseWhitelist) Logger.Warning("Whitelist is now ON");
-            else Logger.Warning("Whitelist is now OFF");
+            Logger.Warning($"User '{ConsoleManager.commandParameters[0]}' is no longer whitelisted");
         }
     }
 }
