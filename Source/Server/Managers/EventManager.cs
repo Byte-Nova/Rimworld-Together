@@ -41,25 +41,25 @@ namespace GameServer
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
+            if (!PlayerSettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData._toTile);
+                SettlementFile settlement = PlayerSettlementManager.GetSettlementFileFromTile(eventData._toTile);
                 if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
                 {
                     eventData._stepMode = EventStepMode.Recover;
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
                 else
                 {
-                    ServerClient target = UserManagerHelper.GetConnectedClientFromUsername(settlement.Owner);
+                    ServerClient target = NetworkHelper.GetConnectedClientFromUsername(settlement.Owner);
 
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
                     {
                         eventData._stepMode = EventStepMode.Recover;
-                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
 
@@ -67,7 +67,7 @@ namespace GameServer
                     {
                         //Back to player
 
-                        Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                        Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                         client.listener.EnqueuePacket(packet);
 
                         //To the person that should receive it
@@ -76,7 +76,7 @@ namespace GameServer
 
                         target.userFile.UpdateEventTime();
 
-                        packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                        packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                         target.listener.EnqueuePacket(packet);
                     }
                 }

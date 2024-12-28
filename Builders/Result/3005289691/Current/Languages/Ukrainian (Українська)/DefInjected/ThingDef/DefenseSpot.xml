@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTDefenseSpot.label>Точка Оборони</RTDefenseSpot.label>
+    <RTDefenseSpot.description>Визначає місце де колоністи будуть знаходитись під час оборони в режимі офлайн. Застосовується тільки при нальотах гравців!</RTDefenseSpot.description>
+</LanguageData>

@@ -70,7 +70,7 @@
     <RTServerIP>IP</RTServerIP>
     <RTServerPort>Port</RTServerPort>
     <RTTryingToConnect>Trying to connect to server</RTTryingToConnect>
-    <RTInvalidServer>Server details are invalid! Please try again!</RTInvalidServer>
+    <RTInvalidServerDetails>Server details are invalid! Please try again!</RTInvalidServerDetails>
     <RTLoginInvalid>Login details are invalid! Please try again!</RTLoginInvalid>
     <RTRegisterWait>Waiting for register response</RTRegisterWait>
     <RTRegisterInvalid>Register details are invalid! Please try again!</RTRegisterInvalid>
@@ -132,10 +132,12 @@
     <RTNoOneToTrade>There's no one in the server to trade with!</RTNoOneToTrade>
     <RTTradeQuantityError>You are trying to request an invalid quantity!</RTTradeQuantityError>
     <RTTradeTooMuch>You are trying to request more than is available!</RTTradeTooMuch>
-    <RTRequestQuantity>Quantity to request</RTRequestQuantity>
-    <RTRequestQuantityDesc>Type the quantity you want to request</RTRequestQuantityDesc>
+    <RTRequest>{0} request</RTRequest>
+    <RTRequestyDesc>Max ammount to request: {0} | Price per unit: {1}</RTRequestyDesc>
     <RTMarketWait>Waiting for market response</RTMarketWait>
     <RTNotEnoughSilver>You do not have enough silver!</RTNotEnoughSilver>
+    <RTMarketBookRecreation>{0}% recreation</RTMarketBookRecreation>
+    <RTMarketBookMentalBreak>mental break: {0}%</RTMarketBookMentalBreak>
     
     <!-- Server -->
     
@@ -166,6 +168,8 @@
     <RTDialogVersionMismatch>Mod version mismatch! Expected version {0}</RTDialogVersionMismatch>
     <RTDialogServerBeingSetup>Server is currently being set up! Join again later!</RTDialogServerBeingSetup>
     <RTServerDidntResponded>The server did not respond in time</RTServerDidntResponded>
+    <RTResponseIllegalActions>Kicked for illegal actions!</RTResponseIllegalActions>
+    
     <!-- Managers -->
     
     <!-- ModManager -->
@@ -176,6 +180,10 @@
     <RTModConfigurationRequired>Required</RTModConfigurationRequired>
     <RTModConfigurationOptional>Optional</RTModConfigurationOptional>
     <RTModConfigurationForbidden>Forbidden</RTModConfigurationForbidden>
+    <RTModAdminMenu>Admin menu</RTModAdminMenu>
+    <RTModAdminMenuDesc>Choose which action to execute</RTModAdminMenuDesc>
+    <RTModAdminMenuModManager>Mod Manager</RTModAdminMenuModManager>
+    <RTModAdminMenuCustomDifficulty>Custom Difficulty</RTModAdminMenuCustomDifficulty>
     
     <!-- Factions -->
     

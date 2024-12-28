@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTFaction.label>Frakció Tag Játékosok Települései</RTFaction.label>
-	<RTFaction.description>Egy online frakció tag.</RTFaction.description>
-	<RTFaction.fixedName>Frakció Tag Játékosok Települése</RTFaction.fixedName>
-	<RTFaction.leaderTitle>főnök</RTFaction.leaderTitle>
-	<RTFaction.pawnSingular>kolonista</RTFaction.pawnSingular>
-	<RTFaction.pawnsPlural>kolonisták</RTFaction.pawnsPlural>
-</LanguageData>

@@ -42,14 +42,14 @@ namespace GameClient
 
             listingStandard.GapLine();
             listingStandard.Label("RTExperimental".Translate());
-            listingStandard.CheckboxLabeled("RTUseVerboseLogs".Translate(), ref modConfigs.verboseBool, "RTUseVerboseLogsDesc".Translate());
-            listingStandard.CheckboxLabeled("RTExtremeVerboseLogs".Translate(), ref modConfigs.extremeVerboseBool, "RTExtremeVerboseLogsDesc".Translate());
+            if (listingStandard.ButtonTextLabeled("RTUseVerboseMode".Translate(), $"{ClientValues.currentVerboseMode}")) ShowVerbosesaveFloatMenu();
 
             listingStandard.GapLine();
             listingStandard.Label("RTExternalSources".Translate());
-            if (listingStandard.ButtonTextLabeled("RTWikiOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://rimworldtogether.github.io/Guide");
-            if (listingStandard.ButtonTextLabeled("RTGithubOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/RimworldTogether/Rimworld-Together");
-            if (listingStandard.ButtonTextLabeled("RTIncompatibilityOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/RimworldTogether/Rimworld-Together/blob/development/IncompatibilityList.md");
+            if (listingStandard.ButtonTextLabeled("RTWikiOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/wiki");
+            if (listingStandard.ButtonTextLabeled("RTGithubOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
+            if (listingStandard.ButtonTextLabeled("RTIncompatibilityOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/blob/development/IncompatibilityList.md");
+            if (listingStandard.ButtonTextLabeled("Check out the mod's donation page!", "Open")) StartProcess("https://ko-fi.com/rimworldtogether");
             if (listingStandard.ButtonTextLabeled("RTDiscordOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://discord.gg/yUF2ec8Vt8");
 
             listingStandard.End();
@@ -79,7 +79,31 @@ namespace GameClient
                     ClientValues.autosaveDays = tuple.Item2;
                     ClientValues.autosaveInternalTicks = Mathf.RoundToInt(tuple.Item2 * 60000f);
 
-                    PreferenceManager.SaveClientPreferences(ClientValues.autosaveDays.ToString());
+                    PreferenceManager.SaveClientPreferences();
+                });
+
+                list.Add(item);
+            }
+
+            Find.WindowStack.Add(new FloatMenu(list));
+        }
+
+        private void ShowVerbosesaveFloatMenu()
+        {
+            List<FloatMenuOption> list = new List<FloatMenuOption>();
+            List<Tuple<string, ClientValues.VerboseMode>> autosaveDays = new List<Tuple<string, ClientValues.VerboseMode>>()
+            {
+                Tuple.Create("None", ClientValues.VerboseMode.None),
+                Tuple.Create("Verbose", ClientValues.VerboseMode.Verbose),
+                Tuple.Create("Extreme", ClientValues.VerboseMode.Extreme)
+            };
+
+            foreach (Tuple<string, ClientValues.VerboseMode> tuple in autosaveDays)
+            {
+                FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
+                {
+                    ClientValues.currentVerboseMode = tuple.Item2;
+                    PreferenceManager.SaveClientPreferences();
                 });
 
                 list.Add(item);

@@ -38,7 +38,7 @@ namespace GameClient
             data._details.toTile = tileBID;
             data._details.roadDefName = roadDef.defName;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -51,7 +51,7 @@ namespace GameClient
             data._details.fromTile = tileAID;
             data._details.toTile = tileBID;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.RoadPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 

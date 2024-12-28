@@ -5,7 +5,6 @@
 	<packageId>nova.rimworldtogether</packageId>
 	<supportedVersions>
 		<li>1.5</li>
-		<li>1.4</li>
 	</supportedVersions>
 	<loadAfter>
 		<li>brrainz.harmony</li>
@@ -23,18 +22,6 @@
 				<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
 			</li>
 		</v1.5>
-		<v1.4>
-			<li>
-				<packageId>brrainz.harmony</packageId>
-				<displayName>Harmony</displayName>
-				<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
-			</li>
-			<li>
-				<packageId>unlimitedhugs.hugslib</packageId>
-				<displayName>Hugslib</displayName>
-				<steamWorkshopUrl>steam://url/CommunityFilePage/818773962</steamWorkshopUrl>
-			</li>
-		</v1.4>
 	</modDependenciesByVersion>
 	<description>Ever wondered how would it be to be able to play with other players online in the same RimWorld world?\n
 "RimWorld Together" is an early access community project founded by people who want to push the idea further!\n

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -72,7 +73,7 @@ namespace GameServer
                     else
                     {
                         File.Delete(playerArchivedSavePath);
-                        if (Master.serverConfig.VerboseLogs) Logger.Warning($"Deleting backup of {username} because he already had one.");
+                        Logger.Warning($"Deleting backup of {username} because he already had one.", LogImportanceMode.Verbose);
                     }
                 }
 
@@ -84,14 +85,11 @@ namespace GameServer
                 string userSavePath = Path.Combine(Master.savesPath, username + SaveManager.fileExtension);
                 if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
 
-                MapData[] userMaps = MapManager.GetAllMapsFromUsername(username);
-                foreach (MapData map in userMaps) toArchive.Add(Path.Combine(Master.mapsPath, map._mapTile + MapManager.fileExtension));
+                SiteIdendityFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+                foreach (SiteIdendityFile site in playerSites) toArchive.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
 
-                SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-                foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
-
-                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
-                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
+                SettlementFile[] playerSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(username);
+                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + PlayerSettlementManager.fileExtension));
 
                 CaravanFile[] playerCaravans = CaravanManagerHelper.GetCaravansFromOwner(username);
                 foreach (CaravanFile caravanFile in playerCaravans) toArchive.Add(Path.Combine(Master.caravansPath, caravanFile.ID + CaravanManager.fileExtension));
@@ -124,7 +122,7 @@ namespace GameServer
             while (Directory.GetFiles(Master.backupServerPath).Length > Master.backupConfig.Amount)
             {
                 FileSystemInfo fileInfo = new DirectoryInfo(Master.backupServerPath).GetFileSystemInfos().OrderBy(file => file.CreationTime).First();
-                if (Master.serverConfig.VerboseLogs) Logger.Warning($"Deleting backup {fileInfo.Name} because we've reached the limit of {Master.backupConfig.Amount}");
+                Logger.Warning($"Deleting backup {fileInfo.Name} because we've reached the limit of {Master.backupConfig.Amount}", LogImportanceMode.Verbose);
                 fileInfo.Delete();
             }
         }

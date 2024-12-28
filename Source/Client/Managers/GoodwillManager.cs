@@ -13,6 +13,13 @@ namespace GameClient
 
     public static class GoodwillManager
     {
+        public static void ParsePacket(Packet packet)
+        {
+            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
+            ChangeStructureGoodwill(factionGoodwillData);
+            DialogManager.PopWaitDialog();
+        }
+
         //Tries to request a goodwill change depending on the values given
 
         public static void TryRequestGoodwill(Goodwill type, GoodwillTarget target)
@@ -64,7 +71,7 @@ namespace GameClient
             factionGoodwillData._tile = structureTile;
             factionGoodwillData._goodwill = goodwill;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.GoodwillPacket), factionGoodwillData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(GoodwillManager), factionGoodwillData);
             Network.listener.EnqueuePacket(packet);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("RTGoodWillChanging".Translate());
@@ -73,11 +80,10 @@ namespace GameClient
 
         //Changes a structure goodwill from a packet
 
-        public static void ChangeStructureGoodwill(Packet packet)
+        public static void ChangeStructureGoodwill(FactionGoodwillData data)
         {
-            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
-            ChangeSettlementGoodwills(factionGoodwillData);
-            ChangeSiteGoodwills(factionGoodwillData);
+            ChangeSettlementGoodwills(data);
+            ChangeSiteGoodwills(data);
         }
 
         //Changes a settlement goodwill from a request
@@ -114,7 +120,7 @@ namespace GameClient
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                PlayerSiteManager.playerSites.Remove(toChange[i]);
+                SiteManager.playerSites.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
@@ -122,7 +128,7 @@ namespace GameClient
                             threatPoints: 1000,
                             faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._siteGoodwills[i]));
 
-                PlayerSiteManager.playerSites.Add(newSite);
+                SiteManager.playerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);
             }
         }

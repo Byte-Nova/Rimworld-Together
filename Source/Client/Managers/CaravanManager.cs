@@ -14,7 +14,9 @@ namespace GameClient
         //Variables
 
         public static WorldObjectDef onlineCaravanDef;
+
         public static List<CaravanFile> activeCaravans = new List<CaravanFile>();
+
         public static Dictionary<Caravan, int> activePlayerCaravans = new Dictionary<Caravan, int>();
 
         public static void ParsePacket(Packet packet)
@@ -122,7 +124,7 @@ namespace GameClient
             data._caravanFile.Tile = caravan.Tile;
             data._caravanFile.Owner = ClientValues.username;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -138,7 +140,7 @@ namespace GameClient
                 data._stepMode = CaravanStepMode.Remove;
                 data._caravanFile = details;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -155,7 +157,7 @@ namespace GameClient
                 data._stepMode = CaravanStepMode.Move;
                 data._caravanFile = details;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CaravanPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }

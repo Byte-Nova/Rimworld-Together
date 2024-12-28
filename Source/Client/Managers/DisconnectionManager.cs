@@ -78,6 +78,7 @@ namespace GameClient
             ClientValues.CleanValues();
             ServerValues.CleanValues();
             SessionValues.CleanValues();
+            PlayerRecountManager.CleanValues();
             ChatManager.CleanChat();
 
             DialogManager.PopWaitDialog();

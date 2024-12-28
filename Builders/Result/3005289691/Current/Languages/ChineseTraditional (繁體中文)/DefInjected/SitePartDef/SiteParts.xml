@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTFarmland.label>農田</RTFarmland.label>
+    <RTFarmland.description>線上地點</RTFarmland.description>
+
+    <RTQuarry.label>採石場</RTQuarry.label>
+    <RTQuarry.description>線上地點</RTQuarry.description>
+
+    <RTSawmill.label>鋸木廠</RTSawmill.label>
+    <RTSawmill.description>線上地點</RTSawmill.description>
+
+    <RTBank.label>銀行</RTBank.label>
+    <RTBank.description>線上地點</RTBank.description>
+
+    <RTLaboratory.label>實驗室</RTLaboratory.label>
+    <RTLaboratory.description>線上地點</RTLaboratory.description>
+
+    <RTRefinery.label>煉油廠</RTRefinery.label>
+    <RTRefinery.description>線上地點</RTRefinery.description>
+
+    <RTHerbalWorkshop.label>草藥工坊</RTHerbalWorkshop.label>
+    <RTHerbalWorkshop.description>線上地點</RTHerbalWorkshop.description>
+
+    <RTTextileFactory.label>紡織廠</RTTextileFactory.label>
+    <RTTextileFactory.description>線上地點</RTTextileFactory.description>
+
+    <RTFoodProcessor.label>食品加工廠</RTFoodProcessor.label>
+    <RTFoodProcessor.description>線上地點</RTFoodProcessor.description>
+</LanguageData>

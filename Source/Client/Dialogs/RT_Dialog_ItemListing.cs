@@ -102,12 +102,12 @@ namespace GameClient
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+            if (ScriberHelper.CheckIfThingIsHuman(thing))
             {
                 Widgets.Label(fixedRect, $"[H] {itemName}");
             }
 
-            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
+            else if (ScriberHelper.CheckIfThingIsAnimal(thing))
             {
                 Widgets.Label(fixedRect, $"[A] {itemName}");
             }
@@ -150,7 +150,7 @@ namespace GameClient
                 {
                     SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.TransferPacket), SessionValues.incomingManifest);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.incomingManifest);
                     Network.listener.EnqueuePacket(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);

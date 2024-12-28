@@ -9,6 +9,18 @@ Will always use "Pascal Case".
 public class ClassName
 ```
 
+### Class names working as files:
+Will always end with "File" in the name.
+```C#
+public class ClassNameFile
+```
+
+### Class names working as packets:
+Will always end with "Data" in the name.
+```C#
+public class ClassNameData
+```
+
 ### Class variables:
 Will always use "cammel Case".
 ```C#

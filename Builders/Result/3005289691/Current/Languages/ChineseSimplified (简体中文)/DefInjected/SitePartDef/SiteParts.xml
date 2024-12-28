@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTFarmland.label>农田</RTFarmland.label>
+    <RTFarmland.description>在线地点</RTFarmland.description>
+
+    <RTQuarry.label>采石场</RTQuarry.label>
+    <RTQuarry.description>在线地点</RTQuarry.description>
+
+    <RTSawmill.label>锯木厂</RTSawmill.label>
+    <RTSawmill.description>在线地点</RTSawmill.description>
+
+    <RTBank.label>银行</RTBank.label>
+    <RTBank.description>在线地点</RTBank.description>
+
+    <RTLaboratory.label>实验室</RTLaboratory.label>
+    <RTLaboratory.description>在线地点</RTLaboratory.description>
+
+    <RTRefinery.label>炼油厂</RTRefinery.label>
+    <RTRefinery.description>在线地点</RTRefinery.description>
+
+    <RTHerbalWorkshop.label>草药工坊</RTHerbalWorkshop.label>
+    <RTHerbalWorkshop.description>在线地点</RTHerbalWorkshop.description>
+
+    <RTTextileFactory.label>纺织厂</RTTextileFactory.label>
+    <RTTextileFactory.description>在线地点</RTTextileFactory.description>
+
+    <RTFoodProcessor.label>食品加工厂</RTFoodProcessor.label>
+    <RTFoodProcessor.description>在线地点</RTFoodProcessor.description>
+</LanguageData>

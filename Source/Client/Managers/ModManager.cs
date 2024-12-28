@@ -17,12 +17,12 @@ namespace GameClient
             switch (data._stepMode)
             {
                 case ModConfigStepMode.Ask:
-                    OpenModManagerMenu(false, data._configFile);
+                    OpenModManagerMenu(false);
                     break;
             }
         }
 
-        public static void OpenModManagerMenu(bool isFirstEdit, ModConfigFile configFile = null)
+        public static void OpenModManagerMenu(bool isFirstEdit)
         {
             Action toDo = delegate
             {
@@ -31,7 +31,7 @@ namespace GameClient
                 data._configFile = new ModConfigFile();
                 SortModsIntoCategories(data._configFile, DialogManager.dialogTupleListingResultString, DialogManager.dialogTupleListingResultInt);
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ModPacket), data);
+                Packet packet = Packet.CreatePacketFromObject(nameof(ModManager), data);
                 Network.listener.EnqueuePacket(packet);
 
                 if (isFirstEdit)
@@ -87,7 +87,8 @@ namespace GameClient
             List<string> loadedMods = new List<string>();
             ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
             foreach (ModContentPack mod in runningMods) loadedMods.Add(mod.PackageId);
-            
+            loadedMods.Sort();
+
             ModConfigFile configFile = new ModConfigFile();
             configFile.UnsortedMods = loadedMods.ToArray();
             return configFile;
@@ -99,23 +100,6 @@ namespace GameClient
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("RTModMismatchMenu".Translate(), "RTModMismatchMenuDesc".Translate(),
                 loginData._extraDetails.ToArray()));
-        }
-
-        public static bool CheckIfMapHasConflictingMods(MapData mapData)
-        {
-            string[] currentMods = GetRunningModList().UnsortedMods;
-
-            foreach (string mod in mapData._mapMods)
-            {
-                if (!currentMods.Contains(mod)) return true;
-            }
-
-            foreach (string mod in currentMods)
-            {
-                if (!mapData._mapMods.Contains(mod)) return true;
-            }
-
-            return false;
         }
     }
 }

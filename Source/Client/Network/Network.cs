@@ -26,24 +26,26 @@ namespace GameClient
         {
             if (TryConnectToServer())
             {
-                SiteManager.SetSiteDefs();
+                ClientValues.ManageDevOptions();
 
                 Threader.GenerateThread(Threader.Mode.Listener);
                 Threader.GenerateThread(Threader.Mode.Sender);
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                if (!ClientValues.isQuickConnecting) DialogShortcuts.ShowLoginOrRegisterDialogs();
+                if (!ClientValues.isQuickConnecting) LoginManager.ShowLoginOrRegisterDialogs();
 
                 Logger.Message($"Connected to server");
                 state = ClientNetworkState.Connected;
-                return;
             }
 
-            DialogManager.PopWaitDialog();
-            RT_Dialog_Error d1 = new RT_Dialog_Error("RTServerDidntResponded".Translate());
-            DialogManager.PushNewDialog(d1);
-            DisconnectFromServer();
+            else
+            {
+                DialogManager.PopWaitDialog();
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RTServerDidntResponded".Translate());
+                DialogManager.PushNewDialog(d1);
+                DisconnectFromServer();
+            }
         }
 
         //Tries to connect into the specified server
@@ -63,6 +65,7 @@ namespace GameClient
         }
 
         //Disconnects client from the server
+        
         public static void DisconnectFromServer()
         {
             CleanNetworkVariables();

@@ -129,9 +129,17 @@ namespace GameServer
             "toggles verbose logs to be true or false",
             ToggleVerboseLogsCommandAction);
 
+        private static readonly ServerCommand toggleExtremeVerboseLogsCommand = new ServerCommand("toggleextremeverboselogs", 0,
+            "toggles extreme verbose logs to be true or false",
+            ToggleExtremeVerboseLogsCommandAction);
+
         private static readonly ServerCommand toggleSyncLocalSaveCommand = new ServerCommand("togglesynclocalsave", 0,
             "toggles allowing local saves to sync with server to be true or false",
             ToggleSyncLocalSaveCommandAction);
+
+        private static readonly ServerCommand setGameSpeedCommand = new ServerCommand("setgamespeed", 1,
+            "Changes the enforced game speed for all players",
+            SetGameSpeedCommandAction);
 
         private static readonly ServerCommand resetWorldCommand = new ServerCommand("resetworld", 0,
             "Resets all the world related data and stores a backup of it",
@@ -153,7 +161,11 @@ namespace GameServer
             "Allows a player to change mod configuration for the server",
             ShowModManagerCommandAction);
 
-        public static readonly ServerCommand[] serverCommands = new ServerCommand[]
+        private static readonly ServerCommand updateCommand = new ServerCommand("update", 0,
+            "Updates your server to the newest version. Do not use if you aren't told directly to do so, as it can very well BREAK things",
+            UpdateCommandAction);
+
+        public static List<ServerCommand> serverCommands = new List<ServerCommand>
         {
             backupCommand,
             backupUserCommand,
@@ -166,6 +178,7 @@ namespace GameServer
             doSiteRewards,
             eventAllCommand,
             eventCommand,
+            setGameSpeedCommand,
             eventListCommand,
             forceQuitCommand,
             forceSaveCommand,
@@ -187,11 +200,13 @@ namespace GameServer
             toggleSyncLocalSaveCommand,
             toggleUPnPCommand,
             toggleVerboseLogsCommand,
+            toggleExtremeVerboseLogsCommand,
             whitelistAddCommand,
             whitelistCommand,
             whitelistRemoveCommand,
             whitelistToggleCommand,
-            showModManagerCommand
+            showModManagerCommand,
+            updateCommand
         };
 
         private static void HelpCommandAction()
@@ -272,7 +287,7 @@ namespace GameServer
                     CommandData commandData = new CommandData();
                     commandData._commandMode = CommandMode.Op;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
                     toFind.listener.EnqueuePacket(packet);
 
                     Logger.Warning($"User '{CommandManager.commandParameters[0]}' has now admin privileges");
@@ -306,7 +321,7 @@ namespace GameServer
                     CommandData commandData = new CommandData();
                     commandData._commandMode = CommandMode.Deop;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
                     toFind.listener.EnqueuePacket(packet);
 
                     Logger.Warning($"User '{toFind.userFile.Username}' is no longer an admin");
@@ -338,47 +353,6 @@ namespace GameServer
             }
         }
 
-        private static void BanCommandAction()
-        {
-            ServerClient toFind = Network.connectedClients.ToList().Find(x => x.userFile.Username == CommandManager.commandParameters[0]);
-            if (toFind == null)
-            {
-                UserFile userFile = UserManagerHelper.GetUserFileFromName(CommandManager.commandParameters[0]);
-                if (userFile == null) Logger.Warning($"User '{CommandManager.commandParameters[0]}' was not found");
-
-                else
-                {
-                    if (CheckIfIsAlready(userFile)) return;
-                    else
-                    {
-                        toFind.userFile.UpdateBan(true);
-
-                        Logger.Warning($"User '{CommandManager.commandParameters[0]}' has been banned from the server");
-                    }
-                }
-            }
-
-            else
-            {
-                toFind.listener.disconnectFlag = true;
-
-                toFind.userFile.UpdateBan(true);
-
-                Logger.Warning($"User '{CommandManager.commandParameters[0]}' has been banned from the server");
-            }
-
-            bool CheckIfIsAlready(UserFile userFile)
-            {
-                if (userFile.IsBanned)
-                {
-                    Logger.Warning($"User '{CommandManager.commandParameters[0]}' was already banned from the server");
-                    return true;
-                }
-
-                else return false;
-            }
-        }
-
         private static void BanListCommandAction()
         {
             List<UserFile> userFiles = UserManagerHelper.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
@@ -389,33 +363,9 @@ namespace GameServer
             Logger.Title("----------------------------------------");
         }
 
-        private static void PardonCommandAction()
-        {
-            UserFile userFile = UserManagerHelper.GetUserFileFromName(CommandManager.commandParameters[0]);
-            if (userFile == null) Logger.Warning($"User '{CommandManager.commandParameters[0]}' was not found");
+        private static void BanCommandAction() { UserManager.BanPlayerFromName(CommandManager.commandParameters[0]); }
 
-            else
-            {
-                if (CheckIfIsAlready(userFile)) return;
-                else
-                {
-                    userFile.UpdateBan(false);
-
-                    Logger.Warning($"User '{CommandManager.commandParameters[0]}' is no longer banned from the server");
-                }
-            }
-
-            bool CheckIfIsAlready(UserFile userFile)
-            {
-                if (!userFile.IsBanned)
-                {
-                    Logger.Warning($"User '{CommandManager.commandParameters[0]}' was not banned from the server");
-                    return true;
-                }
-
-                else return false;
-            }
-        }
+        private static void PardonCommandAction() { UserManager.PardonPlayerFromName(CommandManager.commandParameters[0]); }
 
         private static void ReloadCommandAction() { Main_.LoadResources(); }
         
@@ -435,6 +385,19 @@ namespace GameServer
             Logger.Title("----------------------------------------");
             foreach (string str in Master.modConfig.ForbiddenMods) Logger.Warning($"{str}");
             Logger.Title("----------------------------------------");
+        }
+
+        private static void SetGameSpeedCommandAction()
+        {
+            int desiredSpeed = int.Parse(CommandManager.commandParameters[0]);
+            if (desiredSpeed < 0 || desiredSpeed > 4) Logger.Error("Tried to set invalid game speed, specify 0-4");
+            else
+            {
+                Master.actionValues.EnforcedGameSpeed = int.Parse(CommandManager.commandParameters[0]);
+                Main_.SaveValueFile(ServerFileMode.Actions);
+
+                Logger.Warning($"Enforced game speed to '{Master.actionValues.EnforcedGameSpeed}'");
+            }
         }
 
         private static void DoSiteRewardsCommandAction()
@@ -460,7 +423,7 @@ namespace GameServer
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                     client.listener.EnqueuePacket(packet);
 
                     Logger.Title($"Sent event '{CommandManager.commandParameters[1]}' to '{CommandManager.commandParameters[0]}'");
@@ -483,7 +446,7 @@ namespace GameServer
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -509,7 +472,7 @@ namespace GameServer
             commandData._commandMode = CommandMode.Broadcast;
             commandData._details = fullText;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             Logger.Title($"Sent broadcast: '{fullText}'");
@@ -524,7 +487,7 @@ namespace GameServer
             }
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
-            ChatManager.BroadcastServerMessage(fullText);
+            ChatManager.BroadcastConsoleMessage(fullText);
 
             Logger.Title($"Sent chat: '{fullText}'");
         }
@@ -595,7 +558,7 @@ namespace GameServer
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
                 toFind.listener.EnqueuePacket(packet);
 
                 Logger.Warning($"User '{CommandManager.commandParameters[0]}' has been forced to save");
@@ -605,7 +568,7 @@ namespace GameServer
         private static void ResetPlayerCommandAction()
         {
             UserFile userFile = UserManagerHelper.GetUserFileFromName(CommandManager.commandParameters[0]);
-            ServerClient toFind = UserManagerHelper.GetConnectedClientFromUsername(userFile.Username);
+            ServerClient toFind = NetworkHelper.GetConnectedClientFromUsername(userFile.Username);
 
             if (userFile == null) Logger.Warning($"User '{CommandManager.commandParameters[0]}' was not found");
             else SaveManager.ResetPlayerData(toFind, userFile.Username);
@@ -679,6 +642,13 @@ namespace GameServer
             Main_.SaveValueFile(ServerFileMode.Configs);
         }
 
+        private static void ToggleExtremeVerboseLogsCommandAction()
+        {
+            Master.serverConfig.ExtremeVerboseLogs = !Master.serverConfig.ExtremeVerboseLogs;
+            Logger.Warning($"Extreme verbose Logs set to {Master.serverConfig.ExtremeVerboseLogs}");
+            Main_.SaveValueFile(ServerFileMode.Configs);
+        }
+
         private static void ToggleSyncLocalSaveCommandAction()
         {
             Master.serverConfig.SyncLocalSave = !Master.serverConfig.SyncLocalSave;
@@ -698,15 +668,24 @@ namespace GameServer
                 if (response == "NO") return;
                 else if (response != "YES")
                 {
-                    Logger.Error($"{response} is not a valid option; The options must be capitalized");
+                    Logger.Error($"{response} is not a valid option. The answer must be capitalized");
                     goto DeleteWorldQuestion;
                 }
 
                 BackupManager.BackupServer();
-                File.Delete($"{Master.corePath + Path.DirectorySeparatorChar}WorldValues.json");
 
-                Logger.Warning("World has been successfully reset");
-                foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) client.listener.disconnectFlag = true;
+                Directory.Delete($"{Master.caravansPath}",true);
+                Directory.Delete($"{Master.corePath}", true);
+                Directory.Delete($"{Master.eventsPath}", true);
+                Directory.Delete($"{Master.factionsPath}", true);
+                Directory.Delete($"{Master.logsPath}", true);
+                Directory.Delete($"{Master.mapsPath}", true);
+                Directory.Delete($"{Master.savesPath}", true);
+                Directory.Delete($"{Master.settlementsPath}", true);
+                Directory.Delete($"{Master.sitesPath}", true);
+                Directory.Delete($"{Master.usersPath}", true);
+
+                Environment.Exit(0);
         }
 
         private static void QuitCommandAction()
@@ -720,7 +699,7 @@ namespace GameServer
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CommandPacket), commandData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(CommandManager), commandData);
                 client.listener.EnqueuePacket(packet);
             }
 
@@ -740,7 +719,7 @@ namespace GameServer
 
         private static void ShowModManagerCommandAction()
         {
-            ServerClient toFind = UserManagerHelper.GetConnectedClientFromUsername(CommandManager.commandParameters[0]);
+            ServerClient toFind = NetworkHelper.GetConnectedClientFromUsername(CommandManager.commandParameters[0]);
             if (toFind == null) Logger.Error($"Player '{CommandManager.commandParameters[0]}' was not found");
             else
             {
@@ -751,12 +730,29 @@ namespace GameServer
                     data._stepMode = ModConfigStepMode.Ask;
                     data._configFile = Master.modConfig;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.ModPacket), data);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(ModManager), data);
                     toFind.listener.EnqueuePacket(packet);
 
                     Logger.Warning("Command sent sucessfully");
                 }
             }
+        }
+
+        private static void UpdateCommandAction() 
+        {
+            Logger.Warning("Are you sure you want to run the update command? You should only do so if you are told to, as this may break things.");
+            Logger.Warning("Please type 'YES' or 'NO'");
+
+            UpdateCommandQuestion:
+                string response = Console.ReadLine();
+
+                if (response == "NO") return;
+                else if (response == "YES") Updater.UpdateManager.UpdateServer();
+                else 
+                {
+                    Logger.Error($"{response} is not a valid option; The options must be capitalized");
+                    goto UpdateCommandQuestion;
+                }
         }
     }
 }

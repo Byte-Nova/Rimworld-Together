@@ -11,8 +11,8 @@ namespace GameClient
     {
         public static void SetPlanetRivers() 
         {
-            if (PlanetGeneratorManager.cachedWorldValues.Rivers == null) return;
-            else AddRivers(PlanetGeneratorManager.cachedWorldValues.Rivers, false);
+            if (WorldManager.cachedWorldValues.Rivers == null) return;
+            else AddRivers(WorldManager.cachedWorldValues.Rivers, false);
         }
 
         public static void AddRivers(RiverDetails[] rivers, bool forceRefresh)

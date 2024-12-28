@@ -10,7 +10,7 @@ namespace GameClient
 {
     public static class EventManager
     {
-        public static void ParseEventPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
 
@@ -71,7 +71,7 @@ namespace GameClient
                 eventData._toTile = SessionValues.chosenSettlement.Tile;
                 eventData._eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.EventPacket), eventData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("RTEventWait".Translate()));

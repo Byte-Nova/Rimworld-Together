@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using RimWorld;
+using Shared;
 using Verse;
 
 namespace GameClient
@@ -97,7 +98,7 @@ namespace GameClient
 
             difficultyData._values.WastepackInfestationChanceFactor = Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.CustomDifficultyPacket), difficultyData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(DifficultyManager), difficultyData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -190,6 +191,12 @@ namespace GameClient
 
                 Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor = difficultyValues.WastepackInfestationChanceFactor;
             }
+        }
+
+        public static void OpenDifficultyMenu()
+        {
+            Page_SelectStorytellerInGame d1 = new Page_SelectStorytellerInGame();
+            DialogManager.PushNewDialog(d1);
         }
     }
 }

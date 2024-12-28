@@ -47,11 +47,11 @@ namespace GameClient
             aidData._fromTile = Find.AnyPlayerHomeMap.Tile;
             aidData._toTile = SessionValues.chosenSettlement.Tile;
 
-            Pawn toGet = RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResultInt];
-            aidData._humanData = HumanScribeManager.HumanToString(toGet);
+            Pawn toGet = RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResultInt];
+            aidData._humanData = HumanScriber.HumanToString(toGet);
             RimworldManager.RemovePawnFromGame(toGet);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), aidData);
+            Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), aidData);
             Network.listener.EnqueuePacket(packet);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("RTDialogServerWait".Translate()));
@@ -73,7 +73,7 @@ namespace GameClient
             DialogManager.PopWaitDialog();
 
             Map map = Find.World.worldObjects.SettlementAt(data._fromTile).Map;
-            Pawn pawn = HumanScribeManager.StringToHuman(data._humanData);
+            Pawn pawn = HumanScriber.StringtoHuman(data._humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
             DialogManager.PushNewDialog(new RT_Dialog_Error("RTPlayerNotAvailable".Translate()));
@@ -82,11 +82,11 @@ namespace GameClient
         private static void AcceptAid(AidData data)
         {
             Map map = Find.World.worldObjects.SettlementAt(data._toTile).Map;
-            Pawn pawn = HumanScribeManager.StringToHuman(data._humanData);
-            RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
+            Pawn pawn = HumanScriber.StringtoHuman(data._humanData);
+            RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true, true);
 
             data._stepMode = AidStepMode.Accept;
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
             Network.listener.EnqueuePacket(packet);
 
             RimworldManager.GenerateLetter("RTAidReceived".Translate(),
@@ -99,7 +99,7 @@ namespace GameClient
         private static void RejectAid(AidData data)
         {
             data._stepMode = AidStepMode.Reject;
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.AidPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
             Network.listener.EnqueuePacket(packet);
         }
     }

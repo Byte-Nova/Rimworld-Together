@@ -11,7 +11,7 @@ namespace GameClient
 {
     public static class OfflineActivityManager
     {
-        public static void ParseOfflineActivityPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             OfflineActivityData offlineVisitData = Serializer.ConvertBytesToObject<OfflineActivityData>(packet.contents);
 
@@ -41,7 +41,7 @@ namespace GameClient
                 return;
             }
 
-            SessionValues.ToggleOfflineFunction(activityType);
+            SessionValues.ToggleOfflineActivity(activityType);
 
             if (activityType == OfflineActivityType.Spy)
             {
@@ -73,7 +73,7 @@ namespace GameClient
             data._stepMode = OfflineActivityStepMode.Request;
             data._targetTile = SessionValues.chosenSettlement.Tile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.OfflineActivityPacket), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -117,40 +117,34 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            MapData mapData = offlineVisitData._mapData;
-
             Action r1 = delegate 
             {
                 if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy) SaveManager.ForceSave();
-                PrepareMapForOfflineActivity(mapData); 
+                PrepareMapForOfflineActivity(offlineVisitData._mapFile); 
             };
 
-            if (ModManagerHelper.CheckIfMapHasConflictingMods(mapData))
-            {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTMapUnknownModData".Translate(), r1, null));
-            }
-            else r1.Invoke();
+            r1.Invoke();
         }
 
         //Prepares a map for the offline visit feature from a request
 
-        private static void PrepareMapForOfflineActivity(MapData mapData)
+        private static void PrepareMapForOfflineActivity(MapFile mapFile)
         {
             Map map = null;
 
             if (SessionValues.latestOfflineActivity == OfflineActivityType.Visit)
             {
-                map = MapScribeManager.StringToMap(mapData, false, true, true, true, true, true);
+                map = MapScriber.StringToMap(mapFile, false, true, true, true, true, true);
             }
 
             else if (SessionValues.latestOfflineActivity == OfflineActivityType.Raid)
             {
-                map = MapScribeManager.StringToMap(mapData, true, true, true, true, true, true, true);
+                map = MapScriber.StringToMap(mapFile, true, true, true, true, true, true, true);
             }
 
             else if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy)
             {
-                map = MapScribeManager.StringToMap(mapData, false, true, false, true, false, true);
+                map = MapScriber.StringToMap(mapFile, false, true, false, true, false, true);
             }
 
             HandleMapFactions(map);

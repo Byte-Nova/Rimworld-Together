@@ -8,7 +8,7 @@ namespace GameClient
 {
     public static class FactionManager
     {
-        public static void ParseFactionPacket(Packet packet)
+        public static void ParsePacket(Packet packet)
         {
             PlayerFactionData data = Serializer.ConvertBytesToObject<PlayerFactionData>(packet.contents);
 
@@ -57,7 +57,7 @@ namespace GameClient
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData._stepMode = FactionStepMode.MemberList;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -67,7 +67,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.RemoveMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -78,7 +78,7 @@ namespace GameClient
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData._stepMode = FactionStepMode.Delete;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -113,7 +113,7 @@ namespace GameClient
                     playerFactionData._stepMode = FactionStepMode.Create;
                     playerFactionData._factionFile.Name = DialogManager.dialog1ResultOne;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
                     Network.listener.EnqueuePacket(packet);
                 }
             };
@@ -133,7 +133,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.Promote;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -143,7 +143,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.Demote;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -153,7 +153,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.RemoveMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -192,7 +192,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.AddMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -243,7 +243,7 @@ namespace GameClient
 
                 factionManifest._stepMode = FactionStepMode.AcceptInvite;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PacketHandler.FactionPacket), factionManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
                 Network.listener.EnqueuePacket(packet);
             };
 

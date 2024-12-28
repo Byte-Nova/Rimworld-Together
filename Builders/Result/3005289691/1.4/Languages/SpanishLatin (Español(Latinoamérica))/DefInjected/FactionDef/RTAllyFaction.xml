@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LanguageData>
-	<RTAlly.label>Asentamiento Aliado</RTAlly.label>
-	<RTAlly.description>Una facción multijugador</RTAlly.description>
-	<RTAlly.fixedName>Asentamiento Aliado</RTAlly.fixedName>
-	<RTAlly.leaderTitle>líder</RTAlly.leaderTitle>
-	<RTAlly.pawnSingular>colono</RTAlly.pawnSingular>
-	<RTAlly.pawnsPlural>colonos</RTAlly.pawnsPlural>
-</LanguageData>

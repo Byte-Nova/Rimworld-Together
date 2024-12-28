@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+    <RTAlly.label>盟友玩家定居點</RTAlly.label>
+    <RTAlly.description>一個線上派系</RTAlly.description>
+    <RTAlly.fixedName>盟友玩家定居點</RTAlly.fixedName>
+    <RTAlly.leaderTitle>領袖</RTAlly.leaderTitle>
+    <RTAlly.pawnSingular>殖民者</RTAlly.pawnSingular>
+    <RTAlly.pawnsPlural>殖民者們</RTAlly.pawnsPlural>
+</LanguageData>

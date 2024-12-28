@@ -1,56 +1,78 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using Verse;
-
 namespace GameClient
 {
     public static class CompatibilityManager 
     {
         public static void LoadAllPatchedAssemblies()
         {
-            string[] allCompatibilitiesToLoad = CompatibilityManagerHelper.GetAllPatchedMods();
-            
-            foreach (string compatibility in allCompatibilitiesToLoad)
+            List<Assembly> toLoad = new List<Assembly>();
+            foreach (string compatibility in CompatibilityManagerHelper.GetAllPatchedMods())
             {
-                string compatibilityName = Path.GetFileNameWithoutExtension(compatibility);
-
-                if (LoadedModManager.RunningModsListForReading.Any(mod => mod.Name == compatibilityName))
-                {
-                    try
-                    {
-                        Assembly assembly = Assembly.LoadFrom(compatibility);
-                        Type toUse = typeof(CompatibilityManager);
-
-                        MethodInfo methodInfo = toUse.GetMethod(compatibilityName, BindingFlags.NonPublic | BindingFlags.Static);
-                        methodInfo.Invoke(compatibilityName, null);
-
-                        Master.loadedCompatibilityPatches.Add(compatibilityName, assembly);
-                        Logger.Message($"Loaded patch for '{compatibilityName}'");
-                    }
-                    catch (Exception ex){ Logger.Error($"Failed to load patch for '{compatibilityName}' because :\n{ex}"); }
-                }
+                Assembly toAdd = LoadCustomAssembly(compatibility);
+                if (toAdd != null) toLoad.Add(toAdd);    
+            }
+            
+            if (toLoad.Count > 0)
+            {
+                Master.loadedCompatibilityPatches = toLoad.ToArray();
+                Logger.Warning($"Loaded > {Master.loadedCompatibilityPatches.Length} patches");
+                Logger.Warning($"CAUTION > Custom patches aren't created by the mod developers, always use them with care");
             }
         }
 
-        //Entry point for the soon-to-come SOS2 patch
-
-        private static void SOS2Patch()
+        private static Assembly LoadCustomAssembly(string assemblyPath)
         {
-            Logger.Warning("Loaded!");
+            try
+            {
+                Assembly assembly = Assembly.LoadFrom(assemblyPath);
+
+                foreach (Type type in assembly.GetTypes())
+                {
+                    if (type.Namespace == null) continue;
+                    else if (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")) continue;
+                    else if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Length != 0)
+                    {
+                        if (type.IsAbstract && type.IsSealed)
+                        {
+                            ConstructorInfo constructor = type.TypeInitializer;
+                            if (constructor != null)
+                            {
+                                System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+                                return assembly;
+                            }
+                            else Logger.Error($"Mod {MethodManager.GetAssemblyName(assembly)} has class {type.Name} with attribute 'RTStartup' but no constructor.");
+                        }
+                        else Logger.Error($"Mod {MethodManager.GetAssemblyName(assembly)} has class {type.Name} with attribute 'RTStartup' but isn't static.");
+                    } 
+                }
+            }
+            catch (Exception e) { Logger.Error($"Failed to load patch '{assemblyPath}'. {e}"); }
+
+            return null;
         }
     }
 
     public static class CompatibilityManagerHelper
     {
-        public static readonly string fileExtension = ".dll";
+        public static readonly string PatchFolderName = "RTPatches";
 
         public static string[] GetAllPatchedMods()
         {
-            return Directory.GetFiles(Master.compatibilityPatchesFolderPath)
-                .Where(fetch => fetch.EndsWith(fileExtension)).ToArray();
+            List<string> results = new List<string>();
+            foreach (ModContentPack mod in LoadedModManager.RunningMods)
+            {
+                if (Directory.Exists(Path.Combine(mod.RootDir, PatchFolderName)))
+                {
+                    results.AddRange(Directory.GetFiles(Path.Combine(mod.RootDir, PatchFolderName)));
+                }
+            }
+            
+            return results.ToArray();
         }
     }
 }

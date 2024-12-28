@@ -1,5 +1,9 @@
-﻿using Shared;
+﻿using Microsoft.VisualBasic;
+using Shared;
 using System.Net.Sockets;
+using System.Reflection;
+using static Shared.CommonEnumerators;
+using static Shared.CommonValues;
 
 namespace GameServer
 {
@@ -63,7 +67,7 @@ namespace GameServer
         {
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(1);
 
@@ -75,29 +79,67 @@ namespace GameServer
                     }
                 }
             }
-            catch { disconnectFlag = true; }
-        }
 
-        //Runs in a separate thread and listens for any kind of information being sent through the connection
+            catch (Exception e)
+            { 
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
+
+                disconnectFlag = true; 
+            }
+        }
 
         public void Listen()
         {
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(1);
 
                     string data = streamReader.ReadLine();
-                    Packet receivedPacket = Serializer.SerializeFromString<Packet>(data);
-                    PacketHandler.HandlePacket(targetClient, receivedPacket);
+                    if (string.IsNullOrWhiteSpace(data)) disconnectFlag = true;
+                    else HandlePacket(Serializer.SerializeFromString<Packet>(data));
                 }
             }
 
             catch (Exception e)
             {
-                if (Master.serverConfig.VerboseLogs) Logger.Warning(e.ToString());
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
+                disconnectFlag = true;
+            }
+        }
+
+        //Function that opens handles the action that the packet should do, then sends it to the correct one below
+
+        public void HandlePacket(Packet packet)
+        {
+            if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
+            else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
+
+            if (packet.isModded)
+            {
+                if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, packet.targetPatchName, [targetClient, packet]))
+                {
+                    OnHandleError();
+                }
+            }
+            
+            else
+            {  
+                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
+                {
+                    OnHandleError();
+                }
+            }
+
+            // If method manager failed to execute the packet we assume corrupted data
+
+            void OnHandleError()
+            {
+                Logger.Error($"Error while trying to execute method from type '{packet.header}'");      
+                Logger.Error("Forcefully disconnecting due to MethodManager exception");
+                Logger.Error(MethodManager.latestException);
                 disconnectFlag = true;
             }
         }
@@ -106,16 +148,13 @@ namespace GameServer
 
         public void CheckConnectionHealth()
         {
-            try
+            try { while (!disconnectFlag) Thread.Sleep(1); }
+            catch (Exception e)
             {
-                while (true)
-                {
-                    Thread.Sleep(1);
+                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
 
-                    if (disconnectFlag) break;
-                }
+                disconnectFlag = true;
             }
-            catch { }
 
             Thread.Sleep(1000);
 
@@ -130,7 +169,7 @@ namespace GameServer
 
             try
             {
-                while (true)
+                while (!disconnectFlag)
                 {
                     Thread.Sleep(int.Parse(Master.serverConfig.MaxTimeoutInMS));
 
@@ -138,7 +177,7 @@ namespace GameServer
                     else break;
                 }
             }
-            catch { }
+            catch (Exception e) { Logger.Warning(e.ToString(), LogImportanceMode.Verbose); }
 
             disconnectFlag = true;
         }
@@ -150,7 +189,7 @@ namespace GameServer
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
-            if (targetClient.inVisitWith != null) OnlineActivityManager.SendVisitStop(targetClient);
+            if (targetClient.activityPartner != null) OnlineActivityManager.StopActivity(targetClient);
         }
     }
 }
