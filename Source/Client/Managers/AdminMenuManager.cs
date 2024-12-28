@@ -4,11 +4,11 @@ namespace GameClient
 {
     public static class AdminMenuManager
     {
-        private static readonly string dialogTitle = "RTModAdminMenu".Translate();
+        private static readonly string dialogTitle = "RTAdminMenu".Translate();
 
-        private static readonly string dialogDescription = "RTModAdminMenuDesc".Translate();
+        private static readonly string dialogDescription = "RTAdminMenuDesc".Translate();
 
-        private static readonly string[] menuButtons = new string[] { "RTModAdminMenuModManager".Translate(), "RTModAdminMenuCustomDifficulty".Translate() };
+        private static readonly string[] menuButtons = new string[] { "RTAdminMenuModManager".Translate(), "RTAdminMenuCustomDifficulty".Translate() };
 
         public static void ShowAdminMenu()
         {

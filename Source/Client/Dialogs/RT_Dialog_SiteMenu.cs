@@ -16,7 +16,7 @@ namespace GameClient
         
         public override Vector2 InitialSize => initialSize;
 
-        public string title = "Choose a site";
+        public string title = "RTSiteMenu".Translate();
 
         private Vector2 scrollPosition = Vector2.zero;
 

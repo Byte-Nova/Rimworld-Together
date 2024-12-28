@@ -26,7 +26,7 @@ namespace GameClient
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
 
-            listingStandard.Label("Running version: " + CommonValues.executableVersion);
+            listingStandard.Label("RTModVersion".Translate(CommonValues.executableVersion));
 
             listingStandard.GapLine();
             listingStandard.Label("RTMultiplayerParameters".Translate());
@@ -49,7 +49,7 @@ namespace GameClient
             if (listingStandard.ButtonTextLabeled("RTWikiOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/wiki");
             if (listingStandard.ButtonTextLabeled("RTGithubOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
             if (listingStandard.ButtonTextLabeled("RTIncompatibilityOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/blob/development/IncompatibilityList.md");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's donation page!", "Open")) StartProcess("https://ko-fi.com/rimworldtogether");
+            if (listingStandard.ButtonTextLabeled("RTKofiOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://ko-fi.com/rimworldtogether");
             if (listingStandard.ButtonTextLabeled("RTDiscordOpen".Translate(), "RTConfigOpen".Translate())) StartProcess("https://discord.gg/yUF2ec8Vt8");
 
             listingStandard.End();
@@ -93,9 +93,9 @@ namespace GameClient
             List<FloatMenuOption> list = new List<FloatMenuOption>();
             List<Tuple<string, ClientValues.VerboseMode>> autosaveDays = new List<Tuple<string, ClientValues.VerboseMode>>()
             {
-                Tuple.Create("None", ClientValues.VerboseMode.None),
-                Tuple.Create("Verbose", ClientValues.VerboseMode.Verbose),
-                Tuple.Create("Extreme", ClientValues.VerboseMode.Extreme)
+                Tuple.Create((string)"RTVerboseModeNone".Translate(), ClientValues.VerboseMode.None),
+                Tuple.Create((string)"RTVerboseModeVerbose".Translate(), ClientValues.VerboseMode.Verbose),
+                Tuple.Create((string)"RTVerboseModeExtreme".Translate(), ClientValues.VerboseMode.Extreme)
             };
 
             foreach (Tuple<string, ClientValues.VerboseMode> tuple in autosaveDays)

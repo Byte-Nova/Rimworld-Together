@@ -67,7 +67,7 @@ namespace GameClient
             if (Network.state == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && ServerValues.isAdmin && Prefs.DevMode)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
-                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 4, buttonSize.x, buttonSize.y), "Admin menu")) { }
+                if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 4, buttonSize.x, buttonSize.y), "RTAdminMenu".Translate())) { }
             }
 
             return;

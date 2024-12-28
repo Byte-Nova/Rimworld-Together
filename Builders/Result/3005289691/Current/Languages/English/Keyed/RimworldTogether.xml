@@ -4,6 +4,8 @@
     
     <!-- Configs -->
     
+    <RTModVersion>Running version: {0}</RTModVersion>
+    
     <RTMultiplayerParameters>Multiplayer Parameters</RTMultiplayerParameters>
     <RTDenyIncomingTransfers>[When Playing] Deny all incoming transfers</RTDenyIncomingTransfers>
     <RTDenyIncomingTransfersDesc>Automatically denies transfers</RTDenyIncomingTransfersDesc>
@@ -31,15 +33,17 @@
     <RTConfigOpen>Open</RTConfigOpen>
     
     <RTExperimental>Experimental</RTExperimental>
-    <RTUseVerboseLogs>Use verbose logs</RTUseVerboseLogs>
-    <RTUseVerboseLogsDesc>Output more advanced info into the logs</RTUseVerboseLogsDesc>
-    <RTExtremeVerboseLogs>Use extreme verbose logs</RTExtremeVerboseLogs>
-    <RTExtremeVerboseLogsDesc>Output ALL available info into the logs</RTExtremeVerboseLogsDesc>
+    <RTUseVerboseMode>Verbose mode</RTUseVerboseMode>
+    <RTVerboseModeNone>None</RTVerboseModeNone>
+    <RTVerboseModeVerbose>Verbose</RTVerboseModeVerbose>
+    <RTVerboseModeExtreme>Extreme</RTVerboseModeExtreme>
+    
 
     <RTExternalSources>External Sources</RTExternalSources>
     <RTWikiOpen>Check out the mod's wiki!</RTWikiOpen>
     <RTGithubOpen>Check out the mod's Github!</RTGithubOpen>
     <RTIncompatibilityOpen>Check out the mod's incompatibility list!</RTIncompatibilityOpen>
+    <RTKofiOpen>Check out the mod's donation page!</RTKofiOpen>
     <RTDiscordOpen>Join the mod's Discord community!</RTDiscordOpen>
     
     <!-- Tabs -->
@@ -92,6 +96,7 @@
     <RTDialogOK>OK</RTDialogOK>
     <RTDialogClose>Close</RTDialogClose>
     <RTDialogSelect>Select</RTDialogSelect>
+    <RTDialogChoose>Choose</RTDialogChoose>
     <RTDialogNew>New</RTDialogNew>
     <RTDialogReload>Reload</RTDialogReload>
     <RTDialogReset>Reset</RTDialogReset>
@@ -133,7 +138,7 @@
     <RTTradeQuantityError>You are trying to request an invalid quantity!</RTTradeQuantityError>
     <RTTradeTooMuch>You are trying to request more than is available!</RTTradeTooMuch>
     <RTRequest>{0} request</RTRequest>
-    <RTRequestyDesc>Max ammount to request: {0} | Price per unit: {1}</RTRequestyDesc>
+    <RTRequestDesc>Max ammount to request: {0} | Price per unit: {1}</RTRequestDesc>
     <RTMarketWait>Waiting for market response</RTMarketWait>
     <RTNotEnoughSilver>You do not have enough silver!</RTNotEnoughSilver>
     <RTMarketBookRecreation>{0}% recreation</RTMarketBookRecreation>
@@ -180,10 +185,10 @@
     <RTModConfigurationRequired>Required</RTModConfigurationRequired>
     <RTModConfigurationOptional>Optional</RTModConfigurationOptional>
     <RTModConfigurationForbidden>Forbidden</RTModConfigurationForbidden>
-    <RTModAdminMenu>Admin menu</RTModAdminMenu>
-    <RTModAdminMenuDesc>Choose which action to execute</RTModAdminMenuDesc>
-    <RTModAdminMenuModManager>Mod Manager</RTModAdminMenuModManager>
-    <RTModAdminMenuCustomDifficulty>Custom Difficulty</RTModAdminMenuCustomDifficulty>
+    <RTAdminMenu>Admin menu</RTAdminMenu>
+    <RTAdminMenuDesc>Choose which action to execute</RTAdminMenuDesc>
+    <RTAdminMenuModManager>Mod Manager</RTAdminMenuModManager>
+    <RTAdminMenuCustomDifficulty>Custom Difficulty</RTAdminMenuCustomDifficulty>
     
     <!-- Factions -->
     
@@ -274,10 +279,10 @@
     <RTOnline>[BETA] Online</RTOnline>
     <RTOffline>Offline</RTOffline>
     <RTAlreadyIRT>You are already in a real time activity!</RTAlreadyIRT>
-    <RTVisitedBy>Visited by {0}, accept?</RTVisitedBy>
     <RTPlayerRejected>Player rejected the activity!</RTPlayerRejected>
     <RTPlayerMustOnline>Player must be online!</RTPlayerMustOnline>
-    <RTOnlineEnded>Online activity ended</RTOnlineEnded>
+    <RTActivityEnded>Online activity ended</RTActivityEnded>
+    <RTOnlineActivityReceive>Requested activity from '{0}'. Accept?</RTOnlineActivityReceive>
     
     <RTSpyMenu>Spy Settlement</RTSpyMenu>
     <RTSpyMenuDesc>Spy this settlement</RTSpyMenuDesc>
@@ -289,7 +294,6 @@
     <RTRaidButtonDesc>Raid this settlement</RTRaidButtonDesc>
     <RTRaidMenu>Raid Mode</RTRaidMenu>
     <RTRaidMenuDesc>Please choose your raid mode</RTRaidMenuDesc>
-    <RTRaidedBy>Raided by {0}, accept?</RTRaidedBy>
     
     <RTVisitSettlementButton>Visit Settlement</RTVisitSettlementButton>
     <RTVisitSettlementButtonDesc>Visit this settlement</RTVisitSettlementButtonDesc>
@@ -314,7 +318,7 @@
     
     
     <!-- Sites -->
-    <RTBuildPersonalSite>Build Personal Site</RTBuildPersonalSite>
+    <RTBuildSite>Build Site</RTBuildSite>
     <RTBuildPersonalSiteDesc>Build an utility site for your convenience</RTBuildPersonalSiteDesc>
     <RTBuildablePersonalSites>Buildable Personal Sites</RTBuildablePersonalSites>
     <RTBuildFactionSite>Build Faction Site</RTBuildFactionSite>
@@ -337,6 +341,11 @@
     <RTSiteWorkerInside>The site has a worker inside!</RTSiteWorkerInside>
     <RTSiteRewards>Site Rewards</RTSiteRewards>
     <RTSiteRewardsDesc>You have received site rewards!</RTSiteRewardsDesc>
-    <RTSiteCost>This site will cost you {0} silver, continue?</RTSiteCost>
     <RTSiteBuildingWait>Waiting for building</RTSiteBuildingWait>
+    <RTSiteCost>Cost: </RTSiteCost>
+    <RTSiteMenu>Choose a site</RTSiteMenu>
+    <RTSiteTimePerProduce>Produces every {0} minutes:</RTSiteTimePerProduce>
+    <RTSiteConfigurationChangeButton>Change site configs</RTSiteConfigurationChangeButton>
+    <RTSiteConfigurationChangeButtonDesc>Change the configuration of your sites. These settings affect all sites currently under your control.</RTSiteConfigurationChangeButtonDesc>
+    <RTSiteInvalidConfiguration>Site could not be loaded because of invalid configuration</RTSiteInvalidConfiguration>
 </LanguageData>

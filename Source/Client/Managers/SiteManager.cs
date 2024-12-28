@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -161,7 +162,7 @@ namespace GameClient
             Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("RTSiteBuildingWait".Translate()));
         }
 
         public static void RequestSiteChangeConfig(SiteInfoFile config, string reward) 

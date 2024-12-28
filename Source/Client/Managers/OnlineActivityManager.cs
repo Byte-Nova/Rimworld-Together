@@ -751,10 +751,10 @@ namespace GameClient
                         toTarget.health.AddHediff(toMake, bodyPartRecord);
                     }
 
-                else
-                {
-                    Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data._hediffOrder._hediffDefName &&
-                        fetch.Part.def.defName == bodyPartRecord.def.defName);
+                    else if (data._applyMode == OnlineActivityApplyMode.Remove)
+                    {
+                        // FIX ME
+                        // Currently doesn't target WholeBody
 
                         Hediff hediff = toTarget.health.hediffSet.hediffs.First(fetch => fetch.def.defName == data._hediffComponent.DefName &&
                             fetch.Part.def.defName == bodyPartRecord.def.defName && fetch.Part.Label == bodyPartRecord.Label);

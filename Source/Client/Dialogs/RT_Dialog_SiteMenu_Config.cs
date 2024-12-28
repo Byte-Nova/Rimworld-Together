@@ -98,7 +98,7 @@ namespace GameClient
             foreach (ThingDef thing in rewardThing.Keys)
             {
                 Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25f), $"- {thing.label} {rewardThing[thing].ToString()} ");
-                if (Widgets.ButtonText(new Rect(viewRightColumn.width + 210f, num, viewRightColumn.width - 210f, 25f), "Choose"))
+                if (Widgets.ButtonText(new Rect(viewRightColumn.width + 210f, num, viewRightColumn.width - 210f, 25f), "RTDialogChoose".Translate()))
                 {
                     SiteManager.RequestSiteChangeConfig(configFile, thing.defName);
                     DialogManager.dialogSiteMenu.Close();

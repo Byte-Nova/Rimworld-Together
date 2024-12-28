@@ -67,7 +67,7 @@ namespace GameClient
         {
             if (invalid) 
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Site could not be loaded because of invalid configuration"));
+                DialogManager.PushNewDialog(new RT_Dialog_Error("RTSiteInvalidConfiguration".Translate()));
                 this.Close();
             }
 
@@ -93,7 +93,7 @@ namespace GameClient
 
             Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), sitePartDef.description); // Description of site
             num += heightDesc;
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), ("Cost:"));
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), ("RTSiteCost".Translate()));
             num += 20f;
 
             foreach (ThingDef thing in costThing.Keys)
@@ -103,7 +103,7 @@ namespace GameClient
             }
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces every {SiteManager.siteValues.TimeIntervalMinutes} minutes:");
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), "RTSiteTimePerProduce".Translate(SiteManager.siteValues.TimeIntervalMinutes));
             num += 20f;
 
             foreach (ThingDef thing in rewardThing.Keys)

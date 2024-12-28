@@ -3,13 +3,15 @@
     <RTMainMenuButton>Играть вместе</RTMainMenuButton>
     
     <!-- Configs -->
+
+    <RTModVersion>Версия: {0}</RTModVersion>
     
     <RTMultiplayerParameters>Параметры Мультиплеера</RTMultiplayerParameters>
     <RTDenyIncomingTransfers>[В Игре] Отклонять все входящие передачи</RTDenyIncomingTransfers>
     <RTDenyIncomingTransfersDesc>Автоматически отклоняет передачи</RTDenyIncomingTransfersDesc>
     <RTDenyIncomingSiteRewards>[В Игре] Отклонять все входящие награды с цехов</RTDenyIncomingSiteRewards>
     <RTDenyIncomingSiteRewardsDesc>Автоматически отклоняет награды с цехов</RTDenyIncomingSiteRewardsDesc>
-    <RTMuteChat>[В Игре] Заглушить сообщения чата</RTMuteChat>
+    <RTMuteChat>[В Игре] Заглушить входящие сообщения с чата</RTMuteChat>
     <RTMuteChatDesc>Заглушает сообщения чата</RTMuteChatDesc>
     <RTServerSyncInterval>[В Игре] Интервал сохранений на сервер</RTServerSyncInterval>
     <RTServerSyncIntervalVar>{0} Дней</RTServerSyncIntervalVar>
@@ -24,17 +26,17 @@
     <RTDays14>14 Дней</RTDays14>
     
     <RTCompatibility>Совместимость</RTCompatibility>
-    <RTConvertSave>Конвертировать сохранение для использование сервером</RTConvertSave>
+    <RTConvertSave>Конвертировать сохранение для использования сервером</RTConvertSave>
     <RTConvertSaveSuccesful>Сохранение успешно конвертировано</RTConvertSaveSuccesful>
     <RTConvertSaveButton>Конвертировать</RTConvertSaveButton>
     <RTOpenSaveFolder>Открыть папку сохранений</RTOpenSaveFolder>
     <RTConfigOpen>Открыть</RTConfigOpen>
     
     <RTExperimental>Экспериментальное</RTExperimental>
-    <RTUseVerboseLogs>Использовать подробный вывод в журнал</RTUseVerboseLogs>
-    <RTUseVerboseLogsDesc>Выводит больше информации в журнал</RTUseVerboseLogsDesc>
-    <RTExtremeVerboseLogs>Использовать экстремально подробный вывод в журнал</RTExtremeVerboseLogs>
-    <RTExtremeVerboseLogsDesc>Выводит ВСЮ информацию в журнал</RTExtremeVerboseLogsDesc>
+    <RTUseVerboseMode>Режим экстремальности</RTUseVerboseMode>
+    <RTVerboseModeNone>Нету</RTVerboseModeNone>
+    <RTVerboseModeVerbose>Подробный</RTVerboseModeVerbose>
+    <RTVerboseModeExtreme>Экстремальный</RTVerboseModeExtreme>
 
     <RTExternalSources>Внешние источники</RTExternalSources>
     <RTWikiOpen>Наш вики!</RTWikiOpen>
@@ -92,6 +94,7 @@
     <RTDialogOK>OK</RTDialogOK>
     <RTDialogClose>Закрыть</RTDialogClose>
     <RTDialogSelect>Выбрать</RTDialogSelect>
+    <RTDialogChoose>Выбрать</RTDialogChoose>
     <RTDialogNew>Новый</RTDialogNew>
     <RTDialogReload>Обновить</RTDialogReload>
     <RTDialogReset>Сбросить</RTDialogReset>
@@ -122,22 +125,23 @@
     <RTDialogNoTransferSpot1>У вас отсутствует зона торговли!</RTDialogNoTransferSpot1>
     <RTDialogNoTransferSpot2>Полученные вещи будут появляться в центре карты!</RTDialogNoTransferSpot2>
     <RTDialogNoTransferSpot3>Постройте зону торговли, чтобы изменить место их появления!</RTDialogNoTransferSpot3>
-    <RTTransferTradeReceived>У вас есть входящее предложение на торговлю</RTTransferTradeReceived>
+    <RTTransferTradeReceived>Входящее предложение на торговлю</RTTransferTradeReceived>
     <RTTransfering>Передать предметы {0}</RTTransfering>
     <RTGlobalMarket>Глобальный рынок</RTGlobalMarket>
     <RTGlobalMarketMenu>Меню глобального рынка</RTGlobalMarketMenu>
     <RTGlobalMarketMenuDesc>Войти в глобальный рынок</RTGlobalMarketMenuDesc>
-    <RTGlobalMarketDisabled>Рынок отключен на этом сервере!</RTGlobalMarketDisabled>
     <RTGlobalMarketRequirement>Вам необходима консоль связи, чтобы использовать рынок!</RTGlobalMarketRequirement>
     <RTAvailableSilver>Серебра доступного к торговле: {0}</RTAvailableSilver>
     <RTNoOneToTrade>На сервере нет никого, способного к торговле!</RTNoOneToTrade>
     <RTTradeQuantityError>Вы пытаетесь запросить неверное количество!</RTTradeQuantityError>
-    <RTTradeTooMuch>Вы пытаетесь запросить больше, чем возможно!</RTTradeTooMuch>
-    <RTRequestQuantity>Количество к запросу</RTRequestQuantity>
-    <RTRequestQuantityDesc>Введите количество, которое хотите запросить</RTRequestQuantityDesc>
+    <RTTradeTooMuch>Вы пытаетесь запросить больше, чем доступно!</RTTradeTooMuch>
+    <RTRequest>Запрос {0}</RTRequest>
+    <RTRequestDesc>Максимальное количество: {0} | Цена за штуку: {1}</RTRequestDesc>
     <RTMarketWait>Ожидание ответа от рынка</RTMarketWait>
     <RTNotEnoughSilver>У вас не хватает серебра!</RTNotEnoughSilver>
-    <RTServerDidntResponded>Сервер не ответил вовремя</RTServerDidntResponded>
+    <RTMarketBookRecreation>{0}% удовлетворения</RTMarketBookRecreation>
+    <RTMarketBookMentalBreak>Шанс нервного срыва: {0}%</RTMarketBookMentalBreak>
+    
     <!-- Server -->
     
     <RTDialogFirstPlayer>Вы первый, кто зашел на сервер!</RTDialogFirstPlayer>
@@ -160,13 +164,29 @@
     <RTCommandServerBroadcast>Сообщение сервера</RTCommandServerBroadcast>
     <RTDisconnectProgressSaved>Ваш прогресс сохранен!</RTDisconnectProgressSaved>
     <RTDisconnectSave>Подключение разорвано. Сохранить игру?</RTDisconnectSave>
-    <RTModMismatchMenu>Конфликты с модами</RTModMismatchMenu>
+    <RTModMismatchMenu>Конфликт модов</RTModMismatchMenu>
     <RTModMismatchMenuDesc>Данные моды конфликтуют с сервером</RTModMismatchMenuDesc>
     <RTDialogServerFull>Сервер полон!</RTDialogServerFull>
     <RTDialogWhitelisted>Сервер использует белый список!</RTDialogWhitelisted>
     <RTDialogVersionMismatch>Неверная версия мода! Ожидаемая версия {0}</RTDialogVersionMismatch>
     <RTDialogServerBeingSetup>Сервер прямо сейчас настраивается! Присоединитесь позже!</RTDialogServerBeingSetup>
+    <RTServerDidntResponded>Сервер не ответил вовремя</RTServerDidntResponded>
+    <RTResponseIllegalActions>Выгнан из-за нелегальных действий</RTResponseIllegalActions>
+    
     <!-- Managers -->
+
+    <!-- ModManager -->
+
+    <RTModConfigurationTitle>Управление модами</RTModConfigurationTitle>
+    <RTModConfigurationDesc>Управляйте модами сервера</RTModConfigurationDesc>
+    <RTModConfigurationChanged>Список модов был изменен!</RTModConfigurationChanged>
+    <RTModConfigurationRequired>Необходим</RTModConfigurationRequired>
+    <RTModConfigurationOptional>Опционален</RTModConfigurationOptional>
+    <RTModConfigurationForbidden>Запрещен</RTModConfigurationForbidden>
+    <RTAdminMenu>Меню админа</RTAdminMenu>
+    <RTAdminMenuDesc>Выберите действие</RTAdminMenuDesc>
+    <RTAdminMenuModManager>Управление модами</RTAdminMenuModManager>
+    <RTAdminMenuCustomDifficulty>Сложность сервера</RTAdminMenuCustomDifficulty>
     
     <!-- Factions -->
     
@@ -228,7 +248,7 @@
     
     <RTEventMenu>Отправить событие</RTEventMenu>
     <RTEventMenuDesc>Отправить событие на это поселение</RTEventMenuDesc>
-    <RTEventSend>Это событие будет стоить вам {0} серебра, продолжить?"</RTEventSend>
+    <RTEventSend>Событие стоит {0} серебра, продолжить?"</RTEventSend>
     <RTEventSelector>Выбор события</RTEventSelector>
     <RTEventSelectorDesc>Выберите событие которое хотите отправить</RTEventSelectorDesc>
     <RTEventNotEnoughSilver>Вам не хватает серебра для этого действия!</RTEventNotEnoughSilver>
@@ -257,10 +277,10 @@
     <RTOnline>[BETA] Онлайн</RTOnline>
     <RTOffline>Оффлайн</RTOffline>
     <RTAlreadyIRT>Вы уже в активности в реальном времени!</RTAlreadyIRT>
-    <RTVisitedBy>Вы посещаетесь {0}, принять?</RTVisitedBy>
     <RTPlayerRejected>Игрок отклонил активность!</RTPlayerRejected>
     <RTPlayerMustOnline>Игрок должен быть онлайн!</RTPlayerMustOnline>
-    <RTOnlineEnded>Онлайн активность закончена</RTOnlineEnded>
+    <RTActivityEnded>Онлайн активность закончена</RTOnlineEnded>
+    <RTOnlineActivityReceive>Запрос активности от {0}. Принять?</RTOnlineActivityReceive>
     
     <RTSpyMenu>Шпионаж за поселением</RTSpyMenu>
     <RTSpyMenuDesc>Шпионить за этим поселением</RTSpyMenuDesc>
@@ -272,7 +292,6 @@
     <RTRaidButtonDesc>Напасть на это поселение</RTRaidButtonDesc>
     <RTRaidMenu>Режим нападения</RTRaidMenu>
     <RTRaidMenuDesc>Выберите режим нападения</RTRaidMenuDesc>
-    <RTRaidedBy>Вас атакует {0}, принять?</RTRaidedBy>
     
     <RTVisitSettlementButton>Посетить поселение</RTVisitSettlementButton>
     <RTVisitSettlementButtonDesc>Посетить</RTVisitSettlementButtonDesc>
@@ -285,19 +304,19 @@
     
     <RTRoadBuilder>Строитель дорог</RTRoadBuilder>
     <RTRoadBuilderDesc>Строй и уничтожай дороги</RTRoadBuilderDesc>
+    <RTRoadBuilding>Выберите тип дороги</RTRoadBuilding>
     <RTRoadManager>Управление дорогами</RTRoadManager>
     <RTRoadManagerDesc>Выберите действие, которое хотите сделать</RTRoadManagerDesc>
-    <RTRoadBuild>Построить</RTRoadBuild>
-    <RTRoadDestroy>Уничтожить</RTRoadDestroy>
-    
-    <RTRoadBuilding>Выберите тип дороги</RTRoadBuilding>
     <RTRoadTileToConnect>Выберите клетку для соединения</RTRoadTileToConnect>
     <RTRoadTile>Клетка на {0} - {1}</RTRoadTile>
     <RTRoadDestroyer>Уничтожитель дорог</RTRoadDestroyer>
     <RTRoadDestroyerDesc>Выберите клетку для отсоединения</RTRoadDestroyerDesc>
+    <RTRoadBuild>Построить</RTRoadBuild>
+    <RTRoadDestroy>Уничтожить</RTRoadDestroy>
+   
     
     <!-- Sites -->
-    <RTBuildPersonalSite>Построить персональный цех</RTBuildPersonalSite>
+    <RTBuildSite>Построить цех</RTBuildSite>
     <RTBuildPersonalSiteDesc>Постройте цех для ваших нужд</RTBuildPersonalSiteDesc>
     <RTBuildablePersonalSites>Возможные к постройке персональные цехи</RTBuildablePersonalSites>
     <RTBuildFactionSite>Постройте цех фракции</RTBuildFactionSite>
@@ -320,6 +339,11 @@
     <RTSiteWorkerInside>Этот цех имеет рабочего внутри!</RTSiteWorkerInside>
     <RTSiteRewards>Награды цеха</RTSiteRewards>
     <RTSiteRewardsDesc>Вы получили награды от цеха!</RTSiteRewardsDesc>
-    <RTSiteCost>Этот цех будет стоить {0} серебра, продолжить?</RTSiteCost>
     <RTSiteBuildingWait>Ожидание строительства</RTSiteBuildingWait>
+    <RTSiteCost>Стоимость:</RTSiteCost>
+    <RTSiteMenu>Выберите цех</RTSiteMenu>
+    <RTSiteTimePerProduce>Производит каждые {0} минут:</RTSiteTimePerProduce>
+    <RTSiteConfigurationChangeButton>Сменить настройки цеха</RTSiteConfigurationChangeButton>
+    <RTSiteConfigurationChangeButtonDesc>Изменить конфигурации цехов. Эти настройки меняют все цехи под вашим контролем.</RTSiteConfigurationChangeButtonDesc>
+    <RTSiteInvalidConfiguration>Цех не может выбран из-за неверной конфигурации</RTSiteInvalidConfiguration>
 </LanguageData>
