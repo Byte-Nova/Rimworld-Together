@@ -342,10 +342,14 @@
     <RTSiteRewards>Site Rewards</RTSiteRewards>
     <RTSiteRewardsDesc>You have received site rewards!</RTSiteRewardsDesc>
     <RTSiteBuildingWait>Waiting for building</RTSiteBuildingWait>
-    <RTSiteCost>Cost: </RTSiteCost>
+    
+    <!-- Site Menu-->
+    
     <RTSiteMenu>Choose a site</RTSiteMenu>
+    <RTSiteInvalidConfiguration>Site could not be loaded because of invalid configuration</RTSiteInvalidConfiguration>
     <RTSiteTimePerProduce>Produces every {0} minutes:</RTSiteTimePerProduce>
+    <RTSiteCost>Cost:</RTSiteCost>
+    <RTSiteBuy>Buy</RTSiteBuy>
     <RTSiteConfigurationChangeButton>Change site configs</RTSiteConfigurationChangeButton>
     <RTSiteConfigurationChangeButtonDesc>Change the configuration of your sites. These settings affect all sites currently under your control.</RTSiteConfigurationChangeButtonDesc>
-    <RTSiteInvalidConfiguration>Site could not be loaded because of invalid configuration</RTSiteInvalidConfiguration>
 </LanguageData>

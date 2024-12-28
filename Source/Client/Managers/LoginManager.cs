@@ -129,7 +129,7 @@ namespace GameClient
 
             else
             {
-                RT_Dialog_Error d1 = new RT_Dialog_Error("RTLoginInvalid".Translate(),
+                RT_Dialog_Error d1 = new RT_Dialog_Error("RTLoginInvalidDetails".Translate(),
                     delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
                 DialogManager.PushNewDialog(d1);

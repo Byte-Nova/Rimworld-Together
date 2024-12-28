@@ -159,7 +159,7 @@ namespace GameClient
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferAcceptSure".Translate(),
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferAcceptConfirm".Translate(),
                 r1, null));
         }
 
@@ -172,7 +172,7 @@ namespace GameClient
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferCancelSure".Translate(),
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("RTTransferCancelConfirm".Translate(),
                 r1, null));
         }
     }
