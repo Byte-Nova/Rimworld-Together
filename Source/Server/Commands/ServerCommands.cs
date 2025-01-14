@@ -47,6 +47,10 @@ namespace GameServer.Commands
             "Shows all connected players",
             ListCommandAction);
 
+        public static readonly BaseServerCommand ListAllCommand = new BaseServerCommand("listall", 0,
+            "Shows all players",
+            ListAllCommandAction);
+
         public static readonly BaseServerCommand opCommand = new BaseServerCommand("op", 1,
             "Gives admin privileges to the selected player",
             OpCommandAction);
@@ -166,6 +170,7 @@ namespace GameServer.Commands
             helpCommand,
             kickCommand,
             listCommand,
+            ListAllCommand,
             modListCommand,
             opCommand,
             pardonCommand,
@@ -228,7 +233,21 @@ namespace GameServer.Commands
             Printer.Title("----------------------------------------");
             foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
-                Printer.Warning($"{client.userFile.SavedIP} - {client.userFile.Label} - {client.userFile.Uid}");
+                Printer.Warning($"{client.userFile.SavedIP} - {client.userFile.Label} - {client.userFile.Uid}" + (client.userFile.IsAdmin ? " - Admin" : ""));
+            }
+            Printer.Title("----------------------------------------");
+        }
+
+        public static void ListAllCommandAction()
+        {
+            ListCommandAction();
+            UserFile[] users = UserManagerH.GetAllUserFiles().Where(X =>
+                !NetworkHelper.GetConnectedClientsSafe().Any(Y => Y.userFile.Uid == X.Uid)).ToArray();
+            Printer.Title($"Offline players: [{users.Count()}]");
+            Printer.Title("----------------------------------------");
+            foreach (UserFile userFile in users)
+            {
+                Printer.Warning($"{userFile.SavedIP} - {userFile.Label} - {userFile.Uid}" + (userFile.IsAdmin ? " - Admin" : ""));
             }
             Printer.Title("----------------------------------------");
         }
@@ -248,12 +267,31 @@ namespace GameServer.Commands
 
         public static void OpCommandAction()
         {
-            ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
+            string uid = ConsoleManager.commandParameters[0];
+            ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(uid);
 
-            if (toFind == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (toFind == null)
+            {
+                UserFile? user = UserManagerH.GetAllUserFiles().Where(X => X.Uid == uid).FirstOrDefault();
+                if (user == null)
+                    Printer.Warning($"User '{uid}' was not found");
+                else
+                {
+                    if (CheckIfIsAlready(user))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        user.UpdateAdmin(true);
+                        UserManagerH.SaveUserFile(user);
+                        Printer.Warning($"User '{user.Label}' has now admin privileges");
+                    }
+                }
+            }
             else
             {
-                if (CheckIfIsAlready(toFind)) return;
+                if (CheckIfIsAlready(toFind.userFile)) return;
                 else
                 {
                     toFind.userFile.UpdateAdmin(true);
@@ -268,11 +306,11 @@ namespace GameServer.Commands
                 }
             }
 
-            bool CheckIfIsAlready(ServerClient client)
+            bool CheckIfIsAlready(UserFile userFile)
             {
-                if (client.userFile.IsAdmin)
+                if (userFile.IsAdmin)
                 {
-                    Printer.Warning($"User '{client.userFile.Label}' was already an admin");
+                    Printer.Warning($"User '{userFile.Label}' was already an admin");
                     return true;
                 }
 
@@ -282,12 +320,28 @@ namespace GameServer.Commands
 
         public static void DeopCommandAction()
         {
-            ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
+            string uid = ConsoleManager.commandParameters[0];
+            ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(uid);
 
-            if (toFind == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (toFind == null)
+            {
+                UserFile? user = UserManagerH.GetAllUserFiles().Where(X => X.Uid == uid).FirstOrDefault();
+                if (user == null)
+                    Printer.Warning($"User '{uid}' was not found");
+                else
+                {
+                    if (CheckIfIsAlready(user)) return;
+                    else
+                    {
+                        user.UpdateAdmin(false);
+                        UserManagerH.SaveUserFile(user);
+                        Printer.Warning($"User '{user.Label}' is no longer an admin");
+                    }
+                }
+            }
             else
             {
-                if (CheckIfIsAlready(toFind)) return;
+                if (CheckIfIsAlready(toFind.userFile)) return;
                 else
                 {
                     toFind.userFile.UpdateAdmin(false);
@@ -302,11 +356,11 @@ namespace GameServer.Commands
                 }
             }
 
-            bool CheckIfIsAlready(ServerClient client)
+            bool CheckIfIsAlready(UserFile userFile)
             {
-                if (!client.userFile.IsAdmin)
+                if (!userFile.IsAdmin)
                 {
-                    Printer.Warning($"User '{client.userFile.Label}' was not an admin");
+                    Printer.Warning($"User '{userFile.Label}' was not an admin");
                     return true;
                 }
 
