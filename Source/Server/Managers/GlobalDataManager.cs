@@ -9,6 +9,10 @@ namespace GameServer.Managers
     {
         public static void SendServerGlobalData(ServerClient client)
         {
+            foreach (SiteInfoFile siteInfoFile in Master.siteValues.SiteInfoFiles)
+            {
+                siteInfoFile.shouldSerializeTexture.Value = true;
+            }
             ServerGlobalData globalData = new ServerGlobalData();
 
             globalData = GlobalDataManagerHelper.GetClientValues(client, globalData);
@@ -27,6 +31,10 @@ namespace GameServer.Managers
 
             Packet packet = Packet.CreatePacketFromObject(nameof(GlobalDataManager), globalData);
             client.listener.EnqueuePacket(packet);
+            foreach (SiteInfoFile siteInfoFile in Master.siteValues.SiteInfoFiles)
+            {
+                siteInfoFile.shouldSerializeTexture.Value = false;
+            }
         }
     }
 

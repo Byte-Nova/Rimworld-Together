@@ -325,6 +325,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTFarmland",
+                Label = "Farmland",
+                Description = "A simple farmland, typically used to grow crops such as corn and rice.",
+                TexturePath = Path.Combine(Master.texturePath, "RTFarmland"),
                 DefNameCost = ["Silver"],
                 Cost = [500],
                 Rewards =
@@ -355,6 +358,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTHunterCamp",
+                Label = "Hunting Camp",
+                Description = "This hunting camp is capable of providing leather and meat.",
+                TexturePath = Path.Combine(Master.texturePath, "RTHunterCamp"),
                 DefNameCost = ["Silver"],
                 Cost = [500],
                 Rewards =
@@ -385,6 +391,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTQuarry",
+                Label = "Quarry",
+                Description = "This glorified hole in the ground is used to extract the most precious rocks and stones!",
+                TexturePath = Path.Combine(Master.texturePath, "RTQuarry"),
                 DefNameCost = ["Silver"],
                 Cost = [500],
                 Rewards =
@@ -415,6 +424,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTSawmill",
+                Label = "Sawmill",
+                Description = "A simple site capable of giving you large amounts of wood.",
+                TexturePath = Path.Combine(Master.texturePath, "RTSawmill"),
                 DefNameCost = ["Silver"],
                 Cost = [300],
                 Rewards =
@@ -430,6 +442,10 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTBank",
+                Label = "Bank",
+                Description = "Your pawns worked on hard on this one. " +
+                "Banks are capable of magically generating silver and other precious metals out of mid air. Fancy that!",
+                TexturePath = Path.Combine(Master.texturePath, "RTBank"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -450,6 +466,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTLaboratory",
+                Label = "Laboratory",
+                Description = "Where the brightest live. Your scientist and engineers work hard to make components here.",
+                TexturePath = Path.Combine(Master.texturePath, "RTLaboratory"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -470,6 +489,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTRefinery",
+                Label = "Refinery",
+                Description = "A fully automated refinery, capable of outputting chemfuel.",
+                TexturePath = Path.Combine(Master.texturePath, "RTRefinery"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -485,6 +507,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTHerbalWorkshop",
+                Label = "Herbal Workshop",
+                Description = "A simple medicine workshop, shrimple as that.",
+                TexturePath = Path.Combine(Master.texturePath, "RTHerbalWorkshop"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -505,6 +530,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTTextileFactory",
+                Label = "Textile Factory",
+                Description = "The textile factory outputs the finest fabric, none of that peasant stuff.",
+                TexturePath = Path.Combine(Master.texturePath, "RTTextileFactory"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -525,6 +553,9 @@ namespace GameServer.Managers
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTFoodProcessor",
+                Label = "Food Processor",
+                Description = "Tired of cooking? This site does it for you! Food poisoning included.",
+                TexturePath = Path.Combine(Master.texturePath, "RTFoodProcessor"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =

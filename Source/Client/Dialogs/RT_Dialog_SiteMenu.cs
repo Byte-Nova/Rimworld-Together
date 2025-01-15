@@ -5,6 +5,7 @@ using Verse;
 using RimWorld;
 using Shared;
 using GameClient.Managers;
+using GameClient.Misc;
 
 namespace GameClient.Dialogs
 {
@@ -47,7 +48,7 @@ namespace GameClient.Dialogs
             float num3 = scrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < SiteManager.siteDefs.Length; i++)
+            for (int i = 0; i < SiteManager.siteDefs.Count; i++)
             {
                 if (num > num2 && num < num3)
                 {
@@ -64,6 +65,7 @@ namespace GameClient.Dialogs
 
         private void DrawCustomRow(Rect rect, SitePartDef thing, int index)
         {
+            Printer.Message($"{thing.defName}, {thing.label}, {thing.description}");
             Text.Font = GameFont.Small;
             Rect highLightRect = new Rect(new Vector2(rect.x, rect.y), new Vector2(rect.width - 16f, 50f));
             Rect fixedRect = new Rect(new Vector2(highLightRect.x + 75, highLightRect.y), new Vector2(highLightRect.width - 75f, 55f));

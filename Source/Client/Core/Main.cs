@@ -30,7 +30,6 @@ namespace GameClient.Core
                 LoadAllManagers();
 
                 CaravanManagerHelper.SetCaravanDefs();
-                SiteManager.SetSiteDefs();
                 
                 PlayerPreferenceManager.LoadPlayerPreferences();
             }

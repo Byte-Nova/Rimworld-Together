@@ -46,6 +46,8 @@ namespace GameServer.Core
 
         public static string compatibilityPatchesPath;
 
+        public static string texturePath;
+
         //References
 
         public static WhitelistConfigFile whitelist;

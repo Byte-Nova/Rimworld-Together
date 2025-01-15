@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using GameClient.WorldObjects;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -19,7 +22,7 @@ namespace GameClient.Managers
     [RTManager]
     public static class SiteManager
     {
-        public static SitePartDef[] siteDefs;
+        public static List<SitePartDef> siteDefs = new List<SitePartDef>();
 
         public static SiteValuesFile siteValues;
 
@@ -47,23 +50,6 @@ namespace GameClient.Managers
                     ReceiveSiteRewards(siteData._rewardFiles);
                     break;
             }
-        }
-
-        public static void SetSiteDefs()
-        {
-            siteDefs = new SitePartDef[]
-            {
-                RTSitePartDefOf.RTFarmland,
-                RTSitePartDefOf.RTHunterCamp,
-                RTSitePartDefOf.RTQuarry,
-                RTSitePartDefOf.RTSawmill,
-                RTSitePartDefOf.RTBank,
-                RTSitePartDefOf.RTLaboratory,
-                RTSitePartDefOf.RTRefinery,
-                RTSitePartDefOf.RTHerbalWorkshop,
-                RTSitePartDefOf.RTTextileFactory,
-                RTSitePartDefOf.RTFoodProcessor
-            };
         }
 
         private static void OnSiteAccept()
@@ -222,8 +208,34 @@ public static class SiteManagerHelper
 
     public static void SetValues(ServerGlobalData serverGlobalData)
     {
+        SiteManager.siteDefs.Clear();
         SiteManager.siteValues = serverGlobalData._siteValues;
         tempSites = serverGlobalData._playerSites;
+        foreach (SiteInfoFile siteFile in serverGlobalData._siteValues.SiteInfoFiles)
+        {
+            SitePartDef def = MakeDefFromFile(siteFile);
+            SiteManager.siteDefs.Add(def);
+        }
+    }
+
+    public static SitePartDef MakeDefFromFile(SiteInfoFile site) 
+    {
+        SitePartDef def = new SitePartDef()
+        {
+            defName = site.DefName,
+            label = site.Label,
+            description = site.Description
+        };
+        Type type = typeof(SitePartDef);
+        TextureSerializer.MakeTextureOnMainThread(site.Texture, (texture) =>
+        {
+            FieldInfo field = type.GetField("expandingIconTextureInt", BindingFlags.Instance | BindingFlags.NonPublic);
+            field.SetValue(texture, def);
+        });
+
+        FieldInfo field2 = type.GetField("workerInt", BindingFlags.Instance | BindingFlags.NonPublic);
+        field2.SetValue(def, (SitePartWorker)Activator.CreateInstance(typeof(SitePartWorker)));
+        return def;
     }
 }
 

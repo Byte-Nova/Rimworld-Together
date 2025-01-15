@@ -51,6 +51,7 @@ namespace GameServer.Core
             Master.caravansPath = Path.Combine(Master.assetsPath, "Caravans");
             Master.eventsPath = Path.Combine(Master.assetsPath, "Events");
             Master.compatibilityPatchesPath = Path.Combine(Master.assetsPath, "Patches");
+            Master.texturePath = Path.Combine(Master.assetsPath, "Textures");
 
             Master.logsPath = Path.Combine(Master.mainPath, "Logs");
             Master.systemLogsPath = Path.Combine(Master.logsPath, "System");
@@ -76,6 +77,7 @@ namespace GameServer.Core
             if (!Directory.Exists(Master.settlementsPath)) Directory.CreateDirectory(Master.settlementsPath);
             if (!Directory.Exists(Master.caravansPath)) Directory.CreateDirectory(Master.caravansPath);
             if (!Directory.Exists(Master.eventsPath)) Directory.CreateDirectory(Master.eventsPath);
+            if (!Directory.Exists(Master.texturePath)) Directory.CreateDirectory(Master.texturePath);
 
             if (!Directory.Exists(Master.backupUsersPath)) Directory.CreateDirectory(Master.backupUsersPath);
             if (!Directory.Exists(Master.backupServerPath)) Directory.CreateDirectory(Master.backupServerPath);
