@@ -1,4 +1,6 @@
-﻿using GameServer.Core;
+﻿using System.IO.Compression;
+using System.Net;
+using GameServer.Core;
 using GameServer.Files;
 using GameServer.Misc;
 using GameServer.TCP;
@@ -320,14 +322,15 @@ namespace GameServer.Managers
 
         public static void SetSitePresets()
         {
+            string pathForTextures = Path.Combine(Master.texturePath, "Sites");
             List<SiteInfoFile> siteInfoFiles = new List<SiteInfoFile>();
-
+            FetchTexturesFromGithub();
             siteInfoFiles.Add(new SiteInfoFile()
             {
                 DefName = "RTFarmland",
                 Label = "Farmland",
                 Description = "A simple farmland, typically used to grow crops such as corn and rice.",
-                TexturePath = Path.Combine(Master.texturePath, "RTFarmland"),
+                TexturePath = Path.Combine(pathForTextures, "RTFarmland"),
                 DefNameCost = ["Silver"],
                 Cost = [500],
                 Rewards =
@@ -360,7 +363,7 @@ namespace GameServer.Managers
                 DefName = "RTHunterCamp",
                 Label = "Hunting Camp",
                 Description = "This hunting camp is capable of providing leather and meat.",
-                TexturePath = Path.Combine(Master.texturePath, "RTHunterCamp"),
+                TexturePath = Path.Combine(pathForTextures, "RTHunterCamp"),
                 DefNameCost = ["Silver"],
                 Cost = [500],
                 Rewards =
@@ -393,7 +396,7 @@ namespace GameServer.Managers
                 DefName = "RTQuarry",
                 Label = "Quarry",
                 Description = "This glorified hole in the ground is used to extract the most precious rocks and stones!",
-                TexturePath = Path.Combine(Master.texturePath, "RTQuarry"),
+                TexturePath = Path.Combine(pathForTextures, "RTQuarry"),
                 DefNameCost = ["Silver"],
                 Cost = [500],
                 Rewards =
@@ -426,7 +429,7 @@ namespace GameServer.Managers
                 DefName = "RTSawmill",
                 Label = "Sawmill",
                 Description = "A simple site capable of giving you large amounts of wood.",
-                TexturePath = Path.Combine(Master.texturePath, "RTSawmill"),
+                TexturePath = Path.Combine(pathForTextures, "RTSawmill"),
                 DefNameCost = ["Silver"],
                 Cost = [300],
                 Rewards =
@@ -445,7 +448,7 @@ namespace GameServer.Managers
                 Label = "Bank",
                 Description = "Your pawns worked on hard on this one. " +
                 "Banks are capable of magically generating silver and other precious metals out of mid air. Fancy that!",
-                TexturePath = Path.Combine(Master.texturePath, "RTBank"),
+                TexturePath = Path.Combine(pathForTextures, "RTBank"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -468,7 +471,7 @@ namespace GameServer.Managers
                 DefName = "RTLaboratory",
                 Label = "Laboratory",
                 Description = "Where the brightest live. Your scientist and engineers work hard to make components here.",
-                TexturePath = Path.Combine(Master.texturePath, "RTLaboratory"),
+                TexturePath = Path.Combine(pathForTextures, "RTLaboratory"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -491,7 +494,7 @@ namespace GameServer.Managers
                 DefName = "RTRefinery",
                 Label = "Refinery",
                 Description = "A fully automated refinery, capable of outputting chemfuel.",
-                TexturePath = Path.Combine(Master.texturePath, "RTRefinery"),
+                TexturePath = Path.Combine(pathForTextures, "RTRefinery"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -509,7 +512,7 @@ namespace GameServer.Managers
                 DefName = "RTHerbalWorkshop",
                 Label = "Herbal Workshop",
                 Description = "A simple medicine workshop, shrimple as that.",
-                TexturePath = Path.Combine(Master.texturePath, "RTHerbalWorkshop"),
+                TexturePath = Path.Combine(pathForTextures, "RTHerbalWorkshop"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -532,7 +535,7 @@ namespace GameServer.Managers
                 DefName = "RTTextileFactory",
                 Label = "Textile Factory",
                 Description = "The textile factory outputs the finest fabric, none of that peasant stuff.",
-                TexturePath = Path.Combine(Master.texturePath, "RTTextileFactory"),
+                TexturePath = Path.Combine(pathForTextures, "RTTextileFactory"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -555,7 +558,7 @@ namespace GameServer.Managers
                 DefName = "RTFoodProcessor",
                 Label = "Food Processor",
                 Description = "Tired of cooking? This site does it for you! Food poisoning included.",
-                TexturePath = Path.Combine(Master.texturePath, "RTFoodProcessor"),
+                TexturePath = Path.Combine(pathForTextures, "RTFoodProcessor"),
                 DefNameCost = ["Silver"],
                 Cost = [750],
                 Rewards =
@@ -574,6 +577,27 @@ namespace GameServer.Managers
             });
 
             Master.siteValues.SiteInfoFiles = siteInfoFiles.ToArray();
+            Main_.SaveValueFile(ServerFileMode.Sites);
+        }
+        public static void FetchTexturesFromGithub() 
+        {
+            string url = "https://github.com/Erag0n001/Rimworld-Together/raw/refs/heads/ServerSideSites/DefaultTextures.zip";
+            string downloadPath = Path.Combine(Master.tempPath, "download.zip");
+            string extractPath = Path.Combine(Master.texturePath);
+            try
+            {
+                using WebClient webClient = new WebClient();
+                webClient.DownloadFile(new Uri(url), downloadPath);
+
+                ZipFile.ExtractToDirectory(downloadPath, extractPath);
+
+                File.Delete(downloadPath);
+            }
+            catch (Exception ex)
+            {
+                Printer.Message("Failed to download default textures for sites");
+                Printer.Error(ex, LogImportanceMode.Verbose);
+            }
         }
     }
 }

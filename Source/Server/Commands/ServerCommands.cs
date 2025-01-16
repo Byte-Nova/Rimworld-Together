@@ -146,6 +146,9 @@ namespace GameServer.Commands
         public static readonly BaseServerCommand clearCommand = new BaseServerCommand("clear", 0,
             "Clears the console output",
             ClearCommandAction);
+        public static readonly BaseServerCommand resetSitesCommand = new BaseServerCommand("resetsites", 0,
+        "Resets sites to their default configuration and redownloads default textures.",
+        ResetSitesAction);  
 
         public static List<BaseServerCommand> commands = new List<BaseServerCommand>
         {
@@ -173,6 +176,7 @@ namespace GameServer.Commands
             quitCommand,
             reloadCommand,
             resetPlayerCommand,
+            resetSitesCommand,
             resetWorldCommand,
             serverMessageCommand,
             whitelistAddCommand,
@@ -535,6 +539,27 @@ namespace GameServer.Commands
             }
         }
 
+        public static void ResetSitesAction() 
+        {
+            Printer.Warning("Are you sure you want to reset the site configuration?");
+            Printer.Warning("Please type 'YES' or 'NO'");
+
+        ResetSitesQuestion:
+            string response = Console.ReadLine();
+
+            if (response == "NO") return;
+            else if (response != "YES")
+            {
+                Printer.Error($"{response} is not a valid option. The answer must be capitalized");
+                goto ResetSitesQuestion;
+            }
+
+            Directory.Delete(Master.texturePath, true);
+            Directory.CreateDirectory(Master.texturePath);
+
+            File.Delete(Path.Combine(Master.configsPath, "ServerConfig.json"));
+            SiteManagerHelper.SetSitePresets();
+        }
         public static void PortForwardCommandAction()
         {
             if (!Master.serverConfig.UseUPnP) Printer.Error("Cannot portforward because UPnP is disabled on the server");
