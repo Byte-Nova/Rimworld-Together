@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
@@ -211,11 +212,14 @@ public static class SiteManagerHelper
         SiteManager.siteDefs.Clear();
         SiteManager.siteValues = serverGlobalData._siteValues;
         tempSites = serverGlobalData._playerSites;
-        foreach (SiteInfoFile siteFile in serverGlobalData._siteValues.SiteInfoFiles)
+        Master.threadDispatcher.Enqueue(() =>
         {
-            SitePartDef def = MakeDefFromFile(siteFile);
-            SiteManager.siteDefs.Add(def);
-        }
+            foreach (SiteInfoFile siteFile in serverGlobalData._siteValues.SiteInfoFiles)
+            {
+                SitePartDef def = MakeDefFromFile(siteFile);
+                SiteManager.siteDefs.Add(def);
+            }
+        });
     }
 
     public static SitePartDef MakeDefFromFile(SiteInfoFile site) 
@@ -227,12 +231,15 @@ public static class SiteManagerHelper
             description = site.Description
         };
         Type type = typeof(SitePartDef);
-        TextureSerializer.MakeTextureOnMainThread(site.Texture, (texture) =>
+        if (site.Texture != null)
         {
             FieldInfo field = type.GetField("expandingIconTextureInt", BindingFlags.Instance | BindingFlags.NonPublic);
-            field.SetValue(texture, def);
-        });
-
+            field.SetValue(def, TextureSerializer.MakeTexture(site.Texture));
+        } 
+        else 
+        {
+            Printer.Error($"No textures found for {site.DefName}");
+        }
         FieldInfo field2 = type.GetField("workerInt", BindingFlags.Instance | BindingFlags.NonPublic);
         field2.SetValue(def, (SitePartWorker)Activator.CreateInstance(typeof(SitePartWorker)));
         return def;

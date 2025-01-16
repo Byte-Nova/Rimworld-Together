@@ -1,4 +1,5 @@
 ﻿using GameServer.Core;
+using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
 
@@ -33,6 +34,8 @@ namespace GameServer.Managers
             client.listener.EnqueuePacket(packet);
             foreach (SiteInfoFile siteInfoFile in Master.siteValues.SiteInfoFiles)
             {
+                if(siteInfoFile.Texture == null)
+                    Printer.Warning(siteInfoFile.TexturePath);
                 siteInfoFile.shouldSerializeTexture.Value = false;
             }
         }

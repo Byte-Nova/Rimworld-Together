@@ -21,7 +21,7 @@ namespace Shared
 
         public SiteRewardFile[] Rewards;
 
-        [JsonIgnore] public byte[]? Texture;
+        public byte[]? Texture { get; set; } //For some reason NewtonSoft can only read Properties for the {ShouldSerialize}, no idea
 
         [JsonIgnore] public ThreadLocal<bool> shouldSerializeTexture = new ThreadLocal<bool>();
 
@@ -42,7 +42,7 @@ namespace Shared
             {
                 Texture = null;
             }
-            return false;
+            return true;
         }
 
         public SiteInfoFile Clone() 
