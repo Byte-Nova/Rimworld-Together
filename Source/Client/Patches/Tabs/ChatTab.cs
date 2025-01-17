@@ -3,8 +3,10 @@ using UnityEngine;
 using Verse;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient.Managers;
+using GameClient.Values;
 
-namespace GameClient
+namespace GameClient.Patches.Tabs
 {
     public class ChatTab : MainTabWindow
     {
@@ -14,7 +16,7 @@ namespace GameClient
         private Vector2 scrollPositionChat = Vector2.zero;
 
         private readonly int startAcceptingInputAtFrame;
-            
+
         private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
         public ChatTab()
@@ -80,7 +82,7 @@ namespace GameClient
 
         private void DrawPlayerCount(Rect rect)
         {
-            string toShow = PlayerRecountManager.currentPlayers > 1 ? $"{PlayerRecountManager.currentPlayers} Players Online" : $"{PlayerRecountManager.currentPlayers} Player Online" ;
+            string toShow = PlayerRecountManager.currentPlayers > 1 ? $"{PlayerRecountManager.currentPlayers} Players Online" : $"{PlayerRecountManager.currentPlayers} Player Online";
 
             Text.Font = GameFont.Small;
             Widgets.Label(new(rect.x, rect.y, Text.CalcSize(toShow).x, Text.CalcSize(toShow).y), $"<color=grey>{toShow}</color>");
@@ -134,7 +136,7 @@ namespace GameClient
             {
                 if (num > num2 && num < num3)
                 {
-                    Rect rect2 = new(160f , mainRect.y + num, viewRect.width, Text.CalcHeight(str, mainRect.width - heightCalcWidthOffset - chatScrollbarSafezone));
+                    Rect rect2 = new(160f, mainRect.y + num, viewRect.width, Text.CalcHeight(str, mainRect.width - heightCalcWidthOffset - chatScrollbarSafezone));
                     DrawCustomRow(rect2, str);
                 }
 
@@ -162,7 +164,7 @@ namespace GameClient
 
         private void CheckForEnterKey()
         {
-            bool keyPressed = !string.IsNullOrWhiteSpace(ChatManager.currentChatInput) && (Event.current.keyCode == KeyCode.Return || 
+            bool keyPressed = !string.IsNullOrWhiteSpace(ChatManager.currentChatInput) && (Event.current.keyCode == KeyCode.Return ||
                 Event.current.keyCode == KeyCode.KeypadEnter);
 
             if (keyPressed)

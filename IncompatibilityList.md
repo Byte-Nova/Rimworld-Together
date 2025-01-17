@@ -11,10 +11,7 @@
 - [Realistic Planets](https://steamcommunity.com/sharedfiles/filedetails/?id=2557451791) > Breaks world generation and sending the world towards the server for storing, since it modifies the world generation above our patches.
 - [Alpha Biomes](https://steamcommunity.com/workshop/filedetails/?id=1841354677) > Breaks UI whenever you relog into the server and access the world map.
 - [SOS2](https://steamcommunity.com/workshop/filedetails/?id=1909914131) > Breaks many of the functions RimWorld Together has, such as trading, caravans, settlements, etc.
+- [Prepatcher](https://steamcommunity.com/workshop/filedetails/?id=2934420800) > On some cases only, might prevent the mod from starting correctly. Might depend on loading priority.
   
 ### Mods that somewhat break with Rimworld Together:
 - [SRTS](https://steamcommunity.com/workshop/filedetails/?id=1845423808) > Breaks raiding / spying / visiting due to the mod not using vanilla caravan code, similar mods might produce same results.
-
-### Mods that slightly break with Rimworld Together:
-- [Roads of the Rim](https://steamcommunity.com/sharedfiles/filedetails/?id=1613783924) > No issues other than the roads that are built don't get synced with the server.
-- [Vanilla Outposts Expanded](https://steamcommunity.com/workshop/filedetails/?id=2688941031) > Works completely fine aside from the fact that outposts that generate from this mod aren't synced to everyone else.

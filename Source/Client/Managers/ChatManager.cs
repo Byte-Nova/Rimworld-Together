@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using GameClient.Core;
+using GameClient.Misc;
+using GameClient.TCP;
+using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using Shared;
@@ -12,9 +16,10 @@ using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
     [StaticConstructorOnStartup]
+    [RTManager]
     public static class ChatManager
     {
         public static Vector2 chatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
@@ -63,7 +68,7 @@ namespace GameClient
         public static void SendMessage(string messageToSend)
         {
             ChatSounds.OwnChatDing.PlayOneShotOnCamera();
-    
+
             ChatData chatData = new ChatData();
             chatData._username = ClientValues.username;
             chatData._message = messageToSend;
@@ -111,7 +116,7 @@ namespace GameClient
         public static void UpdateChatIcon()
         {
             chatIconIndex++;
-            if(chatIconIndex > chatIcons.Count) chatIconIndex = 0;
+            if (chatIconIndex > chatIcons.Count) chatIconIndex = 0;
             AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[chatIconIndex]);
         }
 
@@ -119,7 +124,7 @@ namespace GameClient
 
         public static void ChatClock()
         {
-            while(isChatIconActive)
+            while (isChatIconActive)
             {
                 Master.threadDispatcher.Enqueue(UpdateChatIcon);
 
@@ -210,7 +215,7 @@ namespace GameClient
                             break;
 
                         //Check for NEW LINE (broadcasts only)
-                        
+
                         case "[n]":
                             if (fromBroadcast)
                             {

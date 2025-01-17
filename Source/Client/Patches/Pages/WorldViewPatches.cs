@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient.Dialogs;
+using GameClient.Managers;
+using GameClient.Patches.Tabs;
+using GameClient.TCP;
+using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -8,7 +13,7 @@ using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(WorldInspectPane), "SetInitialSizeAndPosition")]
     public static class AddSideTabs
@@ -84,14 +89,23 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = __instance;
 
-                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
-                            GoodwillTarget.Settlement); };
+                        Action r1 = delegate
+                        {
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
+                            GoodwillTarget.Settlement);
+                        };
 
-                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
-                            GoodwillTarget.Settlement); };
+                        Action r2 = delegate
+                        {
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
+                            GoodwillTarget.Settlement);
+                        };
 
-                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
-                            GoodwillTarget.Settlement); };
+                        Action r3 = delegate
+                        {
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
+                            GoodwillTarget.Settlement);
+                        };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set settlement's goodwill to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
@@ -111,8 +125,8 @@ namespace GameClient
 
                         if (SessionValues.actionValues.EnableFactions)
                         {
-                            if (SessionValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) FactionManager.OnFactionOpenOnMember();
-                            else FactionManager.OnFactionOpenOnNonMember();
+                            if (SessionValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) GuildManager.OnFactionOpenOnMember();
+                            else GuildManager.OnFactionOpenOnNonMember();
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                     }
@@ -127,7 +141,7 @@ namespace GameClient
                     {
                         SessionValues.chosenSettlement = __instance;
 
-                        Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved:true);
+                        Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved: true);
                         DialogManager.PushNewDialog(d1);
                     }
                 };
@@ -144,8 +158,8 @@ namespace GameClient
                         if (SessionValues.actionValues.EnableAids)
                         {
                             List<string> pawnNames = new List<string>();
-                            foreach (Pawn pawn in RimworldManager.GetAllSettlementPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
-                            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Aid menu", "Select the pawn you want to send for aid", 
+                            foreach (Pawn pawn in RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
+                            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Aid menu", "Select the pawn you want to send for aid",
                                 pawnNames.ToArray(), AidManager.SendAidRequest));
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
@@ -189,32 +203,13 @@ namespace GameClient
 
                         if (SessionValues.actionValues.EnableFactions)
                         {
-                            if (ServerValues.hasFaction) FactionManager.OnFactionOpen();
-                            else FactionManager.OnNoFactionOpen();
+                            if (ServerValues.hasFaction) GuildManager.OnFactionOpen();
+                            else GuildManager.OnNoFactionOpen();
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                     }
                 };
 
-                Command_Action command_GlobalMarketMenu = new Command_Action
-                {
-                    defaultLabel = "Global Market Menu",
-                    defaultDesc = "Access the global market",
-                    icon = ContentFinder<Texture2D>.Get("Commands/GlobalMarket"),
-                    action = delegate 
-                    {
-                        SessionValues.chosenSettlement = Find.WorldObjects.Settlements.First(fetch => fetch.Faction == Faction.OfPlayer);
-
-                        if (SessionValues.actionValues.EnableMarket)
-                        {
-                            if (RimworldManager.CheckIfPlayerHasConsoleInMap(SessionValues.chosenSettlement.Map)) MarketManager.RequestReloadStock();
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("You need a comms console to use the market!"));
-                        }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
-                    }
-                };
-
-                gizmoList.Add(command_GlobalMarketMenu);
                 gizmoList.Add(command_FactionMenu);
                 __result = gizmoList;
             }
@@ -372,11 +367,11 @@ namespace GameClient
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
 
+            List<Gizmo> gizmoList = __result.ToList();
+            gizmoList.Clear();
+
             if (FactionValues.playerFactions.Contains(__instance.Faction))
             {
-                var gizmoList = __result.ToList();
-                gizmoList.Clear();
-
                 Command_Action command_Goodwill = new Command_Action
                 {
                     defaultLabel = "Change Goodwill",
@@ -386,14 +381,23 @@ namespace GameClient
                     {
                         SessionValues.chosenSite = __instance;
 
-                        Action r1 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
-                            GoodwillTarget.Site); };
+                        Action r1 = delegate
+                        {
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
+                            GoodwillTarget.Site);
+                        };
 
-                        Action r2 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
-                            GoodwillTarget.Site); };
+                        Action r2 = delegate
+                        {
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
+                            GoodwillTarget.Site);
+                        };
 
-                        Action r3 = delegate { GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
-                            GoodwillTarget.Site); };
+                        Action r3 = delegate
+                        {
+                            GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
+                            GoodwillTarget.Site);
+                        };
 
                         RT_Dialog_3Button d1 = new RT_Dialog_3Button("Change Goodwill", "Set site's goodwill to",
                             "Enemy", "Neutral", "Ally", r1, r2, r3, null);
@@ -402,15 +406,26 @@ namespace GameClient
                     }
                 };
 
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Goodwill);
+                if (__instance.Faction != FactionValues.yourOnlineFaction || __instance.Faction != Faction.OfPlayer) gizmoList.Add(command_Goodwill);
 
                 __result = gizmoList;
             }
 
             else if (__instance.Faction == Find.FactionManager.OfPlayer)
             {
-                var gizmoList = __result.ToList();
-                gizmoList.Clear();
+                Command_Action command_Config = new Command_Action
+                {
+                    defaultLabel = "Change site configs",
+                    defaultDesc = "Change the configuration of your sites. These settings affect all sites currently under your control.",
+                    icon = ContentFinder<Texture2D>.Get("Commands/SiteConfig"),
+                    action = delegate
+                    {
+                        if (SessionValues.actionValues.EnableSites) DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
+                    }
+                };
+
+                gizmoList.Add(command_Config);
 
                 __result = gizmoList;
             }
@@ -448,29 +463,10 @@ namespace GameClient
 
                 if (presentSettlement == null && presentSite == null)
                 {
+
                     Command_Action Command_BuildSite = new Command_Action
                     {
-                        defaultLabel = "Build Personal Site",
-                        defaultDesc = "Build an utility site for your convenience",
-                        icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
-                        action = delegate
-                        {
-                            SessionValues.chosenCaravan = __instance;
-                            
-                            if (SessionValues.actionValues.EnableSites)
-                            {
-                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Personal Sites", "Available sites to build",
-                                    SiteManager.siteDefLabels, PersonalSiteManager.PushConfirmSiteDialog, null);
-
-                                DialogManager.PushNewDialog(d1);
-                            }
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
-                        }
-                    };
-
-                    Command_Action Command_BuildFactionSite = new Command_Action
-                    {
-                        defaultLabel = "Build Faction Site",
+                        defaultLabel = "Build a Site",
                         defaultDesc = "Build an utility site for your faction",
                         icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
                         action = delegate
@@ -479,36 +475,16 @@ namespace GameClient
 
                             if (SessionValues.actionValues.EnableSites)
                             {
-                                RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Buildable Faction Sites", "Available sites to build",
-                                    SiteManager.siteDefLabels, FactionSiteManager.PushConfirmSiteDialog, null);
-
-                                DialogManager.PushNewDialog(d1);
+                                DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(false));
                             }
                             else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
                         }
                     };
-
                     gizmoList.Add(Command_BuildSite);
-                    if (ServerValues.hasFaction) gizmoList.Add(Command_BuildFactionSite);
                 }
 
                 else if (presentSite != null)
                 {
-                    Command_Action command_AccessPersonalSite = new Command_Action
-                    {
-                        defaultLabel = "Access Personal Site",
-                        defaultDesc = "Access your personal site",
-                        icon = ContentFinder<Texture2D>.Get("Commands/PSite"),
-                        action = delegate
-                        {
-                            SessionValues.chosenCaravan = __instance;
-                            SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
-
-                            if (SessionValues.actionValues.EnableSites) SiteManager.OnSimpleSiteRequest();
-                            else DialogManager.PushNewDialog(new RT_Dialog_Error("This feature has been disabled in this server!"));
-                        }
-                    };
-
                     Command_Action command_DestroySite = new Command_Action
                     {
                         defaultLabel = "Destroy Site",
@@ -526,7 +502,6 @@ namespace GameClient
 
                     if (presentSite.Faction == Faction.OfPlayer)
                     {
-                        gizmoList.Add(command_AccessPersonalSite);
                         gizmoList.Add(command_DestroySite);
                     }
                     else if (presentSite.Faction == FactionValues.yourOnlineFaction)

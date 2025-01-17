@@ -4,6 +4,8 @@ namespace Shared
     {
         public enum ClientNetworkState { Disconnected, Connecting, Connected }
 
+        public enum GenStepMode { Scenario, Storyteller, Difficulty }
+
         public enum AssemblyType { Client, Server }
 
         public enum JoinType { Login, Register }
@@ -12,7 +14,7 @@ namespace Shared
 
         public enum SaveStepMode { Send, Receive, Reset }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Market, Discord, Backup, Mods, Chat }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Scenario, Storyteller, Discord, Backup, Mods, Chat }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
@@ -22,8 +24,6 @@ namespace Shared
 
         public enum EventStepMode { Send, Receive, Recover }
 
-        public enum MarketStepMode { Add, Request, Reload }
-
         public enum AidStepMode { Send, Receive, Accept, Reject }
 
         public enum CaravanStepMode { Add, Remove, Move }
@@ -32,7 +32,7 @@ namespace Shared
 
         public enum ModConfigStepMode { Send, Ask }
 
-        public enum FactionStepMode { Create, Delete, NameInUse, NoPower, AddMember, RemoveMember, AcceptInvite, Promote, Demote, AdminProtection, MemberList }
+        public enum GuildStepMode { Create, Delete, NameInUse, NoPower, AddMember, RemoveMember, AcceptInvite, Promote, Demote, AdminProtection, MemberList }
 
         public enum FactionRanks { Member, Moderator, Admin }
 
@@ -40,15 +40,15 @@ namespace Shared
 
         public enum GoodwillTarget { Settlement, Site }
 
-        public enum TransferMode { Gift, Trade, Rebound, Pod, Market }
+        public enum TransferMode { Gift, Trade, Rebound, Pod }
 
-        public enum TransferLocation { Caravan, Settlement, Pod, Market }
+        public enum TransferLocation { Caravan, Settlement, Pod }
 
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod, Market }
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
 
         public enum OfflineActivityStepMode { Request, Deny, Unavailable }
 
-        public enum OnlineActivityStepMode { Request, Accept, Reject, Ready, Unavailable, Stop, Jobs, Create, Destroy, Damage, Hediff, GameCondition, Weather, TimeSpeed }
+        public enum OnlineActivityStepMode { Request, Accept, Reject, Ready, Unavailable, Stop, Buffer }
 
         public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
 
@@ -60,9 +60,9 @@ namespace Shared
 
         public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
 
-        public enum CreationType { Human, Animal, Thing }
+        public enum CreationType { Human, Animal, Corpse, Thing }
 
-        public enum SiteStepMode { Accept, Build, Destroy, Info, Deposit, Retrieve, Reward, WorkerError }
+        public enum SiteStepMode { Accept, Build, Destroy, Info, Config, Rewards}
 
         public enum SettlementStepMode { Add, Remove }
 
@@ -74,11 +74,9 @@ namespace Shared
 
         public enum MessageColor { Normal, Admin, Console, Private, Discord, Server }
 
-        public enum LoginMode { Login, Register }
-
         public enum ModType { Required, Optional, Forbidden };
 
-        public enum LoginResponse { InvalidLogin, BannedLogin, RegisterInUse, RegisterError, ExtraLogin, WrongMods, WrongVersion, ServerFull, Whitelist, NoWorld }
+        public enum LoginResponse { InvalidLogin, BannedLogin, RegisterError, ExtraLogin, WrongMods, WrongVersion, ServerFull, Whitelist, NoWorld }
     }
 }
 

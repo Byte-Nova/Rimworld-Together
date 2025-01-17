@@ -1,18 +1,23 @@
-namespace GameClient
+using GameClient.Dialogs;
+
+namespace GameClient.Managers
 {
+    using RimWorld;
+    using Shared;
+    [RTManager]
     public static class AdminMenuManager
     {
         private static readonly string dialogTitle = "Admin menu";
 
         private static readonly string dialogDescription = "Choose which action to execute";
 
-        private static readonly string[] menuButtons = new string[] { "Mod Manager", "Custom Difficulty" };
+        private static readonly string[] menuButtons = new string[] { "Mod Manager" };
 
         public static void ShowAdminMenu()
         {
-            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons(dialogTitle, dialogDescription, 
+            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons(dialogTitle, dialogDescription,
                 menuButtons, delegate { OpenSpecificMenu(); }, null);
-                
+
             DialogManager.PushNewDialog(d1);
         }
 
@@ -22,10 +27,6 @@ namespace GameClient
             {
                 case 0:
                     ModManager.OpenModManagerMenu(false);
-                    break;
-
-                case 1:
-                    DifficultyManager.OpenDifficultyMenu();
                     break;
             }
         }

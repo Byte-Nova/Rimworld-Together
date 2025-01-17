@@ -1,4 +1,8 @@
-﻿namespace GameServer
+﻿using GameServer.Managers;
+using GameServer.Managers.External;
+using GameServer.TCP;
+
+namespace GameServer.Misc
 {
     public static class Threader
     {
@@ -11,7 +15,7 @@
                 ServerMode.Start => Task.Run(Network.ReadyServer),
                 ServerMode.Sites => Task.Run(SiteManager.StartSiteTicker),
                 ServerMode.Caravans => Task.Run(CaravanManager.StartCaravanTicker),
-                ServerMode.Console => Task.Run(CommandManager.ListenForServerCommands),
+                ServerMode.Console => Task.Run(ConsoleManager.ListenForServerCommands),
                 _ => throw new NotImplementedException(),
             };
         }

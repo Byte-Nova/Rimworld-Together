@@ -8,7 +8,9 @@ namespace Shared
     {
         public int Tile;
 
-        public string Owner;
+        public string UID;
+
+        public string Label;
         
         public Goodwill Goodwill;
     }

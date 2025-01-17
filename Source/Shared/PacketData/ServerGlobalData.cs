@@ -9,15 +9,19 @@ namespace Shared
 
         public bool _isClientFactionMember;
 
-        public SiteValuesFile _siteValues;
+        public ServerValuesFile _serverValues;
 
-        public MarketValuesFile _marketValues;
+        public SiteValuesFile _siteValues;
 
         public EventFile[] _eventValues;
 
         public ActionValuesFile _actionValues;
 
         public RoadValuesFile _roadValues;
+
+        public ScenarioValuesFile _scenarioValues;
+
+        public StorytellerValuesFile _storytellerValues;
 
         public DifficultyValuesFile _difficultyValues;
 

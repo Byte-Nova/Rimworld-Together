@@ -1,23 +1,39 @@
-﻿using RimWorld.Planet;
+﻿using GameClient.Patches;
+using RimWorld.Planet;
 using Shared;
 using System.Collections.Generic;
 using Verse;
-
-namespace GameClient
+namespace GameClient.Managers
 {
+    [RTManager]
     public static class PollutionManager
     {
+        public static void ParsePacket(Packet packet)
+        {
+            if (ModsConfig.BiotechActive)
+            {
+                PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(packet.contents);
+                AddPollutedTileOrganic(data._pollutionData);
+            }
+        }
+
         public static void AddPollutedTiles(PollutionDetails[] details, bool forceRefresh)
         {
             if (details == null) return;
 
-            foreach(PollutionDetails detail in details)
+            foreach (PollutionDetails detail in details)
             {
                 AddPollutedTileSimple(detail, forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
             if (!forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
+        }
+
+        public static void AddPollutedTileOrganic(PollutionDetails details)
+        {
+            PollutionPatch.PatchAddPollution.addedByServer = true;
+            WorldPollutionUtility.PolluteWorldAtTile(details.tile, details.quantity);
         }
 
         public static void AddPollutedTileSimple(PollutionDetails details, bool forceRefresh)

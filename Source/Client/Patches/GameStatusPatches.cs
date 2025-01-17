@@ -1,11 +1,16 @@
-﻿using HarmonyLib;
+﻿using GameClient.Managers;
+using GameClient.Misc;
+using GameClient.Scribers;
+using GameClient.TCP;
+using GameClient.Values;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches
 {
     public class GameStatusPatches
     {
@@ -18,7 +23,6 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
-                    DifficultyManager.EnforceCustomDifficulty();
                     SaveManager.ForceSave();
 
                     if (ClientValues.isGeneratingFreshWorld)
@@ -40,7 +44,6 @@ namespace GameClient
                 {
                     PlanetManager.BuildPlanet();
                     ClientValues.ToggleReadyToPlay(true);
-                    DifficultyManager.EnforceCustomDifficulty();
                 }
             }
         }
@@ -53,12 +56,7 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = caravan.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
-                    Network.listener.EnqueuePacket(packet);
+                    PlayerSettlementManager.SendNewPlayerSettlement(caravan.Tile);
 
                     SaveManager.ForceSave();
                 }
@@ -73,12 +71,7 @@ namespace GameClient
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = map.Tile;
-                    settlementData._stepMode = SettlementStepMode.Add;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
-                    Network.listener.EnqueuePacket(packet);
+                    PlayerSettlementManager.SendNewPlayerSettlement(map.Tile);
 
                     SaveManager.ForceSave();
                 }
@@ -94,7 +87,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementData.Tile = settlement.Tile;
+                    settlementData._settlementFile.Tile = settlement.Tile;
                     settlementData._stepMode = SettlementStepMode.Remove;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
@@ -114,6 +107,7 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     if (!ClientValues.isReadyToPlay) return;
+                    if (!SessionValues.actionValues.EnableNPCDestruction) return;
 
                     if (__instance.Faction == Faction.OfPlayer) return;
                     else if (FactionValues.playerFactions.Contains(__instance.Faction)) return;
@@ -129,17 +123,6 @@ namespace GameClient
             public static void DoPost()
             {
                 if (Network.state == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
-                else return;
-            }
-        }
-
-        [HarmonyPatch(typeof(Page_SelectStorytellerInGame), nameof(Page_SelectStorytellerInGame.DoWindowContents))]
-        public static class PatchCustomDifficulty
-        {
-            [HarmonyPostfix]
-            public static void DoPost()
-            {
-                if (Network.state == ClientNetworkState.Connected) DifficultyManager.EnforceCustomDifficulty();
                 else return;
             }
         }

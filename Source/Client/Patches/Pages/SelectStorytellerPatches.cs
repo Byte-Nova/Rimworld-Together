@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient.Dialogs;
+using GameClient.Managers;
+using GameClient.Misc;
+using GameClient.TCP;
+using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(Page_SelectStoryteller), "PreOpen")]
     public static class PatchDifficultyOverride
@@ -16,21 +21,105 @@ namespace GameClient
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-
-            if (DifficultyManager.difficultyValues.UseCustomDifficulty)
+            else
             {
-                ___difficulty = DifficultyDefOf.Rough;
-                ___difficultyValues = new Difficulty(___difficulty);
-            }
+                Find.GameInitData.permadeathChosen = true;
 
-            Find.GameInitData.permadeathChosen = true;
-            return true;
+                if (!ClientValues.isGeneratingFreshWorld)
+                {
+                    ___difficulty = DifficultyDefOf.Rough;
+                    ___difficultyValues = new Difficulty(___difficulty);
+                }
+
+                return true;
+            }
         }
     }
 
     [HarmonyPatch(typeof(Page_SelectStoryteller), "DoWindowContents")]
     public static class PatchSelectStorytellerPage
     {
+        private static bool executed;
+
+        [HarmonyPrefix]
+        public static bool DoPre(Rect rect, Page_SelectStoryteller __instance)
+        {
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+
+            if (ClientValues.isGeneratingFreshWorld)
+            {
+                if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
+                {
+                    Current.Game.storyteller = GenManagerH.GetStorytellerReference(__instance);
+
+                    Action difficultyYes = delegate
+                    {
+                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty());
+                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(), true);
+
+                        DialogManager.PushNewDialog(__instance.next);
+                        __instance.Close();
+                    };
+
+                    Action difficultyNo = delegate
+                    {
+                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty());
+                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(), false);
+
+                        DialogManager.PushNewDialog(__instance.next);
+                        __instance.Close();
+                    };
+
+                    RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("Do you want to ENFORCE the selected DIFFICULTY?", difficultyYes, difficultyNo);
+
+                    Action storytellerYes = delegate
+                    {
+                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance));
+                        GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), true);
+
+                        DialogManager.PushNewDialog(d2);
+                    };
+
+                    Action storytellerNo = delegate
+                    {
+                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance));
+                        GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), false);
+
+                        DialogManager.PushNewDialog(d2);
+                    };
+
+                    RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to ENFORCE the selected STORYTELLER?", storytellerYes, storytellerNo);
+
+                    DialogManager.PushNewDialog(d1);
+                };
+            }
+
+            else
+            {
+                if (GameParameterManager.storytellerFile.EnforceStoryteller)
+                {
+                    if (executed) return true;
+                    else
+                    {
+                        Action toDo = delegate
+                        {
+                            GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
+
+                            DialogManager.PushNewDialog(__instance.next);
+                            __instance.Close();
+
+                            executed = false;
+                        };
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Storyteller will be forced by the server", toDo));
+
+                        executed = true;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
@@ -44,52 +133,29 @@ namespace GameClient
         }
     }
 
-    [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "DoWindowContents")]
-    public static class PatchSelectStorytellerInGamePage
+    [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "PreClose")]
+    public static class PatchSelectStorytellerInGamePageClose
     {
         [HarmonyPrefix]
-        public static bool DoPre(Rect rect, Page_SelectStorytellerInGame __instance)
+        public static bool DoPre()
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (DifficultyManager.difficultyValues.UseCustomDifficulty)
+            if (GameParameterManager.difficultyFile.EnforceDifficulty || GameParameterManager.storytellerFile.EnforceStoryteller)
             {
-                __instance.Close();
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Difficulty can't be changed in this server!"));
+                Action toDo = delegate
+                {
+                    GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
+
+                    GameParameterManager.SetDifficulty(GameParameterManager.difficultyFile);
+                };
+
+                DialogManager.PushNewDialog(new RT_Dialog_OK("Settings might change to reflect server enforcements", toDo));
+
                 return false;
             }
 
-            else
-            {
-                if (ServerValues.isAdmin)
-                {
-                    Text.Font = GameFont.Small;
-                    Vector2 buttonSize = new Vector2(150f, 38f);
-                    Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty"))
-                    {
-                        DifficultyManager.SendCustomDifficulty();
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Custom difficulty has been changed!"));
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        [HarmonyPostfix]
-        public static void DoPost(Rect rect)
-        {
-            if (Network.state == ClientNetworkState.Disconnected) return;
-            if (DifficultyManager.difficultyValues.UseCustomDifficulty) return;
-
-            if (ServerValues.isAdmin)
-            {
-                Text.Font = GameFont.Small;
-                Vector2 buttonSize = new Vector2(150f, 38f);
-                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty")) { }
-            }          
+            return true;
         }
     }
 
@@ -99,11 +165,11 @@ namespace GameClient
     {
         private static readonly Texture2D StorytellerHighlightTex = ContentFinder<Texture2D>.Get("UI/HeroArt/Storytellers/Highlight");
 
-        private static Vector2 scrollPosition = default(Vector2);
+        private static Vector2 scrollPosition = default;
 
-        private static Vector2 explanationScrollPosition = default(Vector2);
+        private static Vector2 explanationScrollPosition = default;
 
-        private static Rect explanationInnerRect = default(Rect);
+        private static Rect explanationInnerRect = default;
 
         private static AnimationCurve explanationScrollPositionAnimated;
 
@@ -126,12 +192,12 @@ namespace GameClient
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
             if (Current.ProgramState != ProgramState.Entry) return true;
-            
+
             Widgets.BeginGroup(rect);
             Rect outRect = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x + 16f, rect.height);
-            Widgets.BeginScrollView(viewRect: new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, (float)DefDatabase<StorytellerDef>.AllDefs.Count() * (Storyteller.PortraitSizeTiny.y + 10f)), outRect: outRect, scrollPosition: ref scrollPosition);
+            Widgets.BeginScrollView(viewRect: new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, DefDatabase<StorytellerDef>.AllDefs.Count() * (Storyteller.PortraitSizeTiny.y + 10f)), outRect: outRect, scrollPosition: ref scrollPosition);
             Rect rect2 = new Rect(0f, 0f, Storyteller.PortraitSizeTiny.x, Storyteller.PortraitSizeTiny.y).ContractedBy(4f);
-            foreach (StorytellerDef item in DefDatabase<StorytellerDef>.AllDefs.OrderBy((StorytellerDef tel) => tel.listOrder))
+            foreach (StorytellerDef item in DefDatabase<StorytellerDef>.AllDefs.OrderBy((tel) => tel.listOrder))
             {
                 if (item.listVisible)
                 {
@@ -178,7 +244,7 @@ namespace GameClient
                 infoListing.Gap(6f);
             }
 
-            if (!DifficultyManager.difficultyValues.UseCustomDifficulty)
+            if (ClientValues.isGeneratingFreshWorld)
             {
                 if (chosenStoryteller != null && chosenStoryteller.listVisible)
                 {
@@ -199,7 +265,7 @@ namespace GameClient
 
                             difficulty = allDef;
                         }
-
+                        
                         infoListing.Gap(3f);
                     }
                 }
@@ -209,7 +275,7 @@ namespace GameClient
             num = rect3.y + infoListing.CurHeight;
             infoListing.End();
 
-            if (!DifficultyManager.difficultyValues.UseCustomDifficulty)
+            if (ClientValues.isGeneratingFreshWorld)
             {
                 if (difficulty != null && difficulty.isCustom)
                 {
@@ -373,7 +439,7 @@ namespace GameClient
 
         private static void DrawCustomDifficultySlider(Listing_Standard listing, string optionName, ref float value, ToStringStyle style, ToStringNumberSense numberSense, float min, float max, float precision = 0.01f, bool reciprocate = false, float reciprocalCutoff = 1000f)
         {
-            string text = (reciprocate ? "_Inverted" : "");
+            string text = reciprocate ? "_Inverted" : "";
             string text2 = optionName.CapitalizeFirst();
             string key = "Difficulty_" + text2 + text + "_Label";
             string key2 = "Difficulty_" + text2 + text + "_Info";
@@ -398,13 +464,13 @@ namespace GameClient
 
         private static void DrawCustomDifficultyCheckbox(Listing_Standard listing, string optionName, ref bool value, bool invert = false, bool showTooltip = true)
         {
-            string text = (invert ? "_Inverted" : "");
+            string text = invert ? "_Inverted" : "";
             string text2 = optionName.CapitalizeFirst();
             string key = "Difficulty_" + text2 + text + "_Label";
             string key2 = "Difficulty_" + text2 + text + "_Info";
-            bool checkOn = (invert ? (!value) : value);
-            listing.CheckboxLabeled(key.Translate(), ref checkOn, showTooltip ? key2.Translate() : ((TaggedString)null));
-            value = (invert ? (!checkOn) : checkOn);
+            bool checkOn = invert ? !value : value;
+            listing.CheckboxLabeled(key.Translate(), ref checkOn, showTooltip ? key2.Translate() : (TaggedString)null);
+            value = invert ? !checkOn : checkOn;
         }
 
         private static void DrawDisabledCustomDifficultySetting(Listing_Standard listing, string optionName, TaggedString disableReason)

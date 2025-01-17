@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient.Dialogs;
+using GameClient.TCP;
+using GameClient.Values;
 using RimWorld;
 using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
+    [RTManager]
     public static class EventManager
     {
         public static void ParsePacket(Packet packet)
@@ -109,7 +113,7 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent!", 
+            RimworldManager.GenerateLetter("Event sent!", "Your event has been sent!",
                 LetterDefOf.PositiveEvent);
 
             SaveManager.ForceSave();

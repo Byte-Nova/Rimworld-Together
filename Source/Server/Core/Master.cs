@@ -1,20 +1,26 @@
-﻿using Shared;
+﻿using GameServer.Core.Configs;
+using Shared;
+using System.Reflection;
 
-namespace GameServer
+namespace GameServer.Core
 {
     //Class with all the critical variables for the client to work
 
     public static class Master
     {
-        //Paths
-
         public static string mainPath;
 
-        public static string corePath;
+        public static string assetsPath;
 
-        public static string mapsPath;
+        public static string backupsPath;
+
+        public static string configsPath;
 
         public static string logsPath;
+
+        public static string tempPath;
+
+        public static string mapsPath;
 
         public static string systemLogsPath;
 
@@ -34,17 +40,15 @@ namespace GameServer
 
         public static string eventsPath;
 
-        public static string backupsPath;
-
         public static string backupServerPath;
 
         public static string backupUsersPath;
 
+        public static string compatibilityPatchesPath;
+
         //References
 
-        public static MarketValuesFile marketValues;
-
-        public static WhitelistFile whitelist;
+        public static WhitelistConfigFile whitelist;
 
         public static SiteValuesFile siteValues;
 
@@ -52,9 +56,13 @@ namespace GameServer
 
         public static ServerConfigFile serverConfig;
 
-        public static ActionValuesFile actionValues;
+        public static ActionValuesFile actionConfigs;
 
         public static DifficultyValuesFile difficultyValues;
+
+        public static StorytellerValuesFile storytellerValues;
+
+        public static ScenarioValuesFile scenarioValues;
 
         public static RoadValuesFile roadValues;
 
@@ -63,8 +71,10 @@ namespace GameServer
         public static BackupConfigFile backupConfig;
 
         public static ModConfigFile modConfig;
-        
+
         public static ChatConfigFile chatConfig;
+
+        public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
 
         //Booleans
 

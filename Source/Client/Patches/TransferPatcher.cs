@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
+using GameClient.Managers;
+using GameClient.TCP;
+using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches
 {
     [HarmonyPatch(typeof(TradeDeal), "AddAllTradeables")]
     public static class AddTradeablePatch
@@ -14,7 +18,7 @@ namespace GameClient
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
             if (!FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
-            
+
             ___tradeables = new List<Tradeable>();
             ___tradeables.AddRange(SessionValues.listToShowInTradesMenu);
             return false;
@@ -27,12 +31,30 @@ namespace GameClient
         [HarmonyPrefix]
         public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
         {
-            if (Network.state == ClientNetworkState.Connected && FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) 
-            {
-                TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], ___countToTransfer);                
-            }
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (!FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
+            else TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], ___countToTransfer);
 
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(Settlement_TraderTracker), nameof(Settlement_TraderTracker.GiveSoldThingToTrader))]
+    public static class IgnoreSoldThingCheckPatch
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Thing toGive, int countToGive)
+        {
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+            else if (!FactionValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
+            else
+            {
+                Thing thing = toGive.SplitOff(countToGive);
+                if (toGive is Pawn pawn && !pawn.Destroyed) pawn.Destroy();
+                else if (!thing.Destroyed) thing.Destroy();
+            }
+
+            return false;
         }
     }
 }

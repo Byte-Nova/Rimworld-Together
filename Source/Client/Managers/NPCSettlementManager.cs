@@ -6,9 +6,13 @@ using Verse;
 using Shared;
 using static Shared.CommonEnumerators;
 using System.Collections.Generic;
+using GameClient.Misc;
+using GameClient.Values;
+using GameClient.TCP;
 
-namespace GameClient
+namespace GameClient.Managers
 {
+    [RTManager]
     public static class NPCSettlementManager
     {
         public static void ParsePacket(Packet packet)
@@ -28,7 +32,7 @@ namespace GameClient
 
         public static void AddSettlements(PlanetNPCSettlement[] settlements)
         {
-            foreach(PlanetNPCSettlement settlement in settlements)
+            foreach (PlanetNPCSettlement settlement in settlements)
             {
                 SpawnSingleSettlement(settlement);
             }
@@ -47,7 +51,7 @@ namespace GameClient
 
                 if (factions.Count == 0)
                 {
-                    Logger.Warning($"Could not find faction for settlement at tile {toAdd.tile} with faction {toAdd.defName}");
+                    Printer.Warning($"Could not find faction for settlement at tile {toAdd.tile} with faction {toAdd.defName}");
                     return;
                 }
 
@@ -60,11 +64,11 @@ namespace GameClient
                 {
                     foreach (Faction faction in factions)
                     {
-                        if(faction.Name == toAdd.factionName) settlement.SetFaction(faction);
+                        if (faction.Name == toAdd.factionName) settlement.SetFaction(faction);
                     }
 
-                    if(settlement.Faction == null) settlement.SetFaction(factions.First());
-                } 
+                    if (settlement.Faction == null) settlement.SetFaction(factions.First());
+                }
 
                 Find.WorldObjects.Add(settlement);
             }
@@ -102,9 +106,9 @@ namespace GameClient
                         NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
                         Find.WorldObjects.Remove(settlement);
                     }
-                    else Logger.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
+                    else Printer.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
                 }
-                catch (Exception e) { Logger.Warning($"Failed to remove NPC settlement at {settlement.Tile}. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed to remove NPC settlement at {settlement.Tile}. Reason: {e}"); }
             }
 
             else if (destroyedSettlement != null)
@@ -115,9 +119,9 @@ namespace GameClient
                     {
                         Find.WorldObjects.Remove(destroyedSettlement);
                     }
-                    else Logger.Warning($"Ignored removal of settlement at {destroyedSettlement.Tile} because player was inside");
+                    else Printer.Warning($"Ignored removal of settlement at {destroyedSettlement.Tile} because player was inside");
                 }
-                catch (Exception e) { Logger.Warning($"Failed to remove NPC settlement at {destroyedSettlement.Tile}. Reason: {e}"); }       
+                catch (Exception e) { Printer.Warning($"Failed to remove NPC settlement at {destroyedSettlement.Tile}. Reason: {e}"); }
             }
         }
 
@@ -135,7 +139,7 @@ namespace GameClient
     public static class NPCSettlementManagerHelper
     {
         public static PlanetNPCSettlement[] tempNPCSettlements;
-        
+
         public static Settlement lastRemovedSettlement;
 
         public static void SetValues(ServerGlobalData serverGlobalData)

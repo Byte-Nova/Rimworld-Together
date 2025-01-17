@@ -1,4 +1,6 @@
-﻿using RimWorld;
+﻿using GameClient.Dialogs;
+using GameClient.TCP;
+using RimWorld;
 using Shared;
 using System;
 using System.Collections.Generic;
@@ -6,8 +8,9 @@ using System.Linq;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
+    [RTManager]
     public static class ModManager
     {
         public static void ParsePacket(Packet packet)
@@ -45,7 +48,7 @@ namespace GameClient
 
             string[] keys = ModManagerHelper.GetRunningModList().UnsortedMods;
             string[] values = new string[] { "Required", "Optional", "Forbidden" };
-            RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager" , "Manage mods for the server", keys, values, toDo);
+            RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager", "Manage mods for the server", keys, values, toDo);
             DialogManager.PushNewDialog(dialog);
         }
 
@@ -57,7 +60,7 @@ namespace GameClient
 
             for (int i = 0; i < modNames.Length; i++)
             {
-                switch((ModType)categoryIndexes[i])
+                switch ((ModType)categoryIndexes[i])
                 {
                     case ModType.Required:
                         requiredMods.Add(modNames[i]);
@@ -70,7 +73,7 @@ namespace GameClient
                     case ModType.Forbidden:
                         forbiddenMods.Add(modNames[i]);
                         break;
-                }            
+                }
             }
 
             modConfig.UnsortedMods = modNames;
@@ -100,23 +103,6 @@ namespace GameClient
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
                 loginData._extraDetails.ToArray()));
-        }
-
-        public static bool CheckIfMapHasConflictingMods(MapFile mapFile)
-        {
-            string[] currentMods = GetRunningModList().UnsortedMods;
-
-            foreach (string mod in mapFile.Mods.UnsortedMods)
-            {
-                if (!currentMods.Contains(mod)) return true;
-            }
-
-            foreach (string mod in currentMods)
-            {
-                if (!mapFile.Mods.UnsortedMods.Contains(mod)) return true;
-            }
-
-            return false;
         }
     }
 }

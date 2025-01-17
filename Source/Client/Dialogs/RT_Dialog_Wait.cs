@@ -1,8 +1,9 @@
-﻿using RimWorld;
+﻿using GameClient.Managers;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_Wait : Window
     {
@@ -20,7 +21,7 @@ namespace GameClient
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+
 
             closeOnAccept = false;
             closeOnCancel = false;

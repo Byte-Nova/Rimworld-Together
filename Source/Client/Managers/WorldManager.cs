@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient.Dialogs;
+using GameClient.Misc;
+using GameClient.Scribers;
+using GameClient.TCP;
+using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -9,15 +14,16 @@ using Verse;
 using Verse.Profile;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
+    [RTManager]
     public static class WorldManager
     {
         public static WorldValuesFile cachedWorldValues;
 
         private static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
-                                                                      orderby x.order, x.index
-                                                                      select x;
+                                                                       orderby x.order, x.index
+                                                                       select x;
 
         private static readonly List<Type> stepsToIgnoreIfNotFresh = new List<Type>()
         {
@@ -48,9 +54,9 @@ namespace GameClient
             DialogManager.PopWaitDialog();
 
             ClientValues.ToggleGenerateWorld(true);
-            
+
             RT_Dialog_OK_Loop d1 = new RT_Dialog_OK_Loop(new string[] { "You are the first person joining the server!",
-                "Configure the world that everyone will play on" } , delegate { ModManager.OpenModManagerMenu(true); });
+                "Configure the world that everyone will play on" }, delegate { ModManager.OpenModManagerMenu(true); });
 
             DialogManager.PushNewDialog(d1);
         }
@@ -85,7 +91,7 @@ namespace GameClient
             {
                 Find.GameInitData.ResetWorldRelatedMapInitData();
                 Current.Game.World = GenerateWorld();
-                LongEventHandler.ExecuteWhenFinished(delegate 
+                LongEventHandler.ExecuteWhenFinished(delegate
                 {
                     Find.World.renderer.RegenerateAllLayersNow();
                     MemoryUtility.UnloadUnusedUnityAssets();
@@ -186,7 +192,7 @@ namespace GameClient
 
                     Find.WorldFeatures.features.Add(worldFeature);
                 }
-                catch (Exception e) { Logger.Warning($"Failed set planet feature from def '{planetFeature.defName}'. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed set planet feature from def '{planetFeature.defName}'. Reason: {e}"); }
             }
 
             Find.WorldFeatures.textsCreated = false;
@@ -212,7 +218,7 @@ namespace GameClient
                         faction.color[2],
                         faction.color[3]);
                 }
-                catch (Exception e) { Logger.Warning($"Failed set planet faction from def '{cachedWorldValues.NPCFactions[i].defName}'. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed set planet faction from def '{cachedWorldValues.NPCFactions[i].defName}'. Reason: {e}"); }
             }
         }
     }
@@ -227,6 +233,7 @@ namespace GameClient
             WorldManager.cachedWorldValues.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
             WorldManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
             WorldManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
+
             return WorldManager.cachedWorldValues;
         }
 
@@ -241,7 +248,7 @@ namespace GameClient
                     toCreate.defName = faction.defName;
                     npcFactions.Add(toCreate);
                 }
-                catch (Exception e) { Logger.Warning($"Failed to get faction '{faction.defName}' from game. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed to get faction '{faction.defName}' from game. Reason: {e}"); }
             }
             return npcFactions.ToArray();
         }
@@ -255,14 +262,14 @@ namespace GameClient
                 FactionDef newFaction = DefDatabase<FactionDef>.GetNamedSilentFail(faction.defName);
                 if (newFaction == null)
                 {
-                    Logger.Warning($"Failed to get FactionDef '{faction.defName}' from server.", LogImportanceMode.Verbose);
+                    Printer.Warning($"Failed to get FactionDef '{faction.defName}' from server.", LogImportanceMode.Verbose);
 
-                    switch (faction.defName) 
+                    switch (faction.defName)
                     {
                         case "OutlanderRoughPig":
                             newFaction = FactionDefOf.OutlanderRough;
                             defList.Add(newFaction);
-                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.OutlanderRough.defName, color = faction.color, name = faction.name} );
+                            serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.OutlanderRough.defName, color = faction.color, name = faction.name });
                             break;
 
                         case "PirateYttakin":
@@ -294,7 +301,7 @@ namespace GameClient
                             defList.Add(newFaction);
                             serverFactions.Add(new PlanetNPCFaction() { defName = FactionDefOf.TribeRough.defName, color = faction.color, name = faction.name });
                             break;
-                            
+
                         case "Empire":
                             newFaction = FactionDefOf.OutlanderCivil;
                             defList.Add(newFaction);
@@ -305,14 +312,14 @@ namespace GameClient
                             break;
                     }
 
-                    if(newFaction != null) Logger.Warning($"Replaced {faction.defName} with {newFaction.defName}", LogImportanceMode.Verbose);
+                    if (newFaction != null) Printer.Warning($"Replaced {faction.defName} with {newFaction.defName}", LogImportanceMode.Verbose);
                     serverFactions.Remove(faction);
                 }
 
                 else
                 {
                     defList.Add(newFaction);
-                    Logger.Warning($"Loaded {newFaction.defName}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Loaded {newFaction.defName}", LogImportanceMode.Verbose);
                 }
 
                 WorldManager.cachedWorldValues.NPCFactions = serverFactions.ToArray();
@@ -326,7 +333,7 @@ namespace GameClient
             List<PlanetNPCFaction> planetFactions = new List<PlanetNPCFaction>();
             Faction[] existingFactions = Find.World.factionManager.AllFactions.ToArray();
 
-            foreach(Faction faction in existingFactions)
+            foreach (Faction faction in existingFactions)
             {
                 try
                 {
@@ -341,7 +348,7 @@ namespace GameClient
                         planetFactions.Add(planetFaction);
                     }
                 }
-                catch (Exception e) { Logger.Warning($"Failed to get NPC faction '{faction.def.defName}' to populate. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed to get NPC faction '{faction.def.defName}' to populate. Reason: {e}"); }
             }
 
             return planetFactions.ToArray();
@@ -367,7 +374,7 @@ namespace GameClient
                     PlanetNPCSettlement.factionName = settlement.Faction.Name;
                     npcSettlements.Add(PlanetNPCSettlement);
                 }
-                catch (Exception e) { Logger.Warning($"Failed to get NPC settlement '{settlement.Tile}' to populate. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed to get NPC settlement '{settlement.Tile}' to populate. Reason: {e}"); }
             }
             return npcSettlements.ToArray();
         }
@@ -388,7 +395,7 @@ namespace GameClient
 
                     planetFeatures.Add(planetFeature);
                 }
-                catch (Exception e) { Logger.Warning($"Failed to get feature '{worldFeature.def.defName}' to populate. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed to get feature '{worldFeature.def.defName}' to populate. Reason: {e}"); }
             }
 
             return planetFeatures.ToArray();

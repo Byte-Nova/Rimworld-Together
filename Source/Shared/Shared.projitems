@@ -10,12 +10,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Map\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\AnimalFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\CaravanFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Map\TileComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\HediffComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\TransformComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Managers\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\EventFile.cs" />
+    <Compile Include="..\Shared\Files\GuildFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\HumanFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\MapFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ModConfigFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\SettlementFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\SiteConfigFile.cs" />
+    <Compile Include="..\Shared\Files\Sites\SiteFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\SiteInfoFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\SiteRewardFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\ThingFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\Values\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\*.cs" />
@@ -28,6 +40,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\OnlineActivities\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\Settlements\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Files\Components\Map\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />

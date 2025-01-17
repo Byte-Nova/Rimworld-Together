@@ -1,11 +1,13 @@
-﻿using HarmonyLib;
+﻿using GameClient.TCP;
+using GameClient.Values;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using System;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches
 {
     [HarmonyPatch(typeof(SettlementDefeatUtility), nameof(SettlementDefeatUtility.CheckDefeated))]
     public static class PatchSettlementJoin
@@ -14,8 +16,7 @@ namespace GameClient
         public static bool DoPre(Settlement factionBase)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-
-            if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
+            else if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
             else return true;
         }
     }

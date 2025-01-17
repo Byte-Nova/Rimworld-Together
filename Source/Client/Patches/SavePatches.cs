@@ -1,10 +1,14 @@
 ﻿using System;
+using GameClient.Managers;
+using GameClient.Misc;
+using GameClient.TCP;
+using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches
 {
     [HarmonyPatch(typeof(GameDataSaveLoader), "SaveGame", typeof(string))]
     public static class SaveOnlineGame
@@ -21,7 +25,9 @@ namespace GameClient
                 ClientValues.ToggleSavingGame(true);
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
-                DifficultyManager.EnforceCustomDifficulty();
+                GameParameterManager.SetScenario(GameParameterManager.scenarioFile);
+                GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
+                GameParameterManager.SetDifficulty(GameParameterManager.difficultyFile);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
 
@@ -35,18 +41,18 @@ namespace GameClient
                     }, Find.GameInfo.permadeathMode);
                     ___lastSaveTick = Find.TickManager.TicksGame;
                 }
-                catch (Exception e) { Logger.Error("Exception while saving game: " + e); }
+                catch (Exception e) { Printer.Error("Exception while saving game: " + e); }
 
                 if (Network.state.Equals(ClientNetworkState.Connected))
                 {
-                    Logger.Message("Sending maps to server");
+                    Printer.Message("Sending maps to server");
                     MapManager.SendPlayerMapsToServer();
 
-                    Logger.Message("Sending save to server");
+                    Printer.Message("Sending save to server");
                     SaveManager.SendSavePartToServer();
                 }
             }
-            catch (Exception e) { Logger.Error($"{e}"); }
+            catch (Exception e) { Printer.Error($"{e}"); }
 
             ClientValues.ToggleSavingGame(false);
 
@@ -81,7 +87,7 @@ namespace GameClient
             }
 
             return false;
-            
+
         }
     }
 }

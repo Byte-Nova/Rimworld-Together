@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace GameClient
+namespace GameClient.Files
 {
     [Serializable]
     public class LoginDataFile
     {
-        public string Username;
+        public string UID;
 
-        public string Password;
+        public string Username;
     }
 }

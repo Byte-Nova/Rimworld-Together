@@ -1,10 +1,12 @@
-﻿using Shared;
+﻿using GameClient.Scribers;
+using GameClient.TCP;
+using Shared;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Managers
 {
     //Class that handles map functions for the mod to use
-
+    [RTManager]
     public static class MapManager
     {
         //Sends all the player maps to the server
@@ -25,21 +27,10 @@ namespace GameClient
         private static void SendMapToServerSingle(Map map)
         {
             MapData mapData = new MapData();
-            mapData._mapFile = ParseMap(map, true, true, true, true);
+            mapData._mapFile = MapScriber.MapToString(map, true, true, true, true, true, true);
 
             Packet packet = Packet.CreatePacketFromObject(nameof(MapManager), mapData);
             Network.listener.EnqueuePacket(packet);
-        }
-
-        //Parses a desired map into an usable mod class
-
-        public static MapFile ParseMap(Map map, bool includeThings, bool includeHumans, bool includeAnimals, bool includeMods)
-        {
-            MapFile mapFile = MapScribeManager.MapToString(map, includeThings, includeThings, includeHumans, includeHumans, includeAnimals, includeAnimals);
-
-            if (includeMods) mapFile.Mods = ModManagerHelper.GetRunningModList();
-
-            return mapFile;
         }
     }
 }

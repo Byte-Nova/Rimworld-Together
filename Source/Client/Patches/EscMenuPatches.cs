@@ -1,12 +1,15 @@
-﻿using HarmonyLib;
+﻿using GameClient.Dialogs;
+using GameClient.Managers;
+using GameClient.TCP;
+using GameClient.Values;
+using HarmonyLib;
 using RimWorld;
-using Shared;
 using System;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches
 {
     [HarmonyPatch(typeof(MainMenuDrawer), "DoMainMenuControls")]
     public static class SaveMenuPatch

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_Listing : Window
     {
@@ -36,7 +37,7 @@ namespace GameClient
             absorbInputAroundWindow = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -60,7 +61,7 @@ namespace GameClient
             Text.Font = GameFont.Medium;
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
-            
+
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
@@ -72,7 +73,7 @@ namespace GameClient
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + (float)elements.Count() * 30f;
+            float height = 6f + elements.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
             float num = 0;

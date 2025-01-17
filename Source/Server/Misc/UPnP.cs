@@ -1,6 +1,7 @@
-﻿using Mono.Nat;
+﻿using GameServer.TCP;
+using Mono.Nat;
 
-namespace GameServer
+namespace GameServer.Misc
 {
     //Class that handles UPnP forwarding between the server and the router
 
@@ -12,7 +13,7 @@ namespace GameServer
 
         public UPnP()
         {
-            Logger.Warning($"[UPnP] > Attempting to forward port '{Network.port}'");
+            Printer.Warning($"[UPnP] > Attempting to forward port '{Network.port}'");
 
             NatUtility.DeviceFound += DeviceFound;
 
@@ -20,13 +21,12 @@ namespace GameServer
         }
 
         //Function that acts as a clock to check if UPnP was forwarded correctly
-        
+
         public void TryToMapPort()
         {
-
             NatUtility.StartDiscovery();
 
-            for(int i = 0; i < 20; i++)
+            for (int i = 0; i < 20; i++)
             {
                 Thread.Sleep(250);
                 if (autoPortForwardSuccessful) break;
@@ -34,7 +34,7 @@ namespace GameServer
 
             if (!autoPortForwardSuccessful)
             {
-                Logger.Error("Could not enable UPnP - Possible causes:\n" +
+                Printer.Error("Could not enable UPnP - Possible causes:\n" +
                     "- the port is being used\n" +
                     "- the router has UPnP disabled\n" +
                     "- the router/modem does not have ports available");
@@ -51,12 +51,12 @@ namespace GameServer
                 device.CreatePortMap(new Mapping(Protocol.Tcp, Network.port, Network.port));
 
                 //This line can run multiple times if you are connected to multiple devices (Theres no reason for that, so only print it once)
-                if (!autoPortForwardSuccessful) Logger.Warning("successfully portforwarded the server");
+                if (!autoPortForwardSuccessful) Printer.Warning("successfully portforwarded the server");
                 autoPortForwardSuccessful = true;
 
-                Logger.Warning("UPnP forward successful");
+                Printer.Warning("UPnP forward successful");
             }
-            catch (Exception e) { Logger.Error(e.ToString()); }
+            catch (Exception e) { Printer.Error(e.ToString()); }
         }
     }
 }

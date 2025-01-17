@@ -1,10 +1,13 @@
 ﻿using System.Linq;
+using GameClient.Managers;
+using GameClient.TCP;
+using GameClient.Values;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches.Tabs
 {
     public class BasesUI : WITab
     {
@@ -44,7 +47,7 @@ namespace GameClient
         {
             var orderedDictionary = PlayerSettlementManager.playerSettlements.OrderBy(x => x.Name);
 
-            float height = 6f + (float)orderedDictionary.Count() * 30f;
+            float height = 6f + orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
 
             Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
@@ -92,7 +95,7 @@ namespace GameClient
             }
 
             buttonX = 30f;
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - (buttonX * 3), rect.y), new Vector2(buttonX, buttonY)), "-"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX * 3, rect.y), new Vector2(buttonX, buttonY)), "-"))
             {
                 foreach (Settlement settlement in Find.World.worldObjects.Settlements)
                 {
@@ -108,7 +111,7 @@ namespace GameClient
                 }
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - (buttonX * 4), rect.y), new Vector2(buttonX, buttonY)), "="))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX * 4, rect.y), new Vector2(buttonX, buttonY)), "="))
             {
                 foreach (Settlement settlement in Find.World.worldObjects.Settlements)
                 {
@@ -124,7 +127,7 @@ namespace GameClient
                 }
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - (buttonX * 5), rect.y), new Vector2(buttonX, buttonY)), "+"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX * 5, rect.y), new Vector2(buttonX, buttonY)), "+"))
             {
                 foreach (Settlement settlement in Find.World.worldObjects.Settlements)
                 {

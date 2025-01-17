@@ -9,7 +9,7 @@ namespace Shared
     {
         public int _tile;
 
-        public string _owner;
+        public string _uid;
 
         public Goodwill _goodwill;
 

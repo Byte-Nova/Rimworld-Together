@@ -1,4 +1,8 @@
-﻿using RimWorld;
+﻿using GameClient.Dialogs;
+using GameClient.Misc;
+using GameClient.TCP;
+using GameClient.Values;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using System;
@@ -8,8 +12,9 @@ using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
+    [RTManager]
     public static class RoadManager
     {
         public static void ParsePacket(Packet packet)
@@ -72,7 +77,7 @@ namespace GameClient
         {
             if (!RoadManagerHelper.CheckIfCanBuildRoadOnTile(tileBID))
             {
-                Logger.Warning($"Tried building a road at '{tileBID}' when it's not possible");
+                Printer.Warning($"Tried building a road at '{tileBID}' when it's not possible");
                 return;
             }
 
@@ -161,7 +166,7 @@ namespace GameClient
         public static RoadDef AncientAsphaltRoadDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "AncientAsphaltRoad");
         public static RoadDef AncientAsphaltHighwayDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "AncientAsphaltHighway");
 
-        public static void SetValues(ServerGlobalData serverGlobalData) 
+        public static void SetValues(ServerGlobalData serverGlobalData)
         {
             tempRoadDetails = serverGlobalData._roads;
 
@@ -209,7 +214,7 @@ namespace GameClient
         public static string[] GetAvailableRoadLabels(bool includePrices)
         {
             List<string> roadLabels = new List<string>();
-            for(int i = 0; i < allowedRoadDefs.Length; i++)
+            for (int i = 0; i < allowedRoadDefs.Length; i++)
             {
                 RoadDef def = allowedRoadDefs[i];
 

@@ -1,6 +1,6 @@
 ﻿using RimWorld.Planet;
 
-namespace GameClient
+namespace GameClient.WorldObjects
 {
     public class OnlineCaravan : WorldObject
     {

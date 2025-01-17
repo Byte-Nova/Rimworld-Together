@@ -1,4 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using GameClient.Dialogs;
+using GameClient.Managers;
+using GameClient.Misc;
+using GameClient.TCP;
+using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -6,24 +12,77 @@ using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(Page_SelectScenario), "DoWindowContents")]
     public static class PatchSelectScenarioPage
     {
+        private static bool executed;
+
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectScenario __instance)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            Vector2 buttonSize = new Vector2(150f, 38f);
-            Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
-            if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
+            if (!ClientValues.isGeneratingFreshWorld && GameParameterManager.scenarioFile.EnforceScenario)
             {
-                __instance.Close();
-                ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                Network.listener.disconnectFlag = true;
+                if (executed) return true;
+                else
+                {
+                    Action toDo = delegate
+                    {
+                        Page_SelectScenario.BeginScenarioConfiguration(GenManagerH.GetScenarioReference(__instance), __instance);
+                        GameParameterManager.SetScenario(GameParameterManager.scenarioFile);
+
+                        DialogManager.PushNewDialog(__instance.next);
+                        __instance.Close();
+
+                        executed = false;
+                    };
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("Scenario will be forced by the server", toDo));
+
+                    executed = true;
+                }
             }
+
+            else
+            {
+                if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomLeft), ""))
+                {
+                    __instance.Close();
+                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
+                    Network.listener.disconnectFlag = true;
+                }
+
+                if (ClientValues.isGeneratingFreshWorld)
+                {
+                    if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
+                    {
+                        Page_SelectScenario.BeginScenarioConfiguration(GenManagerH.GetScenarioReference(__instance), __instance);
+
+                        Action a1 = delegate
+                        {
+                            GameParameterManager.SetScenario(GameParameterManager.GetScenario(__instance));
+                            GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), true);
+
+                            DialogManager.PushNewDialog(__instance.next);
+                            __instance.Close();
+                        };
+
+                        Action a2 = delegate
+                        {
+                            GameParameterManager.SetScenario(GameParameterManager.GetScenario(__instance));
+                            GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), false);
+
+                            DialogManager.PushNewDialog(__instance.next);
+                            __instance.Close();
+                        };
+
+                        DialogManager.PushNewDialog(new RT_Dialog_YesNo("Do you want to ENFORCE the selected SCENARIO?", a1, a2));
+                    };
+                }
+            }
+
             return true;
         }
 
@@ -32,10 +91,7 @@ namespace GameClient
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
 
-            Text.Font = GameFont.Small;
-            Vector2 buttonSize = new Vector2(150f, 38f);
-            Vector2 buttonLocation = new Vector2(rect.xMin, rect.yMax - buttonSize.y);
-            if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Disconnect")) { }
+            if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomLeft), "Disconnect")) { };
         }
     }
 

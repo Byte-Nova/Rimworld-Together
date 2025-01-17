@@ -1,9 +1,10 @@
 ﻿using System;
+using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_YesNo : Window
     {
@@ -18,10 +19,10 @@ namespace GameClient
         private readonly float buttonY = 38f;
 
         private readonly Action actionYes;
-        
+
         private readonly Action actionNo;
 
-        public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo)
+        public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null)
         {
             DialogManager.dialogYesNo = this;
             this.description = description;
@@ -30,9 +31,7 @@ namespace GameClient
 
             forcePause = true;
             absorbInputAroundWindow = true;
-
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
 
             closeOnAccept = false;
             closeOnCancel = false;

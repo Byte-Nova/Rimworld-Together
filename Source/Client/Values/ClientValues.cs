@@ -1,6 +1,7 @@
-﻿using Verse;
+﻿using GameClient.Managers;
+using Verse;
 
-namespace GameClient
+namespace GameClient.Values
 {
     public static class ClientValues
     {
@@ -10,21 +11,21 @@ namespace GameClient
 
         public static bool isSavingGame;
 
-        public static bool isQuickConnecting;
-
         public static bool isSendingSaveToServer;
 
         public static bool isInTransfer;
 
+        public static bool isUsingScriber;
+
         public static string username;
 
-        public static string[] serverBrowserContainer = new string[] { "127.0.0.1|25555" };
+        public static string uid;
 
         //ModStuff values go below. Do not change manually
 
-        public static bool verboseBool;
-        
-        public static bool extremeVerboseBool;
+        public enum VerboseMode { None, Verbose, Extreme }
+
+        public static VerboseMode currentVerboseMode;
 
         public static bool muteSoundBool;
 
@@ -47,11 +48,11 @@ namespace GameClient
         }
 
         public static void ToggleGenerateWorld(bool mode) { isGeneratingFreshWorld = mode; }
-    
-        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None) 
-        { 
+
+        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None)
+        {
             DisconnectionManager.isIntentionalDisconnect = mode;
-            DisconnectionManager.intentionalDisconnectReason = reason; 
+            DisconnectionManager.intentionalDisconnectReason = reason;
         }
 
         public static void ToggleReadyToPlay(bool mode) { isReadyToPlay = mode; }
@@ -62,9 +63,9 @@ namespace GameClient
 
         public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
 
-        public static void ToggleQuickConnecting(bool mode) { isQuickConnecting = mode; }
-
         public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
+
+        public static void ToggleUsingScriber(bool mode) { isUsingScriber = mode; }
 
         public static void CleanValues()
         {
@@ -73,8 +74,8 @@ namespace GameClient
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleSavingGame(false);
-            ToggleQuickConnecting(false);
             ToggleSendingSaveToServer(false);
+            ToggleUsingScriber(false);
         }
     }
 }

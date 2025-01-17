@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Shared
 {
@@ -10,26 +11,18 @@ namespace Shared
 
         public string filePath;
 
-        public string fileName;
-
-        public double fileSize;
-
-        public double fileParts;
-
         private double partSize = 262144;
         
         public bool isLastPart;
 
-        public void PrepareUpload(string filePath)
-        {
-            this.filePath = filePath;
+        public Action onFinish;
 
+        public UploadManager(string filePath) { this.filePath = filePath; }
+
+        public void PrepareUpload()
+        {
             fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             fileInfo = new FileInfo(filePath);
-
-            fileName = Path.GetFileName(filePath);
-            fileSize = fileInfo.Length;
-            fileParts = fileInfo.Length / partSize;
         }
 
         public byte[] ReadFilePart()

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_ListingWithButton : Window
     {
@@ -43,7 +44,7 @@ namespace GameClient
             absorbInputAroundWindow = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -78,7 +79,7 @@ namespace GameClient
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + (float)elements.Count() * 30f;
+            float height = 6f + elements.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
             float num = 0;

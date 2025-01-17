@@ -17,6 +17,7 @@ jobs:
           - linux-x64
           - win-x64
           - win-x86
+    if: "!github.event.release.prerelease"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

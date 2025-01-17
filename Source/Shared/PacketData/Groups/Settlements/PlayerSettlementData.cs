@@ -8,6 +8,6 @@ namespace Shared
     {
         public SettlementStepMode _stepMode;
 
-        public SettlementFile _settlementData = new SettlementFile();
+        public SettlementFile _settlementFile = new SettlementFile();
     }
 }

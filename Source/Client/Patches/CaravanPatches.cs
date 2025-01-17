@@ -1,8 +1,10 @@
-﻿using HarmonyLib;
+﻿using GameClient.Managers;
+using HarmonyLib;
 using RimWorld.Planet;
 using static Shared.CommonEnumerators;
+using GameClient.TCP;
 
-namespace GameClient
+namespace GameClient.Patches
 {
     [HarmonyPatch(typeof(Caravan), nameof(Caravan.PostAdd))]
     public static class PatchAddCaravan

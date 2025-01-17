@@ -1,4 +1,4 @@
-﻿namespace GameClient
+﻿namespace GameClient.Misc
 {
     /*
    Copyright 2015 Pim de Witte All Rights Reserved.
@@ -33,7 +33,7 @@
     {
         private static readonly Queue<Action> _executionQueue = new Queue<Action>();
 
-        private void Awake() { DontDestroyOnLoad(this.gameObject); }
+        private void Awake() { DontDestroyOnLoad(gameObject); }
 
         public void Update()
         {
@@ -50,7 +50,8 @@
         {
             lock (_executionQueue)
             {
-                _executionQueue.Enqueue(() => {
+                _executionQueue.Enqueue(() =>
+                {
                     StartCoroutine(action);
                 });
             }

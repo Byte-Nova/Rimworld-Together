@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace GameClient
+namespace GameClient.Misc
 {
     public static class ValueParser
     {
@@ -16,7 +16,7 @@ namespace GameClient
 
         public static IntVec3 ArrayToIntVec3(int[] data) { return new IntVec3(data[0], data[1], data[2]); }
 
-        public static Rot4 IntToRot4(int data) { return new Rot4(data); } 
+        public static Rot4 IntToRot4(int data) { return new Rot4(data); }
 
         public static int Rot4ToInt(Rot4 data) { return data.AsInt; }
     }

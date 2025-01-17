@@ -1,9 +1,10 @@
 ﻿using System;
+using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_3Input : Window
     {
@@ -47,8 +48,8 @@ namespace GameClient
 
         private string inputThreeCensoredResult;
 
-        public RT_Dialog_3Input(string title, string inputOneLabel, string inputTwoLabel, string inputThreeLabel, 
-            Action actionConfirm, Action actionCancel, bool inputOneCensored = false, bool inputTwoCensored = false, 
+        public RT_Dialog_3Input(string title, string inputOneLabel, string inputTwoLabel, string inputThreeLabel,
+            Action actionConfirm, Action actionCancel, bool inputOneCensored = false, bool inputTwoCensored = false,
             bool inputThreeCensored = false)
         {
             DialogManager.dialog3Input = this;
@@ -66,7 +67,7 @@ namespace GameClient
             absorbInputAroundWindow = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -119,12 +120,12 @@ namespace GameClient
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputOneLabel).x / 2, labelDif, Text.CalcSize(inputOneLabel).x, Text.CalcSize(inputOneLabel).y), inputOneLabel);
 
             Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputOneResult);
+            string inputOne = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputOneResult);
             if (AcceptsInput && inputOne.Length <= 32) inputOneResult = inputOne;
 
             if (inputOneCensored)
             {
-                string censorOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputOneCensoredResult);
+                string censorOne = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputOneCensoredResult);
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
@@ -140,12 +141,12 @@ namespace GameClient
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputTwoLabel).x / 2, labelDif, Text.CalcSize(inputTwoLabel).x, Text.CalcSize(inputTwoLabel).y), inputTwoLabel);
 
             Text.Font = GameFont.Small;
-            string inputTwo = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputTwoResult);
+            string inputTwo = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputTwoResult);
             if (AcceptsInput && inputTwo.Length <= 32) inputTwoResult = inputTwo;
 
             if (inputTwoCensored)
             {
-                string censorOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputTwoCensoredResult);
+                string censorOne = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputTwoCensoredResult);
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
@@ -161,12 +162,12 @@ namespace GameClient
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputThreeLabel).x / 2, labelDif, Text.CalcSize(inputThreeLabel).x, Text.CalcSize(inputThreeLabel).y), inputThreeLabel);
 
             Text.Font = GameFont.Small;
-            string inputThree = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputThreeResult);
+            string inputThree = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputThreeResult);
             if (AcceptsInput && inputThree.Length <= 32) inputThreeResult = inputThree;
 
             if (inputThreeCensored)
             {
-                string censorOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputThreeCensoredResult);
+                string censorOne = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputThreeCensoredResult);
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;

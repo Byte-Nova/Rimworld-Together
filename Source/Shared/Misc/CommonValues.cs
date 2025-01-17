@@ -2,18 +2,10 @@ namespace Shared
 {
     public static class CommonValues
     {
-        public readonly static string executableVersion = "dev";
-
-        public readonly static string clientAssemblyName = "GameClient";
-
-        public readonly static string serverAssemblyName = "GameServer";
+        public readonly static string executableVersion = "25.1.2.1";
 
         public static readonly string defaultParserMethodName = "ParsePacket";
 
-        public static readonly string[] ignoredLogPackets =
-        {
-            "OnlineActivityManager",
-            "KeepAliveManager"
-        };
+        public static readonly string[] ignoredLogPackets = { "OnlineActivityManager", "KeepAliveManager" };
     }
 }

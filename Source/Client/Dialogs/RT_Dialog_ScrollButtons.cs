@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_ScrollButtons : Window
     {
@@ -23,9 +24,9 @@ namespace GameClient
         private readonly string[] buttonNames;
 
         private readonly Action actionSelect;
-        
+
         private readonly Action actionCancel;
-            
+
         public RT_Dialog_ScrollButtons(string title, string description, string[] buttonNames, Action actionSelect, Action actionCancel)
         {
             DialogManager.dialogScrollButtons = this;
@@ -39,7 +40,7 @@ namespace GameClient
             absorbInputAroundWindow = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+
             closeOnAccept = false;
             closeOnCancel = true;
         }
@@ -65,7 +66,7 @@ namespace GameClient
 
             GenerateList(new Rect(rect.x, rect.yMax - buttonY * 5 - 40, rect.width, 175f), buttonNames);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
             {
                 OnCancel();
             }

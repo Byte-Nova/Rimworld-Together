@@ -1,15 +1,17 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.Files;
+using GameServer.TCP;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
+    [RTManager]
     public static class OfflineActivityManager
     {
-        private static readonly double baseActivityTimer = 3600000;
-
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            if (!Master.actionValues.EnableOfflineActivities)
+            if (!Master.actionConfigs.EnableOfflineActivities)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -42,7 +44,7 @@ namespace GameServer
             {
                 SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._targetTile);
 
-                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
+                if (UserManagerH.CheckIfUserIsConnected(settlementFile.UID))
                 {
                     data._stepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
@@ -51,9 +53,9 @@ namespace GameServer
 
                 else
                 {
-                    UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
+                    UserFile userFile = UserManagerH.GetUserFileFromName(settlementFile.UID);
 
-                    if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
+                    if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, Master.serverConfig.TemporalActivityProtectionTime * 1000))
                     {
                         data._stepMode = OfflineActivityStepMode.Deny;
                         Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);

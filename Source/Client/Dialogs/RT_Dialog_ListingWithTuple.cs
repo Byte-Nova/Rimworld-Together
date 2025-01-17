@@ -1,16 +1,17 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
+using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using static GameClient.DialogManagerHelper;
+using static GameClient.Managers.DialogManagerH;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_ListingWithTuple : Window
     {
-        public override Vector2 InitialSize => new Vector2(400f, 400f);
+        public override Vector2 InitialSize => new Vector2(500f, 400f);
 
         public readonly string title;
 
@@ -23,6 +24,8 @@ namespace GameClient
         private readonly Action actionAccept;
 
         private readonly Vector2 selectButton = new Vector2(100f, 25f);
+
+        private readonly Vector2 smallButton = new Vector2(25f, 25f);
 
         private Vector2 scrollPosition = Vector2.zero;
 
@@ -74,6 +77,9 @@ namespace GameClient
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - defaultButtonSize.y - 85f));
 
             Text.Font = GameFont.Small;
+
+            if (Widgets.ButtonText(GetRectForLocation(rect, smallButton, RectLocation.TopRight), "▶")) ShowFloatMenu(-1, true);
+
             if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomCenter), "Accept"))
             {
                 DialogManager.dialogTupleListingResultString = keys;
@@ -118,20 +124,35 @@ namespace GameClient
             string buttonLabel = valueString[index];
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButton.x, rect.yMax - selectButton.y), selectButton), buttonLabel))
             {
-                ShowFloatMenu(index);
+                ShowFloatMenu(index, false);
             }
         }
 
-        private void ShowFloatMenu(int index)
+        private void ShowFloatMenu(int index, bool globalChange)
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
-            foreach(string str in values)
+            foreach (string str in values)
             {
-                list.Add(new FloatMenuOption(str, delegate
+                Action changeSingleValue = delegate
                 {
                     valueString[index] = str;
                     valueInt[index] = GetValueFromString(str);
+                };
+
+                Action changeAllValues = delegate
+                {
+                    for (int i = 0; i < valueString.Length; i++)
+                    {
+                        valueString[i] = str;
+                        valueInt[i] = GetValueFromString(valueString[i]);
+                    }
+                };
+
+                list.Add(new FloatMenuOption(str, delegate
+                {
+                    if (globalChange) changeAllValues();
+                    else changeSingleValue();
                 }));
             }
 

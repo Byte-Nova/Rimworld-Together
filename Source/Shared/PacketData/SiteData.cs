@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
 namespace Shared
@@ -9,8 +8,10 @@ namespace Shared
     {
         public SiteStepMode _stepMode;
 
-        public SiteFile _siteFile = new SiteFile();
+        public SiteFile _file = new SiteFile();
 
-        public List<int> _sitesWithRewards = new List<int>();
+        public SiteRewardConfigData _rewardConfig;
+
+        public SiteRewardFile[] _rewardFiles;
     }
 }

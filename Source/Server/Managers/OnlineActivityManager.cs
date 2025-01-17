@@ -1,13 +1,16 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.TCP;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
+    [RTManager]
     public static class OnlineActivityManager
     {
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            if (!Master.actionValues.EnableOnlineActivities)
+            if (!Master.actionConfigs.EnableOnlineActivities)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -37,35 +40,7 @@ namespace GameServer
                     StopActivity(client);
                     break;
 
-                case OnlineActivityStepMode.Jobs:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Create:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Destroy:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Damage:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Hediff:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.GameCondition:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.Weather:
-                    SendActions(client, data);
-                    break;
-
-                case OnlineActivityStepMode.TimeSpeed:
+                case OnlineActivityStepMode.Buffer:
                     SendActions(client, data);
                     break;
             }
@@ -74,10 +49,10 @@ namespace GameServer
         private static void RequestActivity(ServerClient client, OnlineActivityData data)
         {
             SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._toTile);
-            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} tried to engage with settlement at tile {data._toTile}, but no settlement could be found");
+            if (settlementFile == null) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Label} tried to engage with settlement at tile {data._toTile}, but no settlement could be found");
             else
             {
-                ServerClient toGet = NetworkHelper.GetConnectedClientFromUsername(settlementFile.Owner);
+                ServerClient toGet = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
                 if (toGet == null)
                 {
                     data._stepMode = OnlineActivityStepMode.Unavailable;
@@ -96,7 +71,7 @@ namespace GameServer
 
                     else
                     {
-                        data._engagerName = client.userFile.Username;
+                        data._engagerName = client.userFile.Label;
                         Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                         toGet.listener.EnqueuePacket(packet);
                     }
@@ -110,7 +85,7 @@ namespace GameServer
             if (settlementFile == null) return;
             else
             {
-                ServerClient toGet = NetworkHelper.GetConnectedClientFromUsername(settlementFile.Owner);
+                ServerClient toGet = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
                 if (toGet == null) return;
                 else
                 {
@@ -129,7 +104,7 @@ namespace GameServer
             if (settlementFile == null) return;
             else
             {
-                ServerClient toGet = NetworkHelper.GetConnectedClientFromUsername(settlementFile.Owner);
+                ServerClient toGet = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
                 if (toGet == null) return;
                 else
                 {

@@ -6,9 +6,13 @@ using System.Linq;
 using Verse;
 using Shared;
 using static Shared.CommonEnumerators;
+using GameClient.Misc;
+using GameClient.Values;
+using GameClient.TCP;
 
-namespace GameClient
+namespace GameClient.Managers
 {
+    [RTManager]
     public static class PlayerSettlementManager
     {
         public static List<Settlement> playerSettlements = new List<Settlement>();
@@ -20,11 +24,11 @@ namespace GameClient
             switch (settlementData._stepMode)
             {
                 case SettlementStepMode.Add:
-                    SpawnSingleSettlement(settlementData._settlementData);
+                    SpawnSingleSettlement(settlementData._settlementFile);
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveSingleSettlement(settlementData._settlementData);
+                    RemoveSingleSettlement(settlementData._settlementFile);
                     break;
             }
         }
@@ -57,13 +61,13 @@ namespace GameClient
                 {
                     Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                     settlement.Tile = toAdd.Tile;
-                    settlement.Name = $"{toAdd.Owner}'s settlement";
+                    settlement.Name = $"{toAdd.Label}'s settlement";
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
 
                     playerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
-                catch (Exception e) { Logger.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
+                catch (Exception e) { Printer.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
             }
         }
 
@@ -77,15 +81,15 @@ namespace GameClient
                     if (playerSettlements.Contains(toGet)) playerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
-                else Logger.Warning($"Ignored removal of settlement at {toGet.Tile} because player was inside");
+                else Printer.Warning($"Ignored removal of settlement at {toGet.Tile} because player was inside");
             }
-            catch (Exception e) { Logger.Error($"Failed to remove settlement at {toRemove.Tile}. Reason: {e}"); }
+            catch (Exception e) { Printer.Error($"Failed to remove settlement at {toRemove.Tile}. Reason: {e}"); }
         }
 
         public static void SendNewPlayerSettlement(int settlementTile)
         {
             PlayerSettlementData settlementData = new PlayerSettlementData();
-            settlementData._settlementData.Tile = settlementTile;
+            settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Add;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);

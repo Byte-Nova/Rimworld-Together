@@ -1,9 +1,14 @@
-﻿using Verse;
 
-namespace GameClient
+using Verse;
+using Shared;
+﻿using GameClient.Dialogs;
+using GameClient.Misc;
+using GameClient.Values;
+
+namespace GameClient.Managers
 {
     //Class that contains all the disconnection functions that the mod uses
-
+    [RTManager]
     public static class DisconnectionManager
     {
         //Useful disconnection variables
@@ -55,12 +60,12 @@ namespace GameClient
                         break;
                 }
 
-                Logger.Message($"Disconnected from server: {reason}");
+                Printer.Message($"Disconnected from server: {reason}");
             }
 
             else
             {
-                Logger.Message($"Disconnected from server: Connection Lost");
+                Printer.Message($"Disconnected from server: Connection Lost");
 
                 if (Current.ProgramState != ProgramState.Entry)
                 {

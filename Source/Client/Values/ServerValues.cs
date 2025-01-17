@@ -1,7 +1,6 @@
 ﻿using Shared;
-using System.Collections.Generic;
 
-namespace GameClient
+namespace GameClient.Values
 {
     public static class ServerValues
     {

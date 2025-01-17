@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿using GameClient.Managers;
+using GameClient.TCP;
+using GameClient.Values;
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -6,7 +9,7 @@ using UnityEngine.SceneManagement;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches.Pages
 {
     public class SelectStartingSitePatches
     {
@@ -19,11 +22,11 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Disconnected) return true;
 
                 int num = TutorSystem.TutorialMode ? 4 : 5;
-                int num2 = (num < 4 || !((float)UI.screenWidth < 540f + (float)num * (150f + 10f))) ? 1 : 2;
-                int num3 = Mathf.CeilToInt((float)num / (float)num2);
-                float num4 = 150f * (float)num3 + 10f * (float)(num3 + 1);
-                float num5 = (float)num2 * 38f + 10f * (float)(num2 + 1);
-                Rect rect = new Rect(((float)UI.screenWidth - num4) / 2f, (float)UI.screenHeight - num5 - 4f, num4, num5);
+                int num2 = num < 4 || !(UI.screenWidth < 540f + num * (150f + 10f)) ? 1 : 2;
+                int num3 = Mathf.CeilToInt(num / (float)num2);
+                float num4 = 150f * num3 + 10f * (num3 + 1);
+                float num5 = num2 * 38f + 10f * (num2 + 1);
+                Rect rect = new Rect((UI.screenWidth - num4) / 2f, UI.screenHeight - num5 - 4f, num4, num5);
 
                 WorldInspectPane worldInspectPane = Find.WindowStack.WindowOfType<WorldInspectPane>();
                 if (worldInspectPane != null && rect.x < InspectPaneUtility.PaneWidthFor(worldInspectPane) + 4f)
@@ -50,11 +53,11 @@ namespace GameClient
                 if (Network.state == ClientNetworkState.Disconnected) return;
 
                 int num = TutorSystem.TutorialMode ? 4 : 5;
-                int num2 = (num < 4 || !((float)UI.screenWidth < 540f + (float)num * (150f + 10f))) ? 1 : 2;
-                int num3 = Mathf.CeilToInt((float)num / (float)num2);
-                float num4 = 150f * (float)num3 + 10f * (float)(num3 + 1);
-                float num5 = (float)num2 * 38f + 10f * (float)(num2 + 1);
-                Rect rect = new Rect(((float)UI.screenWidth - num4) / 2f, (float)UI.screenHeight - num5 - 4f, num4, num5);
+                int num2 = num < 4 || !(UI.screenWidth < 540f + num * (150f + 10f)) ? 1 : 2;
+                int num3 = Mathf.CeilToInt(num / (float)num2);
+                float num4 = 150f * num3 + 10f * (num3 + 1);
+                float num5 = num2 * 38f + 10f * (num2 + 1);
+                Rect rect = new Rect((UI.screenWidth - num4) / 2f, UI.screenHeight - num5 - 4f, num4, num5);
 
                 WorldInspectPane worldInspectPane = Find.WindowStack.WindowOfType<WorldInspectPane>();
                 if (worldInspectPane != null && rect.x < InspectPaneUtility.PaneWidthFor(worldInspectPane) + 4f)

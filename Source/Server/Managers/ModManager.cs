@@ -1,8 +1,12 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.Misc;
+using GameServer.TCP;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
+    [RTManager]
     public static class ModManager
     {
         public static void ParsePacket(ServerClient client, Packet packet)
@@ -21,15 +25,15 @@ namespace GameServer
         {
             if (Master.worldValues != null && !client.userFile.IsAdmin)
             {
-                UserManager.BanPlayerFromName(client.userFile.Username);
-                Logger.Warning($"Player {client.userFile.Username} tried to change mod config without being admin");
+                UserManager.BanPlayerFromName(client.userFile.Uid);
+                Printer.Warning($"Player {client.userFile.Uid} tried to change mod config without being admin");
             }
 
             else
             {
                 Master.modConfig = file;
                 Main_.SaveValueFile(ServerFileMode.Mods, true);
-                Logger.Warning($"[Set mods] > {client.userFile.Username}");
+                InformationDisplayer.DisplaySetMods(client);
             }
         }
 
@@ -94,15 +98,15 @@ namespace GameServer
             {
                 if (client.userFile.IsAdmin)
                 {
-                    Logger.Warning($"[Mod bypass] > {client.userFile.Username}");
+                    InformationDisplayer.DisplayModBypass(client.userFile.Label);
                     client.userFile.UpdateMods(clientMods);
                     return false;
                 }
 
                 else
                 {
-                    Logger.Warning($"[Mod Mismatch] > {client.userFile.Username}");
-                    LoginManager.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
+                    InformationDisplayer.DisplayModMismatch(client.userFile.Label);
+                    LoginManagerH.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }
             }

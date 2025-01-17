@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Managers
 {
+    [RTManager]
     public static class RiverManager
     {
-        public static void SetPlanetRivers() 
+        public static void SetPlanetRivers()
         {
             if (WorldManager.cachedWorldValues.Rivers == null) return;
             else AddRivers(WorldManager.cachedWorldValues.Rivers, false);

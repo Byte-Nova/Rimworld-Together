@@ -1,9 +1,10 @@
 ﻿using System;
+using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_2Input : Window
     {
@@ -36,10 +37,10 @@ namespace GameClient
         private string inputOneCensoredResult;
 
         private readonly bool inputTwoCensored;
-        
+
         private string inputTwoCensoredResult;
 
-        public RT_Dialog_2Input(string title, string inputOneLabel, string inputTwoLabel, Action actionConfirm, Action actionCancel, 
+        public RT_Dialog_2Input(string title, string inputOneLabel, string inputTwoLabel, Action actionConfirm, Action actionCancel = null,
             bool inputOneCensored = false, bool inputTwoCensored = false)
         {
             DialogManager.dialog2Input = this;
@@ -55,7 +56,7 @@ namespace GameClient
             absorbInputAroundWindow = true;
 
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -75,10 +76,11 @@ namespace GameClient
             Text.Font = GameFont.Medium;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
             Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
+            Text.Font = GameFont.Small;
 
             DrawInputOne(centeredX, inputOneLabelDif, inputOneDif);
 
-            DrawInputTwo(centeredX, inputTwoLabelDif, inputTwoDif);  
+            DrawInputTwo(centeredX, inputTwoLabelDif, inputTwoDif);
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
             {
@@ -98,16 +100,15 @@ namespace GameClient
 
         private void DrawInputOne(float centeredX, float labelDif, float normalDif)
         {
-            Text.Font = GameFont.Medium;
+            Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputOneLabel).x / 2, labelDif, Text.CalcSize(inputOneLabel).x, Text.CalcSize(inputOneLabel).y), inputOneLabel);
 
-            Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputOneResult);
+            string inputOne = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputOneResult);
             if (AcceptsInput && inputOne.Length <= 32) inputOneResult = inputOne;
 
             if (inputOneCensored)
             {
-                string censorOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputOneCensoredResult);
+                string censorOne = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputOneCensoredResult);
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;
@@ -119,16 +120,15 @@ namespace GameClient
 
         private void DrawInputTwo(float centeredX, float labelDif, float normalDif)
         {
-            Text.Font = GameFont.Medium;
+            Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputTwoLabel).x / 2, labelDif, Text.CalcSize(inputTwoLabel).x, Text.CalcSize(inputTwoLabel).y), inputTwoLabel);
 
-            Text.Font = GameFont.Small;
-            string inputTwo = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputTwoResult);
+            string inputTwo = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputTwoResult);
             if (AcceptsInput && inputTwo.Length <= 32) inputTwoResult = inputTwo;
 
             if (inputTwoCensored)
             {
-                string censorOne = Widgets.TextField(new Rect(centeredX - (200f / 2), normalDif, 200f, 30f), inputTwoCensoredResult);
+                string censorOne = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputTwoCensoredResult);
                 if (AcceptsInput && censorOne.Length <= 32)
                 {
                     Text.Font = GameFont.Medium;

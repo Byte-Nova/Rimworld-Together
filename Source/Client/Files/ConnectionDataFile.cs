@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GameClient
+namespace GameClient.Files
 {
     [Serializable]
     public class ConnectionDataFile

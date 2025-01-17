@@ -1,9 +1,10 @@
+using GameClient.TCP;
+using GameClient.Values;
 using HarmonyLib;
-using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches
 {
     [HarmonyPatch(typeof(TickManager), nameof(TickManager.TickManagerUpdate))]
     public static class PatchGameSpeed

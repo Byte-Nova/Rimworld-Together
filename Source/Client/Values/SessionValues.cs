@@ -4,7 +4,7 @@ using RimWorld.Planet;
 using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Values
 {
     public static class SessionValues
     {
@@ -21,13 +21,13 @@ namespace GameClient
         public static Caravan chosenCaravan;
 
         public static Site chosenSite;
-        
+
         public static CompLaunchable chosendPods;
 
         public static TransferData outgoingManifest = new TransferData();
 
         public static TransferData incomingManifest = new TransferData();
-        
+
         public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();
 
         public static ActionValuesFile actionValues;
@@ -44,7 +44,7 @@ namespace GameClient
         public static void ToggleOnlineActivityHost(bool type) { isActivityHost = type; }
 
         public static void ToggleOnlineActivityReady(bool type) { isActivityReady = type; }
-        
+
         public static void CleanValues()
         {
             ToggleOnlineActivity(OnlineActivityType.None);

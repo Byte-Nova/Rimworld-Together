@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Linq;
+using GameClient.Managers;
+using GameClient.Scribers;
+using GameClient.TCP;
+using GameClient.Values;
 using RimWorld;
 using Shared;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_ItemListing : Window
     {
@@ -38,9 +42,7 @@ namespace GameClient
 
             forcePause = true;
             absorbInputAroundWindow = true;
-
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -49,9 +51,11 @@ namespace GameClient
         public override void DoWindowContents(Rect rect)
         {
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect((rect.width / 2) - Text.CalcSize(title).x / 2, rect.y, rect.width, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(title).x / 2, rect.y, rect.width, Text.CalcSize(title).y), title);
 
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - buttonY - 45));
+
+            Text.Font = GameFont.Small;
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept"))
             {
@@ -67,9 +71,8 @@ namespace GameClient
         private void FillMainRect(Rect mainRect)
         {
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
-            Widgets.DrawLineHorizontal(mainRect.x, mainRect.yMax + 1, mainRect.width);
 
-            float height = 6f + (float)listedThings.Count() * 30f;
+            float height = 6f + listedThings.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
             float num = 0;
@@ -102,12 +105,12 @@ namespace GameClient
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (DeepScribeHelper.CheckIfThingIsHuman(thing))
+            if (ScriberH.CheckIfThingIsHuman(thing))
             {
                 Widgets.Label(fixedRect, $"[H] {itemName}");
             }
 
-            else if (DeepScribeHelper.CheckIfThingIsAnimal(thing))
+            else if (ScriberH.CheckIfThingIsAnimal(thing))
             {
                 Widgets.Label(fixedRect, $"[A] {itemName}");
             }

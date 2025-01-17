@@ -1,13 +1,16 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.TCP;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
+    [RTManager]
     public static class WorldManager
     {
-        private static string worldFileName = "WorldValues.json";
+        private static string worldFileName = "WorldConfig.json";
 
-        private static string worldFilePath = Path.Combine(Master.corePath, worldFileName);
+        private static string worldFilePath = Path.Combine(Master.configsPath, worldFileName);
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {

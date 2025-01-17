@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GameClient.Managers;
+using GameClient.TCP;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Patches.Tabs
 {
     public class PlayersUI : WITab
     {
@@ -46,7 +48,7 @@ namespace GameClient
             List<string> orderedList = PlayerRecountManager.currentPlayerNames;
             orderedList.Sort();
 
-            float height = 6f + (float)orderedList.Count() * 30f;
+            float height = 6f + orderedList.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
 
             Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);

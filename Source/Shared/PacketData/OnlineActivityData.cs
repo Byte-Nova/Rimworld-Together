@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
 namespace Shared
@@ -29,22 +28,20 @@ namespace Shared
 
         //Orders
 
-        public PawnOrderData _pawnOrder;
+        public CreationOrderData[] _creationOrders = new CreationOrderData[0];
 
-        public CreationOrderData _creationOrder;
+        public DestructionOrderData[] _destructionOrders = new DestructionOrderData[0];
 
-        public DestructionOrderData _destructionOrder;
+        public DamageOrderData[] _damageOrders = new DamageOrderData[0];
 
-        public DamageOrderData _damageOrder;
+        public HediffOrderData[] _hediffOrders = new HediffOrderData[0];
 
-        public HediffOrderData _hediffOrder;
+        public TimeSpeedOrderData[] _timeSpeedOrders = new TimeSpeedOrderData[0];
 
-        public TimeSpeedOrderData _timeSpeedOrder;
+        public GameConditionOrderData[] _gameConditionOrders = new GameConditionOrderData[0];
 
-        public GameConditionOrderData _gameConditionOrder;
+        public WeatherOrderData[] _weatherOrders = new WeatherOrderData[0];
 
-        public WeatherOrderData _weatherOrder;
-
-        public KillOrderData _killOrder;
+        public PawnJobData[] _jobOrders = new PawnJobData[0];
     }
 }

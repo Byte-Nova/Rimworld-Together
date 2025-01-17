@@ -1,29 +1,40 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
 
-namespace GameClient
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+﻿using System.Reflection;
+using GameClient.Core.Configs;
+using GameClient.Misc;
+
+namespace GameClient.Core
 {
-    //Class with all the critical variables for the client to work
+    // Class with all the critical variables for the client to work
 
     public static class Master
     {
-        //Instances
+        // Instances
 
         public static UnityMainThreadDispatcher threadDispatcher;
-        
-        public static ModConfigs modConfigs = new ModConfigs();
 
-        public static Dictionary<string, Assembly> loadedCompatibilityPatches = new Dictionary<string,Assembly>();
+        public static ModExposer modConfigs = new ModExposer();
 
-        //Paths
+        public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
 
-        public static string mainPath;
-        
-        public static string modFolderPath;
+        // Paths
+
+        public static string appdataPath;
+
+        public static string appdataRTPath;
+
+        public static string appdataTempPath;
+
+        public static string appdataTempVersionPath;
+
+        public static string modMainPath;
 
         public static string modAssemblyPath;
 
-        public static string compatibilityPatchesFolderPath;
+        public static string modAddonsPath;
 
         public static string connectionDataPath;
 
@@ -31,6 +42,12 @@ namespace GameClient
 
         public static string clientPreferencesPath;
 
+        public static string recentServersPath;
+
         public static string savesFolderPath;
+
+        // Values
+
+        public static readonly string modID = "RimWorld Together";
     }
 }

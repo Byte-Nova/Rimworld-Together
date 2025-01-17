@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GameClient.Values;
 using RimWorld;
 using Verse;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
     //Class that handles all the planet functions for the mod
-
+    [RTManager]
     public static class PlanetManager
     {
         //Regenerates the planet of player objects
@@ -24,8 +26,8 @@ namespace GameClient
                 PlayerSettlementManager.ClearAllSettlements();
                 PlayerSettlementManager.AddSettlements(PlayerSettlementManagerHelper.tempSettlements);
 
-                PlayerSiteManager.ClearAllSites();
-                PlayerSiteManager.AddSites(PlayerSiteManagerHelper.tempSites);
+                SiteManager.ClearAllSites();
+                SiteManager.AddSites(SiteManagerHelper.tempSites);
 
                 NPCSettlementManager.ClearAllSettlements();
                 NPCSettlementManager.AddSettlements(NPCSettlementManagerHelper.tempNPCSettlements);
@@ -55,7 +57,6 @@ namespace GameClient
         public static Faction GetPlayerFactionFromGoodwill(Goodwill goodwill)
         {
             Faction factionToUse = null;
-
             switch (goodwill)
             {
                 case Goodwill.Enemy:
@@ -95,7 +96,7 @@ namespace GameClient
                 }
             }
 
-            if(factions.Count >= 1) return factions;
+            if (factions.Count >= 1) return factions;
             else
             {
                 switch (defName) // If missing factions from missing dlcs.
@@ -127,7 +128,7 @@ namespace GameClient
                     case "Empire":
                         factions.AddRange(GetNPCFactionFromDefName(FactionDefOf.OutlanderCivil.defName));
                         break;
-                        
+
                     default:
                         break;
                 }

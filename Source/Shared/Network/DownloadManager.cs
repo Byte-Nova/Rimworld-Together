@@ -8,17 +8,11 @@ namespace Shared
 
         public string filePath;
 
-        public double fileSize;
-        
-        public double fileParts;
-
         public bool isLastPart;
 
-        public void PrepareDownload(string filePath, double fileParts)
-        {
-            this.fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite);
-            this.fileParts = fileParts;
-        }
+        public DownloadManager(string filePath) { this.filePath = filePath; }
+
+        public void PrepareDownload() { fileStream = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite); }
 
         public void WriteFilePart(byte[] partBytes)
         {

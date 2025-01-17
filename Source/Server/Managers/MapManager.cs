@@ -1,7 +1,11 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.Misc;
+using GameServer.TCP;
+using Shared;
 
-namespace GameServer
+namespace GameServer.Managers
 {
+    [RTManager]
     public static class MapManager
     {
         //Variables
@@ -10,80 +14,40 @@ namespace GameServer
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            MapData data = Serializer.ConvertBytesToObject<MapData>(packet.contents);
-            SaveUserMap(client, data);
+            MapData mapData = Serializer.ConvertBytesToObject<MapData>(packet.contents);
+            SaveUserMap(client, mapData._mapFile);
         }
 
-        public static void SaveUserMap(ServerClient client, MapData data)
+        public static void SaveUserMap(ServerClient client, MapFile file)
         {
-            data._mapFile.Owner = client.userFile.Username;
+            file.UID = client.userFile.Uid;
+            Serializer.ObjectBytesToFile(Path.Combine(Master.mapsPath, file.Tile + fileExtension), file);
 
-            Serializer.SerializeToFile(Path.Combine(Master.mapsPath, data._mapFile.Tile + fileExtension), data._mapFile);
-
-            Logger.Message($"[Save map] > {client.userFile.Username} > {data._mapFile.Tile}");
+            InformationDisplayer.DisplaySaveMap(client);
         }
 
         public static void DeleteMap(MapFile mapFile)
         {
             File.Delete(Path.Combine(Master.mapsPath, mapFile.Tile + fileExtension));
-
-            Logger.Warning($"[Remove map] > {mapFile.Tile}");
+            InformationDisplayer.DisplayRemoveMap(mapFile.Tile.ToString());
         }
 
-        public static MapFile[] GetAllMapFiles()
+        public static string[] GetAllMaps()
         {
-            List<MapFile> mapDatas = new List<MapFile>();
-
-            string[] maps = Directory.GetFiles(Master.mapsPath);
-            foreach (string map in maps)
-            {
-                if (!map.EndsWith(fileExtension)) continue;
-
-                MapFile newMap = Serializer.SerializeFromFile<MapFile>(map);
-                mapDatas.Add(newMap);
-            }
-
-            return mapDatas.ToArray();
+            return Directory.GetFiles(Master.mapsPath);
         }
 
         public static bool CheckIfMapExists(int mapTileToCheck)
         {
-            MapFile[] maps = GetAllMapFiles();
-            foreach (MapFile map in maps)
-            {
-                if (map.Tile == mapTileToCheck)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public static MapFile[] GetAllMapsFromUsername(string username)
-        {
-            List<MapFile> userMaps = new List<MapFile>();
-
-            SettlementFile[] userSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(username);
-            foreach (SettlementFile settlementFile in userSettlements)
-            {
-                MapFile mapFile = GetUserMapFromTile(settlementFile.Tile);
-                if (mapFile != null) userMaps.Add(mapFile);
-            }
-
-            return userMaps.ToArray();
+            string toFind = GetAllMaps().FirstOrDefault(fetch => Path.GetFileNameWithoutExtension(fetch) == mapTileToCheck.ToString());
+            if (toFind != null) return true;
+            else return false;
         }
 
         public static MapFile GetUserMapFromTile(int mapTileToGet)
         {
-            MapFile[] mapFiles = GetAllMapFiles();
-
-            foreach (MapFile mapFile in mapFiles)
-            {
-                if (mapFile.Tile == mapTileToGet) return mapFile;
-            }
-
-            return null;
+            string path = Path.Combine(Master.mapsPath, mapTileToGet + fileExtension);
+            return Serializer.FileBytesToObject<MapFile>(path);
         }
     }
 }

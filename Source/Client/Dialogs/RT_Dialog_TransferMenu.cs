@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient.Managers;
+using GameClient.Scribers;
+using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -8,7 +11,7 @@ using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Dialogs
 {
     public class RT_Dialog_TransferMenu : Window
     {
@@ -60,7 +63,7 @@ namespace GameClient
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
-            
+
             closeOnAccept = false;
             closeOnCancel = false;
 
@@ -83,16 +86,17 @@ namespace GameClient
             float windowDescriptionDif = Text.CalcSize(description).y + 8;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect((rect.width / 2) - Text.CalcSize(title).x / 2, rect.y, rect.width, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(title).x / 2, rect.y, rect.width, Text.CalcSize(title).y), title);
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect((rect.width / 2) - Text.CalcSize(description).x / 2, windowDescriptionDif, rect.width, Text.CalcSize(description).y), description);
+            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(description).x / 2, windowDescriptionDif, rect.width, Text.CalcSize(description).y), description);
             Text.Font = GameFont.Medium;
 
             FillMainRect(new Rect(0f, 55f, rect.width, rect.height - buttonY - 65));
 
+            Text.Font = GameFont.Small;
             if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept")) OnAccept();
-            if (Widgets.ButtonText(new Rect(new Vector2((rect.width / 2) - (buttonX / 2), rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reset")) OnReset();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.width / 2 - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reset")) OnReset();
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel")) OnCancel();
         }
 
@@ -101,7 +105,7 @@ namespace GameClient
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.yMax + 1, mainRect.width);
 
-            float height = 6f + (float)cachedTradeables.Count * 30f;
+            float height = 6f + cachedTradeables.Count * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
             float num = 0;
@@ -164,21 +168,6 @@ namespace GameClient
                 DialogManager.PushNewDialog(d1);
             }
 
-            else if (transferLocation == TransferLocation.Market)
-            {
-                Action r1 = delegate
-                {
-                    SessionValues.outgoingManifest._transferMode = TransferMode.Market;
-                    DialogManager.PopDialog(DialogManager.dialogItemListing);
-                    postChoosing();
-                };
-
-                RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    r1, null);
-
-                DialogManager.PushNewDialog(d1);
-            }
-
             void postChoosing()
             {
                 TransferManager.TakeTransferItems(transferLocation);
@@ -228,11 +217,6 @@ namespace GameClient
             {
                 playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
-
-            else if (transferLocation == TransferLocation.Market)
-            {
-                playerNegotiator = SessionValues.chosenSettlement.Map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
-            }
         }
 
         private void SetupTrade()
@@ -244,14 +228,8 @@ namespace GameClient
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                TradeSession.SetupWith(Find.WorldObjects.SettlementAt(SessionValues.incomingManifest._fromTile), 
+                TradeSession.SetupWith(Find.WorldObjects.SettlementAt(SessionValues.incomingManifest._fromTile),
                     playerNegotiator, true);
-            }
-
-            else if (transferLocation == TransferLocation.Market)
-            {
-                Settlement toUse = Find.WorldObjects.Settlements.Find(fetch => FactionValues.playerFactions.Contains(fetch.Faction));
-                TradeSession.SetupWith(toUse, playerNegotiator, true);
             }
         }
 
@@ -320,7 +298,7 @@ namespace GameClient
                 {
                     foreach (Pawn pawn in SessionValues.chosenCaravan.pawns)
                     {
-                        if (DeepScribeHelper.CheckIfThingIsHuman(pawn))
+                        if (ScriberH.CheckIfThingIsHuman(pawn))
                         {
                             if (allowHumans)
                             {
@@ -334,7 +312,7 @@ namespace GameClient
                             }
                         }
 
-                        else if (DeepScribeHelper.CheckIfThingIsAnimal(pawn))
+                        else if (ScriberH.CheckIfThingIsAnimal(pawn))
                         {
                             if (allowAnimals)
                             {
@@ -358,70 +336,9 @@ namespace GameClient
 
                 if (allowItems)
                 {
-                    foreach(Thing thing in thingsInMap)
-                    {
-                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
-                        {
-                            Tradeable tradeable = new Tradeable();
-                            tradeable.AddThing(thing, Transactor.Colony);
-                            SessionValues.listToShowInTradesMenu.Add(tradeable);
-                        }
-                    }
-                }
-
-                if (allowHumans || allowAnimals)
-                {
-                    foreach (Pawn pawn in pawnsInMap)
-                    {
-                        if (DeepScribeHelper.CheckIfThingIsAnimal(pawn))
-                        {
-                            if (allowAnimals)
-                            {
-                                Tradeable tradeable = new Tradeable();
-                                tradeable.AddThing(pawn, Transactor.Colony);
-                                SessionValues.listToShowInTradesMenu.Add(tradeable);
-                            }
-                        }
-
-                        else
-                        {
-                            if (allowHumans)
-                            {
-                                if (pawn == playerNegotiator) continue;
-                                else
-                                {
-                                    Tradeable tradeable = new Tradeable();
-                                    tradeable.AddThing(pawn, Transactor.Colony);
-                                    SessionValues.listToShowInTradesMenu.Add(tradeable);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            else if (transferLocation == TransferLocation.Market)
-            {
-                Map map = SessionValues.chosenSettlement.Map;
-
-                List<Pawn> pawnsInMap = map.mapPawns.PawnsInFaction(Faction.OfPlayer).ToList();
-                pawnsInMap.AddRange(map.mapPawns.PrisonersOfColony);
-
-                List<Thing> thingsInMap = new List<Thing>();
-                foreach (Thing thing in map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item && fetch.IsInAnyStorage()))
-                {
-                    if (thing.def.category == ThingCategory.Item && !thing.Position.Fogged(map))
-                    {
-                        thingsInMap.Add(thing);
-                    }
-                }
-
-                if (allowItems)
-                {
                     foreach (Thing thing in thingsInMap)
                     {
                         if (thing.MarketValue == 0 && !allowFreeThings) continue;
-                        else
                         {
                             Tradeable tradeable = new Tradeable();
                             tradeable.AddThing(thing, Transactor.Colony);
@@ -434,7 +351,7 @@ namespace GameClient
                 {
                     foreach (Pawn pawn in pawnsInMap)
                     {
-                        if (DeepScribeHelper.CheckIfThingIsAnimal(pawn))
+                        if (ScriberH.CheckIfThingIsAnimal(pawn))
                         {
                             if (allowAnimals)
                             {
@@ -464,11 +381,12 @@ namespace GameClient
 
         public void LoadAllAvailableTradeables()
         {
-            cachedTradeables = (from tr in SessionValues.listToShowInTradesMenu 
-                orderby 0 descending select tr)
-                .ThenBy((Tradeable tr) => tr.ThingDef.label)
-                .ThenBy((Tradeable tr) => tr.AnyThing.TryGetQuality(out QualityCategory qc) ? ((int)qc) : (-1))
-                .ThenBy((Tradeable tr) => tr.AnyThing.HitPoints)
+            cachedTradeables = (from tr in SessionValues.listToShowInTradesMenu
+                                orderby 0 descending
+                                select tr)
+                .ThenBy((tr) => tr.ThingDef.label)
+                .ThenBy((tr) => tr.AnyThing.TryGetQuality(out QualityCategory qc) ? (int)qc : -1)
+                .ThenBy((tr) => tr.AnyThing.HitPoints)
                 .ToList();
         }
     }
