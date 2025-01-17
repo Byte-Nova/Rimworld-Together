@@ -228,7 +228,10 @@ public static class SiteManagerHelper
         {
             defName = site.DefName,
             label = site.Label,
-            description = site.Description
+            description = site.Description,
+            workerClass = typeof(SitePartWorker_Outpost),
+            siteTexture = "World/WorldObjects/DefaultSettlement",
+            applyFactionColorToSiteTexture = true
         };
         Type type = typeof(SitePartDef);
         if (site.Texture != null)
@@ -242,6 +245,8 @@ public static class SiteManagerHelper
         }
         FieldInfo field2 = type.GetField("workerInt", BindingFlags.Instance | BindingFlags.NonPublic);
         field2.SetValue(def, (SitePartWorker)Activator.CreateInstance(typeof(SitePartWorker)));
+        def.Worker.def = def;
+        DefDatabase<SitePartDef>.Add(def);
         return def;
     }
 }
