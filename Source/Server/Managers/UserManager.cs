@@ -1,4 +1,5 @@
-﻿using GameServer.Core;
+﻿using GameServer.Commands;
+using GameServer.Core;
 using GameServer.Files;
 using GameServer.Misc;
 using GameServer.TCP;
@@ -24,7 +25,8 @@ namespace GameServer.Managers
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(uid);
             ServerClient client = NetworkHelper.GetConnectedClientFromUid(uid);
-            if (userFile == null || client == null) Printer.Warning($"User '{uid}' couldn't be found");
+            if (userFile == null || client == null)
+                ConsoleCommandActions.ThrowUserNotFoundError();
             else
             {
                 if (userFile.IsBanned) Printer.Warning($"User '{userFile.Label}' is already banned from the server");
@@ -40,7 +42,7 @@ namespace GameServer.Managers
         public static void PardonPlayerFromName(string uid)
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(uid);
-            if (userFile == null) Printer.Warning($"User '{uid}' couldn't be found");
+            if (userFile == null) ConsoleCommandActions.ThrowUserNotFoundError();
             else
             {
                 if (!userFile.IsBanned) Printer.Warning($"User '{userFile.Label}' is not banned from the server");
