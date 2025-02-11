@@ -15,9 +15,18 @@ namespace GameServer.Managers
 {
     public static class ModDownloadManager
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient client;
         private static readonly string pathForTempMod = Path.Combine(Master.tempPath ,"TempMod.mod");
         private static readonly string pathForTempDirectory = Path.Combine(Master.tempPath, "TempMod");
+
+
+        static ModDownloadManager() 
+        {
+            HttpClientHandler handler = new HttpClientHandler() { AllowAutoRedirect = true };
+            client = new HttpClient(handler);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+        }
+
         // We use this to find the latest Harmony release, since they like to change the numbers around
         public static async Task<string> GetDownloadUrlFromPartialUrl(string repoOwner, string repoName, string partialName) 
         {
@@ -89,8 +98,6 @@ namespace GameServer.Managers
             try
             {
                 Printer.Warning($"Downloading {url}");
-                HttpClientHandler handler = new HttpClientHandler() { AllowAutoRedirect = true };
-                using HttpClient client = new HttpClient(handler);
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 
                 HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
@@ -185,9 +192,6 @@ namespace GameServer.Managers
         // We use this to fetch automatically a .dll or .zip if the user didn't specify one
         public static async Task<string> FetchLatestReleaseFile(string url)
         {
-            using HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
-
             HttpResponseMessage response = await client.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
