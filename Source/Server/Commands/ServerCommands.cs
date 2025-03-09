@@ -7,6 +7,7 @@ using GameServer.Files;
 using GameServer.Managers;
 using GameServer.Misc;
 using GameServer.TCP;
+using System.Net;
 
 namespace GameServer.Commands
 {
@@ -147,6 +148,9 @@ namespace GameServer.Commands
             "Clears the console output",
             ClearCommandAction);
 
+        public static readonly BaseServerCommand getMod = new BaseServerCommand("getmod", 1,
+            "Fetch a mod from a github repository",
+            GetModCommandAction);
         public static List<BaseServerCommand> commands = new List<BaseServerCommand>
         {
             backupCommand,
@@ -177,7 +181,8 @@ namespace GameServer.Commands
             serverMessageCommand,
             whitelistAddCommand,
             whitelistCommand,
-            whitelistRemoveCommand
+            whitelistRemoveCommand,
+            getMod
         };
     }
 
@@ -593,6 +598,74 @@ namespace GameServer.Commands
             Console.Clear();
 
             Printer.Title("[Cleared console]");
+        }
+
+        public static async void GetModCommandAction()
+        {
+            const string example = "Ex: https://github.com/Erag0n001/SOS2RTCompat/releases/tag/Pre-release";
+            string url = ConsoleManager.commandParameters[0];
+
+            if (url.EndsWith(".dll"))
+            {
+                await ModDownloadManager.Download(url);
+                return;
+            }
+            else if (url.EndsWith(".zip"))
+            {
+                await ModDownloadManager.DownloadAndDecompress(url);
+                return;
+            }
+
+            string[] str = url.Split("/");
+            if(str.Length < 4) 
+            {
+                Printer.Error($"The url you passed was not a valid github url.\nExample:{example}");
+            }
+            string owner = str[3];
+            string repo = str[4];
+
+            string apiUrl;
+            if (str.Contains("releases"))
+            {
+                if (str.Contains("latest"))
+                {
+                    apiUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+                }
+                else if (str.Contains("tag"))
+                {
+                    string tag = str.Last();
+                    apiUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/tags/{tag}";
+                }
+                else
+                {
+                    Printer.Warning("Please specify a release and file name.\nExample:{example}");
+                    return;
+                }
+            }
+            else 
+            {
+                apiUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+            }
+
+            string fileUrl = await ModDownloadManager.FetchLatestReleaseFile(apiUrl);
+            if (fileUrl == string.Empty)
+            {
+                Printer.Error("No valid .zip or .dll file found in the release.\nMaybe the url was wrong? Example:{example}");
+                return;
+            }
+            bool success;
+            if (fileUrl.EndsWith(".dll"))
+                success = await ModDownloadManager.Download(fileUrl);
+            else
+                success = await ModDownloadManager.DownloadAndDecompress(fileUrl);
+            if (success)
+                Printer.Warning($"Successfuly downloaded {fileUrl.Split("/").Last()}\n" +
+                    $"Remember that all patches are not made by the creators of Rimworld Together and we cannot ensure they are 100% safe.\n" +
+                    $"You will need to restart the server for these patches to be enabled.");
+            else
+            {
+                Printer.Warning($"Failed to download {fileUrl.Split($"/".Last())}\nMaybe the url was wrong? Example:{example}");
+            }
         }
     }
 }
