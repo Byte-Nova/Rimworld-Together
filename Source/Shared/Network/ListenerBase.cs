@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Linq;
 using System.Collections.Concurrent;
@@ -21,26 +22,27 @@ namespace Shared
 
         public string LatestException { get; private set; }
 
+        // Cancellation token to cancel loops when connection is terminated.
+        private CancellationTokenSource _cts = new CancellationTokenSource();
+
         public void EnqueuePacket(Packet packet)
         {
             PacketQueue.Enqueue(packet);
         }
 
-        public void Write()
+        public async Task WriteAsync()
         {
             try
             {
-                while (true)
+                while (!_cts.Token.IsCancellationRequested)
                 {
-                    Thread.Sleep(1);
+                    await Task.Delay(1, _cts.Token);
 
-                    // Check if we should exit the loop
                     if (DisconnectFlag || Stream == null || !Stream.CanWrite)
                         break;
 
                     if (PacketQueue.Count > 0)
                     {
-                        // If TryDequeue fails, just continue to next iteration
                         if (!PacketQueue.TryDequeue(out Packet packet))
                             continue;
 
@@ -48,10 +50,9 @@ namespace Shared
                         byte[] tracerBuffer = BitConverter.GetBytes(packetBuffer.Length);
                         byte[] completeBuffer = tracerBuffer.Concat(packetBuffer).ToArray();
 
-                        // Check again before writing
                         if (Stream != null && Stream.CanWrite)
                         {
-                            Stream.Write(completeBuffer, 0, completeBuffer.Length);
+                            await Stream.WriteAsync(completeBuffer, 0, completeBuffer.Length, _cts.Token);
                         }
                         else
                         {
@@ -74,18 +75,16 @@ namespace Shared
             }
         }
 
-        public void ReadFullPacket(byte[] content)
+        public async Task ReadFullPacketAsync(byte[] content)
         {
             int readBytes = 0;
             try
             {
                 while (readBytes < content.Length)
                 {
-                    int read = Stream.Read(content, readBytes, content.Length - readBytes);
-                    // If read == 0, the connection is closed unexpectedly
+                    int read = await Stream.ReadAsync(content, readBytes, content.Length - readBytes, _cts.Token);
                     if (read == 0)
                         throw new EndOfStreamException("Stream returned 0 bytes; connection may have closed.");
-
                     readBytes += read;
                 }
             }
@@ -97,13 +96,13 @@ namespace Shared
             }
         }
 
-        public void SendKAFlag()
+        public async Task SendKAFlagAsync()
         {
             try
             {
-                while (true)
+                while (!_cts.Token.IsCancellationRequested)
                 {
-                    Thread.Sleep(CommonValues.KeepAliveCooldown);
+                    await Task.Delay(CommonValues.KeepAliveCooldown, _cts.Token);
                     KeepAliveData keepAliveData = new KeepAliveData();
                     Packet packet = Packet.CreateFromObject("KeepAliveManager", keepAliveData);
                     EnqueuePacket(packet);
@@ -117,18 +116,19 @@ namespace Shared
             }
         }
 
-        public void CheckConnectionHealth(Action toDo)
+        public async Task CheckConnectionHealthAsync(Action toDo)
         {
             while (!DisconnectFlag)
             {
-                Thread.Sleep(1);
+                await Task.Delay(1);
             }
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
             toDo.Invoke();
         }
 
         public void DestroyConnection()
         {
+            _cts.Cancel();
             Connection.Close();
         }
     }

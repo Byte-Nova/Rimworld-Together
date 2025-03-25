@@ -176,17 +176,45 @@ namespace GameServer.Managers.External
                 // If adding the next line would exceed our limit, send the current buffer and then clear.
                 if (sb.Length + line.Length > MaxMessageLength)
                 {
-                    await consoleChannel.SendMessageAsync(sb.ToString());
+                    await TrySendMessageAsync(sb.ToString());
                     sb.Clear();
                 }
                 sb.AppendLine(line);
             }
             if (sb.Length > 0)
             {
-                await consoleChannel.SendMessageAsync(sb.ToString());
+                await TrySendMessageAsync(sb.ToString());
             }
             // Reschedule the timer for the next flush.
             _consoleBufferTimer?.Change(BufferIntervalMs, Timeout.Infinite);
+        }
+
+        // Helper method to send a message with error handling.
+        private static async Task TrySendMessageAsync(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+            try
+            {
+                await consoleChannel.SendMessageAsync(message);
+            }
+            catch (Discord.Net.HttpException httpEx)
+            {
+                Printer.Warning($"[Discord Integration] Rate limit triggered: {httpEx.Message}");
+                // Requeue the message (split by newlines) so it will be retried later.
+                foreach (var line in message.Split('\n'))
+                {
+                    if (!string.IsNullOrWhiteSpace(line))
+                        _consoleQueue.Enqueue(line);
+                }
+                // Wait a bit longer before the next flush attempt.
+                await Task.Delay(3000);
+            }
+            catch (Exception ex)
+            {
+                Printer.Error($"[Discord Integration] Failed to send message: {ex}");
+                // Optionally, requeue or drop the message.
+            }
         }
 
         // Start the console buffer timer (used for debouncing console messages).

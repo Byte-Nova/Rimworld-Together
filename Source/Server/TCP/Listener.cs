@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
+using System.Threading.Tasks;
 
 namespace GameServer.TCP
 {
@@ -19,27 +20,37 @@ namespace GameServer.TCP
             PrintVerboseAction = () => Printer.Warning(LatestException, LogImportanceMode.Verbose);
             PrintExtremeAction = () => Printer.Warning(LatestException, LogImportanceMode.Extreme);
 
-            Task.Run(() => Read());
-            Task.Run(() => Write());
-            Task.Run(() => SendKAFlag());
-            Task.Run(() => CheckConnectionHealth(() => Network.KickClient(TargetClient)));
+            // Run asynchronous loops instead of blocking threads.
+            Task.Run(() => ReadAsync());
+            Task.Run(() => WriteAsync());
+            Task.Run(() => SendKAFlagAsync());
+            Task.Run(() => CheckConnectionHealthAsync(() => Network.KickClient(TargetClient)));
         }
 
-        public void Read()
+        public async Task ReadAsync()
         {
             try
             {
                 while (true)
                 {
-                    Thread.Sleep(1);
+                    await Task.Delay(1);
+
+                    if (DisconnectFlag || Stream == null || !Stream.CanRead)
+                        break;
+
                     if (Stream.DataAvailable)
                     {
                         byte[] buffer = new byte[Packet.DefaultPacketSizeInBytes];
-                        Stream.Read(buffer, 0, buffer.Length);
-                        Packet.SetPacketSize(BitConverter.ToInt32(buffer, 0));
+                        int read = await Stream.ReadAsync(buffer, 0, buffer.Length);
+                        if (read == 0)
+                        {
+                            DisconnectFlag = true;
+                            break;
+                        }
 
+                        Packet.SetPacketSize(BitConverter.ToInt32(buffer, 0));
                         buffer = new byte[Packet.CurrentPacketSizeInBytes];
-                        ReadFullPacket(buffer);
+                        await ReadFullPacketAsync(buffer);
                         Packet packet = Packet.DecompressPacket(buffer);
 
                         Printer.Message($"[Packet] > {packet.Header}", LogImportanceMode.Verbose);
@@ -48,7 +59,7 @@ namespace GameServer.TCP
                         {
                             Master.managerDictionary[packet.Header].Invoke(null, new object[] { TargetClient, packet });
                         }
-                        catch (Exception ex)
+                        catch (System.Exception ex)
                         {
                             Printer.Error($"Error executing method '{packet.Header}'");
                             Printer.Error("Force-disconnecting due to method manager exception");
@@ -63,7 +74,7 @@ namespace GameServer.TCP
                 Printer.Warning(e, LogImportanceMode.Extreme);
                 DisconnectFlag = true;
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 Printer.Warning(e.ToString(), LogImportanceMode.Verbose);
                 DisconnectFlag = true;
