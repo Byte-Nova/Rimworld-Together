@@ -1,11 +1,8 @@
 ﻿using GameServer.Core;
-using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
-using System.Collections.Concurrent;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
-using static Shared.CommonValues;
 
 namespace GameServer.TCP
 {
@@ -15,18 +12,17 @@ namespace GameServer.TCP
 
         public Listener(ServerClient clientToUse, TcpClient connection)
         {
-            this.TargetClient = clientToUse;
+            TargetClient = clientToUse;
+            Connection = connection;
+            Stream = connection.GetStream();
 
-            this.Connection = connection;
-            this.Stream = connection.GetStream();
-
-            PrintVerboseAction = delegate { Printer.Warning(LatestException, LogImportanceMode.Verbose); };
-            PrintExtremeAction = delegate { Printer.Warning(LatestException, LogImportanceMode.Extreme); };
+            PrintVerboseAction = () => Printer.Warning(LatestException, LogImportanceMode.Verbose);
+            PrintExtremeAction = () => Printer.Warning(LatestException, LogImportanceMode.Extreme);
 
             Task.Run(() => Read());
             Task.Run(() => Write());
             Task.Run(() => SendKAFlag());
-            Task.Run(() => CheckConnectionHealth(delegate { Network.KickClient(TargetClient); }));
+            Task.Run(() => CheckConnectionHealth(() => Network.KickClient(TargetClient)));
         }
 
         public void Read()
@@ -36,7 +32,6 @@ namespace GameServer.TCP
                 while (true)
                 {
                     Thread.Sleep(1);
-
                     if (Stream.DataAvailable)
                     {
                         byte[] buffer = new byte[Packet.DefaultPacketSizeInBytes];
@@ -47,29 +42,27 @@ namespace GameServer.TCP
                         ReadFullPacket(buffer);
                         Packet packet = Packet.DecompressPacket(buffer);
 
-                        if (!IgnoredLogPackets.Contains(packet.Header)) Printer.Message($"[Packet] > {packet.Header}", LogImportanceMode.Verbose);
-                        else Printer.Message($"[Packet] > {packet.Header}", LogImportanceMode.Extreme);
+                        Printer.Message($"[Packet] > {packet.Header}", LogImportanceMode.Verbose);
 
-                        try { Master.managerDictionary[packet.Header].Invoke(null, new object[] { TargetClient, packet }); }
-                        catch (Exception ex) { OnHandleError(ex); }
-
-                        void OnHandleError(Exception ex)
+                        try
                         {
-                            Printer.Error($"Error while trying to execute method from type '{packet.Header}'");
-                            Printer.Error("Forcefully disconnecting due to MethodManager exception");
+                            Master.managerDictionary[packet.Header].Invoke(null, new object[] { TargetClient, packet });
+                        }
+                        catch (Exception ex)
+                        {
+                            Printer.Error($"Error executing method '{packet.Header}'");
+                            Printer.Error("Force-disconnecting due to method manager exception");
                             Printer.Error(ex.ToString());
                             DisconnectFlag = true;
                         }
                     }
                 }
             }
-
-            catch (System.ObjectDisposedException e)
+            catch (ObjectDisposedException e)
             {
                 Printer.Warning(e, LogImportanceMode.Extreme);
                 DisconnectFlag = true;
             }
-
             catch (Exception e)
             {
                 Printer.Warning(e.ToString(), LogImportanceMode.Verbose);
