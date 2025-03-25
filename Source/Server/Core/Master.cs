@@ -42,7 +42,6 @@ namespace GameServer.Core
         public static DiscordConfigFile discordConfig;
 
         public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
-
         public static bool isClosing;
     }
 }

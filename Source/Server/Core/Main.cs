@@ -23,24 +23,17 @@ namespace GameServer.Core
             LoadAllManagers();
             CheckForServerName();
             CompatibilityManager.LoadAllPatches();
-
             Printer.Title("----------------------------------------");
-
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
-
             if (Master.actionConfigs.EnableSites)
                 SiteManager.UpdateAllSiteInfo();
-
             if (Master.backupConfig.AutomaticBackups)
                 Threader.GenerateServerThread(Threader.ServerMode.Backup);
-
-            // Discord integration block:
             if (Master.discordConfig != null && Master.discordConfig.Enabled)
             {
                 Task.Run(async () => await DiscordManager.StartAsync());
             }
-
             while (true)
                 Thread.Sleep(1);
         }
@@ -59,15 +52,12 @@ namespace GameServer.Core
             Master.settlementsPath = Path.Combine(Master.assetsPath, "Settlements");
             Master.eventsPath = Path.Combine(Master.assetsPath, "Events");
             Master.compatibilityPatchesPath = Path.Combine(Master.assetsPath, "Patches");
-
             Master.logsPath = Path.Combine(Master.mainPath, "Logs");
             Master.systemLogsPath = Path.Combine(Master.logsPath, "System");
             Master.chatLogsPath = Path.Combine(Master.logsPath, "Chat");
-
             Master.backupsPath = Path.Combine(Master.mainPath, "Backups");
             Master.backupUsersPath = Path.Combine(Master.backupsPath, "Users");
             Master.backupServerPath = Path.Combine(Master.backupsPath, "Servers");
-
             if (!Directory.Exists(Master.assetsPath)) Directory.CreateDirectory(Master.assetsPath);
             if (!Directory.Exists(Master.configsPath)) Directory.CreateDirectory(Master.configsPath);
             if (!Directory.Exists(Master.logsPath)) Directory.CreateDirectory(Master.logsPath);
@@ -101,45 +91,31 @@ namespace GameServer.Core
             Printer.Title($"Server version {CommonValues.ExecutableVersion}");
             Printer.Title("Loading all necessary resources");
             Printer.Title("----------------------------------------");
-
             LoadValueFile(ServerFileMode.Configs);
             SaveValueFile(ServerFileMode.Configs, false);
-
             LoadValueFile(ServerFileMode.Actions);
             SaveValueFile(ServerFileMode.Actions, false);
-
             LoadValueFile(ServerFileMode.Sites);
             SaveValueFile(ServerFileMode.Sites, false);
-
             LoadValueFile(ServerFileMode.Roads);
             SaveValueFile(ServerFileMode.Roads, false);
-
             LoadValueFile(ServerFileMode.Whitelist);
             SaveValueFile(ServerFileMode.Whitelist, false);
-
             LoadValueFile(ServerFileMode.Difficulty);
             SaveValueFile(ServerFileMode.Difficulty, false);
-
             LoadValueFile(ServerFileMode.Scenario);
             SaveValueFile(ServerFileMode.Scenario, false);
-
             LoadValueFile(ServerFileMode.Storyteller);
             SaveValueFile(ServerFileMode.Storyteller, false);
-
             LoadValueFile(ServerFileMode.Backup);
             SaveValueFile(ServerFileMode.Backup, false);
-
             LoadValueFile(ServerFileMode.Mods);
             SaveValueFile(ServerFileMode.Mods, false);
-
             LoadValueFile(ServerFileMode.Chat);
             SaveValueFile(ServerFileMode.Chat, false);
-
             LoadValueFile(ServerFileMode.Discord);
             SaveValueFile(ServerFileMode.Discord, false);
-
             LoadValueFile(ServerFileMode.World);
-
             EventManager.LoadEvents();
         }
 
@@ -328,25 +304,25 @@ namespace GameServer.Core
                     }
                     break;
                 case ServerFileMode.Discord:
-                    pathToLoad = Path.Combine(Master.configsPath, "DiscordConfig.json");
-                    if (File.Exists(pathToLoad))
-                        Master.discordConfig = Serializer.SerializeFromFile<DiscordConfigFile>(pathToLoad);
-                    else
                     {
-                        Master.discordConfig = new DiscordConfigFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.discordConfig);
+                        pathToLoad = Path.Combine(Master.configsPath, "DiscordConfig.json");
+                        if (File.Exists(pathToLoad))
+                            Master.discordConfig = Serializer.SerializeFromFile<DiscordConfigFile>(pathToLoad);
+                        else
+                        {
+                            Master.discordConfig = new DiscordConfigFile();
+                            Serializer.SerializeToFile(pathToLoad, Master.discordConfig);
+                        }
+                        break;
                     }
-                    break;
             }
-
             if (broadcast)
                 InformationDisplayer.DisplayLoadFile(pathToLoad);
         }
 
         public static void ChangeTitle()
         {
-            Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - " +
-                $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.serverConfig.MaxPlayers}]";
+            Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - Players [{NetworkHelper.GetConnectedClientsSafe().Count()}/{Master.serverConfig.MaxPlayers}]";
         }
 
         private static void CheckForServerName()
@@ -364,8 +340,15 @@ namespace GameServer.Core
             {
                 if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
                 {
-                    try { Master.managerDictionary[type.Name] = type.GetMethod("ParsePacket", BindingFlags.Static | BindingFlags.NonPublic); }
-                    catch (Exception exception) { Printer.Error($"{type.Name} failed to load > {exception}"); }
+                    try
+                    {
+                        Master.managerDictionary[type.Name] =
+                            type.GetMethod("ParsePacket", BindingFlags.Static | BindingFlags.NonPublic);
+                    }
+                    catch (Exception exception)
+                    {
+                        Printer.Error($"{type.Name} failed to load > {exception}");
+                    }
                 }
             }
         }

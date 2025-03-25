@@ -12,8 +12,8 @@ namespace Shared
 
         public Packet(string header, byte[] contents)
         {
-            this.Header = header;
-            this.Contents = contents;
+            Header = header;
+            Contents = contents;
         }
 
         public static Packet CreateFromObject(string header, object objectToUse)
@@ -36,7 +36,7 @@ namespace Shared
         {
             try
             {
-                // Check for GZip magic numbers (0x1F, 0x8B) to decide if the packet is compressed.
+                // If the first two bytes indicate GZip (0x1F, 0x8B) then decompress.
                 if (contents.Length >= 2 && contents[0] == 0x1F && contents[1] == 0x8B)
                 {
                     return Serializer.ConvertBytesToObject<Packet>(contents, true);

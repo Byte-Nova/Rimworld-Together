@@ -5,8 +5,6 @@ using GameServer.TCP;
 using Shared;
 using System.Text;
 using static Shared.CommonEnumerators;
-using System.Linq;
-using System.Threading.Tasks; // for Task.Run
 
 namespace GameServer.Managers
 {
@@ -49,7 +47,6 @@ namespace GameServer.Managers
         private static void ExecuteChatCommand(ServerClient client, string[] command)
         {
             commandSemaphore.WaitOne();
-
             BaseChatCommand toFind = ChatManagerHelper.GetCommandFromName(command[0]);
             if (toFind == null)
             {
@@ -69,13 +66,11 @@ namespace GameServer.Managers
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
             if (Master.serverConfig == null) return;
-            var chatData = new ChatData
-            {
-                _username = client.userFile.Label,
-                _message = message,
-                _usernameColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal,
-                _messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal
-            };
+            var chatData = new ChatData();
+            chatData._username = client.userFile.Label;
+            chatData._message = message;
+            chatData._usernameColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
+            chatData._messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
             Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
             WriteToLogs(client.userFile.Label, message);
@@ -91,13 +86,11 @@ namespace GameServer.Managers
 
         public static void BroadcastDiscordMessage(string client, string message)
         {
-            var chatData = new ChatData
-            {
-                _username = client,
-                _message = message,
-                _usernameColor = UserColor.Discord,
-                _messageColor = MessageColor.Discord
-            };
+            var chatData = new ChatData();
+            chatData._username = client;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Discord;
+            chatData._messageColor = MessageColor.Discord;
             Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
             WriteToLogs(client, message);
@@ -106,13 +99,11 @@ namespace GameServer.Managers
 
         public static void BroadcastConsoleMessage(string message)
         {
-            var chatData = new ChatData
-            {
-                _username = systemName,
-                _message = message,
-                _usernameColor = UserColor.Console,
-                _messageColor = MessageColor.Console
-            };
+            var chatData = new ChatData();
+            chatData._username = systemName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Console;
+            chatData._messageColor = MessageColor.Console;
             Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
             WriteToLogs(chatData._username, message);
@@ -121,13 +112,11 @@ namespace GameServer.Managers
 
         public static void BroadcastServerNotification(string message)
         {
-            var chatData = new ChatData
-            {
-                _username = notificationName,
-                _message = message,
-                _usernameColor = UserColor.Server,
-                _messageColor = MessageColor.Server
-            };
+            var chatData = new ChatData();
+            chatData._username = notificationName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Server;
+            chatData._messageColor = MessageColor.Server;
             Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
             NetworkHelper.SendPacketToAllClients(packet);
             WriteToLogs(chatData._username, message);
@@ -136,26 +125,22 @@ namespace GameServer.Managers
 
         public static void SendConsoleMessage(ServerClient client, string message)
         {
-            var chatData = new ChatData
-            {
-                _username = systemName,
-                _message = message,
-                _usernameColor = UserColor.Console,
-                _messageColor = MessageColor.Console
-            };
+            var chatData = new ChatData();
+            chatData._username = systemName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Console;
+            chatData._messageColor = MessageColor.Console;
             Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
             client.listener.EnqueuePacket(packet);
         }
 
         public static void SendServerMessage(ServerClient client, string message)
         {
-            var chatData = new ChatData
-            {
-                _username = notificationName,
-                _message = message,
-                _usernameColor = UserColor.Server,
-                _messageColor = MessageColor.Server
-            };
+            var chatData = new ChatData();
+            chatData._username = notificationName;
+            chatData._message = message;
+            chatData._usernameColor = UserColor.Server;
+            chatData._messageColor = MessageColor.Server;
             Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
             client.listener.EnqueuePacket(packet);
         }
@@ -169,7 +154,7 @@ namespace GameServer.Managers
             DateTime dateTime = DateTime.Now.Date;
             string nowFileName = $"{dateTime.Year}-{dateTime.Month:D2}-{dateTime.Day:D2}";
             string nowFullPath = Master.chatLogsPath + System.IO.Path.DirectorySeparatorChar + nowFileName + ".txt";
-            File.AppendAllText(nowFullPath, sb.ToString());
+            System.IO.File.AppendAllText(nowFullPath, sb.ToString());
             sb.Clear();
             logSemaphore.Release();
         }

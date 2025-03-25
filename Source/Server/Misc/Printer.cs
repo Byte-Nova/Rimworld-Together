@@ -3,8 +3,8 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using GameServer.Core;
-using GameServer.Managers.External;
 using static Shared.CommonEnumerators;
+using GameServer.Managers.External;
 
 namespace GameServer.Misc
 {
@@ -14,11 +14,11 @@ namespace GameServer.Misc
 
         private static readonly Dictionary<LogMode, ConsoleColor> colorDictionary = new Dictionary<LogMode, ConsoleColor>
         {
-            { LogMode.Message, ConsoleColor.White },
-            { LogMode.Warning, ConsoleColor.Yellow },
-            { LogMode.Error,   ConsoleColor.Red },
-            { LogMode.Title,   ConsoleColor.Green },
-            { LogMode.Outsider,ConsoleColor.Magenta }
+            { LogMode.Message,  ConsoleColor.White },
+            { LogMode.Warning,  ConsoleColor.Yellow },
+            { LogMode.Error,    ConsoleColor.Red },
+            { LogMode.Title,    ConsoleColor.Green },
+            { LogMode.Outsider, ConsoleColor.Magenta }
         };
 
         public static void Message(object value, LogImportanceMode importance = LogImportanceMode.Normal)
