@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +21,13 @@ namespace GameServer.Managers.External
         private static IMessageChannel? consoleChannel;
 
         private const int presenceDelayMs = 60000;
-        // --- Rate limit merge functionality removed ---
+
+        // Buffer for console log lines
+        private static readonly ConcurrentQueue<string> _consoleQueue = new ConcurrentQueue<string>();
+        private static Timer? _consoleBufferTimer;
+        // Debounce interval reduced to 200ms for near-instant flushing
+        private const int BufferIntervalMs = 200;
+        private const int MaxMessageLength = 1900; // Slightly below Discord's 2000-char limit
 
         public static async Task StartAsync()
         {
@@ -70,6 +77,7 @@ namespace GameServer.Managers.External
             _running = false;
             try
             {
+                _consoleBufferTimer?.Dispose();
                 await _client.StopAsync();
                 await _client.LogoutAsync();
                 _client.Dispose();
@@ -95,6 +103,9 @@ namespace GameServer.Managers.External
                 chatChannel = _client.GetChannel(Master.discordConfig.ChatChannelId) as IMessageChannel;
             if (Master.discordConfig.ConsoleChannelId != 0)
                 consoleChannel = _client.GetChannel(Master.discordConfig.ConsoleChannelId) as IMessageChannel;
+
+            // Start the console log buffer timer when the bot is ready.
+            StartConsoleBuffer();
 
             await AnnounceServerOnline();
             if (Master.discordConfig.UseOnlineCount)
@@ -134,27 +145,57 @@ namespace GameServer.Managers.External
             await chatChannel.SendMessageAsync($"**{username}**: {text}");
         }
 
-        // --- Instead of queuing messages to avoid rate limits, send console lines immediately ---
+        // Instead of sending each console line immediately, we queue them.
         public static void EnqueueConsoleLine(string line)
         {
             if (!_running) return;
             if (Master.discordConfig.ConsoleChannelId == 0) return;
-            Task.Run(async () =>
+            _consoleQueue.Enqueue(line);
+            // Reset the timer: if already set, change due time; if not, create a new one.
+            _consoleBufferTimer?.Change(BufferIntervalMs, Timeout.Infinite);
+            if (_consoleBufferTimer == null)
             {
-                if (consoleChannel == null)
-                {
+                _consoleBufferTimer = new Timer(async state => await FlushConsoleBuffer(), null, BufferIntervalMs, Timeout.Infinite);
+            }
+        }
+
+        // Flush the queued console log lines as one aggregated message.
+        private static async Task FlushConsoleBuffer()
+        {
+            if (!_running) return;
+            if (consoleChannel == null)
+            {
+                if (Master.discordConfig.ConsoleChannelId != 0)
                     consoleChannel = _client.GetChannel(Master.discordConfig.ConsoleChannelId) as IMessageChannel;
-                    if (consoleChannel == null) return;
-                }
-                try
+                if (consoleChannel == null) return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            while (_consoleQueue.TryDequeue(out string line))
+            {
+                // If adding the next line would exceed our limit, send the current buffer and then clear.
+                if (sb.Length + line.Length > MaxMessageLength)
                 {
-                    await consoleChannel.SendMessageAsync(line);
+                    await consoleChannel.SendMessageAsync(sb.ToString());
+                    sb.Clear();
                 }
-                catch (Exception ex)
-                {
-                    Printer.Error($"[Discord] Failed to send console line: {ex}");
-                }
-            });
+                sb.AppendLine(line);
+            }
+            if (sb.Length > 0)
+            {
+                await consoleChannel.SendMessageAsync(sb.ToString());
+            }
+            // Reschedule the timer for the next flush.
+            _consoleBufferTimer?.Change(BufferIntervalMs, Timeout.Infinite);
+        }
+
+        // Start the console buffer timer (used for debouncing console messages).
+        private static void StartConsoleBuffer()
+        {
+            if (_consoleBufferTimer == null)
+            {
+                _consoleBufferTimer = new Timer(async state => await FlushConsoleBuffer(), null, BufferIntervalMs, Timeout.Infinite);
+            }
         }
 
         public static async Task BroadcastAll(string message)
