@@ -34,16 +34,29 @@ namespace Shared
                 {
                     Thread.Sleep(1);
 
+                    // Check if we should exit the loop
+                    if (DisconnectFlag || Stream == null || !Stream.CanWrite)
+                        break;
+
                     if (PacketQueue.Count > 0)
                     {
-                        // If TryDequeue fails, we just continue the loop rather than return
+                        // If TryDequeue fails, just continue to next iteration
                         if (!PacketQueue.TryDequeue(out Packet packet))
                             continue;
 
                         byte[] packetBuffer = Packet.CompressPacket(packet);
                         byte[] tracerBuffer = BitConverter.GetBytes(packetBuffer.Length);
                         byte[] completeBuffer = tracerBuffer.Concat(packetBuffer).ToArray();
-                        Stream.Write(completeBuffer, 0, completeBuffer.Length);
+
+                        // Check again before writing
+                        if (Stream != null && Stream.CanWrite)
+                        {
+                            Stream.Write(completeBuffer, 0, completeBuffer.Length);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -91,7 +104,6 @@ namespace Shared
                 while (true)
                 {
                     Thread.Sleep(CommonValues.KeepAliveCooldown);
-
                     KeepAliveData keepAliveData = new KeepAliveData();
                     Packet packet = Packet.CreateFromObject("KeepAliveManager", keepAliveData);
                     EnqueuePacket(packet);
