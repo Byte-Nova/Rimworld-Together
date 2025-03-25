@@ -4,75 +4,44 @@ using System.Reflection;
 
 namespace GameServer.Core
 {
-    //Class with all the critical variables for the client to work
-
     public static class Master
     {
         public static string mainPath;
-
         public static string assetsPath;
-
         public static string backupsPath;
-
         public static string configsPath;
-
         public static string logsPath;
-
         public static string tempPath;
-
         public static string mapsPath;
-
         public static string systemLogsPath;
-
         public static string chatLogsPath;
-
         public static string usersPath;
-
         public static string savesPath;
-
         public static string sitesPath;
-
         public static string factionsPath;
-
         public static string settlementsPath;
-
         public static string eventsPath;
-
         public static string backupServerPath;
-
         public static string backupUsersPath;
-
         public static string compatibilityPatchesPath;
 
-        //References
-
         public static WhitelistConfigFile whitelist;
-
         public static SiteValuesFile siteValues;
-
         public static WorldValuesFile worldValues;
-
         public static ServerConfigFile serverConfig;
-
         public static ActionValuesFile actionConfigs;
-
         public static DifficultyValuesFile difficultyValues;
-
         public static StorytellerValuesFile storytellerValues;
-
         public static ScenarioValuesFile scenarioValues;
-
         public static RoadValuesFile roadValues;
-
         public static BackupConfigFile backupConfig;
-
         public static ModConfigFile modConfig;
-
         public static ChatConfigFile chatConfig;
 
-        public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
+        // Discord configuration file
+        public static DiscordConfigFile discordConfig;
 
-        //Booleans
+        public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
 
         public static bool isClosing;
     }
