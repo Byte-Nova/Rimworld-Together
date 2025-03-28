@@ -20,10 +20,10 @@ namespace GameServer.TCP
             PrintVerboseAction = () => Printer.Warning(LatestException, LogImportanceMode.Verbose);
             PrintExtremeAction = () => Printer.Warning(LatestException, LogImportanceMode.Extreme);
 
-            // Run asynchronous loops on the server side.
-            Task.Run(ReadAsync);
-            Task.Run(WriteAsync);
-            Task.Run(SendKAFlagAsync);
+            // Run asynchronous loops instead of blocking threads.
+            Task.Run(() => ReadAsync());
+            Task.Run(() => WriteAsync());
+            Task.Run(() => SendKAFlagAsync());
             Task.Run(() => CheckConnectionHealthAsync(() => Network.KickClient(TargetClient)));
         }
 

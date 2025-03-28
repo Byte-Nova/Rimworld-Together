@@ -21,14 +21,19 @@ namespace GameServer.Managers.External
         private static IMessageChannel? consoleChannel;
 
         private const int presenceDelayMs = 60000;
+
+        // Buffer for console log lines
         private static readonly ConcurrentQueue<string> _consoleQueue = new ConcurrentQueue<string>();
         private static Timer? _consoleBufferTimer;
+        // Debounce interval reduced to 200ms for near-instant flushing
         private const int BufferIntervalMs = 200;
-        private const int MaxMessageLength = 1900;
+        private const int MaxMessageLength = 1900; // Slightly below Discord's 2000-char limit
 
         public static async Task StartAsync()
         {
-            if (Master.discordConfig == null || !Master.discordConfig.Enabled || string.IsNullOrWhiteSpace(Master.discordConfig.BotToken))
+            if (Master.discordConfig == null ||
+                !Master.discordConfig.Enabled ||
+                string.IsNullOrWhiteSpace(Master.discordConfig.BotToken))
             {
                 Printer.Warning("[Discord] Integration disabled or missing config.");
                 return;
@@ -43,7 +48,9 @@ namespace GameServer.Managers.External
 
             var config = new DiscordSocketConfig
             {
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent
+                GatewayIntents = GatewayIntents.Guilds |
+                                 GatewayIntents.GuildMessages |
+                                 GatewayIntents.MessageContent
             };
 
             _client = new DiscordSocketClient(config);
@@ -91,11 +98,15 @@ namespace GameServer.Managers.External
         private static async Task OnBotReadyAsync()
         {
             if (!_running) return;
+
             if (Master.discordConfig.ChatChannelId != 0)
                 chatChannel = _client.GetChannel(Master.discordConfig.ChatChannelId) as IMessageChannel;
             if (Master.discordConfig.ConsoleChannelId != 0)
                 consoleChannel = _client.GetChannel(Master.discordConfig.ConsoleChannelId) as IMessageChannel;
+
+            // Start the console log buffer timer when the bot is ready.
             StartConsoleBuffer();
+
             await AnnounceServerOnline();
             if (Master.discordConfig.UseOnlineCount)
                 _ = Task.Run(UpdatePlayerCountLoop);
@@ -107,11 +118,13 @@ namespace GameServer.Managers.External
             if (message.Author.Id == _client.CurrentUser.Id) return;
             if (message.Author.IsBot) return;
 
-            if (Master.discordConfig.ChatChannelId != 0 && message.Channel.Id == Master.discordConfig.ChatChannelId)
+            if (Master.discordConfig.ChatChannelId != 0 &&
+                message.Channel.Id == Master.discordConfig.ChatChannelId)
             {
                 ChatManager.BroadcastDiscordMessage(message.Author.Username, message.Content);
             }
-            else if (Master.discordConfig.ConsoleChannelId != 0 && message.Channel.Id == Master.discordConfig.ConsoleChannelId)
+            else if (Master.discordConfig.ConsoleChannelId != 0 &&
+                     message.Channel.Id == Master.discordConfig.ConsoleChannelId)
             {
                 Printer.Outsider($"[Discord Console] {message.Content}");
                 ConsoleManager.ParseServerCommands(message.Content);
@@ -123,6 +136,7 @@ namespace GameServer.Managers.External
         {
             if (!_running || _client == null) return;
             if (Master.discordConfig.ChatChannelId == 0) return;
+
             if (chatChannel == null)
             {
                 chatChannel = _client.GetChannel(Master.discordConfig.ChatChannelId) as IMessageChannel;
@@ -131,11 +145,13 @@ namespace GameServer.Managers.External
             await chatChannel.SendMessageAsync($"**{username}**: {text}");
         }
 
+        // Instead of sending each console line immediately, we queue them.
         public static void EnqueueConsoleLine(string line)
         {
             if (!_running) return;
             if (Master.discordConfig.ConsoleChannelId == 0) return;
             _consoleQueue.Enqueue(line);
+            // Reset the timer: if already set, change due time; if not, create a new one.
             _consoleBufferTimer?.Change(BufferIntervalMs, Timeout.Infinite);
             if (_consoleBufferTimer == null)
             {
@@ -143,6 +159,7 @@ namespace GameServer.Managers.External
             }
         }
 
+        // Flush the queued console log lines as one aggregated message.
         private static async Task FlushConsoleBuffer()
         {
             if (!_running) return;
@@ -152,9 +169,11 @@ namespace GameServer.Managers.External
                     consoleChannel = _client.GetChannel(Master.discordConfig.ConsoleChannelId) as IMessageChannel;
                 if (consoleChannel == null) return;
             }
+
             StringBuilder sb = new StringBuilder();
             while (_consoleQueue.TryDequeue(out string line))
             {
+                // If adding the next line would exceed our limit, send the current buffer and then clear.
                 if (sb.Length + line.Length > MaxMessageLength)
                 {
                     await TrySendMessageAsync(sb.ToString());
@@ -166,9 +185,11 @@ namespace GameServer.Managers.External
             {
                 await TrySendMessageAsync(sb.ToString());
             }
+            // Reschedule the timer for the next flush.
             _consoleBufferTimer?.Change(BufferIntervalMs, Timeout.Infinite);
         }
 
+        // Helper method to send a message with error handling.
         private static async Task TrySendMessageAsync(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -180,19 +201,23 @@ namespace GameServer.Managers.External
             catch (Discord.Net.HttpException httpEx)
             {
                 Printer.Warning($"[Discord Integration] Rate limit triggered: {httpEx.Message}");
+                // Requeue the message (split by newlines) so it will be retried later.
                 foreach (var line in message.Split('\n'))
                 {
                     if (!string.IsNullOrWhiteSpace(line))
                         _consoleQueue.Enqueue(line);
                 }
+                // Wait a bit longer before the next flush attempt.
                 await Task.Delay(3000);
             }
             catch (Exception ex)
             {
                 Printer.Error($"[Discord Integration] Failed to send message: {ex}");
+                // Optionally, requeue or drop the message.
             }
         }
 
+        // Start the console buffer timer (used for debouncing console messages).
         private static void StartConsoleBuffer()
         {
             if (_consoleBufferTimer == null)

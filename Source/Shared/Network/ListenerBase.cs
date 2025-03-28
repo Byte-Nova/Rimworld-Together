@@ -131,11 +131,5 @@ namespace Shared
             _cts.Cancel();
             Connection.Close();
         }
-
-        // === Synchronous wrappers for client compatibility ===
-        public void Write() => WriteAsync().GetAwaiter().GetResult();
-        public void ReadFullPacket(byte[] content) => ReadFullPacketAsync(content).GetAwaiter().GetResult();
-        public void SendKAFlag() => SendKAFlagAsync().GetAwaiter().GetResult();
-        public void CheckConnectionHealth(Action toDo) => CheckConnectionHealthAsync(toDo).GetAwaiter().GetResult();
     }
 }
