@@ -1,6 +1,9 @@
 using System.Globalization;
+using System.Reflection;
+using System.Threading.Tasks;
 using GameServer.Core.Configs;
 using GameServer.Managers;
+using GameServer.Managers.External;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
@@ -13,67 +16,65 @@ namespace GameServer.Core
         static void Main()
         {
             Console.ForegroundColor = ConsoleColor.White;
-
             SetPaths();
             SetCulture();
             LoadResources();
             ChangeTitle();
-            MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
-
-            Printer.Title($"----------------------------------------");
-
+            LoadAllManagers();
+            CheckForServerName();
+            CompatibilityManager.LoadAllPatches();
+            Printer.Title("----------------------------------------");
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
-            if (Master.ActionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
-            if (Master.BackupConfig.AutomaticBackups) Threader.GenerateServerThread(Threader.ServerMode.Backup);
-            ServerBrowserManager.StartLoops();
-            while (true) Thread.Sleep(1);
+            if (Master.actionConfigs.EnableSites)
+                SiteManager.UpdateAllSiteInfo();
+            if (Master.backupConfig.AutomaticBackups)
+                Threader.GenerateServerThread(Threader.ServerMode.Backup);
+            if (Master.discordConfig != null && Master.discordConfig.Enabled)
+            {
+                Task.Run(async () => await DiscordManager.StartAsync());
+            }
+            while (true)
+                Thread.Sleep(1);
         }
 
         public static void SetPaths()
         {
-            Master.MainPath = Directory.GetCurrentDirectory();
-            Master.ConfigsPath = Path.Combine(Master.MainPath, "Configs");
-            Master.TempPath = Path.Combine(Master.MainPath, "Temp");
-
-            Master.AssetsPath = Path.Combine(Master.MainPath, "Assets");
-            Master.MapsPath = Path.Combine(Master.AssetsPath, "Maps");
-            Master.UsersPath = Path.Combine(Master.AssetsPath, "Users");
-            Master.SavesPath = Path.Combine(Master.AssetsPath, "Saves");
-            Master.SitesPath = Path.Combine(Master.AssetsPath, "Sites");
-            Master.FactionsPath = Path.Combine(Master.AssetsPath, "Factions");
-            Master.SettlementsPath = Path.Combine(Master.AssetsPath, "Settlements");
-            Master.EventsPath = Path.Combine(Master.AssetsPath, "Events");
-            Master.CompatibilityPatchesPath = Path.Combine(Master.AssetsPath, "Patches");
-
-            Master.LogsPath = Path.Combine(Master.MainPath, "Logs");
-            Master.SystemLogsPath = Path.Combine(Master.LogsPath, "System");
-            Master.ChatLogsPath = Path.Combine(Master.LogsPath, "Chat");
-
-            Master.BackupsPath = Path.Combine(Master.MainPath, "Backups");
-            Master.BackupUsersPath = Path.Combine(Master.BackupsPath, "Users");
-            Master.BackupServerPath = Path.Combine(Master.BackupsPath, "Servers");
-
-            if (!Directory.Exists(Master.AssetsPath)) Directory.CreateDirectory(Master.AssetsPath);
-            if (!Directory.Exists(Master.ConfigsPath)) Directory.CreateDirectory(Master.ConfigsPath);
-            if (!Directory.Exists(Master.LogsPath)) Directory.CreateDirectory(Master.LogsPath);
-            if (!Directory.Exists(Master.BackupsPath)) Directory.CreateDirectory(Master.BackupsPath);
-            if (!Directory.Exists(Master.TempPath)) Directory.CreateDirectory(Master.TempPath);
-
-            if (!Directory.Exists(Master.UsersPath)) Directory.CreateDirectory(Master.UsersPath);
-            if (!Directory.Exists(Master.SavesPath)) Directory.CreateDirectory(Master.SavesPath);
-            if (!Directory.Exists(Master.MapsPath)) Directory.CreateDirectory(Master.MapsPath);
-            if (!Directory.Exists(Master.SystemLogsPath)) Directory.CreateDirectory(Master.SystemLogsPath);
-            if (!Directory.Exists(Master.ChatLogsPath)) Directory.CreateDirectory(Master.ChatLogsPath);
-            if (!Directory.Exists(Master.SitesPath)) Directory.CreateDirectory(Master.SitesPath);
-            if (!Directory.Exists(Master.FactionsPath)) Directory.CreateDirectory(Master.FactionsPath);
-            if (!Directory.Exists(Master.SettlementsPath)) Directory.CreateDirectory(Master.SettlementsPath);
-            if (!Directory.Exists(Master.EventsPath)) Directory.CreateDirectory(Master.EventsPath);
-
-            if (!Directory.Exists(Master.BackupUsersPath)) Directory.CreateDirectory(Master.BackupUsersPath);
-            if (!Directory.Exists(Master.BackupServerPath)) Directory.CreateDirectory(Master.BackupServerPath);
-
-            if (!Directory.Exists(Master.CompatibilityPatchesPath)) Directory.CreateDirectory(Master.CompatibilityPatchesPath);
+            Master.mainPath = Directory.GetCurrentDirectory();
+            Master.configsPath = Path.Combine(Master.mainPath, "Configs");
+            Master.tempPath = Path.Combine(Master.mainPath, "Temp");
+            Master.assetsPath = Path.Combine(Master.mainPath, "Assets");
+            Master.mapsPath = Path.Combine(Master.assetsPath, "Maps");
+            Master.usersPath = Path.Combine(Master.assetsPath, "Users");
+            Master.savesPath = Path.Combine(Master.assetsPath, "Saves");
+            Master.sitesPath = Path.Combine(Master.assetsPath, "Sites");
+            Master.factionsPath = Path.Combine(Master.assetsPath, "Factions");
+            Master.settlementsPath = Path.Combine(Master.assetsPath, "Settlements");
+            Master.eventsPath = Path.Combine(Master.assetsPath, "Events");
+            Master.compatibilityPatchesPath = Path.Combine(Master.assetsPath, "Patches");
+            Master.logsPath = Path.Combine(Master.mainPath, "Logs");
+            Master.systemLogsPath = Path.Combine(Master.logsPath, "System");
+            Master.chatLogsPath = Path.Combine(Master.logsPath, "Chat");
+            Master.backupsPath = Path.Combine(Master.mainPath, "Backups");
+            Master.backupUsersPath = Path.Combine(Master.backupsPath, "Users");
+            Master.backupServerPath = Path.Combine(Master.backupsPath, "Servers");
+            if (!Directory.Exists(Master.assetsPath)) Directory.CreateDirectory(Master.assetsPath);
+            if (!Directory.Exists(Master.configsPath)) Directory.CreateDirectory(Master.configsPath);
+            if (!Directory.Exists(Master.logsPath)) Directory.CreateDirectory(Master.logsPath);
+            if (!Directory.Exists(Master.backupsPath)) Directory.CreateDirectory(Master.backupsPath);
+            if (!Directory.Exists(Master.tempPath)) Directory.CreateDirectory(Master.tempPath);
+            if (!Directory.Exists(Master.usersPath)) Directory.CreateDirectory(Master.usersPath);
+            if (!Directory.Exists(Master.savesPath)) Directory.CreateDirectory(Master.savesPath);
+            if (!Directory.Exists(Master.mapsPath)) Directory.CreateDirectory(Master.mapsPath);
+            if (!Directory.Exists(Master.systemLogsPath)) Directory.CreateDirectory(Master.systemLogsPath);
+            if (!Directory.Exists(Master.chatLogsPath)) Directory.CreateDirectory(Master.chatLogsPath);
+            if (!Directory.Exists(Master.sitesPath)) Directory.CreateDirectory(Master.sitesPath);
+            if (!Directory.Exists(Master.factionsPath)) Directory.CreateDirectory(Master.factionsPath);
+            if (!Directory.Exists(Master.settlementsPath)) Directory.CreateDirectory(Master.settlementsPath);
+            if (!Directory.Exists(Master.eventsPath)) Directory.CreateDirectory(Master.eventsPath);
+            if (!Directory.Exists(Master.backupUsersPath)) Directory.CreateDirectory(Master.backupUsersPath);
+            if (!Directory.Exists(Master.backupServerPath)) Directory.CreateDirectory(Master.backupServerPath);
+            if (!Directory.Exists(Master.compatibilityPatchesPath)) Directory.CreateDirectory(Master.compatibilityPatchesPath);
         }
 
         private static void SetCulture()
@@ -82,255 +83,274 @@ namespace GameServer.Core
             CultureInfo.CurrentUICulture = new CultureInfo("en-US", false);
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
-
             Printer.Title($"Server culture > [{CultureInfo.CurrentCulture}]");
         }
 
         public static void LoadResources()
         {
             Printer.Title($"Server version {CommonValues.ExecutableVersion}");
-            Printer.Title($"Loading all necessary resources");
-            Printer.Title($"----------------------------------------");
-
+            Printer.Title("Loading all necessary resources");
+            Printer.Title("----------------------------------------");
             LoadValueFile(ServerFileMode.Configs);
             SaveValueFile(ServerFileMode.Configs, false);
-
             LoadValueFile(ServerFileMode.Actions);
             SaveValueFile(ServerFileMode.Actions, false);
-
             LoadValueFile(ServerFileMode.Sites);
             SaveValueFile(ServerFileMode.Sites, false);
-
             LoadValueFile(ServerFileMode.Roads);
             SaveValueFile(ServerFileMode.Roads, false);
-
             LoadValueFile(ServerFileMode.Whitelist);
             SaveValueFile(ServerFileMode.Whitelist, false);
-
             LoadValueFile(ServerFileMode.Difficulty);
             SaveValueFile(ServerFileMode.Difficulty, false);
-
             LoadValueFile(ServerFileMode.Scenario);
             SaveValueFile(ServerFileMode.Scenario, false);
-
             LoadValueFile(ServerFileMode.Storyteller);
             SaveValueFile(ServerFileMode.Storyteller, false);
-
             LoadValueFile(ServerFileMode.Backup);
             SaveValueFile(ServerFileMode.Backup, false);
-
             LoadValueFile(ServerFileMode.Mods);
             SaveValueFile(ServerFileMode.Mods, false);
-
             LoadValueFile(ServerFileMode.Chat);
             SaveValueFile(ServerFileMode.Chat, false);
-
+            LoadValueFile(ServerFileMode.Discord);
+            SaveValueFile(ServerFileMode.Discord, false);
             LoadValueFile(ServerFileMode.World);
-
             EventManager.LoadEvents();
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)
         {
             string pathToSave = "";
-
             switch (mode)
             {
                 case ServerFileMode.Configs:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "ServerConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.ServerConfig);
+                    pathToSave = Path.Combine(Master.configsPath, "ServerConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.serverConfig);
                     break;
-
                 case ServerFileMode.Actions:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.ActionConfigs);
+                    pathToSave = Path.Combine(Master.configsPath, "ActionConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.actionConfigs);
                     break;
-
                 case ServerFileMode.Sites:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "SiteConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.SiteValues);
+                    pathToSave = Path.Combine(Master.configsPath, "SiteConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.siteValues);
                     break;
-
                 case ServerFileMode.Roads:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "RoadConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.RoadValues);
+                    pathToSave = Path.Combine(Master.configsPath, "RoadConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.roadValues);
                     break;
-
                 case ServerFileMode.World:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "WorldConfig.json");
-                    Serializer.ObjectBytesToFile(pathToSave, Master.WorldValues);
+                    pathToSave = Path.Combine(Master.configsPath, "WorldConfig.json");
+                    Serializer.ObjectBytesToFile(pathToSave, Master.worldValues);
                     break;
-
                 case ServerFileMode.Whitelist:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.Whitelist);
+                    pathToSave = Path.Combine(Master.configsPath, "WhitelistConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.whitelist);
                     break;
-
                 case ServerFileMode.Difficulty:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.DifficultyValues);
+                    pathToSave = Path.Combine(Master.configsPath, "DifficultyConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.difficultyValues);
                     break;
-
                 case ServerFileMode.Scenario:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.ScenarioValues);
+                    pathToSave = Path.Combine(Master.configsPath, "ScenarioConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.scenarioValues);
                     break;
-
                 case ServerFileMode.Storyteller:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.StorytellerValues);
+                    pathToSave = Path.Combine(Master.configsPath, "StorytellerConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.storytellerValues);
                     break;
-
                 case ServerFileMode.Backup:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.BackupConfig);
+                    pathToSave = Path.Combine(Master.configsPath, "BackupConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.backupConfig);
                     break;
-
                 case ServerFileMode.Mods:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "ModConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.ModConfig);
+                    pathToSave = Path.Combine(Master.configsPath, "ModConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.modConfig);
                     break;
-
                 case ServerFileMode.Chat:
-                    pathToSave = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.ChatConfig);
+                    pathToSave = Path.Combine(Master.configsPath, "ChatConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.chatConfig);
+                    break;
+                case ServerFileMode.Discord:
+                    pathToSave = Path.Combine(Master.configsPath, "DiscordConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.discordConfig);
                     break;
             }
-
-            if (broadcast) InformationDisplayer.DisplaySaveFile(pathToSave);
+            if (broadcast)
+                InformationDisplayer.DisplaySaveFile(pathToSave);
         }
 
         public static void LoadValueFile(ServerFileMode mode, bool broadcast = true)
         {
             string pathToLoad = "";
-
             switch (mode)
             {
                 case ServerFileMode.Configs:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "ServerConfig.json");
-                    if (File.Exists(pathToLoad)) Master.ServerConfig = Serializer.SerializeFromFile<ServerConfigFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "ServerConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.serverConfig = Serializer.SerializeFromFile<ServerConfigFile>(pathToLoad);
                     else
                     {
-                        Master.ServerConfig = new ServerConfigFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.ServerConfig);
+                        Master.serverConfig = new ServerConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.serverConfig);
                     }
                     break;
-
                 case ServerFileMode.Actions:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
-                    if (File.Exists(pathToLoad)) Master.ActionConfigs = Serializer.SerializeFromFile<ActionValuesFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "ActionConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.actionConfigs = Serializer.SerializeFromFile<ActionValuesFile>(pathToLoad);
                     else
                     {
-                        Master.ActionConfigs = new ActionValuesFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.ActionConfigs);
+                        Master.actionConfigs = new ActionValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.actionConfigs);
                     }
                     break;
-
                 case ServerFileMode.Sites:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "SiteConfig.json");
-                    if (File.Exists(pathToLoad)) Master.SiteValues = Serializer.SerializeFromFile<SiteValuesFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "SiteConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.siteValues = Serializer.SerializeFromFile<SiteValuesFile>(pathToLoad);
                     else
                     {
-                        Master.SiteValues = new SiteValuesFile();
+                        Master.siteValues = new SiteValuesFile();
                         SiteManagerHelper.SetSitePresets();
-                        Serializer.SerializeToFile(pathToLoad, Master.SiteValues);
+                        Serializer.SerializeToFile(pathToLoad, Master.siteValues);
                     }
                     break;
-
                 case ServerFileMode.Roads:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "RoadConfig.json");
-                    if (File.Exists(pathToLoad)) Master.RoadValues = Serializer.SerializeFromFile<RoadValuesFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "RoadConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.roadValues = Serializer.SerializeFromFile<RoadValuesFile>(pathToLoad);
                     else
                     {
-                        Master.RoadValues = new RoadValuesFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.RoadValues);
+                        Master.roadValues = new RoadValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.roadValues);
                     }
                     break;
-
                 case ServerFileMode.World:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "WorldConfig.json");
-                    if (File.Exists(pathToLoad)) Master.WorldValues = Serializer.FileBytesToObject<WorldValuesFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "WorldConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.worldValues = Serializer.FileBytesToObject<WorldValuesFile>(pathToLoad);
                     else return;
                     break;
-
                 case ServerFileMode.Whitelist:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
-                    if (File.Exists(pathToLoad)) Master.Whitelist = Serializer.SerializeFromFile<WhitelistConfigFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "WhitelistConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.whitelist = Serializer.SerializeFromFile<WhitelistConfigFile>(pathToLoad);
                     else
                     {
-                        Master.Whitelist = new WhitelistConfigFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.Whitelist);
+                        Master.whitelist = new WhitelistConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.whitelist);
                     }
                     break;
-
                 case ServerFileMode.Difficulty:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
-                    if (File.Exists(pathToLoad)) Master.DifficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "DifficultyConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(pathToLoad);
                     else
                     {
-                        Master.DifficultyValues = new DifficultyValuesFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.DifficultyValues);
+                        Master.difficultyValues = new DifficultyValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.difficultyValues);
                     }
                     break;
-
                 case ServerFileMode.Scenario:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
-                    if (File.Exists(pathToLoad)) Master.ScenarioValues = Serializer.SerializeFromFile<ScenarioValuesFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "ScenarioConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.scenarioValues = Serializer.SerializeFromFile<ScenarioValuesFile>(pathToLoad);
                     else
                     {
-                        Master.ScenarioValues = new ScenarioValuesFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.ScenarioValues);
+                        Master.scenarioValues = new ScenarioValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.scenarioValues);
                     }
                     break;
-
                 case ServerFileMode.Storyteller:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
-                    if (File.Exists(pathToLoad)) Master.StorytellerValues = Serializer.SerializeFromFile<StorytellerValuesFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "StorytellerConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.storytellerValues = Serializer.SerializeFromFile<StorytellerValuesFile>(pathToLoad);
                     else
                     {
-                        Master.StorytellerValues = new StorytellerValuesFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.StorytellerValues);
+                        Master.storytellerValues = new StorytellerValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.storytellerValues);
                     }
                     break;
-
                 case ServerFileMode.Backup:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
-                    if (File.Exists(pathToLoad)) Master.BackupConfig = Serializer.SerializeFromFile<BackupConfigFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "BackupConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.backupConfig = Serializer.SerializeFromFile<BackupConfigFile>(pathToLoad);
                     else
                     {
-                        Master.BackupConfig = new BackupConfigFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.BackupConfig);
+                        Master.backupConfig = new BackupConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.backupConfig);
                     }
                     break;
-
                 case ServerFileMode.Mods:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "ModConfig.json");
-                    if (File.Exists(pathToLoad)) Master.ModConfig = Serializer.SerializeFromFile<ModConfigFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "ModConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.modConfig = Serializer.SerializeFromFile<ModConfigFile>(pathToLoad);
                     else
                     {
-                        Master.ModConfig = new ModConfigFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.ModConfig);
+                        Master.modConfig = new ModConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.modConfig);
                     }
                     break;
-
                 case ServerFileMode.Chat:
-                    pathToLoad = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
-                    if (File.Exists(pathToLoad)) Master.ChatConfig = Serializer.SerializeFromFile<ChatConfigFile>(pathToLoad);
+                    pathToLoad = Path.Combine(Master.configsPath, "ChatConfig.json");
+                    if (File.Exists(pathToLoad))
+                        Master.chatConfig = Serializer.SerializeFromFile<ChatConfigFile>(pathToLoad);
                     else
                     {
-                        Master.ChatConfig = new ChatConfigFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.ChatConfig);
+                        Master.chatConfig = new ChatConfigFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.chatConfig);
                     }
                     break;
+                case ServerFileMode.Discord:
+                    {
+                        pathToLoad = Path.Combine(Master.configsPath, "DiscordConfig.json");
+                        if (File.Exists(pathToLoad))
+                            Master.discordConfig = Serializer.SerializeFromFile<DiscordConfigFile>(pathToLoad);
+                        else
+                        {
+                            Master.discordConfig = new DiscordConfigFile();
+                            Serializer.SerializeToFile(pathToLoad, Master.discordConfig);
+                        }
+                        break;
+                    }
             }
-
-            if (broadcast) InformationDisplayer.DisplayLoadFile(pathToLoad);
+            if (broadcast)
+                InformationDisplayer.DisplayLoadFile(pathToLoad);
         }
 
         public static void ChangeTitle()
         {
-            Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - " +
-                $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.ServerConfig.MaxPlayers}]";
+            Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - Players [{NetworkHelper.GetConnectedClientsSafe().Count()}/{Master.serverConfig.MaxPlayers}]";
+        }
+
+        private static void CheckForServerName()
+        {
+            if (!StringChecker.CheckIfStringIsValid(Master.serverConfig.Name))
+            {
+                Printer.Error("ILLEGAL characters detected on the server name");
+                Printer.Error("This will make your players UNABLE to save their games");
+            }
+        }
+
+        public static void LoadAllManagers()
+        {
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
+                {
+                    try
+                    {
+                        Master.managerDictionary[type.Name] =
+                            type.GetMethod("ParsePacket", BindingFlags.Static | BindingFlags.NonPublic);
+                    }
+                    catch (Exception exception)
+                    {
+                        Printer.Error($"{type.Name} failed to load > {exception}");
+                    }
+                }
+            }
         }
     }
 }

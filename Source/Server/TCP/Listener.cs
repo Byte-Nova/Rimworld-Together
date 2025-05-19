@@ -1,8 +1,8 @@
-﻿using GameServer.Misc;
+﻿using GameServer.Core;
+using GameServer.Misc;
 using Shared;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
-using static Shared.CommonValues;
 
 namespace GameServer.TCP
 {
@@ -12,18 +12,17 @@ namespace GameServer.TCP
 
         public Listener(ServerClient clientToUse, TcpClient connection)
         {
-            this.TargetClient = clientToUse;
+            TargetClient = clientToUse;
+            Connection = connection;
+            Stream = connection.GetStream();
 
-            this.Connection = connection;
-            this.Stream = connection.GetStream();
-
-            PrintVerboseAction = delegate { Printer.Warning(LatestException, LogImportanceMode.Verbose); };
-            PrintExtremeAction = delegate { Printer.Warning(LatestException, LogImportanceMode.Extreme); };
+            PrintVerboseAction = () => Printer.Warning(LatestException, LogImportanceMode.Verbose);
+            PrintExtremeAction = () => Printer.Warning(LatestException, LogImportanceMode.Extreme);
 
             Task.Run(() => Read());
             Task.Run(() => Write());
             Task.Run(() => SendKAFlag());
-            Task.Run(() => CheckConnectionHealth(delegate { Network.KickClient(TargetClient); }));
+            Task.Run(() => CheckConnectionHealth(() => Network.KickClient(TargetClient)));
         }
 
         public void Read()
@@ -33,45 +32,37 @@ namespace GameServer.TCP
                 while (true)
                 {
                     Thread.Sleep(1);
-
                     if (Stream.DataAvailable)
                     {
-                        // Read packet header
-                        byte[] buffer = new byte[1];
+                        byte[] buffer = new byte[Packet.DefaultPacketSizeInBytes];
                         Stream.Read(buffer, 0, buffer.Length);
-                        PacketHeader header = (PacketHeader)buffer[0];
+                        Packet.SetPacketSize(BitConverter.ToInt32(buffer, 0));
 
-                        // Read packet size
-                        buffer = new byte[4];
-                        Stream.Read(buffer, 0, buffer.Length);
-
-                        // Read packet contents
-                        buffer = new byte[BitConverter.ToInt32(buffer, 0)];
+                        buffer = new byte[Packet.CurrentPacketSizeInBytes];
                         ReadFullPacket(buffer);
+                        Packet packet = Packet.DecompressPacket(buffer);
 
-                        if (!IgnoredLogPackets.Contains(header)) Printer.Message($"[Packet] > {header}", LogImportanceMode.Verbose);
-                        else Printer.Message($"[Packet] > {header}", LogImportanceMode.Extreme);
+                        Printer.Message($"[Packet] > {packet.Header}", LogImportanceMode.Verbose);
 
-                        try { MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { TargetClient, buffer }); }
-                        catch (Exception ex) { OnHandleError(ex); }
-
-                        void OnHandleError(Exception ex)
+                        try
                         {
-                            Printer.Error($"Error while trying to execute method from type '{header}'");
-                            Printer.Error("Forcefully disconnecting due to MethodManager exception");
+                            Master.managerDictionary[packet.Header].Invoke(null, new object[] { TargetClient, packet });
+                        }
+                        catch (Exception ex)
+                        {
+                            Printer.Error($"Error executing method '{packet.Header}'");
+                            Printer.Error("Force-disconnecting due to method manager exception");
                             Printer.Error(ex.ToString());
                             DisconnectFlag = true;
                         }
                     }
                 }
             }
-
-            catch (System.ObjectDisposedException e)
+            catch (ObjectDisposedException e)
             {
                 Printer.Warning(e, LogImportanceMode.Extreme);
                 DisconnectFlag = true;
             }
-
             catch (Exception e)
             {
                 Printer.Warning(e.ToString(), LogImportanceMode.Verbose);
