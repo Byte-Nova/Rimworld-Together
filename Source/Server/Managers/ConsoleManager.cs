@@ -1,93 +1,56 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using GameServer.Commands;
-using GameServer.Core;
+﻿using GameServer.Commands;
 using GameServer.Misc;
 
 namespace GameServer.Managers
 {
+
     public static class ConsoleManager
     {
-        public static string[] CommandParameters;
-        [Obsolete("Use ConsoleManager.CommandParameters instead.")]
-        public static string[] commandParameters
-        {
-            get => CommandParameters;
-            set => CommandParameters = value;
-        }
+        public static string[] commandParameters;
 
         public static void ListenForServerCommands()
         {
-            bool interactive = false;
-            try { interactive = Console.In.Peek() != -1; }
-            catch { Printer.Warning("Couldn't find interactive console, disabling commands"); }
+            bool interactiveConsole = false;
 
-            if (!interactive) return;
+            try { interactiveConsole = Console.In.Peek() != -1 ? true : false; }
+            catch { Printer.Warning($"Couldn't find interactive console, disabling commands"); }
 
-            while (true)
-                ParseServerCommands(Console.ReadLine() ?? "");
+            if (interactiveConsole)
+            {
+                while (true)
+                {
+                    ParseServerCommands(Console.ReadLine());
+                }
+            }
         }
 
-        public static void ParseServerCommands(string cmd)
+        public static void ParseServerCommands(string command)
         {
-            if (string.IsNullOrWhiteSpace(cmd)) return;
-
-            var parts  = cmd.Split(' ');
-            var prefix = parts[0].ToLowerInvariant();
-            var count  = parts.Length - 1;
-
-            CommandParameters = cmd.Replace(parts[0] + " ", "")
-                                   .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string parsedPrefix = command.Split(' ')[0].ToLower();
+            int parsedParameters = command.Split(' ').Count() - 1;
+            commandParameters = command.Replace(parsedPrefix + " ", "").Split(" ");
 
             try
             {
-                var command = ConsoleCommands.Commands
-                                             .FirstOrDefault(c => c.Prefix.Equals(prefix,
-                                                                                   StringComparison.OrdinalIgnoreCase));
-
-                if (command == null)
-                {
-                    Printer.Warning($"Command '{prefix}' was not found");
-                }
-                else if (command.Parameters != count && command.Parameters != -1)
-                {
-                    Printer.Warning($"Command '{command.Prefix}' wanted [{command.Parameters}] parameters but got [{count}]");
-                }
+                CommandBase commandToFetch = ConsoleCommands.Commands.ToList().Find(x => x.Prefix == parsedPrefix);
+                if (commandToFetch == null) Printer.Warning($"Command '{parsedPrefix}' was not found");
                 else
                 {
-                    command.CommandAction?.Invoke();
+                    if (commandToFetch.Parameters != parsedParameters && commandToFetch.Parameters != -1)
+                    {
+                        Printer.Warning($"Command '{commandToFetch.Prefix}' wanted [{commandToFetch.Parameters}] parameters "
+                            + $"but was passed [{parsedParameters}]");
+                    }
+
+                    else
+                    {
+                        if (commandToFetch.CommandAction != null) commandToFetch.CommandAction.Invoke();
+
+                        else Printer.Warning($"Command '{commandToFetch.Prefix}' didn't have any action built in");
+                    }
                 }
             }
-            catch (Exception ex)
-            {
-                Printer.Error($"Couldn't parse command '{prefix}'. Reason: {ex.Message}");
-            }
-        }
-
-        public static void ProcessDiscordCommand(string cmd, string user)
-        {
-            if (Master.DiscordConfig?.Enabled != true) return;
-
-            // 1) echo in local console
-            Printer.Message($"[Discord Console] {user}: {cmd}");
-
-            // 2) capture subsequent Printer output
-            Printer.StartDiscordBuffer(user);
-
-            // 3) parse as if it had been typed in the server console
-            ParseServerCommands(cmd);
-
-            // 4) collect captured lines
-            var lines = Printer.FlushDiscordBuffer();
-            if (lines.Count == 0) lines.Add("*(no output)*");
-
-            // 5) prepend bold header
-            lines.Insert(0, $"**{user}: {cmd}**");
-
-            // 6) ship to Discord
-            var payload = string.Join('\n', lines);
-            _ = DiscordManager.SendConsoleMessageAsync(payload);
+            catch (Exception e) { Printer.Error($"Couldn't parse command '{parsedPrefix}'. Reason: {e}"); }
         }
     }
 }

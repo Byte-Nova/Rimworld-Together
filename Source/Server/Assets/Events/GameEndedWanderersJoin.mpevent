@@ -1,6 +1,0 @@
-{
-  "Name": "Wanderers join",
-  "DefName": "GameEndedWanderersJoin",
-  "Cost": 500,
-  "IsEnabled": true
-}

@@ -1,6 +1,0 @@
-{
-  "Name": "Organ decay",
-  "DefName": "Disease_OrganDecay",
-  "Cost": 500,
-  "IsEnabled": true
-}

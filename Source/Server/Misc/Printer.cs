@@ -1,8 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Threading;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Text;
 using GameServer.Core;
 using static Shared.CommonEnumerators;
 
@@ -10,93 +6,77 @@ namespace GameServer.Misc
 {
     public static class Printer
     {
-        public static string DiscordConsoleUser { get; private set; }
-        private static readonly List<string> DiscordConsoleBuffer = new();
+        //Variables
 
-        private static readonly Semaphore Semaphore = new(1, 1);
-        private static readonly Dictionary<LogMode, ConsoleColor> ColorDictionary = new()
+        private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
+
+        private static Dictionary<LogMode, ConsoleColor> ColorDictionary { get; set; } = new Dictionary<LogMode, ConsoleColor>
         {
-            { LogMode.Message,  ConsoleColor.White   },
-            { LogMode.Warning,  ConsoleColor.Yellow  },
-            { LogMode.Error,    ConsoleColor.Red     },
-            { LogMode.Title,    ConsoleColor.Green   },
-            { LogMode.Outsider, ConsoleColor.Magenta }
+            { LogMode.Message, ConsoleColor.White },
+            { LogMode.Warning, ConsoleColor.Yellow },
+            { LogMode.Error, ConsoleColor.Red },
+            { LogMode.Title, ConsoleColor.Green },
+            { LogMode.Outsider, ConsoleColor.Magenta}
         };
 
-        // façade helpers
-        public static void Message (object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Message,  i);
-        public static void Warning (object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Warning,  i);
-        public static void Error   (object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Error,    i);
-        public static void Title   (object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Title,    i);
-        public static void Outsider(object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Outsider, i);
+        //Functions to write logs in different colors
 
-        // Discord capture
-        public static void StartDiscordBuffer(string username)
-        {
-            DiscordConsoleUser = username;
-            DiscordConsoleBuffer.Clear();
-        }
+        public static void Message(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Message, importance); }
 
-        public static List<string> FlushDiscordBuffer()
-        {
-            var result = new List<string>(DiscordConsoleBuffer);
-            DiscordConsoleBuffer.Clear();
-            DiscordConsoleUser = null!;
-            return result;
-        }
+        public static void Warning(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Warning, importance); }
 
-        // core writer
-        private static void Write(string? text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
+        public static void Error(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Error, importance); }
+
+        public static void Title(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Title, importance); }
+
+        public static void Outsider(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Outsider, importance); }
+
+        //Actual function that writes the logs
+
+        private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
         {
-            if (text == null) return;
             Semaphore.WaitOne();
+
             try
             {
-                if (!ShouldPrint(importance)) return;
+                if (CheckIfShouldPrint(importance))
+                {
+                    if (writeToLogs) WriteToLogs(text);
 
-                if (writeToLogs)
-                    WriteToLogs(text);
-
-                var ts = DateTime.Now.ToString("HH:mm:ss");
-                Console.ForegroundColor = ColorDictionary[mode];
-                Console.WriteLine($"[{ts}] | {text}");
-                Console.ForegroundColor = ConsoleColor.White;
-
-                // only buffer while capturing a Discord-command response
-                if (!string.IsNullOrEmpty(DiscordConsoleUser) && Master.DiscordConfig?.Enabled == true)
-                    DiscordConsoleBuffer.Add(text);
+                    Console.ForegroundColor = ColorDictionary[mode];
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
             }
-            finally
-            {
-                Semaphore.Release();
-            }
+            catch { throw new Exception($"Logger encountered an error. This should never happen"); }
+
+            Semaphore.Release();
         }
+
+        //Function that writes contents to log file
 
         private static void WriteToLogs(string toLog)
         {
-            try
-            {
-                var sb = new StringBuilder();
-                sb.Append($"[{DateTime.Now:HH:mm:ss}] | {toLog}{Environment.NewLine}");
-                var fname = $"{DateTime.Now:yyyy-MM-dd}.txt";
-                var path  = Path.Combine(Master.SystemLogsPath, fname);
-                File.AppendAllText(path, sb.ToString());
-            }
-            catch { /* swallow */ }
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | " + toLog);
+            stringBuilder.Append(Environment.NewLine);
+
+            DateTime dateTime = DateTime.Now.Date;
+            string nowFileName = $"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}";
+            string nowFullPath = Master.SystemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+
+            File.AppendAllText(nowFullPath, stringBuilder.ToString());
+            stringBuilder.Clear();
         }
 
-        private static bool ShouldPrint(LogImportanceMode importance) =>
-            importance switch
-            {
-                LogImportanceMode.Normal  => true,
-                LogImportanceMode.Verbose => Master.ServerConfig.VerboseLogs,
-                LogImportanceMode.Extreme => Master.ServerConfig.ExtremeVerboseLogs,
-                _ => false
-            };
+        //Checks if the importance of the log has been enabled
+
+        private static bool CheckIfShouldPrint(LogImportanceMode importance)
+        {
+            if (importance == LogImportanceMode.Normal) return true;
+            else if (importance == LogImportanceMode.Verbose && Master.ServerConfig.VerboseLogs) return true;
+            else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.ExtremeVerboseLogs) return true;
+            else return false;
+        }
     }
 }

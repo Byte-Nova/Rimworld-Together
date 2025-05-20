@@ -1,6 +1,0 @@
-{
-  "Name": "Enemy raid",
-  "DefName": "RaidEnemy",
-  "Cost": 500,
-  "IsEnabled": true
-}
