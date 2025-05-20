@@ -1,0 +1,7 @@
+{
+  "Enabled": false,
+  "BotToken": "YOUR_DISCORD_BOT_TOKEN",
+  "ChatChannelId": 0,
+  "ConsoleChannelId": 0,
+  "UseOnlineCount": true
+}

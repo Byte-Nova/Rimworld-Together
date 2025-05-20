@@ -1,0 +1,6 @@
+{
+  "Name": "Imperial wimp",
+  "DefName": "GiveQuest_Intro_Wimp",
+  "Cost": 500,
+  "IsEnabled": true
+}

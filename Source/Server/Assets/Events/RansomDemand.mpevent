@@ -1,0 +1,6 @@
+{
+  "Name": "Ransom demand",
+  "DefName": "RansomDemand",
+  "Cost": 500,
+  "IsEnabled": true
+}

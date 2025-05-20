@@ -1,0 +1,6 @@
+{
+  "Name": "Creepjoiner join",
+  "DefName": "CreepJoinerJoin",
+  "Cost": 500,
+  "IsEnabled": true
+}

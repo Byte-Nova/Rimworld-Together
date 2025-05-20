@@ -1,0 +1,6 @@
+{
+  "Name": "Twisted obelisk",
+  "DefName": "WarpedObelisk_Mutator",
+  "Cost": 500,
+  "IsEnabled": true
+}

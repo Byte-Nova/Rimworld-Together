@@ -1,0 +1,6 @@
+{
+  "Name": "Sightstealer arrival",
+  "DefName": "SightstealerArrival",
+  "Cost": 500,
+  "IsEnabled": true
+}

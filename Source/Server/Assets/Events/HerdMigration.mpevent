@@ -1,0 +1,6 @@
+{
+  "Name": "Herd migration",
+  "DefName": "HerdMigration",
+  "Cost": 500,
+  "IsEnabled": true
+}

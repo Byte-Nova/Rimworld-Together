@@ -1,0 +1,6 @@
+{
+  "Name": "Fleshbeast attack",
+  "DefName": "FleshbeastAttack",
+  "Cost": 500,
+  "IsEnabled": true
+}

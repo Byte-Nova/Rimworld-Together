@@ -1,0 +1,6 @@
+{
+  "Name": "Wastepack infestation",
+  "DefName": "WastepackInfestation",
+  "Cost": 500,
+  "IsEnabled": true
+}

@@ -1,0 +1,6 @@
+{
+  "Name": "Flu (animals)",
+  "DefName": "Disease_AnimalFlu",
+  "Cost": 500,
+  "IsEnabled": true
+}

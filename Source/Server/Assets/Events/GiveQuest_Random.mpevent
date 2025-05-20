@@ -1,0 +1,6 @@
+{
+  "Name": "Quest",
+  "DefName": "GiveQuest_Random",
+  "Cost": 500,
+  "IsEnabled": true
+}

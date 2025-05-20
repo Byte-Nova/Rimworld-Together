@@ -1,0 +1,6 @@
+{
+  "Name": "Heat wave",
+  "DefName": "HeatWave",
+  "Cost": 500,
+  "IsEnabled": true
+}

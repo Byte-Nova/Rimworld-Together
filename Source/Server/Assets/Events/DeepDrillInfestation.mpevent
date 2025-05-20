@@ -1,0 +1,6 @@
+{
+  "Name": "Deep drill infestation",
+  "DefName": "DeepDrillInfestation",
+  "Cost": 500,
+  "IsEnabled": true
+}

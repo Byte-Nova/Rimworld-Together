@@ -1,0 +1,22 @@
+{
+  "Name": "RimWorld-Together-Server",
+  "Description": "My new Rimworld Together Server!",
+  "IP": "0.0.0.0",
+  "Port": "25555",
+  "MaxPlayers": "100",
+  "EnableServerBrowser": false,
+  "PublicEndPoint": "",
+  "VerboseLogs": false,
+  "ExtremeVerboseLogs": false,
+  "DisplayChatInConsole": false,
+  "UseUPnP": false,
+  "SyncLocalSave": true,
+  "TemporalActivityProtection": false,
+  "TemporalActivityProtectionTime": 3600,
+  "TemporalEventProtection": true,
+  "TemporalEventProtectionTime": 3600,
+  "TemporalAidProtection": false,
+  "TemporalAidProtectionTime": 3600,
+  "TemporalSpyProtection": true,
+  "TemporalSpyProtectionTime": 3600
+}

@@ -1,0 +1,6 @@
+{
+  "Name": "Journey offer",
+  "DefName": "GiveQuest_EndGame_ShipEscape",
+  "Cost": 500,
+  "IsEnabled": true
+}

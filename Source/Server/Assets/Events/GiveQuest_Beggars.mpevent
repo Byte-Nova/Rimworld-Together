@@ -1,0 +1,6 @@
+{
+  "Name": "Beggars arrive",
+  "DefName": "GiveQuest_Beggars",
+  "Cost": 500,
+  "IsEnabled": true
+}

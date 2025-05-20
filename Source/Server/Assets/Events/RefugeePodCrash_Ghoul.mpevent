@@ -1,0 +1,6 @@
+{
+  "Name": "Ghoul transport pod crash",
+  "DefName": "RefugeePodCrash_Ghoul",
+  "Cost": 500,
+  "IsEnabled": true
+}

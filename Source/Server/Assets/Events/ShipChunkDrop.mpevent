@@ -1,0 +1,6 @@
+{
+  "Name": "Ship chunk drop",
+  "DefName": "ShipChunkDrop",
+  "Cost": 500,
+  "IsEnabled": true
+}

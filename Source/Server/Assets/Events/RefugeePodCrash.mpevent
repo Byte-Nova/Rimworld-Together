@@ -1,0 +1,6 @@
+{
+  "Name": "Transport pod crash",
+  "DefName": "RefugeePodCrash",
+  "Cost": 500,
+  "IsEnabled": true
+}

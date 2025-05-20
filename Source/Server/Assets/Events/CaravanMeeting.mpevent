@@ -1,0 +1,6 @@
+{
+  "Name": "Caravan meeting",
+  "DefName": "CaravanMeeting",
+  "Cost": 500,
+  "IsEnabled": true
+}

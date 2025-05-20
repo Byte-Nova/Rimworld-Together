@@ -1,0 +1,6 @@
+{
+  "Name": "Strange signal",
+  "DefName": "MonolithMigration",
+  "Cost": 500,
+  "IsEnabled": true
+}

@@ -1,0 +1,6 @@
+{
+  "Name": "Imperial deserter",
+  "DefName": "GiveQuest_Intro_Deserter",
+  "Cost": 500,
+  "IsEnabled": true
+}

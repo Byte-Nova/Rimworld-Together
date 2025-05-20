@@ -1,0 +1,6 @@
+{
+  "Name": "Shambler assault",
+  "DefName": "ShamblerAssault",
+  "Cost": 500,
+  "IsEnabled": true
+}

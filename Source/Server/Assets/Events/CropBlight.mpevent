@@ -1,0 +1,6 @@
+{
+  "Name": "Crop blight",
+  "DefName": "CropBlight",
+  "Cost": 500,
+  "IsEnabled": true
+}

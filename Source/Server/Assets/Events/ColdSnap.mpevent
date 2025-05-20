@@ -1,0 +1,6 @@
+{
+  "Name": "Cold snap",
+  "DefName": "ColdSnap",
+  "Cost": 500,
+  "IsEnabled": true
+}

@@ -1,0 +1,6 @@
+{
+  "Name": "Plague (animals)",
+  "DefName": "Disease_AnimalPlague",
+  "Cost": 500,
+  "IsEnabled": true
+}

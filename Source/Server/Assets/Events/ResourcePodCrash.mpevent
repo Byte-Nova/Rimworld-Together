@@ -1,0 +1,6 @@
+{
+  "Name": "Resource pod crash",
+  "DefName": "ResourcePodCrash",
+  "Cost": 500,
+  "IsEnabled": true
+}

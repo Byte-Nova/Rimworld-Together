@@ -1,0 +1,6 @@
+{
+  "Name": "Mysterious cargo cube",
+  "DefName": "MysteriousCargoCube",
+  "Cost": 500,
+  "IsEnabled": true
+}

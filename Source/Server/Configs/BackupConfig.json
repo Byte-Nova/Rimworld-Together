@@ -1,0 +1,6 @@
+{
+  "AutomaticBackups": true,
+  "IntervalHours": 24.0,
+  "AutomaticDeletion": true,
+  "Amount": 3
+}

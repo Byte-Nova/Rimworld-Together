@@ -1,0 +1,6 @@
+{
+  "Name": "Short circuit",
+  "DefName": "ShortCircuit",
+  "Cost": 500,
+  "IsEnabled": true
+}

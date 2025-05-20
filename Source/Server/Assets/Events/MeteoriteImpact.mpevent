@@ -1,0 +1,6 @@
+{
+  "Name": "Meteorite impact",
+  "DefName": "MeteoriteImpact",
+  "Cost": 500,
+  "IsEnabled": true
+}

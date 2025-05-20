@@ -1,0 +1,6 @@
+{
+  "Name": "Plague",
+  "DefName": "Disease_Plague",
+  "Cost": 500,
+  "IsEnabled": true
+}

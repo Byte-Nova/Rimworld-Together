@@ -1,0 +1,6 @@
+{
+  "Name": "Trader caravan arrival",
+  "DefName": "TraderCaravanArrival",
+  "Cost": 500,
+  "IsEnabled": true
+}

@@ -1,0 +1,6 @@
+{
+  "Name": "Volcanic winter",
+  "DefName": "VolcanicWinter",
+  "Cost": 500,
+  "IsEnabled": true
+}

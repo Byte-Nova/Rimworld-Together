@@ -1,0 +1,6 @@
+{
+  "Name": "Payment demand",
+  "DefName": "CaravanDemand",
+  "Cost": 500,
+  "IsEnabled": true
+}

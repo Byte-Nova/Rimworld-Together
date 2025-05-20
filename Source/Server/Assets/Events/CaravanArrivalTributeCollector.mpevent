@@ -1,0 +1,6 @@
+{
+  "Name": "Tribute collector caravan arrival",
+  "DefName": "CaravanArrivalTributeCollector",
+  "Cost": 500,
+  "IsEnabled": true
+}

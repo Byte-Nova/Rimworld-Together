@@ -1,0 +1,6 @@
+{
+  "Name": "Psychic soothe",
+  "DefName": "PsychicSoothe",
+  "Cost": 500,
+  "IsEnabled": true
+}

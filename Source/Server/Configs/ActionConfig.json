@@ -1,0 +1,15 @@
+{
+  "EnableActivities": true,
+  "EnableEvents": true,
+  "EnableSites": true,
+  "EnableRoads": true,
+  "EnableFactions": true,
+  "EnableAids": true,
+  "EnableTrading": true,
+  "EnableSpying": true,
+  "EnableCustomScenarios": true,
+  "EnableNPCDestruction": false,
+  "EnablePollutionSpread": true,
+  "EnforcedGameSpeed": 0,
+  "SpyCost": 100
+}

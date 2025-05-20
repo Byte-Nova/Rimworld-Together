@@ -1,0 +1,6 @@
+{
+  "Name": "Anima tree",
+  "DefName": "AnimaTreeSpawn",
+  "Cost": 500,
+  "IsEnabled": true
+}

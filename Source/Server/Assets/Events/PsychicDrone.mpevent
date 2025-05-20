@@ -1,0 +1,6 @@
+{
+  "Name": "Psychic drone",
+  "DefName": "PsychicDrone",
+  "Cost": 500,
+  "IsEnabled": true
+}

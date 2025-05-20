@@ -1,0 +1,6 @@
+{
+  "Name": "Distress signal",
+  "DefName": "GiveQuest_DistressCall",
+  "Cost": 500,
+  "IsEnabled": true
+}

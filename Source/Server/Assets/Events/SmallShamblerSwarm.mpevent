@@ -1,0 +1,6 @@
+{
+  "Name": "Shambler swarm",
+  "DefName": "SmallShamblerSwarm",
+  "Cost": 500,
+  "IsEnabled": true
+}

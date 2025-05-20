@@ -1,0 +1,6 @@
+{
+  "Name": "Muscle parasites",
+  "DefName": "Disease_MuscleParasites",
+  "Cost": 500,
+  "IsEnabled": true
+}
