@@ -35,7 +35,7 @@ namespace GameServer.Misc
         public static void Outsider(object v, LogImportanceMode i = LogImportanceMode.Normal)
             => Write(v?.ToString(), LogMode.Outsider, i);
 
-        // Discord capture
+        // Discord capture 
         public static void StartDiscordBuffer(string username)
         {
             DiscordConsoleUser = username;

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using GameServer.Commands;
 using GameServer.Core;
 using GameServer.Misc;
@@ -9,7 +11,9 @@ namespace GameServer.Managers
 {
     public static class ConsoleManager
     {
-        public static string[] CommandParameters;
+        public static string[] CommandParameters { get; private set; } = Array.Empty<string>();
+
+        // *<remarks>Temporary alias kept only so older binary plugins still build.</remarks>
         [Obsolete("Use ConsoleManager.CommandParameters instead.")]
         public static string[] commandParameters
         {
@@ -17,77 +21,83 @@ namespace GameServer.Managers
             set => CommandParameters = value;
         }
 
-        public static void ListenForServerCommands()
+        public static Task ListenForServerCommandsAsync(CancellationToken token = default)
+            => Task.Run(() => ListenLoop(token), token);
+
+        private static async Task ListenLoop(CancellationToken token)
         {
-            bool interactive = false;
-            try { interactive = Console.In.Peek() != -1; }
-            catch { Printer.Warning("Couldn't find interactive console, disabling commands"); }
+            if (!ConsoleIsInteractive())
+            {
+                Printer.Warning("Interactive console not detected – command loop disabled");
+                return;
+            }
 
-            if (!interactive) return;
+            while (!token.IsCancellationRequested && !Master.IsClosing)
+            {
+                string? line;
+                try     { line = await Console.In.ReadLineAsync(); }
+                catch   { break; }            // stdin closed
 
-            while (true)
-                ParseServerCommands(Console.ReadLine() ?? "");
+                if (line != null) ParseServerCommands(line);
+            }
         }
 
+        private static bool ConsoleIsInteractive()
+        {
+            try { return Console.In.Peek() != -1; }
+            catch { return false; }
+        }
+        
         public static void ParseServerCommands(string cmd)
         {
             if (string.IsNullOrWhiteSpace(cmd)) return;
 
-            var parts  = cmd.Split(' ');
+            var parts = cmd.Split(' ', StringSplitOptions.RemoveEmptyEntries);
             var prefix = parts[0].ToLowerInvariant();
-            var count  = parts.Length - 1;
-
-            CommandParameters = cmd.Replace(parts[0] + " ", "")
-                                   .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var argCount = parts.Length - 1;
+            CommandParameters = parts.Length > 1 ? parts[1..] : Array.Empty<string>();
 
             try
             {
-                var command = ConsoleCommands.Commands
-                                             .FirstOrDefault(c => c.Prefix.Equals(prefix,
-                                                                                   StringComparison.OrdinalIgnoreCase));
+                var match = ConsoleCommands.Commands
+                                           .FirstOrDefault(c => c.Prefix.Equals(prefix,
+                                                          StringComparison.OrdinalIgnoreCase));
 
-                if (command == null)
+                if (match == null)
                 {
                     Printer.Warning($"Command '{prefix}' was not found");
+                    return;
                 }
-                else if (command.Parameters != count && command.Parameters != -1)
+
+                if (match.Parameters != argCount && match.Parameters != -1)
                 {
-                    Printer.Warning($"Command '{command.Prefix}' wanted [{command.Parameters}] parameters but got [{count}]");
+                    Printer.Warning($"Command '{match.Prefix}' wanted [{match.Parameters}] parameters but got [{argCount}]");
+                    return;
                 }
-                else
-                {
-                    command.CommandAction?.Invoke();
-                }
+
+                match.CommandAction?.Invoke();
             }
             catch (Exception ex)
             {
-                Printer.Error($"Couldn't parse command '{prefix}'. Reason: {ex.Message}");
+                Printer.Error($"Exception while executing '{prefix}': {ex.Message}");
             }
         }
 
+        // DISCORD BRIDGE
         public static void ProcessDiscordCommand(string cmd, string user)
         {
             if (Master.DiscordConfig?.Enabled != true) return;
 
-            // 1) echo in local console
             Printer.Message($"[Discord Console] {user}: {cmd}");
-
-            // 2) capture subsequent Printer output
             Printer.StartDiscordBuffer(user);
 
-            // 3) parse as if it had been typed in the server console
-            ParseServerCommands(cmd);
+            ParseServerCommands(cmd);             // run command
 
-            // 4) collect captured lines
             var lines = Printer.FlushDiscordBuffer();
             if (lines.Count == 0) lines.Add("*(no output)*");
-
-            // 5) prepend bold header
             lines.Insert(0, $"**{user}: {cmd}**");
 
-            // 6) ship to Discord
-            var payload = string.Join('\n', lines);
-            _ = DiscordManager.SendConsoleMessageAsync(payload);
+            _ = DiscordManager.SendConsoleMessageAsync(string.Join('\n', lines));
         }
     }
 }

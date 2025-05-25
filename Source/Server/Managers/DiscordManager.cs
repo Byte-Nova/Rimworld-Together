@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -12,20 +13,29 @@ using Shared;
 
 namespace GameServer.Misc
 {
+    ///   Handles all Discord I/O (console bridge + in-game chat mirror).
+    ///   Public surface kept 100% identical for comptibility.
     public static class DiscordManager
     {
         private static DiscordSocketClient _Client;
         private static DiscordConfigFile   _Config;
 
-        //                      initialisation
+        // simple rate-gate so presence updates aren’t spammed every packet
+        private static readonly SemaphoreSlim _presenceGate = new(1, 1);
+
+        // initialisation
         public static async Task InitializeAsync()
         {
-            string ConfigPath = Path.Combine(Master.ConfigsPath, "DiscordConfig.json");
-            _Config = Serializer.SerializeFromFile<DiscordConfigFile>(ConfigPath);
+            string cfgPath = Path.Combine(Master.ConfigsPath, "DiscordConfig.json");
+            _Config = Serializer.SerializeFromFile<DiscordConfigFile>(cfgPath);
 
-            if (_Config == null || !_Config.Enabled) return;
+            if (_Config == null || !_Config.Enabled)
+            {
+                Printer.Outsider("[Discord] Integration disabled in config.");
+                return;
+            }
 
-            var DiscordConfig = new DiscordSocketConfig
+            var dcCfg = new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Info,
                 GatewayIntents =
@@ -35,67 +45,86 @@ namespace GameServer.Misc
                     | GatewayIntents.MessageContent
             };
 
-            _Client = new DiscordSocketClient(DiscordConfig);
+            _Client = new DiscordSocketClient(dcCfg);
             _Client.Log             += OnLogAsync;
             _Client.Ready           += OnReadyAsync;
             _Client.MessageReceived += OnMessageReceivedAsync;
 
-            await _Client.LoginAsync(TokenType.Bot, _Config.BotToken);
-            await _Client.StartAsync();
+            try
+            {
+                await _Client.LoginAsync(TokenType.Bot, _Config.BotToken).ConfigureAwait(false);
+                await _Client.StartAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Printer.Error($"[Discord] Failed to start bot: {ex.Message}");
+                // fail-open – the game server can still run without Discord
+            }
         }
 
-        //                      logging / ready
-        private static Task OnLogAsync(LogMessage msg)
+        // logging / ready
+        private static Task OnLogAsync(LogMessage m)
         {
-            Printer.Outsider($"[Discord] {msg.Severity}: {msg}");
+            Printer.Outsider($"[Discord] {m.Severity}: {m}");
             return Task.CompletedTask;
         }
 
         private static Task OnReadyAsync()
         {
             Printer.Outsider("[Discord] Info: Gateway: Ready");
-            if (_Config.UseOnlineCount) _ = UpdatePresenceAsync();
+            if (_Config.UseOnlineCount)
+                _ = UpdatePresenceAsync();
             return Task.CompletedTask;
         }
 
         public static async Task UpdatePresenceAsync()
         {
-            if (!_Config.UseOnlineCount) return;
-            await _Client.SetGameAsync($"Players online: {Network.ConnectedClients.Count}");
+            if (!_Config.UseOnlineCount || _Client?.LoginState != LoginState.LoggedIn) return;
+
+            // gate: only one presence update at a time
+            if (!await _presenceGate.WaitAsync(0)) return;
+
+            try
+            {
+                int count = Network.ConnectedClients.Count;
+                await _Client.SetGameAsync($"Players online: {count}").ConfigureAwait(false);
+            }
+            finally
+            {
+                _presenceGate.Release();
+            }
         }
 
-        //                      outgoing
+        // outgoing helpers
         public static async Task SendChatMessageAsync(string username, string message)
         {
             if (!_Config.Enabled) return;
 
-            var ChannelRaw = _Client.GetChannel(_Config.ChatChannelId);
-            if (ChannelRaw is not IMessageChannel Channel)
+            if (_Client.GetChannel(_Config.ChatChannelId) is not IMessageChannel ch)
             {
                 Printer.Warning($"[Discord] ChatChannelId {_Config.ChatChannelId} invalid.");
                 return;
             }
 
-            await Channel.SendMessageAsync($"**{username}**: {message}");
-            if (_Config.UseOnlineCount) await UpdatePresenceAsync();
+            await ch.SendMessageAsync($"**{username}**: {message}").ConfigureAwait(false);
+            if (_Config.UseOnlineCount) await UpdatePresenceAsync().ConfigureAwait(false);
         }
 
         public static async Task SendConsoleMessageAsync(string payload)
         {
             if (!_Config.Enabled) return;
 
-            var ChannelRaw = _Client.GetChannel(_Config.ConsoleChannelId);
-            if (ChannelRaw is not IMessageChannel Channel)
+            if (_Client.GetChannel(_Config.ConsoleChannelId) is not IMessageChannel ch)
             {
                 Printer.Warning($"[Discord] ConsoleChannelId {_Config.ConsoleChannelId} invalid.");
                 return;
             }
 
-            await Channel.SendMessageAsync($"```{payload}```");
-            if (_Config.UseOnlineCount) await UpdatePresenceAsync();
+            await ch.SendMessageAsync($"```{payload}```").ConfigureAwait(false);
+            if (_Config.UseOnlineCount) await UpdatePresenceAsync().ConfigureAwait(false);
         }
 
-        //                             incoming
+        // incoming → game-side
         private static Task OnMessageReceivedAsync(SocketMessage msg)
         {
             if (!_Config.Enabled || msg.Author.IsBot) return Task.CompletedTask;
@@ -106,6 +135,16 @@ namespace GameServer.Misc
                 ChatManager.BroadcastDiscordMessage(msg.Author.Username, msg.Content);
 
             return Task.CompletedTask;
+        }
+
+        // graceful shutdown helper (call from Main_ when server stops)
+        public static async Task ShutdownAsync()
+        {
+            if (_Client == null) return;
+            await _Client.LogoutAsync().ConfigureAwait(false);
+            await _Client.StopAsync().ConfigureAwait(false);
+            await _Client.DisposeAsync().ConfigureAwait(false);
+            Printer.Outsider("[Discord] Gateway: Disconnected");
         }
     }
 }

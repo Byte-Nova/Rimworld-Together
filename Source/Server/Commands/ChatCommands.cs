@@ -26,7 +26,6 @@ namespace GameServer.Commands
         private static readonly CommandBase PMCommand = new(
             "/w", 0, "Sends a private message to a specific user", PrivateMessageCommandAction);
 
-        // identifier expected by the rest of the codebase
         public static readonly CommandBase[] commands =
         {
             HelpCommand,
@@ -75,9 +74,8 @@ namespace GameServer.Commands
 
         public static void PrivateMessageCommandAction()
         {
-            if (TargetClient == null || Command == null || Command.Length < 3) return;
+            if (TargetClient == null || Command is not { Length: > 2 }) return;
 
-            // build whisper text
             string msg = string.Join(' ', Command, 2, Command.Length - 2);
             if (string.IsNullOrWhiteSpace(msg))
             {
