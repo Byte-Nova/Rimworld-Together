@@ -5,5 +5,7 @@ namespace Shared
         public string RewardDef;
 
         public int RewardAmount;
+
+        //Override ToString() once rework is done
     }
 }

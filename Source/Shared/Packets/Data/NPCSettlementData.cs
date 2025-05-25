@@ -8,5 +8,10 @@ namespace Shared
         public SettlementStepMode _stepMode { get; set; } = SettlementStepMode.Add;
 
         public PlanetNPCSettlementDetails _settlementData { get; set; } = new PlanetNPCSettlementDetails();
+
+        public override string ToString()
+        {
+            return $"NPCSettlementData:|{_stepMode}|{_settlementData}";
+        }
     }
 }

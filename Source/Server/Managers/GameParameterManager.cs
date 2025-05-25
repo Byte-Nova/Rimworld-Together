@@ -14,6 +14,8 @@ namespace GameServer.Managers
         {
             GameParameterData data = Serializer.ConvertBytesToObject<GameParameterData>(bytes);
 
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
             switch (data._stepMode)
             {
                 case GenStepMode.Scenario:

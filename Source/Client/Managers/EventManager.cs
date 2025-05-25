@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameClient.Dialogs;
+using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using RimWorld;
@@ -16,16 +17,18 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.EventManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            EventData eventData = Serializer.ConvertBytesToObject<EventData>(bytes);
+            EventData data = Serializer.ConvertBytesToObject<EventData>(bytes);
 
-            switch (eventData._stepMode)
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
+            switch (data._stepMode)
             {
                 case EventStepMode.Send:
                     OnEventSent();
                     break;
 
                 case EventStepMode.Receive:
-                    OnEventReceived(eventData);
+                    OnEventReceived(data);
                     break;
 
                 case EventStepMode.Recover:

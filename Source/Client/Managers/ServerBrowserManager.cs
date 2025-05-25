@@ -11,6 +11,7 @@ using RimWorld;
 using Shared;
 using Steamworks;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
@@ -32,7 +33,11 @@ namespace GameClient.Managers
                     Printer.Warning($"response was null");
                     return null;
                 }
-                return Serializer.SerializeFromString<AllServersPacket>(response)._serverInfos;
+                AllServersPacket data = Serializer.SerializeFromString<AllServersPacket>(response);
+
+                Printer.Warning(data, LogImportanceMode.Extreme);
+
+                return data._serverInfos;
             }
             catch (Exception ex)
             {

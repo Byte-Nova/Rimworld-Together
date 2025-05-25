@@ -12,5 +12,10 @@ namespace Shared
         public int Cost;
 
         public bool IsEnabled;
+
+        public override string ToString()
+        {
+            return $"EventFile:|{Name}|{DefName}|{Cost}|{IsEnabled}";
+        }
     }
 }

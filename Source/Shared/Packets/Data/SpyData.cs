@@ -12,5 +12,10 @@ namespace Shared
         public int _mapTile { get; set; } = -1;
 
         public MapFile _mapFile { get; set; } = null;
+
+        public override string ToString()
+        {
+            return $"SpyData:|{_stepMode}|{_worldObjectMode}|{_mapTile}|{_mapFile}";
+        }
     }
 }

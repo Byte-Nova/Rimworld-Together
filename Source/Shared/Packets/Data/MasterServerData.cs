@@ -18,10 +18,20 @@ namespace Shared
         public int _currentPlayerCount { get; set; } = -1;
 
         public int _port { get; set; } = -1;
+
+        public override string ToString()
+        {
+            return $"ServerInfo:|{_ip}|{_name}|{_description}|{_config}|{_maximumPlayerCount}|{_currentPlayerCount}|{_currentPlayerCount}|{_port}";
+        }
     }
 
     public class AllServersPacket
     {
         public ServerInfo[] _serverInfos { get; set; } = null;
+
+        public override string ToString()
+        {
+            return $"AllServersPacket:|{_serverInfos?.Length ?? 0}";
+        }
     }
 }

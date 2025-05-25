@@ -10,6 +10,7 @@ using GameClient.Misc;
 using GameClient.TCP;
 using Shared;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
@@ -20,6 +21,8 @@ namespace GameClient.Managers
         private static void ParsePacket(byte[] bytes)
         {
             VersionData data = Serializer.ConvertBytesToObject<VersionData>(bytes);
+
+            Printer.Warning(data, LogImportanceMode.Extreme);
 
             switch (data._step)
             {

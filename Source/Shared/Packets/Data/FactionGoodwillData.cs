@@ -23,5 +23,10 @@ namespace Shared
         public List<int> _siteTiles { get; set; } = new List<int>();
 
         public Goodwill[] _siteGoodwills { get; set; } = null;
+
+        public override string ToString()
+        {
+            return $"FactionGoodwillData:|{_tile}|{_uid}";
+        }
     }
 }

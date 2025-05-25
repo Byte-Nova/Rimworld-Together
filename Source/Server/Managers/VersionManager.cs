@@ -1,4 +1,5 @@
-﻿using GameServer.TCP;
+﻿using GameServer.Misc;
+using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -11,6 +12,8 @@ namespace GameServer.Managers
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             VersionData data = Serializer.ConvertBytesToObject<VersionData>(bytes);
+
+            Printer.Warning(data, LogImportanceMode.Extreme);
 
             if (data._version == CommonValues.ExecutableVersion)
             {

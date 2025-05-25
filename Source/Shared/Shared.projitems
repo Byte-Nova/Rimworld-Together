@@ -18,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\MethodGatherer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\StringChecker.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\StringUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\ListenerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Data\*.cs" />

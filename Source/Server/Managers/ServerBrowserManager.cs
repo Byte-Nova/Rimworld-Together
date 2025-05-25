@@ -8,6 +8,7 @@ using GameServer.Core;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
@@ -71,22 +72,28 @@ namespace GameServer.Managers
                 }
             });
         }
+
         private static bool ValidateServerInfos() 
         {
             var serverInfo = Master.ServerConfig;
             if(serverInfo.Description.Length > MaxDescriptionLength) 
             {
-                Printer.Error($"Server description is above {MaxDescriptionLength} characters, please shorten it. Server browser features have been turned off");
+                Printer.Error($"Server description is above {MaxDescriptionLength} characters, please shorten it. Server browser features have been turned off.");
                 return false;
             }
             if (string.IsNullOrEmpty(serverInfo.PublicEndPoint)) 
             {
-                Printer.Error($"Public endpoint is empty. Please set your public ip adress or domain. Server browser features have been turned off");
+                Printer.Error($"Public endpoint is empty. Please set your public ip adress or domain. Server browser features have been turned off.");
                 return false;
             }
             if (serverInfo.Name.Length > MaxNameLength)
             {
-                Printer.Error($"Server name is above {MaxNameLength} characters, please shorten it. Server browser freatures have been turned off");
+                Printer.Error($"Server name is above {MaxNameLength} characters, please shorten it. Server browser features have been turned off.");
+                return false;
+            }
+            if(serverInfo.Name == "RimWorld-Together-Server") 
+            {
+                Printer.Error($"Server name is the default name of {serverInfo.Name}. Please change the server name to something unique!. Server browser features have been turned off.");
                 return false;
             }
             return true;
@@ -135,8 +142,9 @@ namespace GameServer.Managers
                 response.EnsureSuccessStatusCode();
                 return true;
             }
-            catch
+            catch(Exception ex)
             {
+                Printer.Error(ex, LogImportanceMode.Verbose);
                 return false;
             }
         }
@@ -150,7 +158,7 @@ namespace GameServer.Managers
         {
             SendClosureSignal().Wait();
         }
-        public static async Task SendClosureSignal() 
+        private static async Task SendClosureSignal() 
         {
             Client.DefaultRequestHeaders.Clear();
             Client.DefaultRequestHeaders.Add("action", "Remove-Server-Browser");
@@ -158,11 +166,7 @@ namespace GameServer.Managers
             {
                 _ip = Master.ServerConfig.PublicEndPoint,
                 _port = int.Parse(Master.ServerConfig.Port),
-                _name = Master.ServerConfig.Name,
-                _description = Master.ServerConfig.Description,
-                _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
-                _currentPlayerCount = Network.ConnectedClients.Count,
-                _config = Master.ModConfig
+                _name = Master.ServerConfig.Name
             };
             HttpResponseMessage response = await Client.PostAsync(MasterServer,
                 new StringContent(Serializer.SerializeToString(info)));

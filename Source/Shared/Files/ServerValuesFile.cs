@@ -8,5 +8,10 @@ namespace Shared
         }
 
         public string ServerName = "RimWorld Together Server";
+
+        public override string ToString()
+        {
+            return $"ServerValuesFile:|{ServerName}";
+        }
     }
 }

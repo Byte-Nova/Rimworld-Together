@@ -1,4 +1,5 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -13,9 +14,11 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.LoginManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(bytes);
+            LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
-            switch (loginData._tryResponse)
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
+            switch (data._tryResponse)
             {
                 case LoginResponse.InvalidLogin:
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Login details are invalid! Please try again!" }));
@@ -46,7 +49,7 @@ namespace GameClient.Managers
                     break;
 
                 case LoginResponse.WrongVersion:
-                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"Mod version mismatch! Expected version '{loginData._extraDetails[0]}'" }));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"Mod version mismatch! Expected version '{data._extraDetails[0]}'" }));
                     break;
 
                 case LoginResponse.NoWorld:

@@ -19,5 +19,10 @@ namespace Shared
         public List<AnimalFile> _animals { get; set; } = new List<AnimalFile>();
 
         public List<ThingFile> _things { get; set; } = new List<ThingFile>();
+
+        public override string ToString()
+        {
+            return $"TransferData:|{_stepMode}|{_transferMode}|{_fromTile}|{_toTile}|{_humans?.Count ?? 0}|{_animals?.Count ?? 0}|{_things?.Count ?? 0}";
+        }
     }
 }

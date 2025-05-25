@@ -16,5 +16,10 @@ namespace Shared
         public List<int> CurrentRanks = new List<int>();
 
         [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
+
+        public override string ToString()
+        {
+            return $"GuildFile:|{Name}|{CurrentUids?.Count ?? 0}|{CurrentLabels?.Count ?? 0}|{CurrentRanks?.Count ?? 0}";
+        }
     }
 }

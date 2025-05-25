@@ -2,6 +2,7 @@
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
@@ -18,12 +19,14 @@ namespace GameServer.Managers
                 return;
             }
 
-            EventData eventData = Serializer.ConvertBytesToObject<EventData>(bytes);
+            EventData data = Serializer.ConvertBytesToObject<EventData>(bytes);
 
-            switch (eventData._stepMode)
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
+            switch (data._stepMode)
             {
                 case EventStepMode.Send:
-                    SendEvent(client, eventData);
+                    SendEvent(client, data);
                     break;
 
                 case EventStepMode.Receive:

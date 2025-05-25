@@ -1,4 +1,5 @@
 ﻿using GameServer.Files;
+using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
@@ -12,8 +13,10 @@ namespace GameServer.Managers
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(bytes);
-            ChangeUserGoodwills(client, data);
 
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
+            ChangeUserGoodwills(client, data);
         }
 
         public static void ChangeUserGoodwills(ServerClient client, FactionGoodwillData data)

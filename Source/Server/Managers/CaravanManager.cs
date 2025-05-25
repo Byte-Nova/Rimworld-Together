@@ -17,6 +17,8 @@ namespace GameServer.Managers
         {
             CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(bytes);
 
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
             switch (data._stepMode)
             {
                 case CaravanStepMode.Add:

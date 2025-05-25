@@ -20,6 +20,8 @@ namespace GameServer.Managers
         {
             SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
 
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
             if (data._stepMode == SaveStepMode.Receive) SaveReceiverManager.ReceiveSaveFromClient(client, data);
             else if (data._stepMode == SaveStepMode.Send) SaveSenderManager.SendSaveToClient(client);
             else if (data._stepMode == SaveStepMode.Reset) ResetClientSave(client);

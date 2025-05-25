@@ -1,4 +1,5 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using RimWorld;
@@ -15,6 +16,8 @@ namespace GameClient.Managers
         private static void ParsePacket(byte[] bytes)
         {
             AidData data = Serializer.ConvertBytesToObject<AidData>(bytes);
+
+            Printer.Warning(data, LogImportanceMode.Extreme);
 
             switch (data._stepMode)
             {

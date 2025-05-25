@@ -3,6 +3,7 @@ using GameServer.Files;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
@@ -19,40 +20,42 @@ namespace GameServer.Managers
                 return;
             }
 
-            PlayerGuildData factionManifest = Serializer.ConvertBytesToObject<PlayerGuildData>(bytes);
+            PlayerGuildData data = Serializer.ConvertBytesToObject<PlayerGuildData>(bytes);
 
-            switch (factionManifest._stepMode)
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
+            switch (data._stepMode)
             {
                 case GuildStepMode.Create:
-                    CreateFaction(client, factionManifest);
+                    CreateFaction(client, data);
                     break;
 
                 case GuildStepMode.Delete:
-                    DeleteFaction(client, factionManifest);
+                    DeleteFaction(client, data);
                     break;
 
                 case GuildStepMode.AddMember:
-                    AddMemberToFaction(client, factionManifest);
+                    AddMemberToFaction(client, data);
                     break;
 
                 case GuildStepMode.RemoveMember:
-                    RemoveMemberFromFaction(client, factionManifest);
+                    RemoveMemberFromFaction(client, data);
                     break;
 
                 case GuildStepMode.AcceptInvite:
-                    ConfirmAddMemberToFaction(client, factionManifest);
+                    ConfirmAddMemberToFaction(client, data);
                     break;
 
                 case GuildStepMode.Promote:
-                    PromoteMember(client, factionManifest);
+                    PromoteMember(client, data);
                     break;
 
                 case GuildStepMode.Demote:
-                    DemoteMember(client, factionManifest);
+                    DemoteMember(client, data);
                     break;
 
                 case GuildStepMode.MemberList:
-                    SendFactionMemberList(client, factionManifest);
+                    SendFactionMemberList(client, data);
                     break;
             }
         }

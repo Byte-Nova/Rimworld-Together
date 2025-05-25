@@ -10,5 +10,10 @@ namespace Shared
         public string UID;
 
         public int ID;
+
+        public override string ToString()
+        {
+            return $"CaravanFile:|{Tile}|{UID}|{ID}";
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using GameClient.Dialogs;
+using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using RimWorld;
@@ -19,8 +20,11 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.GoodWillManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(bytes);
-            ChangeStructureGoodwill(factionGoodwillData);
+            FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(bytes);
+
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
+            ChangeStructureGoodwill(data);
             RT_Dialog_Wait.Instance.Close();
         }
 

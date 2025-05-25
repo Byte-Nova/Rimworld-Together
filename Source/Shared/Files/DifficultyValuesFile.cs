@@ -90,5 +90,18 @@ namespace Shared
         public float AdultAgingRate = 1.0f;
 
         public float WastepackInfestationChanceFactor = 1.0f;
+        public override string ToString()
+        {
+            return $"DifficultyValuesFile:|{EnforceDifficulty}|{ThreatScale}|{AllowBigThreats}|{AllowViolentQuests}|{AllowIntroThreats}|" +
+                   $"{PredatorsHuntHumanlikes}|{AllowExtremeWeatherIncidents}|{CropYieldFactor}|{MineYieldFactor}|{ButcherYieldFactor}|" +
+                   $"{ResearchSpeedFactor}|{QuestRewardValueFactor}|{RaidLootPointsFactor}|{TradePriceFactorLoss}|{MaintenanceCostFactor}|" +
+                   $"{ScariaRotChance}|{EnemyDeathOnDownedChanceFactor}|{ColonistMoodOffset}|{FoodPoisonChanceFactor}|" +
+                   $"{ManhunterChanceOnDamageFactor}|{PlayerPawnInfectionChanceFactor}|{DiseaseIntervalFactor}|{EnemyReproductionRateFactor}|" +
+                   $"{DeepDrillInfestationChanceFactor}|{FriendlyFireChanceFactor}|{AllowInstantKillChance}|{PeacefulTemples}|" +
+                   $"{AllowCaveHives}|{UnwaveringPrisoners}|{AllowTraps}|{AllowTurrets}|{AllowMortars}|{ClassicMortars}|" +
+                   $"{AdaptationEffectFactor}|{AdaptationGrowthRateFactorOverZero}|{FixedWealthMode}|{LowPopConversionBoost}|" +
+                   $"{NoBabiesOrChildren}|{BabiesAreHealthy}|{ChildRaidersAllowed}|{ChildAgingRate}|{AdultAgingRate}|" +
+                   $"{WastepackInfestationChanceFactor}";
+        }
     }
 }

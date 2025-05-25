@@ -74,12 +74,14 @@ namespace GameClient.TCP
 
         public static void DisconnectFromServerInstant()
         {
+            Printer.Warning($"Disconnecting from server...", LogImportanceMode.Verbose);
             CleanNetworkVariables();
             DisconnectionManager.HandleDisconnect();
         }
         
         public static void CleanNetworkVariables()
         {
+            Printer.Warning($"Cleaning network variables...", LogImportanceMode.Verbose);
             State = ClientNetworkState.Disconnected;
 
             if (Listener != null)

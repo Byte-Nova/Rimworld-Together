@@ -1,4 +1,5 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Misc;
 using GameClient.Values;
 using RimWorld;
 using Shared;
@@ -14,9 +15,11 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.ConsoleManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(bytes);
+            CommandData data = Serializer.ConvertBytesToObject<CommandData>(bytes);
 
-            switch (commandData._commandMode)
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
+            switch (data._commandMode)
             {
                 case CommandMode.Op:
                     OnOpCommand();
@@ -27,7 +30,7 @@ namespace GameClient.Managers
                     break;
 
                 case CommandMode.Broadcast:
-                    OnBroadcastCommand(commandData);
+                    OnBroadcastCommand(data);
                     break;
 
                 case CommandMode.ForceSave:

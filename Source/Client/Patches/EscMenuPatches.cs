@@ -50,7 +50,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.State == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && ClientValues.IsAdmin && Prefs.DevMode)
+            if (Network.State == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && ClientValues.IsAdmin)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -67,7 +67,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.State == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && ClientValues.IsAdmin && Prefs.DevMode)
+            if (Network.State == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && ClientValues.IsAdmin)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 4, buttonSize.x, buttonSize.y), "Admin menu")) { }

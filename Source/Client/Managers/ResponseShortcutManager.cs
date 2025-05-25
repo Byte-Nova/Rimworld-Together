@@ -1,5 +1,7 @@
 using GameClient.Dialogs;
+using GameClient.Misc;
 using Shared;
+using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
@@ -9,6 +11,8 @@ namespace GameClient.Managers
         private static void ParsePacket(byte[] bytes)
         {
             ResponseShortcutData data = Serializer.ConvertBytesToObject<ResponseShortcutData>(bytes);
+
+            Printer.Warning(data, LogImportanceMode.Extreme);
 
             switch (data._stepMode)
             {

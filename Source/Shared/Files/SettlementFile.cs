@@ -13,5 +13,10 @@ namespace Shared
         public string Label;
         
         public Goodwill Goodwill;
+
+        public override string ToString()
+        {
+            return $"SettlementFile:|{Tile}|{UID}|{Label}|{Goodwill}";
+        }
     }
 }

@@ -12,5 +12,10 @@ namespace Shared
         public StorytellerValuesFile _storyteller { get; set; } = null;
 
         public DifficultyValuesFile _difficulty { get; set; } = null;
+
+        public override string ToString()
+        {
+            return $"GameParameterData:|{_stepMode}|{_scenario}|{_storyteller}|{_difficulty}";
+        }
     }
 }

@@ -1,8 +1,10 @@
-﻿using GameClient.Patches;
+﻿using GameClient.Misc;
+using GameClient.Patches;
 using RimWorld.Planet;
 using Shared;
 using System.Collections.Generic;
 using Verse;
+using static Shared.CommonEnumerators;
 namespace GameClient.Managers
 {
 
@@ -14,6 +16,9 @@ namespace GameClient.Managers
             if (ModsConfig.BiotechActive)
             {
                 PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(bytes);
+
+                Printer.Warning(data, LogImportanceMode.Extreme);
+
                 AddPollutedTileOrganic(data._pollutionData);
             }
         }

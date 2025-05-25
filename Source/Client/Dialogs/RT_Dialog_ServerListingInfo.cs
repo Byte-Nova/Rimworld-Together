@@ -47,11 +47,20 @@ namespace GameClient.Dialogs
             Rect descriptionRect = new Rect(inRect.x, titleSize.y + 6f, inRect.width / 3 * 2, inRect.height - 55f);
             Widgets.Label(descriptionRect, ServerInfo._description);
 
-            Rect connectRect = new Rect(inRect.width - 110f, inRect.height - 55f, 100f, 45f);
+            Rect connectRect = new Rect(inRect.width - 135f, inRect.height - 55f, 125f, 45f);
+            Rect playerCountRect = new Rect(connectRect.x, connectRect.y - 30f, 125f, 45f);
+
+            Widgets.Label(playerCountRect, $"Population: {ServerInfo._currentPlayerCount}/{ServerInfo._maximumPlayerCount}");
 
             if (Widgets.ButtonText(connectRect, "Connect"))
             {
                 MatchModlists();
+            }
+
+            Rect modListRect = new Rect(10f, inRect.height - 55f, 125f, 45f);
+            if (Widgets.ButtonText(modListRect, "Modlist"))
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListingModlist($"{ServerInfo._name}'s modlist", "Modlist of a server.", ServerInfo));
             }
         }
         private void MatchModlists() 
