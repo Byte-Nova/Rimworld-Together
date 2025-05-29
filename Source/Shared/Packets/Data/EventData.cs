@@ -12,10 +12,5 @@ namespace Shared
         public int _toTile { get; set; } = -1;
 
         public EventFile _eventFile { get; set; } = null;
-
-        public override string ToString()
-        {
-            return $"EventData:|{_stepMode}|{_fromTile}|{_toTile}|{_eventFile}";
-        }
     }
 }

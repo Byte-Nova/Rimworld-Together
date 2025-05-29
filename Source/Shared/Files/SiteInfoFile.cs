@@ -15,7 +15,5 @@ namespace Shared
             byte[] data = Serializer.ConvertObjectToBytes(this);
             return Serializer.ConvertBytesToObject<SiteInfoFile>(data, false);
         }
-
-        //Override ToString() once rework is done
     }
 }

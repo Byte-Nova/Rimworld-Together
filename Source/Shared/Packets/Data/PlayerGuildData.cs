@@ -10,10 +10,5 @@ namespace Shared
         public GuildFile _file { get; set; } = new GuildFile();
 
         public int _dataInt { get; set; } = -1;
-
-        public override string ToString()
-        {
-            return $"PlayerGuildData:|{_stepMode}|{_file}|{_dataInt}";
-        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using GameServer.Core;
-using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
@@ -18,14 +17,12 @@ namespace GameServer.Managers
                 return;
             }
 
-            TransferData data = Serializer.ConvertBytesToObject<TransferData>(bytes);
+            TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
-            switch (data._stepMode)
+            switch (transferData._stepMode)
             {
                 case TransferStepMode.TradeRequest:
-                    TransferThings(client, data);
+                    TransferThings(client, transferData);
                     break;
 
                 case TransferStepMode.TradeReject:

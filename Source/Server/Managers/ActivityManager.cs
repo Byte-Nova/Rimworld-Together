@@ -1,5 +1,4 @@
 ﻿using GameServer.Core;
-using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
@@ -19,8 +18,6 @@ namespace GameServer.Managers
             }
 
             ActivityData data = Serializer.ConvertBytesToObject<ActivityData>(bytes);
-
-            Printer.Warning(data, LogImportanceMode.Extreme);
 
             switch (data._stepMode)
             {

@@ -12,10 +12,5 @@ namespace Shared
         public int _toTile { get; set; } = -1;
 
         public HumanFile _humanData { get; set; } = null;
-
-        public override string ToString()
-        {
-            return $"AidData:|{_stepMode}|{_fromTile}|{_toTile}";
-        }
     }
 }

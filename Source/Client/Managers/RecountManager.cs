@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using GameClient.Misc;
 using Shared;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
@@ -17,12 +15,9 @@ namespace GameClient.Managers
 
         public static void SetServerPlayers(byte[] bytes)
         {
-            PlayerRecountData data = Serializer.ConvertBytesToObject<PlayerRecountData>(bytes);
-
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
-            CurrentPlayers = data._currentPlayerCount;
-            CurrentPlayerNames = data._currentPlayerNames;
+            PlayerRecountData playerRecountData = Serializer.ConvertBytesToObject<PlayerRecountData>(bytes);
+            CurrentPlayers = playerRecountData._currentPlayerCount;
+            CurrentPlayerNames = playerRecountData._currentPlayerNames;
         }
     }
 }

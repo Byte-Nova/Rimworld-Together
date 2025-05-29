@@ -25,20 +25,18 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.TransferManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            TransferData data = Serializer.ConvertBytesToObject<TransferData>(bytes);
+            TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
-            switch (data._stepMode)
+            switch (transferData._stepMode)
             {
                 case TransferStepMode.TradeRequest:
-                    ReceiveTransferRequest(data);
+                    ReceiveTransferRequest(transferData);
                     break;
 
                 case TransferStepMode.TradeAccept:
                     RT_Dialog_Wait.Instance.Close();
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Transfer was a success!" }));
-                    if (data._transferMode == TransferMode.Pod) LaunchDropPods();
+                    if (transferData._transferMode == TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
@@ -50,7 +48,7 @@ namespace GameClient.Managers
 
                 case TransferStepMode.TradeReRequest:
                     RT_Dialog_Wait.Instance.Close();
-                    ReceiveReboundRequest(data);
+                    ReceiveReboundRequest(transferData);
                     break;
 
                 case TransferStepMode.TradeReAccept:

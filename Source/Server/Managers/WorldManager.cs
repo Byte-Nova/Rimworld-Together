@@ -1,5 +1,4 @@
 ﻿using GameServer.Core;
-using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
@@ -15,8 +14,6 @@ namespace GameServer.Managers
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             WorldData data = Serializer.ConvertBytesToObject<WorldData>(bytes);
-
-            Printer.Warning(data, LogImportanceMode.Extreme);
 
             switch (data._stepMode)
             {

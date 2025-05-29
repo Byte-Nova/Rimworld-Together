@@ -28,11 +28,5 @@ namespace Shared
         public int AsphaltPathCost = 30;
 
         public int AsphaltHighwayCost = 50;
-
-        public override string ToString()
-        {
-            return $"RoadValuesFile:|{AllowDirtPath}|{AllowDirtRoad}|{AllowStoneRoad}|{AllowAsphaltPath}|{AllowAsphaltHighway}" +
-                $"|{DirtPathCost}|{DirtRoadCost}|{StoneRoadCost}|{AsphaltPathCost}|{AsphaltHighwayCost}";
-        }
     }
 }

@@ -2,7 +2,6 @@
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
@@ -17,18 +16,16 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.SettlementManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            PlayerSettlementData data = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
+            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
-            switch (data._stepMode)
+            switch (settlementData._stepMode)
             {
                 case SettlementStepMode.Add:
-                    AddSettlement(client, data);
+                    AddSettlement(client, settlementData);
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveSettlement(client, data);
+                    RemoveSettlement(client, settlementData);
                     break;
             }
         }

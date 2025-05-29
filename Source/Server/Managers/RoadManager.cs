@@ -22,8 +22,6 @@ namespace GameServer.Managers
 
             RoadData data = Serializer.ConvertBytesToObject<RoadData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case RoadStepMode.Add:

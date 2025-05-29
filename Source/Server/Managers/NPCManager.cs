@@ -20,8 +20,6 @@ namespace GameServer.Managers
 
             NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case SettlementStepMode.Add:

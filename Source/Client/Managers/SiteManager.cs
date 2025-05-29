@@ -27,11 +27,9 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.SiteManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            SiteData data = Serializer.ConvertBytesToObject<SiteData>(bytes);
+            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
-            switch (data._stepMode)
+            switch (siteData._stepMode)
             {
                 case SiteStepMode.Accept:
                     OnSiteAccept();
@@ -42,23 +40,23 @@ namespace GameClient.Managers
                     break;
 
                 case SiteStepMode.Build:
-                    SpawnSingleSite(data._file);
+                    SpawnSingleSite(siteData._file);
                     break;
 
                 case SiteStepMode.Destroy:
-                    RemoveSingleSite(data._file);
+                    RemoveSingleSite(siteData._file);
                     break;
 
                 case SiteStepMode.Visit:
-                    VisitSite(data);
+                    VisitSite(siteData);
                     break;
 
                 case SiteStepMode.Raid:
-                    RaidSite(data);
+                    RaidSite(siteData);
                     break;
 
                 case SiteStepMode.Rewards:
-                    ReceiveSiteRewards(data._rewardFiles);
+                    ReceiveSiteRewards(siteData._rewardFiles);
                     break;
             }
         }

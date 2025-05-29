@@ -30,11 +30,5 @@ namespace Shared
         public int EnforcedGameSpeed = 0;
 
         public int SpyCost = 100;
-
-        public override string ToString()
-        {
-            return $"ActionValuesFile:|{EnableActivities}|{EnableEvents}|{EnableSites}|{EnableRoads}|{EnableFactions}|{EnableAids}|{EnableTrading}" +
-                $"|{EnableSpying}|{EnableCustomScenarios}|{EnableNPCDestruction}|{EnablePollutionSpread}|{EnforcedGameSpeed}|{SpyCost}";
-        }
     }
 }

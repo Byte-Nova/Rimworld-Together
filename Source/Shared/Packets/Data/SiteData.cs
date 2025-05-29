@@ -14,7 +14,5 @@ namespace Shared
         public SiteRewardFile[] _rewardFiles { get; set; } = null;
 
         public MapFile _siteMap { get; set; } = null;
-
-        //Override ToString() once rework is done
     }
 }

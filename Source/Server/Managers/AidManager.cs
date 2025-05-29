@@ -20,8 +20,6 @@ namespace GameServer.Managers
 
             AidData data = Serializer.ConvertBytesToObject<AidData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case AidStepMode.Send:

@@ -44,18 +44,16 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.ChatManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            ChatData data = Serializer.ConvertBytesToObject<ChatData>(bytes);
-
-            Printer.Warning(data, LogImportanceMode.Extreme);
+            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(bytes);
 
             bool hasBeenTagged = false;
-            if (ChatManagerHelper.GetMessageWords(data._message).Contains($"@{ClientValues.Username}"))
+            if (ChatManagerHelper.GetMessageWords(chatData._message).Contains($"@{ClientValues.Username}"))
             {
                 hasBeenTagged = true;
-                data._message = data._message.Replace($"@{ClientValues.Username}", $"<color=red>@{ClientValues.Username}</color>");
+                chatData._message = chatData._message.Replace($"@{ClientValues.Username}", $"<color=red>@{ClientValues.Username}</color>");
             }
 
-            AddMessageToChat(data._username, data._message, data._usernameColor, data._messageColor);
+            AddMessageToChat(chatData._username, chatData._message, chatData._usernameColor, chatData._messageColor);
 
             if (!ClientValues.IsReadyToPlay) return;
 

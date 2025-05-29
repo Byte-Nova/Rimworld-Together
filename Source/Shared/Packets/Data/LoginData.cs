@@ -15,10 +15,5 @@ namespace Shared
         public LoginResponse _tryResponse { get; set; } = LoginResponse.InvalidLogin;
 
         public List<string> _extraDetails { get; set; } = new List<string>();
-
-        public override string ToString()
-        {
-            return $"LoginData:|{_uid}|{_username}|{_runningMods}|{_tryResponse}";
-        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using GameClient.Dialogs;
-using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using Shared;
@@ -16,8 +15,6 @@ namespace GameClient.Managers
         private static void ParsePacket(byte[] bytes)
         {
             PlayerGuildData data = Serializer.ConvertBytesToObject<PlayerGuildData>(bytes);
-
-            Printer.Warning(data, LogImportanceMode.Extreme);
 
             switch (data._stepMode)
             {

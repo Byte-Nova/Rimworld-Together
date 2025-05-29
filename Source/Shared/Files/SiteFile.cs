@@ -17,7 +17,5 @@ namespace Shared
         public SiteInfoFile Type = new SiteInfoFile();
 
         [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
-
-        //Override ToString() once rework is done
     }
 }

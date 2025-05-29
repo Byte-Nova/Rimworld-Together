@@ -34,12 +34,5 @@
         public PollutionDetails[] _pollutedTiles { get; set; } = null;
 
         public ModConfigFile _modConfigs { get; set; } = null;
-
-        public override string ToString()
-        {
-            return $"ServerGlobalData:|{_isClientAdmin}|{_isClientFactionMember}|{_serverValues}|{_siteValues}|{_eventValues}" +
-                $"|{_actionValues}|{_roadValues}|{_scenarioValues}|{_storytellerValues}|{_difficultyValues}|{_npcSettlements?.Length ?? 0}|{_playerSettlements?.Length ?? 0}" +
-                $"|{_playerSites?.Length ?? 0}|{_roads?.Length ?? 0}|{_pollutedTiles?.Length ?? 0}|{_modConfigs}";
-        }
     }
 }

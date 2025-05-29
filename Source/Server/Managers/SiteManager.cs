@@ -23,34 +23,31 @@ namespace GameServer.Managers
                 return;
             }
 
-            SiteData data = Serializer.ConvertBytesToObject<SiteData>(bytes);
-
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
-            switch (data._stepMode)
+            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(bytes);
+            switch (siteData._stepMode)
             {
                 case SiteStepMode.Build:
-                    AddNewSite(client, data);
+                    AddNewSite(client, siteData);
                     break;
 
                 case SiteStepMode.Destroy:
-                    DestroySite(client, data);
+                    DestroySite(client, siteData);
                     break;
 
                 case SiteStepMode.Visit:
-                    VisitSite(client, data);
+                    VisitSite(client, siteData);
                     break;
 
                 case SiteStepMode.Raid:
-                    RaidSite(client, data);
+                    RaidSite(client, siteData);
                     break;
 
                 case SiteStepMode.Info:
-                    SiteManagerHelper.GetSiteInfo(client, data);
+                    SiteManagerHelper.GetSiteInfo(client, siteData);
                     break;
 
                 case SiteStepMode.Config:
-                    ChangeUserSiteConfig(client, data);
+                    ChangeUserSiteConfig(client, siteData);
                     break;
 
             }

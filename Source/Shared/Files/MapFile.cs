@@ -25,10 +25,5 @@ namespace Shared
         public AnimalFile[] FactionAnimals;
         
         public AnimalFile[] NonFactionAnimals;
-
-        public override string ToString()
-        {
-            return $"MapFile:|{Tile}|{UID}|{CurWeatherDefName}|{Mods}";
-        }
     }
 }

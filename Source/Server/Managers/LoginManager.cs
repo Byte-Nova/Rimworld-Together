@@ -14,9 +14,6 @@ namespace GameServer.Managers
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
-
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             HandleUser(client, data);
         }
 

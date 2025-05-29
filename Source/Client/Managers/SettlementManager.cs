@@ -19,18 +19,16 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.SettlementManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            PlayerSettlementData data = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
+            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
-            switch (data._stepMode)
+            switch (settlementData._stepMode)
             {
                 case SettlementStepMode.Add:
-                    SpawnSingleSettlement(data._settlementFile);
+                    SpawnSingleSettlement(settlementData._settlementFile);
                     break;
 
                 case SettlementStepMode.Remove:
-                    RemoveSingleSettlement(data._settlementFile);
+                    RemoveSingleSettlement(settlementData._settlementFile);
                     break;
             }
         }

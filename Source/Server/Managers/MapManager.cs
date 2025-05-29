@@ -2,8 +2,6 @@
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
@@ -17,11 +15,8 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.MapManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            MapData data = Serializer.ConvertBytesToObject<MapData>(bytes);
-
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
-            SaveUserMap(client, data._mapFile);
+            MapData mapData = Serializer.ConvertBytesToObject<MapData>(bytes);
+            SaveUserMap(client, mapData._mapFile);
         }
 
         public static void SaveUserMap(ServerClient client, MapFile file)

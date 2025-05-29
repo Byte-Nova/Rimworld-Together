@@ -9,10 +9,5 @@ namespace Shared
         public string ID;
 
         public string ScribeData;
-
-        public override string ToString()
-        {
-            return $"ThingFile:|{ID}|{ScribeData?.Length ?? 0}";
-        }
     }
 }

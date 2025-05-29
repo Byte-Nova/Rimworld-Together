@@ -38,10 +38,5 @@ namespace Shared
         public PlanetNPCFactionDetails[] NPCFactions;
 
         public PlanetNPCSettlementDetails[] NPCSettlements;
-
-        public override string ToString()
-        {
-            return $"WorldValuesFile:|{PersistentRandomValue}|{SeedString}";
-        }
     }
 }
