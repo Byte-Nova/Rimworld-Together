@@ -13,7 +13,6 @@ namespace GameServer.Managers
     {
         public static string[] CommandParameters { get; private set; } = Array.Empty<string>();
 
-        // *<remarks>Temporary alias kept only so older binary plugins still build.</remarks>
         [Obsolete("Use ConsoleManager.CommandParameters instead.")]
         public static string[] commandParameters
         {
@@ -22,9 +21,12 @@ namespace GameServer.Managers
         }
 
         public static Task ListenForServerCommandsAsync(CancellationToken token = default)
-            => Task.Run(() => ListenLoop(token), token);
+            => Task.Run(() => ListenLoopAsync(token), token);
 
-        private static async Task ListenLoop(CancellationToken token)
+        public static void ListenForServerCommands()
+            => ListenLoopAsync(CancellationToken.None).GetAwaiter().GetResult();
+
+        private static async Task ListenLoopAsync(CancellationToken token)
         {
             if (!ConsoleIsInteractive())
             {
@@ -35,8 +37,8 @@ namespace GameServer.Managers
             while (!token.IsCancellationRequested && !Master.IsClosing)
             {
                 string? line;
-                try     { line = await Console.In.ReadLineAsync(); }
-                catch   { break; }            // stdin closed
+                try { line = await Console.In.ReadLineAsync(); }
+                catch { break; }                     // stdin closed
 
                 if (line != null) ParseServerCommands(line);
             }
@@ -47,7 +49,7 @@ namespace GameServer.Managers
             try { return Console.In.Peek() != -1; }
             catch { return false; }
         }
-        
+
         public static void ParseServerCommands(string cmd)
         {
             if (string.IsNullOrWhiteSpace(cmd)) return;
@@ -61,7 +63,7 @@ namespace GameServer.Managers
             {
                 var match = ConsoleCommands.Commands
                                            .FirstOrDefault(c => c.Prefix.Equals(prefix,
-                                                          StringComparison.OrdinalIgnoreCase));
+                                                           StringComparison.OrdinalIgnoreCase));
 
                 if (match == null)
                 {
@@ -83,7 +85,6 @@ namespace GameServer.Managers
             }
         }
 
-        // DISCORD BRIDGE
         public static void ProcessDiscordCommand(string cmd, string user)
         {
             if (Master.DiscordConfig?.Enabled != true) return;
@@ -91,7 +92,7 @@ namespace GameServer.Managers
             Printer.Message($"[Discord Console] {user}: {cmd}");
             Printer.StartDiscordBuffer(user);
 
-            ParseServerCommands(cmd);             // run command
+            ParseServerCommands(cmd);                 // run command
 
             var lines = Printer.FlushDiscordBuffer();
             if (lines.Count == 0) lines.Add("*(no output)*");
