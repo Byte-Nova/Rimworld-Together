@@ -10,7 +10,10 @@ namespace GameServer.Misc
 {
     public static class Printer
     {
-        public static string DiscordConsoleUser { get; private set; }
+        public enum LogKind { Title, Warning, Error }
+        public static event Action<LogKind, string>? ConsoleTap;
+
+        public static string DiscordConsoleUser { get; private set; } = string.Empty;
         private static readonly List<string> DiscordConsoleBuffer = new();
 
         private static readonly Semaphore Semaphore = new(1, 1);
@@ -20,22 +23,33 @@ namespace GameServer.Misc
             { LogMode.Warning,  ConsoleColor.Yellow  },
             { LogMode.Error,    ConsoleColor.Red     },
             { LogMode.Title,    ConsoleColor.Green   },
-            { LogMode.Outsider, ConsoleColor.Magenta }
+            { LogMode.Discord,  ConsoleColor.Magenta }
         };
 
         // façade helpers
         public static void Message (object v, LogImportanceMode i = LogImportanceMode.Normal)
             => Write(v?.ToString(), LogMode.Message,  i);
         public static void Warning (object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Warning,  i);
-        public static void Error   (object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Error,    i);
-        public static void Title   (object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Title,    i);
-        public static void Outsider(object v, LogImportanceMode i = LogImportanceMode.Normal)
-            => Write(v?.ToString(), LogMode.Outsider, i);
+        {
+            Write(v?.ToString(), LogMode.Warning, i);
+            ConsoleTap?.Invoke(LogKind.Warning, v?.ToString() ?? string.Empty);   // NEW
+        }
 
-        // Discord capture 
+        public static void Error   (object v, LogImportanceMode i = LogImportanceMode.Normal)
+        {
+            Write(v?.ToString(), LogMode.Error,   i);
+            ConsoleTap?.Invoke(LogKind.Error,   v?.ToString() ?? string.Empty);   // NEW
+        }
+
+        public static void Title   (object v, LogImportanceMode i = LogImportanceMode.Normal)
+        {
+            Write(v?.ToString(), LogMode.Title,   i);
+            ConsoleTap?.Invoke(LogKind.Title,   v?.ToString() ?? string.Empty);   // NEW
+        }
+
+        public static void Discord (object v, LogImportanceMode i = LogImportanceMode.Normal)
+            => Write(v?.ToString(), LogMode.Discord, i);
+
         public static void StartDiscordBuffer(string username)
         {
             DiscordConsoleUser = username;
@@ -44,14 +58,16 @@ namespace GameServer.Misc
 
         public static List<string> FlushDiscordBuffer()
         {
-            var result = new List<string>(DiscordConsoleBuffer);
+            var outp = new List<string>(DiscordConsoleBuffer);
             DiscordConsoleBuffer.Clear();
-            DiscordConsoleUser = null!;
-            return result;
+            DiscordConsoleUser = string.Empty;
+            return outp;
         }
 
-        // core writer
-        private static void Write(string? text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
+        private static void Write(string? text,
+                                  LogMode mode,
+                                  LogImportanceMode importance,
+                                  bool writeToLogs = true)
         {
             if (text == null) return;
             Semaphore.WaitOne();
@@ -59,39 +75,35 @@ namespace GameServer.Misc
             {
                 if (!ShouldPrint(importance)) return;
 
-                if (writeToLogs)
-                    WriteToLogs(text);
+                if (writeToLogs) WriteToLogs(text);
 
                 var ts = DateTime.Now.ToString("HH:mm:ss");
                 Console.ForegroundColor = ColorDictionary[mode];
                 Console.WriteLine($"[{ts}] | {text}");
                 Console.ForegroundColor = ConsoleColor.White;
 
-                // only buffer while capturing a Discord-command response
-                if (!string.IsNullOrEmpty(DiscordConsoleUser) && Master.DiscordConfig?.Enabled == true)
+                // capture console-command output for Discord
+                if (!string.IsNullOrEmpty(DiscordConsoleUser) &&
+                    Master.DiscordConfig?.Enabled == true)
                     DiscordConsoleBuffer.Add(text);
             }
-            finally
-            {
-                Semaphore.Release();
-            }
+            finally { Semaphore.Release(); }
         }
 
-        private static void WriteToLogs(string toLog)
+        private static void WriteToLogs(string line)
         {
             try
             {
-                var sb = new StringBuilder();
-                sb.Append($"[{DateTime.Now:HH:mm:ss}] | {toLog}{Environment.NewLine}");
-                var fname = $"{DateTime.Now:yyyy-MM-dd}.txt";
-                var path  = Path.Combine(Master.SystemLogsPath, fname);
-                File.AppendAllText(path, sb.ToString());
+                var path = Path.Combine(Master.SystemLogsPath,
+                                        $"{DateTime.Now:yyyy-MM-dd}.txt");
+                File.AppendAllText(path,
+                    $"[{DateTime.Now:HH:mm:ss}] | {line}{Environment.NewLine}");
             }
             catch { /* swallow */ }
         }
 
-        private static bool ShouldPrint(LogImportanceMode importance) =>
-            importance switch
+        private static bool ShouldPrint(LogImportanceMode imp) =>
+            imp switch
             {
                 LogImportanceMode.Normal  => true,
                 LogImportanceMode.Verbose => Master.ServerConfig.VerboseLogs,

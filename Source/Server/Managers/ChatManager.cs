@@ -23,7 +23,7 @@ namespace GameServer.Managers
         private static ChatConfigFile?    ChatConfig    => Master.ChatConfig;
         private static DiscordConfigFile? DiscordConfig => Master.DiscordConfig;
 
-        // defaults (aliases retained)
+        // Defaults messages
         public static readonly string[] DefaultJoinMessages =
         {
             "Welcome to the global chat!",
@@ -36,13 +36,12 @@ namespace GameServer.Managers
             "List of available text tools:",
             "'b' inside brackets - Followed by the text you want to turn [b]bold",
             "'i' inside brackets - Followed by the text you want to turn [i]cursive",
-            "HTML color inside brackets - Followed by the text you want to [ff0000]change color"
+            "HTML color inside brackets - Followed by the text you want to [ff0000]change color",
+            "!'Name' - Ping a Discord user"
         };
 
-        // stylistic Pascal-case proxy (does NOT break existing calls to `defaultTextTools`)
         public static string[] DefaultTextTools => _defaultTextTools;
 
-        // keep original lowercase alias
         public static string[] defaultTextTools => _defaultTextTools;
 
         // packets
