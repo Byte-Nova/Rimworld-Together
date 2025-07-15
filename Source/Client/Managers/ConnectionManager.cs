@@ -9,11 +9,11 @@ namespace GameClient.Managers
     {
         public static void ShowWelcomeDialogs()
         {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Choose a login method:",
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Choose a connection method:",
                 delegate { RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListing()); },
                 delegate { ShowConnectDialogs(); },
                 "Server Browser",
-                "Login",
+                "Direct Connect",
                 true
                 ));
         }
