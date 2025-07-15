@@ -14,7 +14,7 @@ namespace GameClient.Dialogs
 
         private string NoText { get; set; }
 
-        public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null, string yText = "Yes", string nText = "No")
+        public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null, string yText = "Yes", string nText = "No", bool closableX = false)
         {
             this.Title = "OPTION";
             this.Description = description;
@@ -25,6 +25,8 @@ namespace GameClient.Dialogs
 
             closeOnAccept = false;
             closeOnCancel = false;
+
+            if (closableX) this.doCloseX = true;
         }
 
         public override void DoWindowContents(Rect rect)
