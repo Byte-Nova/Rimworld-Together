@@ -20,12 +20,20 @@ namespace GameClient.Core.Preferences
         public static LoginDataFile LoadLoginData()
         {
             // For testing purposes
-
             if (Input.GetKey(KeyCode.LeftShift)) return GetTestingLoginFile();
             else
             {
-                if (File.Exists(Master.LoginDataPath)) return Serializer.SerializeFromFile<LoginDataFile>(Master.LoginDataPath);
-                else return new LoginDataFile();
+                // 1st use existing login data, 2nd use Steam info, 3rd new login data file
+                if (File.Exists(Master.LoginDataPath))
+                    return Serializer.SerializeFromFile<LoginDataFile>(Master.LoginDataPath);
+                else if (Master.HasSteam)
+                    return new LoginDataFile()
+                    {
+                        UID = Master.SteamID.ToString(),
+                        Username = Master.SteamName,
+                    };
+                else
+                    return new LoginDataFile();
             }
         }
 
