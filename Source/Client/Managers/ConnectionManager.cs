@@ -7,13 +7,14 @@ namespace GameClient.Managers
 {
     public static class ConnectionManager
     {
-        public static void ShowWelcomeDialogs() 
+        public static void ShowWelcomeDialogs()
         {
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Choose a login method:",
                 delegate { RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListing()); },
                 delegate { ShowConnectDialogs(); },
                 "Server Browser",
-                "Login"
+                "Login",
+                true
                 ));
         }
 
