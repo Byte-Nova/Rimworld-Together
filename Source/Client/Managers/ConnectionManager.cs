@@ -20,8 +20,13 @@ namespace GameClient.Managers
 
         public static void ShowConnectDialogs()
         {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Connection Details", new string[] { "IP", "Port" }, new bool[] { false, false },
-                delegate { ParseConnectionDetails(); }));
+            var dialogConnDetails = new RT_Dialog_Inputs("Connection Details",
+                new string[] { "IP", "Port" },
+                new bool[] { false, false },
+                delegate { ParseConnectionDetails(); },
+                defaultValues: new string[] { "", "25555" }
+            );
+            RT_Dialog_Base.PushNewDialog(dialogConnDetails);
         }
 
         public static void ParseConnectionDetails()
