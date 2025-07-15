@@ -35,6 +35,14 @@ namespace GameClient.Core
         public static string RecentServersPath { get; set; }
 
         public static string SavesFolderPath { get; set; }
+        
+        // Steam
+        
+        public static bool HasSteam { get; set; }
+
+        public static ulong SteamID { get; set; }
+
+        public static string SteamName { get; set; }
 
         // Values
 
