@@ -35,8 +35,20 @@ namespace GameClient.Dialogs
 
             closeOnAccept = false;
             closeOnCancel = true;
+            doCloseX = true;
 
             _ = GetServersAsync();
+        }
+
+        public override bool OnCloseRequest()
+        {
+            // todo abort server serach when closing...
+            if (IsLoading)
+            {
+                Printer.Warning("Cannot close the server browser while it is loading!");
+                return false;
+            }
+            return base.OnCloseRequest();
         }
 
         private async Task<bool> GetServersAsync()
