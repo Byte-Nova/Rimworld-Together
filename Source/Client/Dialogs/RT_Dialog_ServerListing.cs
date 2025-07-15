@@ -24,6 +24,8 @@ namespace GameClient.Dialogs
 
         private bool FailedToFetchServers { get; set; } = false;
 
+        private float _loadingStartTime = -1f;
+
         public RT_Dialog_ServerListing()
         {
             IsLoading = false;
@@ -54,6 +56,7 @@ namespace GameClient.Dialogs
         private async Task<bool> GetServersAsync()
         {
             IsLoading = true;
+            _loadingStartTime = -1f;  // initialize the loading animation
             try
             {
                 var success = await Task.Run(GetServers);
@@ -96,7 +99,56 @@ namespace GameClient.Dialogs
 
         private void DoWindowContentsLoading(Rect rect)
         {
-            Widgets.Label(new Rect(rect.x + 10f, rect.y + 10f, rect.width - 20f, rect.height - 20f), "Loading servers...");
+            if (_loadingStartTime < 0f)
+                _loadingStartTime = Time.realtimeSinceStartup;
+
+            int seconds = Mathf.FloorToInt(Time.realtimeSinceStartup - _loadingStartTime);
+
+            float lineHeight = 32f;
+            float centeredX = rect.width / 2;
+            float windowDescriptionDif = Text.CalcSize(base.Description).y + StandardMargin;
+            float titleLineDif1 = windowDescriptionDif - Text.CalcSize(base.Description).y * 0.25f;
+
+            Text.Font = GameFont.Medium;
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(base.Title).x / 2, rect.y, Text.CalcSize(base.Title).x, Text.CalcSize(base.Title).y), base.Title);
+
+            Widgets.DrawLineHorizontal(rect.x, titleLineDif1, rect.width);
+
+            Text.Font = GameFont.Medium;
+            var labelLoading = "Loading servers...";
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(labelLoading).x / 2, windowDescriptionDif + lineHeight, Text.CalcSize(labelLoading).x, Text.CalcSize(labelLoading).y), labelLoading);
+
+            // Draw mood loading indicator
+            var space = 100f;
+            float moodY = windowDescriptionDif + space; //Text.CalcSize(base.Description).y * 1.1f;
+
+            Text.Font = GameFont.Medium;
+            var labelMood = "Mood";
+            Widgets.Label(new Rect(100f, moodY, Text.CalcSize(labelMood).x, Text.CalcSize(labelMood).y), labelMood);
+
+            moodY += lineHeight;
+            Text.Font = GameFont.Small;
+            DrawLabelWithValue(rect, moodY, "Very low expectations", "24", Color.green);
+
+            moodY += lineHeight;
+            Text.Font = GameFont.Small;
+            DrawLabelWithValue(rect, moodY, "Waiting for servers", (-seconds-1).ToString(), Color.red);
+        }
+
+        private void DrawLabelWithValue(Rect rect, float y, string label, string value, Color valueColor)
+        {
+            float margin = 20f;
+            float lineHeight = 32f;
+
+            Vector2 labelSize = Text.CalcSize(label);
+            Vector2 valueSize = Text.CalcSize(value);
+
+            Widgets.Label(new Rect(rect.x + margin, y, labelSize.x, lineHeight), label);
+
+            Color oldColor = GUI.color;
+            GUI.color = valueColor;
+            Widgets.Label(new Rect(rect.x + rect.width/2 - margin - valueSize.x, y, valueSize.x, lineHeight), value);
+            GUI.color = oldColor;
         }
 
         private void DoWindowContentsServerList(Rect rect)
@@ -115,8 +167,6 @@ namespace GameClient.Dialogs
             Widgets.Label(new Rect(centeredX - Text.CalcSize(base.Description).x / 2, windowDescriptionDif, Text.CalcSize(base.Description).x, Text.CalcSize(base.Description).y), base.Description);
 
             Text.Font = GameFont.Medium;
-            Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
-
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - DefaultButtonSize.y - 85f));
 
             Text.Font = GameFont.Small;
