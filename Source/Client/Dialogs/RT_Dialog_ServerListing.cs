@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using GameClient.Core.Preferences;
 using GameClient.Files;
 using GameClient.Managers;
@@ -19,11 +20,14 @@ namespace GameClient.Dialogs
 
         public static RT_Dialog_Base Instance { get; private set; }
 
+        private bool IsLoading { get; set; } = false;
+
         private bool FailedToFetchServers { get; set; } = false;
 
         public RT_Dialog_ServerListing()
         {
-            if (!GetServers()) FailedToFetchServers = true;
+            IsLoading = false;
+            FailedToFetchServers = false;
 
             Instance = this;
             this.Title = "Server Browser";
@@ -31,6 +35,23 @@ namespace GameClient.Dialogs
 
             closeOnAccept = false;
             closeOnCancel = true;
+
+            _ = GetServersAsync();
+        }
+
+        private async Task<bool> GetServersAsync()
+        {
+            IsLoading = true;
+            try
+            {
+                var success = await Task.Run(GetServers);
+                FailedToFetchServers = !success;
+                return success;
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private bool GetServers() 
@@ -56,7 +77,18 @@ namespace GameClient.Dialogs
         public override void DoWindowContents(Rect rect)
         {
             if (FailedToFetchServers) Close();
+            
+            if (IsLoading) DoWindowContentsLoading(rect);
+            else DoWindowContentsServerList(rect);
+        }
 
+        private void DoWindowContentsLoading(Rect rect)
+        {
+            Widgets.Label(new Rect(rect.x + 10f, rect.y + 10f, rect.width - 20f, rect.height - 20f), "Loading servers...");
+        }
+
+        private void DoWindowContentsServerList(Rect rect)
+        {
             float centeredX = rect.width / 2;
             float windowDescriptionDif = Text.CalcSize(base.Description).y + StandardMargin;
             float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(base.Description).y * 0.25f;
