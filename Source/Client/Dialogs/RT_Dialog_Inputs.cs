@@ -28,7 +28,11 @@ namespace GameClient.Dialogs
 
         public static string[]? DialogInputResults { get; set; }
 
-        public RT_Dialog_Inputs(string title, string[] labels, bool[] censors, Action onConfirm = null, Action onCancel = null, string onConfirmText = "Confirm", string OnCancel = "Cancel")
+        public RT_Dialog_Inputs(string title, string[] labels, bool[] censors,
+            Action onConfirm = null, Action onCancel = null, string onConfirmText = "Confirm",
+            string OnCancel = "Cancel",
+            string[]? defaultValues = null
+        )
         {
             this.Title = title;
             this.OnAccept = onConfirm;
@@ -38,9 +42,22 @@ namespace GameClient.Dialogs
             this.Censors = censors;
             Results = new string[] { "", "", "" };
             CensorResult = new string[] { "", "", "" };
+            SetDefaultValues(defaultValues);
 
             closeOnAccept = false;
             closeOnCancel = false;
+        }
+
+        private void SetDefaultValues(string[]? defaultValues)
+        {
+            if (defaultValues == null || defaultValues.Length == 0) return;
+            
+            for (int i = 0; i < defaultValues.Length; i++)
+            {
+                if (i >= Results.Length) break;
+
+                Results[i] = defaultValues[i];
+            }
         }
 
         public override void PreOpen() { CalculateWindowSize(); }
