@@ -40,7 +40,7 @@ namespace GameClient.Managers
             string[] values = new string[] { "Required", "Optional", "Forbidden" };
 
             RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager", "Manage mods for the server", 
-                keys, values, null, toDo);
+                keys, values, null, toDo, true);
 
             RT_Dialog_Base.PushNewDialog(dialog);
         }
