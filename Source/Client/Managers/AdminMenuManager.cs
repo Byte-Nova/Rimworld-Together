@@ -1,12 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using GameClient.Dialogs;
-using GameClient.Misc;
-using GameClient.TCP;
-using GameClient.Values;
-using Shared;
 
 namespace GameClient.Managers
 {
@@ -20,7 +12,8 @@ namespace GameClient.Managers
         {
             "Mod Manager",
             "Event Manager",
-            "Save Manager (BETA)"
+            "Save Manager (BETA)",
+            "Difficulty Manager"
         };
 
         public static void ShowAdminMenu()
@@ -36,7 +29,7 @@ namespace GameClient.Managers
             switch (RT_Dialog_ScrollButtons.SelectedScrollButton)
             {
                 case 0:
-                    ModManager.OpenModManagerMenu(false);
+                    ModManager.OpenModManagerMenu();
                     break;
 
                 case 1:
@@ -45,6 +38,10 @@ namespace GameClient.Managers
 
                 case 2:
                     SaveManager.OpenSaveUploaderMenu();
+                    break;
+
+                case 3:
+                    DifficultyManager.OpenDifficultyMenu();
                     break;
             }
         }

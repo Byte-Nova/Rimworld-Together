@@ -1,8 +1,9 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
-using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
@@ -45,9 +46,9 @@ namespace GameServer.Managers
                     Master.WorldValues.PollutedTiles = existingPollutedTiles.ToArray();
                 }
 
-                if (shouldBroadcast) NetworkHelper.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
+                if (shouldBroadcast) ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
 
-                WorldValuesFile.Save();
+                Master.WorldValues.Save();
             }
 
             catch

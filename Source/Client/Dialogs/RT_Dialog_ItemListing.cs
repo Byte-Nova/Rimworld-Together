@@ -1,19 +1,20 @@
-﻿using System;
-using System.Linq;
-using GameClient.Managers;
-using GameClient.TCP;
+﻿using GameClient.Managers;
 using GameClient.Values;
 using RimWorld;
+using RimWorld.Planet;
 using Shared;
+using System;
+using System.Linq;
 using UnityEngine;
 using Verse;
+using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Dialogs
 {
     public class RT_Dialog_ItemListing : RT_Dialog_Base
     {
-        public override Vector2 InitialSize => new Vector2(350f, 512f);
+        public override Vector2 InitialSize => new Vector2(400f, 512f);
 
         private Thing[] ListedThings { get; set; }
 
@@ -38,19 +39,17 @@ namespace GameClient.Dialogs
         {
             Text.Font = GameFont.Medium;
             Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(Title).x / 2, rect.y, rect.width, Text.CalcSize(Title).y), Title);
-
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - SlimButtonSize.y - 45));
-
             Text.Font = GameFont.Small;
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept"))
             {
-                OnAccept();
+                Accept();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel"))
             {
-                OnReject();
+                Reject();
             }
         }
 
@@ -91,75 +90,61 @@ namespace GameClient.Dialogs
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (ScriberH.CheckIfThingIsHuman(thing))
+            if (ScriberH.CheckIfThingIsHuman(thing)) Widgets.Label(fixedRect, $"[Human] {itemName}");
+            else if (ScriberH.CheckIfThingIsAnimal(thing)) Widgets.Label(fixedRect, $"[Animal] {itemName}");
+            else Widgets.Label(fixedRect, $"[Item] {itemName} (x{thing.stackCount}) ({thing.HitPoints} HP)");
+        }
+
+        private void Accept()
+        {
+            ClientValues.ToggleTradeStep(ClientValues.TradeMode.Receiving);
+
+            if (TransferMode == TransferMode.Gift)
             {
-                Widgets.Label(fixedRect, $"[H] {itemName}");
+                TransferManager.GetTransferedItemsToSettlement(ListedThings);
+                Close();
             }
 
-            else if (ScriberH.CheckIfThingIsAnimal(thing))
+            else if (TransferMode == TransferMode.Trade)
             {
-                Widgets.Label(fixedRect, $"[A] {itemName}");
+                if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
+                {
+                    Settlement settlement = Find.World.worldObjects.Settlements.First(fetch => fetch.Faction != Faction.OfPlayer);
+                    Pawn negotiator = RimworldManager.GetNegotiatorAtMap(settlement.Map);
+                    Find.WindowStack.Add(new Dialog_Trade(negotiator, settlement));
+                }
+
+                else
+                {
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
+                    TransferManager.RejectRequest(TransferMode);
+                    Close();
+                }
             }
 
-            else
+            else if (TransferMode == TransferMode.Rebound)
             {
-                Widgets.Label(fixedRect, $"[I] {itemName} (x{thing.stackCount}) ({thing.HitPoints} HP)");
+                SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
+
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+
+                TransferManager.GetTransferedItemsToCaravan(ListedThings);
+
+                Close();
+            }
+
+            else if (TransferMode == TransferMode.Pod)
+            {
+                TransferManager.GetTransferedItemsToSettlement(ListedThings);
+                Close();
             }
         }
 
-        private void OnAccept()
+        private void Reject()
         {
-            Action r1 = delegate
-            {
-                if (TransferMode == TransferMode.Gift)
-                {
-                    TransferManager.GetTransferedItemsToSettlement(ListedThings);
-                }
+            TransferManager.RejectRequest(TransferMode);
 
-                else if (TransferMode == TransferMode.Trade)
-                {
-                    if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
-                    {
-                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Settlement, true, true, true));
-                    }
-
-                    else
-                    {
-                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
-                        TransferManager.RejectRequest(TransferMode);
-                    }
-                }
-
-                else if (TransferMode == TransferMode.Pod)
-                {
-                    TransferManager.GetTransferedItemsToSettlement(ListedThings);
-                }
-
-                else if (TransferMode == TransferMode.Rebound)
-                {
-                    SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
-
-                    Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
-
-                    TransferManager.GetTransferedItemsToCaravan(ListedThings);
-                }
-
-                Close();
-            };
-
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?", r1, null));
-        }
-
-        private void OnReject()
-        {
-            Action r1 = delegate
-            {
-                TransferManager.RejectRequest(TransferMode);
-
-                Close();
-            };
-
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?", r1, null));
+            Close();
         }
     }
 }

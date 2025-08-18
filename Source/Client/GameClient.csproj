@@ -2,20 +2,21 @@
 	<PropertyGroup>
 		<TargetFramework>net472</TargetFramework>
 		<RootNamespace>GameClient</RootNamespace>
-		<Nullable>enable</Nullable>
+		<Nullable>disable</Nullable>
 		<LangVersion>9</LangVersion>
 		<OutputPath>..\..\1.6\Assemblies</OutputPath>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<AppendConfigurationToOutputPath>false</AppendConfigurationToOutputPath>
+		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-		<DebugType>full</DebugType>
+
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-		<DebugType>full</DebugType>
+
 		<Optimize>true</Optimize>
 	</PropertyGroup>
 
@@ -32,13 +33,75 @@
 		<PackageReference Include="Lib.Harmony" Version="2.3.6">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
+		<PackageReference Include="MessagePack" Version="3.1.4" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Reference Include="Newtonsoft.Json">
 	    <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
+	    <Private>True</Private>
 	  </Reference>
 	</ItemGroup>
 
-	<Import Project="..\Shared\Shared.projitems" Label="Shared" />
+	<ItemGroup>
+	  <ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System.Core">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System.Data">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System.Drawing">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System.IO.Compression.FileSystem">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System.Numerics">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System.Runtime.Serialization">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System.Xml">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Update="System.Xml.Linq">
+	    <Private>False</Private>
+	  </Reference>
+	</ItemGroup>
 </Project>

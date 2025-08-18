@@ -1,18 +1,19 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Shared.Files;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using Verse;
 using Verse.Sound;
+using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
@@ -21,8 +22,6 @@ namespace GameClient.Managers
 
     public static class TransferManager
     {
-        //Parses the packet into useful orders
-
         [HandlesPacket(PacketHeader.TransferManager)]
         private static void ParsePacket(byte[] bytes)
         {
@@ -77,18 +76,6 @@ namespace GameClient.Managers
 
         public static void TakeTransferItems(TransferLocation transferLocation)
         {
-            SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
-
-            if (transferLocation == TransferLocation.Caravan)
-            {
-                SessionValues.OutgoingManifest._toTile = SessionValues.ChosenSettlement.Tile;
-            }
-
-            else if (transferLocation == TransferLocation.Settlement)
-            {
-                SessionValues.OutgoingManifest._toTile = SessionValues.IncomingManifest._fromTile;
-            }
-
             if (TradeSession.deal.TryExecute(out bool actuallyTraded))
             {
                 SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
@@ -105,17 +92,19 @@ namespace GameClient.Managers
         public static void TakeTransferItemsFromPods(IEnumerable<IThingHolder> pods)
         {
             SessionValues.OutgoingManifest._transferMode = TransferMode.Pod;
-            SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
-            SessionValues.OutgoingManifest._toTile = SessionValues.ChosenSettlement.Tile;
 
             foreach (IThingHolder pod in pods)
             {
-                ThingOwner directlyHeldThings = pod.GetDirectlyHeldThings();
-
-                for (int i = 0; i < directlyHeldThings.Count(); i++)
+                try
                 {
-                    TransferManagerHelper.AddThingToTransferManifest(directlyHeldThings[i], directlyHeldThings[i].stackCount);
+                    ThingOwner directlyHeldThings = pod.GetDirectlyHeldThings();
+
+                    for (int i = 0; i < directlyHeldThings.Count(); i++)
+                    {
+                        TransferManagerHelper.AddThingToTransferManifest(directlyHeldThings[i], directlyHeldThings[i].stackCount);
+                    }
                 }
+                catch { continue; }
             }
         }
 
@@ -127,23 +116,33 @@ namespace GameClient.Managers
 
             if (transferLocation == TransferLocation.Caravan)
             {
-                SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
+                SessionValues.ChosenCaravan = TradeSession.playerNegotiator.GetCaravan();
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
+                SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
+                SessionValues.OutgoingManifest._toTile = TradeSession.playerNegotiator.Tile;
+
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeReRequest;
+                RT_Dialog_ItemListing.Instance.Close();
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeReRequest;
+                SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
+                SessionValues.OutgoingManifest._toTile = SessionValues.IncomingManifest._fromTile;
+
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Pod)
             {
                 SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
+                SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
+                SessionValues.OutgoingManifest._toTile = SessionValues.ChosenSettlement.Tile;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
         }
 
@@ -155,20 +154,8 @@ namespace GameClient.Managers
             {
                 Thing[] toRecover = TransferManagerHelper.GetAllTransferedItems(SessionValues.OutgoingManifest);
 
-                if (transferLocation == TransferLocation.Caravan)
-                {
-                    GetTransferedItemsToCaravan(toRecover, false);
-                }
-
-                else if (transferLocation == TransferLocation.Settlement)
-                {
-                    GetTransferedItemsToSettlement(toRecover, false);
-                }
-
-                else if (transferLocation == TransferLocation.Pod)
-                {
-                    //Do nothing
-                }
+                if (transferLocation == TransferLocation.Caravan) GetTransferedItemsToCaravan(toRecover, false);
+                else if (transferLocation == TransferLocation.Settlement) GetTransferedItemsToSettlement(toRecover, false);
             }
 
             catch
@@ -231,10 +218,13 @@ namespace GameClient.Managers
 
         public static void FinishTransfer(bool success)
         {
+            ClientValues.ToggleTradeStep(ClientValues.TradeMode.None);
+
             if (success) SaveManager.ForceSave();
 
             SessionValues.IncomingManifest = new TransferData();
             SessionValues.OutgoingManifest = new TransferData();
+
             ClientValues.ToggleTransfer(false);
         }
 
@@ -255,39 +245,17 @@ namespace GameClient.Managers
                 {
                     Action r1 = delegate
                     {
-                        if (transferData._transferMode == TransferMode.Gift)
-                        {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Gift);
-                            RT_Dialog_Base.PushNewDialog(d1);
-                        }
+                        RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), 
+                            transferData._transferMode);
 
-                        else if (transferData._transferMode == TransferMode.Trade)
-                        {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Trade);
-                            RT_Dialog_Base.PushNewDialog(d1);
-                        }
-
-                        else if (transferData._transferMode == TransferMode.Pod)
-                        {
-                            RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Pod);
-                            RT_Dialog_Base.PushNewDialog(d1);
-                        }
+                        RT_Dialog_Base.PushNewDialog(d1);
                     };
 
-                    if (transferData._transferMode == TransferMode.Gift)
-                    {
-                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a gift request" }, r1));
-                    }
+                    string description = string.Empty;
+                    if (transferData._transferMode == TransferMode.Trade) description = "You are receiving a trade request";
+                    else description = "You are receiving a gift request";
 
-                    else if (transferData._transferMode == TransferMode.Trade)
-                    {
-                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a trade request" }, r1));
-                    }
-
-                    else if (transferData._transferMode == TransferMode.Pod)
-                    {
-                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a gift request" }, r1));
-                    }
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { description }, r1));
                 }
             }
 
@@ -336,7 +304,7 @@ namespace GameClient.Managers
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReject;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
             }
 
             else if (transferMode == TransferMode.Pod)
@@ -348,7 +316,7 @@ namespace GameClient.Managers
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReReject;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
 
                 RecoverTradeItems(TransferLocation.Caravan);
             }
@@ -388,12 +356,12 @@ namespace GameClient.Managers
             {
                 Pawn pawn = thing as Pawn;
 
-                SessionValues.OutgoingManifest._animals.Add(ScribeManager.AnimalToString(pawn));
+                SessionValues.OutgoingManifest._animals.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Thing));
 
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
-            else SessionValues.OutgoingManifest._things.Add(ScribeManager.ThingToString(thing, thingCount));
+            else SessionValues.OutgoingManifest._things.Add(ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thingCount));
         }
 
         //Gets the transfer location in the desired map
@@ -428,14 +396,14 @@ namespace GameClient.Managers
                 allTransferedItems.Add(ScribeManager.StringtoHuman(file));
             }
 
-            foreach (AnimalFile file in transferData._animals)
+            foreach (string data in transferData._animals)
             {
-                allTransferedItems.Add(ScribeManager.StringToAnimal(file));
+                allTransferedItems.Add((Pawn)ScribeManager.SerializeFromString<Pawn>(data));
             }
 
-            foreach (ThingFile file in transferData._things)
+            foreach (string data in transferData._things)
             {
-                allTransferedItems.Add(ScribeManager.StringToThing(file));
+                allTransferedItems.Add((Thing)ScribeManager.SerializeFromString<Thing>(data));
             }
 
             return allTransferedItems.ToArray();

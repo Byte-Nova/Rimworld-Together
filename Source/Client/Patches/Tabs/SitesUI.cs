@@ -1,10 +1,8 @@
 ﻿using System.Linq;
 using GameClient.Managers;
-using GameClient.TCP;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Tabs
 {

@@ -1,53 +1,44 @@
-#if SERVER
-using GameServer.Core;
-#endif
-namespace Shared
+using Shared.Files;
+using System;
+using System.IO;
+
+namespace Shared.Files
 {
-    public class ModConfigFile
+    public class ModConfigFile : BaseFile
     {
-        public string[] UnsortedMods = new string[0];
+        public static string Path { get; set; } = string.Empty;
 
-        public ulong[] AllModIds = new ulong[0];
+        public string[] UnsortedMods { get; set; } = new string[0];
 
-        public string[] RequiredMods = new string[0];
+        public ulong[] AllModIds { get; set; } = new ulong[0];
 
-        public string[] OptionalMods = new string[0];
+        public string[] RequiredMods { get; set; } = new string[0];
 
-        public string[] ForbiddenMods = new string[0];
+        public string[] OptionalMods { get; set; } = new string[0];
 
-        public bool EnforcedConfigs = false;
+        public string[] ForbiddenMods { get; set; } = new string[0];
 
-        public string[] ModFileNames = new string[0];
+        public bool EnforcedConfigs { get; set; } = false;
 
-        public string[] ModConfigs = new string[0];
+        public string[] ModFileNames { get; set; } = new string[0];
 
-        public override string ToString()
+        public string[] ModConfigs { get; set; } = new string[0];
+
+        public override void Save()
         {
-            return $"ModConfigFile:|Total Mods : {UnsortedMods?.Length ?? 0}";
+            try { Serializer.SerializeToFile(Path, this); }
+            catch (Exception e) { throw new Exception(e.ToString()); }
         }
-#if SERVER
-        private static string FilePath => Path.Combine(Master.ConfigsPath, "ModConfig.json");
 
-        public static ModConfigFile Load()
+        public static object Load<T>()
         {
-            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ModConfigFile>(FilePath);
+            if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                ModConfigFile obj = new ModConfigFile();
-                Serializer.SerializeToFile(FilePath, obj);
-                return obj;
+                ModConfigFile file = new ModConfigFile();
+                Serializer.SerializeToFile(Path, file);
+                return file;
             }
         }
-
-        public static bool Save()
-        {
-            try
-            {
-                Serializer.SerializeToFile(FilePath, Master.ModConfig);
-                return true;
-            }
-            catch { return false; }
-        }
-#endif
     }
 }

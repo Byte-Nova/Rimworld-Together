@@ -4,7 +4,7 @@
 		<OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <Nullable>disable</Nullable>
         <RootNamespace>GameServer</RootNamespace>
 		<RuntimeIdentifiers>win-x64;win-x86;linux-x64;linux-arm;linux-arm64</RuntimeIdentifiers>
     </PropertyGroup>
@@ -20,6 +20,7 @@
     </PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MessagePack" Version="3.1.4" />
 		<PackageReference Include="Mono.Nat" Version="3.0.4" />
 		<PackageReference Include="System.Security.Permissions" Version="9.0.3" />
     </ItemGroup>
@@ -28,8 +29,15 @@
 
 	    <Reference Include="Newtonsoft.Json">
 	      <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
+	      <Private>True</Private>
 	    </Reference>
 	</ItemGroup>
-	
-    <Import Project="..\Shared\Shared.projitems" Label="Shared" />
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\Shared.csproj" />
+    </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
+	</ItemGroup>
 </Project>

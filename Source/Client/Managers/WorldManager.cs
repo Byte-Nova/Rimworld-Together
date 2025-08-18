@@ -1,23 +1,20 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
-using HarmonyLib;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Shared.Files;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using Verse;
 using Verse.Profile;
 using static Shared.CommonEnumerators;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace GameClient.Managers
 {
@@ -62,14 +59,11 @@ namespace GameClient.Managers
 
         public static void OnAskForWorld()
         {
-            RT_Dialog_Wait.Instance.Close();
-
             ClientValues.ToggleGenerateWorld(true);
 
-            RT_Dialog_Message d1 = new RT_Dialog_Message("MESSAGE", new string[] { "You are the first person joining the server!",
-                "Configure the world that everyone will play on" }, delegate { ModManager.OpenModManagerMenu(true); });
+            RT_Dialog_Wait.Instance.Close();
 
-            RT_Dialog_Base.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(new Page_SelectScenario());
         }
 
         public static void OnExistingWorld()
@@ -87,7 +81,7 @@ namespace GameClient.Managers
             data._stepMode = WorldStepMode.Sent;
             data._fileBytes = Serializer.ConvertObjectToBytes(SessionValues.WorldFile);
 
-            Network.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.WorldManager, data);
 
             OnWorldSent();
         }
@@ -97,8 +91,6 @@ namespace GameClient.Managers
             File.Delete(WorldManager.tempWorldPath);
 
             ClientValues.ToggleGenerateWorld(false);
-
-            SaveManager.ForceSave();
         }
 
         public static void OnReceiveWorld(WorldData data)
@@ -241,28 +233,11 @@ namespace GameClient.Managers
         public static void PopulateWorldValues()
         {
             Printer.Warning("Populating world values", LogImportanceMode.Verbose);
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-
             SessionValues.WorldFile.Features = GetPlanetFeatures();
-            Printer.Warning($"Getting planet features took {watch.ElapsedMilliseconds} ms",  LogImportanceMode.Verbose);
-            watch.Restart();
-
             SessionValues.WorldFile.Roads = RoadManagerHelper.GetPlanetRoads();
-            Printer.Warning($"Roads took {watch.ElapsedMilliseconds} ms");
-            watch.Restart();
-
             SessionValues.WorldFile.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
-            Printer.Warning($"Getting pollution took {watch.ElapsedMilliseconds} ms", LogImportanceMode.Verbose);
-            watch.Restart();
-
             SessionValues.WorldFile.NPCSettlements = GetPlanetNPCSettlements();
-            Printer.Warning($"Getting settlements took {watch.ElapsedMilliseconds} ms", LogImportanceMode.Verbose);
-            watch.Restart();
-
             SessionValues.WorldFile.NPCFactions = GetPlanetNPCFactions();
-            Printer.Warning($"Getting factions took {watch.ElapsedMilliseconds} ms", LogImportanceMode.Verbose);
-            watch.Restart();
         }
 
         public static PlanetNPCFactionDetails[] GetNPCFactionsFromDef(FactionDef[] factionDefs)

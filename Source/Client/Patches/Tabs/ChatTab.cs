@@ -16,10 +16,6 @@ namespace GameClient.Patches.Tabs
 
         private Vector2 scrollPositionChat = Vector2.zero;
 
-        private readonly int startAcceptingInputAtFrame;
-
-        private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
-
         public ChatTab()
         {
             layer = WindowLayer.GameUI;
@@ -151,7 +147,7 @@ namespace GameClient.Patches.Tabs
         {
             Text.Font = GameFont.Small;
             string inputOne = Widgets.TextField(new(rect.xMin + 165f, rect.yMax - 25f, rect.width - 165f, 25f), ChatManager.CurrentChatInput);
-            if (AcceptsInput && inputOne.Length <= 512) ChatManager.CurrentChatInput = inputOne;
+            if (inputOne.Length <= 512) ChatManager.CurrentChatInput = inputOne;
         }
 
         private void DrawPinCheckbox(Rect rect)

@@ -1,41 +1,32 @@
-#if SERVER
-using GameServer.Core;
-#endif
-namespace Shared
+using Shared.Files;
+using System;
+using System.IO;
+
+namespace Shared.Files
 {
-    public class ScenarioValuesFile
+    public class ScenarioValuesFile : BaseFile
     {
-        public bool EnforceScenario;
+        public static string Path { get; set; } = string.Empty;
 
-        public string ScenarioName;
+        public bool EnforceScenario { get; set; } = false;
 
-        public override string ToString()
+        public string ScenarioName { get; set; } = string.Empty;
+
+        public override void Save()
         {
-            return $"ScenarioValuesFile:|{EnforceScenario}|{ScenarioName}";
+            try { Serializer.SerializeToFile(Path, this); }
+            catch (Exception e) { throw new Exception(e.ToString()); }
         }
-#if SERVER
-        private static string FilePath => Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
 
-        public static ScenarioValuesFile Load()
+        public static object Load<T>()
         {
-            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ScenarioValuesFile>(FilePath);
+            if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                ScenarioValuesFile obj = new ScenarioValuesFile();
-                Serializer.SerializeToFile(FilePath, obj);
-                return obj;
+                ScenarioValuesFile file = new ScenarioValuesFile();
+                Serializer.SerializeToFile(Path, file);
+                return file;
             }
         }
-
-        public static bool Save()
-        {
-            try
-            {
-                Serializer.SerializeToFile(FilePath, Master.ScenarioValues);
-                return true;
-            }
-            catch { return false; }
-        }
-#endif
     }
 }

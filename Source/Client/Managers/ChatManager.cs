@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
@@ -14,6 +13,7 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -34,7 +34,7 @@ namespace GameClient.Managers
         public static bool ChatAutoscroll = true;
 
         //Chat clock
-        private static Task? ChatClockTask { get; set; }
+        private static Task ChatClockTask { get; set; }
         private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
         //Icons
@@ -72,7 +72,7 @@ namespace GameClient.Managers
             chatData._username = ClientValues.Username;
             chatData._message = messageToSend;
 
-            Network.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
@@ -261,10 +261,10 @@ namespace GameClient.Managers
     [DefOf]
     public static class ChatSounds
     {
-        public static SoundDef? OwnChatDing;
-        public static SoundDef? AllyChatDing;
-        public static SoundDef? NeutralChatDing;
-        public static SoundDef? HostileChatDing;
-        public static SoundDef? SystemChatDing;
+        public static SoundDef OwnChatDing;
+        public static SoundDef AllyChatDing;
+        public static SoundDef NeutralChatDing;
+        public static SoundDef HostileChatDing;
+        public static SoundDef SystemChatDing;
     }
 }

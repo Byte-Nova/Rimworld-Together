@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<RootNamespace>Template</RootNamespace>
+		<Nullable>disable</Nullable>
+		<LangVersion>9</LangVersion>
+		<OutputPath>..\..\1.6\Assemblies</OutputPath>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+		<AppendConfigurationToOutputPath>false</AppendConfigurationToOutputPath>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+</Project>

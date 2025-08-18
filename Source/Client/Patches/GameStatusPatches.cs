@@ -1,5 +1,4 @@
 ﻿using GameClient.Managers;
-using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
@@ -7,6 +6,9 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
+using GameClient.Misc;
+using GameClient.Dialogs;
+using System;
 
 namespace GameClient.Patches
 {
@@ -18,12 +20,12 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.State == ClientNetworkState.Connected)
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     SettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
 
-                    if (ClientValues.IsGeneratingFreshWorld) WorldManager.SendWorld();
-                    else SaveManager.ForceSave();
+                    if (!ClientValues.IsGeneratingFreshWorld) SaveManager.ForceSave();
+                    else ModManager.OpenModManagerMenu(true);
 
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
@@ -37,7 +39,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.State == ClientNetworkState.Connected)
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     PlanetManager.BuildPlanet();
 
@@ -51,80 +53,13 @@ namespace GameClient.Patches
             }
         }
 
-        [HarmonyPatch(typeof(SettleInEmptyTileUtility), nameof(SettleInEmptyTileUtility.Settle))]
-        public static class SettlePatch
-        {
-            [HarmonyPostfix]
-            public static void ModifyPost(Caravan caravan)
-            {
-                if (Network.State == ClientNetworkState.Connected)
-                {
-                    SettlementManager.SendNewPlayerSettlement(caravan.Tile);
-
-                    SaveManager.ForceSave();
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(SettleInExistingMapUtility), nameof(SettleInExistingMapUtility.Settle))]
-        public static class SettleInMapPatch
-        {
-            [HarmonyPostfix]
-            public static void ModifyPost(Map map)
-            {
-                if (Network.State == ClientNetworkState.Connected)
-                {
-                    SettlementManager.SendNewPlayerSettlement(map.Tile);
-
-                    SaveManager.ForceSave();
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(SettlementAbandonUtility), "Abandon")]
-        public static class AbandonPatch
-        {
-            [HarmonyPostfix]
-            public static void ModifyPost(Settlement settlement)
-            {
-                if (Network.State == ClientNetworkState.Connected)
-                {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementFile.Tile = settlement.Tile;
-                    settlementData._stepMode = SettlementStepMode.Remove;
-
-                    Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
-
-                    SaveManager.ForceSave();
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(Settlement), nameof(Settlement.PostRemove))]
-        public static class DestroyNPCSettlementPatch
-        {
-            [HarmonyPostfix]
-            public static void ModifyPost(Settlement __instance)
-            {
-                if (Network.State == ClientNetworkState.Connected)
-                {
-                    if (!ClientValues.IsReadyToPlay) return;
-                    if (!SessionValues.ActionValues.EnableNPCDestruction) return;
-
-                    if (__instance.Faction == Faction.OfPlayer) return;
-                    else if (ClientValues.PlayerFactions.Contains(__instance.Faction)) return;
-                    else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
-                }
-            }
-        }
-
         [HarmonyPatch(typeof(Dialog_Options), nameof(Dialog_Options.DoWindowContents))]
         public static class PatchDevMode
         {
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.State == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
                 else return;
             }
         }

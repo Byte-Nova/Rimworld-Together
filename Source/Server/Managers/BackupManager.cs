@@ -1,6 +1,7 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
 using Shared;
+using Shared.Files;
 using System.IO.Compression;
 using static Shared.CommonEnumerators;
 
@@ -119,10 +120,10 @@ namespace GameServer.Managers
         {
             while (true)
             {
+                Thread.Sleep(TimeSpan.FromHours(Master.BackupConfig.IntervalHours));
+
                 try { BackupServer(); }
                 catch (Exception e) { Printer.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
-
-                Thread.Sleep(TimeSpan.FromHours(Master.BackupConfig.IntervalHours));
             }
         }
     }

@@ -20,7 +20,7 @@ Download the latest server files at [here](https://github.com/Byte-Nova/Rimworld
 > When extracting the server files somewhere, be mindful on where this location might be, avoid installing it at privileged locations (where admin permissions are needed) to prevent your antivirus/system kicking off.
 
 ## Container-based Deployment:
-We provide an official container image hosted on the Github Container Repository and an exemple docker-compose file to run the server.
+We provide an official container image hosted on the Github Container Repository and an example docker-compose file to run the server.
 
 The following commands allow you to runs the server after creating a `RWTData` directory that will contain all the server's user files.
 

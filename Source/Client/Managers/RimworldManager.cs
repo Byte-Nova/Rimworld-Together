@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameClient.Misc;
 using GameClient.Values;
@@ -20,16 +21,14 @@ namespace GameClient.Managers
             else return false;
         }
 
+        public static Pawn GetIfSocialPawnInCaravan(Caravan caravan)
+        {
+            return caravan.PawnsListForReading.FirstOrDefault(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+        }
+
         public static bool CheckIfSocialPawnInMap(Map map)
         {
             Pawn playerNegotiator = map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
-            if (playerNegotiator != null) return true;
-            else return false;
-        }
-
-        public static bool CheckIfSocialPawnInCaravan(Caravan caravan)
-        {
-            Pawn playerNegotiator = caravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             if (playerNegotiator != null) return true;
             else return false;
         }
@@ -65,6 +64,11 @@ namespace GameClient.Managers
             return false;
         }
 
+        public static Pawn GetNegotiatorAtMap(Map map)
+        {
+            return Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+        }
+
         public static Thing[] GetAllThingsInMap(Map map)
         {
             return map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item
@@ -74,10 +78,8 @@ namespace GameClient.Managers
         public static int GetSpecificThingCountInMap(ThingDef thingDef, Map map)
         {
             int totalCount = 0;
-
-            Thing[] allFetchedThings = map.listerThings.AllThings.Where(fetch => fetch.def == thingDef && !fetch.Position.Fogged(map)).ToArray();
-
-            foreach (Thing thing in allFetchedThings)
+            List<Thing> things = map.listerThings.ThingsOfDef(thingDef).FindAll(fetch => fetch.IsInAnyStorage()).ToList();
+            foreach (Thing thing in things)
             {
                 totalCount += thing.stackCount;
             }
@@ -173,19 +175,15 @@ namespace GameClient.Managers
 
         public static void RemoveThingFromSettlement(Map map, ThingDef thingDef, int requiredQuantity)
         {
+            List<Thing> things = map.listerThings.ThingsOfDef(thingDef).Where(fetch => fetch.IsInAnyStorage()).ToList();
+
             while (requiredQuantity > 0)
             {
-                List<Thing> things = map.listerThings.ThingsOfDef(thingDef).Where(fetch => fetch.IsInAnyStorage())
-                    .ToList();
-
-                while (requiredQuantity > 0)
-                {
-                    Thing thing = things.First();
-                    int stackDeleting = Mathf.Min(requiredQuantity, thing.stackCount);
-                    thing.SplitOff(stackDeleting);
-                    requiredQuantity -= stackDeleting;
-                    things.Remove(thing);
-                }
+                Thing thing = things.First();
+                int stackDeleting = Mathf.Min(requiredQuantity, thing.stackCount);
+                thing.SplitOff(stackDeleting);
+                requiredQuantity -= stackDeleting;
+                things.Remove(thing);
             }
         }
 
@@ -225,26 +223,32 @@ namespace GameClient.Managers
             else return false;
         }
 
-        public static void HandleMapFactions(Map map, Faction targetFaction)
+        public static void SetMapFactions(Map map, Faction targetFaction)
         {
-            foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
-            {
-                if (pawn.Faction == ClientValues.NeutralPlayer)
-                {
-                    pawn.SetFaction(targetFaction);
-                }
-            }
+            //We don't wanna change to neutral faction because it's the default one
 
-            foreach (Thing thing in map.listerThings.AllThings.ToArray())
+            if (targetFaction == ClientValues.NeutralPlayer) return;
+            else
             {
-                if (thing.Faction == ClientValues.NeutralPlayer)
+                foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
                 {
-                    if (thing.def.CanHaveFaction) thing.SetFaction(targetFaction);
+                    if (pawn.Faction == ClientValues.NeutralPlayer)
+                    {
+                        pawn.SetFaction(targetFaction);
+                    }
+                }
+
+                foreach (Thing thing in map.listerThings.AllThings.ToArray())
+                {
+                    if (thing.Faction == ClientValues.NeutralPlayer)
+                    {
+                        if (thing.def.CanHaveFaction) thing.SetFaction(targetFaction);
+                    }
                 }
             }
         }
 
-        public static void PrepareMapLord(Map map, Faction targetFaction)
+        public static void SetMapLord(Map map, Faction targetFaction)
         {
             Thing toFocusOn;
 
@@ -253,7 +257,7 @@ namespace GameClient.Managers
             if (toFocusOn != null) deployPlace = toFocusOn.Position;
 
             Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == targetFaction).ToArray();
-            LordJob_DefendBase job = new LordJob_DefendBase(targetFaction, deployPlace, 1);
+            LordJob_DefendBase job = new LordJob_DefendBase(targetFaction, deployPlace, int.MaxValue);
             LordMaker.MakeNewLord(targetFaction, job, map, lordPawns);
         }
     }

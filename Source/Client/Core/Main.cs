@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Verse;
-using Verse.Steam;
 
 namespace GameClient.Core
 {

@@ -1,14 +1,9 @@
-using System.Diagnostics;
-using System.Globalization;
-using System.Runtime;
-using System.Text;
-using GameServer.Core.Configs;
 using GameServer.Managers;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
-using Shared.Misc;
-using GameServer.Misc;
+using Shared.Files;
+using System.Globalization;
+using System.Reflection;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Core
@@ -20,67 +15,58 @@ namespace GameServer.Core
             Console.ForegroundColor = ConsoleColor.White;
 
             SetPaths();
+            LoadFiles();
             SetCulture();
             LoadResources();
-            ChangeTitle();
+
             Validator.CheckIfFirstBoot();
             MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
 
             if (Master.ActionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
 
-            Threader.GenerateServerThread(Threader.ServerMode.Start);
-            Threader.GenerateServerThread(Threader.ServerMode.Console);
+            ServerNetwork _ = new ServerNetwork();
+
             if (Master.BackupConfig.AutomaticBackups) Threader.GenerateServerThread(Threader.ServerMode.Backup);
             ServerBrowserManager.StartLoops();
 
-            while (true) Thread.Sleep(1);
+            while (true) ConsoleManager.ListenForServerCommands();
         }
 
         public static void SetPaths()
         {
-            Master.MainPath = Directory.GetCurrentDirectory();
-            Master.ConfigsPath = Path.Combine(Master.MainPath, "Configs");
-            Master.TempPath = Path.Combine(Master.MainPath, "Temp");
-
-            Master.AssetsPath = Path.Combine(Master.MainPath, "Assets");
-            Master.MapsPath = Path.Combine(Master.AssetsPath, "Maps");
-            Master.UsersPath = Path.Combine(Master.AssetsPath, "Users");
-            Master.SavesPath = Path.Combine(Master.AssetsPath, "Saves");
-            Master.SitesPath = Path.Combine(Master.AssetsPath, "Sites");
-            Master.FactionsPath = Path.Combine(Master.AssetsPath, "Factions");
-            Master.SettlementsPath = Path.Combine(Master.AssetsPath, "Settlements");
-            Master.EventsPath = Path.Combine(Master.AssetsPath, "Events");
-            Master.WorldPath = Path.Combine(Master.AssetsPath, "World");
-            Master.CompatibilityPatchesPath = Path.Combine(Master.AssetsPath, "Patches");
-
-            Master.LogsPath = Path.Combine(Master.MainPath, "Logs");
-            Master.SystemLogsPath = Path.Combine(Master.LogsPath, "System");
-            Master.ChatLogsPath = Path.Combine(Master.LogsPath, "Chat");
-
-            Master.BackupsPath = Path.Combine(Master.MainPath, "Backups");
-            Master.BackupUsersPath = Path.Combine(Master.BackupsPath, "Users");
-            Master.BackupServerPath = Path.Combine(Master.BackupsPath, "Servers");
+            ServerConfigFile.Path = Path.Combine(Master.ConfigsPath, "ServerConfig.json");
+            ActionValuesFile.Path = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
+            WorldValuesFile.Path = Path.Combine(Master.WorldPath, "WorldValuesFile.json");
+            StorytellerValuesFile.Path = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
+            SiteValuesFile.Path = Path.Combine(Master.ConfigsPath, "SiteConfig.json");
+            ScenarioValuesFile.Path = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
+            RoadValuesFile.Path = Path.Combine(Master.ConfigsPath, "RoadConfig.json");
+            ModConfigFile.Path = Path.Combine(Master.ConfigsPath, "ModConfig.json");
+            DifficultyValuesFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
+            ServerBrowserConfig.Path = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
+            WhitelistConfigFile.Path = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
+            BackupConfigFile.Path = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
+            ChatConfigFile.Path = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
 
             if (!Directory.Exists(Master.AssetsPath)) Directory.CreateDirectory(Master.AssetsPath);
             if (!Directory.Exists(Master.ConfigsPath)) Directory.CreateDirectory(Master.ConfigsPath);
-            if (!Directory.Exists(Master.LogsPath)) Directory.CreateDirectory(Master.LogsPath);
-            if (!Directory.Exists(Master.BackupsPath)) Directory.CreateDirectory(Master.BackupsPath);
-            if (!Directory.Exists(Master.TempPath)) Directory.CreateDirectory(Master.TempPath);
 
+            if (!Directory.Exists(Master.LogsPath)) Directory.CreateDirectory(Master.LogsPath);
+            if (!Directory.Exists(Master.SystemLogsPath)) Directory.CreateDirectory(Master.SystemLogsPath);
+            if (!Directory.Exists(Master.ChatLogsPath)) Directory.CreateDirectory(Master.ChatLogsPath);
+            if (!Directory.Exists(Master.BackupsPath)) Directory.CreateDirectory(Master.BackupsPath);
+            if (!Directory.Exists(Master.BackupUsersPath)) Directory.CreateDirectory(Master.BackupUsersPath);
+            if (!Directory.Exists(Master.BackupServerPath)) Directory.CreateDirectory(Master.BackupServerPath);
+
+            if (!Directory.Exists(Master.TempPath)) Directory.CreateDirectory(Master.TempPath);
             if (!Directory.Exists(Master.UsersPath)) Directory.CreateDirectory(Master.UsersPath);
             if (!Directory.Exists(Master.SavesPath)) Directory.CreateDirectory(Master.SavesPath);
             if (!Directory.Exists(Master.MapsPath)) Directory.CreateDirectory(Master.MapsPath);
-            if (!Directory.Exists(Master.SystemLogsPath)) Directory.CreateDirectory(Master.SystemLogsPath);
-            if (!Directory.Exists(Master.ChatLogsPath)) Directory.CreateDirectory(Master.ChatLogsPath);
             if (!Directory.Exists(Master.SitesPath)) Directory.CreateDirectory(Master.SitesPath);
             if (!Directory.Exists(Master.FactionsPath)) Directory.CreateDirectory(Master.FactionsPath);
             if (!Directory.Exists(Master.SettlementsPath)) Directory.CreateDirectory(Master.SettlementsPath);
             if (!Directory.Exists(Master.EventsPath)) Directory.CreateDirectory(Master.EventsPath);
             if (!Directory.Exists(Master.WorldPath)) Directory.CreateDirectory(Master.WorldPath);
-
-            if (!Directory.Exists(Master.BackupUsersPath)) Directory.CreateDirectory(Master.BackupUsersPath);
-            if (!Directory.Exists(Master.BackupServerPath)) Directory.CreateDirectory(Master.BackupServerPath);
-
             if (!Directory.Exists(Master.CompatibilityPatchesPath)) Directory.CreateDirectory(Master.CompatibilityPatchesPath);
         }
 
@@ -99,44 +85,37 @@ namespace GameServer.Core
             Printer.Title($"Server version {CommonValues.ExecutableVersion}");
             Printer.Title($"Loading all necessary resources");
             Printer.Title($"----------------------------------------");
-            
-            Master.ServerConfig = ServerConfigFile.Load();
 
-            Master.ActionConfigs = ActionValuesFile.Load();
+            LoadFiles();
 
-            Master.SiteValues = SiteValuesFile.Load();
-
-            Master.RoadValues = RoadValuesFile.Load();
-
-            Master.Whitelist = WhitelistConfigFile.Load();
-
-            Master.DifficultyValues = DifficultyValuesFile.Load();
-
-            Master.ScenarioValues = ScenarioValuesFile.Load();
-
-            Master.StorytellerValues =  StorytellerValuesFile.Load();
-
-            Master.BackupConfig = BackupConfigFile.Load();
-
-            Master.ModConfig = ModConfigFile.Load();
-            
-            Master.ChatConfig = ChatConfigFile.Load();
-            
-            Master.WorldValues = WorldValuesFile.Load();
-            
-            Master.ServerBrowserConfig = ServerBrowserConfig.Load();
-            
-            EventManagerHelper.LoadEvents();
+            EventManagerH.LoadAllEvents();
             
             GC.Collect();
             GC.WaitForPendingFinalizers();
             Printer.Warning($"{GC.GetTotalAllocatedBytes() / 1024 / 1024}MB after resource loading", LogImportanceMode.Verbose);
         }
 
+        private static void LoadFiles()
+        {
+            Master.ServerConfig = (ServerConfigFile)ServerConfigFile.Load<ServerConfigFile>();
+            Master.ActionConfigs = (ActionValuesFile)ActionValuesFile.Load<ActionValuesFile>();
+            Master.SiteValues = (SiteValuesFile)SiteValuesFile.Load<SiteValuesFile>();
+            Master.RoadValues = (RoadValuesFile)RoadValuesFile.Load<RoadValuesFile>();
+            Master.Whitelist = (WhitelistConfigFile)WhitelistConfigFile.Load<WhitelistConfigFile>();
+            Master.DifficultyValues = (DifficultyValuesFile)DifficultyValuesFile.Load<DifficultyValuesFile>();
+            Master.ScenarioValues = (ScenarioValuesFile)ScenarioValuesFile.Load<ScenarioValuesFile>();
+            Master.StorytellerValues = (StorytellerValuesFile)StorytellerValuesFile.Load<StorytellerValuesFile>();
+            Master.BackupConfig = (BackupConfigFile)BackupConfigFile.Load<BackupConfigFile>();
+            Master.ModConfig = (ModConfigFile)ModConfigFile.Load<ModConfigFile>();
+            Master.ChatConfig = (ChatConfigFile)ChatConfigFile.Load<ChatConfigFile>();
+            Master.WorldValues = (WorldValuesFile)WorldValuesFile.Load<WorldValuesFile>();
+            Master.ServerBrowserConfig = (ServerBrowserConfig)ServerBrowserConfig.Load<ServerBrowserConfig>();
+        }
+
         public static void ChangeTitle()
         {
             Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - " +
-                $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.ServerConfig.MaxPlayers}]";
+                $"Players [{ServerNetwork.Instance.GetConnectedClientsSafe().Length}/{Master.ServerConfig.MaxPlayers}]";
         }
     }
 }

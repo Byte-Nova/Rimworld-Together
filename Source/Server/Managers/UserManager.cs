@@ -2,8 +2,10 @@
 using GameServer.Core;
 using GameServer.Files;
 using GameServer.Misc;
-using GameServer.TCP;
+using TCPNetwork.Packets;
+using TCPNetwork.Server;
 using Shared;
+using Shared.Files;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
@@ -14,16 +16,16 @@ namespace GameServer.Managers
         public static void SendPlayerRecount()
         {
             PlayerRecountData playerRecountData = new PlayerRecountData();
-            playerRecountData._currentPlayerCount = NetworkHelper.GetConnectedClientsSafe().Count();
-            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.UserFile.Label);
+            playerRecountData._currentPlayerCount = ServerNetwork.Instance.GetConnectedClientsSafe().Count();
+            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.UserFile.Label);
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.RecountManager, playerRecountData);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.RecountManager, playerRecountData);
         }
 
         public static void BanPlayerFromName(string uid)
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(uid);
-            ServerClient client = NetworkHelper.GetConnectedClientFromUid(uid);
+            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUid(uid);
             if (userFile == null || client == null) ConsoleCommandActions.ThrowUserNotFoundError();
             else
             {
@@ -104,7 +106,7 @@ namespace GameServer.Managers
 
         public static bool CheckIfUserIsConnected(string username)
         {
-            ServerClient toGet = NetworkHelper.GetConnectedClientFromUid(username);
+            ServerClient toGet = ServerNetwork.Instance.GetConnectedClientFromUid(username);
             if (toGet != null) return true;
             else return false;
         }

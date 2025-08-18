@@ -1,21 +1,19 @@
-namespace Shared 
+namespace Shared.Files
 {
     public class SiteInfoFile 
     {
-        public string DefName;
+        public string DefName { get; set; } = string.Empty;
 
-        public string[] DefNameCost;
+        public string[] DefNameCost { get; set; } = null;
 
-        public int[] Cost;
+        public int[] Cost { get; set; } = null;
 
-        public SiteRewardFile[] Rewards;
+        public SiteRewardFile[] Rewards { get; set; } = null;
 
         public SiteInfoFile Clone() 
         {
             byte[] data = Serializer.ConvertObjectToBytes(this);
-            return Serializer.ConvertBytesToObject<SiteInfoFile>(data, false);
+            return Serializer.ConvertBytesToObject<SiteInfoFile>(data);
         }
-
-        //Override ToString() once rework is done
     }
 }

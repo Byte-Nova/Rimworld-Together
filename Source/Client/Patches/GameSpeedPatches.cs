@@ -1,4 +1,3 @@
-using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
 using Verse;
@@ -13,7 +12,7 @@ namespace GameClient.Patches
         public static bool DoPre(TickManager __instance)
         {
             //Check if player is connected
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
             //Check if feature is disabled
             if (SessionValues.ActionValues.EnforcedGameSpeed == 0) return true;

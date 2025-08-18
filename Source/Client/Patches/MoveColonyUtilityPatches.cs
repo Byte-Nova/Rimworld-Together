@@ -3,13 +3,12 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using GameClient.Managers;
-using GameClient.Misc;
-using GameClient.TCP;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using TCPNetwork.Packets;
 
 namespace GameClient.Patches
 {
@@ -63,7 +62,7 @@ namespace GameClient.Patches
                     settlementData._settlementFile.Tile = settlement;
                     settlementData._stepMode = CommonEnumerators.SettlementStepMode.Remove;
 
-                    Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+                    ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
                 }
             }
         }

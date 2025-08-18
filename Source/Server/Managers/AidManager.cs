@@ -1,8 +1,10 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Packets;
+using TCPNetwork.Server;
 
 namespace GameServer.Managers
 {
@@ -50,7 +52,7 @@ namespace GameServer.Managers
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._toTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.UID))
                 {
-                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
+                    ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUid(settlementFile.UID);
 
                     if (!ValueChecker.CheckIfCanAid(target.UserFile))
                     {
@@ -83,7 +85,7 @@ namespace GameServer.Managers
                 {
                     client.UserFile.UpdateAidTime();
 
-                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
+                    ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUid(settlementFile.UID);
                     target.Listener.EnqueuePacket(PacketHeader.AidManager, data);
                 }
 
@@ -105,7 +107,7 @@ namespace GameServer.Managers
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.UID))
                 {
-                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
+                    ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUid(settlementFile.UID);
                     target.Listener.EnqueuePacket(PacketHeader.AidManager, data);
                 }
 

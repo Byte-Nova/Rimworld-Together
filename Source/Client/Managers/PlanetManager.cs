@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using GameClient.Misc;
 using GameClient.Values;
 using RimWorld;
-using RimWorld.Planet;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -24,40 +21,29 @@ namespace GameClient.Managers
             if (ClientValues.IsGeneratingFreshWorld) return;
             else
             {
-                Stopwatch watch = Stopwatch.StartNew();
-                
                 SettlementManager.ClearAllSettlements();
                 SettlementManager.AddSettlements(PlayerSettlementManagerHelper.tempSettlements);
-                Printer.Warning($"Swapping player settlements took {watch.ElapsedMilliseconds} ms");
-                watch.Restart();
                 
                 SiteManager.ClearAllSites();
                 SiteManager.AddSites(SiteManagerH.tempSites);
-                Printer.Warning($"Swapping sites took {watch.ElapsedMilliseconds} ms");
-                watch.Restart();
                 
                 NPCManager.ClearAllSettlements();
                 NPCManagerH.SaveAllQuests();
                 
                 NPCManager.AddSettlements(NPCManagerH.tempNPCSettlements);
                 NPCManagerH.CleanupQuests();
-                Printer.Warning($"Swapping npc settlements and quests took {watch.ElapsedMilliseconds} ms");
-                watch.Restart();
                 
                 RoadManager.ClearAllRoads();
                 RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails, false);
-                Printer.Warning($"Swapping roads took {watch.ElapsedMilliseconds} ms");
-                watch.Restart();
                 
-                PollutionManager.ClearAllPollution();
-                PollutionManager.AddPollutedTiles(PollutionManagerHelper.tempPollutionDetails, false);
-                Printer.Warning($"Swapping pollution took {watch.ElapsedMilliseconds} ms");
-                watch.Restart();
+                if (ModLister.BiotechInstalled)
+                {
+                    PollutionManager.ClearAllPollution();
+                    PollutionManager.AddPollutedTiles(PollutionManagerHelper.tempPollutionDetails, false);
+                }
                 
                 CaravanManager.ClearAllCaravans();
                 CaravanManagerH.SetAllPlayerCaravans();
-                Printer.Warning($"Swapping caravans took {watch.ElapsedMilliseconds} ms");
-                watch.Restart();
             }
         }
     }

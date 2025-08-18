@@ -1,11 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using GameClient.Core.Preferences;
-using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
-using RimWorld;
+using TCPNetwork.Packets;
 using Shared;
 using UnityEngine;
 using Verse;

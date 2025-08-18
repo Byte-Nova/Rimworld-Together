@@ -1,12 +1,12 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Packets;
+using TCPNetwork.Server;
 
 namespace GameServer.Managers
 {
-
     public static class ActivityManager
     {
         [HandlesPacket(PacketHeader.ActivityManager)]

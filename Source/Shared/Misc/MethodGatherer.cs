@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace Shared
 {
@@ -17,7 +18,8 @@ namespace Shared
         {
             if (type == AssemblyType.Client)
             {
-                MethodInfo[] clientMethods = GetPacketHandlerAttributes((Type[])Assembly.GetExecutingAssembly().GetTypes().ToArray());
+                Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameClient");
+                MethodInfo[] clientMethods = GetPacketHandlerAttributes((Type[])assembly.GetTypes().ToArray());
                 ClientMethodDictionary = new Dictionary<PacketHeader, MethodInfo>();
                 for (int i = 0; i < clientMethods.Length; i++)
                 {
@@ -28,7 +30,8 @@ namespace Shared
 
             else
             {
-                MethodInfo[] serverMethods = GetPacketHandlerAttributes((Type[])Assembly.GetExecutingAssembly().GetTypes().ToArray());
+                Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameServer");
+                MethodInfo[] serverMethods = GetPacketHandlerAttributes((Type[])assembly.GetTypes().ToArray());
                 ServerMethodDictionary = new Dictionary<PacketHeader, MethodInfo>();
                 for (int i = 0; i < serverMethods.Length; i++)
                 {

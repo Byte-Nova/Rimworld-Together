@@ -5,8 +5,8 @@ using GameClient.Dialogs;
 using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
+using TCPNetwork.Packets;
 using Shared;
 using UnityEngine;
 using Verse;
@@ -19,6 +19,8 @@ namespace GameClient.Core.Preferences
 
         public static LoginDataFile LoadLoginData()
         {
+            RemoveOnNextUpdate.FixSpacesInUsername();
+
             // For testing purposes
 
             if (Input.GetKey(KeyCode.LeftShift)) return GetTestingLoginFile();
@@ -33,7 +35,7 @@ namespace GameClient.Core.Preferences
 
         public static void UseLoginData()
         {
-            if (Network.State != CommonEnumerators.ClientNetworkState.Connected) return;
+            if (SessionValues.CurrentNetworkState != CommonEnumerators.ClientNetworkState.Connected) return;
             else
             {
                 LoginDataFile file = LoadLoginData();
@@ -45,7 +47,7 @@ namespace GameClient.Core.Preferences
                 data._username = file.Username;
                 data._runningMods = ModManagerH.GetRunningModList();
 
-                Network.Listener.EnqueuePacket(PacketHeader.LoginManager, data);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.LoginManager, data);
             }
         }
 
@@ -122,21 +124,21 @@ namespace GameClient.Core.Preferences
         public static void SetupQuickConnectVariables()
         {
             ConnectionDataFile connectionData = ConnectionDataHandler.LoadConnectionData();
-            Network.Ip = connectionData.IP;
-            Network.Port = connectionData.Port;
+            ClientNetwork.Ip = connectionData.IP;
+            ClientNetwork.Port = connectionData.Port;
         }
 
         public static void ShowQuickConnectFloatMenu()
         {
             List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
             {
-                Tuple.Create($"Join latest server > {Network.Ip}:{Network.Port}", 0),
+                Tuple.Create($"Join latest server > {ClientNetwork.Ip}:{ClientNetwork.Port}", 0),
             };
 
             FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Threader.GenerateThread(Threader.Mode.Start);
+                ClientNetwork _ = new ClientNetwork();
             });
 
             Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>() { tuple1 }));
@@ -144,8 +146,8 @@ namespace GameClient.Core.Preferences
 
         public static bool CheckIfQuickConnectIsValid()
         {
-            if (string.IsNullOrWhiteSpace(Network.Ip)) return false;
-            else if (string.IsNullOrWhiteSpace(Network.Port)) return false;
+            if (string.IsNullOrWhiteSpace(ClientNetwork.Ip)) return false;
+            else if (string.IsNullOrWhiteSpace(ClientNetwork.Port)) return false;
             else return true;
         }
     }

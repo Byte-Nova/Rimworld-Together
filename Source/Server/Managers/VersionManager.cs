@@ -1,7 +1,8 @@
 ﻿using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
@@ -20,7 +21,12 @@ namespace GameServer.Managers
                 data._step = VersionData.VersionStep.Pass;
                 client.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
             }
-            else LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongVersion);
+
+            else
+            {
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongVersion);
+                InformationDisplayer.DisplayVersionMismatch(client);
+            }
         }
 
         public static void AskForClientVersion(ServerClient client)

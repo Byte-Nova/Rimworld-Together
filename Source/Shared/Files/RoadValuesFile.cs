@@ -1,65 +1,53 @@
-﻿using System;
-#if SERVER
-using GameServer.Core;
-#endif
-namespace Shared
+﻿using Shared.Files;
+using System;
+using System.IO;
+
+namespace Shared.Files
 {
     [Serializable]
-    public class RoadValuesFile
+    public class RoadValuesFile : BaseFile
     {
+        public static string Path { get; set; } = string.Empty;
+
         //Allowance of the roads
 
-        public bool AllowDirtPath = true;
+        public bool AllowDirtPath { get; set; } = true;
 
-        public bool AllowDirtRoad = true;
+        public bool AllowDirtRoad { get; set; } = true;
 
-        public bool AllowStoneRoad = true;
+        public bool AllowStoneRoad { get; set; } = true;
 
-        public bool AllowAsphaltPath = true;
+        public bool AllowAsphaltPath { get; set; } = true;
 
-        public bool AllowAsphaltHighway = true;
+        public bool AllowAsphaltHighway { get; set; } = true;
 
         //Cost of the roads
 
-        public int DirtPathCost = 10;
+        public int DirtPathCost { get; set; } = 10;
 
-        public int DirtRoadCost = 20;
+        public int DirtRoadCost { get; set; } = 20;
 
-        public int StoneRoadCost = 25;
+        public int StoneRoadCost { get; set; } = 25;
 
-        public int AsphaltPathCost = 30;
+        public int AsphaltPathCost { get; set; } = 30;
 
-        public int AsphaltHighwayCost = 50;
+        public int AsphaltHighwayCost { get; set; } = 50;
 
-        public override string ToString()
+        public override void Save()
         {
-            return $"RoadValuesFile:|{AllowDirtPath}|{AllowDirtRoad}|{AllowStoneRoad}|{AllowAsphaltPath}|{AllowAsphaltHighway}" +
-                $"|{DirtPathCost}|{DirtRoadCost}|{StoneRoadCost}|{AsphaltPathCost}|{AsphaltHighwayCost}";
+            try { Serializer.SerializeToFile(Path, this); }
+            catch (Exception e) { throw new Exception(e.ToString()); }
         }
-        
-#if SERVER
-        private static string FilePath => Path.Combine(Master.ConfigsPath, "RoadConfig.json");
 
-        public static RoadValuesFile Load()
+        public static object Load<T>()
         {
-            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<RoadValuesFile>(FilePath);
+            if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                RoadValuesFile obj = new RoadValuesFile();
-                Serializer.SerializeToFile(FilePath, obj);
-                return obj;
+                RoadValuesFile file = new RoadValuesFile();
+                Serializer.SerializeToFile(Path, file);
+                return file;
             }
         }
-
-        public static bool Save()
-        {
-            try
-            {
-                Serializer.SerializeToFile(FilePath, Master.RoadValues);
-                return true;
-            }
-            catch { return false; }
-        }
-#endif
     }
 }

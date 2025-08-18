@@ -1,7 +1,7 @@
 using GameClient.Core.Preferences;
-using GameClient.TCP;
 using GameClient.Values;
 using Shared;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -14,7 +14,7 @@ namespace GameClient.Managers
 
             ClientValues.SetValues(serverGlobalData);
             SessionValues.SetValues(serverGlobalData);
-            EventManagerHelper.SetValues(serverGlobalData);
+            EventManagerH.SetValues(serverGlobalData);
             GameParameterManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);
             NPCManagerH.SetValues(serverGlobalData);
@@ -22,7 +22,7 @@ namespace GameClient.Managers
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
             ModManager.ReceiveMods(serverGlobalData);
-            RecentServersHandler.AddServerToList(serverGlobalData._serverValues.ServerName, $"{Network.Ip}:{Network.Port}");
+            RecentServersHandler.AddServerToList(serverGlobalData._serverValues.ServerName, $"{ClientNetwork.Ip}:{ClientNetwork.Port}");
         }
     }
 }

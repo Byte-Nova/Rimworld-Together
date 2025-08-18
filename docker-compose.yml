@@ -1,6 +1,6 @@
 services:
   rimworld-together:
-    image: ghcr.io/byte-nova/rimworld-together:latest
+    image: ghcr.io/rimworld-together/rimworld-together:latest
     ports:
       - 25555:25555
     volumes:

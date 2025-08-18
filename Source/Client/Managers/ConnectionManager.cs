@@ -1,7 +1,6 @@
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
 
 namespace GameClient.Managers
 {
@@ -41,11 +40,11 @@ namespace GameClient.Managers
             if (isInvalid) RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server details are invalid! Please try again!" }));
             else
             {
-                Network.Ip = RT_Dialog_Inputs.DialogInputResults[0];
-                Network.Port = RT_Dialog_Inputs.DialogInputResults[1];
+                ClientNetwork.Ip = RT_Dialog_Inputs.DialogInputResults[0];
+                ClientNetwork.Port = RT_Dialog_Inputs.DialogInputResults[1];
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Threader.GenerateThread(Threader.Mode.Start);
+                ClientNetwork _ = new ClientNetwork();
             }
         }
     }

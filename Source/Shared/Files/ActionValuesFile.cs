@@ -1,69 +1,52 @@
-﻿using System;
-#if SERVER
-using GameServer.Core;
-#endif
+﻿using Shared.Files;
+using System;
+using System.IO;
 
-namespace Shared
+namespace Shared.Files
 {
-    [Serializable]
-    public class ActionValuesFile
+    public class ActionValuesFile : BaseFile
     {
-        public bool EnableActivities = true;
+        public static string Path { get; set; } = string.Empty;
 
-        public bool EnableEvents = true;
+        public bool EnableActivities { get; set; } = true;
 
-        public bool EnableSites = true;
+        public bool EnableEvents { get; set; } = true;
 
-        public bool EnableRoads = true;
+        public bool EnableSites { get; set; } = true;
 
-        public bool EnableFactions = true;
+        public bool EnableRoads { get; set; } = true;
 
-        public bool EnableAids = true;
+        public bool EnableFactions { get; set; } = true;
 
-        public bool EnableTrading = true;
+        public bool EnableAids { get; set; } = true;
 
-        public bool EnableSpying = true;
+        public bool EnableTrading { get; set; } = true;
 
-        public bool EnableCustomScenarios = true;
+        public bool EnableSpying { get; set; } = true;
 
-        public bool EnableNPCDestruction = false;
+        public bool EnableCustomScenarios { get; set; } = true;
 
-        public bool EnablePollutionSpread = true;
+        public bool EnableNPCDestruction { get; set; } = false;
 
-        public int EnforcedGameSpeed = 0;
+        public bool EnablePollutionSpread { get; set; } = true;
 
-        public int SpyCost = 100;
+        public int EnforcedGameSpeed { get; set; } = 0;
 
-        public override string ToString()
+        public override void Save()
         {
-            return $"ActionValuesFile:|{EnableActivities}|{EnableEvents}|{EnableSites}|{EnableRoads}|{EnableFactions}|{EnableAids}|{EnableTrading}" +
-                $"|{EnableSpying}|{EnableCustomScenarios}|{EnableNPCDestruction}|{EnablePollutionSpread}|{EnforcedGameSpeed}|{SpyCost}";
+            try { Serializer.SerializeToFile(Path, this); }
+            catch (Exception e) { throw new Exception(e.ToString()); }
         }
 
-#if SERVER
-        private static string FilePath => Path.Combine(Master.ConfigsPath, "ActionConfig.json");
-
-        public static ActionValuesFile Load()
+        public static object Load<T>()
         {
-            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ActionValuesFile>(FilePath);
+            if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                ActionValuesFile obj = new ActionValuesFile();
-                Serializer.SerializeToFile(FilePath, obj);
-                return obj;
+                ActionValuesFile file = new ActionValuesFile();
+                Serializer.SerializeToFile(Path, file);
+                return file;
             }
         }
-
-        public static bool Save()
-        {
-            try
-            {
-                Serializer.SerializeToFile(FilePath, Master.ActionConfigs);
-                return true;
-            }
-            catch { return false; }
-        }
-#endif
-
     }
 }

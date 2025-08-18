@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
-using RimWorld.Planet;
 using Shared;
 using Verse;
 
@@ -14,8 +13,6 @@ namespace GameClient.Values
 {
     public static class ClientValues
     {
-        public static Stopwatch TestingWatch { get; private set; } = new Stopwatch();
-
         public static bool IsGeneratingFreshWorld { get; private set; } = false;
 
         public static bool IsReadyToPlay { get; private set; } = false;
@@ -33,6 +30,10 @@ namespace GameClient.Values
         public static bool IsAdmin { get; set; } = false;
 
         public static bool HasFaction { get; set; } = false;
+
+        public enum TradeMode { None, Sending, Receiving }
+
+        public static TradeMode LastTradeStep { get; private set; } = ClientValues.TradeMode.None;
 
         public static List<Faction> PlayerFactions { get; set; } = new List<Faction>();
 
@@ -133,6 +134,8 @@ namespace GameClient.Values
 
         public static void ToggleUsingScriber(bool mode) { IsUsingScriber = mode; }
 
+        public static void ToggleTradeStep(TradeMode step) { LastTradeStep = step; }
+
         public static void ToggleAdmin(bool mode) 
         { 
             IsAdmin = mode;
@@ -150,6 +153,7 @@ namespace GameClient.Values
             ToggleUsingScriber(false);
             ToggleAdmin(false);
             ToggleFaction(false);
+            ToggleTradeStep(TradeMode.None);
 
             DisconnectionManager.SetIntentionalDisconnect(false);
         }

@@ -1,7 +1,7 @@
 ﻿using GameClient.Misc;
-using GameClient.TCP;
 using Shared;
 using Verse;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -23,7 +23,7 @@ namespace GameClient.Managers
             MapData mapData = new MapData();
             mapData._mapFile = MapSaveLoader.MapToString(map, true, true, true, true, true, true);
 
-            Network.Listener.EnqueuePacket(PacketHeader.MapManager, mapData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.MapManager, mapData);
         }
     }
 }

@@ -6,6 +6,7 @@ using RimWorld;
 using Shared;
 using GameClient.Managers;
 using GameClient.Misc;
+using Shared.Files;
 
 namespace GameClient.Dialogs
 {

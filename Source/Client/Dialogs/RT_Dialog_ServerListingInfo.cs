@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
 using HarmonyLib;
-using RimWorld;
+using TCPNetwork.Packets;
 using Shared;
 using UnityEngine;
 using Verse;
@@ -189,10 +186,10 @@ namespace GameClient.Dialogs
 
         private void ConnectToServer() 
         {
-            Network.Ip = ServerInfo._ip;
-            Network.Port = ServerInfo._port.ToString();
+            ClientNetwork.Ip = ServerInfo._ip;
+            ClientNetwork.Port = ServerInfo._port.ToString();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-            Threader.GenerateThread(Threader.Mode.Start);
+            ClientNetwork _ = new ClientNetwork();
             Close();
         }
 

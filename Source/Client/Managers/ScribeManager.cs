@@ -5,8 +5,8 @@ using System.Text.RegularExpressions;
 using GameClient.Misc;
 using GameClient.Values;
 using RimWorld;
-using RimWorld.Planet;
 using Shared;
+using Shared.Files;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -20,16 +20,24 @@ namespace GameClient.Managers
 
         public static string ScribeNodeName { get; private set; } = "N";
 
-        public static string SerializeFromThing(Thing toSave, int customCount = -1)
+        public enum SerializableType { Thing, Other }
+
+        public static string SerializeToString(object toSave, SerializableType type, int customCount = -1)
         {
             ClientValues.ToggleUsingScriber(true);
 
-            string scribeData = "";
+            string scribeData = string.Empty;
+            int originalCount = -1;
+            Thing objAsThing = null;
 
             try
             {
-                int originalCount = toSave.stackCount;
-                if (customCount != -1) toSave.stackCount = customCount;
+                if (type == SerializableType.Thing)
+                {
+                    objAsThing = toSave as Thing;
+                    originalCount = objAsThing.stackCount;
+                    if (customCount != -1) objAsThing.stackCount = customCount;
+                }
 
                 Scribe.saver.InitSaving("", ScribeTreeName);
 
@@ -37,22 +45,25 @@ namespace GameClient.Managers
 
                 Scribe.saver.FinalizeSaving();
 
-                if (customCount != -1) toSave.stackCount = originalCount;
+                if (type == SerializableType.Thing)
+                {
+                    if (customCount != -1) objAsThing.stackCount = originalCount;
+                }
 
                 scribeData = new Regex(@">\s*<").Replace(StringWriter.ToString(), "><");
             }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); };
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
 
             ClientValues.ToggleUsingScriber(false);
 
             return scribeData.ToString();
         }
 
-        public static Thing SerializeToThing(string scribeData)
+        public static T SerializeFromString<T>(string scribeData, SerializableType type = SerializableType.Thing)
         {
             ClientValues.ToggleUsingScriber(true);
 
-            Thing toLoad = null;
+            object toLoad = null;
 
             try
             {
@@ -61,47 +72,34 @@ namespace GameClient.Managers
                 Scribe_Deep.Look(ref toLoad, ScribeNodeName);
 
                 Scribe.loader.FinalizeLoading();
+
+                if (type == SerializableType.Thing)
+                {
+                    Thing thing = toLoad as Thing;
+                    thing.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
+                }
             }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); };
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
 
             ClientValues.ToggleUsingScriber(false);
 
-            return toLoad;
+            return (T)toLoad;
         }
 
-        public static ThingFile ThingToString(Thing thing, int thingCount)
-        {
-            ThingFile thingData = new ThingFile();
-
-            thingData.ID = thing.ThingID;
-
-            thingData.ScribeData = ScribeManager.SerializeFromThing(thing, thingCount);
-
-            return thingData;
-        }
-
-        public static Thing StringToThing(ThingFile thingData)
-        {
-            return ScribeManager.SerializeToThing(thingData.ScribeData);
-        }
+        //At some point merge these 2 below into the top functions, beware of ideology
 
         public static HumanFile HumanToString(Pawn human)
         {
             HumanFile humanFile = new HumanFile();
 
-            humanFile.ID = human.ThingID;
-
-            humanFile.ScribeData = ScribeManager.SerializeFromThing(human);
+            humanFile.ScribeData = ScribeManager.SerializeToString(human, SerializableType.Thing);
 
             if (ModsConfig.IdeologyActive)
             {
-                humanFile.Ideology = new IdeologyFile();
-
                 bool isPlayerIdeo = human.Ideo.initialPlayerIdeo;
                 human.Ideo.initialPlayerIdeo = false;
-                humanFile.Ideology.ScriberData = IdeoToString(human.Ideo);
+                humanFile.IdeologyData = SerializeToString(human.Ideo, SerializableType.Other);
                 human.Ideo.initialPlayerIdeo = isPlayerIdeo;
-                humanFile.Ideology.Id = human.Ideo.id;
             }
 
             return humanFile;
@@ -109,11 +107,11 @@ namespace GameClient.Managers
 
         public static Pawn StringtoHuman(HumanFile file)
         {
-            Pawn pawn = (Pawn)ScribeManager.SerializeToThing(file.ScribeData);
+            Pawn pawn = (Pawn)ScribeManager.SerializeFromString<Pawn>(file.ScribeData);
 
             if (ModsConfig.IdeologyActive)
             {
-                Ideo ideo = StringToIdeo(file.Ideology.ScriberData);
+                Ideo ideo = (Ideo)ScribeManager.SerializeFromString<Ideo>(file.IdeologyData);
 
                 Ideo match = Find.IdeoManager.IdeosListForReading.FirstOrDefault(i => 
                     i.id == ideo.id && i.name == ideo.name && i.description == ideo.description);
@@ -123,154 +121,6 @@ namespace GameClient.Managers
 
             return (pawn);
         }
-
-        public static AnimalFile AnimalToString(Pawn animal)
-        {
-            AnimalFile animalData = new AnimalFile();
-
-            animalData.ID = animal.ThingID;
-
-            animalData.ScribeData = ScribeManager.SerializeFromThing(animal);
-
-            return animalData;
-        }
-
-        public static Pawn StringToAnimal(AnimalFile file)
-        {
-            return (Pawn)ScribeManager.SerializeToThing(file.ScribeData);
-        }
-
-        public static string TileToString(Tile toSave)
-        {
-            ClientValues.ToggleUsingScriber(true);
-
-            string scribeData = "";
-
-            try
-            {
-                Scribe.saver.InitSaving("", ScribeManager.ScribeTreeName);
-
-                Scribe_Deep.Look(ref toSave, ScribeManager.ScribeNodeName);
-
-                Scribe.saver.FinalizeSaving();
-
-                scribeData = new Regex(@">\s*<").Replace(ScribeManager.StringWriter.ToString(), "><");
-            }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
-
-            ClientValues.ToggleUsingScriber(false);
-
-            return scribeData.ToString();
-        }
-
-        public static Tile StringToTile(string scribeData)
-        {
-            ClientValues.ToggleUsingScriber(true);
-
-            Tile toLoad = null;
-
-            try
-            {
-                Scribe.loader.InitLoading(scribeData);
-
-                Scribe_Deep.Look(ref toLoad, ScribeManager.ScribeNodeName);
-
-                Scribe.loader.FinalizeLoading();
-            }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
-
-            ClientValues.ToggleUsingScriber(false);
-
-            return toLoad;
-        }
-
-        public static string DifficultyToString(Difficulty toSave)
-        {
-            ClientValues.ToggleUsingScriber(true);
-
-            string scribeData = "";
-
-            try
-            {
-                Scribe.saver.InitSaving("", ScribeManager.ScribeTreeName);
-
-                Scribe_Deep.Look(ref toSave, ScribeManager.ScribeNodeName);
-
-                Scribe.saver.FinalizeSaving();
-
-                scribeData = new Regex(@">\s*<").Replace(ScribeManager.StringWriter.ToString(), "><");
-            }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
-
-            ClientValues.ToggleUsingScriber(false);
-
-            return scribeData.ToString();
-        }
-
-        public static Difficulty StringToDifficulty(string scribeData)
-        {
-            ClientValues.ToggleUsingScriber(true);
-
-            Difficulty toLoad = null;
-
-            try
-            {
-                Scribe.loader.InitLoading(scribeData);
-
-                Scribe_Deep.Look(ref toLoad, ScribeManager.ScribeNodeName);
-
-                Scribe.loader.FinalizeLoading();
-            }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
-
-            ClientValues.ToggleUsingScriber(false);
-
-            return toLoad;
-        }
-
-        public static string IdeoToString(Ideo ideology)
-        {
-            ClientValues.ToggleUsingScriber(true);
-
-            string scribeData = "";
-
-            try
-            {
-                Scribe.saver.InitSaving("", ScribeManager.ScribeTreeName);
-
-                Scribe_Deep.Look(ref ideology, ScribeManager.ScribeNodeName);
-
-                Scribe.saver.FinalizeSaving();
-
-                scribeData = new Regex(@">\s*<").Replace(ScribeManager.StringWriter.ToString(), "><");
-            }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
-
-            ClientValues.ToggleUsingScriber(false);
-
-            return scribeData.ToString();
-        }
-
-        public static Ideo StringToIdeo(string str) 
-        {
-            ClientValues.ToggleUsingScriber(true);
-
-            Ideo toload = null;
-
-            try
-            {
-                Scribe.loader.InitLoading(str);
-
-                Scribe_Deep.Look(ref toload, ScribeManager.ScribeNodeName);
-
-                Scribe.loader.FinalizeLoading();
-            }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
-
-            ClientValues.ToggleUsingScriber(false);
-
-            return toload;
-        }      
     }
 
     public static class ScriberH
@@ -291,17 +141,6 @@ namespace GameClient.Managers
             {
                 PawnKindDef animal = DefDatabase<PawnKindDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == thing.def.defName);
                 if (animal != null) return true;
-                else return false;
-            }
-            catch { return false; }
-        }
-
-        public static bool CheckIfThingIsCorpse(Thing thing)
-        {
-            try
-            {
-                Corpse corpse = thing as Corpse;
-                if (corpse != null) return true;
                 else return false;
             }
             catch { return false; }

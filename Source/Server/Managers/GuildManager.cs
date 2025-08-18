@@ -1,10 +1,11 @@
 ﻿using GameServer.Core;
 using GameServer.Files;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Packets;
+using TCPNetwork.Server;
 
 namespace GameServer.Managers
 {
@@ -134,7 +135,7 @@ namespace GameServer.Managers
         {
             GuildFile factionFile = GuildManagerH.GetFactionFromFactionName(client.UserFile.GuildName);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
-            ServerClient toAdd = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
+            ServerClient toAdd = ServerNetwork.Instance.GetConnectedClientFromUid(settlementFile.UID);
 
             if (factionFile == null) return;
             if (toAdd == null) return;
@@ -187,7 +188,7 @@ namespace GameServer.Managers
             GuildFile factionFile = GuildManagerH.GetFactionFromFactionName(client.UserFile.GuildName);
             SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(factionManifest._dataInt);
             UserFile toUpdateOffline = UserManagerH.GetUserFileFromName(settlementFile.UID);
-            ServerClient toRemoveConnected = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
+            ServerClient toRemoveConnected = ServerNetwork.Instance.GetConnectedClientFromUid(settlementFile.UID);
 
             if (GuildManagerH.GetMemberRank(factionFile, client.UserFile.Uid) == FactionRanks.Member)
             {
@@ -348,7 +349,7 @@ namespace GameServer.Managers
 
                 foreach (string str in factionFile.CurrentUids)
                 {
-                    ServerClient toUpdateConnected = NetworkHelper.GetConnectedClientFromUid(str);
+                    ServerClient toUpdateConnected = ServerNetwork.Instance.GetConnectedClientFromUid(str);
                     toUpdateConnected?.UserFile.UpdateFaction(factionFile);
 
                     UserFile toUpdateOffline = UserManagerH.GetUserFileFromName(str);
@@ -422,7 +423,7 @@ namespace GameServer.Managers
 
         public static ServerClient[] GetConnectedFactionMembers(GuildFile factionFile)
         {
-            return NetworkHelper.GetConnectedClientsSafe().Where(fetch => fetch.UserFile.GuildName == factionFile.Name).ToArray();
+            return ServerNetwork.Instance.GetConnectedClientsSafe().Where(fetch => fetch.UserFile.GuildName == factionFile.Name).ToArray();
         }
 
         public static UserFile[] GetUsersFromFactionMembers(GuildFile factionFile)

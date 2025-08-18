@@ -1,16 +1,19 @@
-﻿using RimWorld.Planet;
+﻿using GameClient.Dialogs;
+using GameClient.Misc;
+using GameClient.Patches;
+using GameClient.Values;
+using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
+using RimWorld.Planet;
 using Shared;
+using Shared.Files;
+using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
-using GameClient.Dialogs;
-using GameClient.Values;
-using GameClient.TCP;
-using GameClient.Misc;
 
 namespace GameClient.Managers
 {
-
     public static class ActivityManager
     {
         [HandlesPacket(PacketHeader.ActivityManager)]
@@ -53,14 +56,14 @@ namespace GameClient.Managers
             data._stepMode = ActivityStepMode.Request;
             data._targetTile = targetTile;
 
-            Network.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ActivityManager, data);
         }
 
-        private static void OnAccept(ActivityData offlineVisitData) 
+        private static void OnAccept(ActivityData data) 
         {
             RT_Dialog_Wait.Instance.Close();
 
-            PrepareMap(offlineVisitData._mapFile); 
+            PrepareMap(data._mapFile); 
         }
 
         private static void OnDeny()
@@ -74,48 +77,40 @@ namespace GameClient.Managers
         {
             Map map = null;
 
-            if (SessionValues.latestActivity == ActivityType.Visit)
-            {
-                map = MapSaveLoader.StringToMap(mapFile, false, true, true, true, true, true, false);
-            }
-
-            else if (SessionValues.latestActivity == ActivityType.Raid)
+            if (SessionValues.latestActivity == ActivityType.Raid)
             {
                 map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
             }
 
-            else if (SessionValues.latestActivity == ActivityType.Spy)
+            else if (SessionValues.latestActivity == ActivityType.Zoom)
             {
-                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
+                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, false);
             }
 
             Faction faction;
-            if (SessionValues.latestActivity == ActivityType.Visit) faction = ClientValues.AllyPlayer;
-            else if (SessionValues.latestActivity == ActivityType.Raid) faction = ClientValues.EnemyPlayer;
-            else faction = ClientValues.EnemyPlayer;
+            if (SessionValues.latestActivity == ActivityType.Raid) faction = ClientValues.EnemyPlayer;
+            else faction = ClientValues.NeutralPlayer;
 
-            RimworldManager.HandleMapFactions(map, faction);
+            RimworldManager.SetMapFactions(map, faction);
 
-            RimworldManager.PrepareMapLord(map, faction);
+            RimworldManager.SetMapLord(map, faction);
 
-            if (SessionValues.latestActivity == ActivityType.Visit)
+            if (SessionValues.latestActivity == ActivityType.Raid)
             {
-                CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, map, CaravanEnterMode.Edge,
-                    CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
+                CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, SessionValues.ChosenSettlement.Map, 
+                    CaravanEnterMode.Edge, CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
+
+                CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
             }
 
-            else if (SessionValues.latestActivity == ActivityType.Raid)
-            {
-                SettlementUtility.Attack(SessionValues.ChosenCaravan, SessionValues.ChosenSettlement);
-            }
-
-            else if (SessionValues.latestActivity == ActivityType.Spy)
+            else if (SessionValues.latestActivity == ActivityType.Zoom)
             {
                 Pawn pawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Colonist, Faction.OfPlayer);
                 Caravan caravan = CaravanMaker.MakeCaravan(new Pawn[] { pawn }, Faction.OfPlayer, map.Tile, true);
+                CaravanEnterMapUtility.Enter(caravan, map, CaravanEnterMode.Edge);
 
-                CaravanEnterMapUtility.Enter(caravan, map, CaravanEnterMode.Edge,
-                    CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
+                CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
+                pawn.Destroy();
             }
         }
     }

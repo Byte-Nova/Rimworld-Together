@@ -7,10 +7,10 @@ using GameClient.Core;
 using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
 using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -41,7 +41,7 @@ namespace GameClient.Managers
             VersionData data = new VersionData();
             data._version = CommonValues.ExecutableVersion;
 
-            Network.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.VersionManager, data);
         }
 
         public static void PromptChangeVersion()

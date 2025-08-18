@@ -1,19 +1,13 @@
 using System;
 
-namespace Shared
+namespace Shared.Files
 {
-    [Serializable]
     public class CaravanFile
     {
-        public int Tile;
+        public int Tile { get; set; } = -1;
 
-        public string UID;
+        public string UID { get; set; } = string.Empty;
 
-        public int ID;
-
-        public override string ToString()
-        {
-            return $"CaravanFile:|{Tile}|{UID}|{ID}";
-        }
+        public int ID { get; set; } = -1;
     }
 }

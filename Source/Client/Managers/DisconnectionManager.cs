@@ -2,8 +2,6 @@ using Verse;
 using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
-using Shared;
-using GameClient.TCP;
 
 namespace GameClient.Managers
 {

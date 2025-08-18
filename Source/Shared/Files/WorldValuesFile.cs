@@ -1,18 +1,14 @@
-﻿using System;
-using System.Text;
-using Newtonsoft.Json;
-using Shared.Misc;
+﻿using Shared.Files;
+using System;
+using System.IO;
 
-#if SERVER
-using GameServer.Misc;
-using GameServer.Core;
-#endif
-
-namespace Shared
+namespace Shared.Files
 {
     [Serializable]
-    public class WorldValuesFile
+    public class WorldValuesFile : BaseFile
     {
+        public static string Path { get; set; } = string.Empty;
+
         public int PersistentRandomValue { get; set; } = -1;
 
         public string SeedString { get; set; } = string.Empty;
@@ -39,32 +35,16 @@ namespace Shared
 
         public PlanetNPCSettlementDetails[] NPCSettlements { get; set; } = null;
 
-        public override string ToString()
+        public override void Save()
         {
-            return $"WorldValuesFile:|{PersistentRandomValue}|{SeedString}";
+            try { Serializer.ObjectBytesToFile(Path, this); }
+            catch (Exception e) { throw new Exception(e.ToString()); }
         }
 
-#if SERVER
-        public static string FilePath => Path.Combine(Master.WorldPath, "WorldValuesFile.json");
-
-        public static WorldValuesFile Load()
+        public static object Load<T>()
         {
-            //We don't want to generate the world if it doesn't exist, this task is for the first player to do
-
-            if (File.Exists(FilePath)) return Serializer.FileBytesToObject<WorldValuesFile>(FilePath);
+            if (File.Exists(Path)) return Serializer.FileBytesToObject<T>(Path);
             else return null;
         }
-
-        public static bool Save()
-        {
-            try
-            {
-                Serializer.ObjectBytesToFile(FilePath, Master.WorldValues);
-                return true;
-            }
-            catch { return false; }
-        }
-#endif
-
     }
 }

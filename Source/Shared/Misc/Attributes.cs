@@ -2,10 +2,6 @@ using System;
 
 namespace Shared
 {
-    // Used for loading in custom assemblies
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class RTStartupAttribute : Attribute { }
-
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class HandlesPacket : Attribute
     {
@@ -44,6 +40,7 @@ namespace Shared
         ConsoleManager,
         GlobalDataManager,
         ResponseShortcutManager,
-        RecountManager
+        RecountManager,
+        InformationManager
     }
 }

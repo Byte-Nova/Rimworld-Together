@@ -1,8 +1,8 @@
 ﻿using GameClient.Managers;
+using GameClient.Values;
 using HarmonyLib;
 using RimWorld.Planet;
 using static Shared.CommonEnumerators;
-using GameClient.TCP;
 
 namespace GameClient.Patches
 {
@@ -12,7 +12,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Caravan __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             else CaravanManager.RequestCaravanAdd(__instance);
         }
     }
@@ -23,7 +23,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Caravan __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             else CaravanManager.RequestCaravanRemove(__instance);
         }
     }
@@ -34,7 +34,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Caravan ___caravan)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 CaravanManager.RequestCaravanUpdate(___caravan);

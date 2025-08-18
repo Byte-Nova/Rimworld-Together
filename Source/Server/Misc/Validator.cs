@@ -1,9 +1,5 @@
-﻿using System;
-using System.Text;
-using GameServer.Core;
+﻿using GameServer.Core;
 using GameServer.Files;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Shared;
 
 namespace GameServer.Misc

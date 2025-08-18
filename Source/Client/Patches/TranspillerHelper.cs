@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using GameClient.TCP;
+using GameClient.Values;
 using HarmonyLib;
 using Shared;
 
@@ -10,7 +9,7 @@ namespace GameClient.Patches
 {
     public static class TranspilerHelper
     {
-        private static readonly FieldInfo NetworkState = AccessTools.Field(typeof(Network), nameof(Network.State));
+        private static readonly FieldInfo NetworkState = AccessTools.Field(typeof(SessionValues), nameof(SessionValues.CurrentNetworkState));
         /// <summary>
         /// Checks if the player is online, with an if - else statement
         /// </summary>

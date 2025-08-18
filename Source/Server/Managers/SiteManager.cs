@@ -1,19 +1,16 @@
 ﻿using GameServer.Core;
 using GameServer.Files;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Packets;
+using TCPNetwork.Server;
 
 namespace GameServer.Managers
 {
-
     public static class SiteManager
     {
-        //Variables
-
-        private static readonly double taskDelayMS = 1800000;
-
         [HandlesPacket(PacketHeader.SiteManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
@@ -37,14 +34,6 @@ namespace GameServer.Managers
                     DestroySite(client, data);
                     break;
 
-                case SiteStepMode.Visit:
-                    VisitSite(client, data);
-                    break;
-
-                case SiteStepMode.Raid:
-                    RaidSite(client, data);
-                    break;
-
                 case SiteStepMode.Info:
                     SiteManagerHelper.GetSiteInfo(client, data);
                     break;
@@ -64,7 +53,7 @@ namespace GameServer.Managers
             siteData._stepMode = SiteStepMode.Build;
             siteData._file = siteFile;
 
-            foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
+            foreach (ServerClient cClient in ServerNetwork.Instance.GetConnectedClientsSafe())
             {
                 siteData._file.Goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
                 cClient.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
@@ -109,14 +98,8 @@ namespace GameServer.Managers
 
         private static void RaidSite(ServerClient client, SiteData siteData)
         {
-            if (!ValueChecker.CheckIfCanActivity(client.UserFile)) siteData._stepMode = SiteStepMode.Deny;
-            else
-            {
-                if (MapManager.CheckIfMapExists(siteData._file.Tile)) siteData._siteMap = MapManager.GetMapFromTile(siteData._file.Tile);
-                else siteData._siteMap = null;
-
-                client.UserFile.UpdateActivityTime();
-            }
+            if (MapManager.CheckIfMapExists(siteData._file.Tile)) siteData._siteMap = MapManager.GetMapFromTile(siteData._file.Tile);
+            else siteData._siteMap = null;
 
             client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
@@ -127,7 +110,7 @@ namespace GameServer.Managers
             siteData._stepMode = SiteStepMode.Destroy;
             siteData._file = siteFile;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.SiteManager, siteData);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.SiteManager, siteData);
 
             File.Delete(Path.Combine(Master.SitesPath, siteFile.Tile + SiteManagerHelper.fileExtension));
 
@@ -149,7 +132,7 @@ namespace GameServer.Managers
         {
             SiteFile[] sites = SiteManagerHelper.GetAllSites();
 
-            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
+            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
             {
                 List<SiteRewardFile> rewards = new List<SiteRewardFile>();
 

@@ -2,15 +2,10 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using GameClient.Managers;
-using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
-using RimWorld.Planet;
-using UnityEngine;
 using UnityEngine.SceneManagement;
-using Verse;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Pages
@@ -68,7 +63,7 @@ namespace GameClient.Patches.Pages
             {
                 SceneManager.LoadScene(0);
                 DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                Network.Listener.DisconnectFlag = true;
+                ClientNetwork.Instance.ClientListener.DisconnectFlag = true;
             }
         }
 
@@ -78,7 +73,7 @@ namespace GameClient.Patches.Pages
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.State == ClientNetworkState.Disconnected) return;
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
 
                 if (!ClientValues.IsGeneratingFreshWorld)
                 {

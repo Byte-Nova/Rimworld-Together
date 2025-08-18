@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Shared.Misc
 {
@@ -13,7 +12,7 @@ namespace Shared.Misc
             
             private static object Lock = new object();
             
-            public static string GetOrAddString(string? str)
+            public static string GetOrAddString(string str)
             {
                 if (str == null)
                     return null;

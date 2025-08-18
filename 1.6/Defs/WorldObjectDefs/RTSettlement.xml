@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<WorldObjectDef Name="RTSettlement" ParentName="StaticWorldObjectBase">
+		<defName>RTSettlement</defName>
+		<label>Online settlement</label>
+		<description>A settlement from another player</description>
+		<worldObjectClass>GameClient.WorldObjects.RTSettlement</worldObjectClass>
+		<texture>World/WorldObjects/RTSettlement</texture>
+		<expandingIconTexture>World/WorldObjects/RTSettlement</expandingIconTexture>
+		<fullyExpandedInSpace>true</fullyExpandedInSpace>
+		<expandingIcon>true</expandingIcon>
+		<expandingIconPriority>10</expandingIconPriority>
+	</WorldObjectDef>
+</Defs>

@@ -1,22 +1,17 @@
 using System;
 using static Shared.CommonEnumerators;
 
-namespace Shared
+namespace Shared.Files
 {
     [Serializable]
     public class SettlementFile
     {
-        public int Tile;
+        public int Tile { get; set; } = -1;
 
-        public string UID;
+        public string UID { get; set; } = string.Empty;
 
-        public string Label;
+        public string Label { get; set; } = string.Empty;
         
-        public Goodwill Goodwill;
-
-        public override string ToString()
-        {
-            return $"SettlementFile:|{Tile}|{UID}|{Label}|{Goodwill}";
-        }
+        public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
     }
 }

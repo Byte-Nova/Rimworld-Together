@@ -1,21 +1,16 @@
 using System;
 
-namespace Shared
+namespace Shared.Files
 {
     [Serializable]
     public class EventFile
     {
-        public string Name;
+        public string Name { get; set; } = string.Empty;
 
-        public string DefName;
+        public string DefName { get; set; } = string.Empty;
 
-        public int Cost;
+        public int Cost { get; set; } = 100;
 
-        public bool IsEnabled;
-
-        public override string ToString()
-        {
-            return $"EventFile:|{Name}|{DefName}|{Cost}|{IsEnabled}";
-        }
+        public bool IsEnabled { get; set; } = true;
     }
 }

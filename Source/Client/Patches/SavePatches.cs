@@ -1,7 +1,6 @@
 ﻿using System;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
 using Verse;
@@ -17,7 +16,7 @@ namespace GameClient.Patches
         {
             try
             {
-                if (Network.State == ClientNetworkState.Disconnected) return true;
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
                 if (ClientValues.IsSavingGame) return false;
 
                 ClientValues.ToggleSavingGame(true);
@@ -42,7 +41,7 @@ namespace GameClient.Patches
                 }
                 catch (Exception e) { Printer.Error("Exception while saving game: " + e); }
 
-                if (Network.State.Equals(ClientNetworkState.Connected))
+                if (SessionValues.CurrentNetworkState.Equals(ClientNetworkState.Connected))
                 {
                     Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
                     MapManager.SendPlayerMapsToServer();

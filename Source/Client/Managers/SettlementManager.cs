@@ -8,13 +8,15 @@ using Shared;
 using static Shared.CommonEnumerators;
 using GameClient.Misc;
 using GameClient.Values;
-using GameClient.TCP;
+using Shared.Files;
+using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
     public static class SettlementManager
     {
-        public static List<Settlement> PlayerSettlements { get; set; } = new List<Settlement>();
+        public static List<RTSettlement> PlayerSettlements { get; set; } = new List<RTSettlement>();
 
         [HandlesPacket(PacketHeader.SettlementManager)]
         private static void ParsePacket(byte[] bytes)
@@ -47,8 +49,10 @@ namespace GameClient.Managers
         {
             PlayerSettlements.Clear();
 
-            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => ClientValues.PlayerFactions.Contains(fetch.Faction)).ToArray();
-            foreach (Settlement settlement in settlements)
+            WorldObject[] settlements = (WorldObject[])Find.World.worldObjects.AllWorldObjects.FindAll(fetch => 
+                fetch.def.defName == "RTSettlement").ToArray();
+
+            foreach (RTSettlement settlement in settlements)
             {
                 SettlementFile toRemove = new SettlementFile();
                 toRemove.Tile = settlement.Tile;
@@ -58,28 +62,27 @@ namespace GameClient.Managers
 
         public static void SpawnSingleSettlement(SettlementFile toAdd)
         {
-            if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
-            else
+            try
             {
-                try
-                {
-                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Tile = toAdd.Tile;
-                    settlement.Name = $"{toAdd.Label}'s settlement";
-                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
+                WorldObjectDef def = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSettlement");
+                RTSettlement settlement = (RTSettlement)WorldObjectMaker.MakeWorldObject(def);
+                settlement.Tile = toAdd.Tile;
+                settlement.Name = $"{toAdd.Label}'s settlement";
+                settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
 
-                    PlayerSettlements.Add(settlement);
-                    Find.WorldObjects.Add(settlement);
-                }
-                catch (Exception e) { Printer.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
+                PlayerSettlements.Add(settlement);
+                Find.WorldObjects.Add(settlement);
             }
+            catch (Exception e) { Printer.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
         }
 
         public static void RemoveSingleSettlement(SettlementFile toRemove)
         {
             try
             {
-                Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && ClientValues.PlayerFactions.Contains(fetch.Faction));
+                RTSettlement toGet = (RTSettlement)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == toRemove.Tile && 
+                    ClientValues.PlayerFactions.Contains(fetch.Faction));
+
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
                     if (PlayerSettlements.Contains(toGet)) PlayerSettlements.Remove(toGet);
@@ -96,7 +99,18 @@ namespace GameClient.Managers
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Add;
 
-            Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+        }
+
+        public static void AbandonSettlement(int settlementTile)
+        {
+            PlayerSettlementData settlementData = new PlayerSettlementData();
+            settlementData._settlementFile.Tile = settlementTile;
+            settlementData._stepMode = SettlementStepMode.Remove;
+
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+
+            SaveManager.ForceSave();
         }
     }
 

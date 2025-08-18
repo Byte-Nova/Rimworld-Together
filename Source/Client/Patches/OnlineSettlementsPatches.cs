@@ -1,5 +1,4 @@
-﻿using GameClient.TCP;
-using GameClient.Values;
+﻿using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -15,7 +14,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Settlement factionBase)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.PlayerFactions.Contains(factionBase.Faction)) return false;
             else return true;
         }
@@ -27,7 +26,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             if (!ClientValues.PlayerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
@@ -40,7 +39,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             if (!ClientValues.PlayerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
@@ -53,7 +52,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Site site, ref int __result)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
             if (ClientValues.PlayerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
             {

@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using GameClient.Managers;
-using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
+using GameClient.WorldObjects;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
@@ -57,7 +56,7 @@ namespace GameClient.Patches.Tabs
             float num3 = scrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            foreach (Settlement playerSettlement in orderedDictionary)
+            foreach (RTSettlement playerSettlement in orderedDictionary)
             {
                 if (num > num2 && num < num3)
                 {
@@ -72,7 +71,7 @@ namespace GameClient.Patches.Tabs
             Widgets.EndScrollView();
         }
 
-        private void DrawCustomRow(Rect rect, Settlement playerSettlement, int index)
+        private void DrawCustomRow(Rect rect, RTSettlement playerSettlement, int index)
         {
             Text.Font = GameFont.Small;
 
@@ -84,7 +83,7 @@ namespace GameClient.Patches.Tabs
             Widgets.Label(fixedRect, $"{playerSettlement.Name} - {playerSettlement.Tile}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.y), new Vector2(buttonX, buttonY)), "Focus"))
             {
-                foreach (Settlement settlement in Find.World.worldObjects.Settlements)
+                foreach (RTSettlement settlement in Find.World.worldObjects.AllWorldObjects)
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
@@ -97,7 +96,7 @@ namespace GameClient.Patches.Tabs
             buttonX = 30f;
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX * 3, rect.y), new Vector2(buttonX, buttonY)), "-"))
             {
-                foreach (Settlement settlement in Find.World.worldObjects.Settlements)
+                foreach (RTSettlement settlement in Find.World.worldObjects.AllWorldObjects)
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
@@ -113,7 +112,7 @@ namespace GameClient.Patches.Tabs
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX * 4, rect.y), new Vector2(buttonX, buttonY)), "="))
             {
-                foreach (Settlement settlement in Find.World.worldObjects.Settlements)
+                foreach (RTSettlement settlement in Find.World.worldObjects.AllWorldObjects)
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
@@ -129,7 +128,7 @@ namespace GameClient.Patches.Tabs
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX * 5, rect.y), new Vector2(buttonX, buttonY)), "+"))
             {
-                foreach (Settlement settlement in Find.World.worldObjects.Settlements)
+                foreach (RTSettlement settlement in Find.World.worldObjects.AllWorldObjects)
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {

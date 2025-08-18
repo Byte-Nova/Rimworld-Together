@@ -1,8 +1,10 @@
 ﻿using GameServer.Files;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Packets;
+using TCPNetwork.Server;
 
 namespace GameServer.Managers
 {
@@ -156,7 +158,7 @@ namespace GameServer.Managers
 
         public static void ClearAllFactionMemberGoodwills(GuildFile factionFile)
         {
-            ServerClient[] clients = NetworkHelper.GetConnectedClientsSafe();
+            ServerClient[] clients = ServerNetwork.Instance.GetConnectedClientsSafe();
             List<ServerClient> clientsToGet = new List<ServerClient>();
 
             foreach (ServerClient client in clients)

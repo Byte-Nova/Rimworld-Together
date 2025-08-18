@@ -20,7 +20,7 @@ namespace Shared
 
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
-        public enum EventStepMode { Send, Receive, Recover, Customize }
+        public enum EventStepMode { Send, Receive, Recover, Customize, Set }
 
         public enum AidStepMode { Send, Receive, Accept, Reject }
 
@@ -38,17 +38,11 @@ namespace Shared
 
         public enum GoodwillTarget { Settlement, Site }
 
-        public enum TransferMode { Gift, Trade, Rebound, Pod }
-
-        public enum TransferLocation { Caravan, Settlement, Pod }
-
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
-
         public enum ActivityStepMode { Request, Deny }
 
-        public enum ActivityType { None, Visit, Raid, Spy }
+        public enum ActivityType { None, Raid, Zoom }
 
-        public enum SiteStepMode { Accept, Deny, Build, Visit, Raid, Destroy, Info, Config, Rewards}
+        public enum SiteStepMode { Accept, Deny, Build, Destroy, Info, Config, Rewards}
 
         public enum SettlementStepMode { Add, Remove }
 

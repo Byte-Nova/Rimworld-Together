@@ -3,7 +3,6 @@ using System.Linq;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
-using GameClient.TCP;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches
@@ -14,7 +13,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Quest quest)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
             foreach (Faction faction in ClientValues.PlayerFactions)
             {

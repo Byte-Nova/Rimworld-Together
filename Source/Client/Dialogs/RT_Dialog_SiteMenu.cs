@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using Verse;
 using RimWorld;
-using Shared;
 using GameClient.Managers;
 
 namespace GameClient.Dialogs

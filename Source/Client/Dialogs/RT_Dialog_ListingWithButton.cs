@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using GameClient.Managers;
-using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -13,7 +11,7 @@ namespace GameClient.Dialogs
 
         public string[] Elements { get; private set; }
 
-        public static string? DialogButtonListingResultString { get; private set; }
+        public static string DialogButtonListingResultString { get; private set; }
 
         public static int DialogButtonListingResultInt { get; private set; }
 

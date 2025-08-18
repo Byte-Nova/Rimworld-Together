@@ -1,13 +1,13 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
-
     public static class MapManager
     {
         //Variables
@@ -53,7 +53,8 @@ namespace GameServer.Managers
         public static MapFile GetMapFromTile(int mapTileToGet)
         {
             string path = Path.Combine(Master.MapsPath, mapTileToGet + fileExtension);
-            return Serializer.FileBytesToObject<MapFile>(path);
+            if (File.Exists(path)) return Serializer.FileBytesToObject<MapFile>(path);
+            else return null;
         }
     }
 }

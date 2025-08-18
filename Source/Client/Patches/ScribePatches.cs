@@ -4,7 +4,6 @@ using System.IO;
 using System.Xml;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
 using Verse;
@@ -18,7 +17,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ScribeSaver __instance, ref XmlWriter ___writer, string documentElementName)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (!ClientValues.IsUsingScriber) return true;
             else
             {
@@ -55,7 +54,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ScribeLoader __instance, string filePath)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (!ClientValues.IsUsingScriber) return true;
             else
             {
@@ -94,7 +93,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref Dictionary<Pawn, PawnTextureAtlasFrameSet> ___frameAssignments, ref List<Pawn> ___tmpPawnsToFree, ref List<PawnTextureAtlasFrameSet> ___freeFrameSets)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 try
@@ -133,7 +132,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else return false;
         }
     }
@@ -144,7 +143,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(DebugLoadIDsSavingErrorsChecker __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 __instance.Clear();
@@ -159,7 +158,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ILoadReferenceable reffable, ref Dictionary<string, ILoadReferenceable> ___allObjectsByLoadID, ref Dictionary<int, ILoadReferenceable> ___allThingsByThingID)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 try { ___allObjectsByLoadID.Add(reffable.GetUniqueLoadID(), reffable); }
@@ -181,7 +180,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (!ClientValues.IsUsingScriber) return true;
             else return false;
         }
@@ -193,7 +192,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (!ClientValues.IsUsingScriber) return true;
             else return false;
         }

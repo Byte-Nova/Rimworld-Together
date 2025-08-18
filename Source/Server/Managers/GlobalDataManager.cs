@@ -1,10 +1,11 @@
 ﻿using GameServer.Core;
-using GameServer.TCP;
 using Shared;
+using Shared.Files;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
-
     public static class GlobalDataManager
     {
         public static void SendServerGlobalData(ServerClient client)
@@ -14,8 +15,10 @@ namespace GameServer.Managers
             globalData._isClientAdmin = client.UserFile.IsAdmin;
             globalData._isClientFactionMember = !string.IsNullOrEmpty(client.UserFile.GuildName);
 
-            globalData._serverValues = new ServerValuesFile(Master.ServerConfig.Name);
-            globalData._eventValues = EventManagerHelper.LoadedEvents;
+            globalData._serverValues = new ServerValuesFile();
+            globalData._serverValues.ServerName = Master.ServerConfig.Name;
+
+            globalData._eventValues = EventManagerH.LoadedEvents;
             globalData._siteValues = Master.SiteValues;
             globalData._difficultyValues = Master.DifficultyValues;
             globalData._scenarioValues = Master.ScenarioValues;

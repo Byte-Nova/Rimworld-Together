@@ -1,6 +1,7 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
+using TCPNetwork.Packets;
 using RimWorld;
 using Shared;
 using static Shared.CommonEnumerators;

@@ -1,6 +1,4 @@
-﻿using GameClient.Managers;
-using RimWorld;
-using UnityEngine;
+﻿using UnityEngine;
 using Verse;
 
 namespace GameClient.Dialogs

@@ -2,21 +2,19 @@
 using HarmonyLib;
 using RimWorld;
 using static Shared.CommonEnumerators;
-using GameClient.TCP;
-using GameClient.Managers;
 using GameClient.Dialogs;
 
 namespace GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(Dialog_Options), "DoModOptions")]
-    public static class PreventModOptionsButton
+    public static class Patch_DialogOptions_DoModOptions
     {
         public static bool executedMessage;
 
         [HarmonyPrefix]
         public static bool DoPre(Dialog_Options __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (!SessionValues.ConfigFile.EnforcedConfigs) return true;
             else if (ClientValues.IsAdmin) return true;
             else

@@ -1,8 +1,10 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Packets;
+using TCPNetwork.Server;
 
 namespace GameServer.Managers
 {
@@ -46,7 +48,7 @@ namespace GameServer.Managers
 
             SaveRoad(data._details, client);
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.RoadManager, data);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.RoadManager, data);
         }
 
         private static void RemoveRoad(ServerClient client, RoadData data)
@@ -78,7 +80,7 @@ namespace GameServer.Managers
 
             void BroadcastDeletion(RoadDetails toRemove)
             {
-                NetworkHelper.SendPacketToAllClients(PacketHeader.RoadManager, data);
+                ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.RoadManager, data);
             }
         }
 
@@ -88,7 +90,7 @@ namespace GameServer.Managers
             currentRoads.Add(details);
 
             Master.WorldValues.Roads = currentRoads.ToArray();
-            WorldValuesFile.Save();
+            Master.WorldValues.Save();
 
             InformationDisplayer.DisplayAddRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
@@ -99,7 +101,7 @@ namespace GameServer.Managers
             currentRoads.Remove(details);
 
             Master.WorldValues.Roads = currentRoads.ToArray();
-            WorldValuesFile.Save();
+            Master.WorldValues.Save();
 
             InformationDisplayer.DisplayRemoveRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }

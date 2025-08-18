@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using GameClient.Misc;
-using GameClient.TCP;
+﻿using GameClient.Misc;
 using GameClient.Values;
-using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -47,8 +47,8 @@ namespace GameClient.Managers
             else
             {
                 Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                settlement.Tile = toAdd.Tile;
                 settlement.Name = toAdd.Name;
+                settlement.Tile = toAdd.Tile;
 
                 List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.DefName);
 
@@ -58,10 +58,7 @@ namespace GameClient.Managers
                     return;
                 }
 
-                else if (factions.Count == 1)
-                {
-                    settlement.SetFaction(factions.First());
-                }
+                else if (factions.Count == 1) settlement.SetFaction(factions.First());
 
                 else if (factions.Count > 1)
                 {
@@ -71,6 +68,15 @@ namespace GameClient.Managers
                     }
 
                     if (settlement.Faction == null) settlement.SetFaction(factions.First());
+                }
+
+                // Check if the settlement belongs to planet or space
+
+                if (ModLister.OdysseyInstalled && settlement.Faction.def == FactionDefOf.TradersGuild)
+                {
+                    PlanetLayer orbitLayer = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Orbit);
+                    Tile toFind = orbitLayer.Tiles.FirstOrDefault(fetch => fetch.tile.tileId == toAdd.Tile);
+                    settlement.Tile = toFind.tile;
                 }
 
                 Find.WorldObjects.Add(settlement);
@@ -136,7 +142,7 @@ namespace GameClient.Managers
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData.Tile = settlement.Tile;
 
-            Network.Listener.EnqueuePacket(PacketHeader.NPCManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.NPCManager, data);
         }
     }
 

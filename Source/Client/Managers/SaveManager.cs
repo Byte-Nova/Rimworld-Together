@@ -12,10 +12,10 @@ using System;
 using GameClient.Core;
 using GameClient.Misc;
 using GameClient.Values;
-using GameClient.TCP;
 using System.Collections.Generic;
 using GameClient.Dialogs;
 using System.Linq;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -23,7 +23,7 @@ namespace GameClient.Managers
     {
         // Variables
 
-        public static string CustomSaveName => $"Server - {Network.Ip} - {Network.Port} - {ClientValues.Username}";
+        public static string CustomSaveName => $"Server - {ClientNetwork.Ip} - {ClientNetwork.Port} - {ClientValues.Username}";
         
         public static string LatestSavePath = string.Empty;
 
@@ -63,7 +63,7 @@ namespace GameClient.Managers
             SaveData data = new SaveData();
             data._stepMode = SaveStepMode.Reset;
 
-            Network.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
         public static double GetRealPlayTimeInteractingFromSave(string filePath)
@@ -147,7 +147,7 @@ namespace GameClient.Managers
             }
             else data._instructions = SaveMode.Autosave;
 
-            Network.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
         public static void ReceiveSaveFromServer(SaveData data)

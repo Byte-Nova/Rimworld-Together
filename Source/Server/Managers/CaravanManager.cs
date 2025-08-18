@@ -1,7 +1,9 @@
 ﻿using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
@@ -41,7 +43,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = file;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.CaravanManager, data);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.CaravanManager, data);
 
             InformationDisplayer.DisplayAddCaravan(client.UserFile.Uid);
         }
@@ -52,7 +54,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Remove;
             data._caravanFile = file;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.CaravanManager, data);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.CaravanManager, data);
 
             InformationDisplayer.DisplayRemoveCaravan(client.UserFile.Uid);
         }
@@ -63,7 +65,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Move;
             data._caravanFile = file;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
 
             InformationDisplayer.DisplayMoveCaravan(client.UserFile.Uid);
         }

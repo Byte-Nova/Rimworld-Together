@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GameClient.Dialogs;
+﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
+using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using System.Collections.Generic;
+using System.Linq;
 using Verse;
 using static Shared.CommonEnumerators;
+using static UnityEngine.GraphicsBuffer;
 
 
 namespace GameClient.Managers
@@ -79,7 +81,7 @@ namespace GameClient.Managers
             factionGoodwillData._tile = structureTile;
             factionGoodwillData._goodwill = goodwill;
 
-            Network.Listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
             RT_Dialog_Base.PushNewDialog(d1);
@@ -97,10 +99,10 @@ namespace GameClient.Managers
 
         private static void ChangeSettlementGoodwills(FactionGoodwillData factionGoodwillData)
         {
-            List<Settlement> toChange = new List<Settlement>();
+            List<RTSettlement> toChange = new List<RTSettlement>();
             foreach (int settlementTile in factionGoodwillData._settlementTiles)
             {
-                Settlement settlement = Find.WorldObjects.Settlements.Find(x => x.Tile == settlementTile);
+                RTSettlement settlement = (RTSettlement)Find.WorldObjects.AllWorldObjects.First(x => x.Tile == settlementTile);
                 if (settlement.Faction == Faction.OfPlayer) continue;
                 else toChange.Add(settlement);
             }
@@ -110,7 +112,8 @@ namespace GameClient.Managers
                 SettlementManager.PlayerSettlements.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
-                Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                WorldObjectDef def = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSettlement");
+                RTSettlement newSettlement = (RTSettlement)WorldObjectMaker.MakeWorldObject(def);
                 newSettlement.Tile = toChange[i].Tile;
                 newSettlement.Name = toChange[i].Name;
                 newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._settlementGoodwills[i]));
@@ -125,7 +128,11 @@ namespace GameClient.Managers
         private static void ChangeSiteGoodwills(FactionGoodwillData factionGoodwillData)
         {
             List<Site> toChange = new List<Site>();
-            foreach (int siteTile in factionGoodwillData._siteTiles) { toChange.Add(Find.WorldObjects.Sites.Find(x => x.Tile == siteTile)); }
+            foreach (int siteTile in factionGoodwillData._siteTiles) 
+            {
+                toChange.Add((Site)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == siteTile &&
+                    ClientValues.PlayerFactions.Contains(fetch.Faction)));
+            }
 
             for (int i = 0; i < toChange.Count(); i++)
             {

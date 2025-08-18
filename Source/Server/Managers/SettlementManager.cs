@@ -1,9 +1,10 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
@@ -47,7 +48,7 @@ namespace GameServer.Managers
                 Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + fileExtension), settlementFile);
 
                 settlementData._stepMode = SettlementStepMode.Add;
-                foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
+                foreach (ServerClient cClient in ServerNetwork.Instance.GetConnectedClientsSafe())
                 {
                     if (cClient == client) continue;
                     else
@@ -100,7 +101,7 @@ namespace GameServer.Managers
             {
                 settlementData._stepMode = SettlementStepMode.Remove;
 
-                NetworkHelper.SendPacketToAllClients(PacketHeader.SettlementManager, settlementData, client);
+                ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.SettlementManager, settlementData, client);
             }
         }
 

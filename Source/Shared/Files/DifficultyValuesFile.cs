@@ -1,43 +1,33 @@
-﻿using System;
-#if SERVER
-using GameServer.Core;
-#endif
-namespace Shared
+﻿using Shared.Files;
+using System;
+using System.IO;
+
+namespace Shared.Files
 {
     [Serializable]
-    public class DifficultyValuesFile
+    public class DifficultyValuesFile : BaseFile
     {
-        public bool EnforceDifficulty = false;
+        public static string Path { get; set; } = string.Empty;
 
-        public string ScribeData = string.Empty;
-        
-        public override string ToString()
+        public bool EnforceDifficulty { get; set; } = false;
+
+        public string ScribeData { get; set; } = string.Empty;
+
+        public override void Save()
         {
-            return $"DifficultyValuesFile:|{EnforceDifficulty}";
+            try { Serializer.SerializeToFile(Path, this); }
+            catch (Exception e) { throw new Exception(e.ToString()); }
         }
-#if SERVER
-        private static string FilePath => Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
 
-        public static DifficultyValuesFile Load()
+        public static object Load<T>()
         {
-            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<DifficultyValuesFile>(FilePath);
+            if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                DifficultyValuesFile obj = new DifficultyValuesFile();
-                Serializer.SerializeToFile(FilePath, obj);
-                return obj;
+                DifficultyValuesFile file = new DifficultyValuesFile();
+                Serializer.SerializeToFile(Path, file);
+                return file;
             }
         }
-
-        public static bool Save()
-        {
-            try
-            {
-                Serializer.SerializeToFile(FilePath, Master.DifficultyValues);
-                return true;
-            }
-            catch { return false; }
-        }
-#endif
     }
 }

@@ -1,18 +1,33 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
 using RimWorld;
 using Shared;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
+using Shared.Files;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
 
     public static class GameParameterManager
     {
+        public static void SetFirstTimeSetup()
+        {
+            string title = "Server Enforcements";
+            string description = "Chose what features to enforce";
+            string[] keys = new string[] { "Scenario", "Storyteller", "Difficulty" };
+            string[] values = new string[] { "Free", "Enforced" };
+
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_ListingWithTuple(title, description, keys, values, null,
+                GameParameterManager.SendFirstTimeSetup));
+        }
+
         public static void SetValues(ServerGlobalData data)
         {
             SessionValues.ScenarioFile = data._scenarioValues;
@@ -20,39 +35,25 @@ namespace GameClient.Managers
             SessionValues.DifficultyFile = data._difficultyValues;
         }
 
-        public static ScenarioValuesFile GetScenario(Page_SelectScenario __instance)
-        {
-            ScenarioValuesFile file = new ScenarioValuesFile();
-
-            file.ScenarioName = GameParameterManagerH.GetScenarioReference(__instance).name;
-
-            return file;
-        }
-
         public static void SetScenario(ScenarioValuesFile file)
         {
             if (!file.EnforceScenario) return;
-            else Current.Game.Scenario = ScenarioLister.AllScenarios().First(fetch => fetch.name == file.ScenarioName);
+            else
+            {
+                Scenario toFind = ScenarioLister.AllScenarios().FirstOrDefault(fetch => fetch.name == file.ScenarioName);
+                if (toFind != null) Current.Game.Scenario = toFind;
+                else Current.Game.Scenario = ScenarioLister.AllScenarios().ToArray()[0];
+            }
         }
 
-        public static void SendScenario(ScenarioValuesFile file, bool mode)
+        public static void SetDifficulty(DifficultyValuesFile file, bool bypass = false)
         {
-            file.EnforceScenario = mode;
-
-            GameParameterData data = new GameParameterData();
-            data._stepMode = GenStepMode.Scenario;
-            data._scenario = file;
-
-            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
-        }
-
-        public static StorytellerValuesFile GetStoryteller(Page_SelectStoryteller __instance)
-        {
-            StorytellerValuesFile file = new StorytellerValuesFile();
-
-            file.StorytellerDefname = GameParameterManagerH.GetStorytellerReference(__instance).def.defName;
-
-            return file;
+            if (!file.EnforceDifficulty && !bypass) return;
+            else
+            {
+                Current.Game.storyteller.difficultyDef = DifficultyDefOf.Rough;
+                Current.Game.storyteller.difficulty = (Difficulty)ScribeManager.SerializeFromString<Difficulty>(file.ScribeData);
+            }
         }
 
         public static void SetStoryteller(StorytellerValuesFile file, bool bypassCheck = false)
@@ -68,69 +69,79 @@ namespace GameClient.Managers
             }
         }
 
-        public static void SendStoryteller(StorytellerValuesFile file, bool mode)
+        public static void SendCurrentScenario(bool isEnforced)
         {
-            file.EnforceStoryteller = mode;
+            ScenarioValuesFile file = new ScenarioValuesFile();
+            file.EnforceScenario = isEnforced;
+            file.ScenarioName = Current.Game.Scenario.name;
+
+            GameParameterData data = new GameParameterData();
+            data._stepMode = GenStepMode.Scenario;
+            data._scenario = file;
+
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
+        }
+
+        public static void SendCurrentStoryteller(bool isEnforced)
+        {
+            StorytellerValuesFile file = new StorytellerValuesFile();
+            file.EnforceStoryteller = isEnforced;
+            file.StorytellerDefname = Current.Game.storyteller.def.defName;
 
             GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Storyteller;
             data._storyteller = file;
 
-            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
 
-        public static DifficultyValuesFile GetDifficulty(Page_SelectStoryteller __instance)
+        public static void SendCurrentDifficulty(bool isEnforced)
         {
-            Difficulty difficulty = GameParameterManagerH.GetDifficultyReference(__instance);
-
             DifficultyValuesFile file = new DifficultyValuesFile();
-            
-            file.ScribeData = ScribeManager.DifficultyToString(difficulty);
-            
-            return file;
-        }
-
-        public static void SetDifficulty(DifficultyValuesFile file, bool bypass = false)
-        {
-            if (!file.EnforceDifficulty && !bypass) return;
-
-            Current.Game.storyteller.difficultyDef = DifficultyDefOf.Rough;
-            Current.Game.storyteller.difficulty = ScribeManager.StringToDifficulty(file.ScribeData);
-        }
-
-        public static void SendDifficulty(DifficultyValuesFile file, bool mode)
-        {
-            file.EnforceDifficulty = mode;
+            file.EnforceDifficulty = isEnforced;
+            file.ScribeData = ScribeManager.SerializeToString(Current.Game.storyteller.difficulty, ScribeManager.SerializableType.Other);
 
             GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Difficulty;
             data._difficulty = file;
 
-            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
-        }
-    }
-
-    public static class GameParameterManagerH
-    {
-        public static Scenario GetScenarioReference(Page_SelectScenario __instance)
-        {
-            return (Scenario)typeof(Page_SelectScenario).GetField("curScen", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
 
-        public static Storyteller GetStorytellerReference(Page_SelectStoryteller __instance)
+        public static void SendCurrentModConfigs(bool isEnforced)
         {
-            StorytellerDef toGet = (StorytellerDef)typeof(Page_SelectStoryteller).GetField("storyteller", BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(__instance);
+            ModConfigData data = new ModConfigData();
+            data._stepMode = ModConfigStepMode.Send;
+            data._configFile = ModManagerH.SortModsIntoCategories(RT_Dialog_ListingWithTuple.DialogTupleListingResultString,
+                RT_Dialog_ListingWithTuple.DialogTupleListingResultInt);
 
-            return new Storyteller(toGet, DifficultyDefOf.Rough, new Difficulty(DifficultyDefOf.Rough));
+            List<string> modFileNames = new List<string>();
+            List<string> modConfigs = new List<string>();
+            foreach (string str in ModManagerH.GetAllModConfigs())
+            {
+                modFileNames.Add(Path.GetFileName(str));
+                modConfigs.Add(File.ReadAllText(str));
+            }
+
+            data._configFile.ModFileNames = modFileNames.ToArray();
+            data._configFile.ModConfigs = modConfigs.ToArray();
+            data._configFile.EnforcedConfigs = isEnforced;
+
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ModManager, data);
         }
 
-        public static Difficulty GetDifficultyReference(Page_SelectStoryteller __instance)
+        private static void SendFirstTimeSetup()
         {
-            Difficulty toGet = (Difficulty)typeof(Page_SelectStoryteller).GetField("difficultyValues", BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(__instance);
+            if (RT_Dialog_ListingWithTuple.DialogTupleListingResultInt[0] == 1) { GameParameterManager.SendCurrentScenario(true); }
+            if (RT_Dialog_ListingWithTuple.DialogTupleListingResultInt[1] == 1) { GameParameterManager.SendCurrentStoryteller(true); }
+            if (RT_Dialog_ListingWithTuple.DialogTupleListingResultInt[2] == 1) { GameParameterManager.SendCurrentDifficulty(true); }
 
-            return toGet;
+            WorldManager.SendWorld();
+            EventManager.SendExistingEventsToServer();
+            SaveManager.ForceSave();
+
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", 
+                new string[] { "Some configurations might require a reconnection to apply" }));
         }
     }
 }

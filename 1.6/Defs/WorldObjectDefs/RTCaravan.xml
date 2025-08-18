@@ -4,9 +4,9 @@
 		<defName>RTCaravan</defName>
 		<label>Online Caravan</label>
 		<description>A caravan from another player</description>
-		<worldObjectClass>GameClient.WorldObjects.OnlineCaravan</worldObjectClass>
-		<texture>World/WorldObjects/OnlineCaravan</texture>
-		<expandingIconTexture>World/WorldObjects/OnlineCaravan</expandingIconTexture>
+		<worldObjectClass>GameClient.WorldObjects.RTCaravan</worldObjectClass>
+		<texture>World/WorldObjects/RTCaravan</texture>
+		<expandingIconTexture>World/WorldObjects/RTCaravan</expandingIconTexture>
 		<expandingIcon>true</expandingIcon>
 		<expandingIconPriority>95</expandingIconPriority>
 		<saved>false</saved>

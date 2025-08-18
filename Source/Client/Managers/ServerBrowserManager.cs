@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using GameClient.Misc;
-using HarmonyLib;
-using RimWorld;
+using TCPNetwork.Packets;
 using Shared;
 using Steamworks;
-using Verse;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers

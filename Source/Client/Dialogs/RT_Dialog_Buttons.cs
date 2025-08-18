@@ -1,6 +1,4 @@
 ﻿using System;
-using GameClient.Managers;
-using RimWorld;
 using UnityEngine;
 using Verse;
 
