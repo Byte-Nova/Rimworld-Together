@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Dialogs
 {
@@ -52,14 +51,17 @@ namespace GameClient.Dialogs
             closeOnCancel = false;
 
             List<string> strings = new List<string>();
-            for (int i = 0; i < keys.Length; i++) strings.Add(values[0]);
-            ValueString = strings.ToArray();
-
             List<int> ints = new List<int>();
-            for (int i = 0; i < keys.Length; i++) ints.Add(0);
+            List<int> orgIndex = new List<int>();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                strings.Add(values[0]);
+                ints.Add(0);
+                orgIndex.Add(i);
+            }
+            ValueString = strings.ToArray();
             ValueInt = ints.ToArray();
-
-            displayKeysOrgIndex = Enumerable.Range(0, Keys.Length).ToArray();
+            displayKeysOrgIndex = orgIndex.ToArray();
 
             if (defaultValues != null)
             {
