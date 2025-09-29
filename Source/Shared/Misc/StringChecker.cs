@@ -11,7 +11,6 @@ namespace Shared
 
         public static bool CheckIfStringValid(string toCheck)
         {
-            if (string.IsNullOrEmpty(toCheck)) return false;
             if (string.IsNullOrWhiteSpace(toCheck)) return false;
             foreach (string str in IllegalSequences)
             {
