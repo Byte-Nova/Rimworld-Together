@@ -1,5 +1,8 @@
 namespace Shared
 {
+    using System;
+    using System.Linq;
+
     public static class StringChecker
     {
         private static string[] IllegalSequences { get; } = new string[]
@@ -12,10 +15,7 @@ namespace Shared
         public static bool CheckIfStringValid(string toCheck)
         {
             if (string.IsNullOrWhiteSpace(toCheck)) return false;
-            foreach (string str in IllegalSequences)
-            {
-                if (toCheck.Contains(str)) return false;
-            }
+            if (IllegalSequences.Any(s => toCheck.IndexOf(s, StringComparison.InvariantCultureIgnoreCase) > -1)) return false;
 
             return true;
         }
