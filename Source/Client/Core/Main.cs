@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Steamworks;
 using UnityEngine;
 using Verse;
 
@@ -22,6 +23,7 @@ namespace GameClient.Core
                 ApplyHarmonyPathches();
                 PrepareCulture();
                 PreparePaths();
+                PrepareSteam();
                 CreateUnityDispatcher();
                 MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Client);
 
@@ -69,6 +71,31 @@ namespace GameClient.Core
             if (!Directory.Exists(Master.AppdataTempVersionPath)) Directory.CreateDirectory(Master.AppdataTempVersionPath);
             if (!Directory.Exists(Master.AppdataTempModsPath)) Directory.CreateDirectory(Master.AppdataTempModsPath);
             if (!Directory.Exists(Master.ModAddonsPath)) Directory.CreateDirectory(Master.ModAddonsPath);        
+        }
+
+        private static void PrepareSteam()
+        {
+            if (Verse.Steam.SteamManager.Initialized)
+            {
+                // SteamManager initialized -> Rimworld running with Steam
+                Master.HasSteam = true;
+
+                CSteamID steamID = SteamUser.GetSteamID();
+                ulong steamID64 = steamID.m_SteamID;
+                Master.SteamID = steamID64;
+
+                string name = SteamFriends.GetPersonaName();
+                Master.SteamName = name;
+                
+                Printer.Message("SteamManager initialized -> Rimworld with Steam: " + 
+                                "name=" + name + "  -  id=" + steamID64);
+            }
+            else
+            {
+                Master.HasSteam = false;
+
+                Printer.Message("SteamManager not initialized -> Rimworld without Steam integration.");
+            }
         }
 
         private static void CreateUnityDispatcher()
