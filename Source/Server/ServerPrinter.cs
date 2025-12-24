@@ -1,6 +1,11 @@
 ﻿using GameServer.Core;
+using GameServer.Integrations.Discord;
 using Shared.Misc;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Threading;
 using static Shared.CommonEnumerators;
 
 namespace GameServer
@@ -55,9 +60,11 @@ namespace GameServer
                     Console.ForegroundColor = ColorDictionary[mode];
                     Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
                     Console.ForegroundColor = ConsoleColor.White;
+
+                    DiscordBridge.TryRelayServerConsoleLine(text, mode);
                 }
             }
-            catch(Exception ex) { throw new Exception($"Logger encountered an error. This should never happen\n{ex}"); }
+            catch (Exception ex) { throw new Exception($"Logger encountered an error. This should never happen\n{ex}"); }
 
             Semaphore.Release();
         }

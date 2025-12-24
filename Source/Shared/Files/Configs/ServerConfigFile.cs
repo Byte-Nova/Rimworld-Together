@@ -27,6 +27,18 @@ namespace Shared.Files.Configs
 
         public bool SyncLocalSave { get; set; } = true;
 
+        public bool EnableDiscordBridge { get; set; } = false;
+
+        public string DiscordBotToken { get; set; } = string.Empty;
+
+        public string DiscordChatChannelId { get; set; } = string.Empty;
+
+        public string DiscordAdminChannelId { get; set; } = string.Empty;
+
+        public string DiscordCommandPrefix { get; set; } = "!";
+
+        public string DiscordAdminRoleIdsCsv { get; set; } = string.Empty;
+
         public override void Save()
         {
             try { Serializer.SerializeToFile(SavePath, this); }

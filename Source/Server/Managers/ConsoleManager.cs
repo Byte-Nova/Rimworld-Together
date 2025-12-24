@@ -1,10 +1,12 @@
 ﻿using GameServer.Commands;
 using GameServer.Misc;
 using Shared.Misc;
+using GameServer.Integrations.Discord;
+using System;
+using System.Linq;
 
 namespace GameServer.Managers
 {
-
     public static class ConsoleManager
     {
         public static string[] commandParameters;
@@ -20,16 +22,39 @@ namespace GameServer.Managers
             {
                 while (true)
                 {
-                    ParseServerCommands(Console.ReadLine());
+                    string line = Console.ReadLine();
+                    ParseServerCommands(line);
                 }
             }
         }
 
         public static void ParseServerCommands(string command)
         {
-            string parsedPrefix = command.Split(' ')[0].ToLower();
-            int parsedParameters = command.Split(' ').Count() - 1;
-            commandParameters = command.Replace(parsedPrefix + " ", "").Split(" ");
+            ParseServerCommands(command, false);
+        }
+
+        public static void ParseServerCommands(string command, bool fromDiscord)
+        {
+            if (string.IsNullOrWhiteSpace(command)) return;
+
+            string trimmed = command.Trim();
+
+            if (!fromDiscord)
+            {
+                DiscordBridge.TryRelayConsoleCommandToDiscord(trimmed);
+            }
+            else
+            {
+                DiscordBridge.BeginConsoleMirrorWindow();
+            }
+
+            string[] parts = trimmed.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 0) return;
+
+            string parsedPrefix = parts[0].ToLower();
+            int parsedParameters = parts.Length - 1;
+
+            commandParameters = parsedParameters > 0 ? parts.Skip(1).ToArray() : Array.Empty<string>();
 
             try
             {
@@ -42,11 +67,9 @@ namespace GameServer.Managers
                         Printer.Warning($"Command '{commandToFetch.Prefix}' wanted [{commandToFetch.Parameters}] parameters "
                             + $"but was passed [{parsedParameters}]");
                     }
-
                     else
                     {
                         if (commandToFetch.CommandAction != null) commandToFetch.CommandAction.Invoke();
-
                         else Printer.Warning($"Command '{commandToFetch.Prefix}' didn't have any action built in");
                     }
                 }

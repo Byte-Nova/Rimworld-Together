@@ -1,8 +1,13 @@
 using GameServer.Commands;
+using GameServer.Integrations.Discord;
 using GameServer.Core;
 using GameServer.Misc;
 using Shared;
+using System;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
@@ -58,8 +63,10 @@ namespace GameServer.Managers
                 toFind.CommandAction.Invoke();
             }
 
+            // idiotic string was concatenated with no spaces (like bruh what, ocd hit hard on this one)
             string chatCommand = "";
-            for (int i = 0; i < command.Length; i++) chatCommand += command[i] + "";
+            for (int i = 0; i < command.Length; i++) chatCommand += command[i] + " ";
+            chatCommand = chatCommand.TrimEnd();
 
             ChatManagerHelper.ShowChatInConsole(client.UserFile.Username, chatCommand);
 
@@ -78,6 +85,8 @@ namespace GameServer.Managers
 
             WriteToLogs(client.UserFile.Username, message);
             ChatManagerHelper.ShowChatInConsole(client.UserFile.Username, message);
+
+            DiscordBridge.TryRelayGameChatToDiscord(chatData._username, chatData._message);
         }
 
         public static void BroadcastDiscordMessage(string client, string message)
@@ -191,4 +200,3 @@ namespace GameServer.Managers
         }
     }
 }
-

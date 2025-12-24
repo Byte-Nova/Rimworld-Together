@@ -1,4 +1,5 @@
 using GameServer.Managers;
+using GameServer.Integrations.Discord;
 using Shared;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
@@ -36,6 +37,9 @@ namespace GameServer.Core
             ServerBrowserManager.StartFeature();
 
             ServerNetwork _ = new ServerNetwork();
+
+            DiscordBridge.TryStart();
+
             while (true) ConsoleManager.ListenForServerCommands();
         }
 
