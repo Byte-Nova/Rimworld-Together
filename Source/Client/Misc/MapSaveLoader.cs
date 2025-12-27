@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using GameClient.Managers;
 using RimWorld;
-using Shared;
 using Shared.Files;
+using Shared.Files.Maps;
 using Shared.Misc;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -24,7 +24,9 @@ namespace GameClient.Misc
 
             mapFile.Wealth = (int)map.wealthWatcher.WealthTotal;
 
-            mapFile.CurWeatherDefName = map.weatherManager.curWeather.defName;
+            mapFile.WeatherByte = (byte)DefDatabase<WeatherDef>.AllDefs.FirstIndexOf(fetch => fetch == map.weatherManager.curWeather);
+
+            mapFile.Mods = ModManagerH.GetRunningModList();
 
             GetMapTerrain(mapFile, map);
 
@@ -33,8 +35,6 @@ namespace GameClient.Misc
             GetMapHumans(mapFile, map, factionHumans, nonFactionHumans);
 
             GetMapAnimals(mapFile, map, factionAnimals, nonFactionAnimals);
-
-            GetMapMods(mapFile);
 
             return mapFile;
         }
@@ -61,114 +61,74 @@ namespace GameClient.Misc
             return map;
         }
 
-        //Getters
-
         private static void GetMapTerrain(MapFile mapFile, Map map)
         {
             try
             {
-                List<MapTileDetail> toGet = new List<MapTileDetail>();
-
                 for (int z = 0; z < map.Size.z; ++z)
                 {
                     for (int x = 0; x < map.Size.x; ++x)
                     {
-                        MapTileDetail component = new MapTileDetail();
                         IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
-                        component.DefName = map.terrainGrid.TerrainAt(vectorToCheck).defName;
+
+                        MapTile component = new MapTile();
+
+                        TerrainDef terrainDef = map.terrainGrid.TerrainAt(vectorToCheck);
+                        if (terrainDef != null) component.TileByte = (byte)DefDatabase<TerrainDef>.AllDefs.FirstIndexOf(fetch => fetch == terrainDef);
+
                         component.IsPolluted = map.pollutionGrid.IsPolluted(vectorToCheck);
 
-                        if (map.roofGrid.RoofAt(vectorToCheck) == null) component.RoofDefName = "null";
-                        else component.RoofDefName = map.roofGrid.RoofAt(vectorToCheck).defName;
+                        RoofDef roofDef = map.roofGrid.RoofAt(vectorToCheck);
+                        if (roofDef != null) component.RoofByte = (byte)DefDatabase<RoofDef>.AllDefs.FirstIndexOf(fetch => fetch == roofDef);
 
-                        toGet.Add(component);
+                        mapFile.Tiles.Add(component);
                     }
                 }
-
-                mapFile.Tiles = toGet.ToArray();
             }
             catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
         }
 
         private static void GetMapThings(MapFile mapFile, Map map, bool factionThings, bool nonFactionThings)
         {
-            try
+            foreach (Thing thing in map.listerThings.AllThings.Where(fetch => !ScriberH.CheckIfThingIsHuman(fetch) && !ScriberH.CheckIfThingIsAnimal(fetch)))
             {
-                List<string> tempFactionThings = new List<string>();
-                List<string> tempNonFactionThings = new List<string>();
-
-                foreach (Thing thing in map.listerThings.AllThings)
+                try
                 {
-                    if (!ScriberH.CheckIfThingIsHuman(thing) && !ScriberH.CheckIfThingIsAnimal(thing))
-                    {
-                        string data = ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thing.stackCount);
-
-                        if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(data);
-                        else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(data);
-                    }
+                    string data = ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thing.stackCount);
+                    if (thing.def.alwaysHaulable && factionThings) mapFile.FactionThings.Add(data);
+                    else if (!thing.def.alwaysHaulable && nonFactionThings) mapFile.NonFactionThings.Add(data);
                 }
-
-                mapFile.FactionThings = tempFactionThings.ToArray();
-                mapFile.NonFactionThings = tempNonFactionThings.ToArray();
+                catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
             }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
         }
 
         private static void GetMapHumans(MapFile mapFile, Map map, bool factionHumans, bool nonFactionHumans)
         {
-            try
+            foreach (Thing thing in map.listerThings.AllThings.Where(fetch => ScriberH.CheckIfThingIsHuman(fetch)))
             {
-                List<HumanFile> tempFactionHumans = new List<HumanFile>();
-                List<HumanFile> tempNonFactionHumans = new List<HumanFile>();
-
-                foreach (Thing thing in map.listerThings.AllThings)
+                try
                 {
-                    if (ScriberH.CheckIfThingIsHuman(thing))
-                    {
-                        HumanFile humanData = ScribeManager.HumanToString(thing as Pawn);
-
-                        if (thing.Faction == Faction.OfPlayer && factionHumans) tempFactionHumans.Add(humanData);
-                        else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) tempNonFactionHumans.Add(humanData);
-                    }
+                    HumanFile humanData = ScribeManager.HumanToString(thing as Pawn);
+                    if (thing.Faction == Faction.OfPlayer && factionHumans) mapFile.FactionHumans.Add(humanData);
+                    else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) mapFile.NonFactionHumans.Add(humanData);
                 }
-
-                mapFile.FactionHumans = tempFactionHumans.ToArray();
-                mapFile.NonFactionHumans = tempNonFactionHumans.ToArray();
+                catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
             }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
         }
 
         private static void GetMapAnimals(MapFile mapFile, Map map, bool factionAnimals, bool nonFactionAnimals)
         {
-            try
+            foreach (Thing thing in map.listerThings.AllThings.Where(fetch => ScriberH.CheckIfThingIsAnimal(fetch)))
             {
-                List<string> tempFactionAnimals = new List<string>();
-                List<string> tempNonFactionAnimals = new List<string>();
-
-                foreach (Thing thing in map.listerThings.AllThings)
+                try
                 {
-                    if (ScriberH.CheckIfThingIsAnimal(thing))
-                    {
-                        string animalData = ScribeManager.SerializeToString(thing as Pawn, ScribeManager.SerializableType.Thing);
-
-                        if (thing.Faction == Faction.OfPlayer && factionAnimals) tempFactionAnimals.Add(animalData);
-                        else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) tempNonFactionAnimals.Add(animalData);
-                    }
+                    string animalData = ScribeManager.SerializeToString(thing as Pawn, ScribeManager.SerializableType.Thing);
+                    if (thing.Faction == Faction.OfPlayer && factionAnimals) mapFile.FactionAnimals.Add(animalData);
+                    else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) mapFile.NonFactionAnimals.Add(animalData);
                 }
-
-                mapFile.FactionAnimals = tempFactionAnimals.ToArray();
-                mapFile.NonFactionAnimals = tempNonFactionAnimals.ToArray();
+                catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
             }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
         }
-
-        private static void GetMapMods(MapFile mapFile)
-        {
-            try { mapFile.Mods = ModManagerH.GetRunningModList(); }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
-        }
-
-        //Setters
 
         private static Map SetEmptyMap(MapFile mapFile, int tileToUse)
         {
@@ -199,12 +159,12 @@ namespace GameClient.Misc
                 {
                     for (int x = 0; x < map.Size.x; ++x)
                     {
-                        MapTileDetail component = mapFile.Tiles[index];
+                        MapTile component = mapFile.Tiles[index];
                         IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
                         try
                         {
-                            TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.DefName);
+                            TerrainDef terrainToUse = DefDatabase<TerrainDef>.AllDefs.ToList()[component.TileByte];
                             map.terrainGrid.SetTerrain(vectorToCheck, terrainToUse);
                             map.pollutionGrid.SetPolluted(vectorToCheck, component.IsPolluted);
                         }
@@ -212,7 +172,7 @@ namespace GameClient.Misc
 
                         try
                         {
-                            RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == component.RoofDefName);
+                            RoofDef roofToUse = DefDatabase<RoofDef>.AllDefs.ToList()[component.RoofByte];
                             map.roofGrid.SetRoof(vectorToCheck, roofToUse);
                         }
                         catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
@@ -351,7 +311,7 @@ namespace GameClient.Misc
         {
             try
             {
-                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.First(fetch => fetch.defName == mapFile.CurWeatherDefName);
+                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.ToList()[mapFile.WeatherByte];
                 map.weatherManager.TransitionTo(weatherDef);
             }
             catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }

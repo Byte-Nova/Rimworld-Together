@@ -2,9 +2,9 @@
 using GameServer.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
-using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Files.Maps;
 
 namespace GameServer.Managers
 {
@@ -15,27 +15,16 @@ namespace GameServer.Managers
         {
             MapData data = Serializer.ConvertBytesToObject<MapData>(bytes);
 
-            SaveUserMap(client, data._mapFile);
+            SaveUserMap(client, data);
         }
 
-        public static void SaveUserMap(ServerClient client, MapFile file)
+        public static void SaveUserMap(ServerClient client, MapData data)
         {
-            file.Username = client.UserFile.Username;
-            Serializer.ObjectBytesToFile(Path.Combine(Master.MapsPath, file.Tile + CommonValues.DefaultSaveFormat), file);
-
+            File.WriteAllBytes(Path.Combine(Master.MapsPath, data._mapTile + CommonValues.DefaultSaveFormat), data._rawData);
             InformationDisplayer.DisplaySaveMap(client);
         }
 
-        public static void DeleteMap(MapFile mapFile)
-        {
-            File.Delete(Path.Combine(Master.MapsPath, mapFile.Tile + CommonValues.DefaultSaveFormat));
-            InformationDisplayer.DisplayRemoveMap(mapFile.Tile.ToString());
-        }
-
-        public static string[] GetAllMaps()
-        {
-            return Directory.GetFiles(Master.MapsPath);
-        }
+        public static string[] GetAllMaps() { return Directory.GetFiles(Master.MapsPath); }
 
         public static bool CheckIfMapExists(int mapTileToCheck)
         {
@@ -44,10 +33,10 @@ namespace GameServer.Managers
             else return false;
         }
 
-        public static MapFile GetMapFromTile(int mapTileToGet)
+        public static byte[] GetMapFromTile(int mapTileToGet)
         {
             string path = Path.Combine(Master.MapsPath, mapTileToGet + CommonValues.DefaultSaveFormat);
-            if (File.Exists(path)) return Serializer.FileBytesToObject<MapFile>(path);
+            if (File.Exists(path)) return File.ReadAllBytes(path);
             else return null;
         }
     }

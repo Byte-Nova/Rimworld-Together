@@ -2,6 +2,7 @@
 using TCPNetwork.Packets;
 using Shared;
 using GameClient.Misc;
+using Shared.Files.Maps;
 
 namespace GameClient.Managers
 {
@@ -61,8 +62,10 @@ namespace GameClient.Managers
         {
             RT_Dialog_Wait.Instance.Close();
 
+            MapFile file = Serializer.ConvertBytesToObject<MapFile>(data._settlementRawData);
+
             string title = "Information";
-            string[] messages = new string[] { $"The wealth of the map is {data._settlementWealth}" };
+            string[] messages = new string[] { $"The wealth of the map is {file.Wealth}" };
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message(title, messages));
         }
     }

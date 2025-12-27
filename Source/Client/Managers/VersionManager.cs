@@ -51,10 +51,8 @@ namespace GameClient.Managers
 
         private static void ChangeVersion()
         {
-            string downloadPath = Path.Combine(Master.ModTempPath, "3005289691.zip");
+            string downloadPath = Path.Combine(Master.AppdataVersionPath, "3005289691.zip");
             string uri = $"https://github.com/RimWorld-Together/Rimworld-Together/releases/download/{RT_Dialog_Inputs.DialogInputResults[0]}/3005289691.zip";
-
-            if (!Directory.Exists(Master.ModTempPath)) Directory.CreateDirectory(Master.ModTempPath);
 
             if (!DownloadVersion(uri, downloadPath))
             {
@@ -68,9 +66,10 @@ namespace GameClient.Managers
                 {
                     string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
                     string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
+                    string modPath = Path.Combine(Master.AppdataTempPath, "ModPath.txt");
 
-                    if (File.Exists(copyPath)) File.Delete(copyPath);
                     File.Copy(scriptPath, copyPath);
+                    File.WriteAllText(modPath, Master.ModMainPath);
 
                     ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
                     processInfo.UseShellExecute = false;

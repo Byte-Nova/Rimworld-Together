@@ -190,6 +190,12 @@ namespace GameClient.Managers
             SessionHandler.PlayerFactions.Add(SessionHandler.AllyFaction);
             SessionHandler.PlayerFactions.Add(SessionHandler.NeutralFaction);
             SessionHandler.PlayerFactions.Add(SessionHandler.GuildFaction);
+
+            SessionHandler.PlayerFactionDefs.Clear();
+            SessionHandler.PlayerFactionDefs.Add(SessionHandler.EnemyFaction.def);
+            SessionHandler.PlayerFactionDefs.Add(SessionHandler.AllyFaction.def);
+            SessionHandler.PlayerFactionDefs.Add(SessionHandler.NeutralFaction.def);
+            SessionHandler.PlayerFactionDefs.Add(SessionHandler.GuildFaction.def);
         }
     }
 }

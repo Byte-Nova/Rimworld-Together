@@ -8,8 +8,8 @@ namespace TCPNetwork.Packets
 
         public bool _isPlayerOnline { get; set; } = false;
 
-        public int _settlementWealth { get; set; } = -1;
-
         public int _settlementTile { get; set; } = -1;
+
+        public byte[] _settlementRawData { get; set; } = null;
     }
 }

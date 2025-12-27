@@ -64,6 +64,8 @@ namespace GameClient.Misc
 
         public static List<Faction> PlayerFactions { get; set; } = new List<Faction>();
 
+        public static List<FactionDef> PlayerFactionDefs { get; set; } = new List<FactionDef>();
+
         public static Faction EnemyFaction { get; set; } = null;
 
         public static Faction AllyFaction { get; set; } = null;

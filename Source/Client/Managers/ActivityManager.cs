@@ -6,10 +6,10 @@ using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using Shared.Files;
 using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
+using Shared.Files.Maps;
 
 namespace GameClient.Managers
 {
@@ -60,7 +60,7 @@ namespace GameClient.Managers
         {
             RT_Dialog_Wait.Instance.Close();
 
-            PrepareMap(data._mapFile); 
+            PrepareMap(Serializer.ConvertBytesToObject<MapFile>(data._mapRawData)); 
         }
 
         private static void OnDeny()

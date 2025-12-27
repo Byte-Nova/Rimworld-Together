@@ -2,6 +2,7 @@
 using Shared;
 using Shared.Files;
 using TCPNetwork.Files.Client;
+using Shared.Files.Maps;
 
 namespace GameServer.Managers
 {
@@ -36,9 +37,7 @@ namespace GameServer.Managers
 
         private static void SendWealth(ServerClient client, InformationData data)
         {
-            MapFile mapToFind = MapManager.GetMapFromTile(data._settlementTile);
-
-            data._settlementWealth = mapToFind != null ? mapToFind.Wealth : -1;
+            data._settlementRawData = MapManager.GetMapFromTile(data._settlementTile);
 
             client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
         }

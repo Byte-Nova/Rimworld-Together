@@ -10,11 +10,11 @@ namespace GameClient.Core
 
         public static string AppdataTempPath { get; set; }
 
+        public static string AppdataVersionPath { get; set; }
+
         public static string ModMainPath { get; set; }
 
         public static string ModAssemblyPath { get; set; }
-
-        public static string ModTempPath { get; set; }
 
         public static string ModScriptsPath { get; set; }
 

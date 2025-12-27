@@ -16,8 +16,6 @@ using Shared.Misc;
 
 namespace GameClient.Patches
 {
-    // Sends the request to the server after the vanilla trading has gone through
-
     [HarmonyPatch(typeof(TradeDeal), nameof(TradeDeal.TryExecute))]
     public static class Patch_TradeDeal_TryExecute
     {
@@ -37,16 +35,13 @@ namespace GameClient.Patches
         }
     }
 
-    // Forces the trader to want every item the player wants to give
-
     [HarmonyPatch(typeof(TraderKindDef), nameof(TraderKindDef.WillTrade))]
     public static class Patch_TraderKindDef_WillTrade
     {
         [HarmonyPrefix]
-        public static bool DoPre(ref bool __result)
+        public static bool DoPre(ref bool __result, TraderKindDef __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.PlayerFactionDefs.Contains(__instance.faction)) return true;
             else
             {
                 __result = true;
@@ -54,8 +49,6 @@ namespace GameClient.Patches
             }
         }
     }
-
-    // Adds all available items to the tradeable list
 
     [HarmonyPatch(typeof(TradeDeal), "AddAllTradeables")]
     public static class Patch_TradeDeal_AddAllTradeables
@@ -67,21 +60,16 @@ namespace GameClient.Patches
             else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
+                MethodInfo toInvoke = typeof(TradeDeal).GetMethod("AddToTradeables", BindingFlags.NonPublic | BindingFlags.Instance);
+
                 // This means we are adding items from the CARAVAN
 
                 if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving)
                 {
-                    SessionHandler.ChosenCaravan = TradeSession.playerNegotiator.GetCaravan();
-
-                    MethodInfo toInvoke = typeof(TradeDeal).GetMethod("AddToTradeables", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                    //Need to check if they are slaves or prisoners because the game already adds them by default
-
-                    foreach (Pawn pawn in SessionHandler.ChosenCaravan.PawnsListForReading)
+                    foreach (Thing thing in SessionHandler.ChosenCaravan.AllThings)
                     {
-                        if (TradeSession.playerNegotiator == pawn) continue;
-                        else if (!pawn.IsFreeColonist || !pawn.IsFreeNonSlaveColonist) continue;
-                        else toInvoke.Invoke(__instance, new object[] { pawn, Transactor.Colony });
+                        if (TradeSession.playerNegotiator == thing) continue;
+                        else toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
                     }
 
                     return true;
@@ -91,17 +79,10 @@ namespace GameClient.Patches
 
                 else
                 {
-                    MethodInfo toInvoke = typeof(TradeDeal).GetMethod("AddToTradeables", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                    foreach (Pawn pawn in RimworldManager.GetPawnsFromMap(TradeSession.playerNegotiator.Map, Faction.OfPlayer, true))
+                    foreach (Thing thing in Finder.GetAllThingsInMap(TradeSession.playerNegotiator.Map))
                     {
-                        if (TradeSession.playerNegotiator == pawn) continue;
-                        else toInvoke.Invoke(__instance, new object[] { pawn, Transactor.Colony });
-                    }
-
-                    foreach (Thing thing in RimworldManager.GetAllThingsInMap(TradeSession.playerNegotiator.Map))
-                    {
-                        toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
+                        if (thing is Pawn && thing.Faction == Faction.OfPlayer && TradeSession.playerNegotiator != thing) toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
+                        else if (thing is not Pawn && thing.def.alwaysHaulable) toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
                     }
 
                     return false;
@@ -109,8 +90,6 @@ namespace GameClient.Patches
             }
         }
     }
-
-    // Adds the selected item to the tradeable list while preventing AI faction from adding it
 
     [HarmonyPatch(typeof(TradeDeal), "AddToTradeables")]
     public static class Patch_TradeDeal_AddToTradeables
@@ -128,8 +107,6 @@ namespace GameClient.Patches
         }
     }
 
-    // Prevents the warning of trader not having enough silver
-
     [HarmonyPatch(typeof(TradeDeal), nameof(TradeDeal.DoesTraderHaveEnoughSilver))]
     public static class Patch_TradeDeal_DoesTraderHaveEnoughSilver
     {
@@ -146,8 +123,6 @@ namespace GameClient.Patches
         }
     }
 
-    // Prevents the trade from failing if the AI faction has no silver
-
     [HarmonyPatch(typeof(Tradeable), nameof(Tradeable.CountPostDealFor))]
     public static class Patch_Tradeable_CountPostDealFor
     {
@@ -163,8 +138,6 @@ namespace GameClient.Patches
             }
         }
     }
-
-    // Trades every item that has been selected
 
     [HarmonyPatch(typeof(Tradeable), nameof(Tradeable.ResolveTrade))]
     public static class Patch_Tradeable_ResolveTrade
@@ -189,8 +162,6 @@ namespace GameClient.Patches
             }
         }
     }
-
-    // Trades every pawn that has been selected
 
     [HarmonyPatch(typeof(Tradeable_Pawn), nameof(Tradeable_Pawn.ResolveTrade))]
     public static class Patch_Tradeable_Pawn_ResolveTrade
@@ -259,8 +230,6 @@ namespace GameClient.Patches
             else return false;
         }
     }
-
-    // Resets the trade variables to make sure it doesn't conflict with AI trades
 
     [HarmonyPatch(typeof(Dialog_Trade), nameof(Dialog_Trade.Close))]
     public static class Patch_Dialog_Trade_Close
