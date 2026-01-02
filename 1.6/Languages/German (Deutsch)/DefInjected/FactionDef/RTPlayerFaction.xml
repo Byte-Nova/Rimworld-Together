@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<RTFaction.label>Fraktions-Spielersiedlungen</RTFaction.label>
+	<RTFaction.description>Eine Online-Fraktion</RTFaction.description>
+	<RTFaction.fixedName>Fraktions-Spielersiedlungen</RTFaction.fixedName>
+	<RTFaction.leaderTitle>Anführer</RTFaction.leaderTitle>
+	<RTFaction.pawnSingular>Kolonist</RTFaction.pawnSingular>
+	<RTFaction.pawnsPlural>Kolonisten</RTFaction.pawnsPlural>
+</LanguageData>

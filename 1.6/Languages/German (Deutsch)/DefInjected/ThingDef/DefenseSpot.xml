@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RTDefenseSpot.label>Verteidigungsplatz</RTDefenseSpot.label>
+  <RTDefenseSpot.description>Markiert einen Platz, den Kolonisten verteidigen, wenn sie offline sind. Gilt nur für Spielerangriffe!</RTDefenseSpot.description>
+</LanguageData>

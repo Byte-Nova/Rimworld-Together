@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+	<RTAlly.label>Verbündete Spielersiedlungen</RTAlly.label>
+	<RTAlly.description>Eine Online-Fraktion</RTAlly.description>
+	<RTAlly.fixedName>Verbündete Spielersiedlungen</RTAlly.fixedName>
+	<RTAlly.leaderTitle>Anführer</RTAlly.leaderTitle>
+	<RTAlly.pawnSingular>Kolonist</RTAlly.pawnSingular>
+	<RTAlly.pawnsPlural>Kolonisten</RTAlly.pawnsPlural>
+</LanguageData>
