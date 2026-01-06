@@ -45,6 +45,10 @@ namespace GameServer.Managers
                 case SiteStepMode.Rewards:
                     SendRewardsToPlayer(client);
                     break;
+
+                case SiteStepMode.Worker:
+                    ManageWorker(client, data);
+                    break;
             }
         }
 
@@ -104,6 +108,13 @@ namespace GameServer.Managers
             InformationDisplayer.DisplayRemoveSite(siteFile.Tile.ToString());
         }
 
+        private static void ManageWorker(ServerClient client, SiteData data)
+        {
+            SiteFile site = SiteManagerHelper.GetSiteFileFromTile(data._file.Tile);
+            site.WorkerString = data._file.WorkerString;
+            site.SaveSite();
+        }
+
         public static void SendRewardsToEveryPlayer()
         {
             foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
@@ -114,8 +125,8 @@ namespace GameServer.Managers
 
         public static void SendRewardsToPlayer(ServerClient client)
         {
-            SiteFile[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username == client.UserFile.Username ||
-                (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)).ToArray();
+            SiteFile[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => (fetch.Username == client.UserFile.Username ||
+                (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)) && !string.IsNullOrEmpty(fetch.WorkerString)).ToArray();
 
             if (availableSites.Length > 0)
             {
@@ -177,12 +188,13 @@ namespace GameServer.Managers
             return null;
         }
 
-        public static void GetSiteInfo(ServerClient client, SiteData siteData)
+        public static void GetSiteInfo(ServerClient client, SiteData data)
         {
-            SiteFile siteFile = GetSiteFileFromTile(siteData._file.Tile);
-            siteData._file = siteFile;
+            SiteFile siteFile = GetSiteFileFromTile(data._file.Tile);
+            data._stepMode = SiteStepMode.Info;
+            data._file = siteFile;
 
-            client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            client.Listener.EnqueuePacket(PacketHeader.SiteManager, data);
         }
 
         public static SiteFile[] GetAllSites()

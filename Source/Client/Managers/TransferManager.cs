@@ -341,7 +341,7 @@ namespace GameClient.Managers
             {
                 Pawn pawn = thing as Pawn;
 
-                SessionHandler.OutgoingManifest._humans.Add(ScribeManager.HumanToString(pawn));
+                SessionHandler.OutgoingManifest._humans.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Thing));
 
                 RimworldManager.RemovePawnFromGame(pawn);
             }
@@ -385,9 +385,9 @@ namespace GameClient.Managers
         {
             List<Thing> allTransferedItems = new List<Thing>();
 
-            foreach (HumanFile file in transferData._humans)
+            foreach (string file in transferData._humans)
             {
-                allTransferedItems.Add(ScribeManager.StringtoHuman(file));
+                allTransferedItems.Add(ScribeManager.SerializeFromString<Pawn>(file));
             }
 
             foreach (string data in transferData._animals)

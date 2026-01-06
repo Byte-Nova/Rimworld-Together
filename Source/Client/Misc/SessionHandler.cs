@@ -26,7 +26,7 @@ namespace GameClient.Misc
 
         public static RTSettlement ChosenSettlement { get; set; } = null;
 
-        public static Site ChosenSite { get; set; } = null;
+        public static RTSite ChosenSite { get; set; } = null;
 
         public static Caravan ChosenCaravan { get; set; } = null;
 

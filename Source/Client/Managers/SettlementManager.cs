@@ -47,11 +47,8 @@ namespace GameClient.Managers
         public static void ClearAllSettlements()
         {
             PlayerSettlements.Clear();
-
-            WorldObject[] settlements = (WorldObject[])Find.World.worldObjects.AllWorldObjects.FindAll(fetch => 
-                fetch.def.defName == "RTSettlement").ToArray();
-
-            foreach (RTSettlement settlement in settlements)
+        
+            foreach (WorldObject settlement in Finder.GetAllRTSettlements())
             {
                 SettlementFile toRemove = new SettlementFile();
                 toRemove.Tile = settlement.Tile;
@@ -79,9 +76,7 @@ namespace GameClient.Managers
         {
             try
             {
-                RTSettlement toGet = (RTSettlement)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == toRemove.Tile &&
-                    SessionHandler.PlayerFactions.Contains(fetch.Faction));
-
+                RTSettlement toGet = Finder.GetRTSettlementFromTile(toRemove.Tile);
                 PlayerSettlements.Remove(toGet); 
                 Find.WorldObjects.Remove(toGet);
                 toGet.Destroy();

@@ -10,6 +10,7 @@ using Verse;
 using static Shared.CommonEnumerators;
 using static UnityEngine.GraphicsBuffer;
 using TCPNetwork.Packets.Goodwills;
+using Shared.Files.Sites;
 
 
 namespace GameClient.Managers
@@ -119,16 +120,9 @@ namespace GameClient.Managers
         {
             foreach (SiteGoodwill _ in factionGoodwillData._sites) 
             {
-                Site site = (Site)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == _.Tile && fetch is Site);
+                RTSite site = (RTSite)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == _.Tile && fetch is RTSite);
 
-                SiteManager.PlayerSites.Remove(site);
-                Find.WorldObjects.Remove(site);
-
-                Site newSite = SiteMaker.MakeSite(sitePart: site.MainSitePartDef, tile: site.Tile, threatPoints: 1000, 
-                    faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(_.Goodwill));
-
-                SiteManager.PlayerSites.Add(newSite);
-                Find.WorldObjects.Add(newSite);
+                SiteManager.RecalculateSiteGoodwill(site, _.Goodwill);
             }
         }
     }

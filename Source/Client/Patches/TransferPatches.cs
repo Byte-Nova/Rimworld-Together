@@ -60,6 +60,24 @@ namespace GameClient.Patches
             else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
+                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving)
+                {
+                    if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionHandler.ChosenCaravan, 1))
+                    {
+                        Thing silver = ThingMaker.MakeThing(ThingDefOf.Silver);
+                        RimworldManager.PlaceThingIntoCaravan(silver, SessionHandler.ChosenCaravan);
+                    }
+                }
+
+                else
+                {
+                    if (!RimworldManager.CheckIfHasEnoughSilverInMap(Find.AnyPlayerHomeMap, 1))
+                    {
+                        Thing silver = ThingMaker.MakeThing(ThingDefOf.Silver);
+                        RimworldManager.PlaceThingIntoMap(silver, Find.AnyPlayerHomeMap);
+                    }
+                }
+
                 MethodInfo toInvoke = typeof(TradeDeal).GetMethod("AddToTradeables", BindingFlags.NonPublic | BindingFlags.Instance);
 
                 // This means we are adding items from the CARAVAN
@@ -72,7 +90,7 @@ namespace GameClient.Patches
                         else toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
                     }
 
-                    return true;
+                    return false;
                 }
 
                 // This means we are adding items from the SETTLEMENT

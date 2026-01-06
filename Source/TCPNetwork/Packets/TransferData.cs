@@ -20,7 +20,7 @@ namespace TCPNetwork.Packets
 
         public int _toTile { get; set; } = -1;
 
-        public List<HumanFile> _humans { get; set; } = new List<HumanFile>();
+        public List<string> _humans { get; set; } = new List<string>();
 
         public List<string> _animals { get; set; } = new List<string>();
 

@@ -22,6 +22,8 @@ namespace GameServer
 
         public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
 
+        public override Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client) { };
+
         public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
         {
             try
@@ -94,29 +96,31 @@ namespace GameServer
         {
             TcpClient newTCP = ServerListener.AcceptTcpClient();
 
-            ServerClient newServerClient = new ServerClient(newTCP);
-            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnWritePacket, OnDisconnect,
+            ServerClient client = new ServerClient(newTCP);
+            client.Listener = new Listener(client, newTCP, OnReadPacket, OnWritePacket, OnConnect, OnDisconnect,
                 OnMessage, OnWarning, OnError, Listener.ListenerMode.Server);
 
             if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
             {
-                LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.Full);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Full);
             }
 
             else if (Master.WorldValues == null && ServerNetwork.Instance.GetConnectedClientsSafe().Length > 0)
             {
-                LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.NoWorld);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.NoWorld);
             }
 
             else
             {
-                ServerClients.Add(newServerClient);
+                Printer.Warning(client);
+
+                ServerNetwork.Instance.ServerClients.Add(client);
 
                 Main_.ChangeTitle();
 
-                InformationDisplayer.DisplayConnect(newServerClient);
+                InformationDisplayer.DisplayConnect(client);
 
-                VersionManager.AskForClientVersion(newServerClient);
+                VersionManager.AskForClientVersion(client);
             }
         }
 

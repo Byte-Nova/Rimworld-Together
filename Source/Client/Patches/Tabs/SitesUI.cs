@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using GameClient.Managers;
+using GameClient.WorldObjects;
 using RimWorld.Planet;
 using UnityEngine;
 using Verse;
@@ -53,7 +54,7 @@ namespace GameClient.Patches.Tabs
             float num3 = scrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            foreach (Site playerSite in orderedDictionary)
+            foreach (RTSite playerSite in orderedDictionary)
             {
                 if (num > num2 && num < num3)
                 {
@@ -68,7 +69,7 @@ namespace GameClient.Patches.Tabs
             Widgets.EndScrollView();
         }
 
-        private void DrawCustomRow(Rect rect, Site playerSite, int index)
+        private void DrawCustomRow(Rect rect, RTSite playerSite, int index)
         {
             Text.Font = GameFont.Small;
 
@@ -89,11 +90,6 @@ namespace GameClient.Patches.Tabs
                     }
                 }
             }
-        }
-
-        protected override void CloseTab()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

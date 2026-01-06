@@ -11,6 +11,7 @@ using GameClient.Misc;
 
 namespace GameClient.Patches.Pages
 {
+    [HarmonyPatchCategory("Start")]
     [HarmonyPatch(typeof(VersionControl), nameof(VersionControl.DrawInfoInCorner))]
     public static class VersionControl_DrawInfoInCorner_Patch
     {
@@ -28,6 +29,7 @@ namespace GameClient.Patches.Pages
         }
     }
 
+    [HarmonyPatchCategory("Start")]
     [HarmonyPatch(typeof(Verse.OptionListingUtility), nameof(Verse.OptionListingUtility.DrawOptionListing))]
     public static class Patch
     {
@@ -52,6 +54,7 @@ namespace GameClient.Patches.Pages
         }
     }
 
+    [HarmonyPatchCategory("Start")]
     [HarmonyPatch(typeof(MainMenuDrawer), "DoMainMenuControls")]
     public static class PatchButton
     {

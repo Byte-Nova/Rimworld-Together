@@ -38,6 +38,11 @@ namespace GameClient
 
         public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
 
+        public override Action<ServerClient> OnConnect { get; set; } = delegate
+        {
+            MainThreadHandler.Instance.Enqueue(delegate { HarmonyHandler.EnableMainPatches(); });
+        };
+
         public override Action<ServerClient> OnDisconnect { get; set; } = delegate 
         {
             MainThreadHandler.Instance.Enqueue(delegate
@@ -101,7 +106,7 @@ namespace GameClient
             {
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
-                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, 
+                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnConnect, OnDisconnect, 
                     OnMessage, OnWarning, OnError, Listener.ListenerMode.Client);
             }
             catch { return false; }

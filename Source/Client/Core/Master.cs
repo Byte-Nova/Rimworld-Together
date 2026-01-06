@@ -24,6 +24,6 @@ namespace GameClient.Core
 
         public static string ModPackageID { get; private set; } = "nova.rimworldtogether";
 
-        public static string ModID { get; private set; } = "RimWorld Together";
+        public static string ModID { get; private set; } = "RimWorldTogether";
     }
 }

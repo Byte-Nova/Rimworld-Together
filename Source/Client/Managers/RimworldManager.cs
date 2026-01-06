@@ -107,7 +107,7 @@ namespace GameClient.Managers
         {
             IntVec3 positionToPlaceAt = IntVec3.Zero;
             if (useSpot) positionToPlaceAt = TransferManagerHelper.GetTransferLocationInMap(map);
-            else positionToPlaceAt = thing.Position;
+            else positionToPlaceAt = map.Center;
 
             if (byDropPod) TradeUtility.SpawnDropPod(FindVectorNear(positionToPlaceAt, map), map, thing);
             else
@@ -136,6 +136,7 @@ namespace GameClient.Managers
 
                 if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.PassToWorld(pawn);
                 if (pawn.def.CanHaveFaction) pawn.SetFactionDirect(Faction.OfPlayer);
+
                 caravan.AddPawn(pawn, false);
             }
 

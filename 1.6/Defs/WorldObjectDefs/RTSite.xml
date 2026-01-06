@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+	<WorldObjectDef Name="RTSite" ParentName="StaticWorldObjectBase">
+		<defName>RTSite</defName>
+		<label>Online site</label>
+		<description>An online site</description>
+		<worldObjectClass>GameClient.WorldObjects.RTSite</worldObjectClass>
+		<texture>World/WorldObjects/RTSite</texture>
+		<expandingIconTexture>World/WorldObjects/RTSite</expandingIconTexture>
+		<fullyExpandedInSpace>true</fullyExpandedInSpace>
+		<expandingIcon>true</expandingIcon>
+		<expandingIconPriority>10</expandingIconPriority>
+	</WorldObjectDef>
+</Defs>

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GameClient.WorldObjects;
+using RimWorld.Planet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +24,26 @@ namespace GameClient.Misc
         public static MentalStateDef GetMentalStateDefFromName(string defname)
         {
             return DefDatabase<MentalStateDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == defname);
+        }
+
+        public static RTSettlement GetRTSettlementFromTile(int tile) 
+        { 
+            return (RTSettlement)Find.World.worldObjects.AllWorldObjects.First(fetch => fetch.Tile == tile && fetch is RTSettlement); 
+        }
+
+        public static RTSite GetRTSiteFromTile(int tile)
+        {
+            return (RTSite)Find.World.worldObjects.AllWorldObjects.First(fetch => fetch.Tile == tile && fetch is RTSite);
+        }
+
+        public static WorldObject[] GetAllRTSettlements()
+        {
+            return (WorldObject[])Find.World.worldObjects.AllWorldObjects.FindAll(fetch => fetch is RTSettlement).ToArray();
+        }
+
+        public static WorldObject[] GetAllRTSites()
+        {
+            return (WorldObject[])Find.World.worldObjects.AllWorldObjects.FindAll(fetch => fetch is RTSite).ToArray();
         }
     }
 }

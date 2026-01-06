@@ -16,8 +16,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Core
 {
-    //Class that works as an entry point for the mod
-
     public static class Main_
     {
         [StaticConstructorOnStartup]
@@ -27,7 +25,7 @@ namespace GameClient.Core
             {
                 ClientPrinter.CreateLogger();
 
-                ApplyHarmonyPatches();
+                HarmonyHandler.EnableStartPatches();
                 PrepareCulture();
                 PreparePaths();
 
@@ -35,12 +33,6 @@ namespace GameClient.Core
                 MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Client);
                 PersistentSettings.SetFilePath(Path.Combine(Master.AppdataRTPath, "PersistentSettings" + CommonValues.DefaultSaveFormat));
             }
-        }
-
-        private static void ApplyHarmonyPatches()
-        {
-            Harmony harmony = new Harmony(Master.ModID);
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         private static void PrepareCulture()

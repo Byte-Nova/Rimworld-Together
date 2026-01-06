@@ -21,9 +21,9 @@ namespace Shared.Files.Maps
 
         public List<string> NonFactionThings { get; set; } = new List<string>();
 
-        public List<HumanFile> FactionHumans { get; set; } = new List<HumanFile>();
+        public List<string> FactionHumans { get; set; } = new List<string>();
 
-        public List<HumanFile> NonFactionHumans { get; set; } = new List<HumanFile>();
+        public List<string> NonFactionHumans { get; set; } = new List<string>();
 
         public List<string> FactionAnimals { get; set; } = new List<string>();
 

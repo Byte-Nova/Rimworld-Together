@@ -40,7 +40,7 @@ namespace Shared
 
         public enum ActivityType { None, Raid, Zoom }
 
-        public enum SiteStepMode { Accept, Build, Destroy, Info, Config, Rewards}
+        public enum SiteStepMode { Accept, Build, Destroy, Info, Config, Rewards, Worker }
 
         public enum SettlementStepMode { Add, Remove }
 

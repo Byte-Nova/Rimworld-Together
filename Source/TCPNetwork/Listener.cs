@@ -65,8 +65,8 @@ namespace TCPNetwork
         };
 
         public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
-            Action<ServerClient> onDisconnect, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
-            Action<object, LogImportanceMode> onError, ListenerMode mode)
+            Action<ServerClient> onConnect, Action<ServerClient> onDisconnect, Action<object, LogImportanceMode> onMessage, 
+            Action<object, LogImportanceMode> onWarning, Action<object, LogImportanceMode> onError, ListenerMode mode)
         {
             this.Connection = connection;
             this.TargetClient = clientToUse;
@@ -79,6 +79,8 @@ namespace TCPNetwork
             this.OnReadPacket = onReadPacket;
             this.OnWritePacket = onWritePacket;
             this.OnDisconnect = onDisconnect;
+
+            onConnect.Invoke(clientToUse);
 
             Task.Run(() => Read());
             Task.Run(() => Write());

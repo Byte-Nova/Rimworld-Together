@@ -52,7 +52,7 @@ namespace GameClient.Managers
             aidData._toTile = SessionHandler.ChosenSettlement.Tile;
 
             Pawn toGet = RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)[RT_Dialog_ListingWithButton.DialogButtonListingResultInt];
-            aidData._humanData = ScribeManager.HumanToString(toGet);
+            aidData._humanData = ScribeManager.SerializeToString(toGet, ScribeManager.SerializableType.Thing);
             RimworldManager.RemovePawnFromGame(toGet);
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.AidManager, aidData);
@@ -77,7 +77,7 @@ namespace GameClient.Managers
 
             Map map = Find.World.worldObjects.SettlementAt(data._fromTile).Map;
 
-            Pawn pawn = ScribeManager.StringtoHuman(data._humanData);
+            Pawn pawn = ScribeManager.SerializeFromString<Pawn>(data._humanData);
             pawn.SetFactionDirect(Faction.OfPlayer);
 
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
@@ -89,7 +89,7 @@ namespace GameClient.Managers
         {
             Map map = Find.World.worldObjects.SettlementAt(data._toTile).Map;
 
-            Pawn pawn = ScribeManager.StringtoHuman(data._humanData);
+            Pawn pawn = ScribeManager.SerializeFromString<Pawn>(data._humanData);
             pawn.SetFactionDirect(Faction.OfPlayer);
 
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true, true);
