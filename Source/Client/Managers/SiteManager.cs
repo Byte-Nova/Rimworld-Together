@@ -164,7 +164,7 @@ namespace GameClient.Managers
             {
                 try
                 {
-                    SitePartDef siteDef = RTSitePartDefs.Defs.First(fetch => fetch.defName == toAdd.Type.DefName);
+                    SitePartDef siteDef = RTSitePartDef.sites.First(fetch => fetch.defName == toAdd.Type.DefName);
                     RTSite site = (RTSite)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSite"));
                     site.Tile = toAdd.Tile;
                     site.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));

@@ -35,7 +35,7 @@ namespace GameClient.Dialogs
             if (Widgets.CloseButtonFor(rect)) Close();
 
             Rect mainRect = new Rect(0, 50f, rect.width, rect.height - 50f);
-            float height = 6f + RTSitePartDefs.Defs.Count() * 50f;
+            float height = 6f + RTSitePartDef.sites.Count() * 50f;
             Rect viewRect = new Rect(0f, 50f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 50;
@@ -43,12 +43,12 @@ namespace GameClient.Dialogs
             float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < RTSitePartDefs.Defs.Length; i++)
+            for (int i = 0; i < RTSitePartDef.sites.Count(); i++)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect inRect = new Rect(0f, num, viewRect.width, 50f);
-                    DrawCustomRow(inRect, RTSitePartDefs.Defs[i], num4);
+                    DrawCustomRow(inRect, RTSitePartDef.sites[i], num4);
                 }
 
                 num += 50f;

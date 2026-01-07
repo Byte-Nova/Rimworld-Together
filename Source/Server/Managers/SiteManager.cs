@@ -131,7 +131,28 @@ namespace GameServer.Managers
             if (availableSites.Length > 0)
             {
                 List<SiteReward> toReward = new List<SiteReward>();
-                foreach (SiteFile site in availableSites) toReward.Add(client.UserFile.SiteConfigs.First(fetch => fetch.DefName == site.Type.DefName).Reward);
+                foreach (SiteFile site in availableSites) 
+                {
+                    List<PlayerSiteConfig> matchingSites = client.UserFile.SiteConfigs.Where(fetch => fetch.DefName == site.Type.DefName).ToList();
+
+                    if (matchingSites.Count == 0)
+                    {
+                        Printer.Warning($"New site \"{site.Type.DefName}\" added to user config of user {client.UserFile.Username}", LogImportanceMode.Verbose);
+                        
+                        PlayerSiteConfig newSite = new PlayerSiteConfig();
+                        newSite.DefName = site.Type.DefName;
+                        newSite.Reward = site.Type.Rewards[0];
+                        List<PlayerSiteConfig> newSiteConfig = client.UserFile.SiteConfigs.ToList();
+                        newSiteConfig.Add(newSite);
+                        client.UserFile.SiteConfigs = newSiteConfig.ToArray();
+                        client.UserFile.SaveUserFile();
+                        toReward.Add(newSite.Reward);
+                    }
+                    else
+                    {
+                        toReward.Add(matchingSites.First().Reward);
+                    }
+                }
 
                 SiteData siteData = new SiteData();
                 siteData._stepMode = SiteStepMode.Rewards;
