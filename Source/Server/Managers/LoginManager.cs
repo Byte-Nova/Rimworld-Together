@@ -5,6 +5,7 @@ using Shared;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Files.Client;
 using Shared.Misc;
+using GameServer.Integrations.Discord;
 
 namespace GameServer.Managers
 {
@@ -36,14 +37,13 @@ namespace GameServer.Managers
 
         public static string TryLoginUser(ServerClient client, LoginData data)
         {
-            if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return $"Login details to not match, either the password or username is wrong for {data._username}";
-            
+            if (!UserManagerH.CheckIfUserAuthCorrect(client, data))
+                return $"Login details to not match, either the password or username is wrong for {data._username}";
+
             client.LoadUserFromFile(client);
 
             if (UserManagerH.CheckIfUserBanned(client)) return $"{data._username} is banned";
-
             if (!UserManagerH.CheckWhitelist(client)) return $"{data._username} is not whitelisted";
-
             if (WorldManager.CheckIfWorldExists() && ModManager.CheckIfModConflict(client, data)) return $"{data._username} has a mod conflict";
 
             LoginManagerH.RemoveOldClientSessions(client);
@@ -81,12 +81,13 @@ namespace GameServer.Managers
 
             if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has joined the server!");
 
+            DiscordPlayerAnnouncer.AnnounceFullyJoined(client.UserFile.Username);
+
             if (WorldManager.CheckIfWorldExists())
             {
                 if (SaveManager.CheckIfUserHasSave(client)) SaveManager.SendSaveToClient(client);
                 else WorldManager.SendWorld(client);
             }
-
             else
             {
                 Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
@@ -123,8 +124,8 @@ namespace GameServer.Managers
             LoginData loginData = new LoginData();
             loginData._tryResponse = response;
 
-            if (response == LoginResponse.Mods) loginData._extraDetails = (List<string>)extraDetails;
-            else if (response == LoginResponse.Version) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
+            if (response == LoginResponse.Mods) loginData._extraDetails = (System.Collections.Generic.List<string>)extraDetails;
+            else if (response == LoginResponse.Version) loginData._extraDetails = new System.Collections.Generic.List<string>() { CommonValues.ExecutableVersion };
 
             client.Listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
             client.Listener.DisconnectSmooth();

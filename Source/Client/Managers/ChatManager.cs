@@ -31,13 +31,9 @@ namespace GameClient.Managers
 
         public static bool ShouldScrollChat { get; set; } = false;
 
-        //No accessors zone
-
         public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
 
         public static bool ChatAutoscroll = true;
-
-        //No accessors zone
 
         [HandlesPacket(PacketHeader.ChatManager)]
         private static void ParsePacket(byte[] bytes)
@@ -62,9 +58,11 @@ namespace GameClient.Managers
         {
             if (ChatMessageCache.Count() > 100) ChatMessageCache.RemoveAt(0);
 
-            if (ChatManagerH.CheckIfHasBeenTagged(message)) message = message.Replace($"@{SessionHandler.Username}", $"<color=red>@{SessionHandler.Username}</color>");
+            if (ChatManagerH.CheckIfHasBeenTagged(message))
+                message = message.Replace($"@{SessionHandler.Username}", $"<color=red>@{SessionHandler.Username}</color>");
 
-            ChatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerH.messageColorDictionary[userColor]}{username}</color>: " +
+            ChatMessageCache.Add($"<color=grey>{DateTime.Now:HH:mm}</color> " +
+                $"{ChatManagerH.messageColorDictionary[userColor]}{username}</color>: " +
                 $"{ChatManagerH.messageColorDictionary[messageColor]}{ChatManagerH.ParseMessage(message)}</color>");
 
             if (ChatAutoscroll) ShouldScrollChat = true;
@@ -73,7 +71,8 @@ namespace GameClient.Managers
             {
                 ToggleChatIcon(true);
 
-                if (!ModConfigGetter.MuteChatSoundBool) RTChatDefSounds.ChatReceive.PlayOneShotOnCamera();
+                if (!ModConfigGetter.MuteChatSoundBool)
+                    RTChatDefSounds.ChatReceive.PlayOneShotOnCamera();
             }
         }
 
@@ -100,8 +99,8 @@ namespace GameClient.Managers
             { ChatColor.Admin, "<color=red>" },
             { ChatColor.Console, "<color=yellow>" },
             { ChatColor.Private, "<color=#3ae0dd>" },
-            { ChatColor.Discord, "<color=white>" },
-            { ChatColor.Server, " <color=white>" }
+            { ChatColor.Discord, "<color=#b36bff>" },
+            { ChatColor.Server, "<color=white>" } // that extra space made server look like it was doubled spaced lmao!!
         };
 
         public static string[] GetMessageWords(string message) { return message.Split(' '); }
@@ -133,14 +132,10 @@ namespace GameClient.Managers
                 {
                     switch (verification.ToLower())
                     {
-                        //Check for TAG CLOSING
-
                         case "[/]":
                             if (codeType.Count > 0) message = message.ReplaceFirst(verification, $"</{codeType.Pop()}>");
                             verification = "";
                             break;
-
-                        //Check for BOLD
 
                         case "[b]":
                             message = message.Replace(verification, "<b>");
@@ -148,15 +143,11 @@ namespace GameClient.Managers
                             verification = "";
                             break;
 
-                        //Check for CURSIVE
-
                         case "[i]":
                             message = message.Replace(verification, "<i>");
                             codeType.Push("i");
                             verification = "";
                             break;
-
-                        //Check for NEW LINE (broadcasts only)
 
                         case "[n]":
                             if (fromBroadcast)
@@ -165,8 +156,6 @@ namespace GameClient.Managers
                                 verification = "";
                             }
                             break;
-
-                        //Check for CUSTOM COLOR
 
                         default:
                             if (Regex.IsMatch(verification, @"\[[a-fA-F0-9]{6}\]"))

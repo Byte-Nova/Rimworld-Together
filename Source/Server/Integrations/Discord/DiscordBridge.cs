@@ -2,23 +2,26 @@
 using Discord.WebSocket;
 using GameServer.Managers;
 using Shared.Misc;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Integrations.Discord
 {
     public static class DiscordBridge
     {
-        private static readonly SemaphoreSlim StartSemaphore = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim StartStopSemaphore = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim SendSemaphore = new SemaphoreSlim(1, 1);
         private static readonly SemaphoreSlim MentionResolveSemaphore = new SemaphoreSlim(1, 1);
 
         private static DiscordSocketClient Client { get; set; }
         private static bool Started { get; set; }
-        private static bool StopRequested { get; set; }
 
         private static ulong ChatChannelId { get; set; }
         private static ulong AdminChannelId { get; set; }
@@ -28,12 +31,17 @@ namespace GameServer.Integrations.Discord
 
         private static readonly ConcurrentQueue<OutboundMessage> Outbox = new ConcurrentQueue<OutboundMessage>();
         private static readonly SemaphoreSlim OutboxSignal = new SemaphoreSlim(0, int.MaxValue);
+
+        private static CancellationTokenSource OutboxCts { get; set; }
         private static Task OutboxWorkerTask { get; set; }
 
         private static readonly AllowedMentions NoMentions = AllowedMentions.None;
 
-        private static readonly ConcurrentDictionary<string, MentionCacheEntry> MentionCache = new ConcurrentDictionary<string, MentionCacheEntry>(StringComparer.OrdinalIgnoreCase);
-        private static readonly Regex MentionTokenRegex = new Regex(@"(?<!\w)@(?:""([^""]{1,32})""|'([^']{1,32})'|([^\s@]{1,32}))", RegexOptions.Compiled);
+        private static readonly ConcurrentDictionary<string, MentionCacheEntry> MentionCache =
+            new ConcurrentDictionary<string, MentionCacheEntry>(StringComparer.OrdinalIgnoreCase);
+
+        private static readonly Regex MentionTokenRegex =
+            new Regex(@"(?<!\w)@(?:""([^""]{1,32})""|'([^']{1,32})'|([^\s@]{1,32}))", RegexOptions.Compiled);
 
         private static int BatchWindowMs { get; set; } = 250;
         private static int BurstCount { get; set; } = 4;
@@ -56,6 +64,215 @@ namespace GameServer.Integrations.Discord
         public static void BeginConsoleMirrorWindow()
         {
             ConsoleMirrorUntilUtc = DateTime.UtcNow.AddMilliseconds(ConsoleMirrorWindowMs);
+        }
+
+        public static void TryStart()
+        {
+            _ = Task.Run(StartAsync);
+        }
+
+        private static async Task StartAsync()
+        {
+            await StartStopSemaphore.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                if (Started) return;
+                if (GameServer.Core.Master.ServerConfig == null) return;
+
+                var cfg = GameServer.Core.Master.ServerConfig;
+                if (!cfg.EnableDiscordBridge) return;
+
+                var token = (cfg.DiscordBotToken ?? string.Empty).Trim();
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    Printer.Warning("[Discord] EnableDiscordBridge is true but DiscordBotToken is empty.");
+                    return;
+                }
+
+                ChatChannelId = ParseUlong(cfg.DiscordChatChannelId);
+                AdminChannelId = ParseUlong(cfg.DiscordAdminChannelId);
+                CommandPrefix = string.IsNullOrWhiteSpace(cfg.DiscordCommandPrefix) ? "!" : cfg.DiscordCommandPrefix.Trim();
+                AdminRoleIds = ParseRoleIds(cfg.DiscordAdminRoleIdsCsv);
+
+                if (ChatChannelId == 0 && AdminChannelId == 0)
+                {
+                    Printer.Warning("[Discord] DiscordChatChannelId and DiscordAdminChannelId are both missing/invalid.");
+                    return;
+                }
+
+                var socketCfg = new DiscordSocketConfig
+                {
+                    GatewayIntents =
+                        GatewayIntents.Guilds |
+                        GatewayIntents.GuildMessages |
+                        GatewayIntents.MessageContent,
+                    AlwaysDownloadUsers = false,
+                    MessageCacheSize = 0
+                };
+
+                Client = new DiscordSocketClient(socketCfg);
+                Client.MessageReceived += OnMessageReceivedAsync;
+
+                await Client.LoginAsync(TokenType.Bot, token).ConfigureAwait(false);
+                await Client.StartAsync().ConfigureAwait(false);
+
+                OutboxCts = new CancellationTokenSource();
+                OutboxWorkerTask = Task.Run(() => OutboxWorkerAsync(OutboxCts.Token));
+
+                Started = true;
+
+                try { DiscordPresence.TryStart(Client); } catch { }
+
+                Printer.Title("[Discord] Bridge started");
+            }
+            catch (Exception e)
+            {
+                Printer.Error($"[Discord] Bridge failed to start: {e}");
+                Started = false;
+
+                try { if (Client != null) await Client.StopAsync().ConfigureAwait(false); } catch { }
+                try { if (Client != null) await Client.LogoutAsync().ConfigureAwait(false); } catch { }
+
+                Client = null;
+            }
+            finally
+            {
+                StartStopSemaphore.Release();
+            }
+        }
+
+        public static void TryStop()
+        {
+            _ = Task.Run(StopAsync);
+        }
+
+        private static async Task StopAsync()
+        {
+            await StartStopSemaphore.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                if (!Started && Client == null) return;
+
+                Started = false;
+
+                try { DiscordPresence.TryStop(); } catch { }
+
+                try
+                {
+                    if (OutboxCts != null)
+                    {
+                        OutboxCts.Cancel();
+                        OutboxSignal.Release();
+                    }
+
+                    if (OutboxWorkerTask != null)
+                    {
+                        try { await OutboxWorkerTask.ConfigureAwait(false); } catch { }
+                    }
+                }
+                finally
+                {
+                    OutboxCts?.Dispose();
+                    OutboxCts = null;
+                    OutboxWorkerTask = null;
+                }
+
+                if (Client != null)
+                {
+                    try { await Client.StopAsync().ConfigureAwait(false); } catch { }
+                    try { await Client.LogoutAsync().ConfigureAwait(false); } catch { }
+                }
+            }
+            catch { }
+            finally
+            {
+                Client = null;
+                while (Outbox.TryDequeue(out _)) { }
+            }
+        }
+
+        private static async Task OnMessageReceivedAsync(SocketMessage raw)
+        {
+            try
+            {
+                if (!Started) return;
+                if (raw == null) return;
+                if (raw.Author?.IsBot == true) return;
+
+                var content = raw.Content?.Trim() ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(content)) return;
+
+                if (ChatChannelId != 0 && raw.Channel?.Id == ChatChannelId)
+                {
+                    var name = GetBestName(raw);
+                    var msg = SanitizeGameTextFromDiscord(raw, content);
+                    if (msg.Length > 5000) msg = msg.Substring(0, 5000);
+
+                    ChatManager.BroadcastDiscordMessage(name, msg);
+                    return;
+                }
+
+                if (AdminChannelId != 0 && raw.Channel?.Id == AdminChannelId)
+                {
+                    if (!content.StartsWith(CommandPrefix, StringComparison.Ordinal)) return;
+                    if (!IsAuthorizedAdmin(raw))
+                    {
+                        await SafeReply(raw.Channel, "❌ Not authorized.").ConfigureAwait(false);
+                        return;
+                    }
+
+                    var cmd = content.Substring(CommandPrefix.Length).Trim();
+                    if (string.IsNullOrWhiteSpace(cmd)) return;
+
+                    BeginConsoleMirrorWindow();
+
+                    ConsoleManager.ParseServerCommands(cmd, true);
+
+                    await SafeReply(raw.Channel, "✅ Executed.").ConfigureAwait(false);
+                }
+            }
+            catch (Exception e)
+            {
+                Printer.Error($"[Discord] MessageReceived error: {e}");
+            }
+        }
+
+        public static void TryRelayGameChatToDiscord(string username, string message)
+        {
+            if (!Started) return;
+            if (Client == null) return;
+            if (ChatChannelId == 0) return;
+            if (string.IsNullOrWhiteSpace(message)) return;
+
+            _ = Task.Run(() => RelayGameChatToDiscordAsync(username, message));
+        }
+
+        private static async Task RelayGameChatToDiscordAsync(string username, string message)
+        {
+            try
+            {
+                if (!Started) return;
+                if (Client == null) return;
+                if (ChatChannelId == 0) return;
+
+                var safeUser = Escape(username);
+                var safeMsg = SanitizeDiscordText(message);
+
+                ulong[] mentionUserIds = Array.Empty<ulong>();
+                var guild = GetPrimaryGuild();
+                if (guild != null)
+                {
+                    var mentionResult = await ApplyUserMentionsAsync(guild, safeMsg).ConfigureAwait(false);
+                    safeMsg = mentionResult.Text;
+                    mentionUserIds = mentionResult.UserIds;
+                }
+
+                Enqueue(ChatChannelId, $"**{safeUser}:** {safeMsg}", mentionUserIds);
+            }
+            catch (Exception e)
+            {
+                Printer.Error($"[Discord] RelayGameChatToDiscord error: {e}");
+            }
         }
 
         public static void TryRelayConsoleCommandToDiscord(string command)
@@ -121,186 +338,15 @@ namespace GameServer.Integrations.Discord
             Enqueue(AdminChannelId, $"[{DateTime.Now:HH:mm:ss}] | {prefix}{cleaned}");
         }
 
-        public static void TryStart()
-        {
-            _ = Task.Run(StartAsync);
-        }
-
-        private static async Task StartAsync()
-        {
-            await StartSemaphore.WaitAsync();
-            try
-            {
-                if (Started) return;
-                if (GameServer.Core.Master.ServerConfig == null) return;
-
-                var cfg = GameServer.Core.Master.ServerConfig;
-                if (!cfg.EnableDiscordBridge) return;
-
-                var token = (cfg.DiscordBotToken ?? string.Empty).Trim();
-                if (string.IsNullOrWhiteSpace(token))
-                {
-                    Printer.Warning("[Discord] EnableDiscordBridge is true but DiscordBotToken is empty.");
-                    return;
-                }
-
-                ChatChannelId = ParseUlong(cfg.DiscordChatChannelId);
-                AdminChannelId = ParseUlong(cfg.DiscordAdminChannelId);
-                CommandPrefix = string.IsNullOrWhiteSpace(cfg.DiscordCommandPrefix) ? "!" : cfg.DiscordCommandPrefix.Trim();
-                AdminRoleIds = ParseRoleIds(cfg.DiscordAdminRoleIdsCsv);
-
-                if (ChatChannelId == 0 && AdminChannelId == 0)
-                {
-                    Printer.Warning("[Discord] DiscordChatChannelId and DiscordAdminChannelId are both missing/invalid.");
-                    return;
-                }
-
-                var socketCfg = new DiscordSocketConfig
-                {
-                    GatewayIntents =
-                        GatewayIntents.Guilds |
-                        GatewayIntents.GuildMessages |
-                        GatewayIntents.MessageContent,
-                    AlwaysDownloadUsers = false,
-                    MessageCacheSize = 0
-                };
-
-                Client = new DiscordSocketClient(socketCfg);
-                Client.MessageReceived += OnMessageReceivedAsync;
-
-                await Client.LoginAsync(TokenType.Bot, token);
-                await Client.StartAsync();
-
-                Started = true;
-                StopRequested = false;
-
-                OutboxWorkerTask = Task.Run(OutboxWorkerAsync);
-                DiscordPresence.TryStart(Client);
-
-                Printer.Title("[Discord] Bridge started");
-            }
-            catch (Exception e)
-            {
-                Printer.Error($"[Discord] Bridge failed to start: {e}");
-            }
-            finally
-            {
-                StartSemaphore.Release();
-            }
-        }
-
-        public static void TryStop()
-        {
-            _ = Task.Run(StopAsync);
-        }
-
-        private static async Task StopAsync()
-        {
-            try
-            {
-                if (!Started) return;
-
-                StopRequested = true;
-                OutboxSignal.Release();
-                DiscordPresence.TryStop();
-
-                if (OutboxWorkerTask != null)
-                {
-                    try { await OutboxWorkerTask; }
-                    catch { }
-                }
-
-                if (Client != null)
-                {
-                    try { await Client.StopAsync(); } catch { }
-                    try { await Client.LogoutAsync(); } catch { }
-                }
-            }
-            catch { }
-            finally
-            {
-                Started = false;
-                Client = null;
-            }
-        }
-
-        private static async Task OnMessageReceivedAsync(SocketMessage raw)
-        {
-            try
-            {
-                if (!Started) return;
-                if (raw.Author?.IsBot == true) return;
-
-                var content = raw.Content?.Trim() ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(content)) return;
-
-                if (ChatChannelId != 0 && raw.Channel.Id == ChatChannelId)
-                {
-                    var name = GetBestName(raw);
-                    var msg = SanitizeGameTextFromDiscord(raw, content);
-                    if (msg.Length > 5000) msg = msg.Substring(0, 5000);
-
-                    ChatManager.BroadcastDiscordMessage(name, msg);
-                    return;
-                }
-
-                if (AdminChannelId != 0 && raw.Channel.Id == AdminChannelId)
-                {
-                    if (!content.StartsWith(CommandPrefix, StringComparison.Ordinal)) return;
-                    if (!IsAuthorizedAdmin(raw)) { await SafeReply(raw.Channel, "❌ Not authorized."); return; }
-
-                    var cmd = content.Substring(CommandPrefix.Length).Trim();
-                    if (string.IsNullOrWhiteSpace(cmd)) return;
-
-                    BeginConsoleMirrorWindow();
-
-                    ConsoleManager.ParseServerCommands(cmd, true);
-
-                    await SafeReply(raw.Channel, "✅ Executed.");
-                }
-            }
-            catch (Exception e)
-            {
-                Printer.Error($"[Discord] MessageReceived error: {e}");
-            }
-        }
-
-        public static void TryRelayGameChatToDiscord(string username, string message)
+        public static void TryRelayServerNoticeToDiscordChat(string text)
         {
             if (!Started) return;
             if (Client == null) return;
             if (ChatChannelId == 0) return;
-            if (string.IsNullOrWhiteSpace(message)) return;
+            if (string.IsNullOrWhiteSpace(text)) return;
 
-            _ = Task.Run(() => RelayGameChatToDiscordAsync(username, message));
-        }
-
-        private static async Task RelayGameChatToDiscordAsync(string username, string message)
-        {
-            try
-            {
-                if (!Started) return;
-                if (Client == null) return;
-                if (ChatChannelId == 0) return;
-
-                var safeUser = Escape(username);
-                var safeMsg = SanitizeDiscordText(message);
-
-                ulong[] mentionUserIds = Array.Empty<ulong>();
-                var guild = GetPrimaryGuild();
-                if (guild != null)
-                {
-                    var mentionResult = await ApplyUserMentionsAsync(guild, safeMsg);
-                    safeMsg = mentionResult.Text;
-                    mentionUserIds = mentionResult.UserIds;
-                }
-
-                Enqueue(ChatChannelId, $"**{safeUser}:** {safeMsg}", mentionUserIds);
-            }
-            catch (Exception e)
-            {
-                Printer.Error($"[Discord] RelayGameChatToDiscord error: {e}");
-            }
+            string cleaned = SanitizeDiscordText(text.Trim());
+            Enqueue(ChatChannelId, cleaned);
         }
 
         private static void Enqueue(ulong channelId, string text, IReadOnlyCollection<ulong> mentionUserIds = null)
@@ -314,22 +360,20 @@ namespace GameServer.Integrations.Discord
             OutboxSignal.Release();
         }
 
-        private static async Task OutboxWorkerAsync()
+        private static async Task OutboxWorkerAsync(CancellationToken token)
         {
             DateTime burstStart = DateTime.UtcNow;
             int sentInBurst = 0;
 
-            while (!StopRequested)
+            while (!token.IsCancellationRequested)
             {
                 try
                 {
-                    await OutboxSignal.WaitAsync();
+                    await OutboxSignal.WaitAsync(token).ConfigureAwait(false);
+                    if (token.IsCancellationRequested) break;
 
-                    if (StopRequested) break;
                     if (Client == null) continue;
-
-                    if (!Outbox.TryDequeue(out var first))
-                        continue;
+                    if (!Outbox.TryDequeue(out var first)) continue;
 
                     StringBuilder sb = new StringBuilder();
                     sb.Append(first.Text);
@@ -339,7 +383,7 @@ namespace GameServer.Integrations.Discord
                         mentionIds = new HashSet<ulong>(first.UserMentionIds);
 
                     DateTime batchUntil = DateTime.UtcNow.AddMilliseconds(BatchWindowMs);
-                    while (DateTime.UtcNow < batchUntil && sb.Length < MaxChunkLen)
+                    while (!token.IsCancellationRequested && DateTime.UtcNow < batchUntil && sb.Length < MaxChunkLen)
                     {
                         if (!Outbox.TryPeek(out var next)) break;
                         if (next.ChannelId != first.ChannelId) break;
@@ -347,7 +391,11 @@ namespace GameServer.Integrations.Discord
                         if (!Outbox.TryDequeue(out next)) break;
 
                         string toAdd = "\n" + next.Text;
-                        if (sb.Length + toAdd.Length > MaxChunkLen) break;
+                        if (sb.Length + toAdd.Length > MaxChunkLen)
+                        {
+                            Outbox.Enqueue(next);
+                            break;
+                        }
 
                         sb.Append(toAdd);
 
@@ -367,13 +415,18 @@ namespace GameServer.Integrations.Discord
                     else if (sentInBurst >= BurstCount)
                     {
                         int wait = Math.Max(0, BurstWindowMs - (int)elapsed);
-                        if (wait > 0) await Task.Delay(wait);
+                        if (wait > 0) await Task.Delay(wait, token).ConfigureAwait(false);
+
                         burstStart = DateTime.UtcNow;
                         sentInBurst = 0;
                     }
 
-                    await SendToChannelAsync(first.ChannelId, sb.ToString(), mentionIds);
+                    await SendToChannelAsync(first.ChannelId, sb.ToString(), mentionIds, token).ConfigureAwait(false);
                     sentInBurst++;
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
                 }
                 catch (Exception e)
                 {
@@ -382,12 +435,11 @@ namespace GameServer.Integrations.Discord
             }
         }
 
-        private static async Task SendToChannelAsync(ulong channelId, string text, IReadOnlyCollection<ulong> mentionUserIds)
+        private static async Task SendToChannelAsync(ulong channelId, string text, IReadOnlyCollection<ulong> mentionUserIds, CancellationToken token)
         {
             try
             {
                 if (Client == null) return;
-
                 var channel = Client.GetChannel(channelId) as IMessageChannel;
                 if (channel == null) return;
 
@@ -402,11 +454,20 @@ namespace GameServer.Integrations.Discord
 
                 foreach (var chunk in Chunk(text, MaxChunkLen))
                 {
-                    await SendSemaphore.WaitAsync();
-                    try { await channel.SendMessageAsync(chunk, allowedMentions: mentions); }
-                    finally { SendSemaphore.Release(); }
+                    if (token.IsCancellationRequested) return;
+
+                    await SendSemaphore.WaitAsync(token).ConfigureAwait(false);
+                    try
+                    {
+                        await channel.SendMessageAsync(chunk, allowedMentions: mentions).ConfigureAwait(false);
+                    }
+                    finally
+                    {
+                        SendSemaphore.Release();
+                    }
                 }
             }
+            catch (OperationCanceledException) { }
             catch (Exception e)
             {
                 Printer.Error($"[Discord] SendToChannel error: {e}");
@@ -419,9 +480,15 @@ namespace GameServer.Integrations.Discord
 
             foreach (var chunk in Chunk(text, MaxChunkLen))
             {
-                await SendSemaphore.WaitAsync();
-                try { await channel.SendMessageAsync(chunk, allowedMentions: NoMentions); }
-                finally { SendSemaphore.Release(); }
+                await SendSemaphore.WaitAsync().ConfigureAwait(false);
+                try
+                {
+                    await channel.SendMessageAsync(chunk, allowedMentions: NoMentions).ConfigureAwait(false);
+                }
+                finally
+                {
+                    SendSemaphore.Release();
+                }
             }
         }
 
@@ -445,7 +512,7 @@ namespace GameServer.Integrations.Discord
 
         private static string GetBestName(SocketMessage msg)
         {
-            if (msg.Author is SocketGuildUser gu)
+            if (msg?.Author is SocketGuildUser gu)
             {
                 if (!string.IsNullOrWhiteSpace(gu.Nickname)) return gu.Nickname;
                 if (!string.IsNullOrWhiteSpace(gu.DisplayName)) return gu.DisplayName;
@@ -456,10 +523,10 @@ namespace GameServer.Integrations.Discord
                 return gu.Username;
             }
 
-            string global2 = TryGetGlobalName(msg.Author);
+            string global2 = TryGetGlobalName(msg?.Author);
             if (!string.IsNullOrWhiteSpace(global2)) return global2;
 
-            return msg.Author?.Username ?? "Discord";
+            return msg?.Author?.Username ?? "Discord";
         }
 
         private static string TryGetGlobalName(IUser user)
@@ -482,7 +549,7 @@ namespace GameServer.Integrations.Discord
         private static bool IsAuthorizedAdmin(SocketMessage msg)
         {
             if (AdminRoleIds.Count == 0) return true;
-            if (msg.Author is not SocketGuildUser gu) return false;
+            if (msg?.Author is not SocketGuildUser gu) return false;
 
             foreach (var r in gu.Roles)
                 if (AdminRoleIds.Contains(r.Id))
@@ -521,7 +588,7 @@ namespace GameServer.Integrations.Discord
             if (string.IsNullOrEmpty(s)) return string.Empty;
 
             s = s.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere");
-            s = s.Replace("<@", "<\u200b@").Replace("<#", "<\u200b#");
+            s = s.Replace("<@", "<\u200b@").Replace("<#", "<\u200b#").Replace("<@&", "<\u200b@&");
             return s;
         }
 
@@ -535,7 +602,7 @@ namespace GameServer.Integrations.Discord
                 {
                     foreach (var u in raw.MentionedUsers)
                     {
-                        var n = u.Username ?? "user";
+                        var n = u?.Username ?? "user";
                         result = result.Replace($"<@{u.Id}>", "@" + n).Replace($"<@!{u.Id}>", "@" + n);
                     }
                 }
@@ -544,7 +611,7 @@ namespace GameServer.Integrations.Discord
                 {
                     foreach (var r in raw.MentionedRoles)
                     {
-                        var n = r.Name ?? "role";
+                        var n = r?.Name ?? "role";
                         result = result.Replace($"<@&{r.Id}>", "@" + n);
                     }
                 }
@@ -585,7 +652,7 @@ namespace GameServer.Integrations.Discord
             int last = 0;
             int mentionCount = 0;
 
-            await MentionResolveSemaphore.WaitAsync();
+            await MentionResolveSemaphore.WaitAsync().ConfigureAwait(false);
             try
             {
                 foreach (Match m in matches)
@@ -609,7 +676,7 @@ namespace GameServer.Integrations.Discord
 
                     if (!resolvedInMessage.TryGetValue(name, out var id))
                     {
-                        id = await ResolveUserIdAsync(guild, name);
+                        id = await ResolveUserIdAsync(guild, name).ConfigureAwait(false);
                         resolvedInMessage[name] = id;
                     }
 
@@ -667,34 +734,34 @@ namespace GameServer.Integrations.Discord
 
             ulong id = 0;
 
-            id = TryMatchUserInCache(guild, name);
-            if (id == 0 && name.Contains(' '))
-                id = TryMatchUserInCache(guild, name.Replace(" ", string.Empty));
+            try
+            {
+                var users = await guild.SearchUsersAsync(name, 25).ConfigureAwait(false);
+                if (users != null)
+                {
+                    IGuildUser best = null;
+                    foreach (var u in users)
+                    {
+                        if (u == null) continue;
+
+                        if (IsUserMatch(u, name))
+                        {
+                            best = u;
+                            break;
+                        }
+
+                        best ??= u;
+                    }
+                    id = best?.Id ?? 0;
+                }
+            }
+            catch { }
 
             if (id == 0)
             {
-                try
-                {
-                    var users = await guild.SearchUsersAsync(name, 25);
-                    if (users != null)
-                    {
-                        IGuildUser best = null;
-                        foreach (var u in users)
-                        {
-                            if (u == null) continue;
-
-                            if (IsUserMatch(u, name))
-                            {
-                                best = u;
-                                break;
-                            }
-
-                            best ??= u;
-                        }
-                        id = best?.Id ?? 0;
-                    }
-                }
-                catch { }
+                id = TryMatchUserInCache(guild, name);
+                if (id == 0 && name.Contains(' '))
+                    id = TryMatchUserInCache(guild, name.Replace(" ", string.Empty));
             }
 
             var exp = now.AddMinutes(MentionCacheMinutes);

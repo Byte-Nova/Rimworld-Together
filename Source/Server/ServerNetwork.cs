@@ -1,13 +1,17 @@
 ﻿using GameServer.Core;
+using GameServer.Integrations.Discord;
 using GameServer.Managers;
 using GameServer.Misc;
-using TCPNetwork;
 using Shared;
+using Shared.Misc;
+using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using static Shared.CommonEnumerators;
+using System.Threading.Tasks;
+using TCPNetwork;
 using TCPNetwork.Files.Client;
-using Shared.Misc;
+using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
@@ -24,7 +28,7 @@ namespace GameServer
 
         public override Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client) { };
 
-        public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
+        public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client)
         {
             try
             {
@@ -33,9 +37,28 @@ namespace GameServer
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
                 InformationDisplayer.DisplayDisconnect(client);
-                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
+
+                if (Master.ChatConfig.DisconnectNotifications && client?.UserFile != null)
+                    ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
+
+                try
+                {
+                    string user = client?.UserFile?.Username;
+                    if (!string.IsNullOrWhiteSpace(user))
+                        DiscordPlayerAnnouncer.AnnounceLeft(user);
+                }
+                catch { }
             }
-            catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
+            catch
+            {
+                try
+                {
+                    string u = client?.UserFile?.Username;
+                    if (string.IsNullOrWhiteSpace(u)) u = "(unknown)";
+                    Printer.Warning($"Error disconnecting user {u}, this will cause memory overhead");
+                }
+                catch { }
+            }
         };
 
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
@@ -71,13 +94,11 @@ namespace GameServer
                 ServerListener = new TcpListener(IPAddress.Parse(Ip), int.Parse(Port));
                 ServerListener.Start();
             }
-
             catch (SocketException e)
             {
                 Printer.Error(
                     $"Failed to start server on {Ip}:{Port}, try setting the address to your local ip address or '0.0.0.0' on port 25555, {e}");
             }
-
             catch (Exception e)
             {
                 Printer.Error(e);
@@ -86,6 +107,8 @@ namespace GameServer
             Printer.Warning("Server launched");
             Printer.Warning($"Listening for users at {Ip}:{Port}");
             Printer.Warning("Type 'help' to get a list of available commands");
+
+            try { DiscordBridge.TryStart(); } catch { }
 
             Main_.ChangeTitle();
 
@@ -104,12 +127,10 @@ namespace GameServer
             {
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Full);
             }
-
             else if (Master.WorldValues == null && ServerNetwork.Instance.GetConnectedClientsSafe().Length > 0)
             {
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.NoWorld);
             }
-
             else
             {
                 Printer.Warning(client);
@@ -126,8 +147,10 @@ namespace GameServer
 
         public ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)
         {
-            if (toExclude != null) return ServerNetwork.Instance.ServerClients.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
-            else return ServerNetwork.Instance.ServerClients.ToArray();
+            if (toExclude != null)
+                return ServerNetwork.Instance.ServerClients.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
+            else
+                return ServerNetwork.Instance.ServerClients.ToArray();
         }
 
         public ServerClient GetConnectedClientFromUsername(string username)
