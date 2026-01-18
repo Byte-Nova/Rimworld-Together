@@ -1,4 +1,5 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Hooks.Synchronous;
 using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
@@ -222,6 +223,20 @@ namespace GameClient.WorldObjects
         {
             List<Gizmo> gizmos = new List<Gizmo>();
 
+            Command_Action command_Synchronous = new Command_Action
+            {
+                defaultLabel = "Synchronous",
+                defaultDesc = "Synchronous this location",
+                icon = ContentFinder<Texture2D>.Get("Commands/Synchronous"),
+                action = delegate
+                {
+                    SessionHandler.ChosenSettlement = this;
+                    SessionHandler.ChosenCaravan = caravan;
+
+                    SynchronousManager.Ask(SessionHandler.ChosenSettlement.Tile);
+                }
+            };
+
             Command_Action command_Raid = new Command_Action
             {
                 defaultLabel = "Raid",
@@ -274,6 +289,7 @@ namespace GameClient.WorldObjects
 
             gizmos.Add(command_Raid);
             gizmos.Add(command_Transfer);
+            //gizmos.Add(command_Synchronous);
 
             return gizmos;
         }

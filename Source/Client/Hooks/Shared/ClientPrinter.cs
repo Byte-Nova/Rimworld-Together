@@ -7,7 +7,7 @@ using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Hooks.Shared
 {
     public static class ClientPrinter
     {

@@ -7,6 +7,7 @@ using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using Shared.Details.Planet;
 using Shared.Misc;
+using GameServer.Hooks.TCPNetwork;
 
 namespace GameServer.Managers
 {

@@ -6,6 +6,7 @@ using static Shared.CommonEnumerators;
 using TCPNetwork.Files.Client;
 using Shared.Misc;
 using GameServer.Integrations.Discord;
+using GameServer.Hooks.TCPNetwork;
 
 namespace GameServer.Managers
 {

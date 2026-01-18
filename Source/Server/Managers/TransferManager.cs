@@ -6,6 +6,7 @@ using Shared.Files;
 using TCPNetwork.Packets;
 using static TCPNetwork.Packets.TransferData;
 using TCPNetwork.Files.Client;
+using GameServer.Hooks.TCPNetwork;
 
 namespace GameServer.Managers
 {

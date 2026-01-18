@@ -1,5 +1,6 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Defs;
+using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;

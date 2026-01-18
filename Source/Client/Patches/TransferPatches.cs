@@ -22,8 +22,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return;
             else
             {
                 if (TradeSession.giftMode) SessionHandler.OutgoingManifest._transferMode = TransferMode.Gift;
@@ -56,8 +55,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(TradeDeal __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving)
@@ -74,7 +72,7 @@ namespace GameClient.Patches
                     if (!RimworldManager.CheckIfHasEnoughSilverInMap(Find.AnyPlayerHomeMap, 1))
                     {
                         Thing silver = ThingMaker.MakeThing(ThingDefOf.Silver);
-                        RimworldManager.PlaceThingIntoMap(silver, Find.AnyPlayerHomeMap);
+                        RimworldManager.PlaceThingIntoMap(silver, Find.AnyPlayerHomeMap, Find.AnyPlayerHomeMap.Center);
                     }
                 }
 
@@ -115,8 +113,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Transactor trans)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 if (trans == Transactor.Trader) return false;
@@ -131,8 +128,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref bool __result)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 __result = true;
@@ -147,8 +143,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref int __result)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 __result = int.MaxValue;
@@ -163,8 +158,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 // We need to set it back to positive because the way RimWorld treats traded items
@@ -187,8 +181,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Tradeable_Pawn __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 // We need to set it back to positive because the way RimWorld treats traded items
@@ -213,8 +206,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Thing toGive, int countToGive)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 // This means we are calculating from the CARAVAN
@@ -243,8 +235,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else return false;
         }
     }
@@ -255,8 +246,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.None;
+            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.None;
         }
     }
 }

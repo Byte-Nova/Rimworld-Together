@@ -9,6 +9,7 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using TCPNetwork.Packets;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Patches
 {

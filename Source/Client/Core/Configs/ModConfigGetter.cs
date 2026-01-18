@@ -15,6 +15,8 @@ namespace GameClient.Core.Configs
 
         public static EnforcedSimulatedLag CurrentSimulatedLag;
 
+        public static bool SynchronousPatchesEnabled;
+
         public override void ExposeData()
         {
             Scribe_Values.Look(ref MuteChatSoundBool, nameof(MuteChatSoundBool));
@@ -22,6 +24,7 @@ namespace GameClient.Core.Configs
             Scribe_Values.Look(ref RejectSiteRewardsBool, nameof(RejectSiteRewardsBool));
             Scribe_Values.Look(ref CurrentVerboseMode, nameof(CurrentVerboseMode));
             Scribe_Values.Look(ref CurrentSimulatedLag, nameof(CurrentSimulatedLag));
+            Scribe_Values.Look(ref SynchronousPatchesEnabled, nameof(SynchronousPatchesEnabled));
 
             base.ExposeData();
         }

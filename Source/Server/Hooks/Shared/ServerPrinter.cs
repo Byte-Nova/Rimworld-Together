@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Hooks.Shared
 {
     public static class ServerPrinter
     {

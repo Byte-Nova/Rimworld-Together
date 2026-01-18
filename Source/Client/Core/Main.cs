@@ -1,5 +1,6 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Files;
+using GameClient.Hooks.Shared;
 using GameClient.Misc;
 using HarmonyLib;
 using Shared;
@@ -10,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using TCPNetwork.Misc;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -30,7 +32,8 @@ namespace GameClient.Core
                 PreparePaths();
 
                 CreateUnityDispatcher();
-                MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Client);
+                PacketCache.CacheAllPacketsInAppDomain(AssemblyType.Client);
+                MethodGatherer.CacheAllMethods(AssemblyType.Client);
                 PersistentSettings.SetFilePath(Path.Combine(Master.AppdataRTPath, "PersistentSettings" + CommonValues.DefaultSaveFormat));
             }
         }

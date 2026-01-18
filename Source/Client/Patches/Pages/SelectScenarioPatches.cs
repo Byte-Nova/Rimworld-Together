@@ -1,4 +1,5 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
@@ -6,6 +7,7 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -21,7 +23,11 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectScenario __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomLeft), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
+            {
+                __instance.Close();
+                ClientNetwork.Instance.ClientListener.DisconnectNow();
+            }
 
             if (!SessionHandler.IsGeneratingFreshWorld && SessionHandler.CurrentScenario.IsEnforced)
             {
@@ -45,24 +51,16 @@ namespace GameClient.Patches.Pages
                 }
             }
 
-            else
-            {
-                if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomLeft), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
-                {
-                    __instance.Close();
-                    ClientNetwork.Instance.ClientListener.DisconnectNow();
-                }
-            }
-
             return true;
         }
 
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+            Text.Font = GameFont.Small;
 
-            if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomLeft), "Disconnect")) { };
+            if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, 
+                RT_Dialog_Base.RectLocation.BottomLeft), "Disconnect")) { };
         }
     }
 
@@ -72,8 +70,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.CurrentActionValues.EnableCustomScenarios) return true;
+            if (SessionHandler.CurrentActionValues.EnableCustomScenarios) return true;
             else
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
@@ -92,7 +89,6 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref Scenario ___curScen)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             if (SessionHandler.CurrentActionValues.EnableCustomScenarios) return true;
 
             if (curScen != null) ___curScen = curScen;

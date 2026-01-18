@@ -18,6 +18,7 @@ using TCPNetwork.Packets;
 using System.Threading.Tasks;
 using System.Threading;
 using Shared.Misc;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Managers
 {
@@ -34,13 +35,13 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.SaveManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            var read = SaveData.ParseSavePacket(bytes, out SaveDataHeader header);
-            var saveFileBytes = bytes.AsSpan().Slice(read);
-            if (header._stepMode == SaveStepMode.Receive) OnSaveReceived(header, saveFileBytes.ToArray());
-            else if (header._stepMode == SaveStepMode.Send)
+            SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
+
+            switch (data._stepMode)
             {
-                LatestSavePath = SaveFilePath;
-                SendSaveToServer();
+                case SaveStepMode.Receive:
+                    OnSaveReceived(data);
+                    break;
             }
         }
 
@@ -65,9 +66,9 @@ namespace GameClient.Managers
         public static void RequestResetSave()
         {
             SaveData data = new SaveData();
-            data._header._stepMode = SaveStepMode.Reset;
+            data._stepMode = SaveStepMode.Reset;
 
-            ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
         public static double GetRealPlayTimeInteractingFromSave(string filePath)
@@ -88,11 +89,11 @@ namespace GameClient.Managers
         public static Dictionary<string, string> GetAllSaveFiles() 
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach (string file in Directory.GetFiles(Master.SavesFolderPath))
+            foreach (string str in Directory.GetFiles(Master.SavesFolderPath))
             {
-                if(Path.GetExtension(file) == ".rws")
-                    result.Add(Path.GetFileNameWithoutExtension(file), file);
+                if (Path.GetExtension(str) == ".rws") result.Add(Path.GetFileNameWithoutExtension(str), str);
             }
+
             return result;
         }
 
@@ -126,25 +127,29 @@ namespace GameClient.Managers
 
         public static void SendSaveToServer()
         {
+            Printer.Message("Sending save to server", LogImportanceMode.Verbose);
+
             byte[] saveBytes;
             if (string.IsNullOrEmpty(LatestSavePath)) saveBytes = File.ReadAllBytes(SaveFilePath);
             else saveBytes = File.ReadAllBytes(LatestSavePath);
 
             SaveData data = new SaveData();
-            data._header = new SaveDataHeader(SaveStepMode.Receive, SessionHandler.IsExiting);
+            data._stepMode = SaveStepMode.Receive;
+            data._forceDisconnect = SessionHandler.IsExiting;
             data._fileBytes = GZip.CompressBytes(saveBytes);
 
-            ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
-        private static void OnSaveReceived(SaveDataHeader header, byte[] save)
+        private static void OnSaveReceived(SaveData data)
         {
             Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
-            var saveBytes = GZip.DecompressBytes(save);
+
+            byte[] saveBytes = GZip.DecompressBytes(data._fileBytes);
             File.WriteAllBytes(TempSaveFilePath, saveBytes);
             File.Delete(CommonValues.DefaultSaveFormat);
 
-            if (header._forceUseSave || !File.Exists(SaveFilePath))
+            if (data._forceUseSave || !File.Exists(SaveFilePath))
             {
                 File.Delete(SaveFilePath);
                 File.Move(TempSaveFilePath, SaveFilePath);

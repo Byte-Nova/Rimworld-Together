@@ -1,4 +1,5 @@
 ﻿using GameServer.Core;
+using GameServer.Hooks.TCPNetwork;
 using GameServer.Misc;
 using Shared;
 using Shared.Files;

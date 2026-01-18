@@ -16,7 +16,9 @@ namespace GameClient.Dialogs
 
         public RT_Dialog_Message(string title, string[] messages, Action onConfirm = null)
         {
-            this.Title = title;
+            if (title != null) this.Title = title;
+            else this.Title = "Message";
+
             this.Messages = messages;
             this.OnAccept = onConfirm;
             CurrentMessage = messages[Index];

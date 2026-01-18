@@ -12,6 +12,7 @@ using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 using Shared.Files.Configs.Mods;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Dialogs
 {

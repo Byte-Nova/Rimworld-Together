@@ -1,5 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Files;
+using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using Shared;
 using System;

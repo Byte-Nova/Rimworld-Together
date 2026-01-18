@@ -11,9 +11,10 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
-using static Shared.CommonEnumerators;
+using TCPNetwork.Misc;
+using TCPNetwork.Packets;
 
-namespace GameServer
+namespace GameServer.Hooks.TCPNetwork
 {
     public class ServerNetwork : Network
     {
@@ -21,7 +22,7 @@ namespace GameServer
 
         public override Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { client, buffer, header });
+            PacketCache.ServerMethodDictionary[header](client, buffer, header);
         };
 
         public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
@@ -59,21 +60,6 @@ namespace GameServer
                 }
                 catch { }
             }
-        };
-
-        public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
-        {
-            Printer.Message(obj, mode);
-        };
-
-        public override Action<object, LogImportanceMode> OnWarning { get; set; } = delegate (object obj, LogImportanceMode mode)
-        {
-            Printer.Warning(obj, mode);
-        };
-
-        public override Action<object, LogImportanceMode> OnError { get; set; } = delegate (object obj, LogImportanceMode mode)
-        {
-            Printer.Error(obj, mode);
         };
 
         public ServerNetwork()
@@ -120,8 +106,7 @@ namespace GameServer
             TcpClient newTCP = ServerListener.AcceptTcpClient();
 
             ServerClient client = new ServerClient(newTCP);
-            client.Listener = new Listener(client, newTCP, OnReadPacket, OnWritePacket, OnConnect, OnDisconnect,
-                OnMessage, OnWarning, OnError, Listener.ListenerMode.Server);
+            client.Listener = new Listener(client, newTCP, OnReadPacket, OnWritePacket, OnConnect, OnDisconnect, Listener.ListenerMode.Server);
 
             if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
             {
@@ -133,8 +118,6 @@ namespace GameServer
             }
             else
             {
-                Printer.Warning(client);
-
                 ServerNetwork.Instance.ServerClients.Add(client);
 
                 Main_.ChangeTitle();

@@ -15,6 +15,8 @@ namespace TCPNetwork.Files.Client
 
         public Listener Listener { get; set; } = null;
 
+        public ServerClient SynchronousClient { get; set; } = null;
+
         public ServerClient(TcpClient tcp)
         {
             if (tcp == null) return;

@@ -36,7 +36,7 @@ namespace GameClient.Managers
 
         public static void AddPollutedTileOrganic(PollutionDetail details)
         {
-            PollutionPatch.PatchAddPollution.addedByServer = true;
+            PatchAddPollution.addedByServer = true;
             WorldPollutionUtility.PolluteWorldAtTile(details.Tile, details.Quantity);
         }
 

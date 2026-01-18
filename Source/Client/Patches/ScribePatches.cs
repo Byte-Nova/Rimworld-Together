@@ -17,8 +17,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ScribeSaver __instance, ref XmlWriter ___writer, string documentElementName)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!SessionHandler.IsUsingScriber) return true;
+            if (!SessionHandler.IsUsingScriber) return true;
             else
             {
                 try
@@ -54,8 +53,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ScribeLoader __instance, string filePath)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!SessionHandler.IsUsingScriber) return true;
+            if (!SessionHandler.IsUsingScriber) return true;
             else
             {
                 try
@@ -93,36 +91,32 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref Dictionary<Pawn, PawnTextureAtlasFrameSet> ___frameAssignments, ref List<Pawn> ___tmpPawnsToFree, ref List<PawnTextureAtlasFrameSet> ___freeFrameSets)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else
+            try
             {
-                try
+                foreach (Pawn key in ___frameAssignments.Keys)
                 {
-                    foreach (Pawn key in ___frameAssignments.Keys)
+                    if (!key.SpawnedOrAnyParentSpawned)
                     {
-                        if (!key.SpawnedOrAnyParentSpawned)
-                        {
-                            ___tmpPawnsToFree.Add(key);
-                        }
-                    }
-
-                    foreach (Pawn item in ___tmpPawnsToFree)
-                    {
-                        ___freeFrameSets.Add(___frameAssignments[item]);
-                        ___frameAssignments.Remove(item);
+                        ___tmpPawnsToFree.Add(key);
                     }
                 }
 
-                catch (Exception e)
+                foreach (Pawn item in ___tmpPawnsToFree)
                 {
-                    ___frameAssignments.Clear();
-                    Printer.Error(e.ToString(), LogImportanceMode.Extreme);
+                    ___freeFrameSets.Add(___frameAssignments[item]);
+                    ___frameAssignments.Remove(item);
                 }
-
-                ___tmpPawnsToFree.Clear();
-
-                return false;
             }
+
+            catch (Exception e)
+            {
+                ___frameAssignments.Clear();
+                Printer.Error(e.ToString(), LogImportanceMode.Extreme);
+            }
+
+            ___tmpPawnsToFree.Clear();
+
+            return false;
         }
     }
 
@@ -132,8 +126,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else return false;
+            return false;
         }
     }
 
@@ -143,12 +136,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(DebugLoadIDsSavingErrorsChecker __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else
-            {
-                __instance.Clear();
-                return false;
-            }
+            __instance.Clear();
+            return false;
         }
     }
 
@@ -158,19 +147,15 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ILoadReferenceable reffable, ref Dictionary<string, ILoadReferenceable> ___allObjectsByLoadID, ref Dictionary<int, ILoadReferenceable> ___allThingsByThingID)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else
-            {
-                try { ___allObjectsByLoadID.Add(reffable.GetUniqueLoadID(), reffable); }
-                catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
+            try { ___allObjectsByLoadID.Add(reffable.GetUniqueLoadID(), reffable); }
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
 
-                if (reffable is not Thing thing) return false;
+            if (reffable is not Thing thing) return false;
 
-                try { ___allThingsByThingID.Add(thing.thingIDNumber, reffable); }
-                catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
+            try { ___allThingsByThingID.Add(thing.thingIDNumber, reffable); }
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
 
-                return false;
-            }
+            return false;
         }
     }
 
@@ -180,8 +165,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!SessionHandler.IsUsingScriber) return true;
+            if (!SessionHandler.IsUsingScriber) return true;
             else return false;
         }
     }
@@ -192,8 +176,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!SessionHandler.IsUsingScriber) return true;
+            if (!SessionHandler.IsUsingScriber) return true;
             else return false;
         }
     }

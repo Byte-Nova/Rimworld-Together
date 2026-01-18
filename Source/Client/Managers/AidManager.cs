@@ -6,6 +6,7 @@ using System;
 using Verse;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Managers
 {
@@ -80,7 +81,7 @@ namespace GameClient.Managers
             Pawn pawn = ScribeManager.SerializeFromString<Pawn>(data._humanData);
             pawn.SetFactionDirect(Faction.OfPlayer);
 
-            RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
+            RimworldManager.PlaceThingIntoMap(pawn, map, map.Center);
 
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
         }
@@ -92,7 +93,7 @@ namespace GameClient.Managers
             Pawn pawn = ScribeManager.SerializeFromString<Pawn>(data._humanData);
             pawn.SetFactionDirect(Faction.OfPlayer);
 
-            RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true, true);
+            RimworldManager.PlaceThingIntoMap(pawn, map, map.Center, true);
 
             data._stepMode = AidStepMode.Accept;
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.AidManager, data);

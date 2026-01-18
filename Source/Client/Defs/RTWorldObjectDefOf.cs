@@ -12,6 +12,10 @@ namespace GameClient.Defs
     {
         public static WorldObjectDef RTCaravan;
 
+        public static WorldObjectDef RTSettlement;
+
+        public static WorldObjectDef RTSite;
+
         static RTWorldObjectDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(WorldObjectDefOf));
     }
 }

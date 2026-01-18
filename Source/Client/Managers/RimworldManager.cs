@@ -103,17 +103,17 @@ namespace GameClient.Managers
             Find.LetterStack.ReceiveLetter(title, description, letterType);
         }
 
-        public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false, bool byDropPod = false)
+        public static void PlaceThingIntoMap(Thing thing, Map map, IntVec3 position, bool byDropPod = false)
         {
             IntVec3 positionToPlaceAt = IntVec3.Zero;
-            if (useSpot) positionToPlaceAt = TransferManagerHelper.GetTransferLocationInMap(map);
+            if (position != IntVec3.Invalid) positionToPlaceAt = position;
             else positionToPlaceAt = map.Center;
 
             if (byDropPod) TradeUtility.SpawnDropPod(FindVectorNear(positionToPlaceAt, map), map, thing);
             else
             {
                 if (thing is Pawn) GenSpawn.Spawn(thing, positionToPlaceAt, map, thing.Rotation);
-                else GenPlace.TryPlaceThing(thing, positionToPlaceAt, map, placeMode, rot: thing.Rotation);
+                else GenPlace.TryPlaceThing(thing, positionToPlaceAt, map, ThingPlaceMode.Direct, rot: thing.Rotation);
             }
         }
 
@@ -258,6 +258,36 @@ namespace GameClient.Managers
             Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == targetFaction).ToArray();
             LordJob_DefendBase job = new LordJob_DefendBase(targetFaction, deployPlace, int.MaxValue);
             LordMaker.MakeNewLord(targetFaction, job, map, lordPawns);
+        }
+
+        public static List<string> GetCaravanPawnsIntoString(Caravan caravan, bool useCustomID = false)
+        {
+            List<string> pawns = new List<string>();
+
+            foreach (Pawn pawn in caravan.PawnsListForReading)
+            {
+                pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn, -1, useCustomID ? pawn.ThingID : null));
+            }
+
+            return pawns;
+        }
+
+        public static List<string> GetMapPawnsIntoString(Map map, bool useCustomID = false, bool factionSpecific = false)
+        {
+            List<string> pawns = new List<string>();
+
+            foreach (Pawn pawn in map.mapPawns.AllPawns)
+            {
+                string data = ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn, -1, useCustomID ? pawn.ThingID : null);
+                if (pawn.Faction == Faction.OfPlayer) pawns.Add(data);
+                else 
+                {
+                    if (factionSpecific) continue;
+                    else pawns.Add(data);
+                }
+            }
+
+            return pawns;
         }
     }
 }

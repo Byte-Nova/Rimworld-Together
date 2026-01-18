@@ -20,7 +20,7 @@ namespace GameClient.Misc
     {
         public static string Username { get; set; } = string.Empty;
 
-        public static ClientNetworkState CurrentNetworkState = ClientNetworkState.Disconnected;
+        public static ClientNetworkState CurrentNetworkState { get; set; } = ClientNetworkState.Disconnected;
 
         public static ActivityType latestActivity { get; set; } = ActivityType.None;
 
@@ -78,6 +78,10 @@ namespace GameClient.Misc
 
         public static bool IsExiting { get; set; } = false;
 
+        public static bool IsSynchronousHost { get; set; } = false;
+
+        public static Map SynchronousMap { get; set; } = null;
+
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
             IsAdmin = serverGlobalData._isClientAdmin;
@@ -96,6 +100,13 @@ namespace GameClient.Misc
         private static void ManageDevOptions()
         {
             try { if (!IsAdmin) Prefs.DevMode = false; }
+            catch { }
+        }
+
+        [OnUpdate]
+        private static void ForceBackgroundMode()
+        {
+            try { Prefs.RunInBackground = true; }
             catch { }
         }
 
@@ -119,6 +130,10 @@ namespace GameClient.Misc
             LastTradeStep = TradeMode.None;
             ChatManager.ShouldScrollChat = true;
             IsExiting = false;
+            IsSynchronousHost = false;
+            SynchronousMap = null;
+
+            CurrentNetworkState = ClientNetworkState.Disconnected;
 
             Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
             Patch_DialogOptions_DoModOptions.executedMessage = false;

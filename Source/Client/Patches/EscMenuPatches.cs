@@ -16,7 +16,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -45,7 +45,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && SessionHandler.IsAdmin)
+            if (Current.ProgramState == ProgramState.Playing && SessionHandler.IsAdmin)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -62,7 +62,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && SessionHandler.IsAdmin)
+            if (Current.ProgramState == ProgramState.Playing && SessionHandler.IsAdmin)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 4, buttonSize.x, buttonSize.y), "Admin menu")) { }
@@ -78,7 +78,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -103,12 +103,11 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
                 GUI.color = Color.red;
-                //Add 6 instead of 7 to prevent the button going through the UI border
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 6) * 6, buttonSize.x, buttonSize.y), "Delete Save")) { }
                 GUI.color = Color.white;
             }

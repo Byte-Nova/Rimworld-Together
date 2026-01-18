@@ -11,7 +11,7 @@ namespace GameClient.Misc
 {
     public static class Finder
     {
-        public static Map GetMapFromID(int id) { return Find.Maps.FirstOrDefault(fetch => fetch.uniqueID == id); }
+        public static Map GetMapFromTile(int tile) { return Find.Maps.FirstOrDefault(fetch => fetch.Tile == tile); }
 
         public static Pawn GetPawnFromID(Map map, string id) { return GetAllPawnsInMap(map).FirstOrDefault(fetch => fetch.ThingID == id); }
 
@@ -21,9 +21,14 @@ namespace GameClient.Misc
 
         public static Thing[] GetAllThingsInMap(Map map) { return map.listerThings.AllThings.ToArray(); }
 
-        public static MentalStateDef GetMentalStateDefFromName(string defname)
+        public static MentalStateDef GetMentalStateDefFromByte(byte value)
         {
-            return DefDatabase<MentalStateDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == defname);
+            return DefDatabase<MentalStateDef>.AllDefs.ToList()[value];
+        }
+
+        public static WeatherDef GetWeatherDefFromByte(byte value)
+        {
+            return DefDatabase<WeatherDef>.AllDefs.ToList()[value];
         }
 
         public static RTSettlement GetRTSettlementFromTile(int tile) 
@@ -44,6 +49,32 @@ namespace GameClient.Misc
         public static WorldObject[] GetAllRTSites()
         {
             return (WorldObject[])Find.World.worldObjects.AllWorldObjects.FindAll(fetch => fetch is RTSite).ToArray();
+        }
+
+        public static Hediff GetHediffFromPart(Pawn pawn, BodyPartRecord part, string hediffDefname, bool forceUntended)
+        {
+            foreach (Hediff hediff in pawn.health.hediffSet.hediffs)
+            {
+                if (hediff.def.defName == hediffDefname)
+                {
+                    if (part == null || hediff.Part.def.defName == part.def.defName)
+                    {
+                        if (!forceUntended) return hediff;
+                        else
+                        {
+                            if (hediff.IsTended()) continue;
+                            else return hediff;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static BodyPartRecord GetBodyPartFromDefname(Pawn pawn, string defName)
+        {
+            return pawn.health.hediffSet.GetNotMissingParts().FirstOrDefault(fetch => fetch.def.defName == defName);
         }
     }
 }

@@ -1,3 +1,4 @@
+using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using Shared;
 

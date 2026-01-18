@@ -10,6 +10,7 @@ using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
 using Shared.Files.Maps;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Managers
 {
@@ -76,12 +77,12 @@ namespace GameClient.Managers
 
             if (SessionHandler.latestActivity == ActivityType.Raid)
             {
-                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
+                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true);
             }
 
             else if (SessionHandler.latestActivity == ActivityType.Zoom)
             {
-                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, false);
+                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, false);
             }
 
             Faction faction;

@@ -20,8 +20,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else SettlementManager.AbandonSettlement(map.Tile);
+            SettlementManager.AbandonSettlement(map.Tile);
         }
     }
 
@@ -31,13 +30,9 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Gravship gravship)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else
-            {
-                Map map = Find.WorldObjects.MapParentAt(gravship.destinationTile)?.Map;
-                SettlementManager.SendNewPlayerSettlement(map.Tile);
-                SaveManager.ForceSave();
-            }
+            Map map = Find.WorldObjects.MapParentAt(gravship.destinationTile)?.Map;
+            SettlementManager.SendNewPlayerSettlement(map.Tile);
+            SaveManager.ForceSave();
         }
     }
 
@@ -47,13 +42,9 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Gravship gravship)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else
-            {
-                Map map = Find.WorldObjects.MapParentAt(gravship.destinationTile)?.Map;
-                SettlementManager.SendNewPlayerSettlement(map.Tile);
-                SaveManager.ForceSave();
-            }
+            Map map = Find.WorldObjects.MapParentAt(gravship.destinationTile)?.Map;
+            SettlementManager.SendNewPlayerSettlement(map.Tile);
+            SaveManager.ForceSave();
         }
     }
 }

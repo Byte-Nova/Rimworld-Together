@@ -1,4 +1,5 @@
 ﻿using GameClient.Defs;
+using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.WorldObjects;

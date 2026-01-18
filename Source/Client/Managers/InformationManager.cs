@@ -3,6 +3,7 @@ using TCPNetwork.Packets;
 using Shared;
 using GameClient.Misc;
 using Shared.Files.Maps;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Managers
 {

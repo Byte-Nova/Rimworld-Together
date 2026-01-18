@@ -21,8 +21,6 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-
             List<Gizmo> gizmoList = __result.ToList();
 
             Command_Action command_PersonalFactionMenu = new Command_Action
@@ -66,7 +64,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<Gizmo> __result, Caravan __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
+            if (RimworldManager.CheckIfPlayerHasMap())
             {
                 bool hasSomethingOnTop = Find.World.worldObjects.AllWorldObjects.FirstOrDefault(fetch => fetch.Tile == __instance.Tile 
                     && fetch is not Caravan) != null;
@@ -138,8 +136,6 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-
             List<Gizmo> gizmoList = __result.ToList();
             List<Gizmo> removeList = new List<Gizmo>();
             foreach (Command_Action action in gizmoList.ToList())
@@ -159,24 +155,20 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(WorldInspectPane __instance, ref IEnumerable<InspectTabBase> __result)
         {
-            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return false;
-            else
+            if (Find.WorldSelector.NumSelectedObjects == 1)
             {
-                if (Find.WorldSelector.NumSelectedObjects == 1)
-                {
-                    __result = Find.WorldSelector.SingleSelectedObject.GetInspectTabs();
-                }
-
-                if (Find.WorldSelector.NumSelectedObjects == 0 && Find.WorldSelector.SelectedTile.Valid)
-                {
-                    __result = PlanetLayer.Selected.Def.Tabs;
-                    __result = __result.AddItem(new PlayersUI());
-                    __result = __result.AddItem(new BasesUI());
-                    __result = __result.AddItem(new SitesUI());
-                }
-
-                return false;
+                __result = Find.WorldSelector.SingleSelectedObject.GetInspectTabs();
             }
+
+            if (Find.WorldSelector.NumSelectedObjects == 0 && Find.WorldSelector.SelectedTile.Valid)
+            {
+                __result = PlanetLayer.Selected.Def.Tabs;
+                __result = __result.AddItem(new PlayersUI());
+                __result = __result.AddItem(new BasesUI());
+                __result = __result.AddItem(new SitesUI());
+            }
+
+            return false;
         }
     }
 
@@ -188,8 +180,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Pawn pawn)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!SessionHandler.PlayerFactions.Contains(pawn.Faction)) return true;
+            if (!SessionHandler.PlayerFactions.Contains(pawn.Faction)) return true;
             else return false;
         }
     }

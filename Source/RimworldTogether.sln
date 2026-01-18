@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11304.174 d18.0
+VisualStudioVersion = 18.1.11304.174
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameClient", "Client\GameClient.csproj", "{4ACC93D1-3675-49D8-96A3-7D0B6C6B6427}"
 EndProject
@@ -15,6 +15,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{22F72E50-B86A-48A6-4252-6FDC98C636E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCPNetwork", "TCPNetwork\TCPNetwork.csproj", "{5CF740F9-DF6B-A663-F96F-19F4F13E6C44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Synchronous", "Synchronous\Synchronous.csproj", "{2D924E9B-E5AB-6DA0-1654-66E7A74A1785}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{5CF740F9-DF6B-A663-F96F-19F4F13E6C44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CF740F9-DF6B-A663-F96F-19F4F13E6C44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CF740F9-DF6B-A663-F96F-19F4F13E6C44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D924E9B-E5AB-6DA0-1654-66E7A74A1785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D924E9B-E5AB-6DA0-1654-66E7A74A1785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D924E9B-E5AB-6DA0-1654-66E7A74A1785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D924E9B-E5AB-6DA0-1654-66E7A74A1785}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

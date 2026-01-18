@@ -9,6 +9,7 @@ using Verse;
 using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
 using GameClient.Misc;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Dialogs
 {

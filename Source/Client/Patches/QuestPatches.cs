@@ -8,13 +8,11 @@ using static Shared.CommonEnumerators;
 namespace GameClient.Patches
 {
     [HarmonyPatch(typeof(QuestManager), nameof(QuestManager.Add))]
-    public static class PatchAddPollution
+    public static class PatchAddQuest
     {
         [HarmonyPrefix]
         public static bool DoPre(Quest quest)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-
             foreach (Faction faction in SessionHandler.PlayerFactions)
             {
                 if (quest.InvolvedFactions.Contains(faction))

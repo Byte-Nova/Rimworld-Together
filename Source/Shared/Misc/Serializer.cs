@@ -3,6 +3,7 @@ using MessagePack;
 using MessagePack.Resolvers;
 using Newtonsoft.Json;
 using System.IO;
+using Shared.Misc;
 
 namespace Shared
 {
@@ -22,16 +23,34 @@ namespace Shared
 
         //Serialize from and to byte arrays
 
-        public static byte[] ConvertObjectToBytes(object toConvert)
+        public static byte[] ConvertObjectToBytes(object toConvert, bool compression = true)
         {
-            try { return MessagePackSerializer.Serialize(toConvert, ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4Block)); }
-            catch (Exception ex) { throw ex; }
+            try 
+            { 
+                if (compression) return MessagePackSerializer.Serialize(toConvert, ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4Block));
+                else return MessagePackSerializer.Serialize(toConvert, ContractlessStandardResolver.Options); 
+            }
+
+            catch (Exception e) 
+            { 
+                Printer.Error(e);
+                throw null;
+            }
         }
 
-        public static T ConvertBytesToObject<T>(byte[] bytes)
+        public static T ConvertBytesToObject<T>(byte[] bytes, bool compression = true)
         {
-            try { return MessagePackSerializer.Deserialize<T>(bytes, ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4Block)); }
-            catch (Exception ex) { throw ex; }
+            try 
+            { 
+                if (compression) return MessagePackSerializer.Deserialize<T>(bytes, ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4Block));
+                else return MessagePackSerializer.Deserialize<T>(bytes, ContractlessStandardResolver.Options);
+            }
+
+            catch (Exception e)
+            {
+                Printer.Error(e);
+                throw null;
+            }
         }
 
         // Serialize from and to strings
@@ -39,13 +58,21 @@ namespace Shared
         public static string SerializeToString(object serializable)
         {
             try { return JsonConvert.SerializeObject(serializable, DefaultSettings); }
-            catch (Exception ex) { throw ex; }
+            catch (Exception e)
+            {
+                Printer.Error(e);
+                throw null;
+            }
         }
 
         public static T SerializeFromString<T>(string serializable)
         {
             try { return JsonConvert.DeserializeObject<T>(serializable, DefaultSettings); }
-            catch (Exception ex) { throw ex; }
+            catch (Exception e)
+            {
+                Printer.Error(e);
+                throw null;
+            }
         }
 
         /// <summary>
@@ -54,7 +81,11 @@ namespace Shared
         public static void SerializeToFile(string path, object serializable)
         {
             try { File.WriteAllText(path, JsonConvert.SerializeObject(serializable, IndentedSettings)); }
-            catch (Exception ex) { throw ex; }
+            catch (Exception e)
+            {
+                Printer.Error(e);
+                throw null;
+            }
         }
 
         /// <summary>
@@ -63,7 +94,11 @@ namespace Shared
         public static T SerializeFromFile<T>(string path)
         {
             try { return JsonConvert.DeserializeObject<T>(File.ReadAllText(path), DefaultSettings); }
-            catch (Exception ex) { throw ex; }
+            catch (Exception e)
+            {
+                Printer.Error(e);
+                throw null;
+            }
         }
 
         /// <summary>
@@ -72,7 +107,11 @@ namespace Shared
         public static void ObjectBytesToFile(string path, object serializable)
         {
             try { File.WriteAllBytes(path, ConvertObjectToBytes(serializable)); }
-            catch (Exception ex) { throw ex; }
+            catch (Exception e)
+            {
+                Printer.Error(e);
+                throw null;
+            }
         }
 
         /// <summary>
@@ -81,7 +120,11 @@ namespace Shared
         public static T FileBytesToObject<T>(string path)
         {
             try { return ConvertBytesToObject<T>(File.ReadAllBytes(path)); }
-            catch (Exception ex) { throw ex; }
+            catch (Exception e)
+            {
+                Printer.Error(e);
+                throw null;
+            }
         }
     }
 }

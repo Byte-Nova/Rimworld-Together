@@ -19,12 +19,6 @@ namespace TCPNetwork
 
         public static string Port { get; set; } = string.Empty;
 
-        public virtual Action<object, LogImportanceMode> OnMessage { get; set; }
-
-        public virtual Action<object, LogImportanceMode> OnWarning { get; set; }
-
-        public virtual Action<object, LogImportanceMode> OnError { get; set; }
-
         public virtual Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; }
 
         public virtual Action<bool> OnWritePacket { get; set; }

@@ -15,6 +15,7 @@ using Verse.Sound;
 using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
 using Shared.Misc;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Managers
 {
@@ -179,7 +180,7 @@ namespace GameClient.Managers
                 foreach (Thing thing in things)
                 {
                     if (thing.def.CanHaveFaction) thing.SetFactionDirect(Faction.OfPlayer);
-                    RimworldManager.PlaceThingIntoMap(thing, map, ThingPlaceMode.Near, true, success);
+                    RimworldManager.PlaceThingIntoMap(thing, map, TransferManagerHelper.GetTransferLocationInMap(map), true);
                 }
 
                 FinishTransfer(success);
@@ -366,14 +367,9 @@ namespace GameClient.Managers
             if (tradingSpot != null) return tradingSpot.Position;
             else
             {
-                RT_Dialog_Message d1 = new RT_Dialog_Message("MESSAGE", new string[] 
-                { 
-                    "You are missing a transfer spot!",
-                    "Received things will appear in the center of the map",
-                    "Build a trading spot to change the drop location!"
-                });
-
-                RT_Dialog_Base.PushNewDialog(d1);
+                string title = "Missing transfer spot";
+                string description = "Received things will appear in the center of the map";
+                RimworldManager.GenerateLetter(title, description, LetterDefOf.NeutralEvent);
 
                 return new IntVec3(map.Center.x, map.Center.y, map.Center.z);
             }

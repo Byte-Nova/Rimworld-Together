@@ -11,6 +11,7 @@ using static Shared.CommonEnumerators;
 using static UnityEngine.GraphicsBuffer;
 using TCPNetwork.Packets.Goodwills;
 using Shared.Files.Sites;
+using GameClient.Hooks.TCPNetwork;
 
 
 namespace GameClient.Managers

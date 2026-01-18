@@ -2,6 +2,8 @@ namespace Shared
 {
     public class CommonEnumerators
     {
+        public enum AssemblyType { None, Client, Server }
+
         public enum ClientNetworkState { Disconnected, Connected }
 
         public enum GenStepMode { Scenario, Storyteller, Difficulty }
@@ -10,7 +12,7 @@ namespace Shared
 
         public enum ResponseStepMode { IllegalAction, UserUnavailable, Pop, NoPower }
 
-        public enum SaveStepMode : byte { Send, Receive, Reset } 
+        public enum SaveStepMode { Send, Receive, Reset } 
 
         public enum SpyStepMode { Request, Accept, Deny }
 

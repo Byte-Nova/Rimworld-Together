@@ -12,8 +12,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Caravan __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else CaravanManager.RequestCaravanAdd(__instance);
+            CaravanManager.RequestCaravanAdd(__instance);
         }
     }
 
@@ -23,8 +22,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Caravan __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else CaravanManager.RequestCaravanRemove(__instance);
+            CaravanManager.RequestCaravanRemove(__instance);
         }
     }
 
@@ -34,12 +32,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Caravan ___caravan)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else
-            {
-                CaravanManager.RequestCaravanUpdate(___caravan);
-                return true;
-            }
+            CaravanManager.RequestCaravanUpdate(___caravan);
+            return true;
         }
     }
 }

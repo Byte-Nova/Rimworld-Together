@@ -57,6 +57,22 @@ namespace GameClient.Misc
             }
         }
 
+        public void DoOnSynchronousStartMethods()
+        {
+            foreach (MethodInfo method in MethodGatherer.OnSynchronousStartMethods)
+            {
+                method.Invoke(null, null);
+            }
+        }
+
+        public void DoOnSynchronousEndMethods()
+        {
+            foreach (MethodInfo method in MethodGatherer.OnSynchronousEndMethods)
+            {
+                method.Invoke(null, null);
+            }
+        }
+
         public void Enqueue(Action action) { Enqueue(ActionWrapper(action)); }
 
         private void Enqueue(IEnumerator action)

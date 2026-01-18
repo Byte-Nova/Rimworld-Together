@@ -19,12 +19,9 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Caravan caravan)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
-            {
-                SettlementManager.SendNewPlayerSettlement(caravan.Tile);
+            SettlementManager.SendNewPlayerSettlement(caravan.Tile);
 
-                SaveManager.ForceSave();
-            }
+            SaveManager.ForceSave();
         }
     }
 
@@ -34,12 +31,9 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Map map)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
-            {
-                SettlementManager.SendNewPlayerSettlement(map.Tile);
+            SettlementManager.SendNewPlayerSettlement(map.Tile);
 
-                SaveManager.ForceSave();
-            }
+            SaveManager.ForceSave();
         }
     }
 
@@ -49,8 +43,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Settlement settlement)
         {
-            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return;
-            else SettlementManager.AbandonSettlement(settlement.Tile);
+            SettlementManager.AbandonSettlement(settlement.Tile);
         }
     }
 
@@ -60,14 +53,11 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Settlement __instance)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
+            if (!SessionHandler.CurrentActionValues.EnableNPCDestruction) return;
+            else
             {
-                if (!SessionHandler.CurrentActionValues.EnableNPCDestruction) return;
-                else
-                {
-                    if (__instance.Faction == Faction.OfPlayer) return;
-                    else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
-                }
+                if (__instance.Faction == Faction.OfPlayer) return;
+                else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
             }
         }
     }

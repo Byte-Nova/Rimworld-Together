@@ -11,6 +11,7 @@ using Verse;
 using static Shared.CommonEnumerators;
 using Shared.Details.Planet;
 using Shared.Misc;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Managers
 {

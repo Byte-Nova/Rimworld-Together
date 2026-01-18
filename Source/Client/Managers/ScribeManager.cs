@@ -22,27 +22,32 @@ namespace GameClient.Managers
 
         public enum SerializableType { Thing, Pawn, Other }
 
-        public static string SerializeToString(object toSave, SerializableType type = SerializableType.Thing, int customCount = -1)
+        public static string SerializeToString(object toSave, SerializableType type = SerializableType.Thing, int customCount = -1, string customID = null)
         {
             SessionHandler.IsUsingScriber = true;
 
             string scribeData = string.Empty;
             int originalCount = -1;
+            string originalID = string.Empty;
             Thing objAsThing = null;
+            Pawn objAsPawn = null;
 
             try
             {
                 if (type == SerializableType.Thing)
                 {
                     objAsThing = toSave as Thing;
+
                     originalCount = objAsThing.stackCount;
                     if (customCount != -1) objAsThing.stackCount = customCount;
                 }
 
                 else if (type == SerializableType.Pawn)
                 {
-                    Pawn pawn = toSave as Pawn;
-                    pawn.guest = null;
+                    objAsPawn = toSave as Pawn;
+
+                    originalID = objAsPawn.ThingID;
+                    if (customID != null) objAsPawn.ThingID = customID;
                 }
 
                 Scribe.saver.InitSaving("", ScribeTreeName);
@@ -56,16 +61,21 @@ namespace GameClient.Managers
                     if (customCount != -1) objAsThing.stackCount = originalCount;
                 }
 
+                if (type == SerializableType.Pawn)
+                {
+                    if (customID != null) objAsPawn.ThingID = originalID;
+                }
+
                 scribeData = new Regex(@">\s*<").Replace(StringWriter.ToString(), "><");
             }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
 
             SessionHandler.IsUsingScriber = false;
 
             return scribeData.ToString();
         }
 
-        public static T SerializeFromString<T>(string scribeData, SerializableType type = SerializableType.Thing)
+        public static T SerializeFromString<T>(string scribeData, SerializableType type = SerializableType.Thing, bool enforceID = false)
         {
             SessionHandler.IsUsingScriber = true;
 
@@ -82,20 +92,17 @@ namespace GameClient.Managers
                 if (type == SerializableType.Thing)
                 {
                     Thing thing = toLoad as Thing;
-                    thing.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
+                    if (!enforceID) thing.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
                 }
 
                 else if (type == SerializableType.Pawn)
                 {
                     Pawn pawn = toLoad as Pawn;
-                    if (pawn.def.CanHaveFaction)
-                    {
-                        pawn.SetFactionDirect(Faction.OfPlayer);
-                        pawn.guest = null;
-                    }
+                    if (pawn.def.CanHaveFaction) pawn.SetFactionDirect(Faction.OfPlayer);
+                    if (!enforceID) pawn.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
                 }
             }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
 
             SessionHandler.IsUsingScriber = false;
 
