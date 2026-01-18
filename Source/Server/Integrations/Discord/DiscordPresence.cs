@@ -1,6 +1,7 @@
 using Discord;
 using Discord.WebSocket;
 using GameServer.Core;
+using GameServer.Hooks.TCPNetwork;
 using Shared.Misc;
 using System;
 using System.Threading;

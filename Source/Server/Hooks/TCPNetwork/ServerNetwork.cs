@@ -13,6 +13,7 @@ using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Misc;
 using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer.Hooks.TCPNetwork
 {
