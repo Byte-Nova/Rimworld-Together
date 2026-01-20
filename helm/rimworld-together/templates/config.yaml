@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-browser-config
+data:
+  ServerBrowserConfig.json: |
+    {
+      "EnableServerBrowser": true,
+      "EnableServerTelemetry": true,
+      "PublicEndPoint": "{{ .Values.ingress.hostname }}"
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-config
+data:
+  ServerConfig.json: |
+    {
+      "Name": "",
+      "Description": "Some test, dont' pay attention",
+      "IP": "0.0.0.0",
+      "Port": "25555",
+      "MaxPlayers": "10",
+      "VerboseLogs": true,
+      "ExtremeVerboseLogs": true,
+      "DisplayChatInConsole": false,
+      "UseUPnP": false,
+      "SyncLocalSave": true
+    }

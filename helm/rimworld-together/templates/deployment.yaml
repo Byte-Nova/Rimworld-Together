@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rimworld-together.fullname" . }}
+  labels:
+    {{- include "rimworld-together.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "rimworld-together.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "rimworld-together.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: game
+              containerPort: 25555
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /Data
+              volumeMounts:
+            - mountPath: '/Data/Configs/ServerBrowserConfig.json'
+              name: server-browser-config
+              readOnly: true
+              subPath: ServerBrowserConfig.json
+            - mountPath: '/Data/Configs/ServerConfig.json'
+              name: server-config
+              readOnly: true
+              subPath: ServerConfig.json
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "rimworld-together.fullname" . }}-pvc
+        - name: server-browser-config
+          configMap:
+            name: server-browser-config
+        - name: server-config
+          configMap:
+            name: server-config

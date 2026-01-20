@@ -422,3 +422,5 @@ Mod/WindowsDouble.bat
 1.6/Assemblies
 /Server
 /Temp
+
+values.secret.yaml
