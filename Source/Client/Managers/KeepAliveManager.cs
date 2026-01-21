@@ -1,3 +1,4 @@
+using System;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using Shared;
@@ -9,7 +10,7 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.KeepAliveManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            ClientNetwork.Instance.ClientListener.CurrentKeepAliveTime = 0;
+            ClientNetwork.Instance.ClientListener.LastKAPacket = DateTime.Now;
         }
     }
 }

@@ -89,11 +89,11 @@ namespace GameClient.Managers
         public static Dictionary<string, string> GetAllSaveFiles() 
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach (string file in Directory.GetFiles(Master.SavesFolderPath))
+            foreach (string str in Directory.GetFiles(Master.SavesFolderPath))
             {
-                if(Path.GetExtension(file) == ".rws")
-                    result.Add(Path.GetFileNameWithoutExtension(file), file);
+                if (Path.GetExtension(str) == ".rws") result.Add(Path.GetFileNameWithoutExtension(str), str);
             }
+
             return result;
         }
 

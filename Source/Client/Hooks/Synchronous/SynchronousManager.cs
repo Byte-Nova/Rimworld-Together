@@ -151,7 +151,7 @@ namespace GameClient.Hooks.Synchronous
             else
             {
                 MapFile file = Serializer.ConvertBytesToObject<MapFile>(data._contents);
-                SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(file, true, true, false, false, false, false, false, true);
+                SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(file, true, true, false, false, false, true);
             }
         }
 
