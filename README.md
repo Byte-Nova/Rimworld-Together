@@ -42,6 +42,15 @@ docker run -it --rm -v './RWTData:/Data' -p 25555:25555 ghcr.io/rimworld-togethe
 docker run -it --rm -v '.\RWTData:/Data' -p 25555:25555 ghcr.io/rimworld-together/rimworld-together:latest
 ```
 
+## Kubernetes based deployment
+This repo contain a Helm chart to deploy the a Rimworld Together server on a kubernetes cluster.
+
+To deploy it, run the following command:
+```bash
+helm install -f values.yaml -f values.secret.yaml rimworld . -n rimworld --create-namespace
+```
+
+Additionnal information about the chart and the tools it depends on can be found on the readme file at the root of the chart
 
 ## Contributing
 Interested? Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!

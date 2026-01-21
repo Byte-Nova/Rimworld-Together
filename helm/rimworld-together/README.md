@@ -23,4 +23,4 @@ rimworld:
     trustedIPs: []
 ```
 
-This should be added on your Treafik values, under the `ports` property. 
+This should be added on your Treafik values, under the `ports` property.
