@@ -2,6 +2,7 @@ using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
+using Shared;
 
 namespace GameClient.Managers
 {
@@ -27,10 +28,10 @@ namespace GameClient.Managers
         {
             bool isInvalid = false;
 
-            if (string.IsNullOrWhiteSpace(RT_Dialog_Inputs.DialogInputResults[0])) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(RT_Dialog_Inputs.DialogInputResults[1])) isInvalid = true;
-            if (RT_Dialog_Inputs.DialogInputResults[1].Count() > 5) isInvalid = true;
+            if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[0])) isInvalid = true;
+            if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[1])) isInvalid = true;
             if (!RT_Dialog_Inputs.DialogInputResults[1].All(char.IsDigit)) isInvalid = true;
+            if (RT_Dialog_Inputs.DialogInputResults[1].Count() > 5) isInvalid = true;
 
             if (isInvalid) RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server details are invalid! Please try again!" }));
             else

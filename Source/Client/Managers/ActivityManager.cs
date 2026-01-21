@@ -77,12 +77,12 @@ namespace GameClient.Managers
 
             if (SessionHandler.latestActivity == ActivityType.Raid)
             {
-                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
+                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true);
             }
 
             else if (SessionHandler.latestActivity == ActivityType.Zoom)
             {
-                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, false);
+                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, false);
             }
 
             Faction faction;

@@ -37,9 +37,11 @@ namespace TCPNetwork
 
         private bool IsDisconnecting { get; set; } = false;
         
-        public int CurrentKeepAliveTime { get; set; } = 0;
+        public DateTime LastKAPacket { get; set; } = DateTime.Now;
 
-        public static readonly int KeepAliveMaxTime = 60000;
+        public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(10);
+        
+        public static readonly TimeSpan KeepAliveMaxTime = TimeSpan.FromSeconds(60);
 
         public static readonly string DefaultParserMethodName = "ParsePacket";
 
@@ -178,7 +180,7 @@ namespace TCPNetwork
             {
                 while (!DisconnectFlag)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(KeepAliveInterval);
                     KeepAliveData keepAliveData = new KeepAliveData();
                     EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
                 }
@@ -192,10 +194,12 @@ namespace TCPNetwork
             {
                 while (!DisconnectFlag)
                 {
-                    Thread.Sleep(1);
-
-                    if (CurrentKeepAliveTime < KeepAliveMaxTime) CurrentKeepAliveTime++;
-                    else break;
+                    Thread.Sleep(KeepAliveInterval);
+                    DateTime current = DateTime.Now;
+                    if (current - LastKAPacket > KeepAliveMaxTime)
+                    {
+                        break;
+                    }
                 }
             }
             catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
