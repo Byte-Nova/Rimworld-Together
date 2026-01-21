@@ -5,7 +5,7 @@ metadata:
 data:
   ServerBrowserConfig.json: |
     {
-      "EnableServerBrowser": true,
+      "EnableServerBrowser": false,
       "EnableServerTelemetry": true,
       "PublicEndPoint": "{{ .Values.ingress.hostname }}"
     }
@@ -18,7 +18,7 @@ data:
   ServerConfig.json: |
     {
       "Name": "",
-      "Description": "Some test, dont' pay attention",
+      "Description": "",
       "IP": "0.0.0.0",
       "Port": "25555",
       "MaxPlayers": "10",

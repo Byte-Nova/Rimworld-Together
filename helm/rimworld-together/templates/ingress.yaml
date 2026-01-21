@@ -1,36 +1,13 @@
 apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: {{ template "rimworld-together.fullname" . }}-tls-ingress
-  labels:
-{{ include "rimworld-together.labels" . | indent 4 }}
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`{{ .Values.ingress.hostname }}`)
-      kind: Rule
-      priority: 10
-      services:
-        - name: {{ template "rimworld-together.fullname" . }}
-          port: {{ .Values.service.port }}
-  tls:
-    secretName: "{{ template "rimworld-together.fullname" . }}-{{ .Values.ingress.shortenedDomain }}"
-
----
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
+kind: IngressRouteTCP
 metadata:
   name: {{ template "rimworld-together.fullname" . }}-ingress
-  labels:
-{{ include "rimworld-together.labels" . | indent 4 }}
 spec:
   entryPoints:
-    - web
+    - rimworld
   routes:
-    - match: Host(`{{ .Values.ingress.hostname }}`)
-      kind: Rule
-      priority: 10
-      services:
-        - name: {{ template "rimworld-together.fullname" . }}
-          port: {{ .Values.service.port }}
+  - match: HostSNI(`*`)
+    priority: 10
+    services:
+      - name: {{ template "rimworld-together.fullname" . }}
+        port: {{ .Values.service.port }}
