@@ -168,9 +168,6 @@ namespace GameClient.Managers
                 else
                 {
                     Printer.Message("Loading local save", LogImportanceMode.Verbose);
-
-                    // Check if this is really needed anymore.
-                    // File.Delete(SaveManager.TempSaveFilePath);
                 }
             }
 
