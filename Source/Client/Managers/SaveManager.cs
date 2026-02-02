@@ -30,7 +30,7 @@ namespace GameClient.Managers
 
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
-        public static string TempSaveFilePath => SaveFilePath + ".rws.temp";
+        public static string TempSaveFilePath => SaveFilePath + $" - {DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss")}.rws";
 
         [HandlesPacket(PacketHeader.SaveManager)]
         private static void ParsePacket(byte[] bytes)
@@ -86,7 +86,7 @@ namespace GameClient.Managers
             catch { return 0; }
         }
 
-        public static Dictionary<string, string> GetAllSaveFiles() 
+        public static Dictionary<string, string> GetAllSaveFiles()
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
             foreach (string str in Directory.GetFiles(Master.SavesFolderPath))
@@ -152,7 +152,7 @@ namespace GameClient.Managers
             if (data._forceUseSave || !File.Exists(SaveFilePath))
             {
                 File.Delete(SaveFilePath);
-                File.Move(TempSaveFilePath, SaveFilePath);
+                File.Copy(TempSaveFilePath, SaveFilePath);
             }
 
             else
@@ -162,14 +162,15 @@ namespace GameClient.Managers
                     Printer.Message("Loading remote save", LogImportanceMode.Verbose);
 
                     File.Delete(SaveManager.SaveFilePath);
-                    File.Move(SaveManager.TempSaveFilePath, SaveManager.SaveFilePath);
+                    File.Copy(SaveManager.TempSaveFilePath, SaveManager.SaveFilePath);
                 }
 
                 else
                 {
                     Printer.Message("Loading local save", LogImportanceMode.Verbose);
 
-                    File.Delete(SaveManager.TempSaveFilePath);
+                    // Check if this is really needed anymore.
+                    // File.Delete(SaveManager.TempSaveFilePath);
                 }
             }
 
