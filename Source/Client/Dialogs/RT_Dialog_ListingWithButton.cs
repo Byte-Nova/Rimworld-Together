@@ -14,14 +14,37 @@ namespace GameClient.Dialogs
         public static string DialogButtonListingResultString { get; private set; }
 
         public static int DialogButtonListingResultInt { get; private set; }
+        public static readonly float DefaultRowHeight = 30f;
 
-        public RT_Dialog_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
+        public float MarginAdjustment { get; private set; }
+
+        private float _rowHeight = DefaultRowHeight;
+        public float RowHeight {
+          get
+          {
+            return _rowHeight;
+          }
+          private set
+          {
+            if (_rowHeight == value)
+            {
+              return;
+            }
+
+            this._rowHeight = value;
+
+            this.MarginAdjustment = Math.Max(0, (RowHeight - DefaultRowHeight) / 2f);
+          }
+        }
+
+        public RT_Dialog_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null, float? rowHeight = null)
         {
             this.Title = title;
             this.Description = description;
             this.Elements = elements;
             this.OnAccept = actionClick;
             this.OnCancel = actionCancel;
+            this.RowHeight = rowHeight ?? DefaultRowHeight;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -66,13 +89,14 @@ namespace GameClient.Dialogs
 
             for (int i = 0; i < Elements.Count(); i++)
             {
+
                 if (num > num2 && num < num3)
                 {
-                    Rect rect = new Rect(0f, num, viewRect.width, 30f);
+                    Rect rect = new Rect(0f, num, viewRect.width, RowHeight);
                     DrawCustomRow(rect, Elements[i], num4);
                 }
 
-                num += 30f;
+                num += RowHeight;
                 num4++;
             }
 
@@ -86,7 +110,7 @@ namespace GameClient.Dialogs
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, $"{element}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Select"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x, rect.yMax - TinyButtonSize.y - MarginAdjustment), TinyButtonSize), "Select"))
             {
                 DialogButtonListingResultInt = index;
                 DialogButtonListingResultString = element;
