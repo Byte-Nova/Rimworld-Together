@@ -31,6 +31,7 @@ namespace GameClient.Managers
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
         public static string TempSaveFilePath => SaveFilePath + ".rws.temp";
+
         public static string BackupSaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + $" - {DateTime.Now:yyyy-MM-dd_HH-mm-ss}.rws");
 
         [HandlesPacket(PacketHeader.SaveManager)]
