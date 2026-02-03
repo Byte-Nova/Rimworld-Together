@@ -30,7 +30,8 @@ namespace GameClient.Managers
 
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
-        public static string TempSaveFilePath => SaveFilePath + $" - {DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss")}.rws";
+        public static string TempSaveFilePath => SaveFilePath + ".rws.temp";
+        public static string BackupSaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + $" - {DateTime.Now:yyyy-MM-dd_HH-mm-ss}.rws");
 
         [HandlesPacket(PacketHeader.SaveManager)]
         private static void ParsePacket(byte[] bytes)
@@ -127,6 +128,8 @@ namespace GameClient.Managers
 
         public static void SendSaveToServer()
         {
+            TriggerBackup(SaveFilePath);
+
             Printer.Message("Sending save to server", LogImportanceMode.Verbose);
 
             byte[] saveBytes;
@@ -141,6 +144,7 @@ namespace GameClient.Managers
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
+
         private static void OnSaveReceived(SaveData data)
         {
             Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
@@ -151,27 +155,37 @@ namespace GameClient.Managers
 
             if (data._forceUseSave || !File.Exists(SaveFilePath))
             {
-                File.Delete(SaveFilePath);
-                File.Copy(TempSaveFilePath, SaveFilePath);
+                MoveTempToPersistentSave();
             }
-
             else
             {
                 if (GetRealPlayTimeInteractingFromSave(TempSaveFilePath) >= GetRealPlayTimeInteractingFromSave(SaveFilePath))
                 {
                     Printer.Message("Loading remote save", LogImportanceMode.Verbose);
-
-                    File.Delete(SaveManager.SaveFilePath);
-                    File.Copy(SaveManager.TempSaveFilePath, SaveManager.SaveFilePath);
+                    MoveTempToPersistentSave();
                 }
 
                 else
                 {
                     Printer.Message("Loading local save", LogImportanceMode.Verbose);
+
+                    File.Delete(SaveManager.TempSaveFilePath);
                 }
             }
 
             GameDataSaveLoader.LoadGame(SaveManager.CustomSaveName);
+        }
+
+        private static void MoveTempToPersistentSave()
+        {
+            File.Delete(SaveManager.SaveFilePath);
+            File.Move(SaveManager.TempSaveFilePath, SaveManager.SaveFilePath);
+            TriggerBackup(SaveFilePath);
+        }
+
+        private static void TriggerBackup(string saveFilePath) {
+            Printer.Message("Backing up save file", LogImportanceMode.Verbose);
+            File.Copy(saveFilePath, BackupSaveFilePath, true);
         }
     }
 }
