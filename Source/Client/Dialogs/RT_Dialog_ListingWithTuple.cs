@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -17,28 +18,50 @@ namespace GameClient.Dialogs
 
         public int[] ValueInt { get; private set; }
 
+        public bool searchBoxEnabled { get; private set; }
+
+        public string searchBoxInput { get; private set; }
+
+        private const int SEARCHBOXINPUTMAXLENGTH = 16;
+
+        public string[] displayKeys {  get; private set; }
+        // This holds the keys to be displayed in the UI.
+        // It contains filtered keys if the search box has input; otherwise, it mirrors the original Keys list.
+
+        public int[] displayKeysOrgIndex { get; private set; }
+        // Used for converting an index of the filtered 'displayKeys' array to its original index in the 'Keys' array.
+        // If the search box is empty, it will contain the original 'Keys' indices.
+
         public static string[] DialogTupleListingResultString { get; private set; }
 
         public static int[] DialogTupleListingResultInt { get; private set; }
 
-        public RT_Dialog_ListingWithTuple(string title, string description, string[] keys, string[] values, int[] defaultValues = null, Action actionAccept = null)
+        public RT_Dialog_ListingWithTuple(string title, string description, string[] keys, string[] values, int[] defaultValues = null, Action actionAccept = null, bool searchBoxEnabled = false)
         {
             this.Title = title;
             this.Description = description;
             this.Keys = keys;
+            this.displayKeys = keys;
             this.Values = values;
             this.OnAccept = actionAccept;
+            this.searchBoxEnabled = searchBoxEnabled;
+            this.searchBoxInput = string.Empty;
 
             closeOnAccept = false;
             closeOnCancel = false;
 
             List<string> strings = new List<string>();
-            for (int i = 0; i < keys.Length; i++) strings.Add(values[0]);
-            ValueString = strings.ToArray();
-
             List<int> ints = new List<int>();
-            for (int i = 0; i < keys.Length; i++) ints.Add(0);
+            List<int> orgIndex = new List<int>();
+            for (int i = 0; i < keys.Length; i++)
+            {
+                strings.Add(values[0]);
+                ints.Add(0);
+                orgIndex.Add(i);
+            }
+            ValueString = strings.ToArray();
             ValueInt = ints.ToArray();
+            displayKeysOrgIndex = orgIndex.ToArray();
 
             if (defaultValues != null)
             {
@@ -67,6 +90,18 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Medium;
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
+            if (searchBoxEnabled)
+            {
+                //Adds a search box to the top-left corner of the dialog when 'searchBoxEnabled' is true.
+                string tempSearchBoxInput = Widgets.TextField(GetRectForLocation(rect, LongButtonSize, RectLocation.TopLeft), searchBoxInput, SEARCHBOXINPUTMAXLENGTH);
+                if (tempSearchBoxInput != searchBoxInput)
+                {
+                    // Updates the 'searchBoxInput' only if the user has changed it.
+                    searchBoxInput = tempSearchBoxInput;
+                    SetDisplayVariables();
+                }
+            }
+
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - DefaultButtonSize.y - 85f));
 
             Text.Font = GameFont.Small;
@@ -84,44 +119,41 @@ namespace GameClient.Dialogs
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + Keys.Length * 30f;
-            Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
+            float viewRectHeight = 6f + displayKeys.Length * 30f;
+            Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, viewRectHeight);
             Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
-            float num = 0;
-            float num2 = ScrollPosition.y - 30f;
-            float num3 = ScrollPosition.y + mainRect.height;
-            int num4 = 0;
+            float currentY = 0;
+            float visibleStartY = ScrollPosition.y - 30f;
+            float visibleEndY = ScrollPosition.y + mainRect.height;
 
-            for (int i = 0; i < Keys.Length; i++)
+            for (int rowCount = 0; rowCount < displayKeys.Length; rowCount++)
             {
-                if (num > num2 && num < num3)
+                if (currentY > visibleStartY && currentY < visibleEndY)
                 {
-                    Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, Keys[i], num4);
+                    Rect rect = new Rect(0f, currentY, viewRect.width, 30f);
+                    DrawCustomRow(rect, displayKeys[rowCount], rowCount);
                 }
-
-                num += 30f;
-                num4++;
+                currentY += 30f;
             }
 
             Widgets.EndScrollView();
         }
 
-        private void DrawCustomRow(Rect rect, string element, int index)
+        private void DrawCustomRow(Rect rect, string element, int displayindex)
         {
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
-            if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
+            if (displayindex % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, element);
-            string buttonLabel = ValueString[index];
+            string buttonLabel = ValueString[displayKeysOrgIndex[displayindex]];
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - LongButtonSize.x, rect.yMax - LongButtonSize.y), LongButtonSize), buttonLabel))
             {
-                ShowFloatMenu(index, false);
+                ShowFloatMenu(displayindex, false);
             }
         }
 
-        private void ShowFloatMenu(int index, bool globalChange)
+        private void ShowFloatMenu(int displayindex, bool globalChange)
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
@@ -129,16 +161,20 @@ namespace GameClient.Dialogs
             {
                 Action changeSingleValue = delegate
                 {
-                    ValueString[index] = str;
-                    ValueInt[index] = GetValueFromString(str);
+                    ValueString[displayKeysOrgIndex[displayindex]] = str;
+                    ValueInt[displayKeysOrgIndex[displayindex]] = GetValueFromString(str);
+                    // Changes the ValueString & ValueInt of the corresponding row upon clicking the Widgets.ButtonText's FloatMenuOption.
+                    // displayKeysOrgIndex[displayindex]: Gets the original index of a displayed key (from before filtering).
                 };
 
                 Action changeAllValues = delegate
                 {
-                    for (int i = 0; i < ValueString.Length; i++)
+                    for (int i = 0; i < displayKeys.Length; i++)
                     {
-                        ValueString[i] = str;
-                        ValueInt[i] = GetValueFromString(ValueString[i]);
+                        // It affects only visible rows/keys (filtered ones), not all keys.
+                        // If the search box is empty, it affects all keys.
+                        ValueString[displayKeysOrgIndex[i]] = str;
+                        ValueInt[displayKeysOrgIndex[i]] = GetValueFromString(ValueString[displayKeysOrgIndex[i]]);
                     }
                 };
 
@@ -153,5 +189,34 @@ namespace GameClient.Dialogs
         }
 
         private int GetValueFromString(string str) { return Values.FirstIndexOf(fetch => fetch == str); }
+
+        private void SetDisplayVariables()
+        {
+            // Updates display arrays ('displayKeys' and 'displayKeyOrgIndex') based on the search box input.
+            // If the search box is empty, it mirrors the 'Keys' array and its original indices.
+            // Otherwise, it sets them to the values filtered by the searchBoxInput
+            if (string.IsNullOrEmpty(searchBoxInput))
+            {
+                displayKeys = Keys;
+                displayKeysOrgIndex = Enumerable.Range(0, Keys.Length).ToArray();
+            }
+            else
+            {
+                // Filter items based on search input
+                List<string> filteredKeys = new List<string>();
+                List<int> filteredKeysOrgIndex = new List<int>();
+                for (int i = 0; i < Keys.Length; i++)
+                {
+                    // Case-insensitive search
+                    if (Keys[i].Contains(searchBoxInput, StringComparison.OrdinalIgnoreCase))
+                    {
+                        filteredKeys.Add(Keys[i]);
+                        filteredKeysOrgIndex.Add(i);
+                    }
+                }
+                displayKeys = filteredKeys.ToArray();
+                displayKeysOrgIndex = filteredKeysOrgIndex.ToArray();
+            }
+        }
     }
 }
