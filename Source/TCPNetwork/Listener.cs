@@ -30,6 +30,8 @@ namespace TCPNetwork
 
         private ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
 
+        private SemaphoreSlim PacketSignal { get; set; } = new SemaphoreSlim(0);
+
         private bool IsDisconnecting { get; set; } = false;
         
         public DateTime LastKAPacket { get; set; } = DateTime.Now;
@@ -52,13 +54,21 @@ namespace TCPNetwork
         public void EnqueuePacket(PacketHeader header, object obj)
         {
             if (IsDisconnecting) return;
-            else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
+            else
+            {
+                PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
+                PacketSignal.Release();
+            }
         }
 
         public void EnqueuePacket(PacketHeader header, byte[] bytes)
         {
             if (IsDisconnecting) return;
-            else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
+            else
+            {
+                PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
+                PacketSignal.Release();
+            }
         }
 
         private void Read()
@@ -70,27 +80,20 @@ namespace TCPNetwork
 
                 while (!IsDisconnecting)
                 {
-                    Thread.Sleep(1);
+                    // Block until data arrives or stream is disposed.
+                    if (!TryReadExact(headerBuffer, sizeof(PacketHeader))) break;
+                    PacketHeader header = (PacketHeader)headerBuffer[0];
 
-                    if (Stream.DataAvailable)
-                    {
-                        // Read packet header
-                        Stream.Read(headerBuffer, 0, sizeof(PacketHeader));
-                        PacketHeader header = (PacketHeader)headerBuffer[0];
+                    if (!TryReadExact(lengthBuffer, Network.PacketLengthSizeInBytes)) break;
+                    int packetLength = BitConverter.ToInt32(lengthBuffer, 0);
+                    var packetBuffer = new byte[packetLength];
+                    if (!TryReadExact(packetBuffer, packetBuffer.Length)) break;
 
-                        // Read packet size
-                        Stream.Read(lengthBuffer, 0, Network.PacketLengthSizeInBytes);
+                    if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
+                    else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
-                        // Read packet contents
-                        var packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
-                        ReadFullPacket(packetBuffer);
-
-                        if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
-                        else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
-
-                        try { Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient); }
-                        catch (Exception e) { Printer.Warning(e, LogImportanceMode.Normal); }
-                    }
+                    try { Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient); }
+                    catch (Exception e) { Printer.Warning(e, LogImportanceMode.Normal); }
                 }
             }
             catch (ObjectDisposedException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
@@ -106,11 +109,11 @@ namespace TCPNetwork
                 byte[] headerBuffer = new byte[sizeof(PacketHeader)];
                 while (!IsDisconnecting)
                 {
-                    Thread.Sleep(1);
+                    // Block until there is something to send, but wake periodically to honor disconnect.
+                    PacketSignal.Wait(1000);
 
-                    if (PacketQueue.Count > 0)
+                    while (!IsDisconnecting && PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData))
                     {
-                        if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
                         byte[] packetSize = BitConverter.GetBytes(packetData.Value.Length);
                         // Write packet header
                         headerBuffer[0] = packetData.Key;
@@ -183,6 +186,20 @@ namespace TCPNetwork
                 }
             }
             catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
+        }
+
+        private bool TryReadExact(byte[] buffer, int length)
+        {
+            int readBytes = 0;
+
+            while (!IsDisconnecting && readBytes < length)
+            {
+                int read = Stream.Read(buffer, readBytes, length - readBytes);
+                if (read == 0) return false;
+                readBytes += read;
+            }
+
+            return readBytes == length;
         }
 
         public void Disconnect()

@@ -40,7 +40,10 @@ namespace GameServer.Core
             ServerBrowserManager.StartFeature();
 
             ServerNetwork _ = new ServerNetwork();
-            while (true) ConsoleManager.ListenForServerCommands();
+            // In Docker/non-interactive consoles, ListenForServerCommands() returns immediately.
+            // Keep the main thread alive without spinning a core.
+            ConsoleManager.ListenForServerCommands();
+            Thread.Sleep(Timeout.Infinite);
         }
 
         public static void SetPaths()
