@@ -19,9 +19,27 @@ namespace GameServer.Hooks.Synchronous
 {
     public static class SynchronousManager
     {
+        private static bool TryGetTargetClientFromTile(int toTile, out ServerClient target)
+        {
+            target = null;
+
+            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(toTile);
+            if (settlement == null) return false;
+
+            target = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
+            return target != null;
+        }
+
         [HandlesPacket(PacketHeader.SynchronousManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
+            // Master switch: if activities are disabled, online visiting/raiding is disabled too.
+            if (!Master.ActionConfigs.ActivityAction.IsEnabled)
+            {
+                ResponseShortcutManager.SendUnavailablePacket(client);
+                return;
+            }
+
             SynchronousData data = Serializer.ConvertBytesToObject<SynchronousData>(bytes);
 
             switch (data._stepMode)
@@ -46,10 +64,12 @@ namespace GameServer.Hooks.Synchronous
 
         private static void TryStartSynchronousSession(ServerClient client, SynchronousData data)
         {
-            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(data._toTile);
-            ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
+            if (!TryGetTargetClientFromTile(data._toTile, out ServerClient toFind))
+            {
+                ResponseShortcutManager.SendUnavailablePacket(client);
+                return;
+            }
 
-            if (toFind == null) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 SynchronousData _ = new SynchronousData();
@@ -66,8 +86,11 @@ namespace GameServer.Hooks.Synchronous
 
         private static void AcceptSynchronousSession(ServerClient client, SynchronousData data)
         {
-            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(data._toTile);
-            ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
+            if (!TryGetTargetClientFromTile(data._toTile, out ServerClient toFind))
+            {
+                ResponseShortcutManager.SendUnavailablePacket(client);
+                return;
+            }
 
             SynchronousData _ = new SynchronousData();
             _._stepMode = SynchronousData.StepMode.Accept;
@@ -85,8 +108,11 @@ namespace GameServer.Hooks.Synchronous
 
         private static void RejectSynchronousSession(ServerClient client, SynchronousData data)
         {
-            SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(data._toTile);
-            ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
+            if (!TryGetTargetClientFromTile(data._toTile, out ServerClient toFind))
+            {
+                ResponseShortcutManager.SendUnavailablePacket(client);
+                return;
+            }
 
             SynchronousData _ = new SynchronousData();
             _._stepMode = SynchronousData.StepMode.Reject;
@@ -101,62 +127,63 @@ namespace GameServer.Hooks.Synchronous
             SynchronousData _ = new SynchronousData();
             _._stepMode = SynchronousData.StepMode.Start;
 
-            client.SynchronousClient.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
+            if (client.SynchronousClient != null)
+                client.SynchronousClient.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
         }
 
         [HandlesPacket(PacketHeader.SPlayerDraft)]
         private static void SPlayerDraft(ServerClient client, byte[] bytes, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, bytes);
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            if (client.SynchronousClient != null) client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
         }
 
         [HandlesPacket(PacketHeader.SPlayerWeather)]
         private static void SPlayerWeather(ServerClient client, byte[] bytes, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, bytes);
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            if (client.SynchronousClient != null) client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
         }
 
         [HandlesPacket(PacketHeader.SPlayerMentalState)]
         private static void SPlayerMentalState(ServerClient client, byte[] bytes, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, bytes);
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            if (client.SynchronousClient != null) client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
         }
 
         [HandlesPacket(PacketHeader.SPlayerGameSpeed)]
         private static void SPlayerGameSpeed(ServerClient client, byte[] bytes, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, bytes);
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            if (client.SynchronousClient != null) client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
         }
 
         [HandlesPacket(PacketHeader.SPlayerJob)]
         private static void SPlayerJob(ServerClient client, byte[] bytes, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, bytes);
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            if (client.SynchronousClient != null) client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
         }
 
         [HandlesPacket(PacketHeader.SPlayerHediff)]
         private static void SPlayerHediff(ServerClient client, byte[] bytes, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, bytes);
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            if (client.SynchronousClient != null) client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
         }
 
         [HandlesPacket(PacketHeader.SPlayerDestroy)]
         private static void SPlayerDestroy(ServerClient client, byte[] bytes, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, bytes);
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            if (client.SynchronousClient != null) client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
         }
 
         [HandlesPacket(PacketHeader.SPlayerPosition)]
         private static void SPlayerPosition(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            if (client.SynchronousClient != null) client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
         }
     }
 }
