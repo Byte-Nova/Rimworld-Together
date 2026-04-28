@@ -28,7 +28,7 @@ namespace GameClient.PacketManagers
     {
         public static string LatestSavePath { get; set; } = string.Empty;
 
-        public static string CustomSaveName => $"MP - {(Network.Ip.Contains(":") ? Network.Ip.Split(":").Join() : Network.Ip)} - {Network.Port} - {SessionHandler.Username}";
+        public static string CustomSaveName => $"MP - {(Network.Ip.Contains(":") ? Network.Ip.Split(":").Join(null, ".") : Network.Ip)} - {Network.Port} - {SessionHandler.Username}";
 
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
