@@ -14,7 +14,7 @@ namespace GameServer.Files
 
         public string SteamWorkshopURL { get; set; } = string.Empty;
 
-        public string IP { get; set; } = "0.0.0.0";
+        public string IP { get; set; } = string.Empty;
 
         public int Port { get; set; } = 25555;
 

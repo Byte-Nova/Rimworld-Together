@@ -5,9 +5,9 @@ namespace GameServer.Misc
 {
     public static class InformationDisplayer
     {
-        public static void DisplayConnect(ServerClient client) { Printer.Message($"[Connect] > {client.CurrentIP}"); }
+        public static void DisplayConnect(ServerClient client) { Printer.Message($"[Connect] > {(client.CurrentIP.Contains(':') && client.CurrentIP.Contains('.') ? client.CurrentIP.Split(":")[3] : client.CurrentIP)}"); }
 
-        public static void DisplayDisconnect(ServerClient client) { Printer.Message($"[Disconnect] > {client.CurrentIP}"); }
+        public static void DisplayDisconnect(ServerClient client) { Printer.Message($"[Disconnect] > {(client.CurrentIP.Contains(':') && client.CurrentIP.Contains('.') ? client.CurrentIP.Split(":")[3] : client.CurrentIP)}"); }
 
         public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.GetOrSetClientData<UserFile>().Username}"); }
 
