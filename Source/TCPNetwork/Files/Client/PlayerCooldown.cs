@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Newtonsoft.Json;
+using Shared;
 using Shared.Files.Actions;
 using System;
 using static System.Collections.Specialized.BitVector32;
@@ -7,14 +8,19 @@ namespace TCPNetwork.Files.Client
 {
     public class PlayerCooldown
     {
+        [JsonConverter(typeof(FlexibleDateTimeConverter))]
         public DateTime EventProtectionTime { get; set; } = DateTime.Now;
 
+        [JsonConverter(typeof(FlexibleDateTimeConverter))]
         public DateTime AidProtectionTime { get; set; } = DateTime.Now;
 
+        [JsonConverter(typeof(FlexibleDateTimeConverter))]
         public DateTime PollutionProtectionTime { get; set; } = DateTime.Now;
 
+        [JsonConverter(typeof(FlexibleDateTimeConverter))]
         public DateTime RoadProtectionTime { get; set; } = DateTime.Now;
 
+        [JsonConverter(typeof(FlexibleDateTimeConverter))]
         public DateTime NPCProtectionTime { get; set; } = DateTime.Now;
 
         public void SetEventTimer(UserFile file) 
