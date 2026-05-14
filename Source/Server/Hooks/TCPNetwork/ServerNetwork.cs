@@ -22,7 +22,7 @@ namespace GameServer.Hooks.TCPNetwork
             method.Invoke(PM_Base.PacketDictionary[header][0], new object[] { client, buffer, header });
         };
 
-        private static Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
+        private static Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client)
         {
             try
             {
@@ -44,11 +44,14 @@ namespace GameServer.Hooks.TCPNetwork
 
                 if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
 
-                Network.ServerListener = new TcpListener(IPAddress.Parse(Network.Ip), Network.Port);
+                Network.ServerListener = Network.Ip == string.Empty
+                    ? TcpListener.Create(Network.Port)
+                    : new TcpListener(IPAddress.Parse(Network.Ip), Network.Port);
+                
                 Network.ServerListener.Start();
 
                 Printer.Warning("Server launched");
-                Printer.Warning($"Listening for users at {Network.Ip}:{Network.Port}");
+                Printer.Warning($"Listening for users on port: {(Network.Ip== string.Empty ? null : $"{Network.Ip}:")}{Network.Port}");
                 Printer.Warning("Type 'help' to get a list of available commands");
 
                 Task.Run(delegate { while (true) ListenForNewClients(); });
