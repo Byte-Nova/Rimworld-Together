@@ -36,14 +36,14 @@ namespace GameServer.PacketManager
             if (!PM_Map.CheckIfMapExists(data.TargetTile))
             {
                 data.CurrentStepMode = StepMode.Deny;
-                client.Listener.EnqueuePacket(PacketHeader.Raid, data);
+                client.Listener.EnqueuePacket(PacketHeader.Zoom, data);
             }
 
             else
             {
                 data.CurrentStepMode = StepMode.Request;
                 data.Map = PM_Map.GetMapFromTile(data.TargetTile);
-                client.Listener.EnqueuePacket(PacketHeader.Raid, data);
+                client.Listener.EnqueuePacket(PacketHeader.Zoom, data);
             }
         }
     }
