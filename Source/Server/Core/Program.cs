@@ -25,6 +25,7 @@ namespace RTServer.Core
             SetPaths();
             CreateFolders();
             LoadFiles();
+            MigrationManager.RunMigrations();
             LoadActions();
 
             Printer.Title($"Server version {CommonValues.ExecutableVersion} ({CommonValues.HotfixVersion})");
