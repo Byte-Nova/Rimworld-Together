@@ -60,6 +60,7 @@ namespace RTServer.Core
             FL_Leaderboard.SavePath = Path.Combine(Master.AssetsPath, "Leaderboard.json");
             FL_Market.SavePath = Path.Combine(Master.AssetsPath, "Market.json");
             FL_Road.SavePath = Path.Combine(Master.AssetsPath, "Roads.json");
+            FL_River.SavePath = Path.Combine(Master.AssetsPath, "Rivers.json");
             FL_Guild.SavePath = Path.Combine(Master.GuildsPath);
             
             // Actions
@@ -76,6 +77,7 @@ namespace RTServer.Core
             ACT_Caravan.SavePath = Path.Combine(Master.ActionsPath, "Caravan.json");
             ACT_Site.SavePath = Path.Combine(Master.ActionsPath, "Site.json");
             ACT_Road.SavePath = Path.Combine(Master.ActionsPath, "Road.json");
+            ACT_River.SavePath = Path.Combine(Master.ActionsPath, "River.json");
             ACT_Scenario.SavePath =  Path.Combine(Master.ActionsPath, "Scenario.json");
 
             // Find a way to move these two to another place or merge with the above
@@ -139,8 +141,11 @@ namespace RTServer.Core
             Master.MarketFile = (FL_Market)FL_Market.Load<FL_Market>(FL_Market.SavePath);
             FL_Market.Save(FL_Market.SavePath, Master.MarketFile);
             
-            Master.RoadFile = (FL_Road)FL_Market.Load<FL_Road>(FL_Road.SavePath);
+            Master.RoadFile = (FL_Road)FL_Road.Load<FL_Road>(FL_Road.SavePath);
             FL_Road.Save(FL_Road.SavePath, Master.RoadFile);
+            
+            Master.RiverFile = (FL_River)FL_River.Load<FL_River>(FL_River.SavePath);
+            FL_River.Save(FL_River.SavePath, Master.RiverFile);
 
             // Don't automatically save this one
             // We require this file to be saved after a client upload
@@ -189,6 +194,9 @@ namespace RTServer.Core
             
             Master.ActionConfigs.RoadAction = (ACT_Road)ACT_Road.Load<ACT_Road>(ACT_Road.SavePath);
             ACT_Road.Save(ACT_Road.SavePath, Master.ActionConfigs.RoadAction);
+            
+            Master.ActionConfigs.RiverAction = (ACT_River)ACT_River.Load<ACT_River>(ACT_River.SavePath);
+            ACT_River.Save(ACT_River.SavePath, Master.ActionConfigs.RiverAction);
             
             Master.ActionConfigs.ScenarioAction = (ACT_Scenario)ACT_Scenario.Load<ACT_Scenario>(ACT_Scenario.SavePath);
             ACT_Scenario.Save(ACT_Scenario.SavePath, Master.ActionConfigs.ScenarioAction);

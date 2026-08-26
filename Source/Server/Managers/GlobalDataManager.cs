@@ -25,6 +25,7 @@ namespace RTServer.Managers
             globalData.ModConfigs = Master.ModConfig;
             globalData.EventValues = PM_Events.LoadedEvents;
             globalData.Roads = PM_Roads.GetAllRoads();
+            globalData.Rivers = PM_Rivers.GetAllRivers();
             
             if (Master.WorldValues != null) globalData.PollutedTiles = Master.WorldValues.PollutedTiles;
 

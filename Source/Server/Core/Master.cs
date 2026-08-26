@@ -70,5 +70,7 @@ namespace RTServer.Core
         public static FL_Market MarketFile { get; set; } = null;
         
         public static FL_Road RoadFile { get; set; } = null;
+        
+        public static FL_River RiverFile { get; set; } = null;
     }
 }
