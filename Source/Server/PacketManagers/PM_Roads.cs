@@ -24,17 +24,17 @@ namespace RTServer.PacketManagers
             {
                 PKT_Road data = Serializer.ConvertBytesToObject<PKT_Road>(bytes);
 
-                switch (data.StepMode)
+                switch (data.CurrentStepMode)
                 {
-                    case RoadStepMode.Add:
+                    case StepMode.Add:
                         AddRoad(client, data);
                         break;
 
-                    case RoadStepMode.Remove:
+                    case StepMode.Remove:
                         RemoveRoad(client, data);
                         break;
                     
-                    case RoadStepMode.Bulk:
+                    case StepMode.Bulk:
                         AddRoadsBulk(client, data);
                         break;
                 }
@@ -82,9 +82,6 @@ namespace RTServer.PacketManagers
 
         public static List<RoadDetail> GetAllRoads() { return Master.RoadFile.Roads; }
 
-        private static RoadDetail FindRoadFile(int tile)
-        {
-            return Master.RoadFile.Roads.FirstOrDefault(fetch => fetch.Tile == tile);
-        }
+        private static RoadDetail FindRoadFile(int tile) { return Master.RoadFile.Roads.FirstOrDefault(fetch => fetch.Tile == tile); }
     }
 }
