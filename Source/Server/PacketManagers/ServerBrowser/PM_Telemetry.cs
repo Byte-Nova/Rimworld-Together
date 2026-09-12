@@ -3,7 +3,7 @@ using RTServer.Hooks.TCPNetwork;
 using RTShared.Files.Configs;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
-using static RTServer.Hooks.ServerBrowser.ServerBrowserManager;
+using static RTServer.Managers.ServerBrowserManager;
 using RTNetwork.Components;
 using RTShared.Misc;
 

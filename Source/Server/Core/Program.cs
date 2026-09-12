@@ -1,5 +1,4 @@
 using RTServer.Files;
-using RTServer.Hooks.ServerBrowser;
 using RTServer.Hooks.Shared;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;

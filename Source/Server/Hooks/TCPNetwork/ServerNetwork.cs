@@ -64,7 +64,7 @@ namespace RTServer.Hooks.TCPNetwork
             else if (Master.WorldValues == null && GetConnectedClients().Length > 0) PM_Login.DenyConnectionWithReason(client, LoginResponse.NoWorld);
             else
             {
-                Network.TotalConnectedClients++;
+                Network.TotalClientsSinceLaunch++;
                 Network.ServerClients.TryAdd(client, -1);
                 InformationDisplayer.DisplayConnect(client);
                 client.Listener.Ruleset.OnConnect?.Invoke(client);

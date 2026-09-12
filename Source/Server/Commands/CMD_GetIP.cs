@@ -1,4 +1,4 @@
-﻿using RTServer.Hooks.ServerBrowser;
+﻿using RTServer.Managers;
 using RTShared.Commands;
 using RTShared.Misc;
 
